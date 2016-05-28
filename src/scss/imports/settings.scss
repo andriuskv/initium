@@ -1,0 +1,45 @@
+.settings-nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+.settings-nav-item {
+    border-bottom: 1px solid transparent;
+
+    &.active { border-color: $brand-color; }
+    .font-btn { padding: 2px 6px; }
+}
+.settings {
+    overflow: hidden;
+    position: relative;
+    padding-left: 0;
+    margin: 0;
+}
+.setting {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    visibility: collapse;
+    color: $primary-text-color;
+
+    &.active { visibility: visible; }
+}
+.setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid $color2;
+    font-size: 12px;
+}
+.setting-input {
+    width: 128px;
+}
+.settings-selection {
+    padding: 2px;
+    border: none;
+    background-color: #333;
+}

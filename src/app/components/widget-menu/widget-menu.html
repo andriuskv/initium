@@ -1,0 +1,34 @@
+<div class="menu">
+    <div class="widget-menu-container" [class.show]="visible">
+        <div class="menu-header">
+            <h3 class="menu-title">{{ title }}</h3>
+            <button class="icon-left-big font-btn close-item-btn" *ngIf="selectedItem" (click)="toggleWidget()" title="Back to widget menu"></button>
+        </div>
+        <ul class="menu-item-container menu-items" *ngIf="!selectedItem">
+            <li class="menu-item">
+                <button class="icon-clock font-btn menu-item-icon" (click)="toggleTimer()">
+                    <div class="menu-item-title">Timer</div>
+                </button>
+            </li>
+            <li class="menu-item">
+                <button class="icon-dropbox font-btn menu-item-icon" (click)="toggleWidget('Dropbox')">
+                    <div class="menu-item-title">Dropbox</div>
+                </button>
+            </li>
+            <li class="menu-item">
+                <button class="icon-calendar font-btn menu-item-icon" (click)="toggleWidget('Calendar')">
+                    <div class="menu-item-title">Calendar</div>
+                </button>
+            </li>
+            <li class="menu-item">
+                <button class="icon-wrench font-btn menu-item-icon" (click)="toggleWidget('Settings')">
+                    <div class="menu-item-title">Settings</div>
+                </button>
+            </li>
+        </ul>
+        <settings [hidden]="selectedItem !== 'Settings'" (setting)="onSetting($event)"></settings>
+        <dropbox *ngIf="selectedItem === 'Dropbox'" (background)="onBackground($event)"></dropbox>
+        <calendar [hidden]="selectedItem !== 'Calendar'" (reminders)="onReminders($event)" [notificationDisabled]="notificationDisabled"></calendar>
+    </div>
+    <button class="icon-menu font-btn menu-btn" (click)="toggleMenu()"></button>
+</div>

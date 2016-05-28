@@ -1,0 +1,36 @@
+<div class="menu-item-container">
+    <span class="calendar-year">{{ calendar.currentYear }}</span>
+    <div *ngIf="!daySelected">
+        <div class="calendar-header">
+            <button class="icon-left-big font-btn month-btn"
+                (click)="setCurrentMonthAndYear(-1)" title="Previous month"></button>
+            <span class="calendar-title">{{ calendar.currentMonth.name }}</span>
+            <button class="icon-left-big font-btn month-btn"
+                (click)="setCurrentMonthAndYear(1)" title="Next month"></button>
+        </div>
+        <ul class="list calendar-week-days">
+            <li class="calendar-cell">Mon</li>
+            <li class="calendar-cell">Tue</li>
+            <li class="calendar-cell">Wed</li>
+            <li class="calendar-cell">Thu</li>
+            <li class="calendar-cell">Fri</li>
+            <li class="calendar-cell">Sat</li>
+            <li class="calendar-cell">Sun</li>
+        </ul>
+        <ul class="list calendar-month-days">
+            <li class="calendar-cell calendar-month-day"
+                *ngFor="let day of calendar.currentMonth.days; let i = index"
+                [class.is-current-month-day]="day.direction === 0"
+                [class.has-reminder]="day.reminders.length"
+                [class.current-day]="day.currentDay"
+                (click)="showDay(day, i)">{{ day.number }}</li>
+        </ul>
+    </div>
+    <div *ngIf="daySelected">
+        <calendar-selected-day [day]="selectedDay"
+        (event)="showCalendar($event)"
+        (notify)="sendReminders($event)"
+        (remove)="removeReminder($event)"
+        (repeat)="repeatReminder($event)"></calendar-selected-day>
+    </div>
+</div>

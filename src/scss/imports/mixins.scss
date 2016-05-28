@@ -1,0 +1,10 @@
+@mixin input-styles($color: $color2) {
+    border: none;
+    background-color: $color;
+    color: $primary-text-color;
+    font-family: sans-serif;
+}
+@mixin scrollbar($color) {
+    &::-webkit-scrollbar { width: 10px; }
+    &::-webkit-scrollbar-thumb { background-color: $color; }
+}

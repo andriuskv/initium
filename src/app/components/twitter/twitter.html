@@ -1,0 +1,54 @@
+<div class="twitter-container">
+    <div class="twitter-hero" [class.show]="!tweets.length">
+        <div class="icon-twitter twitter-hero-icon"></div>
+        <input type="text" id="js-twitter-pin" class="input twitter-pin-input"
+            placeholder="Enter PIN"
+            [class.show]="showPinInput" #pin
+            (keyup)="login($event, pin)">
+        <button class="btn" title="Log in to Twitter" *ngIf="!isLoggedIn"
+            (click)="login($event, pin)">Log in</button>
+    </div>
+    <div class="twitter-content" [class.show]="tweets.length">
+        <div class="twitter-header">
+           <div class="twitter-user">
+                <a href="{{ user.homepage }}" target="_blank">
+                    <img src="{{ user.profileImage }}" class="twitter-user-image">
+                </a>
+                <a href="{{ user.homepage }}" class="twitter-user-name" target="_blank">
+                    <span>{{ user.name }}</span>
+                </a>
+                <a href="{{ user.homepage }}" class="twitter-user-handle" target="_blank">
+                    <span>{{ user.handle }}</span>
+                </a>
+            </div>
+            <button class="btn twitter-btn" *ngIf="tweetsToLoad.length" (click)="loadNewTweets()">
+                <span>View {{ tweetsToLoad.length }} new tweet</span><span *ngIf="tweetsToLoad.length > 1">s</span>
+            </button>
+            <button class="icon-cancel font-btn twitter-logout-btn" title="Log out" (click)="logout()"></button>
+        </div>
+        <ul class="list twitter-tweets">
+            <li class="twitter-tweet" *ngFor="let tweet of tweets">
+                <a href="{{ tweet.tweetUrl }}" target="_blank">
+                    <div class="twitter-retweet" *ngIf="tweet.retweetedBy">
+                        <span class="icon-retweet"></span>
+                        <a href="{{ tweet.retweetedBy.userUrl }}" class="twitter-retweet-by" target="_blank">{{ tweet.retweetedBy.name }}</a>
+                        <span>Retweeted</span>
+                    </div>
+                    <div>
+                        <a href="{{ tweet.userUrl }}" target="_blank">
+                            <img src="{{ tweet.profileImg }}" class="twitter-profile-image">
+                            <span class="twitter-tweet-by-name">{{ tweet.name }}</span>
+                            <span class="twitter-tweet-by-handle">{{ tweet.handle }}</span>
+                        </a>
+                        <a href="{{ tweet.tweetUrl }}" class="twitter-tweeted-on" target="_blank">{{ tweet.created.at }}</a>
+                    </div>
+                    <p class="twitter-tweet-text" *ngIf="tweet.text" [innerHTML]="tweet.text"></p>
+                    <img src="{{ tweet.media }}" class="twitter-tweet-img" *ngIf="tweet.media">
+                </a>
+            </li>
+            <li>
+                <button class="btn twitter-btn" (click)="fetchMoreTweets()">Load more tweets</button>
+            </li>
+        </ul>
+    </div>
+</div>

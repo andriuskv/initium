@@ -1,0 +1,24 @@
+<div class="timer" *ngIf="timerEnabled">
+    <div class="timer-displays" (keypress)="onKeypress($event, hours, minutes, seconds)">
+        <input type="text" class="timer-input" maxlength="2" #hours
+            [(ngModel)]="timer.hours"
+            [readonly]="isSet">
+        <div class="timer-time-point">h</div>
+        <input type="text" class="timer-input" maxlength="2" #minutes
+            [(ngModel)]="timer.minutes"
+            [readonly]="isSet">
+        <div class="timer-time-point">m</div>
+        <input type="text" class="timer-input" maxlength="2" #seconds
+            [(ngModel)]="timer.seconds"
+            [readonly]="isSet">
+        <div class="timer-time-point">s</div>
+    </div>
+    <div class="timer-controls">
+        <button class="font-btn timer-control" (click)="startTimer(hours.value, minutes.value, seconds.value)" *ngIf="!isSet">Start</button>
+        <button class="font-btn timer-control" (click)="stopTimer(hours, minutes, seconds)" *ngIf="isSet">Stop</button>
+        <button class="font-btn timer-control" (click)="resetTimer(hours, minutes, seconds)">Reset</button>
+        <button class="font-btn timer-control"
+            [ngClass]="{ 'icon-bell-alt': alarmOn, 'icon-bell-off': !alarmOn }"
+            (click)="toggleAlarm()"></button>
+    </div>
+</div>

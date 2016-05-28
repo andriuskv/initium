@@ -1,0 +1,34 @@
+<ul class="list main-block-most-visited">
+    <li class="most-visited" *ngFor="let page of mostVisited.display; let i = index"
+        [class.is-in-one-line]="mostVisited.display.length < 4">
+        <button class="icon-cancel font-btn remove-page-btn" (click)="removePage(i)" title="Remove"></button>
+        <a [href]="page.url" [title]="page.title">
+            <div class="page-title">{{ page.title }}</div>
+            <div class="page-thumbnail-container">
+                <img class="page-thumbnail"
+                [src]="page.image"
+                [class.full]="page.uploaded">
+            </div>
+        </a>
+    </li>
+    <li class="most-visited" title="Add new page"
+        *ngIf="!hasBackup"
+        [class.is-in-one-line]="mostVisited.display.length < 4"
+        (click)="showNewThumbWindow()">
+        <button class="icon-plus btn add-page-btn"></button>
+    </li>
+</ul>
+<div class="most-visited-mask" *ngIf="newThumbWindowVisible"></div>
+<div class="new-thumbnail-window" *ngIf="newThumbWindowVisible">
+    <h2 class="new-thumbnail-window-title">Add new page</h2>
+    <form (ngSubmit)="addPage(fileInput)">
+        <input type="text" class="input" placeholder="title" [(ngModel)]="newPage.title" required>
+        <input type="text" class="input" placeholder="url" [(ngModel)]="newPage.url" required>
+        <div class="new-thumbnail-window-btn-container">
+            <label for="file-input" class="btn image-upload-btn">Choose thumbnail</label>
+            <input type="file" id="file-input" class="file-input" #fileInput>
+            <button type="submit" class="btn">Add</button>
+            <button type="button" class="btn" (click)=hideNewThumbWindow()>Close</button>
+        </div>
+    </form>
+</div>

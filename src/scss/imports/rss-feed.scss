@@ -1,0 +1,117 @@
+.rss-feed {
+    height: 204px;
+
+    &.is-hero-visible { background-color: $color2; }
+}
+.feed-header {
+    display: flex;
+    margin-bottom: 4px;
+}
+.feed-titles {
+    display: inline-flex;
+    align-items: stretch;
+    width: 100%;
+    margin-right: 4px;
+    background-color: $color2;
+}
+.feed-title {
+    position: relative;
+    flex: 1 1 100px;
+    height: 20px;
+    padding-top: 3px;
+    border-bottom: 2px solid $color2;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+
+    &.active {
+        border-color: $brand-color;
+    }
+    &:hover {
+        color: $brand-color;
+
+        .remove-feed-btn { display: inline-block; }
+    }
+}
+.remove-feed-btn {
+    position: absolute;
+    right: 2px;
+    display: none;
+    background-color: $color2;
+    box-shadow: -4px 0 8px $color2;
+}
+.add-feed-btn {
+    padding: 3px 4px;
+}
+.feed-hero {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+
+    &.is-header-present { top: 60px; }
+}
+.feed-hero-title {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+.feed-input-container {
+    text-align: right;
+
+    .input, .btn {
+        background-color: $color3;
+    }
+}
+.feed-input-label {
+    display: block;
+    margin-bottom: 2px;
+    text-align: left;
+}
+.feed-input {
+    display: block;
+    margin-bottom: 4px;
+}
+.feeds {
+    @include scrollbar($color3);
+
+    overflow-y: auto;
+    height: calc(100% - 24px);
+    background-color: $color2;
+}
+.feed-entry {
+    padding: 4px;
+    margin: 4px 4px 0 4px;
+    border-bottom: 1px solid $color3;
+}
+.feed-entry-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+
+    &:hover {
+        color: #bbb;
+        text-decoration: underline;
+    }
+}
+.feed-entry-title {
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+.feed-entry-date {
+    color: #bbb;
+    font-size: 10px;
+}
+.feed-entry-desc {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+.is-new-entry {
+    float: right;
+    color: $brand-color;
+    font-style: italic;
+}

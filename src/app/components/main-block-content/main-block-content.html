@@ -1,0 +1,14 @@
+<ul class="list">
+    <li class="main-block-content-item" [class.hidden]="item !== 'mostVisited'">
+        <most-visited [setting]="mostVisitedSetting"></most-visited>
+    <li>
+    <li class="main-block-content-item" [class.hidden]="item !== 'notepad'">
+        <notepad></notepad>
+    </li>
+    <li class="main-block-content-item" [class.hidden]="item !== 'twitter'">
+        <twitter (newTweetCount)="onNewTweets($event)" [item]="item"></twitter>
+    </li>
+    <li class="main-block-content-item" [class.hidden]="item !== 'rssFeed'">
+        <rss-feed (newFeedEntries)="onNewEntries($event)" [item]="item"></rss-feed>
+    </li>
+</ul>

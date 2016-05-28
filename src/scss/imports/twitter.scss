@@ -1,0 +1,162 @@
+.twitter-container {
+    position: relative;
+    height: 204px;
+}
+.twitter-hero {
+    opacity: 0;
+    position: absolute;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%) scale(.8);
+    text-align: center;
+    transition: all 1s;
+
+    &.show {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+.twitter-hero-icon {
+    font-size: 64px;
+    color: #55acee;
+}
+.twitter-pin-input {
+    vertical-align: top;
+    display: none;
+    width: 64px;
+    font-size: 12px;
+    text-align: center;
+
+    &.show { display: inline-block; }
+}
+.twitter-header {
+    position: relative;
+    height: 20px;
+    padding: 2px;
+    margin-bottom: 4px;
+    background-color: $color2;
+
+    .twitter-btn {
+        padding: 2px 0;
+    }
+}
+.twitter-user-image {
+    width: 16px;
+    border-radius: 2px;
+}
+.twitter-user {
+    position: absolute;
+    display: flex;
+    align-items: center;
+}
+.twitter-user-name {
+    margin-left: 4px;
+    font-size: 12px;
+    color: #fff;
+
+    &:hover { text-decoration: underline; }
+}
+.twitter-user-handle {
+    margin-left: 4px;
+    font-size: 10px;
+    color: #bbb;
+
+    &:hover { text-decoration: underline; }
+}
+.twitter-btn {
+    width: 100%;
+    padding: 7px 0;
+}
+.twitter-logout-btn {
+    position: absolute;
+    top: 3px;
+    right: 2px;
+}
+.twitter-content {
+    visibility: collapse;
+    opacity: 0;
+    height: 100%;
+    transform: scale(.8);
+    transition: .6s all;
+
+    &.show {
+        visibility: visible;
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+.twitter-tweets {
+    @include scrollbar($color3);
+
+    position: relative;
+    overflow-y: auto;
+    height: calc(100% - 24px);
+    background-color: $color2;
+}
+.twitter-tweet {
+    overflow: hidden;
+    padding: 4px;
+    border-bottom: 1px solid $color3;
+    transition: background-color .2s;
+
+    &:hover { background-color: lighten($color2, 2%);}
+}
+.twitter-retweet {
+    margin-left: 36px;
+    margin-bottom: 4px;
+    color: #bbb;
+    font-size: 12px;
+}
+.twitter-retweet-by {
+    margin-left: 4px;
+    color: #bbb;
+
+    &:hover { text-decoration: underline; }
+}
+.twitter-tweet-by-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+
+    &:hover {
+        color: #bbb;
+        text-decoration: underline;
+    }
+}
+.twitter-tweet-by-handle {
+    color: #bbb;
+    font-size: 12px;
+}
+.twitter-tweeted-on {
+    @extend .twitter-retweet-by;
+
+    font-size: 12px;
+}
+.twitter-profile-image {
+    float: left;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+.twitter-tweet-text {
+    display: inline-block;
+    width: calc(100% - 56px);
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+.twitter-tweet-link {
+    color: #109ACC;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+}
+.tweet-image-container {
+    margin-left: 56px;
+}
+.twitter-tweet-img {
+    display: block;
+    margin-top: 4px;
+    margin-left: 56px;
+    max-width: calc(100% - 56px);
+    border-radius: 4px;
+}

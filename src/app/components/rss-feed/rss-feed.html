@@ -1,0 +1,46 @@
+<div class="rss-feed" [class.is-hero-visible]="!feeds.length">
+    <div class="feed-header" *ngIf="feeds.length">
+        <ul class="list feed-titles">
+            <li class="feed-title"
+               *ngFor="let feed of feeds; let i = index"
+               [class.active]="feed.url === activeFeed"
+               (click)="showFeed(feed.url, i)">
+                <span *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
+                <span (dblclick)="enableFeedEdit(i)">{{ feed.title }}</span>
+                <button class="icon-cancel font-btn remove-feed-btn" (click)="removeFeed(i)" title="Remove feed"></button>
+            </li>
+        </ul>
+        <button class="icon-plus btn add-feed-btn" (click)="addNewFeed()" title="Add new feed"></button>
+    </div>
+    <div class="feed-hero" [class.is-header-present]="feeds.length" *ngIf="addingNewFeed">
+        <h2 class="feed-hero-title">{{ action }} RSS Feed</h2>
+        <div class="feed-input-container">
+            <label for="feed-title-input" class="feed-input-label">Feed title</label>
+            <input type="text" id="feed-title-input" class="input feed-input"
+                #feedTitle
+                [value]="feedInput.title || ''">
+            <label for="feed-url-input" class="feed-input-label">Feed url</label>
+            <input type="text" id="feed-url-input" class="input feed-input"
+                #feedUrl
+                [value]="feedInput.url || ''">
+            <button class="btn" (click)="getFeedFromInput(feedUrl, feedTitle)" *ngIf="!editingFeed">Add</button>
+            <button class="btn" (click)="editFeed(feedUrl, feedTitle)" *ngIf="editingFeed">Edit</button>
+        </div>
+    </div>
+    <ul id="js-feeds" class="list feeds" *ngIf="!addingNewFeed || feeds.length">
+        <li *ngFor="let feed of feeds">
+            <ul class="list" *ngIf="feed.url === activeFeed">
+                <li class="feed-entry" *ngFor="let entry of feed.entries">
+                    <a href="{{ entry.link }}" class="feed-entry-link" target="_blank">
+                        <span class="feed-entry-title">{{ entry.title }}</span>
+                    </a>
+                    <p class="feed-entry-desc">{{ entry.desc }}</p>
+                    <span class="feed-entry-date" *ngIf="entry.date">
+                        Published on: {{ entry.date | date:"EEE, dd MMM jjmm" }}
+                    </span>
+                    <span *ngIf="entry.newEntry" class="is-new-entry">New</span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,91 @@
+.dropbox-logout-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 14px;
+}
+.dropbox-hero {
+    position: absolute;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    visibility: hidden;
+    margin-top: 20px;
+    text-align: center;
+    transform: scale(.8);
+    transition: all .4s;
+
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+    }
+}
+.dropbox-hero-icon {
+    margin-bottom: 12px;
+    font-size: 64px;
+    color: #2895F1;
+}
+.dropbox-spinner {
+    color: #2895F1;
+    font-size: 24px;
+}
+.dropbox-error-message {
+    color: #fff;
+}
+.dropbox-images {
+    @include scrollbar($color3);
+
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    height: 100%;
+    background-color: $color2;
+    transform: scale(.8);
+    transition: all 0.4s;
+
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+    }
+}
+.dropbox-image {
+    padding: 6px 4px 2px 4px;
+    border-bottom: 1px solid $color3;
+
+    &.hidden { display: none; }
+    &:hover {
+        cursor: pointer;
+
+        .dropbox-image-item-modifier { width: 30%; }
+    }
+    &:active .dropbox-image-item-modifier { width: 100%; }
+}
+.dropbox-image-item-modifier {
+    width: 0;
+    height: 2px;
+    margin-top: 2px;
+    background-color: $brand-color;
+    transition: 0.2s width;
+}
+.dropbox-thumbnail {
+    vertical-align: top;
+    width: 32px;
+}
+.dropbox-image-name {
+    display: inline-block;
+    font-size: 12px;
+    color: $primary-text-color;
+
+    &.no-thumbnail { margin-left: 32px; }
+}
+.animate-spin {
+    display: inline-block;
+    animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}

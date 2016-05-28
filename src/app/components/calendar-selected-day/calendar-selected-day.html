@@ -1,0 +1,21 @@
+<div class="calendar-header">
+    <button class="icon-cancel font-btn" (click)="showCalendar()" title="Close"></button>
+    <span class="calendar-title">{{ selectedDay.date }}</span>
+    <button class="icon-plus font-btn" (click)="toggleReminderInput()" title="Add"></button>
+</div>
+<ul class="list selected-day-remainders" *ngIf="selectedDay.reminders.length">
+    <li class="selected-day-remainder" *ngFor="let reminder of selectedDay.reminders; let i = index;">
+        <span class="icon-retweet is-repeating" title="Repeating" *ngIf="reminder.repeat"></span>
+        <span>{{ reminder.text }}</span>
+        <button class="icon-cancel font-btn" (click)="removeReminder(i)"></button>
+    </li>
+</ul>
+<form (ngSubmit)="createReminder(form)" *ngIf="reminderInputEnabled" #form>
+    <div class="calendar-form-section">
+        <input type="text" class="input selected-day-input" name="reminder" autocomplete="off">
+        <label for="calendar-repeat-checkbox" class="icon-retweet btn calendar-repeat-btn" title="Toggle reminder repeat" [class.checked]="repeatEnabled"></label>
+        <input type="checkbox" id="calendar-repeat-checkbox" class="calendar-repeat-checkbox" (click)="toggleRepeat()">
+        <button class="btn">Create</button>
+    </div>
+    <input type="number" class="input calendar-repeat-gap" *ngIf="repeatEnabled" name="repeat" autocomplete="off" min="1" max="999" value="1">
+</form>

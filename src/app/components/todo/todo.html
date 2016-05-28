@@ -1,0 +1,26 @@
+<div class="todo">
+    <button class="font-btn todo-toggle-btn" (click)="toggle()">todo</button>
+    <div class="todo-container" *ngIf="visible">
+        <header class="todo-header">
+            <input class="input todo-input" type="text" #todoText (keyup)="addTodoOnEnter($event)">
+            <button class="icon-plus btn todo-add-btn" (click)="addTodo(todoText)" title="Add"></button>
+        </header>
+        <ul id="js-todo-list" class="list todos" [class.has-todo]="hasTodo">
+            <li class="todo-item" *ngFor="let todo of todos; let i = index">
+                <input type="checkbox" [attr.id]="i" class="checkbox"
+                    (click)="markTodoDone(i, done)"
+                    [checked]="todo.done" #done>
+                <label [attr.for]="i" class="checkbox-label" *ngIf="todo.text"></label>
+                <span class="todo-item-text"
+                    [ngClass]="{ done: todo.done, 'is-empty': !todo.text }"
+                    (dblclick)="enableTodoEdit(todo, i)">{{ todo.text }}
+                </span>
+                <button class="icon-cancel font-btn" title="Remove" (click)="removeTodo(i)" *ngIf="todo.text"></button>
+            </li>
+        </ul>
+        <footer class="todo-footer" *ngIf="hasTodo">
+            <button class="btn" title="Remove done" (click)="removeTodos()">Remove</button>
+        </footer>
+    </div>
+    <todo-edit (edited)="onEdit($event)" [todo]="editedTodo"></todo-edit>
+</div>
