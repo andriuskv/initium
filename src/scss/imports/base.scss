@@ -58,18 +58,19 @@ a {
     display: none;
 
     & + label, &:checked + label {
-        @include input-styles();
-
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 14px;
         height: 14px;
-        border-radius: 1px;
+        border-radius: 2px;
+        background-color: $color2;
     }
     & + label:before, &:checked + label:before {
         content: "";
     }
     &:checked + label:after {
         content: '✔';
-        margin-left: 2px;
         color: $brand-color;
     };
 
