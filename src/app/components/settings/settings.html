@@ -1,5 +1,8 @@
 <div class="menu-item-container">
     <ul class="list settings-nav">
+        <li class="settings-nav-item" [class.active]="active === 'general'">
+            <button class="font-btn" (click)="active = 'general'">General</button>
+        </li>
         <li class="settings-nav-item" [class.active]="active === 'time'">
             <button class="font-btn" (click)="active = 'time'">Time & Date</button>
         </li>
@@ -14,6 +17,22 @@
         </li>
     </ul>
     <ul class="settings" [style.height.px]=setting.offsetHeight>
+        <li class="setting" [class.active]="active === 'general'">
+            <div class="setting-item">
+                <span>Disable notifications</span>
+                <input type="checkbox" id="notification1-checkbox" class="checkbox"
+                    (click)="onSetting($event, 'notification', 'notificationDisabled')"
+                    [checked]="settings.notification.notificationDisabled.value">
+                <label for="notification1-checkbox"></label>
+            </div>
+            <div class="setting-item">
+                <span>Don't focus tab on notification click</span>
+                <input type="checkbox" id="notification2-checkbox" class="checkbox"
+                    (click)="onSetting($event, 'notification', 'focusDisabled')"
+                    [checked]="settings.notification.focusDisabled.value">
+                <label for="notification2-checkbox"></label>
+            </div>
+        </li>
         <li class="setting" [class.active]="active === 'time'">
             <div class="setting-item">
                 <span>Disable date</span>

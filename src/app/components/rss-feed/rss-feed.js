@@ -1,23 +1,26 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { FeedService } from "app/services/feedService";
 import { LocalStorageService } from "app/services/localStorageService";
+import { NotificationService } from "app/services/notificationService";
 
 @Component({
     selector: "rss-feed",
-    providers: [FeedService],
+    providers: [FeedService, NotificationService],
     templateUrl: "app/components/rss-feed/rss-feed.html"
 })
 export class RssFeed {
     @Output() newFeedEntries = new EventEmitter();
+    @Output() toggleTab = new EventEmitter();
     @Input() item;
 
     static get parameters() {
-        return [[FeedService], [LocalStorageService]];
+        return [[FeedService], [LocalStorageService], [NotificationService]];
     }
 
-    constructor(feedService, localStorageService) {
+    constructor(feedService, localStorageService, notificationService) {
         this.storage = localStorageService;
         this.feedService = feedService;
+        this.notification = notificationService;
         this.feeds = [];
         this.feedsToLoad = this.storage.get("rss feeds") || [];
         this.addingNewFeed = false;
@@ -180,7 +183,17 @@ export class RssFeed {
             newEntryCount = newEntryCount.reduce((sum, entryCount) => sum + entryCount, 0);
             if (newEntryCount && !this.isActive) {
                 this.newEntryCount += newEntryCount;
-                this.newFeedEntries.next(this.newEntryCount);
+                this.newFeedEntries.emit(this.newEntryCount);
+
+                this.notification.send(
+                    "RSS feed",
+                    `You have ${this.newEntryCount} new entries.`
+                ).then(disabled => {
+                    if (!disabled) {
+                        this.toggleTab.emit("rssFeed");
+                        this.newFeedEntries.emit(0);
+                    }
+                });
             }
         })
         .catch(error => {
@@ -227,22 +240,22 @@ export class RssFeed {
         }
 
         return this.feedService.fetchFeed(url)
-        .then(feed => {
-            const newFeed = {
-                title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
-                url: url,
-                newEntries: 0,
-                entries: this.getEntries(feed.entries)
-            };
+            .then(feed => {
+                const newFeed = {
+                    title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
+                    url: url,
+                    newEntries: 0,
+                    entries: this.getEntries(feed.entries)
+                };
 
-            if (typeof index === "number") {
-                this.feeds[index] = newFeed;
-            }
-            else {
-                this.feeds.push(newFeed);
-                this.activeFeed = url;
-            }
-        });
+                if (typeof index === "number") {
+                    this.feeds[index] = newFeed;
+                }
+                else {
+                    this.feeds.push(newFeed);
+                    this.activeFeed = url;
+                }
+            });
     }
 
     showFeed(url, index) {

@@ -9,13 +9,15 @@ import { MainBlockContent } from "app/components/main-block-content/main-block-c
         <div class="main-block">
             <main-block-nav (choice)="onChoice($event)"
                 [newTweets]="tweetCount"
-                [newEntries]="entryCount">
+                [newEntries]="entryCount"
+                [tabNameChange]="tabName">
             </main-block-nav>
             <main-block-content
                 [choice]="item"
                 [setting]="contentSetting"
                 (newTweets)="onNewTweets($event)"
-                (newEntries)="onNewEntries($event)">
+                (newEntries)="onNewEntries($event)"
+                (toggleTab)="onToggleTab($event)">
             </main-block-content>
         </div>
     `
@@ -39,5 +41,9 @@ export class MainBlock {
 
     onNewEntries(count) {
         this.entryCount = count;
+    }
+
+    onToggleTab(name) {
+        this.tabName = name;
     }
 }

@@ -14,6 +14,7 @@ export class MainBlockContent {
     @Input() setting;
     @Output() newTweets = new EventEmitter();
     @Output() newEntries = new EventEmitter();
+    @Output() toggleTab = new EventEmitter();
 
     constructor() {
         this.item = "";
@@ -34,5 +35,12 @@ export class MainBlockContent {
 
     onNewEntries(count) {
         this.newEntries.emit(count);
+    }
+
+    onToggleTab(item) {
+        if (this.item !== item) {
+            this.item = item;
+            this.toggleTab.emit(item);
+        }
     }
 }

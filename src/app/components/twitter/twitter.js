@@ -3,22 +3,26 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { DateService } from "app/services/dateService";
 import { LocalStorageService } from "app/services/localStorageService";
+import { NotificationService } from "app/services/notificationService";
 
 @Component({
     selector: "twitter",
+    providers: [NotificationService],
     templateUrl: "app/components/twitter/twitter.html"
 })
 export class Twitter {
     @Output() newTweetCount = new EventEmitter();
+    @Output() toggleTab = new EventEmitter();
     @Input() item;
 
     static get parameters() {
-        return [[DateService], [LocalStorageService]];
+        return [[DateService], [LocalStorageService], [NotificationService]];
     }
 
-    constructor(dateService, localStorageService) {
+    constructor(dateService, localStorageService, notificationService) {
         this.storage = localStorageService;
         this.dateService = dateService;
+        this.notification = notificationService;
         this.user = {};
         this.tweets = [];
         this.tweetsToLoad = [];
@@ -89,10 +93,10 @@ export class Twitter {
 
         minuteDiff = Math.round(minuteDiff);
         if (minuteDiff <= 60) {
-            at = minuteDiff + "m";
+            at = `${minuteDiff}m`;
         }
         else if (minuteDiff <= 1440) {
-            at = Math.round(minuteDiff / 60) + "h";
+            at = `${Math.round(minuteDiff / 60)}h`;
         }
         else if (minuteDiff <= 1500) {
             at = "1d";
@@ -235,7 +239,7 @@ export class Twitter {
             const cb = new Codebird;
 
             this.setInfo(cb, userInfo);
-            cb.__call("statuses_homeTimeline", "since_id=" + latestTweetId, tweets => {
+            cb.__call("statuses_homeTimeline", `since_id=${latestTweetId}`, tweets => {
                 if (tweets && tweets.length) {
                     tweets = tweets.filter(tweet => tweet.id !== latestTweetId);
                 }
@@ -247,6 +251,16 @@ export class Twitter {
 
                     if (!this.isActive) {
                         this.newTweetCount.emit(this.tweetsToLoad.length);
+
+                        this.notification.send(
+                            "Twitter",
+                            `You have ${this.tweetsToLoad.length} new tweets.`
+                        ).then(disabled => {
+                            if (!disabled) {
+                                this.toggleTab.emit("twitter");
+                                this.newTweetCount.emit(0);
+                            }
+                        });
                     }
                     return;
                 }
@@ -278,8 +292,8 @@ export class Twitter {
         this.setInfo(cb, userInfo);
         cb.__call("account_verifyCredentials", {}, user => {
             this.user.name = user.name;
-            this.user.homepage = "https://twitter.com/" + user.screen_name;
-            this.user.handle = "@" + user.screen_name;
+            this.user.homepage = `https://twitter.com/${user.screen_name}`;
+            this.user.handle = `@${user.screen_name}`;
             this.user.profileImage = user.profile_image_url_https;
         });
     }
@@ -328,7 +342,7 @@ export class Twitter {
             this.setKey(this.cb);
             this.cb.__call("oauth_requestToken", {oauth_callback: "oob"}, (reply, rate, err) => {
                 if (err) {
-                    console.log("error response or timeout exceeded" + err.error);
+                    console.log("error response or timeout exceeded", err.error);
                 }
                 if (reply.httpstatus !== 401) {
                     this.cb.setToken(reply.oauth_token, reply.oauth_token_secret);
@@ -367,7 +381,7 @@ export class Twitter {
 
         if (userInfo.token && userInfo.tokenSecret) {
             this.setInfo(cb, userInfo);
-            cb.__call("statuses_homeTimeline", "max_id=" + oldestTweet.id, tweets => {
+            cb.__call("statuses_homeTimeline", `max_id=${oldestTweet.id}`, tweets => {
                 tweets = tweets.filter(tweet => tweet.id !== oldestTweet.id);
 
                 if (tweets.length) {
