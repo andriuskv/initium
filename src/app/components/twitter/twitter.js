@@ -126,59 +126,54 @@ export class Twitter {
         };
     }
 
-    replaceUserMentions(text, userMentions, className) {
+    replaceUserMentions(text, userMentions) {
         userMentions.forEach(mention => {
             const name = text.includes(`@${mention.name}`) ? mention.name : mention.screen_name;
+            const href = `https://twitter.com/${mention.screen_name}`;
+            const a = `
+                <a href="${href}" class="twitter-tweet-link" target="_blank">@${name}</a>
+            `;
 
-            text = text.replace(`@${name}`, name => {
-                const link = `https://twitter.com/${mention.screen_name}`;
-                const a = `<a href="${link}" class="${className}" target="_blank">${name}</a>`;
-
-                return a;
-            });
+            text = text.replace(`@${name}`, a);
         });
         return text;
     }
 
-    replaceHashtags(text, hashtags, className) {
-        hashtags.forEach(hashtag => {
-            text = text.replace(`#${hashtag.text}`, hashtag => {
-                const link = `https://twitter.com/hashtag/${hashtag}?src=hash`;
-                const a = `<a href="${link}" class="${className}" target="_blank">${hashtag}</a>`;
+    replaceHashtags(text, hashtags) {
+        hashtags.forEach(({ text }) => {
+            const href = `https://twitter.com/hashtag/${text}?src=hash`;
+            const a = `
+                <a href="${href}" class="twitter-tweet-link" target="_blank">#${text}</a>
+            `;
 
-                return a;
-            });
+            text = text.replace(`#${text}`, a);
         });
         return text;
     }
 
-    replaceUrls(text, urls, className) {
-        urls.forEach(url => {
-            const displayUrl = url.display_url;
+    replaceUrls(text, urls) {
+        urls.forEach(({ url, display_url}) => {
+            const a = `
+                <a href="${url}" class="twitter-tweet-link" target="_blank">${display_url}</a>
+            `;
 
-            text = text.replace(url.url, url => {
-                const a = `<a href="${url}" class="${className}" target="_blank">${displayUrl}</a>`;
-
-                return a;
-            });
+            text = text.replace(url, a);
         });
 
         return text;
     }
 
     replaceTweetEntities(text, entities) {
-        const className = "twitter-tweet-link";
-
         if (entities.userMentions.length) {
-            text = this.replaceUserMentions(text, entities.userMentions, className);
+            text = this.replaceUserMentions(text, entities.userMentions);
         }
 
         if (entities.hashtags.length) {
-            text = this.replaceHashtags(text, entities.hashtags, className);
+            text = this.replaceHashtags(text, entities.hashtags);
         }
 
         if (entities.urls.length) {
-            text = this.replaceUrls(text, entities.urls, className);
+            text = this.replaceUrls(text, entities.urls);
         }
 
         if (entities.media.length) {
