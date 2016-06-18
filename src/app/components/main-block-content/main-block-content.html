@@ -6,9 +6,9 @@
         <notepad></notepad>
     </li>
     <li class="main-block-content-item" [class.hidden]="item !== 'twitter'">
-        <twitter (newTweetCount)="onNewTweets($event)" [item]="item"></twitter>
+        <twitter (newTweetCount)="onNewTweets($event)" (toggleTab)="onToggleTab($event)" [item]="item"></twitter>
     </li>
     <li class="main-block-content-item" [class.hidden]="item !== 'rssFeed'">
-        <rss-feed (newFeedEntries)="onNewEntries($event)" [item]="item"></rss-feed>
+        <rss-feed (newFeedEntries)="onNewEntries($event)" (toggleTab)="onToggleTab($event)" [item]="item"></rss-feed>
     </li>
 </ul>

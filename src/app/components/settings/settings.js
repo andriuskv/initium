@@ -17,7 +17,7 @@ export class Settings {
     constructor(localStorageService, settingService) {
         this.storage = localStorageService;
         this.settingService = settingService;
-        this.active = "time";
+        this.active = "general";
     }
 
     ngOnInit() {
@@ -37,40 +37,16 @@ export class Settings {
         }
     }
 
-    onSetting(event, settingFor, setting, value) {
-        const target = event.target;
-        let settingProp = null;
-        let save = true;
-
-        if (target.type === "checkbox") {
-            value = event.target.checked;
-        }
-        else if (target.type.includes("select")) {
-            value = event.target.value;
-        }
-
-        if (settingFor === "weather") {
-            if (setting === "units") {
-                value = value ? "F" : "C";
-            }
-        }
-        else if (settingFor === "background" || settingFor === "mostVisited") {
-            value = true;
-            save = false;
-        }
-
-        settingProp = {
-            name: setting,
+    onSetting(event, settingFor, settingName, value) {
+        const setting = {
+            for: settingFor,
+            name: settingName,
             value
         };
+
         this.setting.emit({
             for: settingFor,
-            [setting]: settingProp
+            [settingName]: this.settingService.set(event.target, this.settings, setting)
         });
-
-        if (save) {
-            this.settings[settingFor][setting] = settingProp;
-        }
-        this.storage.set("settings", this.settings);
     }
 }

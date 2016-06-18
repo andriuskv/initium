@@ -9,6 +9,7 @@ export class MainBlockNav {
     @Output() choice = new EventEmitter();
     @Input() newTweets;
     @Input() newEntries;
+    @Input() tabNameChange;
 
     static get parameters() {
         return [[LocalStorageService]];
@@ -29,7 +30,8 @@ export class MainBlockNav {
     }
 
     ngOnChanges(changes) {
-        if (changes.newTweets && changes.newTweets.currentValue) {
+
+        if (changes.newTweets && typeof changes.newTweets.currentValue === "number") {
             const newTweets = changes.newTweets.currentValue || 0;
 
             this.isNewTweet = this.tweetCount !== newTweets;
@@ -44,7 +46,7 @@ export class MainBlockNav {
             }, 1000);
         }
 
-        if (changes.newEntries && changes.newEntries.currentValue) {
+        if (changes.newEntries && typeof changes.newEntries.currentValue === "number") {
             const newEntries = changes.newEntries.currentValue || 0;
 
             this.isNewEntry = this.entryCount !== newEntries;
@@ -57,6 +59,10 @@ export class MainBlockNav {
             setTimeout(() => {
                 this.isNewEntry = false;
             }, 1000);
+        }
+
+        if (changes.tabNameChange && typeof changes.tabNameChange.currentValue === "string") {
+            this.item = changes.tabNameChange.currentValue;
         }
     }
 
