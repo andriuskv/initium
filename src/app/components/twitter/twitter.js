@@ -246,17 +246,15 @@ export class Twitter {
 
                     if (!this.isActive) {
                         this.newTweetCount.emit(this.tweetsToLoad.length);
-
-                        this.notification.send(
-                            "Twitter",
-                            `You have ${this.tweetsToLoad.length} new tweets.`
-                        ).then(disabled => {
-                            if (!disabled) {
-                                this.toggleTab.emit("twitter");
-                                this.newTweetCount.emit(0);
-                            }
-                        });
                     }
+                    this.notification.send(
+                        "Twitter",
+                        `You have ${this.tweetsToLoad.length} new tweets.`
+                    ).then(disabled => {
+                        if (!disabled) {
+                            this.toggleTab.emit("twitter");
+                        }
+                    });
                     return;
                 }
                 this.updateTimeline(userInfo, latestTweetId);

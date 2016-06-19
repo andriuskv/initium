@@ -62,7 +62,7 @@ export class MainBlockNav {
         }
 
         if (changes.tabNameChange && typeof changes.tabNameChange.currentValue === "string") {
-            this.item = changes.tabNameChange.currentValue;
+            this.chooseItem(changes.tabNameChange.currentValue);
         }
     }
 

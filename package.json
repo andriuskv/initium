@@ -38,9 +38,9 @@
     "babel-preset-angular2": "0.0.2",
     "babel-preset-es2015": "^6.9.0",
     "csso": "^2.1.1",
-    "eslint": "^2.12.0",
+    "eslint": "^2.13.0",
     "ncp": "^2.0.0",
-    "node-sass": "^3.7.0",
+    "node-sass": "^3.8.0",
     "onchange": "^2.5.0",
     "webpack": "^1.13.1"
   }
