@@ -38,9 +38,6 @@ export class MainBlockContent {
     }
 
     onToggleTab(item) {
-        if (this.item !== item) {
-            this.item = item;
-            this.toggleTab.emit(item);
-        }
+        this.toggleTab.emit(item);
     }
 }

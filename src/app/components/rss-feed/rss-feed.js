@@ -181,17 +181,16 @@ export class RssFeed {
         Promise.all(feedsToUpdate)
         .then(newEntryCount => {
             newEntryCount = newEntryCount.reduce((sum, entryCount) => sum + entryCount, 0);
-            if (newEntryCount && !this.isActive) {
-                this.newEntryCount += newEntryCount;
-                this.newFeedEntries.emit(this.newEntryCount);
 
-                this.notification.send(
-                    "RSS feed",
-                    `You have ${this.newEntryCount} new entries.`
-                ).then(disabled => {
+            if (newEntryCount) {
+                if (!this.isActive) {
+                    this.newEntryCount += newEntryCount;
+                    this.newFeedEntries.emit(this.newEntryCount);
+                }
+                this.notification.send("RSS feed", `You have ${this.newEntryCount} new entries.`)
+                .then(disabled => {
                     if (!disabled) {
                         this.toggleTab.emit("rssFeed");
-                        this.newFeedEntries.emit(0);
                     }
                 });
             }
