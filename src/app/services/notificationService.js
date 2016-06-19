@@ -9,6 +9,22 @@ export class NotificationService {
         this.storage = localStorageService;
     }
 
+    closeNotification(notification, delay) {
+        setTimeout(() => {
+            if (notification) {
+                notification.close();
+            }
+        }, delay);
+    }
+
+    onBeforeUnload(notification) {
+        window.onbeforeunload = () => {
+            if (notification) {
+                notification.close();
+            }
+        };
+    }
+
     send(title, body) {
         const settings = this.storage.get("settings");
         let focus = true;
@@ -18,23 +34,19 @@ export class NotificationService {
         }
 
         return new Promise(resolve => {
-            let notification = null;
-
             if (settings.notification.notificationDisabled.value) {
                 resolve(true);
                 return;
             }
             if (Notification.permission === "granted") {
+                let notification = null;
+
                 notification = new Notification(title, {
                     icon: "./resources/images/128.png",
                     body: body
                 });
-
-                setTimeout(() => {
-                    if (notification) {
-                        notification.close();
-                    }
-                }, 6000);
+                this.onBeforeUnload(notification);
+                this.closeNotification(notification, 6000);
 
                 notification.onclick = () => {
                     notification.close();
