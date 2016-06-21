@@ -44,6 +44,6 @@ export class MainBlock {
     }
 
     onToggleTab(name) {
-        this.tabName = name;
+        this.tabName = { name };
     }
 }
