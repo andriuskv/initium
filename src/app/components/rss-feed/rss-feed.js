@@ -183,8 +183,9 @@ export class RssFeed {
             newEntryCount = newEntryCount.reduce((sum, entryCount) => sum + entryCount, 0);
 
             if (newEntryCount) {
+                this.newEntryCount += newEntryCount;
+
                 if (!this.isActive) {
-                    this.newEntryCount += newEntryCount;
                     this.newFeedEntries.emit(this.newEntryCount);
                 }
                 this.notification.send("RSS feed", `You have ${this.newEntryCount} new entries.`)

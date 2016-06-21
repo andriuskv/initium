@@ -30,7 +30,6 @@ export class MainBlockNav {
     }
 
     ngOnChanges(changes) {
-
         if (changes.newTweets && typeof changes.newTweets.currentValue === "number") {
             const newTweets = changes.newTweets.currentValue || 0;
 
@@ -61,24 +60,20 @@ export class MainBlockNav {
             }, 1000);
         }
 
-        if (changes.tabNameChange && typeof changes.tabNameChange.currentValue === "string") {
-            this.chooseItem(changes.tabNameChange.currentValue);
+        if (changes.tabNameChange && changes.tabNameChange.currentValue) {
+            this.chooseItem(changes.tabNameChange.currentValue.name);
         }
     }
 
     chooseItem(item) {
-        if (this.item === item) {
-            this.item = "";
-        }
-        else {
-            this.item = item;
-            if (this.item === "twitter" && Number.parseInt(this.tweetCount, 10) > 0) {
-                this.tweetCount = 0;
-            }
+        this.item = item;
 
-            if (this.item === "rssFeed" && Number.parseInt(this.entryCount, 10) > 0) {
-                this.entryCount = 0;
-            }
+        if (this.item === "twitter" && Number.parseInt(this.tweetCount, 10) > 0) {
+            this.tweetCount = 0;
+        }
+
+        if (this.item === "rssFeed" && Number.parseInt(this.entryCount, 10) > 0) {
+            this.entryCount = 0;
         }
         this.choice.emit(this.item);
     }
