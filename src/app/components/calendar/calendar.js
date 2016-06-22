@@ -30,7 +30,8 @@ export class Calendar {
         const month = this.currentDate.month;
 
         if (calendar) {
-            this.calendar = this.removePreviousCurrentDay(calendar, this.currentDate);
+            calendar[year][month] = this.removePreviousCurrentDay(calendar, this.currentDate);
+            this.calendar = calendar;
         }
         else {
             this.calendar[year] = this.getYear(year);
