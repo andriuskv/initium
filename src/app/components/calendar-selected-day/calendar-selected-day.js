@@ -62,8 +62,8 @@ export class CalendarSelectedDay {
             }
             this.repeatEnabled = false;
         }
-        this.notify.emit(this.selectedDay);
         this.selectedDay.reminders.push(reminder);
+        this.notify.emit(this.selectedDay);
         this.showReminderInput = false;
         form.reset();
     }
