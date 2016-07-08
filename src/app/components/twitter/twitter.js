@@ -140,13 +140,13 @@ export class Twitter {
     }
 
     replaceHashtags(text, hashtags) {
-        hashtags.forEach(({ text }) => {
-            const href = `https://twitter.com/hashtag/${text}?src=hash`;
+        hashtags.forEach(({ text: hashtag }) => {
+            const href = `https://twitter.com/hashtag/${hashtag}?src=hash`;
             const a = `
-                <a href="${href}" class="twitter-tweet-link" target="_blank">#${text}</a>
+                <a href="${href}" class="twitter-tweet-link" target="_blank">#${hashtag}</a>
             `;
 
-            text = text.replace(`#${text}`, a);
+            text = text.replace(`#${hashtag}`, a);
         });
         return text;
     }
@@ -211,13 +211,11 @@ export class Twitter {
     }
 
     loadNewTweets() {
-        if (this.tweetsToLoad.length) {
-            const newTweets = this.loadTweets(this.tweetsToLoad);
+        const newTweets = this.loadTweets(this.tweetsToLoad);
 
-            this.tweets.unshift(...newTweets);
-            this.tweetsToLoad.length = 0;
-            this.newTweetCount.emit(0);
-        }
+        this.tweets.unshift(...newTweets);
+        this.tweetsToLoad.length = 0;
+        this.newTweetCount.emit(0);
     }
 
     updateTweetTime() {
