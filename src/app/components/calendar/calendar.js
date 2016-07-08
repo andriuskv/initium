@@ -150,8 +150,8 @@ export class Calendar {
                 const realMonth = monthIndex + direction;
 
                 return {
-                    direction: direction,
-                    year: year,
+                    direction,
+                    year,
                     month: realMonth,
                     number: monthDay,
                     date: this.getSelectedDayDate(realMonth, monthDay),
@@ -200,8 +200,8 @@ export class Calendar {
 
         this.calendar.currentYear = year;
         this.calendar.currentMonth = {
+            month,
             name: this.dateService.getMonth(month),
-            month: month,
             days: this.calendar[year][month]
         };
     }

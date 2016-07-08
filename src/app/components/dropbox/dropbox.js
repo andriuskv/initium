@@ -165,7 +165,7 @@ export class DropboxComp {
             this.dropbox.imageLocation = folderName;
             this.dropbox.images = [];
 
-            this.client.readdir("/" + folderName, (error, entries, dir_stat) => {
+            this.client.readdir(`/${folderName}`, (error, entries, dir_stat) => {
                 if (error) {
                     this.showErrorMessage(error.response.error);
                     return;

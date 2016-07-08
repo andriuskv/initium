@@ -25,6 +25,7 @@ export class Todo {
 
     toggle() {
         this.visible = !this.visible;
+
         if (this.visible) {
             this.editedTodo = false;
         }
@@ -35,7 +36,7 @@ export class Todo {
         let toAdd = 10 - num;
 
         while (toAdd--) {
-            todos.push({text: "", done: false});
+            todos.push({ text: "", done: false });
         }
         return todos;
     }
@@ -46,13 +47,12 @@ export class Todo {
 
     addTodo(todo) {
         if (todo.value) {
-            this.todos.unshift({text: todo.value, done: false});
+            this.todos.unshift({ text: todo.value, done: false });
             todo.value = "";
 
             if (this.hasEmptyTodo()) {
                 this.todos.pop();
             }
-
             this.hasTodo = this.todos.some(todo => todo.text);
             this.saveTodos(this.todos);
         }
@@ -73,9 +73,8 @@ export class Todo {
         this.todos.splice(i, 1);
 
         if (this.todos.length < 10) {
-            this.todos.push({text: "", done: false});
+            this.todos.push({ text: "", done: false });
         }
-
         this.hasTodo = this.todos.some(todo => todo.text);
         this.saveTodos(this.todos);
     }
@@ -86,7 +85,6 @@ export class Todo {
         if (this.todos.length < 10) {
             this.todos = this.todos.concat(this.populateWithEmptyTodos(this.todos.length));
         }
-
         this.hasTodo = this.todos.some(todo => todo.text);
         this.saveTodos(this.todos);
     }
@@ -99,7 +97,6 @@ export class Todo {
         if (!todo.text) {
             return;
         }
-
         this.editedTodo = {
             text: todo.text,
             index: i
@@ -113,7 +110,6 @@ export class Todo {
         if (!edit.text || edit.text === this.todos[this.editedTodo.index].text) {
             return;
         }
-
         this.todos[this.editedTodo.index].text = edit.text;
         this.saveTodos(this.todos);
     }

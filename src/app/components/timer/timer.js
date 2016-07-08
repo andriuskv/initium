@@ -101,7 +101,7 @@ export class Timer {
     }
 
     checkTime(value) {
-        return /^\d{2}$/.test(value) ? value : "0" + value;
+        return /^\d{2}$/.test(value) ? value : `0${value}`;
     }
 
     checkInput(value) {
