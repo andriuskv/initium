@@ -62,11 +62,11 @@ export class RssFeed {
 
     getEntry(entry, newEntry) {
         return {
+            newEntry,
             link: entry.link,
             title: entry.title,
             desc: this.htmlDecode(entry.contentSnippet),
-            date: entry.publishedDate ? new Date(entry.publishedDate) : "",
-            newEntry: newEntry
+            date: entry.publishedDate ? new Date(entry.publishedDate) : ""
         };
     }
 
@@ -111,7 +111,7 @@ export class RssFeed {
         this.addingNewFeed = true;
         this.editingFeed = true;
         this.feedInput = {
-            index: index,
+            index,
             url: this.feeds[index].url,
             title: this.feeds[index].title
         };
@@ -242,8 +242,8 @@ export class RssFeed {
         return this.feedService.fetchFeed(url)
             .then(feed => {
                 const newFeed = {
+                    url,
                     title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
-                    url: url,
                     newEntries: 0,
                     entries: this.getEntries(feed.entries)
                 };
@@ -259,8 +259,6 @@ export class RssFeed {
     }
 
     showFeed(url, index) {
-        document.getElementById("js-feeds").scrollTop = 0;
-
         if (this.addingNewFeed) {
             this.addingNewFeed = false;
         }
@@ -275,6 +273,12 @@ export class RssFeed {
 
         if (this.feeds[index].newEntries > 0) {
             this.feeds[index].newEntries = 0;
+        }
+    }
+
+    removeNewEntryLabel(entry) {
+        if (entry.newEntry) {
+            entry.newEntry = false;
         }
     }
 }

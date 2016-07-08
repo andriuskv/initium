@@ -152,7 +152,7 @@ export class Twitter {
     }
 
     replaceUrls(text, urls) {
-        urls.forEach(({ url, display_url}) => {
+        urls.forEach(({ url, display_url }) => {
             const a = `
                 <a href="${url}" class="twitter-tweet-link" target="_blank">${display_url}</a>
             `;
@@ -198,10 +198,10 @@ export class Twitter {
         const entities = this.getTweetEntities(tweet.entities);
 
         return {
+            userUrl,
             id: tweet.id,
             name: tweet.user.name,
             handle: `@${screenName}`,
-            userUrl: userUrl,
             tweetUrl: `${userUrl}/status/${tweet.id_str}`,
             profileImg: tweet.user.profile_image_url_https,
             text: this.replaceTweetEntities(tweet.text, entities),
@@ -259,7 +259,7 @@ export class Twitter {
                 }
                 this.updateTimeline(userInfo, latestTweetId);
             });
-        }, 120000);
+        }, 240000);
     }
 
     loadTweets(data) {
@@ -308,7 +308,7 @@ export class Twitter {
     }
 
     authenticateWithPin(pin) {
-        this.cb.__call("oauth_accessToken", {oauth_verifier: pin.value}, reply => {
+        this.cb.__call("oauth_accessToken", { oauth_verifier: pin.value }, reply => {
             if (reply.httpstatus === 200) {
                 this.cb.setToken(reply.oauth_token, reply.oauth_token_secret);
                 this.storage.set("userInfo", {
@@ -333,7 +333,7 @@ export class Twitter {
             }
             this.cb = new Codebird;
             this.setKey(this.cb);
-            this.cb.__call("oauth_requestToken", {oauth_callback: "oob"}, (reply, rate, err) => {
+            this.cb.__call("oauth_requestToken", { oauth_callback: "oob" }, (reply, rate, err) => {
                 if (err) {
                     console.log("error response or timeout exceeded", err.error);
                 }

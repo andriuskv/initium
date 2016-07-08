@@ -49,15 +49,15 @@ export class DateService {
 
     getDayWithSuffix(day) {
         if (day % 10 === 1 && day !== 11) {
-            return day + "st";
+            return `${day}st`;
         }
         else if (day % 10 === 2 && day !== 12) {
-            return day + "nd";
+            return `${day}nd`;
         }
         else if (day % 10 === 3 && day !== 13) {
-            return day + "rd";
+            return `${day}rd`;
         }
-        return day + "th";
+        return `${day}th`;
     }
 
     getDate() {

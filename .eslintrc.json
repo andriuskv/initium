@@ -13,10 +13,14 @@
         "node": true,
         "worker": true
     },
+    "extends": "eslint:recommended",
     "rules": {
         "semi": 2,
         "prefer-const": 2,
+        "no-const-assign": 2,
+        "no-var": 2,
         "comma-dangle": [2, "never"],
+        "no-console": 0,
         "no-cond-assign": 2,
         "no-dupe-args": 2,
         "no-dupe-keys": 2,
@@ -25,7 +29,6 @@
         "no-extra-boolean-cast": 2,
         "no-extra-parens": 2,
         "no-extra-semi": 2,
-        "no-irregular-whitespace": [2, { "skipComments": true }],
         "no-obj-calls": 2,
         "no-unexpected-multiline": 2,
         "no-unreachable": 2,
@@ -55,12 +58,19 @@
         "block-spacing": [2, "always"],
         "brace-style": [2, "stroustrup", { "allowSingleLine": true }],
         "comma-style": [2, "last"],
-        "eol-last": 2,
         "indent": [2, 4, {"SwitchCase": 1}],
         "no-lonely-if": 2,
         "arrow-spacing": [2, { "before": true, "after": true }],
-        "no-const-assign": 2,
         "prefer-spread": 2,
-        "prefer-rest-params": 2
+        "prefer-rest-params": 2,
+        "object-shorthand": 2,
+        "array-callback-return": 2,
+        "prefer-template": 2,
+        "prefer-arrow-callback": 2,
+        "no-useless-constructor": 2,
+        "no-dupe-class-members": 2,
+        "no-unneeded-ternary": 2,
+        "space-before-blocks": 2,
+        "object-curly-spacing": [2, "always"]
     }
 }

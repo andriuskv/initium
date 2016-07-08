@@ -46,7 +46,7 @@ export class Time {
     }
 
     beautifyTime(time) {
-        return time > 9 ? time : "0" + time;
+        return time > 9 ? time : `0${time}`;
     }
 
     changeTimeDisplay(display) {
