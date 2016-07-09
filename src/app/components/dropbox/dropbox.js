@@ -1,7 +1,7 @@
 /* global Dropbox */
 
 import { Component, Output, EventEmitter } from "@angular/core";
-import { LocalStorageService } from "app/services/localStorageService";
+import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "dropbox",

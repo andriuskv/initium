@@ -1,17 +1,18 @@
 const webpack = require("webpack");
+const path = require("path");
 
 module.exports = {
     entry: {
-        vendor: "app/vendor.js",
-        app: "app/main.js"
+        vendor: path.resolve( __dirname, "app/vendor.js"),
+        app: path.resolve( __dirname, "app/main.js")
     },
     output: {
         path: __dirname + "/js",
         filename: "[name].js"
     },
     resolve: {
-        root: __dirname,
-        extensions: ["", ".js"]
+        extensions: ["", ".js"],
+        modules: [path.resolve(__dirname, "app"), "node_modules"]
     },
     module: {
         loaders: [{
@@ -19,7 +20,7 @@ module.exports = {
             loader: "babel-loader",
             exclude: /node_modules/,
             query: {
-                presets: ["es2015", "angular2"],
+                presets: ["es2015-webpack", "angular2"],
                 plugins: ["transform-decorators-legacy"]
             }
         }]

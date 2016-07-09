@@ -1,7 +1,7 @@
 /* global chrome */
 
 import { Component, Input } from "@angular/core";
-import { LocalStorageService } from "app/services/localStorageService";
+import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "most-visited",

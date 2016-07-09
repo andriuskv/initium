@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { LocalStorageService } from "app/services/localStorageService";
+import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "main-block-nav",

@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { DomSanitizationService } from "@angular/platform-browser";
-import { LocalStorageService } from "app/services/localStorageService";
+import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "background",

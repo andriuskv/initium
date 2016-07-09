@@ -1,15 +1,15 @@
 import { Component, enableProdMode } from "@angular/core";
 import { bootstrap } from "@angular/platform-browser-dynamic";
-import { Background } from "app/components/background/background";
-import { Time } from "app/components/time/time";
-import { ReminderNotification } from "app/components/reminder-notification/reminder-notification";
-import { MainBlock } from "app/components/main-block/main-block";
-import { Todo } from "app/components/todo/todo";
-import { Weather } from "app/components/weather/weather";
-import { Timer } from "app/components/timer/timer";
-import { WidgetMenu } from "app/components/widget-menu/widget-menu";
-import { DateService } from "app/services/dateService";
-import { LocalStorageService } from "app/services/localStorageService";
+import { Background } from "components/background/background";
+import { Time } from "components/time/time";
+import { ReminderNotification } from "components/reminder-notification/reminder-notification";
+import { MainBlock } from "components/main-block/main-block";
+import { Todo } from "components/todo/todo";
+import { Weather } from "components/weather/weather";
+import { Timer } from "components/timer/timer";
+import { WidgetMenu } from "components/widget-menu/widget-menu";
+import { DateService } from "services/dateService";
+import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "app",

@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { CalendarSelectedDay } from "app/components/calendar-selected-day/calendar-selected-day";
-import { DateService } from "app/services/dateService";
-import { LocalStorageService } from "app/services/localStorageService";
+import { CalendarSelectedDay } from "components/calendar-selected-day/calendar-selected-day";
+import { DateService } from "services/dateService";
+import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "calendar",
