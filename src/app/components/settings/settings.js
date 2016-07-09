@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter } from "@angular/core";
-import { LocalStorageService } from "app/services/localStorageService";
-import { SettingService } from "app/services/settingService";
+import { LocalStorageService } from "services/localStorageService";
+import { SettingService } from "services/settingService";
 
 @Component({
     selector: "settings",

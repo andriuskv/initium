@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
-import { TodoEdit } from "app/components/todo-edit/todo-edit";
-import { LocalStorageService } from "app/services/localStorageService";
+import { TodoEdit } from "components/todo-edit/todo-edit";
+import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "todo",

@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
-import { MainBlockNav } from "app/components/main-block-nav/main-block-nav";
-import { MainBlockContent } from "app/components/main-block-content/main-block-content";
+import { MainBlockNav } from "components/main-block-nav/main-block-nav";
+import { MainBlockContent } from "components/main-block-content/main-block-content";
 
 @Component({
     selector: "main-block",

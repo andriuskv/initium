@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { FeedService } from "app/services/feedService";
-import { LocalStorageService } from "app/services/localStorageService";
-import { NotificationService } from "app/services/notificationService";
+import { FeedService } from "services/feedService";
+import { LocalStorageService } from "services/localStorageService";
+import { NotificationService } from "services/notificationService";
 
 @Component({
     selector: "rss-feed",

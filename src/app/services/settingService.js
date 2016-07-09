@@ -1,4 +1,4 @@
-import { LocalStorageService } from "app/services/localStorageService";
+import { LocalStorageService } from "services/localStorageService";
 
 export class SettingService {
     static get parameters() {

@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { WeatherService } from "app/services/weatherService";
+import { WeatherService } from "services/weatherService";
 
 @Component({
     selector: "weather",
