@@ -1,6 +1,7 @@
 /* global chrome */
 
 import { Component, Input } from "@angular/core";
+import { DomSanitizationService } from "@angular/platform-browser";
 import { LocalStorageService } from "services/localStorageService";
 
 @Component({
@@ -11,10 +12,11 @@ export class MostVisited {
     @Input() setting;
 
     static get parameters() {
-        return [[LocalStorageService]];
+        return [[DomSanitizationService], [LocalStorageService]];
     }
 
-    constructor(localStorageService) {
+    constructor(domSanitizationService, localStorageService) {
+        this.sanitizer = domSanitizationService;
         this.storage = localStorageService;
         this.mostVisited = {};
         this.newPage = {};
@@ -60,7 +62,6 @@ export class MostVisited {
 
     removePage(index) {
         if (this.mostVisited.backup.length) {
-            // const page = this.mostVisited.backup.splice(0, 1)[0];
             const [page] = this.mostVisited.backup.splice(0, 1);
 
             page.image = this.getImage(page.url);
@@ -81,7 +82,8 @@ export class MostVisited {
         const a = document.createElement("a");
 
         a.href = url;
-        return `chrome://favicon/${a.protocol}//${a.hostname}${a.pathname}`;
+
+        return this.sanitizer.bypassSecurityTrustUrl(`chrome://favicon/${a.protocol}//${a.hostname}${a.pathname}`);
     }
 
     addImages(pages) {
