@@ -2,7 +2,7 @@
     <button class="font-btn todo-toggle-btn" (click)="toggle()">todo</button>
     <div class="todo-container" *ngIf="visible">
         <header class="todo-header">
-            <input class="input todo-input" type="text" #todoText (keyup)="addTodoOnEnter($event)">
+            <input class="input todo-input" type="text" #todoText (keyup.enter)="addTodo(todoText)">
             <button class="icon-plus btn todo-add-btn" (click)="addTodo(todoText)" title="Add"></button>
         </header>
         <ul id="js-todo-list" class="list todos" [class.has-todo]="hasTodo">

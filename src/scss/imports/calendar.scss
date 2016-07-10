@@ -84,22 +84,30 @@
     vertical-align: top;
     width: 330px;
 }
-.calendar-form-section {
+.calendar-new-reminder-section {
     display: flex;
 
     .btn { padding: 3px 6px; }
 }
 .calendar-repeat-btn {
+    border-left: 1px solid $color3;
+    border-right: 1px solid $color3;
     cursor: pointer;
 
-    .checked { color: $brand-color; }
+    .checked {
+        color: $brand-color;
+    }
 }
 .calendar-repeat-checkbox {
     display: none;
 }
 .calendar-repeat-gap {
-    float: right;
+    display: none;
     width: 50px;
-    margin-top: 4px;
+    border-left: 1px solid $color3;
     text-align: center;
+
+    &.show {
+        display: block;
+    }
 }

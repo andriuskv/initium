@@ -40,31 +40,30 @@ export class CalendarSelectedDay {
         this.remove.emit(reminder);
     }
 
-    createReminder(form) {
-        const reminder = {
-            text: form.reminder.value
+    createReminder(reminder, gap) {
+        const newReminder = {
+            text: reminder.value
         };
 
-        if (!reminder.text) {
+        if (!reminder.value) {
             return;
         }
 
         if (this.repeatEnabled) {
-            const dayGap = Number.parseInt(form.repeat.value, 10);
+            const dayGap = Number.parseInt(gap.value, 10);
 
-            if (!Number.isNaN(dayGap)) {
-                reminder.year = this.selectedDay.year;
-                reminder.month = this.selectedDay.month;
-                reminder.day = this.selectedDay.number + dayGap;
-                reminder.gap = dayGap;
-                reminder.repeat = true;
-                this.repeat.emit(reminder);
-            }
+            newReminder.year = this.selectedDay.year;
+            newReminder.month = this.selectedDay.month;
+            newReminder.day = this.selectedDay.number + dayGap;
+            newReminder.gap = dayGap;
+            newReminder.repeat = true;
+            this.repeat.emit(newReminder);
             this.repeatEnabled = false;
+            gap.value = "1";
         }
-        this.selectedDay.reminders.push(reminder);
+        this.selectedDay.reminders.push(newReminder);
         this.notify.emit(this.selectedDay);
         this.showReminderInput = false;
-        form.reset();
+        reminder.value = "";
     }
 }
