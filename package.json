@@ -8,6 +8,7 @@
     "watch:js": "webpack --progress --config ./src/webpack.config.dev.js --watch",
     "watch:css": "onchange 'src/scss/*.scss' 'src/scss/imports/*.scss' -- npm run scss",
     "watch": "npm run watch:js & npm run watch:css",
+    "start": "npm run scss & npm run watch",
     "build:html": "cp ./src/index.html dist",
     "build:css": "npm run scss && csso ./src/css/main.css ./dist/css/main.css",
     "build:js": "ng2-inline /src/app/components/ && webpack --progress --config ./src/webpack.config.prod.js -p && cp -R ./src/js ./dist",

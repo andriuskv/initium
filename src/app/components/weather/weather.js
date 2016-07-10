@@ -113,7 +113,6 @@ export class Weather {
     displayIcon(id, code) {
         let iconClassName = "";
 
-        console.log(id, code);
         switch (id) {
             // Thunderstorm
             case 211:
