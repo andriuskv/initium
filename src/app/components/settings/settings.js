@@ -21,7 +21,10 @@ export class Settings {
     }
 
     ngOnInit() {
-        this.settings = this.storage.get("settings") || this.settingService.getDefault();
+        const defaultSettings = this.settingService.getDefault();
+        const storedSettings = this.storage.get("settings") || {};
+
+        this.settings = Object.assign(defaultSettings, storedSettings);
 
         for (const settingsFor of Object.keys(this.settings)) {
             const settings = this.settings[settingsFor];

@@ -18,6 +18,7 @@ export class Calendar {
 
     constructor(dateService, localStorageService) {
         this.storage = localStorageService;
+        this.initialized = false;
         this.notify = true;
         this.dateService = dateService;
         this.calendar = {};
@@ -25,6 +26,33 @@ export class Calendar {
     }
 
     ngOnInit() {
+        if (!this.initialized) {
+            this.init();
+        }
+    }
+
+    ngOnChanges(changes) {
+        if (changes.notificationDisabled) {
+            const notificationDisabled = changes.notificationDisabled.currentValue;
+
+            if (typeof notificationDisabled === "boolean") {
+                let reminders = [];
+
+                if (!this.initialized) {
+                    this.init();
+                }
+                if (!notificationDisabled) {
+                    const day = this.getCurrentDayInCalendar(this.calendar, this.currentDate);
+
+                    reminders = day.reminders;
+                }
+                this.notify = !notificationDisabled;
+                this.reminders.emit(reminders);
+            }
+        }
+    }
+
+    init() {
         const calendar = this.storage.get("calendar");
         const year = this.currentDate.year;
         const month = this.currentDate.month;
@@ -41,24 +69,7 @@ export class Calendar {
         this.calendar.futureReminders = this.calendar.futureReminders || [];
         this.setCurrentMonthAndYear(0);
         this.setCurrentDay(this.calendar, this.currentDate);
-    }
-
-    ngOnChanges(changes) {
-        if (changes.notificationDisabled) {
-            const notificationDisabled = changes.notificationDisabled.currentValue;
-
-            if (typeof notificationDisabled === "boolean") {
-                let reminders = [];
-
-                this.notify = !notificationDisabled;
-                if (!notificationDisabled) {
-                    const day = this.getCurrentDayInCalendar(this.calendar, this.currentDate);
-
-                    reminders = day.reminders;
-                }
-                this.reminders.emit(reminders);
-            }
-        }
+        this.initialized = true;
     }
 
     removePreviousCurrentDay(calendar, date) {
