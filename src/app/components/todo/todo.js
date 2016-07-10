@@ -58,12 +58,6 @@ export class Todo {
         }
     }
 
-    addTodoOnEnter(event) {
-        if (event.which === 13) {
-            this.addTodo(event.target);
-        }
-    }
-
     markTodoDone(i, done) {
         this.todos[i].done = done.checked;
         this.saveTodos(this.todos);
