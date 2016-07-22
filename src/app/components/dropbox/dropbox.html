@@ -3,15 +3,19 @@
     <div class="dropbox-hero" [class.show]="showHero">
         <div class="icon-dropbox dropbox-hero-icon"></div>
         <button class="btn" *ngIf="showLogin" (click)="login()">Log in</button>
-        <div *ngIf="showFolderInput">
-            <input type="text" class="input" placeholder="Path to images (e.g. photos)" #folderName (keyup)="fetchImages($event, folderName.value)">
+        <div class="dropbox-input-container"*ngIf="showFolderInput">
+            <input type="text" class="input" placeholder="Path to images (e.g. photos)"
+                #folderName
+                (keyup.enter)="fetchImages($event, folderName.value)">
             <button class="btn" (click)="fetchImages($event, folderName.value)">Fetch images</button>
         </div>
         <div class="icon-spin4 animate-spin dropbox-spinner" *ngIf="fetching"></div>
         <p class="dropbox-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
     </div>
     <ul class="list dropbox-images" [class.show]="showNames">
-        <li class="dropbox-image" *ngFor="let image of dropbox.images; let i = index" (click)="setImageAsBackground(image.url)" [class.hidden]="!image.url">
+        <li class="dropbox-image" *ngFor="let image of dropbox.images; let i = index"
+            (click)="setImageAsBackground(image.url)"
+            [class.hidden]="!image.url">
             <img src="{{ image.thumbnail }}" class="dropbox-thumbnail" *ngIf="image.thumbnail">
             <span class="dropbox-image-name" [class.no-thumbnail]="!image.thumbnail">{{ image.name }}</span>
             <div class="dropbox-image-item-modifier"></div>

@@ -159,38 +159,39 @@ export class DropboxComp {
     }
 
     fetchImages(event, folderName) {
-        if (folderName && (event.which === 1 || event.which === 13)) {
-            this.fetching = true;
-            this.showFolderInput = false;
-            this.dropbox.imageLocation = folderName;
-            this.dropbox.images = [];
-
-            this.client.readdir(`/${folderName}`, (error, entries, dir_stat) => {
-                if (error) {
-                    this.showErrorMessage(error.response.error);
-                    return;
-                }
-
-                dir_stat._json.contents.splice(200);
-                dir_stat._json.contents.forEach((file, index) => {
-
-                    // +2 because folderName is surounded by 2 backslashes
-                    this.dropbox.images[index] = {
-                        name: file.path.slice(folderName.length + 2)
-                    };
-
-                    this.getUrl(file, index);
-                    this.getThumbnail(file, index);
-                });
-                this.fetching = false;
-                this.showHero = false;
-                this.showNames = true;
-
-                setTimeout(() => {
-                    this.storage.set("dropbox", this.dropbox);
-                }, 60000);
-            });
+        if (!folderName) {
+            return;
         }
+        this.fetching = true;
+        this.showFolderInput = false;
+        this.dropbox.imageLocation = folderName;
+        this.dropbox.images = [];
+
+        this.client.readdir(`/${folderName}`, (error, entries, dir_stat) => {
+            if (error) {
+                this.showErrorMessage(error.response.error);
+                return;
+            }
+
+            dir_stat._json.contents.splice(200);
+            dir_stat._json.contents.forEach((file, index) => {
+
+                // +2 because folderName is surounded by 2 backslashes
+                this.dropbox.images[index] = {
+                    name: file.path.slice(folderName.length + 2)
+                };
+
+                this.getUrl(file, index);
+                this.getThumbnail(file, index);
+            });
+            this.fetching = false;
+            this.showHero = false;
+            this.showNames = true;
+
+            setTimeout(() => {
+                this.storage.set("dropbox", this.dropbox);
+            }, 60000);
+        });
     }
 
     setImageAsBackground(url) {
