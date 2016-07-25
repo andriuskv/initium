@@ -4,6 +4,16 @@
     right: 4px;
     font-size: 14px;
 }
+.dropbox-header {
+    display: flex;
+    align-items: center;
+}
+.drobox-folder-name {
+    margin-left: auto;
+    margin-right: auto;
+    color: $primary-text-color;
+    font-size: 16px;
+}
 .dropbox-hero {
     position: absolute;
     left: 0;
@@ -12,8 +22,8 @@
     visibility: hidden;
     margin-top: 20px;
     text-align: center;
-    transform: scale(.8);
-    transition: all .4s;
+    transform: scale(0.8);
+    transition: all 0.4s;
 
     &.show {
         opacity: 1;
@@ -26,14 +36,6 @@
     font-size: 64px;
     color: #2895F1;
 }
-.dropbox-input-container {
-    display: flex;
-    justify-content: center;
-
-    .btn {
-        margin-left: 4px;
-    }
-}
 .dropbox-spinner {
     color: #2895F1;
     font-size: 24px;
@@ -41,13 +43,14 @@
 .dropbox-error-message {
     color: #fff;
 }
-.dropbox-images {
+.dropbox-items {
     @include scrollbar($color3);
 
     overflow-y: auto;
     opacity: 0;
     visibility: hidden;
-    height: 100%;
+    height: calc(100% - 22px);
+    margin-top: 4px;
     background-color: $color2;
     transform: scale(.8);
     transition: all 0.4s;
@@ -58,35 +61,47 @@
         transform: scale(1);
     }
 }
-.dropbox-image {
-    padding: 6px 4px 2px 4px;
+.dropbox-item {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 2px;
     border-bottom: 1px solid $color3;
 
-    &.hidden { display: none; }
     &:hover {
         cursor: pointer;
 
-        .dropbox-image-item-modifier { width: 30%; }
+        .dropbox-item-name {
+            text-decoration: underline;
+        }
     }
-    &:active .dropbox-image-item-modifier { width: 100%; }
 }
-.dropbox-image-item-modifier {
-    width: 0;
-    height: 2px;
-    margin-top: 2px;
-    background-color: $brand-color;
-    transition: 0.2s width;
-}
-.dropbox-thumbnail {
+.dropbox-item-thumbnail {
     vertical-align: top;
     width: 32px;
+    height: 20px;
+    object-fit: scale-down;
 }
-.dropbox-image-name {
-    display: inline-block;
+.dropbox-item-name {
+    margin-left: 4px;
     font-size: 12px;
     color: $primary-text-color;
+}
+.dropbox-item-error {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    right: 4px;
+    background-color: $color2;
+    box-shadow: 0 0 4px 8px $color2;
+    color: #888;
+    transition: all 0.2s;
 
-    &.no-thumbnail { margin-left: 32px; }
+    &.show {
+        opacity: 1;
+        visibility: visible;
+    }
 }
 .animate-spin {
     display: inline-block;
@@ -94,6 +109,10 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(359deg); }
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(359deg);
+  }
 }

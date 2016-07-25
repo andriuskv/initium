@@ -16,10 +16,17 @@ export class DropboxComp {
 
     constructor(localStorageService) {
         this.storage = localStorageService;
-        this.fetching = false;
+        this.fetching = true;
+        this.showItems = false;
         this.showLogin = false;
-        this.dropbox = this.storage.get("dropbox") || {};
-        this.showHero = !this.dropbox.images;
+        this.activeDir = {};
+        this.rootDir = {
+            name: "Root",
+            isDir: true,
+            path: "/",
+            items: []
+        };
+        this.dropboxContents = this.storage.get("dropbox") || this.rootDir;
     }
 
     ngOnInit() {
@@ -53,22 +60,20 @@ export class DropboxComp {
                 this.client.reset();
                 return;
             }
-
             this.loggedIn = true;
             this.showLogin = false;
-            this.showFolderInput = !this.showLogin && !this.dropbox.imageLocation;
+            this.fetching = true;
+            this.selectItem(this.dropboxContents);
         });
     }
 
     logout() {
         this.client.signOut();
         this.storage.remove("dropbox");
-
-        this.dropbox = {};
-        this.showHero = true;
+        this.dropboxContents = Object.assign({}, this.rootDir);
+        this.activeDir = {};
         this.showLogin = false;
-        this.showFolderInput = false;
-        this.showNames = false;
+        this.showItems = false;
         this.loggedIn = false;
         this.fetching = true;
 
@@ -88,17 +93,18 @@ export class DropboxComp {
             if (this.client.isAuthenticated()) {
                 this.loggedIn = true;
 
-                if (!this.dropbox.imageLocation) {
-                    this.showFolderInput = true;
-                    return;
+                if (this.dropboxContents.cached) {
+                    this.activeDir = this.dropboxContents;
+                    this.showItems = true;
+                    this.fetching = false;
                 }
-
-                if (this.dropbox.images && this.dropbox.images.length) {
-                    this.showNames = true;
+                else {
+                    this.selectItem(this.dropboxContents);
                 }
             }
             else {
                 this.showLogin = true;
+                this.fetching = false;
             }
         });
     }
@@ -109,92 +115,150 @@ export class DropboxComp {
 
         setTimeout(() => {
             this.errorMessage = "";
-            this.showFolderInput = true;
         }, 4000);
     }
 
-    getThumbnail(file, index) {
-        if (!file.is_dir && file.thumb_exists) {
-            const href = `https://content.dropboxapi.com/1/thumbnails/auto/${file.path}`;
+    getThumbnail(path) {
+        return new Promise(resolve => {
+            const href = `https://content.dropboxapi.com/1/thumbnails/auto/${path}`;
 
             fetch(`${href}?access_token=${this.client._credentials.token}&size=xs`)
             .then(response => response.blob())
             .then(blob => {
                 const image = new Image();
 
-                image.addEventListener("load", () => {
+                image.onload = () => {
                     const canvas = document.createElement("canvas");
                     const ctx = canvas.getContext("2d");
 
                     canvas.width = image.width;
-                    canvas.height = 18;
-
+                    canvas.height = 20;
                     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-                    this.dropbox.images[index].thumbnail = canvas.toDataURL("image/jpeg", 0.4);
-                });
+                    resolve(canvas.toDataURL("image/jpeg", 0.4));
+                };
                 image.src = window.URL.createObjectURL(blob);
             });
-        }
+        });
     }
 
-    getUrl(file, index) {
-        if (!file.is_dir && file.mime_type.includes("image")) {
-            const href = `https://api.dropboxapi.com/1/shares/auto/${file.path}`;
-            const url = `${href}?access_token=${this.client._credentials.token}&short_url=false`;
+    getImageUrl(path) {
+        const href = `https://api.dropboxapi.com/1/shares/auto/${path}`;
+        const url = `${href}?access_token=${this.client._credentials.token}&short_url=false`;
 
-            fetch(url).then(response => response.json())
+        return fetch(url)
+            .then(response => response.json())
             .then(json => {
                 if (!json.url) {
                     return;
                 }
-
                 const url = json.url.split("");
 
+                // replace dl value from 0 to 1 so that image could be displayed
                 url[url.length - 1] = "1";
-
-                this.dropbox.images[index].url = url.join("");
+                return url.join("");
             });
-        }
     }
 
-    fetchImages(event, folderName) {
-        if (!folderName) {
+    setImageAsBackground(item) {
+        if (item.url) {
+            this.background.emit(item.url);
             return;
         }
-        this.fetching = true;
-        this.showFolderInput = false;
-        this.dropbox.imageLocation = folderName;
-        this.dropbox.images = [];
+        this.getImageUrl(item.path)
+            .then(url => {
+                item.url = url;
+                this.background.emit(url);
+                this.storage.set("dropbox", this.dropboxContents);
+            });
+    }
 
-        this.client.readdir(`/${folderName}`, (error, entries, dir_stat) => {
+    getDir(items, dirNames) {
+        const dir = items.find(item => item.name === dirNames[0]);
+
+        if (dirNames.length === 1) {
+            return dir;
+        }
+        dirNames.splice(0, 1);
+        return this.getDir(dir.items, dirNames);
+    }
+
+    fetchItem(selectedItem) {
+        this.showItems = false;
+        this.fetching = true;
+        this.client.readdir(selectedItem.path, (error, entries, dir_stat) => {
             if (error) {
                 this.showErrorMessage(error.response.error);
                 return;
             }
-
-            dir_stat._json.contents.splice(200);
-            dir_stat._json.contents.forEach((file, index) => {
-
-                // +2 because folderName is surounded by 2 backslashes
-                this.dropbox.images[index] = {
-                    name: file.path.slice(folderName.length + 2)
+            dir_stat._json.contents.forEach((item, index) => {
+                const newItem = {
+                    name: entries[index],
+                    isDir: item.is_dir,
+                    mimeType: item.mime_type,
+                    thumbnail: "./resources/images/file-icon.png",
+                    path: item.path
                 };
 
-                this.getUrl(file, index);
-                this.getThumbnail(file, index);
+                if (newItem.isDir) {
+                    newItem.cached = false;
+                    newItem.items = [];
+                    newItem.thumbnail = "./resources/images/folder-icon.png";
+                    selectedItem.items.unshift(newItem);
+                }
+                else {
+                    if (item.thumb_exists) {
+                        this.getThumbnail(item.path)
+                        .then(thumbnail => {
+                            newItem.thumbnail = thumbnail;
+                        });
+                    }
+                    selectedItem.items.push(newItem);
+                }
             });
+            selectedItem.cached = true;
+            this.showItems = true;
             this.fetching = false;
-            this.showHero = false;
-            this.showNames = true;
+            this.activeDir = selectedItem;
 
+            // give some time to finish fetching thumbnails before saving to localStorage
             setTimeout(() => {
-                this.storage.set("dropbox", this.dropbox);
-            }, 60000);
+                this.storage.set("dropbox", this.dropboxContents);
+            }, 30000);
         });
     }
 
-    setImageAsBackground(url) {
-        this.background.emit(url);
+    goBack(currentDir) {
+        const dirNames = currentDir.path.split("/").slice(1);
+
+        if (dirNames.length === 1) {
+            this.activeDir = this.dropboxContents;
+        }
+        else {
+            dirNames.pop();
+            this.activeDir = this.getDir(this.dropboxContents.items, dirNames);
+        }
+    }
+
+    selectItem(item) {
+        if (!item.isDir) {
+            if (item.mimeType.startsWith("image")) {
+                this.setImageAsBackground(item);
+            }
+            else {
+                item.error = true;
+                setTimeout(() => {
+                    item.error = false;
+                }, 800);
+            }
+            return;
+        }
+        const dirNames = item.path.split("/").slice(1);
+        const dir = item.path === "/" ? item : this.getDir(this.dropboxContents.items, dirNames);
+
+        if (dir.cached) {
+            this.activeDir = dir;
+            return;
+        }
+        this.fetchItem(dir);
     }
 }
