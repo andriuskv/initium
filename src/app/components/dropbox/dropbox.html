@@ -1,24 +1,25 @@
 <div class="menu-item-container">
-    <button class="icon-cancel font-btn dropbox-logout-btn" title="Logout" *ngIf="loggedIn" (click)="logout()"></button>
-    <div class="dropbox-hero" [class.show]="showHero">
+    <div class="dropbox-header">
+        <button class="icon-left-big font-btn" title="Back"
+        (click)="goBack(activeDir)"
+        *ngIf="activeDir.path && activeDir.path !== '/'"></button>
+        <span class="drobox-folder-name">{{ activeDir.name }}</span>
+    </div>
+    <button class="icon-cancel font-btn dropbox-logout-btn" title="Logout"
+        *ngIf="loggedIn"
+        (click)="logout()">
+    </button>
+    <div class="dropbox-hero" [class.show]="!showItems">
         <div class="icon-dropbox dropbox-hero-icon"></div>
         <button class="btn" *ngIf="showLogin" (click)="login()">Log in</button>
-        <div class="dropbox-input-container"*ngIf="showFolderInput">
-            <input type="text" class="input" placeholder="Path to images (e.g. photos)"
-                #folderName
-                (keyup.enter)="fetchImages($event, folderName.value)">
-            <button class="btn" (click)="fetchImages($event, folderName.value)">Fetch images</button>
-        </div>
         <div class="icon-spin4 animate-spin dropbox-spinner" *ngIf="fetching"></div>
         <p class="dropbox-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
     </div>
-    <ul class="list dropbox-images" [class.show]="showNames">
-        <li class="dropbox-image" *ngFor="let image of dropbox.images; let i = index"
-            (click)="setImageAsBackground(image.url)"
-            [class.hidden]="!image.url">
-            <img src="{{ image.thumbnail }}" class="dropbox-thumbnail" *ngIf="image.thumbnail">
-            <span class="dropbox-image-name" [class.no-thumbnail]="!image.thumbnail">{{ image.name }}</span>
-            <div class="dropbox-image-item-modifier"></div>
+    <ul class="list dropbox-items" [class.show]="showItems">
+        <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
+            <img src="{{ item.thumbnail }}" class="dropbox-item-thumbnail">
+            <span class="dropbox-item-name">{{ item.name }}</span>
+            <span class="dropbox-item-error" [class.show]="item.error">Not an image</span>
         </li>
     </ul>
 </div>
