@@ -1,11 +1,10 @@
 import { Component, Input } from "@angular/core";
-import { DomSanitizationService } from "@angular/platform-browser";
 import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "background",
     template: `
-        <div class="background" *ngIf="backgroundEnabled" [style.background-image]="background">
+        <img src="{{ background }}" class="background" role="presentation" *ngIf="backgroundEnabled">
     `
 })
 export class Background {
@@ -13,11 +12,10 @@ export class Background {
     @Input() newBackground;
 
     static get parameters() {
-        return [[DomSanitizationService], [LocalStorageService]];
+        return [[LocalStorageService]];
     }
 
-    constructor(domSanitizationService, localStorageService) {
-        this.sanitizer = domSanitizationService;
+    constructor(localStorageService) {
         this.storage = localStorageService;
     }
 
@@ -52,6 +50,6 @@ export class Background {
 
     setBackground(background) {
         this.backgroundEnabled = true;
-        this.background = this.sanitizer.bypassSecurityTrustStyle(`url(${background})`);
+        this.background = background;
     }
 }
