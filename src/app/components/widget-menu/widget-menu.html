@@ -2,7 +2,9 @@
     <div class="widget-menu-container" [class.show]="visible">
         <div class="menu-header">
             <h3 class="menu-title">{{ title }}</h3>
-            <button class="icon-left-big font-btn close-item-btn" *ngIf="selectedItem" (click)="toggleWidget()" title="Back to widget menu"></button>
+            <button class="icon-left-big font-btn close-item-btn" title="Back to widget menu"
+                *ngIf="selectedItem"
+                (click)="toggleWidget()"></button>
         </div>
         <ul class="menu-item-container menu-items" *ngIf="!selectedItem">
             <li class="menu-item">
@@ -27,8 +29,10 @@
             </li>
         </ul>
         <settings [hidden]="selectedItem !== 'Settings'" (setting)="onSetting($event)"></settings>
-        <dropbox *ngIf="selectedItem === 'Dropbox'" (background)="onBackground($event)"></dropbox>
-        <calendar [hidden]="selectedItem !== 'Calendar'" (reminders)="onReminders($event)" [notificationDisabled]="notificationDisabled"></calendar>
+        <dropbox *ngIf="selectedItem === 'Dropbox'" (setting)="onSetting($event)"></dropbox>
+        <calendar [hidden]="selectedItem !== 'Calendar'"
+            (reminders)="onReminders($event)"
+            [remidersDisabled]="remidersDisabled"></calendar>
     </div>
     <button class="icon-menu font-btn menu-btn" (click)="toggleMenu()"></button>
 </div>

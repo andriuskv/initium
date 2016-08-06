@@ -1,35 +1,35 @@
 <div class="menu-item-container">
     <ul class="list settings-nav">
         <li class="settings-nav-item" [class.active]="active === 'general'">
-            <button class="font-btn" (click)="active = 'general'">General</button>
+            <button class="font-btn" (click)="setActiveTab('general')">General</button>
         </li>
         <li class="settings-nav-item" [class.active]="active === 'time'">
-            <button class="font-btn" (click)="active = 'time'">Time & Date</button>
+            <button class="font-btn" (click)="setActiveTab('time')">Time & Date</button>
         </li>
         <li class="settings-nav-item" [class.active]="active === 'background'">
-            <button class="font-btn" (click)="active = 'background'">Background</button>
+            <button class="font-btn" (click)="setActiveTab('background')">Background</button>
         </li>
         <li class="settings-nav-item" [class.active]="active === 'weather'">
-            <button class="font-btn" (click)="active = 'weather'">Weather</button>
+            <button class="font-btn" (click)="setActiveTab('weather')">Weather</button>
         </li>
-        <li class="settings-nav-item" [class.active]="active === 'main-block'">
-            <button class="font-btn" (click)="active = 'main-block'">Main Block</button>
+        <li class="settings-nav-item" [class.active]="active === 'mainBlock'">
+            <button class="font-btn" (click)="setActiveTab('mainBlock')">Main Block</button>
         </li>
     </ul>
-    <ul class="settings" [style.height.px]=setting.offsetHeight>
+    <ul class="settings">
         <li class="setting" [class.active]="active === 'general'">
             <div class="setting-item">
                 <span>Disable notifications</span>
                 <input type="checkbox" id="notification1-checkbox" class="checkbox"
-                    (click)="onSetting($event, 'notification', 'notificationDisabled')"
-                    [checked]="settings.notification.notificationDisabled.value">
+                    (click)="onSetting('notificationDisabled', $event.target.checked)"
+                    [checked]="settings.general.notificationDisabled">
                 <label for="notification1-checkbox"></label>
             </div>
             <div class="setting-item">
                 <span>Don't focus tab on notification click</span>
                 <input type="checkbox" id="notification2-checkbox" class="checkbox"
-                    (click)="onSetting($event, 'notification', 'focusDisabled')"
-                    [checked]="settings.notification.focusDisabled.value">
+                    (click)="onSetting('notificationFocusDisabled', $event.target.checked)"
+                    [checked]="settings.general.notificationFocusDisabled">
                 <label for="notification2-checkbox"></label>
             </div>
         </li>
@@ -37,58 +37,57 @@
             <div class="setting-item">
                 <span>Disable date</span>
                 <input type="checkbox" id="date-checkbox" class="checkbox"
-                    (click)="onSetting($event, 'time', 'dateDisabled')"
-                    [checked]="settings.time.dateDisabled.value">
+                    (click)="onSetting('dateDisabled', $event.target.checked)"
+                    [checked]="settings.time.dateDisabled">
                 <label for="date-checkbox"></label>
             </div>
             <div class="setting-item">
-                <span>Disable calendar notifications</span>
+                <span>Disable calendar reminders</span>
                 <input type="checkbox" id="calendar-checkbox" class="checkbox"
-                    (click)="onSetting($event, 'reminders', 'notificationDisabled')"
-                    [checked]="settings.reminders.notificationDisabled.value">
+                    (click)="onSetting('calendarRemindersDisabled', $event.target.checked)"
+                    [checked]="settings.time.calendarRemindersDisabled">
                 <label for="calendar-checkbox"></label>
             </div>
             <div class="setting-item">
                 <span>Time display</span>
-                <select class="settings-selection" (click)="onSetting($event, 'time', 'timeDisplay')">
-                    <option value="1"></option>
-                    <option value="0" [selected]="settings.time.timeDisplay.value === '0'">12 hour</option>
-                    <option value="1" [selected]="settings.time.timeDisplay.value === '1'">24 hour</option>
+                <select class="settings-selection" (click)="onSetting('timeDisplay', $event.target.value)">
+                    <option value="0" [selected]="settings.time.timeDisplay === '0'">12 hour</option>
+                    <option value="1" [selected]="settings.time.timeDisplay === '1'">24 hour</option>
                 </select>
             </div>
         </li>
         <li class="setting" [class.active]="active === 'background'">
             <div class="setting-item">
                 <span>Reset background</span>
-                <button class="btn" (click)="onSetting($event, 'background', 'reset')">Reset</button>
+                <button class="btn" (click)="onSetting('currentBackground', '')">Reset</button>
             </div>
         </li>
-        <li class="setting" [class.active]="active === 'weather'" #setting>
+        <li class="setting" [class.active]="active === 'weather'">
             <div class="setting-item">
                 <span>Disable weather</span>
                 <input type="checkbox" id="weather-checkbox-1" class="checkbox"
-                    (click)="onSetting($event, 'weather', 'weatherDisabled')"
-                    [checked]="settings.weather.weatherDisabled.value">
+                    (click)="onSetting('disabled', $event.target.checked)"
+                    [checked]="settings.weather.disabled">
                 <label for="weather-checkbox-1"></label>
             </div>
             <div class="setting-item">
                 <span>Show temperature in Farenheit</span>
                 <input type="checkbox" id="weather-checkbox-2" class="checkbox"
-                    (click)="onSetting($event, 'weather', 'units')"
-                    [checked]="settings.weather.units.value === 'F'">
+                    (click)="onSetting('useFarenheit', $event.target.checked)"
+                    [checked]="settings.weather.useFarenheit">
                 <label for="weather-checkbox-2"></label>
             </div>
             <div class="setting-item">
                 <span>City name (and country code)</span>
                 <input type="text" class="input setting-input"
                     (keyup)="getWeatherWithCityName($event)"
-                    [value]="settings.weather.cityName.value || ''">
+                    [value]="settings.weather.cityName || ''">
             </div>
         </li>
-        <li class="setting" [class.active]="active === 'main-block'">
+        <li class="setting" [class.active]="active === 'mainBlock'">
            <div class="setting-item">
                 <span>Reset top sites to Chrome's default</span>
-                <button class="btn" (click)="onSetting($event, 'mostVisited', 'reset')">Reset</button>
+                <button class="btn" (click)="onSetting('resetMostVisited', true)">Reset</button>
            </div>
         </li>
     </ul>

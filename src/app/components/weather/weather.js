@@ -30,43 +30,50 @@ export class Weather {
         this.timeout = 0;
         this.iconClassName = "weather-icon";
         this.showWeather = false;
-        this.inited = false;
+        this.initialized = false;
     }
 
     ngOnChanges(changes) {
         const setting = changes.setting.currentValue;
 
-        if (changes.setting && setting) {
-            if (this.timeout) {
-                clearTimeout(this.timeout);
-            }
+        if (!setting) {
+            return;
+        }
 
-            if (setting.weatherDisabled) {
-                this.weatherDisabled = setting.weatherDisabled.value;
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
 
-                if (!this.weatherDisabled) {
-                    if (this.inited) {
-                        this.getWeather(this.cityName);
-                    }
-                    else {
-                        setTimeout(() => {
-                            this.inited = true;
-                            this.getWeather(this.cityName);
-                        }, 10000);
-                    }
-                }
-            }
-            if (setting.units) {
-                this.units = setting.units.value;
-                this.weather.temp = this.getTemp(this.temperature, setting.units.value);
-            }
-            if (setting.cityName) {
-                this.cityName = setting.cityName.value;
+        if (typeof setting.disabled === "boolean") {
+            this.weatherDisabled = setting.disabled;
 
-                if (this.inited) {
-                    this.isFetching = true;
+            if (!this.weatherDisabled) {
+                if (this.initialized) {
                     this.getWeather(this.cityName);
                 }
+                else {
+                    setTimeout(() => {
+                        this.initialized = true;
+                        this.getWeather(this.cityName);
+                    }, 10000);
+                }
+            }
+            else {
+                this.initialized = true;
+            }
+        }
+        if (typeof setting.useFarenheit === "boolean") {
+            const units = setting.useFarenheit ? "F" : "C";
+
+            this.units = units;
+            this.weather.temp = this.getTemp(this.temperature, units);
+        }
+        if (setting.cityName) {
+            this.cityName = setting.cityName;
+
+            if (this.initialized) {
+                this.isFetching = true;
+                this.getWeather(this.cityName);
             }
         }
     }
