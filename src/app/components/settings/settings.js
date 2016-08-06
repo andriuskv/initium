@@ -1,55 +1,48 @@
 import { Component, Output, EventEmitter } from "@angular/core";
-import { LocalStorageService } from "services/localStorageService";
 import { SettingService } from "services/settingService";
 
 @Component({
     selector: "settings",
-    providers: [SettingService],
     templateUrl: "app/components/settings/settings.html"
 })
 export class Settings {
     @Output() setting = new EventEmitter();
 
+    active = "general";
+
     static get parameters() {
-        return [[LocalStorageService], [SettingService]];
+        return [[SettingService]];
     }
 
-    constructor(localStorageService, settingService) {
-        this.storage = localStorageService;
+    constructor(settingService) {
         this.settingService = settingService;
-        this.active = "general";
     }
 
     ngOnInit() {
-        const defaultSettings = this.settingService.getDefault();
-        const storedSettings = this.storage.get("settings") || {};
+        this.settings = this.settingService.getSettings();
+        this.setting.emit(this.settings);
+    }
 
-        this.settings = Object.assign(defaultSettings, storedSettings);
-
-        for (const settingsFor of Object.keys(this.settings)) {
-            const settings = this.settings[settingsFor];
-
-            settings.for = settingsFor;
-            this.setting.emit(settings);
-        }
+    setActiveTab(tab) {
+        this.active = tab;
     }
 
     getWeatherWithCityName(event) {
-        if (event.key === "Enter" && event.target.value !== this.settings.weather.cityName.value) {
-            this.onSetting(event, "weather", "cityName", event.target.value);
+        if (event.key === "Enter" && event.target.value !== this.settings.weather.cityName) {
+            this.onSetting("cityName", event.target.value);
         }
     }
 
-    onSetting(event, settingFor, settingName, value) {
+    onSetting(settingName, value) {
         const setting = {
-            for: settingFor,
-            name: settingName,
-            value
+            [this.active]: {
+                [settingName]: value
+            }
         };
 
-        this.setting.emit({
-            for: settingFor,
-            [settingName]: this.settingService.set(event.target, this.settings, setting)
-        });
+        this.setting.emit(setting);
+        if (this.active !== "mainBlock") {
+            this.settings = this.settingService.updateSetting(setting);
+        }
     }
 }

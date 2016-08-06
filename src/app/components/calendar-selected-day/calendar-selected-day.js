@@ -9,17 +9,11 @@ export class CalendarSelectedDay {
     @Output() notify = new EventEmitter();
     @Output() remove = new EventEmitter();
     @Output() repeat = new EventEmitter();
-    @Input() day;
+    @Input() day = {};
 
     constructor() {
         this.reminderInputEnabled = false;
         this.repeatEnabled = false;
-    }
-
-    ngOnChanges(changes) {
-        if (changes.day) {
-            this.selectedDay = changes.day.currentValue;
-        }
     }
 
     showCalendar() {
@@ -35,7 +29,7 @@ export class CalendarSelectedDay {
     }
 
     removeReminder(index) {
-        const [reminder] = this.selectedDay.reminders.splice(index, 1);
+        const [reminder] = this.day.reminders.splice(index, 1);
 
         this.remove.emit(reminder);
     }
@@ -52,17 +46,17 @@ export class CalendarSelectedDay {
         if (this.repeatEnabled) {
             const dayGap = Number.parseInt(gap.value, 10);
 
-            newReminder.year = this.selectedDay.year;
-            newReminder.month = this.selectedDay.month;
-            newReminder.day = this.selectedDay.number + dayGap;
+            newReminder.year = this.day.year;
+            newReminder.month = this.day.month;
+            newReminder.day = this.day.number + dayGap;
             newReminder.gap = dayGap;
             newReminder.repeat = true;
             this.repeat.emit(newReminder);
             this.repeatEnabled = false;
             gap.value = "1";
         }
-        this.selectedDay.reminders.push(newReminder);
-        this.notify.emit(this.selectedDay);
+        this.day.reminders.push(newReminder);
+        this.notify.emit(this.day);
         this.showReminderInput = false;
         reminder.value = "";
     }

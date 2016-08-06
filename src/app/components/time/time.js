@@ -28,20 +28,17 @@ export class Time {
         this.timeout = 0;
     }
 
-    ngOnInit() {
-        this.date = this.dateService.getDate();
-    }
-
     ngOnChanges(changes) {
         const setting = changes.setting.currentValue;
 
-        if (changes.setting && setting) {
+        if (setting) {
             if (setting.timeDisplay) {
-                this.changeTimeDisplay(setting.timeDisplay.value);
+                this.changeTimeDisplay(setting.timeDisplay);
             }
-            if (setting.dateDisabled) {
-                this.dateDisabled = setting.dateDisabled.value;
+            if (!setting.dateDisabled) {
+                this.date = this.dateService.getDate();
             }
+            this.dateDisabled = setting.dateDisabled;
         }
     }
 

@@ -27,14 +27,10 @@ export class NotificationService {
 
     send(title, body) {
         const settings = this.storage.get("settings");
-        let focus = true;
-
-        if (settings) {
-            focus = !settings.notification.focusDisabled.value;
-        }
+        const focus = !settings.general.notificationFocusDisabled;
 
         return new Promise(resolve => {
-            if (settings.notification.notificationDisabled.value) {
+            if (settings.general.notificationDisabled) {
                 resolve(true);
                 return;
             }

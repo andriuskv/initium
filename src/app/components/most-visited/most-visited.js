@@ -28,7 +28,9 @@ export class MostVisited {
     }
 
     ngOnChanges(changes) {
-        if (changes.setting.currentValue) {
+        const setting = changes.setting.currentValue;
+
+        if (setting && setting.resetMostVisited) {
             this.resetMostVisited();
         }
     }
@@ -48,6 +50,12 @@ export class MostVisited {
         const mostVisited = this.storage.get("most visited");
 
         if (mostVisited) {
+            mostVisited.display = mostVisited.display.map(page => {
+                if (!page.uploaded) {
+                    page.image = this.getImage(page.url);
+                }
+                return page;
+            });
             this.mostVisited = mostVisited;
             this.checkBackup();
             return;
@@ -80,7 +88,6 @@ export class MostVisited {
 
     getImage(url) {
         const a = document.createElement("a");
-
         a.href = url;
 
         return this.sanitizer.bypassSecurityTrustUrl(`chrome://favicon/${a.protocol}//${a.hostname}${a.pathname}`);
@@ -162,6 +169,7 @@ export class MostVisited {
                     title,
                     url
                 });
+                this.storage.set("most visited", this.mostVisited);
             });
         }
         else {
@@ -170,9 +178,9 @@ export class MostVisited {
                 title,
                 url
             });
+            this.storage.set("most visited", this.mostVisited);
         }
         this.checkBackup();
         this.hideNewThumbWindow();
-        this.storage.set("most visited", this.mostVisited);
     }
 }

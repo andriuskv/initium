@@ -11,7 +11,6 @@ import { Calendar } from "components/calendar/calendar";
 export class WidgetMenu {
     @Output() toggle = new EventEmitter();
     @Output() setting = new EventEmitter();
-    @Output() background = new EventEmitter();
     @Output() reminders = new EventEmitter();
 
     constructor() {
@@ -39,15 +38,9 @@ export class WidgetMenu {
     onSetting(setting) {
         this.setting.emit(setting);
 
-        const notificationDisabled = setting.notificationDisabled;
-
-        if (notificationDisabled) {
-            this.notificationDisabled = notificationDisabled.value;
+        if (setting.time && typeof setting.time.calendarRemindersDisabled === "boolean") {
+            this.remidersDisabled = setting.time.calendarRemindersDisabled;
         }
-    }
-
-    onBackground(background) {
-        this.background.emit(background);
     }
 
     onReminders(reminders) {

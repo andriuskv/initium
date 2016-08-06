@@ -10,7 +10,7 @@ import { LocalStorageService } from "services/localStorageService";
 })
 export class Calendar {
     @Output() reminders = new EventEmitter();
-    @Input() notificationDisabled;
+    @Input() remidersDisabled;
 
     static get parameters() {
         return [[DateService], [LocalStorageService]];
@@ -32,24 +32,17 @@ export class Calendar {
     }
 
     ngOnChanges(changes) {
-        if (changes.notificationDisabled) {
-            const notificationDisabled = changes.notificationDisabled.currentValue;
+        const disabled = changes.remidersDisabled.currentValue;
 
-            if (typeof notificationDisabled === "boolean") {
-                let reminders = [];
-
-                if (!this.initialized) {
-                    this.init();
-                }
-                if (!notificationDisabled) {
-                    const day = this.getCurrentDayInCalendar(this.calendar, this.currentDate);
-
-                    reminders = day.reminders;
-                }
-                this.notify = !notificationDisabled;
-                this.reminders.emit(reminders);
+        if (!disabled) {
+            if (!this.initialized) {
+                this.init();
             }
+            const day = this.getCurrentDayInCalendar(this.calendar, this.currentDate);
+
+            this.reminders.emit(day.reminders);
         }
+        this.notify = !disabled;
     }
 
     init() {

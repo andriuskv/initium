@@ -2,6 +2,7 @@
 
 import { Component, Output, EventEmitter } from "@angular/core";
 import { LocalStorageService } from "services/localStorageService";
+import { SettingService } from "services/settingService";
 
 @Component({
     selector: "dropbox",
@@ -9,16 +10,19 @@ import { LocalStorageService } from "services/localStorageService";
 })
 export class DropboxComp {
     @Output() background = new EventEmitter();
+    @Output() setting = new EventEmitter();
+
+    fetching = true;
+    showItems = false;
+    showLogin = false;
 
     static get parameters() {
-        return [[LocalStorageService]];
+        return [[LocalStorageService], [SettingService]];
     }
 
-    constructor(localStorageService) {
+    constructor(localStorageService, settingService) {
         this.storage = localStorageService;
-        this.fetching = true;
-        this.showItems = false;
-        this.showLogin = false;
+        this.settingService = settingService;
         this.activeDir = {};
         this.rootDir = {
             name: "Root",
@@ -159,15 +163,24 @@ export class DropboxComp {
             });
     }
 
+    setBackground(url) {
+        const setting = {
+            background: { url }
+        };
+
+        this.setting.emit(setting);
+        this.settingService.updateSetting(setting);
+    }
+
     setImageAsBackground(item) {
         if (item.url) {
-            this.background.emit(item.url);
+            this.setBackground(item.url);
             return;
         }
         this.getImageUrl(item.path)
             .then(url => {
                 item.url = url;
-                this.background.emit(url);
+                this.setBackground(url);
                 this.storage.set("dropbox", this.dropboxContents);
             });
     }
