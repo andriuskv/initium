@@ -1,5 +1,5 @@
 {
-    "content_security_policy": "script-src 'self' chrome://favicon/ https://www.dropbox.com/ 'unsafe-eval' 'sha256-JNHrfHGmSAbs+wV1eEjF8LcataGPwTQ1PoJbUqQQDus='; object-src 'self'",
+    "content_security_policy": "script-src 'self' chrome://favicon/ https://www.dropbox.com/ 'unsafe-eval' 'sha256-ereB/cCTbpjzdNMeFhvyEXaG/J3ueIbnF2v70Up1U2M='; object-src 'self'",
     "manifest_version": 2,
     "name": "Initium",
     "description": "New tab page replacement with additional features.",
@@ -19,8 +19,7 @@
         "https://www.dropbox.com/",
         "https://ajax.googleapis.com/"
     ],
-    "web_accessible_resources":
-    ["chrome-extension://jmefobebfekofkbpfmjkmhjgaaaojkml/receiver.html", "receiver.html"],
+    "web_accessible_resources": ["receiver.html"],
     "externally_connectable": {
         "matches": [
             "https://www.dropbox.com/*"

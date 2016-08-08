@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script src="js/libs/dropbox.js"></script>
-    <!-- <script type="text/javascript">
-//        Dropbox.AuthDriver.Popup.oauthReceiver();
-    </script> -->
-    <script src="receiver.js"></script>
-  </head>
-  <body>
+<head>
+    <script>
+        var token = window.location.hash.split("access_token=")[1].split("&")[0];
+
+        localStorage.setItem("dropbox token", token);
+        window.close();
+    </script>
+</head>
+<body>
     <h1>Dropbox sign-in successful</h1>
     <p>Please close this window.</p>
-  </body>
+</body>
 </html>
