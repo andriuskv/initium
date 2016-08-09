@@ -20,6 +20,7 @@
             <img src="{{ item.thumbnail }}" class="dropbox-item-thumbnail">
             <span class="dropbox-item-name">{{ item.name }}</span>
             <span class="dropbox-item-error" [class.show]="item.error">Not an image</span>
+            <span class="icon-spin4 animate-spin dropbox-spinner" *ngIf="item.fetching"></span>
         </li>
     </ul>
 </div>
