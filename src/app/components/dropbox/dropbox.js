@@ -223,10 +223,18 @@ export class DropboxComp {
         this.dropbox.sharingGetSharedLinks({ path: item.path })
         .then(res => {
             const image = res.links.find(link => link.url.includes(item.name));
-            item.url = this.parseImageUrl(image);
+
+            if (!image) {
+                return this.dropbox.sharingCreateSharedLinkWithSettings({ path: item.path })
+                .then(res => this.parseImageUrl(res));
+            }
+            return this.parseImageUrl(image);
+        })
+        .then(url => {
+            item.url = url;
             item.fetching = false;
 
-            this.setBackground(item.url);
+            this.setBackground(url);
             localStorage.setItem("dropbox", JSON.stringify(this.dropboxContents));
         })
         .catch(error => {
