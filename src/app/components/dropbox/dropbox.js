@@ -24,7 +24,7 @@ export class DropboxComp {
         return [[SettingService]];
     }
 
-    constructor(localStorageService, settingService) {
+    constructor(settingService) {
         this.settingService = settingService;
         this.activeDir = {};
         this.dropboxContents = JSON.parse(localStorage.getItem("dropbox")) || this.rootDir;
@@ -54,14 +54,12 @@ export class DropboxComp {
             this.fetching = false;
         }
         else {
-            this.fetchDir(this.dropboxContents);
+            this.fetchRootDir();
         }
     }
 
     login() {
-        const authUrl = this.dropbox.getAuthenticationUrl(
-            "chrome-extension://jmefobebfekofkbpfmjkmhjgaaaojkml/receiver.html"
-        );
+        const authUrl = this.dropbox.getAuthenticationUrl(`${window.location.origin}/receiver.html`);
 
         window.open(authUrl);
         window.addEventListener("storage", function onStorageChange(event) {
@@ -143,16 +141,27 @@ export class DropboxComp {
         }
     }
 
-    fetchDir(dir) {
+    fetchRootDir() {
         this.showItems = false;
         this.fetching = true;
-        this.dropbox.filesListFolder({ path: dir.path })
+
+        this.fetchDir(this.dropboxContents)
+        .then(() => {
+            this.showItems = true;
+            this.fetching = false;
+        });
+    }
+
+    fetchDir(dir) {
+        dir.fetching = true;
+        return this.dropbox.filesListFolder({ path: dir.path })
         .then(res => {
             res.entries.forEach(entry => {
                 const newEntry = {
                     name: entry.name,
                     isDir: entry[".tag"] === "folder",
-                    path: entry.path_lower
+                    path: entry.path_lower,
+                    fetching: false
                 };
 
                 if (newEntry.isDir) {
@@ -162,7 +171,6 @@ export class DropboxComp {
                 }
                 else {
                     newEntry.thumbnail = "./resources/images/file-icon.png";
-
                     if (this.isImage(entry.name)) {
                         this.getThumbnail(newEntry.path)
                         .then(thumbnail => {
@@ -173,10 +181,9 @@ export class DropboxComp {
                 }
                 dir.items.push(newEntry);
             });
-            dir.cached = true;
             this.activeDir = dir;
-            this.showItems = true;
-            this.fetching = false;
+            dir.cached = true;
+            dir.fetching = false;
             localStorage.setItem("dropbox", JSON.stringify(this.dropboxContents));
         })
         .catch(error => {
@@ -212,9 +219,13 @@ export class DropboxComp {
             this.setBackground(item.url);
             return;
         }
+        item.fetching = true;
         this.dropbox.sharingGetSharedLinks({ path: item.path })
         .then(res => {
-            item.url = this.parseImageUrl(res.links[0]);
+            const image = res.links.find(link => link.url.includes(item.name));
+            item.url = this.parseImageUrl(image);
+            item.fetching = false;
+
             this.setBackground(item.url);
             localStorage.setItem("dropbox", JSON.stringify(this.dropboxContents));
         })
@@ -225,7 +236,7 @@ export class DropboxComp {
 
     selectItem(item) {
         if (!item.isDir) {
-            if (this.isImage(item.name)) {
+            if (this.isImage(item.name) && !item.fetching) {
                 this.setImageAsBackground(item);
             }
             else {
@@ -240,6 +251,8 @@ export class DropboxComp {
             this.activeDir = item;
             return;
         }
-        this.fetchDir(item);
+        if (!item.fetching) {
+            this.fetchDir(item);
+        }
     }
 }
