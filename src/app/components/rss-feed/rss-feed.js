@@ -1,11 +1,9 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { FeedService } from "services/feedService";
-import { LocalStorageService } from "services/localStorageService";
 import { NotificationService } from "services/notificationService";
 
 @Component({
     selector: "rss-feed",
-    providers: [FeedService, NotificationService],
     templateUrl: "app/components/rss-feed/rss-feed.html"
 })
 export class RssFeed {
@@ -14,15 +12,14 @@ export class RssFeed {
     @Input() item;
 
     static get parameters() {
-        return [[FeedService], [LocalStorageService], [NotificationService]];
+        return [[FeedService], [NotificationService]];
     }
 
-    constructor(feedService, localStorageService, notificationService) {
-        this.storage = localStorageService;
+    constructor(feedService, notificationService) {
         this.feedService = feedService;
         this.notification = notificationService;
         this.feeds = [];
-        this.feedsToLoad = this.storage.get("rss feeds") || [];
+        this.feedsToLoad = JSON.parse(localStorage.getItem("rss feeds")) || [];
         this.addingNewFeed = false;
         this.editingFeed = false;
         this.activeFeed = "";
@@ -95,7 +92,7 @@ export class RssFeed {
 
     removeFeed(index) {
         this.feeds.splice(index, 1);
-        this.storage.set("rss feeds", this.feeds);
+        localStorage.setItem("rss feeds", JSON.stringify(this.feeds));
 
         if (this.feeds.length) {
             this.activeFeed = this.feeds[0].url;
@@ -143,7 +140,7 @@ export class RssFeed {
         }
         this.activeFeed = this.feeds[index].url;
         this.resetInputs();
-        this.storage.set("rss feeds", this.feeds);
+        localStorage.setItem("rss feeds", JSON.stringify(this.feeds));
     }
 
     loadFeeds(feeds) {
@@ -229,7 +226,7 @@ export class RssFeed {
                 this.resetInputs();
                 clearTimeout(this.timeout);
                 this.updateFeeds(this.feeds);
-                this.storage.set("rss feeds", this.feeds);
+                localStorage.setItem("rss feeds", JSON.stringify(this.feeds));
             });
         }
     }

@@ -1,14 +1,4 @@
-import { LocalStorageService } from "services/localStorageService";
-
 export class NotificationService {
-    static get parameters() {
-        return [[LocalStorageService]];
-    }
-
-    constructor(localStorageService) {
-        this.storage = localStorageService;
-    }
-
     closeNotification(notification, delay) {
         setTimeout(() => {
             if (notification) {
@@ -26,7 +16,7 @@ export class NotificationService {
     }
 
     send(title, body) {
-        const settings = this.storage.get("settings");
+        const settings = JSON.parse(localStorage.getItem("settings"));
         const focus = !settings.general.notificationFocusDisabled;
 
         return new Promise(resolve => {

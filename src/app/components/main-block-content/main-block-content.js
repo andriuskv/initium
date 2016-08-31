@@ -1,12 +1,7 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { MostVisited } from "components/most-visited/most-visited";
-import { Notepad } from "components/notepad/notepad";
-import { Twitter } from "components/twitter/twitter";
-import { RssFeed } from "components/rss-feed/rss-feed";
 
 @Component({
     selector: "main-block-content",
-    directives: [MostVisited, Notepad, Twitter, RssFeed],
     templateUrl: "app/components/main-block-content/main-block-content.html"
 })
 export class MainBlockContent {

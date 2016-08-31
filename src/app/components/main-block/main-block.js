@@ -1,10 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { MainBlockNav } from "components/main-block-nav/main-block-nav";
-import { MainBlockContent } from "components/main-block-content/main-block-content";
 
 @Component({
     selector: "main-block",
-    directives: [MainBlockNav, MainBlockContent],
     template: `
         <div class="main-block">
             <main-block-nav (choice)="onChoice($event)"

@@ -1,13 +1,6 @@
-import { LocalStorageService } from "services/localStorageService";
-
 export class SettingService {
-    static get parameters() {
-        return [[LocalStorageService]];
-    }
-
-    constructor(localStorageService) {
-        this.storage = localStorageService;
-        this.storage.set("settings", this.getSettings());
+    constructor() {
+        localStorage.setItem("settings", JSON.stringify(this.getSettings()));
     }
 
     getDefault() {
@@ -34,7 +27,7 @@ export class SettingService {
 
     getSettings() {
         const defaultSettings = this.getDefault();
-        const storedSettings = this.storage.get("settings") || {};
+        const storedSettings = JSON.parse(localStorage.getItem("settings")) || {};
 
         return Object.assign(defaultSettings, storedSettings);
     }
@@ -44,7 +37,7 @@ export class SettingService {
         const [settingFor] = Object.keys(setting);
 
         settings[settingFor] = Object.assign(settings[settingFor], setting[settingFor]);
-        this.storage.set("settings", settings);
+        localStorage.setItem("settings", JSON.stringify(settings));
         return settings;
     }
 }

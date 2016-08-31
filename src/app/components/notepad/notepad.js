@@ -1,5 +1,4 @@
 import { Component } from "@angular/core";
-import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "notepad",
@@ -12,14 +11,8 @@ import { LocalStorageService } from "services/localStorageService";
     `
 })
 export class Notepad {
-
-    static get parameters() {
-        return [[LocalStorageService]];
-    }
-
-    constructor(localStorageService) {
-        this.storage = localStorageService;
-        this.notepad = this.storage.get("notepad") || "";
+    constructor() {
+        this.notepad = localStorage.getItem("notepad") || "";
     }
 
     insertSpace(elem) {
@@ -34,7 +27,7 @@ export class Notepad {
     }
 
     saveContent(content) {
-        this.storage.set("notepad", content);
+        localStorage.setItem("notepad", content);
     }
 
     onInput(event) {

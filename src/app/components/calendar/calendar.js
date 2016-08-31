@@ -1,11 +1,8 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { CalendarSelectedDay } from "components/calendar-selected-day/calendar-selected-day";
 import { DateService } from "services/dateService";
-import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "calendar",
-    directives: [CalendarSelectedDay],
     templateUrl: "app/components/calendar/calendar.html"
 })
 export class Calendar {
@@ -13,11 +10,10 @@ export class Calendar {
     @Input() remidersDisabled;
 
     static get parameters() {
-        return [[DateService], [LocalStorageService]];
+        return [[DateService]];
     }
 
-    constructor(dateService, localStorageService) {
-        this.storage = localStorageService;
+    constructor(dateService) {
         this.initialized = false;
         this.notify = true;
         this.dateService = dateService;
@@ -46,7 +42,7 @@ export class Calendar {
     }
 
     init() {
-        const calendar = this.storage.get("calendar");
+        const calendar = JSON.parse(localStorage.getItem("calendar"));
         const year = this.currentDate.year;
         const month = this.currentDate.month;
 
@@ -250,7 +246,7 @@ export class Calendar {
         if (selectedDay.currentDay && this.notify) {
             this.reminders.emit(selectedDay.reminders);
         }
-        this.storage.set("calendar", this.calendar);
+        localStorage.setItem("calendar", JSON.stringify(this.calendar));
     }
 
     filterReminders(reminders, text) {
@@ -282,7 +278,7 @@ export class Calendar {
 
             this.reminders.emit(day.reminders);
         }
-        this.storage.set("calendar", this.calendar);
+        localStorage.setItem("calendar", JSON.stringify(this.calendar));
     }
 
     repeatReminder(reminder) {

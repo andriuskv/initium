@@ -81,7 +81,7 @@
                 <span>City name (and country code)</span>
                 <input type="text" class="input setting-input"
                     (keyup)="getWeatherWithCityName($event)"
-                    [value]="settings.weather.cityName || ''">
+                    [value]="settings.weather.cityName">
             </div>
         </li>
         <li class="setting" [class.active]="active === 'mainBlock'">

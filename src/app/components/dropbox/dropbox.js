@@ -1,6 +1,7 @@
+/* global Dropbox */
+
 import { Component, Output, EventEmitter } from "@angular/core";
 import { SettingService } from "services/settingService";
-import * as Dropbox from "dropbox";
 
 @Component({
     selector: "dropbox",
