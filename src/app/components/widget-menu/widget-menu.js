@@ -1,11 +1,7 @@
 import { Component, Output, EventEmitter } from "@angular/core";
-import { Settings } from "components/settings/settings";
-import { DropboxComp } from "components/dropbox/dropbox";
-import { Calendar } from "components/calendar/calendar";
 
 @Component({
     selector: "widget-menu",
-    directives: [Settings, DropboxComp, Calendar],
     templateUrl: "app/components/widget-menu/widget-menu.html"
 })
 export class WidgetMenu {

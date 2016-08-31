@@ -3,7 +3,6 @@ import { WeatherService } from "services/weatherService";
 
 @Component({
     selector: "weather",
-    providers: [WeatherService],
     template: `
         <div class="weather" *ngIf="!weatherDisabled && showWeather"
             [class.is-fetching]="isFetching"
@@ -68,7 +67,7 @@ export class Weather {
             this.units = units;
             this.weather.temp = this.getTemp(this.temperature, units);
         }
-        if (setting.cityName) {
+        if (typeof setting.cityName === "string") {
             this.cityName = setting.cityName;
 
             if (this.initialized) {

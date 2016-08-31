@@ -22,8 +22,8 @@
 <div class="new-thumbnail-window" *ngIf="newThumbWindowVisible">
     <h2 class="new-thumbnail-window-title">Add new page</h2>
     <form (ngSubmit)="addPage(fileInput)">
-        <input type="text" class="input" placeholder="title" [(ngModel)]="newPage.title" required>
-        <input type="text" class="input" placeholder="url" [(ngModel)]="newPage.url" required>
+        <input type="text" class="input" placeholder="title" name="title" [(ngModel)]="newPage.title" required>
+        <input type="text" class="input" placeholder="url" name="url" [(ngModel)]="newPage.url" required>
         <div class="new-thumbnail-window-btn-container">
             <label for="file-input" class="btn image-upload-btn">Choose thumbnail</label>
             <input type="file" id="file-input" class="file-input" #fileInput>

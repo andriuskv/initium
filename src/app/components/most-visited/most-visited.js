@@ -2,7 +2,6 @@
 
 import { Component, Input } from "@angular/core";
 import { DomSanitizationService } from "@angular/platform-browser";
-import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "most-visited",
@@ -12,12 +11,11 @@ export class MostVisited {
     @Input() setting;
 
     static get parameters() {
-        return [[DomSanitizationService], [LocalStorageService]];
+        return [[DomSanitizationService]];
     }
 
-    constructor(domSanitizationService, localStorageService) {
+    constructor(domSanitizationService) {
         this.sanitizer = domSanitizationService;
-        this.storage = localStorageService;
         this.mostVisited = {};
         this.newPage = {};
         this.hasBackup = true;
@@ -47,7 +45,7 @@ export class MostVisited {
     }
 
     loadMostVisited() {
-        const mostVisited = this.storage.get("most visited");
+        const mostVisited = JSON.parse(localStorage.getItem("most visited"));
 
         if (mostVisited) {
             mostVisited.display = mostVisited.display.map(page => {
@@ -64,7 +62,7 @@ export class MostVisited {
     }
 
     resetMostVisited() {
-        this.storage.remove("most visited");
+        localStorage.removeItem("most visited");
         this.getMostVisited();
     }
 
@@ -79,7 +77,7 @@ export class MostVisited {
             this.mostVisited.display.splice(index, 1);
         }
         this.checkBackup();
-        this.storage.set("most visited", this.mostVisited);
+        localStorage.setItem("most visited", JSON.stringify(this.mostVisited));
     }
 
     checkBackup() {
@@ -169,7 +167,7 @@ export class MostVisited {
                     title,
                     url
                 });
-                this.storage.set("most visited", this.mostVisited);
+                localStorage.setItem("most visited", JSON.stringify(this.mostVisited));
             });
         }
         else {
@@ -178,7 +176,7 @@ export class MostVisited {
                 title,
                 url
             });
-            this.storage.set("most visited", this.mostVisited);
+            localStorage.setItem("most visited", JSON.stringify(this.mostVisited));
         }
         this.checkBackup();
         this.hideNewThumbWindow();

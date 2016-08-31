@@ -1,5 +1,4 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "main-block-nav",
@@ -11,13 +10,8 @@ export class MainBlockNav {
     @Input() newEntries;
     @Input() tabNameChange;
 
-    static get parameters() {
-        return [[LocalStorageService]];
-    }
-
-    constructor(localStorageService) {
-        this.storage = localStorageService;
-        this.favorite = this.storage.get("favorite tab");
+    constructor() {
+        this.favorite = localStorage.getItem("favorite tab");
         this.item = this.favorite || "mostVisited";
         this.isNewTweet = false;
         this.isNewEntry = false;
@@ -80,6 +74,6 @@ export class MainBlockNav {
 
     makeFavorite() {
         this.favorite = this.favorite !== this.item ? this.item : "";
-        this.storage.set("favorite tab", this.favorite);
+        localStorage.setItem("favorite tab", this.favorite);
     }
 }

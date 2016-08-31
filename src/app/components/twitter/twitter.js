@@ -2,12 +2,10 @@
 
 import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { DateService } from "services/dateService";
-import { LocalStorageService } from "services/localStorageService";
 import { NotificationService } from "services/notificationService";
 
 @Component({
     selector: "twitter",
-    providers: [NotificationService],
     templateUrl: "app/components/twitter/twitter.html"
 })
 export class Twitter {
@@ -16,11 +14,10 @@ export class Twitter {
     @Input() item;
 
     static get parameters() {
-        return [[DateService], [LocalStorageService], [NotificationService]];
+        return [[DateService], [NotificationService]];
     }
 
-    constructor(dateService, localStorageService, notificationService) {
-        this.storage = localStorageService;
+    constructor(dateService, notificationService) {
         this.dateService = dateService;
         this.notification = notificationService;
         this.user = {};
@@ -80,7 +77,7 @@ export class Twitter {
     }
 
     isAuthenticated() {
-        const userInfo = this.storage.get("userInfo") || {};
+        const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
 
         return userInfo.token && userInfo.tokenSecret;
     }
@@ -234,27 +231,28 @@ export class Twitter {
             this.setInfo(cb, userInfo);
             cb.__call("statuses_homeTimeline", `since_id=${latestTweetId}`, tweets => {
                 if (tweets && tweets.length) {
-                    tweets = tweets.filter(tweet => tweet.id !== latestTweetId);
-                }
+                    const newTweets = tweets.filter(tweet => tweet.id !== latestTweetId);
 
-                if (tweets.length) {
-                    clearTimeout(this.tweetUpdateTimeout);
-                    this.tweetsToLoad.unshift(...tweets);
-                    this.updateTimeline(userInfo, tweets[0].id);
+                    if (newTweets.length) {
+                        clearTimeout(this.tweetUpdateTimeout);
+                        this.tweetsToLoad.unshift(...newTweets);
+                        this.updateTimeline(userInfo, newTweets[0].id);
 
-                    if (!this.isActive) {
-                        this.newTweetCount.emit(this.tweetsToLoad.length);
-                    }
-                    this.notification.send(
-                        "Twitter",
-                        `You have ${this.tweetsToLoad.length} new tweets.`
-                    ).then(disabled => {
-                        if (!disabled) {
-                            this.toggleTab.emit("twitter");
+                        if (!this.isActive) {
+                            this.newTweetCount.emit(this.tweetsToLoad.length);
                         }
-                    });
-                    return;
+                        this.notification.send(
+                            "Twitter",
+                            `You have ${this.tweetsToLoad.length} new tweets.`
+                        ).then(disabled => {
+                            if (!disabled) {
+                                this.toggleTab.emit("twitter");
+                            }
+                        });
+                        return;
+                    }
                 }
+
                 this.updateTimeline(userInfo, latestTweetId);
             });
         }, 240000);
@@ -290,7 +288,7 @@ export class Twitter {
     }
 
     fetchTweets() {
-        const userInfo = this.storage.get("userInfo") || {};
+        const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
 
         if (userInfo.token && userInfo.tokenSecret) {
             const cb = new Codebird;
@@ -309,12 +307,12 @@ export class Twitter {
         this.cb.__call("oauth_accessToken", { oauth_verifier: pin.value }, reply => {
             if (reply.httpstatus === 200) {
                 this.cb.setToken(reply.oauth_token, reply.oauth_token_secret);
-                this.storage.set("userInfo", {
+                localStorage.setItem("userInfo", JSON.stringify({
                     userId: reply.user_id,
                     screenName: reply.screen_name,
                     token: reply.oauth_token,
                     tokenSecret: reply.oauth_token_secret
-                });
+                }));
                 this.isLoggedIn = true;
                 this.showPinInput = false;
                 this.fetchTweets();
@@ -358,7 +356,7 @@ export class Twitter {
         clearTimeout(this.twitterTimeout);
         clearTimeout(this.tweetTimeTimeout);
         clearTimeout(this.tweetUpdateTimeout);
-        this.storage.remove("userInfo");
+        localStorage.removeItem("userInfo");
         this.removeLeftoverImages();
         this.isLoggedIn = false;
         this.tweets.length = 0;
@@ -366,7 +364,7 @@ export class Twitter {
     }
 
     fetchMoreTweets() {
-        const userInfo = this.storage.get("userInfo") || {};
+        const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
         const oldestTweet = this.tweets[this.tweets.length - 1];
         const cb = new Codebird;
 

@@ -1,25 +1,14 @@
 import { Component } from "@angular/core";
-import { TodoEdit } from "components/todo-edit/todo-edit";
-import { LocalStorageService } from "services/localStorageService";
 
 @Component({
     selector: "todo",
-    directives: [TodoEdit],
-    providers: [LocalStorageService],
     templateUrl: "app/components/todo/todo.html"
 })
 export class Todo {
-    static get parameters() {
-        return [[LocalStorageService]];
-    }
-
-    constructor(localStorageService) {
-        this.storage = localStorageService;
-        this.visible = false;
-    }
+    visible = false;
 
     ngOnInit() {
-        this.todos = this.storage.get("todos") || this.populateWithEmptyTodos();
+        this.todos = JSON.parse(localStorage.getItem("todos")) || this.populateWithEmptyTodos();
         this.hasTodo = this.todos.some(todo => todo.text);
     }
 
@@ -84,7 +73,7 @@ export class Todo {
     }
 
     saveTodos(todos) {
-        this.storage.set("todos", todos);
+        localStorage.setItem("todos", JSON.stringify(todos));
     }
 
     enableTodoEdit(todo, i) {
