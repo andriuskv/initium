@@ -1,7 +1,7 @@
 /* global chrome */
 
 import { Component, Input } from "@angular/core";
-import { DomSanitizationService } from "@angular/platform-browser";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
     selector: "most-visited",
@@ -11,11 +11,11 @@ export class MostVisited {
     @Input() setting;
 
     static get parameters() {
-        return [[DomSanitizationService]];
+        return [[DomSanitizer]];
     }
 
-    constructor(domSanitizationService) {
-        this.sanitizer = domSanitizationService;
+    constructor(domSanitizer) {
+        this.sanitizer = domSanitizer;
         this.mostVisited = {};
         this.newPage = {};
         this.hasBackup = true;
