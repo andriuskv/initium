@@ -7,20 +7,21 @@
 }
 .calendar-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: 4px;
     padding: 0 4px 4px 4px;
-
-    &.selected { justify-content: center; }
 }
 .month-btn {
-    vertical-align: top;
     padding: 0 2px;
     font-size: 12px;
 
-    &:last-of-type { transform: rotate(180deg); }
+    &:last-of-type {
+        transform: rotate(180deg);
+    }
 }
 .calendar-title {
+    margin-left: auto;
+    margin-right: auto;
     color: $primary-text-color;
     font-size: 16px;
 }
@@ -44,16 +45,23 @@
     padding-top: 6px;
     color: #222;
 
-    &.is-current-month-day { color: $primary-text-color; }
+    &.is-current-month-day {
+        color: $primary-text-color;
+    }
     &.current-day {
         padding-top: 5px;
         border: 1px solid;
     }
-    &.has-reminder { color: $brand-color; }
+    &.has-reminder {
+        color: $brand-color;
+    }
     &:hover {
         background-color: #333;
         cursor: pointer;
     }
+}
+.add-reminder-btn {
+    width: 100%;
 }
 .selected-day-remainders {
     @include scrollbar($color2);
@@ -74,7 +82,9 @@
     font-size: 14px;
     color: $primary-text-color;
 
-    .font-btn { margin-left: auto; }
+    .font-btn {
+        margin-left: auto;
+    }
 }
 .is-repeating {
     margin-right: 4px;
@@ -87,11 +97,13 @@
 .calendar-new-reminder-section {
     display: flex;
 
-    .btn { padding: 3px 6px; }
+    .btn {
+        margin-left: 1px;
+        padding: 3px 6px;
+    }
 }
 .calendar-repeat-btn {
-    border-left: 1px solid $color3;
-    border-right: 1px solid $color3;
+    margin-left: 1px;
     cursor: pointer;
 
     .checked {
@@ -107,7 +119,7 @@
     border-left: 1px solid $color3;
     text-align: center;
 
-    &.show {
+    &.visible {
         display: block;
     }
 }

@@ -1,21 +1,28 @@
 <div class="calendar-header">
-    <button class="icon-cancel font-btn" (click)="showCalendar()" title="Close"></button>
+    <button class="icon-cancel font-btn" (click)="showCalendar()" title="Show calendar"></button>
     <span class="calendar-title">{{ day.date }}</span>
-    <button class="icon-plus font-btn" (click)="toggleReminderInput()" title="Add"></button>
 </div>
 <ul class="list selected-day-remainders" *ngIf="day.reminders.length">
     <li class="selected-day-remainder" *ngFor="let reminder of day.reminders; let i = index;">
         <span class="icon-retweet is-repeating" title="Repeating" *ngIf="reminder.repeat"></span>
         <span>{{ reminder.text }}</span>
-        <button class="icon-cancel font-btn" (click)="removeReminder(i)"></button>
+        <button class="icon-cancel font-btn" (click)="removeReminder(i)" title="Remove"></button>
     </li>
 </ul>
+<button class="icon-plus btn add-reminder-btn" title="Add reminder"
+    (click)="toggleReminderInput()" *ngIf="!reminderInputEnabled">Add reminder
+</button>
 <div *ngIf="reminderInputEnabled">
     <div class="calendar-new-reminder-section">
-        <input type="text" class="input selected-day-input" name="reminder" autocomplete="off" (keyup.enter)="createReminder(reminder, gap)" #reminder>
-        <input type="number" class="input calendar-repeat-gap" name="repeat" autocomplete="off" min="1" max="999" value="1" #gap [class.show]="repeatEnabled">
-        <label for="calendar-repeat-checkbox" class="icon-retweet btn calendar-repeat-btn" title="Toggle reminder repeat" [class.checked]="repeatEnabled"></label>
-        <input type="checkbox" id="calendar-repeat-checkbox" class="calendar-repeat-checkbox" (click)="toggleRepeat()">
+        <input type="text" class="input selected-day-input" name="reminder" autocomplete="off"
+            (keyup.enter)="createReminder(reminder, gap)" #reminder>
+        <input type="number" class="input calendar-repeat-gap" name="repeat" autocomplete="off"
+            min="1" max="999" value="1" #gap [class.visible]="repeatEnabled">
+        <label for="calendar-repeat-checkbox" class="icon-retweet btn calendar-repeat-btn"
+            title="Toggle reminder repeat" [class.checked]="repeatEnabled"></label>
+        <input type="checkbox" id="calendar-repeat-checkbox" class="calendar-repeat-checkbox"
+            (click)="toggleRepeat()">
         <button class="btn" (click)="createReminder(reminder, gap)">Create</button>
+        <button class="btn" (click)="toggleReminderInput()">Cancel</button>
     </div>
 </div>
