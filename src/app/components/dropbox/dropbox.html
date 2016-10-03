@@ -3,7 +3,7 @@
         <button class="icon-left-big font-btn" title="Back"
         (click)="goBack(activeDir)"
         *ngIf="activeDir.path && activeDir.path !== '/'"></button>
-        <span class="drobox-folder-name">{{ activeDir.name }}</span>
+        <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
     </div>
     <button class="icon-cancel font-btn dropbox-logout-btn" title="Logout"
         *ngIf="loggedIn"

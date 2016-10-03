@@ -18,6 +18,7 @@ export class DropboxComp {
         name: "Root",
         isDir: true,
         path: "",
+        pathForDisplay: "/",
         items: []
     };
 
@@ -162,6 +163,7 @@ export class DropboxComp {
                     name: entry.name,
                     isDir: entry[".tag"] === "folder",
                     path: entry.path_lower,
+                    pathForDisplay: entry.path_display,
                     fetching: false
                 };
 
