@@ -1,26 +1,38 @@
 <div class="todo">
-    <button class="font-btn todo-toggle-btn" (click)="toggle()">todo</button>
+    <button class="font-btn todo-toggle-btn"
+        [class.is-active]="visible || editedTodo" (click)="toggle()">todo</button>
     <div class="todo-container" *ngIf="visible">
         <header class="todo-header">
             <input class="input todo-input" type="text" #todoText (keyup.enter)="addTodo(todoText)">
-            <button class="icon-plus btn todo-add-btn" (click)="addTodo(todoText)" title="Add"></button>
+            <button class="icon-plus btn todo-add-btn" title="Add"
+                (click)="addTodo(todoText)"></button>
         </header>
         <ul id="js-todo-list" class="list todos" [class.has-todo]="hasTodo">
             <li class="todo-item" *ngFor="let todo of todos; let i = index">
                 <input type="checkbox" [attr.id]="i" class="checkbox"
-                    (click)="markTodoDone(i, done)"
-                    [checked]="todo.done" #done>
+                (click)="markTodoDone(i, done)"
+                [checked]="todo.done" #done>
                 <label [attr.for]="i" class="checkbox-label" *ngIf="todo.text"></label>
                 <span class="todo-item-text"
                     [ngClass]="{ done: todo.done, 'is-empty': !todo.text }"
                     (dblclick)="enableTodoEdit(todo, i)">{{ todo.text }}
+                    <button class="icon-pin font-btn todo-pin-btn" title="Pin"
+                        [class.is-pinned]="todo.pinned"
+                        (click)="pinTodo(i)"
+                        *ngIf="!todo.done && todo.text"></button>
                 </span>
-                <button class="icon-cancel font-btn" title="Remove" (click)="removeTodo(i)" *ngIf="todo.text"></button>
+                <button class="icon-cancel font-btn" title="Remove"
+                    (click)="removeTodo(i)" *ngIf="todo.text"></button>
             </li>
         </ul>
         <footer class="todo-footer" *ngIf="hasTodo">
             <button class="btn" title="Remove done" (click)="removeTodos()">Remove</button>
         </footer>
     </div>
-    <todo-edit (edited)="onEdit($event)" [todo]="editedTodo"></todo-edit>
+    <div class="pinned-todo-container" *ngIf="todosToPin.length && !visible && !editedTodo">
+        <todo-pin [todos]="todosToPin"></todo-pin>
+    </div>
+    <div *ngIf="!visible && editedTodo">
+        <todo-edit (edited)="onEdit($event)" [todo]="editedTodo"></todo-edit>
+    </div>
 </div>

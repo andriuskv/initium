@@ -2,22 +2,26 @@
     position: absolute;
     top: 4px;
     left: 4px;
+    width: 240px;
 }
 .todo-container {
     @extend %container;
-
-    width: 240px;
 }
 .todo-toggle-btn {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    padding: 2px 6px;
+    padding: 4px 6px;
+    border-left: 4px solid $brand-color;
+    border-radius: 0;
     font-size: 16px;
+
+    &.is-active {
+        border-color: transparent;
+    }
 }
 .todo-header {
     display: flex;
     justify-content: flex-end;
+    margin-bottom: 4px;
 }
 .todo-input {
     width: 160px;
@@ -32,7 +36,6 @@
     overflow-x: hidden;
     overflow-y: auto;
     max-height: 200px;
-    margin-top: 4px;
 
     &.has-todo { margin-bottom: 4px; }
 }
@@ -44,7 +47,15 @@
     min-height: 20px;
     margin-right: 4px;
 
-    .checkbox-label { flex-shrink: 0; }
+    &:hover {
+        .todo-pin-btn {
+            display: inline-block;
+        }
+    }
+
+    .checkbox-label {
+        flex-shrink: 0;
+    }
 }
 .todo-item-text {
     width: 100%;
@@ -63,15 +74,36 @@
     text-decoration: line-through;
     color: #666;
 }
+.todo-pin-btn {
+    display: none;
+    transition: all 0.1s;
+
+    &.is-pinned {
+        color:  $brand-color;
+        transform: rotateZ(-45deg);
+    }
+}
 .todo-footer {
     text-align: center;
 }
-.todo-edit-header {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 4px;
+.pinned-todo-container {
+    position: relative;
+    top: 30px;
+    padding: 4px;
+    border-left: 4px solid $brand-color;
+    transition: 0.1s background-color;
 
-    .btn:first-child { margin-right: 4px; }
+    &:hover {
+        box-shadow: 0 0 5px rgba(0, 0, 0, .4);
+        background-color: $color3;
+    }
+}
+.pinned-todo {
+    color: $primary-text-color;
+    font-size: 14px;
+}
+.todo-edit-header .btn:first-child {
+    margin-right: 4px;
 }
 .todo-edit-input {
     @include input-styles();
