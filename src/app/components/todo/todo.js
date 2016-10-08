@@ -10,6 +10,7 @@ export class Todo {
     ngOnInit() {
         this.todos = JSON.parse(localStorage.getItem("todos")) || this.populateWithEmptyTodos();
         this.hasTodo = this.todos.some(todo => todo.text);
+        this.getPinnedTodos();
     }
 
     toggle() {
@@ -18,6 +19,13 @@ export class Todo {
         if (this.visible) {
             this.editedTodo = false;
         }
+        else {
+            this.getPinnedTodos();
+        }
+    }
+
+    getPinnedTodos() {
+        this.todosToPin = this.todos.filter(todo => todo.pinned);
     }
 
     populateWithEmptyTodos(num = 0) {
@@ -48,7 +56,17 @@ export class Todo {
     }
 
     markTodoDone(i, done) {
-        this.todos[i].done = done.checked;
+        const todo = this.todos[i];
+
+        todo.done = done.checked;
+        if (todo.done && todo.pinned) {
+            todo.pinned = false;
+        }
+        this.saveTodos(this.todos);
+    }
+
+    pinTodo(index) {
+        this.todos[index].pinned = !this.todos[index].pinned;
         this.saveTodos(this.todos);
     }
 
@@ -88,12 +106,14 @@ export class Todo {
     }
 
     onEdit(edit) {
+        const editedTodo = Object.assign({}, this.editedTodo);
+        this.editedTodo = null;
         this.visible = edit.visible;
 
-        if (!edit.text || edit.text === this.todos[this.editedTodo.index].text) {
+        if (!edit.text || edit.text === this.todos[editedTodo.index].text) {
             return;
         }
-        this.todos[this.editedTodo.index].text = edit.text;
+        this.todos[editedTodo.index].text = edit.text;
         this.saveTodos(this.todos);
     }
 }

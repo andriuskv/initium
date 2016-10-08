@@ -1,6 +1,6 @@
 <div class="rss-feed" [class.is-hero-visible]="!feeds.length">
     <div class="feed-header" *ngIf="feeds.length">
-        <ul class="list feed-titles">
+        <ul class="feed-titles">
             <li class="feed-title"
                *ngFor="let feed of feeds; let i = index"
                [class.active]="feed.url === activeFeed"
@@ -27,9 +27,9 @@
             <button class="btn" (click)="editFeed(feedUrl, feedTitle)" *ngIf="editingFeed">Edit</button>
         </div>
     </div>
-    <ul class="list feeds" *ngIf="!addingNewFeed || feeds.length">
+    <ul class="feeds" *ngIf="!addingNewFeed || feeds.length">
         <li *ngFor="let feed of feeds">
-            <ul class="list" *ngIf="feed.url === activeFeed">
+            <ul *ngIf="feed.url === activeFeed">
                 <li class="feed-entry" *ngFor="let entry of feed.entries">
                     <a href="{{ entry.link }}" class="feed-entry-link" (click)="removeNewEntryLabel(entry)" target="_blank">
                         <span class="feed-entry-title">{{ entry.title }}</span>

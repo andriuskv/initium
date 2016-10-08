@@ -1,4 +1,4 @@
-<ul class="list main-block-most-visited">
+<ul class="main-block-most-visited">
     <li class="most-visited" *ngFor="let page of mostVisited.display; let i = index"
         [class.is-in-one-line]="mostVisited.display.length < 4">
         <button class="icon-cancel font-btn remove-page-btn" (click)="removePage(i)" title="Remove"></button>

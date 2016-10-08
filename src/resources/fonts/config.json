@@ -227,6 +227,12 @@
       "css": "rss",
       "code": 59428,
       "src": "fontawesome"
+    },
+    {
+      "uid": "p57wgnf4glngbchbucdi029iptu8oxb8",
+      "css": "pin",
+      "code": 59429,
+      "src": "typicons"
     }
   ]
 }

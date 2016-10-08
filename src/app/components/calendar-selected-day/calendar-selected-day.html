@@ -2,7 +2,7 @@
     <button class="icon-cancel font-btn" (click)="showCalendar()" title="Show calendar"></button>
     <span class="calendar-title">{{ day.date }}</span>
 </div>
-<ul class="list selected-day-remainders" *ngIf="day.reminders.length">
+<ul class="selected-day-remainders" *ngIf="day.reminders.length">
     <li class="selected-day-remainder" *ngFor="let reminder of day.reminders; let i = index;">
         <span class="icon-retweet is-repeating" title="Repeating" *ngIf="reminder.repeat"></span>
         <span>{{ reminder.text }}</span>

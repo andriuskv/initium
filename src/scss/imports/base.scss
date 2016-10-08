@@ -13,6 +13,12 @@ a {
     text-decoration: none;
     color: $primary-text-color;
 }
+ul {
+    padding-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
 %container {
     padding: 4px;
     box-shadow: 0 0 5px rgba(0, 0, 0, .4);
@@ -71,12 +77,6 @@ a {
         content: '✔';
         color: $brand-color;
     };
-}
-.list {
-    padding-left: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    list-style: none;
 }
 .reminders {
     @include scrollbar($color2);

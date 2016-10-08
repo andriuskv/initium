@@ -1,5 +1,6 @@
 @mixin input-styles($color: $color2) {
     border: none;
+    border-radius: 2px;
     background-color: $color;
     color: $primary-text-color;
     font-family: sans-serif;

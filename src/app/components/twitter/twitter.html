@@ -26,7 +26,7 @@
             </button>
             <button class="icon-cancel font-btn twitter-logout-btn" title="Log out" (click)="logout()"></button>
         </div>
-        <ul class="list twitter-tweets">
+        <ul class="twitter-tweets">
             <li class="twitter-tweet" *ngFor="let tweet of tweets">
                 <a href="{{ tweet.tweetUrl }}" target="_blank">
                     <div class="twitter-retweet" *ngIf="tweet.retweetedBy">
