@@ -31,10 +31,12 @@ export class RssFeed {
     }
 
     ngOnInit() {
+        const delay = this.isActive ? 2000 : 10000;
+
         this.initTimeout = setTimeout(() => {
             this.initTimeout = null;
             this.loadFeeds(this.feedsToLoad);
-        }, 10000);
+        }, delay);
     }
 
     ngOnChanges(changes) {
