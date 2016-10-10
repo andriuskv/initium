@@ -17,7 +17,6 @@ export class NotificationService {
 
     send(title, body) {
         const settings = JSON.parse(localStorage.getItem("settings"));
-        const focus = !settings.general.notificationFocusDisabled;
 
         return new Promise(resolve => {
             if (settings.general.notificationDisabled) {
@@ -38,6 +37,9 @@ export class NotificationService {
                     notification.close();
                     notification.onclick = null;
                     notification = null;
+                    if (!settings.general.notificationFocusDisabled) {
+                        window.focus();
+                    }
                     resolve();
                 };
             }
@@ -48,11 +50,6 @@ export class NotificationService {
                         this.send(title, body);
                     }
                 });
-            }
-        })
-        .then(() => {
-            if (focus) {
-                window.focus();
             }
         });
     }
