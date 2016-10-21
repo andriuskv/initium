@@ -4,13 +4,13 @@
 	right: 4px;
 }
 .widget-menu-container {
-	@extend %container;
-
     vertical-align: bottom;
     position: relative;
     display: none;
 
-    &.show { display: inline-block; }
+    &.visible {
+		display: inline-block;
+	}
 }
 .menu-header {
 	margin-bottom: 4px;
@@ -35,11 +35,6 @@
     width: 392px;
     height: 200px;
 }
-.menu-items {
-	padding-left: 0;
-	margin-top: 0;
-	margin-bottom: 0;
-}
 .menu-item {
     vertical-align: top;
 	display: inline-block;
@@ -50,17 +45,12 @@
 .menu-item-icon {
 	font-size: 28px;
     line-height: 1;
-
-    &:focus { outline: none; }
 }
 .menu-item-title {
 	font-size: 12px;
 	font-family: sans-serif;
 }
-
 .menu-btn {
-    padding: 0;
 	font-size: 20px;
-	color: $primary-text-color;
     line-height: 1;
 }

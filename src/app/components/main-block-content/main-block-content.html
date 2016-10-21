@@ -1,4 +1,4 @@
-<ul>
+<ul class="container main-block-content" [class.is-expanded]="itemState[item]">
     <li class="main-block-content-item" [class.hidden]="item !== 'mostVisited'">
         <most-visited [setting]="mostVisitedSetting"></most-visited>
     <li>
@@ -10,5 +10,8 @@
     </li>
     <li class="main-block-content-item" [class.hidden]="item !== 'rssFeed'">
         <rss-feed (newFeedEntries)="onNewEntries($event)" (toggleTab)="onToggleTab($event)" [item]="item"></rss-feed>
+    </li>
+    <li *ngIf="item !== 'mostVisited'">
+        <button class="btn main-block-expand-btn" (click)="toggleItemState()">{{ toggleItemSizeAction }}</button>
     </li>
 </ul>

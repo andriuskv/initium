@@ -1,7 +1,7 @@
 <ul class="main-block-most-visited">
     <li class="most-visited" *ngFor="let page of mostVisited.display; let i = index"
         [class.is-in-one-line]="mostVisited.display.length < 4">
-        <button class="icon-cancel font-btn remove-page-btn" (click)="removePage(i)" title="Remove"></button>
+        <button class="icon-cancel btn remove-page-btn" (click)="removePage(i)" title="Remove"></button>
         <a [href]="page.url" [title]="page.title">
             <div class="page-title">{{ page.title }}</div>
             <div class="page-thumbnail-container">
@@ -19,7 +19,7 @@
     </li>
 </ul>
 <div class="most-visited-mask" *ngIf="newThumbWindowVisible"></div>
-<div class="new-thumbnail-window" *ngIf="newThumbWindowVisible">
+<div class="container new-thumbnail-window" *ngIf="newThumbWindowVisible">
     <h2 class="new-thumbnail-window-title">Add new page</h2>
     <form (ngSubmit)="addPage(fileInput)">
         <input type="text" class="input" placeholder="title" name="title" [(ngModel)]="newPage.title" required>

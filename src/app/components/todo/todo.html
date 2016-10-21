@@ -1,11 +1,10 @@
 <div class="todo">
     <button class="font-btn todo-toggle-btn"
         [class.is-active]="visible || editedTodo" (click)="toggle()">todo</button>
-    <div class="todo-container" *ngIf="visible">
+    <div class="container" *ngIf="visible">
         <header class="todo-header">
             <input class="input todo-input" type="text" #todoText (keyup.enter)="addTodo(todoText)">
-            <button class="icon-plus btn todo-add-btn" title="Add"
-                (click)="addTodo(todoText)"></button>
+            <button class="icon-plus btn" title="Add" (click)="addTodo(todoText)"></button>
         </header>
         <ul id="js-todo-list" class="list todos" [class.has-todo]="hasTodo">
             <li class="todo-item" *ngFor="let todo of todos; let i = index">

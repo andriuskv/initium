@@ -1,14 +1,14 @@
 <div class="twitter-container">
-    <div class="twitter-hero" [class.show]="!tweets.length">
+    <div class="twitter-hero" [class.visible]="!tweets.length">
         <div class="icon-twitter twitter-hero-icon"></div>
         <input type="text" id="js-twitter-pin" class="input twitter-pin-input"
             placeholder="Enter PIN"
-            [class.show]="showPinInput" #pin
+            [class.visible]="showPinInput" #pin
             (keyup)="login($event, pin)">
         <button class="btn" title="Log in to Twitter" *ngIf="!isLoggedIn"
             (click)="login($event, pin)">Log in</button>
     </div>
-    <div class="twitter-content" [class.show]="tweets.length">
+    <div class="twitter-content" [class.visible]="tweets.length">
         <div class="twitter-header">
            <div class="twitter-user">
                 <a href="{{ user.homepage }}" target="_blank">

@@ -1,6 +1,6 @@
 .main-block {
     position: absolute;
-    top: 44%;
+    top: 45vh;
     left: 0;
     right: 0;
     width: 500px;
@@ -8,62 +8,72 @@
     color: $primary-text-color;
 }
 .main-block-nav {
-    @extend %container;
-
     display: flex;
     justify-content: center;
+    align-items: center;
     height: 24px;
     margin-bottom: 4px;
     user-select: none;
 }
 .main-block-nav-item {
-    &.contains-count { position: relative; }
-    .font-btn {
-        padding: 1px 2px;
-        font-size: 14px;
-    }
+    position: relative;
+    margin-left: 2px;
+    margin-right: 2px;
 }
 .count-indicator {
     z-index: 1;
     position: absolute;
-    bottom: -4px;
+    bottom: -2px;
     right: -2px;
     border-radius: 50%;
     background-color: $color3;
     font-size: 9px;
 
     &.show {
-        animation-duration: .6s;
+        animation-duration: 0.6s;
         animation-timing-function: ease-in-out;
         animation-name: pulse;
     }
-}
-@keyframes pulse {
-    0% { transform: scale(1); }
-    25% { transform: scale(0.8); }
-    75% { transform: scale(1.2); }
-    100% { transform: scale(1); }
 }
 .favorite-btn {
     position: absolute;
     top: 4px;
     right: 4px;
 }
-.main-block-content-item {
-    @extend %container;
+.main-block-content {
+    display: flex;
+    flex-direction: column;
+    height: 212px;
 
-    &.hidden { display: none; }
+    &.is-expanded {
+        height: calc(55vh - 32px);
+    }
+
+}
+.main-block-content-item {
+    flex-grow: 1;
+    height: calc(100% - 24px);
+
+    &.hidden {
+        display: none;
+    }
 }
 .main-block-notepad {
-    @include input-styles();
     @include scrollbar($color3);
 
     resize: none;
-    vertical-align: top;
     width: 100%;
-    height: 204px;
-    padding: 4px;
-    font-size: 12px;
-
-    &:focus { outline: none; }
+    height: 100%;
+}
+.main-block-expand-btn {
+    width: 100%;
+    margin-top: 2px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    25% { transform: scale(0.8); }
+    75% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }

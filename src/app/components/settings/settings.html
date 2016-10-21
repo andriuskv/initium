@@ -1,5 +1,5 @@
 <div class="menu-item-container">
-    <ul class="list settings-nav">
+    <ul class="settings-nav">
         <li class="settings-nav-item" [class.active]="active === 'general'">
             <button class="font-btn" (click)="setActiveTab('general')">General</button>
         </li>
@@ -16,7 +16,7 @@
             <button class="font-btn" (click)="setActiveTab('mainBlock')">Main Block</button>
         </li>
     </ul>
-    <ul class="settings">
+    <ul>
         <li class="setting" [class.active]="active === 'general'">
             <div class="setting-item">
                 <span>Disable notifications</span>
@@ -50,7 +50,7 @@
             </div>
             <div class="setting-item">
                 <span>Time display</span>
-                <select class="settings-selection" (click)="onSetting('timeDisplay', $event.target.value)">
+                <select class="btn setting-selection" (click)="onSetting('timeDisplay', $event.target.value)">
                     <option value="0" [selected]="settings.time.timeDisplay === '0'">12 hour</option>
                     <option value="1" [selected]="settings.time.timeDisplay === '1'">24 hour</option>
                 </select>

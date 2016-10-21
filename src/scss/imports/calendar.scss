@@ -11,13 +11,8 @@
     margin-bottom: 4px;
     padding: 0 4px 4px 4px;
 }
-.month-btn {
-    padding: 0 2px;
-    font-size: 12px;
-
-    &:last-of-type {
-        transform: rotate(180deg);
-    }
+.month-btn:last-of-type {
+    transform: rotate(180deg);
 }
 .calendar-title {
     margin-left: auto;
@@ -48,13 +43,16 @@
     &.is-current-month-day {
         color: $primary-text-color;
     }
+
     &.current-day {
         padding-top: 5px;
         border: 1px solid;
     }
+
     &.has-reminder {
         color: $brand-color;
     }
+
     &:hover {
         background-color: #333;
         cursor: pointer;
@@ -90,17 +88,16 @@
     margin-right: 4px;
     color: #999;
 }
-.selected-day-input {
-    vertical-align: top;
-    width: 330px;
-}
 .calendar-new-reminder-section {
     display: flex;
 
     .btn {
         margin-left: 1px;
-        padding: 3px 6px;
+        padding: 2px 6px;
     }
+}
+.selected-day-input {
+    flex-grow: 1;
 }
 .calendar-repeat-btn {
     margin-left: 1px;
