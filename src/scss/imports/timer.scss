@@ -1,6 +1,4 @@
 .timer {
-    @extend %container;
-
     position: absolute;
     top: 0;
     left: 0;
@@ -9,40 +7,38 @@
     margin: 0 auto;
 }
 .timer-displays {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
     margin-bottom: 4px;
-}
-.timer-input, .timer-time-point {
-    vertical-align: bottom;
-    color: #999;
-}
-.timer-time-point {
-    display: inline-block;
-    margin-bottom: 10px;
-    font-size: 32px;
-    line-height: 1;
 }
 .timer-input {
     width: 74px;
     height: 74px;
-    font-size: 64px;
-    text-align: center;
-}
-.timer-input {
     padding: 0;
     border: none;
     background-color: transparent;
+    color: $primary-text-color;
+    font-size: 64px;
+    text-align: center;
 
-    &:focus { outline: none; }
+    &:focus {
+        outline: none;
+    }
+}
+.timer-time-point {
+    color: $primary-text-color;
+    font-size: 32px;
 }
 .timer-controls {
+    display: flex;
     padding-top: 4px;
-    border-top: 1px solid #333;
+    border-top: 1px solid $color2;
 }
 .timer-control {
-    display: inline-block;
+    margin-right: 4px;
 
-    &:nth-of-type(n + 3) {
-        float: right;
-        margin-left: 4px;
+    &:last-of-type {
+        margin-left: auto;
     }
 }

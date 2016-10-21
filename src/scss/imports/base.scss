@@ -4,7 +4,6 @@
 html, body {
     background-color: #222;
 }
-
 body {
     overflow: hidden;
     font-family: sans-serif;
@@ -19,9 +18,9 @@ ul {
     margin-bottom: 0;
     list-style: none;
 }
-%container {
+.container {
     padding: 4px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, .4);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
     background-color: $color3;
 }
 .background {
@@ -30,33 +29,21 @@ ul {
     left: 0;
     width: 100%;
     height: 100%;
-    background-size: 100% 100%;
+    background-size: cover;
+    background-position: center;
 }
 .btn {
-    @include input-styles();
+    @include btn-styles();
 
-    padding: 3px 6px;
-    font-size: 12px;
-
-    &:hover { color: $brand-color; }
-    &:focus { outline: none; }
+    padding: 2px 8px;
 }
 .font-btn {
-    @include input-styles(transparent);
+    @include btn-styles(transparent);
 
     padding: 0;
-    font-size: 12px;
-    transition: 0.1s all;
-
-    &:hover { color: $brand-color; }
-    &:focus { outline: none; }
 }
 .input {
     @include input-styles();
-
-    height: 20px;
-    padding: 2px 4px;
-    font-size: 14px;
 }
 .checkbox {
     display: none;
@@ -65,14 +52,17 @@ ul {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
         border-radius: 2px;
         background-color: $color2;
+        font-size: 16px;
     }
+
     & + label:before, &:checked + label:before {
         content: "";
     }
+
     &:checked + label:after {
         content: '✔';
         color: $brand-color;
@@ -95,7 +85,7 @@ ul {
 
     &:hover {
         overflow-y: auto;
-        box-shadow: 0 0 5px rgba(0, 0, 0, .4);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
         background-color: $color3;
     }
 }

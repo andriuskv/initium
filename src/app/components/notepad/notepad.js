@@ -3,7 +3,7 @@ import { Component } from "@angular/core";
 @Component({
     selector: "notepad",
     template: `
-        <textarea class="main-block-notepad"
+        <textarea class="input main-block-notepad"
             [value]="notepad"
             (input)="onInput($event)"
             (keydown)="preventLossOfFocus($event)">

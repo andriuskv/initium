@@ -19,11 +19,20 @@
     margin-bottom: 4px;
     background-color: $color2;
 
-    &.is-in-one-line { margin-bottom: 0; }
-    &:nth-of-type(4n) { margin-right: 0; }
-    &:nth-of-type(n + 4) { margin-bottom: 0; }
-    &:hover {
-        .remove-page-btn { display: initial; }
+    &.is-in-one-line {
+        margin-bottom: 0;
+    }
+
+    &:nth-of-type(4n) {
+        margin-right: 0;
+    }
+
+    &:nth-of-type(n + 4) {
+        margin-bottom: 0;
+    }
+
+    &:hover .remove-page-btn {
+        display: initial;
     }
 }
 .page-title {
@@ -31,18 +40,17 @@
     padding: 0 4px;
     border-bottom: 1px solid #444;
     font-size: 12px;
-    line-height: 1.8;
+    line-height: 1.66;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
 .remove-page-btn {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 1px;
+    right: 2px;
     display: none;
-    padding: 2px 4px;
-    background-color: $color2;
+    padding: 0;
     box-shadow: -6px 0px 5px 0px $color2;
 }
 .add-page-btn {
@@ -50,16 +58,17 @@
     height: 100%;
     font-size: 32px;
 
-    &:hover { color: $brand-color; }
+    &:hover {
+        color: $brand-color;
+    }
 }
 .page-thumbnail-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 80px;
 }
 .page-thumbnail {
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     width: 24px;
     height: 24px;
 
@@ -69,13 +78,11 @@
     }
 }
 .new-thumbnail-window {
-    @extend %container;
-
     position: absolute;
     top: calc(50% + 14px);
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 202px;
+    width: 238px;
 
     .input {
         width: 100%;

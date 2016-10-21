@@ -13,6 +13,8 @@ export class MainBlockContent {
 
     constructor() {
         this.item = "";
+        this.itemState = JSON.parse(localStorage.getItem("main block item state")) || {};
+        this.toggleItemSizeAction = "Expand";
     }
 
     ngOnChanges(changes) {
@@ -34,5 +36,11 @@ export class MainBlockContent {
 
     onToggleTab(item) {
         this.toggleTab.emit(item);
+    }
+
+    toggleItemState() {
+        this.itemState[this.item] = !this.itemState[this.item];
+        this.toggleItemSizeAction = this.itemState[this.item] ? "Contract" : "Expand";
+        localStorage.setItem("main block item state", JSON.stringify(this.itemState));
     }
 }

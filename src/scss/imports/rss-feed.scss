@@ -1,17 +1,19 @@
 .rss-feed {
-    height: 204px;
+    height: 100%;
 
-    &.is-hero-visible { background-color: $color2; }
+    &.is-hero-visible {
+        background-color: $color2;
+    }
 }
 .feed-header {
     display: flex;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 .feed-titles {
     display: inline-flex;
     align-items: stretch;
     width: 100%;
-    margin-right: 4px;
+    margin-right: 2px;
     background-color: $color2;
 }
 .feed-title {
@@ -30,21 +32,22 @@
     &.active {
         border-color: $brand-color;
     }
+
     &:hover {
         color: $brand-color;
 
-        .remove-feed-btn { display: inline-block; }
+        .remove-feed-btn {
+            display: inline-block;
+        }
     }
 }
 .remove-feed-btn {
     position: absolute;
+    top: 2px;
     right: 2px;
     display: none;
-    background-color: $color2;
+    padding: 0;
     box-shadow: -4px 0 8px $color2;
-}
-.add-feed-btn {
-    padding: 3px 4px;
 }
 .feed-hero {
     position: absolute;
@@ -53,7 +56,9 @@
     transform: translateX(-50%);
     text-align: center;
 
-    &.is-header-present { top: 60px; }
+    &.is-header-present {
+        top: 60px;
+    }
 }
 .feed-hero-title {
     margin-top: 0;
@@ -73,19 +78,24 @@
 }
 .feed-input {
     display: block;
+    width: 200px;
     margin-bottom: 4px;
 }
 .feeds {
     @include scrollbar($color3);
 
     overflow-y: auto;
-    height: calc(100% - 24px);
+    height: calc(100% - 22px);
     background-color: $color2;
 }
 .feed-entry {
     padding: 4px;
     margin: 4px 4px 0 4px;
     border-bottom: 1px solid $color3;
+
+    &:last-of-type {
+        border-bottom: none;
+    }
 }
 .feed-entry-link {
     color: #fff;

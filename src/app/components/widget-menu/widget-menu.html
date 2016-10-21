@@ -1,12 +1,12 @@
 <div class="menu">
-    <div class="widget-menu-container" [class.show]="visible">
+    <div class="container widget-menu-container" [class.visible]="visible">
         <div class="menu-header">
             <h3 class="menu-title">{{ title }}</h3>
             <button class="icon-left-big font-btn close-item-btn" title="Back to widget menu"
                 *ngIf="selectedItem"
                 (click)="toggleWidget()"></button>
         </div>
-        <ul class="menu-item-container menu-items" *ngIf="!selectedItem">
+        <ul class="menu-item-container" *ngIf="!selectedItem">
             <li class="menu-item">
                 <button class="icon-clock font-btn menu-item-icon" (click)="toggleTimer()">
                     <div class="menu-item-title">Timer</div>

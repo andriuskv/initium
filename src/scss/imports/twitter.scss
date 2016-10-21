@@ -1,17 +1,17 @@
 .twitter-container {
     position: relative;
-    height: 204px;
+    height: 100%;
 }
 .twitter-hero {
     opacity: 0;
     position: absolute;
     top: 32px;
     left: 50%;
-    transform: translateX(-50%) scale(.8);
+    transform: translateX(-50%) scale(0.8);
     text-align: center;
     transition: all 1s;
 
-    &.show {
+    &.visible {
         opacity: 1;
         transform: translateX(-50%) scale(1);
     }
@@ -21,23 +21,23 @@
     color: #55acee;
 }
 .twitter-pin-input {
-    vertical-align: top;
     display: none;
-    width: 64px;
-    font-size: 12px;
+    width: 80px;
     text-align: center;
 
-    &.show { display: inline-block; }
+    &.visible {
+        display: inline-block;
+    }
 }
 .twitter-header {
     position: relative;
     height: 20px;
     padding: 2px;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     background-color: $color2;
 
     .twitter-btn {
-        padding: 2px 0;
+        padding: 0;
     }
 }
 .twitter-user-image {
@@ -54,32 +54,36 @@
     font-size: 12px;
     color: #fff;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+        text-decoration: underline;
+    }
 }
 .twitter-user-handle {
     margin-left: 4px;
     font-size: 10px;
     color: #bbb;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+        text-decoration: underline;
+    }
 }
 .twitter-btn {
     width: 100%;
-    padding: 7px 0;
+    padding: 4px 0;
 }
 .twitter-logout-btn {
     position: absolute;
-    top: 3px;
+    top: 1px;
     right: 2px;
 }
 .twitter-content {
     visibility: collapse;
     opacity: 0;
     height: 100%;
-    transform: scale(.8);
-    transition: .6s all;
+    transform: scale(0.8);
+    transition: 0.6s all;
 
-    &.show {
+    &.visible {
         visibility: visible;
         opacity: 1;
         transform: scale(1);
@@ -90,16 +94,18 @@
 
     position: relative;
     overflow-y: auto;
-    height: calc(100% - 24px);
+    height: calc(100% - 22px);
     background-color: $color2;
 }
 .twitter-tweet {
     overflow: hidden;
     padding: 4px;
     border-bottom: 1px solid $color3;
-    transition: background-color .2s;
+    transition: background-color 0.2s;
 
-    &:hover { background-color: lighten($color2, 2%);}
+    &:hover {
+        background-color: lighten($color2, 2%);
+    }
 }
 .twitter-retweet {
     margin-left: 36px;
@@ -111,7 +117,9 @@
     margin-left: 4px;
     color: #bbb;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+        text-decoration: underline;
+    }
 }
 .twitter-tweet-by-name {
     font-size: 14px;
@@ -148,7 +156,9 @@
     color: #109ACC;
     text-decoration: none;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+        text-decoration: underline;
+    }
 }
 .tweet-image-container {
     margin-left: 56px;

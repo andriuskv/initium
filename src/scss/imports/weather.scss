@@ -12,6 +12,7 @@
 		animation-name: blur-in;
 		animation-fill-mode: forwards;
 	}
+
 	&.done-fetching {
 		animation-duration: 1s;
 		animation-timing-function: ease-in-out;
@@ -32,7 +33,9 @@
     margin-bottom: 2px;
     font-size: 32px;
 }
-.weather-city-name { font-size: 14px; }
+.weather-city-name {
+	font-size: 14px;
+}
 
 @keyframes blur-in {
     0% { filter: blur(0); }

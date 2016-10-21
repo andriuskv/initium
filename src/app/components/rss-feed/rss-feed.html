@@ -7,10 +7,10 @@
                (click)="showFeed(feed.url, i)">
                 <span *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
                 <span (dblclick)="enableFeedEdit(i)">{{ feed.title }}</span>
-                <button class="icon-cancel font-btn remove-feed-btn" (click)="removeFeed(i)" title="Remove feed"></button>
+                <button class="icon-cancel btn remove-feed-btn" (click)="removeFeed(i)" title="Remove feed"></button>
             </li>
         </ul>
-        <button class="icon-plus btn add-feed-btn" (click)="addNewFeed()" title="Add new feed"></button>
+        <button class="icon-plus btn" (click)="addNewFeed()" title="Add new feed"></button>
     </div>
     <div class="feed-hero" [class.is-header-present]="feeds.length" *ngIf="addingNewFeed">
         <h2 class="feed-hero-title">{{ action }} RSS Feed</h2>

@@ -20,9 +20,11 @@
     font-size: 36px;
 }
 .date {
-    margin-top: -20px;
+    margin-top: -18px;
     text-align: right;
     font-size: 20px;
 
-    &.has-marker { margin-right: 60px; }
+    &.has-marker {
+        margin-right: 60px;
+    }
 }
