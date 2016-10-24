@@ -12,6 +12,8 @@
         <rss-feed (newFeedEntries)="onNewEntries($event)" (toggleTab)="onToggleTab($event)" [item]="item"></rss-feed>
     </li>
     <li *ngIf="item !== 'mostVisited'">
-        <button class="btn main-block-expand-btn" (click)="toggleItemState()">{{ toggleItemSizeAction }}</button>
+        <button class="btn main-block-expand-btn" (click)="toggleItemState()">
+            {{ this.itemState[this.item] ? "Contract" : "Expand" }}
+        </button>
     </li>
 </ul>
