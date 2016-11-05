@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { FeedService } from "services/feedService";
-import { NotificationService } from "services/notificationService";
+import { FeedService } from "./../../services/feedService";
+import { NotificationService } from "./../../services/notificationService";
 
 @Component({
     selector: "rss-feed",
@@ -187,12 +187,14 @@ export class RssFeed {
                 if (!this.isActive) {
                     this.newFeedEntries.emit(this.newEntryCount);
                 }
-                this.notification.send("RSS feed", `You have ${this.newEntryCount} new entries.`)
-                .then(disabled => {
-                    if (!disabled) {
-                        this.toggleTab.emit("rssFeed");
-                    }
-                });
+                if (document.hidden) {
+                    this.notification.send("RSS feed", `You have ${this.newEntryCount} new entries.`)
+                    .then(disabled => {
+                        if (!disabled) {
+                            this.toggleTab.emit("rssFeed");
+                        }
+                    });
+                }
             }
         })
         .catch(error => {

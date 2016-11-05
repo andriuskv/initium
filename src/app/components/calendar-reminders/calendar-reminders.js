@@ -4,7 +4,7 @@ import { Component, Input } from "@angular/core";
     selector: "calendar-reminders",
     template: `
         <ul class="reminders" *ngIf="!disabled && reminders.length">
-            <li *ngFor="let reminder of reminders">{{ reminder.text }}</li>
+            <li class="reminder" *ngFor="let reminder of reminders">{{ reminder.text }}</li>
         </ul>`
 })
 export class CalendarReminders {
