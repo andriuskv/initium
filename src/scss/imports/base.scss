@@ -87,5 +87,14 @@ ul {
         overflow-y: auto;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
         background-color: $color3;
+
+        .reminder {
+            border-bottom-color: $color2;
+        }
     }
+}
+.reminder {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
 }

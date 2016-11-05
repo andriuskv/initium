@@ -1,8 +1,8 @@
 /* global Codebird */
 
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { DateService } from "services/dateService";
-import { NotificationService } from "services/notificationService";
+import { DateService } from "./../../services/dateService";
+import { NotificationService } from "./../../services/notificationService";
 
 @Component({
     selector: "twitter",
@@ -53,16 +53,11 @@ export class Twitter {
         document.getElementsByTagName("body")[0].appendChild(script);
         script.addEventListener("load", () => {
             if (this.isAuthenticated()) {
-                if (this.isActive) {
-                    setTimeout(() => {
-                        this.fetchTweets();
-                    }, 2000);
-                }
-                else {
-                    this.twitterTimeout = setTimeout(() => {
-                        this.fetchTweets();
-                    }, 10000);
-                }
+                const delay = this.isActive ? 2000 : 10000;
+
+                this.twitterTimeout = setTimeout(() => {
+                    this.fetchTweets();
+                }, delay);
             }
         }, false);
     }
@@ -234,25 +229,25 @@ export class Twitter {
                     const newTweets = tweets.filter(tweet => tweet.id !== latestTweetId);
 
                     if (newTweets.length) {
-                        clearTimeout(this.tweetUpdateTimeout);
                         this.tweetsToLoad.unshift(...newTweets);
                         this.updateTimeline(userInfo, newTweets[0].id);
 
                         if (!this.isActive) {
                             this.newTweetCount.emit(this.tweetsToLoad.length);
                         }
-                        this.notification.send(
-                            "Twitter",
-                            `You have ${this.tweetsToLoad.length} new tweets.`
-                        ).then(disabled => {
-                            if (!disabled) {
-                                this.toggleTab.emit("twitter");
-                            }
-                        });
+                        if (document.hidden) {
+                            this.notification.send(
+                                "Twitter",
+                                `You have ${this.tweetsToLoad.length} new tweets.`
+                            ).then(disabled => {
+                                if (!disabled) {
+                                    this.toggleTab.emit("twitter");
+                                }
+                            });
+                        }
                         return;
                     }
                 }
-
                 this.updateTimeline(userInfo, latestTweetId);
             });
         }, 240000);
