@@ -6,6 +6,7 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 })
 export class MainBlockNav {
     @Output() choice = new EventEmitter();
+    @Input() setting;
     @Input() newTweets;
     @Input() newEntries;
     @Input() tabNameChange;
@@ -37,6 +38,7 @@ export class MainBlockNav {
             setTimeout(() => {
                 this.isNewTweet = false;
             }, 1000);
+            return;
         }
 
         if (changes.newEntries && typeof changes.newEntries.currentValue === "number") {
@@ -52,24 +54,33 @@ export class MainBlockNav {
             setTimeout(() => {
                 this.isNewEntry = false;
             }, 1000);
+            return;
         }
 
         if (changes.tabNameChange && changes.tabNameChange.currentValue) {
-            this.chooseItem(changes.tabNameChange.currentValue.name);
+            this.selectItem(changes.tabNameChange.currentValue.name);
+            return;
+        }
+
+        if (changes.setting && changes.setting.currentValue) {
+            const setting = changes.setting.currentValue;
+
+            if (typeof setting.hideItemBar === "boolean") {
+                this.hideBar = setting.hideItemBar;
+            }
         }
     }
 
-    chooseItem(item) {
+    selectItem(item) {
         this.item = item;
 
-        if (this.item === "twitter" && Number.parseInt(this.tweetCount, 10) > 0) {
+        if (item === "twitter" && Number.parseInt(this.tweetCount, 10) > 0) {
             this.tweetCount = 0;
         }
-
-        if (this.item === "rssFeed" && Number.parseInt(this.entryCount, 10) > 0) {
+        else if (item === "rssFeed" && Number.parseInt(this.entryCount, 10) > 0) {
             this.entryCount = 0;
         }
-        this.choice.emit(this.item);
+        this.choice.emit(item);
     }
 
     makeFavorite() {

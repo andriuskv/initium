@@ -3,15 +3,16 @@ import { Component, Input } from "@angular/core";
 @Component({
     selector: "main-block",
     template: `
-        <div class="main-block">
+        <div class="main-block" [class.is-item-bar-hidden]="isItemBarHidden">
             <main-block-nav (choice)="onChoice($event)"
+                [setting]="mainBlockSetting"
                 [newTweets]="tweetCount"
                 [newEntries]="entryCount"
                 [tabNameChange]="tabName">
             </main-block-nav>
             <main-block-content
                 [choice]="item"
-                [setting]="contentSetting"
+                [setting]="mainBlockSetting"
                 (newTweets)="onNewTweets($event)"
                 (newEntries)="onNewEntries($event)"
                 (toggleTab)="onToggleTab($event)">
@@ -23,8 +24,14 @@ export class MainBlock {
     @Input() setting;
 
     ngOnChanges(changes) {
-        if (changes.setting.currentValue) {
-            this.contentSetting = changes.setting.currentValue;
+        const setting = changes.setting.currentValue;
+
+        if (setting) {
+            this.mainBlockSetting = setting;
+
+            if (typeof setting.hideItemBar === "boolean") {
+                this.isItemBarHidden = setting.hideItemBar;
+            }
         }
     }
 

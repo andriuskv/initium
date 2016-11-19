@@ -220,6 +220,7 @@ export class Twitter {
     }
 
     updateTimeline(userInfo, latestTweetId) {
+        clearTimeout(this.tweetUpdateTimeout);
         this.tweetUpdateTimeout = setTimeout(() => {
             const cb = new Codebird;
 

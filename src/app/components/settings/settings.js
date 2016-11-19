@@ -33,7 +33,7 @@ export class Settings {
         }
     }
 
-    onSetting(settingName, value) {
+    onSetting(settingName, value, reset) {
         const setting = {
             [this.active]: {
                 [settingName]: value
@@ -41,7 +41,7 @@ export class Settings {
         };
 
         this.setting.emit(setting);
-        if (this.active !== "mainBlock") {
+        if (!reset) {
             this.settings = this.settingService.updateSetting(setting);
         }
     }

@@ -50,15 +50,12 @@
     box-shadow: -4px 0 8px $color2;
 }
 .feed-hero {
-    position: absolute;
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-
-    &.is-header-present {
-        top: 60px;
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 22px);
+    background-color: $color2;
 }
 .feed-hero-title {
     margin-top: 0;

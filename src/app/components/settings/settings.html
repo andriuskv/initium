@@ -59,7 +59,7 @@
         <li class="setting" [class.active]="active === 'background'">
             <div class="setting-item">
                 <span>Reset background</span>
-                <button class="btn" (click)="onSetting('currentBackground', '')">Reset</button>
+                <button class="btn" (click)="onSetting('url', '', true)">Reset</button>
             </div>
         </li>
         <li class="setting" [class.active]="active === 'weather'">
@@ -85,9 +85,16 @@
             </div>
         </li>
         <li class="setting" [class.active]="active === 'mainBlock'">
-           <div class="setting-item">
+            <div class="setting-item">
+                <span>Hide item bar</span>
+                <input type="checkbox" id="main-block-checkbox" class="checkbox"
+                    (click)="onSetting('hideItemBar', $event.target.checked)"
+                    [checked]="settings.mainBlock.hideItemBar">
+                <label for="main-block-checkbox"></label>
+            </div>
+            <div class="setting-item">
                 <span>Reset top sites to Chrome's default</span>
-                <button class="btn" (click)="onSetting('resetMostVisited', true)">Reset</button>
+                <button class="btn" (click)="onSetting('resetMostVisited', true, true)">Reset</button>
            </div>
         </li>
     </ul>

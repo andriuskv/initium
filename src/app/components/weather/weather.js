@@ -152,7 +152,7 @@ export class Weather {
                 break;
             // Fog
             case 741:
-                iconClassName = "icon-fog";
+                iconClassName = "icon-fog-cloud";
                 break;
             // Clear sky, Broken clouds, overcast clouds, scattered clouds
             case 800:

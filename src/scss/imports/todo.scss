@@ -61,6 +61,8 @@
     border-bottom: 1px solid $color2;
     color: $primary-text-color;
     font-size: 14px;
+    overflow: hidden;
+    word-break: break-word;
 
     &.is-empty {
         margin-right: 0;
