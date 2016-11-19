@@ -4,21 +4,35 @@
     left: 0;
     right: 0;
     width: 500px;
+    height: calc(55vh - 32px);
     margin: 0 auto;
     color: $primary-text-color;
+
+    &.is-item-bar-hidden {
+        height: calc(55vh - 4px);
+    }
 }
 .main-block-nav {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 24px;
+    padding: 1px 0 0 0;
     margin-bottom: 4px;
     user-select: none;
+
+    &.hidden {
+        display: none;
+    }
 }
 .main-block-nav-item {
     position: relative;
     margin-left: 2px;
     margin-right: 2px;
+
+    .font-btn {
+        font-size: 16px;
+    }
 }
 .count-indicator {
     z-index: 1;
@@ -37,8 +51,8 @@
 }
 .favorite-btn {
     position: absolute;
-    top: 4px;
-    right: 4px;
+    top: 3px;
+    right: 2px;
 }
 .main-block-content {
     display: flex;
@@ -46,7 +60,7 @@
     height: 212px;
 
     &.is-expanded {
-        height: calc(55vh - 32px);
+        height: 100%;
     }
 
 }

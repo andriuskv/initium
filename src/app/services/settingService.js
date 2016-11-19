@@ -12,6 +12,9 @@ export class SettingService {
                 notificationDisabled: false,
                 notificationFocusDisabled: false
             },
+            mainBlock: {
+                hideItemBar: false
+            },
             time: {
                 dateDisabled: false,
                 timeDisplay: "1",

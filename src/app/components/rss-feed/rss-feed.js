@@ -54,9 +54,10 @@ export class RssFeed {
     }
 
     htmlDecode(input) {
-        const doc = new DOMParser().parseFromString(input, "text/html");
+        const element = document.createElement("textarea");
 
-        return doc.documentElement.textContent;
+        element.innerHTML = input;
+        return element.value;
     }
 
     getEntry(entry, newEntry) {
