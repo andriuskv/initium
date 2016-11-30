@@ -26,6 +26,7 @@ export class Twitter {
         this.twitterTimeout = 0;
         this.tweetTimeTimeout = 0;
         this.tweetUpdateTimeout = 0;
+        this.tweetsToRemove = 0;
     }
 
     ngOnInit() {
@@ -208,6 +209,14 @@ export class Twitter {
         this.tweets.unshift(...newTweets);
         this.tweetsToLoad.length = 0;
         this.newTweetCount.emit(0);
+        this.tweetsToRemove = Math.floor(this.tweetsToRemove / 2);
+
+        if (this.tweetsToRemove) {
+            this.tweets = this.tweets.slice(0, -this.tweetsToRemove);
+        }
+        else {
+            this.tweetsToRemove += 1;
+        }
     }
 
     updateTweetTime() {
@@ -232,6 +241,7 @@ export class Twitter {
                     if (newTweets.length) {
                         this.tweetsToLoad.unshift(...newTweets);
                         this.updateTimeline(userInfo, newTweets[0].id);
+                        this.tweetsToRemove += newTweets.length;
 
                         if (!this.isActive) {
                             this.newTweetCount.emit(this.tweetsToLoad.length);
