@@ -120,14 +120,16 @@ export class Twitter {
     }
 
     replaceUserMentions(text, userMentions) {
-        userMentions.forEach(mention => {
-            const name = text.includes(`@${mention.name}`) ? mention.name : mention.screen_name;
-            const href = `https://twitter.com/${mention.screen_name}`;
-            const a = `
-                <a href="${href}" class="twitter-tweet-link" target="_blank">@${name}</a>
-            `;
+        userMentions.map(mention => ({
+            mention: text.slice(mention.indices[0], mention.indices[1]),
+            screenName: mention.screen_name
+        }))
+        .forEach(user => {
+            const regex = new RegExp(user.mention, "g");
+            const href = `https://twitter.com/${user.screenName}`;
+            const a = `<a href="${href}" class="twitter-tweet-link" target="_blank">${user.mention}</a>`;
 
-            text = text.replace(`@${name}`, a);
+            text = text.replace(regex, a);
         });
         return text;
     }
@@ -135,9 +137,7 @@ export class Twitter {
     replaceHashtags(text, hashtags) {
         hashtags.forEach(({ text: hashtag }) => {
             const href = `https://twitter.com/hashtag/${hashtag}?src=hash`;
-            const a = `
-                <a href="${href}" class="twitter-tweet-link" target="_blank">#${hashtag}</a>
-            `;
+            const a = `<a href="${href}" class="twitter-tweet-link" target="_blank">#${hashtag}</a>`;
 
             text = text.replace(`#${hashtag}`, a);
         });
@@ -146,13 +146,10 @@ export class Twitter {
 
     replaceUrls(text, urls) {
         urls.forEach(({ url, display_url }) => {
-            const a = `
-                <a href="${url}" class="twitter-tweet-link" target="_blank">${display_url}</a>
-            `;
+            const a = `<a href="${url}" class="twitter-tweet-link" target="_blank">${display_url}</a>`;
 
             text = text.replace(url, a);
         });
-
         return text;
     }
 
@@ -271,6 +268,7 @@ export class Twitter {
             if (retweet) {
                 const newTweet = this.getTweetContent(retweet);
 
+                newTweet.id = tweet.id;
                 newTweet.retweetedBy = {
                     name: tweet.user.name,
                     userUrl: `https://twitter.com/${tweet.user.screen_name}`
@@ -367,17 +365,18 @@ export class Twitter {
         this.isLoggedIn = false;
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
+        this.tweetsToRemove = 0;
     }
 
     fetchMoreTweets() {
         const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
-        const oldestTweet = this.tweets[this.tweets.length - 1];
+        const { id: oldestTweetId } = this.tweets[this.tweets.length - 1];
         const cb = new Codebird;
 
         if (userInfo.token && userInfo.tokenSecret) {
             this.setInfo(cb, userInfo);
-            cb.__call("statuses_homeTimeline", `max_id=${oldestTweet.id}`, tweets => {
-                tweets = tweets.filter(tweet => tweet.id !== oldestTweet.id);
+            cb.__call("statuses_homeTimeline", `max_id=${oldestTweetId}`, tweets => {
+                tweets = tweets.filter(tweet => tweet.id !== oldestTweetId);
 
                 if (tweets.length) {
                     const newTweets = this.loadTweets(tweets);

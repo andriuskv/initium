@@ -20,16 +20,16 @@
     "build": "npm run build:html && npm run build:css && npm run build:js && npm run build:libs && npm run build:resources && npm run build:others"
   },
   "dependencies": {
-    "@angular/common": "^2.2.1",
-    "@angular/compiler": "^2.2.1",
-    "@angular/core": "^2.2.1",
-    "@angular/forms": "^2.2.1",
-    "@angular/platform-browser": "^2.2.1",
-    "@angular/platform-browser-dynamic": "^2.2.1",
+    "@angular/common": "^2.2.3",
+    "@angular/compiler": "^2.2.3",
+    "@angular/core": "^2.2.3",
+    "@angular/forms": "^2.2.3",
+    "@angular/platform-browser": "^2.2.3",
+    "@angular/platform-browser-dynamic": "^2.2.3",
     "dropbox": "^2.4.0",
     "reflect-metadata": "^0.1.8",
-    "rxjs": "^5.0.0-rc.3",
-    "zone.js": "^0.6.26"
+    "rxjs": "^5.0.0-rc.4",
+    "zone.js": "^0.7.2"
   },
   "devDependencies": {
     "angular2-template-inline": "^1.0.6",
@@ -41,7 +41,7 @@
     "babel-preset-angular2": "0.0.2",
     "babel-preset-latest": "^6.16.0",
     "csso": "^2.3.0",
-    "eslint": "^3.10.2",
+    "eslint": "^3.11.1",
     "node-sass": "^3.13.0",
     "onchange": "^3.0.2",
     "postcss-cli": "^2.6.0",
