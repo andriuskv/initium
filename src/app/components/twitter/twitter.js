@@ -271,6 +271,7 @@ export class Twitter {
             if (retweet) {
                 const newTweet = this.getTweetContent(retweet);
 
+                newTweet.id = tweet.id;
                 newTweet.retweetedBy = {
                     name: tweet.user.name,
                     userUrl: `https://twitter.com/${tweet.user.screen_name}`
@@ -367,17 +368,18 @@ export class Twitter {
         this.isLoggedIn = false;
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
+        this.tweetsToRemove = 0;
     }
 
     fetchMoreTweets() {
         const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
-        const oldestTweet = this.tweets[this.tweets.length - 1];
+        const { id: oldestTweetId } = this.tweets[this.tweets.length - 1];
         const cb = new Codebird;
 
         if (userInfo.token && userInfo.tokenSecret) {
             this.setInfo(cb, userInfo);
-            cb.__call("statuses_homeTimeline", `max_id=${oldestTweet.id}`, tweets => {
-                tweets = tweets.filter(tweet => tweet.id !== oldestTweet.id);
+            cb.__call("statuses_homeTimeline", `max_id=${oldestTweetId}`, tweets => {
+                tweets = tweets.filter(tweet => tweet.id !== oldestTweetId);
 
                 if (tweets.length) {
                     const newTweets = this.loadTweets(tweets);
