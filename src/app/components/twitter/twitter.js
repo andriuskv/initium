@@ -120,14 +120,16 @@ export class Twitter {
     }
 
     replaceUserMentions(text, userMentions) {
-        userMentions.forEach(mention => {
-            const name = text.includes(`@${mention.name}`) ? mention.name : mention.screen_name;
-            const href = `https://twitter.com/${mention.screen_name}`;
-            const a = `
-                <a href="${href}" class="twitter-tweet-link" target="_blank">@${name}</a>
-            `;
+        userMentions.map(mention => ({
+            mention: text.slice(mention.indices[0], mention.indices[1]),
+            screenName: mention.screen_name
+        }))
+        .forEach(user => {
+            const regex = new RegExp(user.mention, "g");
+            const href = `https://twitter.com/${user.screenName}`;
+            const a = `<a href="${href}" class="twitter-tweet-link" target="_blank">${user.mention}</a>`;
 
-            text = text.replace(`@${name}`, a);
+            text = text.replace(regex, a);
         });
         return text;
     }
@@ -135,9 +137,7 @@ export class Twitter {
     replaceHashtags(text, hashtags) {
         hashtags.forEach(({ text: hashtag }) => {
             const href = `https://twitter.com/hashtag/${hashtag}?src=hash`;
-            const a = `
-                <a href="${href}" class="twitter-tweet-link" target="_blank">#${hashtag}</a>
-            `;
+            const a = `<a href="${href}" class="twitter-tweet-link" target="_blank">#${hashtag}</a>`;
 
             text = text.replace(`#${hashtag}`, a);
         });
@@ -146,13 +146,10 @@ export class Twitter {
 
     replaceUrls(text, urls) {
         urls.forEach(({ url, display_url }) => {
-            const a = `
-                <a href="${url}" class="twitter-tweet-link" target="_blank">${display_url}</a>
-            `;
+            const a = `<a href="${url}" class="twitter-tweet-link" target="_blank">${display_url}</a>`;
 
             text = text.replace(url, a);
         });
-
         return text;
     }
 
