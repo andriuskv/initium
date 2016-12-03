@@ -1,16 +1,11 @@
 .main-block {
     position: absolute;
     top: 45vh;
-    left: 0;
-    right: 0;
-    width: 500px;
-    height: calc(55vh - 32px);
-    margin: 0 auto;
+    bottom: 4px;
+    left: 50%;
+    min-width: 500px;
     color: $primary-text-color;
-
-    &.is-item-bar-hidden {
-        height: calc(55vh - 4px);
-    }
+    transform: translateX(-50%);
 }
 .main-block-nav {
     display: flex;
@@ -59,9 +54,15 @@
     height: 212px;
 
     &.is-expanded {
-        height: 100%;
-    }
+        height: calc(100% - 28px);
 
+        &.is-item-bar-hidden {
+            height: 100%;
+        }
+        &.is-twitter-active {
+            width: 572px;
+        }
+    }
 }
 .main-block-content-item {
     position: relative;
@@ -84,6 +85,7 @@
     margin-top: 2px;
     padding-top: 1px;
     padding-bottom: 1px;
+    border-radius: 0;
 }
 @keyframes pulse {
     0% { transform: scale(1); }

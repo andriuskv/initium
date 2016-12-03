@@ -1,4 +1,4 @@
-.main-block-most-visited {
+.most-visited {
     display: flex;
     flex-wrap: wrap;
 }
@@ -10,7 +10,7 @@
     left: 0;
     background-color: transparentize($color3, 0.2);
 }
-.most-visited {
+.most-visited-item {
     overflow: hidden;
     position: relative;
     width: 120px;
