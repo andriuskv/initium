@@ -1,5 +1,5 @@
-<ul class="main-block-most-visited">
-    <li class="most-visited" *ngFor="let page of mostVisited.display; let i = index"
+<ul class="most-visited">
+    <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index"
         [class.is-in-one-line]="mostVisited.display.length < 4">
         <button class="icon-cancel btn remove-page-btn" (click)="removePage(i)" title="Remove"></button>
         <a [href]="page.url" [title]="page.title">
@@ -11,7 +11,7 @@
             </div>
         </a>
     </li>
-    <li class="most-visited" title="Add new page"
+    <li class="most-visited-item" title="Add new page"
         *ngIf="!hasBackup"
         [class.is-in-one-line]="mostVisited.display.length < 4"
         (click)="showNewThumbWindow()">

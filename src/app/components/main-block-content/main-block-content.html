@@ -1,6 +1,9 @@
-<ul class="container main-block-content" [class.is-expanded]="itemState[item]">
+<ul class="container main-block-content"
+    [class.is-expanded]="itemState[item]"
+    [class.is-item-bar-hidden]="isItemBarHidden"
+    [class.is-twitter-active]="item === 'twitter'">
     <li class="main-block-content-item" [class.hidden]="item !== 'mostVisited'">
-        <most-visited [setting]="mostVisitedSetting"></most-visited>
+        <most-visited [setting]="mainBlockSetting"></most-visited>
     <li>
     <li class="main-block-content-item" [class.hidden]="item !== 'notepad'">
         <notepad></notepad>

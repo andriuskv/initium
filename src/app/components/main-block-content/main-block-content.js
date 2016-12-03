@@ -19,9 +19,16 @@ export class MainBlockContent {
     ngOnChanges(changes) {
         if (changes.choice && typeof changes.choice.currentValue === "string") {
             this.item = changes.choice.currentValue;
+            return;
         }
-        else if (changes.setting && changes.setting.currentValue) {
-            this.mostVisitedSetting = changes.setting.currentValue;
+        const setting = changes.setting;
+
+        if (setting && setting.currentValue) {
+            this.mainBlockSetting = setting.currentValue;
+
+            if (typeof this.mainBlockSetting.hideItemBar === "boolean") {
+                this.isItemBarHidden = this.mainBlockSetting.hideItemBar;
+            }
         }
     }
 
