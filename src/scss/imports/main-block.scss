@@ -3,7 +3,6 @@
     top: 45vh;
     bottom: 4px;
     left: 50%;
-    min-width: 500px;
     color: $primary-text-color;
     transform: translateX(-50%);
 }
@@ -51,6 +50,7 @@
 .main-block-content {
     display: flex;
     flex-direction: column;
+    width: 500px;
     height: 212px;
 
     &.is-expanded {
