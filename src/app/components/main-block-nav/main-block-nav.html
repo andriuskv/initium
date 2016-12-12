@@ -15,9 +15,4 @@
             <span class="count-indicator" [class.show]="isNewEntry" *ngIf="entryCount">{{ entryCount }}</span>
         </button>
     </li>
-    <li class="main-block-nav-item favorite-btn" title="Favorite" *ngIf="item">
-        <button class="font-btn"
-            [ngClass]="{ 'icon-star-empty': item !== favorite, 'icon-star': item === favorite }" (click)="makeFavorite()">
-        </button>
-    </li>
 </ul>

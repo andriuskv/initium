@@ -12,8 +12,7 @@ export class MainBlockNav {
     @Input() tabNameChange;
 
     constructor() {
-        this.favorite = localStorage.getItem("favorite tab");
-        this.item = this.favorite || "mostVisited";
+        this.item = this.getItem();
         this.isNewTweet = false;
         this.isNewEntry = false;
         this.tweetCount = 0;
@@ -71,20 +70,22 @@ export class MainBlockNav {
         }
     }
 
-    selectItem(item) {
-        this.item = item;
+    getItem() {
+        const item = localStorage.getItem("favorite tab");
 
-        if (item === "twitter" && Number.parseInt(this.tweetCount, 10) > 0) {
-            this.tweetCount = 0;
-        }
-        else if (item === "rssFeed" && Number.parseInt(this.entryCount, 10) > 0) {
-            this.entryCount = 0;
-        }
-        this.choice.emit(item);
+        return typeof item === "string" ? item : "mostVisited";
     }
 
-    makeFavorite() {
-        this.favorite = this.favorite !== this.item ? this.item : "";
-        localStorage.setItem("favorite tab", this.favorite);
+    selectItem(item) {
+        this.item = item === this.item ? "" : item;
+
+        if (this.item === "twitter" && Number.parseInt(this.tweetCount, 10) > 0) {
+            this.tweetCount = 0;
+        }
+        else if (this.item === "rssFeed" && Number.parseInt(this.entryCount, 10) > 0) {
+            this.entryCount = 0;
+        }
+        this.choice.emit(this.item);
+        localStorage.setItem("favorite tab", this.item);
     }
 }
