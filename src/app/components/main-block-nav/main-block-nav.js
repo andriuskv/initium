@@ -7,16 +7,21 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 export class MainBlockNav {
     @Output() choice = new EventEmitter();
     @Input() setting;
-    @Input() newTweets;
-    @Input() newEntries;
+    @Input() newItemUpdate;
     @Input() tabNameChange;
 
     constructor() {
         this.item = this.getItem();
-        this.isNewTweet = false;
-        this.isNewEntry = false;
-        this.tweetCount = 0;
-        this.entryCount = 0;
+        this.items = {
+            twitter: {
+                new: false,
+                count: 0
+            },
+            rssFeed: {
+                new: false,
+                count: 0
+            }
+        };
     }
 
     ngOnInit() {
@@ -24,49 +29,31 @@ export class MainBlockNav {
     }
 
     ngOnChanges(changes) {
-        if (changes.newTweets && typeof changes.newTweets.currentValue === "number") {
-            const newTweets = changes.newTweets.currentValue || 0;
+        if (changes.newItemUpdate && !changes.newItemUpdate.isFirstChange()) {
+            const newItem = changes.newItemUpdate.currentValue;
+            const item = this.items[newItem.name];
+            const count = newItem.count || 0;
 
-            this.isNewTweet = this.tweetCount !== newTweets;
-            this.tweetCount = newTweets;
+            item.new = item.count !== count;
+            item.count = count;
 
-            if (this.tweetCount > 99) {
-                this.tweetCount = "99+";
+            if (item.count > 99) {
+                item.count = "99+";
             }
 
             setTimeout(() => {
-                this.isNewTweet = false;
+                item.new = false;
             }, 1000);
             return;
         }
 
-        if (changes.newEntries && typeof changes.newEntries.currentValue === "number") {
-            const newEntries = changes.newEntries.currentValue || 0;
-
-            this.isNewEntry = this.entryCount !== newEntries;
-            this.entryCount = newEntries;
-
-            if (this.entryCount > 99) {
-                this.entryCount = "99+";
-            }
-
-            setTimeout(() => {
-                this.isNewEntry = false;
-            }, 1000);
+        if (changes.tabNameChange && !changes.tabNameChange.isFirstChange()) {
+            this.selectItem(changes.tabNameChange.currentValue, true);
             return;
         }
 
-        if (changes.tabNameChange && changes.tabNameChange.currentValue) {
-            this.selectItem(changes.tabNameChange.currentValue.name);
-            return;
-        }
-
-        if (changes.setting && changes.setting.currentValue) {
-            const setting = changes.setting.currentValue;
-
-            if (typeof setting.hideItemBar === "boolean") {
-                this.hideBar = setting.hideItemBar;
-            }
+        if (changes.setting && !changes.setting.isFirstChange()) {
+            this.hideBar = changes.setting.currentValue.hideItemBar;
         }
     }
 
@@ -76,14 +63,16 @@ export class MainBlockNav {
         return typeof item === "string" ? item : "mostVisited";
     }
 
-    selectItem(item) {
-        this.item = item === this.item ? "" : item;
+    selectItem(item, keepVisible) {
+        this.item = item === this.item && !keepVisible ? "" : item;
 
-        if (this.item === "twitter" && Number.parseInt(this.tweetCount, 10) > 0) {
-            this.tweetCount = 0;
-        }
-        else if (this.item === "rssFeed" && Number.parseInt(this.entryCount, 10) > 0) {
-            this.entryCount = 0;
+        if (this.item === "twitter" || this.item === "rssFeed") {
+            const item = this.items[this.item];
+            const itemCount = Number.parseInt(item.count, 10);
+
+            if (itemCount) {
+                item.count = 0;
+            }
         }
         this.choice.emit(this.item);
         localStorage.setItem("favorite tab", this.item);

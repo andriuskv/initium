@@ -1,6 +1,7 @@
 .most-visited {
     display: flex;
     flex-wrap: wrap;
+    height: 100%;
 }
 .most-visited-mask {
     position: absolute;
@@ -13,15 +14,11 @@
 .most-visited-item {
     overflow: hidden;
     position: relative;
-    width: 120px;
-    height: 100px;
+    width: calc(25% - 3px);
+    height: calc(50% - 2px);
     margin-right: 4px;
     margin-bottom: 4px;
     background-color: $color2;
-
-    &.is-in-one-line {
-        margin-bottom: 0;
-    }
 
     &:nth-of-type(4n) {
         margin-right: 0;

@@ -15,14 +15,17 @@
     padding: 0;
     margin-bottom: 4px;
     user-select: none;
+    transition: all 0.2s;
 
     &.hidden {
-        display: none;
+        height: 0;
+        margin-bottom: 0;
+        overflow: hidden;
     }
 }
 .main-block-nav-item {
     position: relative;
-    margin: 2px 2px 0 2px;
+    margin: 1px 2px 0 2px;
 
     .font-btn {
         font-size: 16px;
@@ -38,7 +41,7 @@
     background-color: $color3;
     font-size: 9px;
 
-    &.show {
+    &.visible {
         animation-duration: 0.6s;
         animation-timing-function: ease-in-out;
         animation-name: pulse;
@@ -49,6 +52,7 @@
     flex-direction: column;
     width: 500px;
     height: 212px;
+    transition: all 0.2s;
 
     &.hidden {
         display: none;

@@ -1,6 +1,5 @@
 <ul class="most-visited">
-    <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index"
-        [class.is-in-one-line]="mostVisited.display.length < 4">
+    <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index">
         <button class="icon-cancel btn remove-page-btn" (click)="removePage(i)" title="Remove"></button>
         <a [href]="page.url" [title]="page.title">
             <div class="page-title">{{ page.title }}</div>

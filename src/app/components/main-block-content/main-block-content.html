@@ -10,10 +10,16 @@
         <notepad></notepad>
     </li>
     <li class="main-block-content-item" [class.hidden]="item !== 'twitter'">
-        <twitter (newTweetCount)="onNewTweets($event)" (toggleTab)="onToggleTab($event)" [item]="item"></twitter>
+        <twitter [item]="item"
+            (newTweetCount)="onNewItemCount($event, 'twitter')"
+            (toggleTab)="onToggleTab($event)">
+        </twitter>
     </li>
     <li class="main-block-content-item" [class.hidden]="item !== 'rssFeed'">
-        <rss-feed (newFeedEntries)="onNewEntries($event)" (toggleTab)="onToggleTab($event)" [item]="item"></rss-feed>
+        <rss-feed [item]="item"
+            (newFeedEntries)="onNewItemCount($event, 'rssFeed')"
+            (toggleTab)="onToggleTab($event)">
+        </rss-feed>
     </li>
     <li *ngIf="item !== 'mostVisited'">
         <button class="btn main-block-expand-btn" (click)="toggleItemState()">
