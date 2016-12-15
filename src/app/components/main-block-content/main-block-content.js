@@ -7,8 +7,7 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 export class MainBlockContent {
     @Input() choice;
     @Input() setting;
-    @Output() newTweets = new EventEmitter();
-    @Output() newEntries = new EventEmitter();
+    @Output() newItemCount = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
 
     constructor() {
@@ -17,27 +16,19 @@ export class MainBlockContent {
     }
 
     ngOnChanges(changes) {
-        if (changes.choice && typeof changes.choice.currentValue === "string") {
+        if (changes.choice) {
             this.item = changes.choice.currentValue;
             return;
         }
-        const setting = changes.setting;
 
-        if (setting && setting.currentValue) {
-            this.mainBlockSetting = setting.currentValue;
-
-            if (typeof this.mainBlockSetting.hideItemBar === "boolean") {
-                this.isItemBarHidden = this.mainBlockSetting.hideItemBar;
-            }
+        if (changes.setting && !changes.setting.isFirstChange()) {
+            this.mainBlockSetting = changes.setting.currentValue;
+            this.isItemBarHidden = this.mainBlockSetting.hideItemBar;
         }
     }
 
-    onNewTweets(count) {
-        this.newTweets.emit(count);
-    }
-
-    onNewEntries(count) {
-        this.newEntries.emit(count);
+    onNewItemCount(count, name) {
+        this.newItemCount.emit({ count, name });
     }
 
     onToggleTab(item) {

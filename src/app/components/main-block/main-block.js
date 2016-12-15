@@ -6,15 +6,13 @@ import { Component, Input } from "@angular/core";
         <div class="main-block">
             <main-block-nav (choice)="onChoice($event)"
                 [setting]="mainBlockSetting"
-                [newTweets]="tweetCount"
-                [newEntries]="entryCount"
+                [newItemUpdate]="itemUpdate"
                 [tabNameChange]="tabName">
             </main-block-nav>
             <main-block-content
                 [choice]="item"
                 [setting]="mainBlockSetting"
-                (newTweets)="onNewTweets($event)"
-                (newEntries)="onNewEntries($event)"
+                (newItemCount)="onNewItemCount($event)"
                 (toggleTab)="onToggleTab($event)">
             </main-block-content>
         </div>
@@ -35,15 +33,11 @@ export class MainBlock {
         this.item = choice;
     }
 
-    onNewTweets(count) {
-        this.tweetCount = count;
-    }
-
-    onNewEntries(count) {
-        this.entryCount = count;
+    onNewItemCount(item) {
+        this.itemUpdate = Object.assign({}, item);
     }
 
     onToggleTab(name) {
-        this.tabName = { name };
+        this.tabName = name;
     }
 }
