@@ -145,6 +145,7 @@ export class Weather {
             // Snow, heavy snow
             case 601:
             case 602:
+            case 621:
                 iconClassName = "icon-snow-heavy-inv";
                 break;
             case 701:

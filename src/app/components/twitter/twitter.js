@@ -144,10 +144,14 @@ export class Twitter {
     }
 
     replaceUrls(text, urls) {
-        urls.forEach(({ url, display_url }) => {
+        urls.filter(({ url }, index) => {
+            return index === urls.findIndex(obj => obj.url === url);
+        })
+        .forEach(({ url, display_url }) => {
+            const regex = new RegExp(url, "g");
             const a = `<a href="${url}" class="twitter-tweet-link" target="_blank">${display_url}</a>`;
 
-            text = text.replace(url, a);
+            text = text.replace(regex, a);
         });
         return text;
     }
