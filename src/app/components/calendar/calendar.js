@@ -207,7 +207,9 @@ export class Calendar {
     }
 
     getCurrentDayInCalendar(calendar, { year, month, day }) {
-        return calendar[year][month].find(calendarDay => calendarDay.number === day);
+        const days = calendar[year][month];
+
+        return days.find(localDay => localDay.direction === 0 && localDay.number === day);
     }
 
     getSelectedDay(selectedDay) {

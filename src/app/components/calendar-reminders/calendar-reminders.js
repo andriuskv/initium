@@ -17,10 +17,10 @@ export class CalendarReminders {
     }
 
     ngOnChanges(changes) {
-        if (changes.newReminders && changes.newReminders.currentValue) {
+        if (changes.newReminders && !changes.newReminders.isFirstChange()) {
             this.reminders = changes.newReminders.currentValue;
         }
-        if (changes.setting && changes.setting.currentValue) {
+        if (changes.setting && !changes.setting.isFirstChange()) {
             this.disabled = changes.setting.currentValue.calendarRemindersDisabled;
         }
     }
