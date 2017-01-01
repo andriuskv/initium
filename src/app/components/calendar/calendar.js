@@ -54,10 +54,10 @@ export class Calendar {
         }
         this.calendar = Object.assign(calendar, {
             currentYear: year,
-            currentMonth: { month },
+            currentMonth: this.getCurrentMonth(calendar, year, month),
             futureReminders: calendar.futureReminders || []
         });
-        this.setCurrentMonthAndYear(0);
+        this.repeatFutureReminders(calendar.futureReminders);
         this.setCurrentDay(this.calendar, this.currentDate);
         this.initialized = true;
     }
@@ -162,6 +162,14 @@ export class Calendar {
         });
     }
 
+    getCurrentMonth(calendar, year, month) {
+        return {
+            month,
+            name: this.dateService.getMonth(month),
+            days: calendar[year][month]
+        };
+    }
+
     repeatFutureReminders(futureReminders) {
         let length = futureReminders.length;
 
@@ -198,13 +206,8 @@ export class Calendar {
                 this.repeatFutureReminders(this.calendar.futureReminders);
             }
         }
-
         this.calendar.currentYear = year;
-        this.calendar.currentMonth = {
-            month,
-            name: this.dateService.getMonth(month),
-            days: this.calendar[year][month]
-        };
+        this.calendar.currentMonth = this.getCurrentMonth(this.calendar, year, month);
     }
 
     getCurrentDayInCalendar(calendar, { year, month, day }) {
@@ -289,6 +292,10 @@ export class Calendar {
         const firstDayIndex = this.getFirstDayOfTheWeek(reminder.year, reminder.month);
         let dayIndex = reminder.day + firstDayIndex - 1;
         let monthIndex = reminder.month;
+
+        if (!year) {
+            return;
+        }
 
         while (monthIndex < year.length) {
             const currentMonth = year[monthIndex];
