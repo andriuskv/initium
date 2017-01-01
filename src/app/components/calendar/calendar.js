@@ -42,20 +42,21 @@ export class Calendar {
     }
 
     init() {
-        const calendar = JSON.parse(localStorage.getItem("calendar"));
+        const calendar = JSON.parse(localStorage.getItem("calendar")) || {};
         const year = this.currentDate.year;
         const month = this.currentDate.month;
 
-        if (calendar) {
-            calendar[year][month] = this.removePreviousCurrentDay(calendar, this.currentDate);
-            this.calendar = calendar;
+        if (!calendar[year]) {
+            calendar[year] = this.getYear(year);
         }
         else {
-            this.calendar[year] = this.getYear(year);
+            this.removePreviousCurrentDay(calendar, this.currentDate);
         }
-        this.calendar.currentYear = year;
-        this.calendar.currentMonth = { month };
-        this.calendar.futureReminders = this.calendar.futureReminders || [];
+        this.calendar = Object.assign(calendar, {
+            currentYear: year,
+            currentMonth: { month },
+            futureReminders: calendar.futureReminders || []
+        });
         this.setCurrentMonthAndYear(0);
         this.setCurrentDay(this.calendar, this.currentDate);
         this.initialized = true;
@@ -63,10 +64,10 @@ export class Calendar {
 
     removePreviousCurrentDay(calendar, date) {
         const currentDay = this.getCurrentDayInCalendar(calendar, date);
-        const month = currentDay.number === 1 ? date.month - 1 : date.month;
-        const year = month === 0 ? date.year - 1 : date.year;
+        const month = currentDay.number === 1 ? date.month - 1 < 0 ? 11 : date.month - 1 : date.month;
+        const year = date.month === 0 ? date.year - 1 : date.year;
 
-        return calendar[year][month].map(day => {
+        calendar[year][month] = calendar[year][month].map(day => {
             if (day.currentDay) {
                 day.currentDay = false;
             }
