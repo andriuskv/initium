@@ -20,7 +20,7 @@ export class CalendarReminders {
         if (changes.newReminders && !changes.newReminders.isFirstChange()) {
             this.reminders = changes.newReminders.currentValue;
         }
-        if (changes.setting && !changes.setting.isFirstChange()) {
+        if (changes.setting && changes.setting.currentValue) {
             this.disabled = changes.setting.currentValue.calendarRemindersDisabled;
         }
     }
