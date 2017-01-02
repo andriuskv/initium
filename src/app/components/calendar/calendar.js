@@ -49,41 +49,37 @@ export class Calendar {
         if (!calendar[year]) {
             calendar[year] = this.getYear(year);
         }
-        else {
-            this.removePreviousCurrentDay(calendar, this.currentDate);
+        if (calendar.currentDay) {
+            const day = calendar.currentDay;
+
+            calendar[day.year][day.month][day.index].currentDay = false;
         }
         this.calendar = Object.assign(calendar, {
             currentYear: year,
             currentMonth: this.getCurrentMonth(calendar, year, month),
+            currentDay: this.setCurrentDay(calendar, this.currentDate),
             futureReminders: calendar.futureReminders || []
         });
         this.repeatFutureReminders(calendar.futureReminders);
-        this.setCurrentDay(this.calendar, this.currentDate);
         this.initialized = true;
-    }
-
-    removePreviousCurrentDay(calendar, date) {
-        const currentDay = this.getCurrentDayInCalendar(calendar, date);
-        const month = currentDay.number === 1 ? date.month - 1 < 0 ? 11 : date.month - 1 : date.month;
-        const year = date.month === 0 ? date.year - 1 : date.year;
-
-        calendar[year][month] = calendar[year][month].map(day => {
-            if (day.currentDay) {
-                day.currentDay = false;
-            }
-            return day;
-        });
     }
 
     setCurrentDay(calendar, date) {
         const currentDay = this.getCurrentDayInCalendar(calendar, date);
+        const currentMonth = calendar[date.year][date.month];
 
-        calendar[date.year][date.month].map(day => {
+        for (let i = 0; i < currentMonth.length; i += 1) {
+            const day = currentMonth[i];
+
             if (day.direction === 0 && day.number === currentDay.number) {
                 day.currentDay = true;
+                return {
+                    index: i,
+                    month: date.month,
+                    year: date.year
+                };
             }
-            return day;
-        });
+        }
     }
 
     getCurrentDate() {
