@@ -9,9 +9,7 @@ import { DateService } from "./../../services/dateService";
                 <div class="clock">{{ clock }}</div>
                 <div class="marker" *ngIf="marker">{{ marker }}</div>
             </div>
-            <div class="date"
-                [class.has-marker]="marker"
-                *ngIf="!dateDisabled">{{ date }}</div>
+            <div class="date" *ngIf="!dateDisabled">{{ date }}</div>
         </div>
     `
 })
@@ -42,54 +40,52 @@ export class Time {
         }
     }
 
-    beautifyTime(time) {
-        return time > 9 ? time : `0${time}`;
-    }
-
     changeTimeDisplay(display) {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
+        clearTimeout(this.timeout);
 
         if (display === "0") {
-            this.clock = this.get12HourTime();
             this.updateTime(this.get12HourTime);
         }
         else {
             this.marker = "";
-            this.clock = this.get24HourTime();
             this.updateTime(this.get24HourTime);
         }
     }
 
-    get12HourTime() {
+    getCurrentTime() {
         const date = new Date();
-        const minutes = this.beautifyTime(date.getMinutes());
-        let hours = date.getHours();
+        const minutes = date.getMinutes();
 
-        if (hours >= 12) {
+        return {
+            hours: date.getHours(),
+            minutes: minutes > 9 ? minutes : `0${minutes}`
+        };
+    }
+
+    get12HourTime() {
+        const time = this.getCurrentTime();
+        let hours = time.hours;
+
+        if (hours > 11) {
             this.marker = "PM";
-            hours = hours !== 12 ? hours - 12 : hours;
+            hours = hours > 13 ? hours - 12 : hours;
         }
         else {
             this.marker = "AM";
         }
-        hours = this.beautifyTime(hours);
-
-        return `${hours}:${minutes}`;
+        return `${hours}:${time.minutes}`;
     }
 
     get24HourTime() {
-        const date = new Date();
-        const hours = this.beautifyTime(date.getHours());
-        const minutes = this.beautifyTime(date.getMinutes());
+        const { hours, minutes } = this.getCurrentTime();
 
         return `${hours}:${minutes}`;
     }
 
     updateTime(cb) {
+        this.clock = cb.call(this);
+
         this.timeout = setTimeout(() => {
-            this.clock = cb.call(this);
             this.updateTime(cb);
         }, 1000);
     }
