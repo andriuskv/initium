@@ -10,9 +10,9 @@
     margin-bottom: 2px;
 }
 .feed-titles {
-    display: inline-flex;
+    display: flex;
     align-items: stretch;
-    width: 100%;
+    width: calc(100% - 32px);
     margin-right: 2px;
     background-color: $color2;
 }
@@ -78,6 +78,9 @@
     width: 200px;
     margin-bottom: 4px;
 }
+.feed-message {
+    font-size: 14px;
+}
 .feeds {
     @include scrollbar($color3);
 
@@ -108,14 +111,37 @@
     margin-bottom: 4px;
     font-weight: bold;
 }
+.feed-entry-desc {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    font-size: 14px;
+
+    p {
+        margin-top: 0;
+        margin-bottom: 4px;
+    }
+    img {
+        max-width: 100px;
+        object-fit: scale-down;
+    }
+    a {
+        color: lighten($brand-color, 20%);
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    td {
+        display: inline-block;
+        vertical-align: top;
+        padding-right: 4px;
+    }
+}
 .feed-entry-date {
     color: #bbb;
-    font-size: 10px;
-}
-.feed-entry-desc {
-    margin-top: 0;
-    margin-bottom: 0;
-    font-size: 14px;
+    font-size: 12px;
 }
 .is-new-entry {
     float: right;

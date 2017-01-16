@@ -24,8 +24,6 @@ export class RssFeed {
         this.editingFeed = false;
         this.activeFeed = "";
         this.latestActiveFeed = "";
-        this.feedInput = {};
-        this.action = "Add";
         this.newEntryCount = 0;
         this.timeout = 0;
     }
@@ -53,31 +51,39 @@ export class RssFeed {
         }
     }
 
-    htmlDecode(input) {
-        const element = document.createElement("textarea");
+    saveFeeds(feeds) {
+        const feedsToSave = feeds.map(feed => ({
+            url: feed.url,
+            title: feed.title
+        }));
 
-        element.innerHTML = input;
-        return element.value;
+        localStorage.setItem("rss feeds", JSON.stringify(feedsToSave));
     }
 
-    getEntry(entry, newEntry) {
+    getEntry(entry, newEntry = false) {
+        let desc = "";
+
+        if (entry.description) {
+            desc = entry.description;
+        }
+        else if (typeof entry.content === "object") {
+            desc = entry.content.content || "";
+        }
         return {
             newEntry,
-            link: entry.link,
+            desc,
+            link: typeof entry.link === "string" ? entry.link : entry.link.href,
             title: entry.title,
-            desc: this.htmlDecode(entry.contentSnippet),
-            date: entry.publishedDate ? new Date(entry.publishedDate) : ""
+            date: entry.pubDate || entry.updated || ""
         };
     }
 
-    getEntries(entries) {
-        return entries.map(entry => this.getEntry(entry));
+    getEntries(entries, newEntries) {
+        return entries.map(entry => this.getEntry(entry, newEntries));
     }
 
     addNewFeed() {
         this.addingNewFeed = !this.addingNewFeed;
-        this.action = "Add";
-        this.feedInput = {};
 
         if (this.editingFeed) {
             this.editingFeed = false;
@@ -95,7 +101,7 @@ export class RssFeed {
 
     removeFeed(index) {
         this.feeds.splice(index, 1);
-        localStorage.setItem("rss feeds", JSON.stringify(this.feeds));
+        this.saveFeeds(this.feeds);
 
         if (this.feeds.length) {
             this.activeFeed = this.feeds[0].url;
@@ -106,64 +112,28 @@ export class RssFeed {
         }
     }
 
-    enableFeedEdit(index) {
-        this.action = "Edit";
-        this.addingNewFeed = true;
-        this.editingFeed = true;
-        this.feedInput = {
-            index,
-            url: this.feeds[index].url,
-            title: this.feeds[index].title
-        };
-        this.latestActiveFeed = this.activeFeed;
-        this.activeFeed = "";
-    }
-
     resetInputs() {
         this.addingNewFeed = false;
         this.editingFeed = false;
-        this.feedInput = {};
-    }
-
-    editFeed(url, title) {
-        const index = this.feedInput.index;
-
-        if (url.value && url.value !== this.feedInput.url) {
-            this.feedService.fetchFeed(url.value)
-            .then(feed => {
-                this.feeds[index] = {
-                    title: title.value || this.feedInput.title,
-                    url: url.value,
-                    entries: this.getEntries(feed.entries)
-                };
-            });
-        }
-        else if (title.value && title.value !== this.feedInput.title) {
-            this.feeds[index].title = title.value;
-        }
-        this.activeFeed = this.feeds[index].url;
-        this.resetInputs();
-        localStorage.setItem("rss feeds", JSON.stringify(this.feeds));
     }
 
     loadFeeds(feeds) {
-        if (feeds.length) {
-            const feedsToLoad = feeds.map((feed, index) => this.getFeed(feed.url, feed.title, index));
-
-            Promise.all(feedsToLoad)
-            .then(() => {
-                this.addingNewFeed = false;
-                this.activeFeed = this.feeds[0].url;
-                clearTimeout(this.timeout);
-                this.getNewFeeds(this.feeds);
-            })
-            .catch(error => {
-                console.log(error);
-            });
-        }
-        else {
+        if (!feeds.length) {
             this.addingNewFeed = true;
+            return;
         }
+        const feedsToLoad = feeds.map((feed, index) => this.getFeed(feed.url, feed.title, index));
+
+        Promise.all(feedsToLoad)
+        .then(() => {
+            this.addingNewFeed = false;
+            this.activeFeed = this.feeds[0].url;
+            clearTimeout(this.timeout);
+            this.getNewFeeds(this.feeds);
+        })
+        .catch(error => {
+            console.log(error);
+        });
     }
 
     getNewFeeds(feeds) {
@@ -171,7 +141,7 @@ export class RssFeed {
             this.timeout = setTimeout(() => {
                 this.updateFeeds(feeds);
                 this.getNewFeeds(feeds);
-            }, 600000);
+            }, 1800000);
         }
     }
 
@@ -206,11 +176,11 @@ export class RssFeed {
     updateFeed(url, index) {
         return this.feedService.fetchFeed(url)
         .then(feed => {
-            const urls = this.feeds[index].entries.map(entry => entry.link),
-                newEntries = feed.entries.filter(entry => urls.indexOf(entry.link) === -1)
-                .map(entry => this.getEntry(entry, true));
+            const urls = this.feeds[index].entries.map(entry => entry.link);
+            let newEntries = feed.entries.filter(entry => urls.indexOf(entry.link) === -1);
 
             if (newEntries.length) {
+                newEntries = this.getEntries(newEntries, true);
                 this.feeds[index].entries.unshift(...newEntries);
 
                 if (this.activeFeed !== this.feeds[index].url) {
@@ -225,15 +195,24 @@ export class RssFeed {
     }
 
     getFeedFromInput(url, title) {
-        if (url.value) {
-            this.getFeed(url.value, title.value)
-            .then(() => {
-                this.resetInputs();
-                clearTimeout(this.timeout);
-                this.updateFeeds(this.feeds);
-                localStorage.setItem("rss feeds", JSON.stringify(this.feeds));
-            });
+        if (!url.value || this.fetching) {
+            return;
         }
+        this.fetching = true;
+        this.getFeed(url.value, title.value)
+        .then(message => {
+            this.fetching = false;
+
+            if (message) {
+                this.message = message;
+                setTimeout(() => {
+                    this.message = "";
+                }, 4000);
+                return;
+            }
+            this.resetInputs();
+            this.saveFeeds(this.feeds);
+        });
     }
 
     getFeed(url, title, index) {
@@ -243,6 +222,9 @@ export class RssFeed {
 
         return this.feedService.fetchFeed(url)
             .then(feed => {
+                if (!feed) {
+                    return "No feed found";
+                }
                 const newFeed = {
                     url,
                     title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
