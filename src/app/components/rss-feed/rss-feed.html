@@ -6,25 +6,22 @@
                [class.active]="feed.url === activeFeed"
                (click)="showFeed(feed.url, i)">
                 <span *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
-                <span (dblclick)="enableFeedEdit(i)">{{ feed.title }}</span>
+                <span>{{ feed.title }}</span>
                 <button class="icon-cancel btn remove-feed-btn" (click)="removeFeed(i)" title="Remove feed"></button>
             </li>
         </ul>
         <button class="icon-plus btn" (click)="addNewFeed()" title="Add new feed"></button>
     </div>
     <div class="feed-hero" *ngIf="addingNewFeed">
-        <h2 class="feed-hero-title">{{ action }} RSS Feed</h2>
+        <h2 class="feed-hero-title">Add RSS Feed</h2>
         <div class="feed-input-container">
             <label for="feed-title-input" class="feed-input-label">Feed title</label>
-            <input type="text" id="feed-title-input" class="input feed-input"
-                #feedTitle
-                [value]="feedInput.title || ''">
+            <input type="text" id="feed-title-input" class="input feed-input" #feedTitle>
             <label for="feed-url-input" class="feed-input-label">Feed url</label>
-            <input type="text" id="feed-url-input" class="input feed-input"
-                #feedUrl
-                [value]="feedInput.url || ''">
+            <input type="text" id="feed-url-input" class="input feed-input" #feedUrl>
+            <span class="icon-spin4 animate-spin" *ngIf="fetching"></span>
+            <span class="feed-message">{{ message }}</span>
             <button class="btn" (click)="getFeedFromInput(feedUrl, feedTitle)" *ngIf="!editingFeed">Add</button>
-            <button class="btn" (click)="editFeed(feedUrl, feedTitle)" *ngIf="editingFeed">Edit</button>
         </div>
     </div>
     <ul class="feeds" *ngIf="!addingNewFeed && feeds.length">
@@ -34,7 +31,7 @@
                     <a href="{{ entry.link }}" class="feed-entry-link" (click)="removeNewEntryLabel(entry)" target="_blank">
                         <span class="feed-entry-title">{{ entry.title }}</span>
                     </a>
-                    <p class="feed-entry-desc">{{ entry.desc }}</p>
+                    <p class="feed-entry-desc" [innerHTML]="entry.desc"></p>
                     <span class="feed-entry-date" *ngIf="entry.date">
                         {{ entry.date | date: "EEEE MMMM dd"}} {{ entry.date | date: "shortTime" }}
                     </span>
