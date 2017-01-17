@@ -32,9 +32,7 @@
                         <span class="feed-entry-title">{{ entry.title }}</span>
                     </a>
                     <p class="feed-entry-desc" [innerHTML]="entry.desc"></p>
-                    <span class="feed-entry-date" *ngIf="entry.date">
-                        {{ entry.date | date: "EEEE MMMM dd"}} {{ entry.date | date: "shortTime" }}
-                    </span>
+                    <span class="feed-entry-date" *ngIf="entry.date">{{ entry.date }}</span>
                     <span *ngIf="entry.newEntry" class="is-new-entry">New</span>
                 </li>
             </ul>

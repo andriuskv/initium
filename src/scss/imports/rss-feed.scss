@@ -121,7 +121,7 @@
     font-size: 14px;
     overflow: hidden;
     word-break: break-word;
-    white-space: pre-wrap;
+    white-space: pre-line;
 
     p {
         margin-top: 0;
@@ -138,9 +138,10 @@
             text-decoration: underline;
         }
     }
+    tr {
+        display: flex;
+    }
     td {
-        display: inline-block;
-        vertical-align: top;
         padding-right: 4px;
         white-space: normal;
     }
