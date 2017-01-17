@@ -1,3 +1,5 @@
+/* global chrome */
+
 import { Component } from "@angular/core";
 
 @Component({
@@ -12,7 +14,13 @@ import { Component } from "@angular/core";
 })
 export class Notepad {
     constructor() {
-        this.notepad = localStorage.getItem("notepad") || "";
+        this.notepad = "";
+    }
+
+    ngOnInit() {
+        chrome.storage.sync.get("notepad", storage => {
+            this.notepad = storage.notepad || localStorage.getItem("notepad") || "";
+        });
     }
 
     insertSpace(elem) {
@@ -27,7 +35,7 @@ export class Notepad {
     }
 
     saveContent(content) {
-        localStorage.setItem("notepad", content);
+        chrome.storage.sync.set({ notepad: content });
     }
 
     onInput(event) {
