@@ -4,7 +4,7 @@
             <li class="feed-title"
                *ngFor="let feed of feeds; let i = index"
                [class.active]="feed.url === activeFeed"
-               (click)="showFeed(feed.url, i)">
+               (click)="showFeed(feed)">
                 <span *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
                 <span>{{ feed.title }}</span>
                 <button class="icon-cancel btn remove-feed-btn" (click)="removeFeed(i)" title="Remove feed"></button>
@@ -21,7 +21,7 @@
             <input type="text" id="feed-url-input" class="input feed-input" #feedUrl>
             <span class="icon-spin4 animate-spin" *ngIf="fetching"></span>
             <span class="feed-message">{{ message }}</span>
-            <button class="btn" (click)="getFeedFromInput(feedUrl, feedTitle)" *ngIf="!editingFeed">Add</button>
+            <button class="btn" (click)="getFeedFromInput(feedUrl, feedTitle)">Add</button>
         </div>
     </div>
     <ul class="feeds" *ngIf="!addingNewFeed && feeds.length">

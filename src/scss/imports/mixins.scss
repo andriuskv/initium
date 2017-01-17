@@ -1,7 +1,6 @@
 @mixin input-styles($color: $color2) {
     padding: 2px 4px;
     border: none;
-    border-radius: 2px;
     background-color: $color;
     color: $primary-text-color;
     font-size: 14px;

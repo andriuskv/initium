@@ -14,14 +14,16 @@
     align-items: stretch;
     width: calc(100% - 32px);
     margin-right: 2px;
-    background-color: $color2;
 }
 .feed-title {
     position: relative;
     flex: 1 1 100px;
     height: 20px;
-    padding-top: 3px;
+    padding: 3px 2px 0 2px;
+    margin-right: 1px;
+    margin-left: 1px;
     border-bottom: 2px solid $color2;
+    background-color: $color2;
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -29,16 +31,18 @@
     cursor: pointer;
     user-select: none;
 
-    &.active {
-        border-color: $brand-color;
-    }
-
     &:hover {
         color: $brand-color;
 
         .remove-feed-btn {
             display: inline-block;
         }
+    }
+    &:last-of-type {
+        margin: 0;
+    }
+    &.active {
+        border-color: $brand-color;
     }
 }
 .remove-feed-btn {
@@ -112,15 +116,16 @@
     font-weight: bold;
 }
 .feed-entry-desc {
-    display: flex;
-    flex-direction: column;
-    margin-top: 8px;
+    margin-top: 4px;
     margin-bottom: 4px;
     font-size: 14px;
+    overflow: hidden;
+    word-break: break-word;
+    white-space: pre-wrap;
 
     p {
         margin-top: 0;
-        margin-bottom: 4px;
+        margin-bottom: 0;
     }
     img {
         max-width: 100px;
@@ -137,6 +142,7 @@
         display: inline-block;
         vertical-align: top;
         padding-right: 4px;
+        white-space: normal;
     }
 }
 .feed-entry-date {
