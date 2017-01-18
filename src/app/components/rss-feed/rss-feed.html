@@ -12,7 +12,7 @@
         </ul>
         <button class="icon-plus btn" (click)="addNewFeed()" title="Add new feed"></button>
     </div>
-    <div class="feed-hero" *ngIf="addingNewFeed">
+    <div class="feed-hero" *ngIf="!activeFeed">
         <h2 class="feed-hero-title">Add RSS Feed</h2>
         <div class="feed-input-container">
             <label for="feed-title-input" class="feed-input-label">Feed title</label>
@@ -24,7 +24,7 @@
             <button class="btn" (click)="getFeedFromInput(feedUrl, feedTitle)">Add</button>
         </div>
     </div>
-    <ul class="feeds" *ngIf="!addingNewFeed && feeds.length">
+    <ul class="feeds" *ngIf="activeFeed && feeds.length">
         <li *ngFor="let feed of feeds">
             <ul *ngIf="feed.url === activeFeed">
                 <li class="feed-entry" *ngFor="let entry of feed.entries">

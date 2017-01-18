@@ -7,16 +7,12 @@
     </li>
     <li class="main-block-nav-item" title="Twitter">
         <button class="icon-twitter font-btn" (click)="selectItem('twitter')">
-            <span class="count-indicator"
-            [class.visible]="items.twitter.new"
-            *ngIf="items.twitter.count">{{ items.twitter.count }}</span>
+            <span class="indicator" *ngIf="items.twitter.new"></span>
         </button>
     </li>
     <li class="main-block-nav-item" title="RSS feed">
         <button class="icon-rss font-btn" (click)="selectItem('rssFeed')">
-            <span class="count-indicator"
-            [class.visible]="items.rssFeed.new"
-            *ngIf="items.rssFeed.count">{{ items.rssFeed.count }}</span>
+            <span class="indicator" *ngIf="items.rssFeed.new"></span>
         </button>
     </li>
 </ul>

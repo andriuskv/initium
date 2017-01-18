@@ -11,13 +11,13 @@
     </li>
     <li class="main-block-content-item" [class.hidden]="item !== 'twitter'">
         <twitter [item]="item"
-            (newTweetCount)="onNewItemCount($event, 'twitter')"
+            (newTweets)="onNewItems($event, 'twitter')"
             (toggleTab)="onToggleTab($event)">
         </twitter>
     </li>
     <li class="main-block-content-item" [class.hidden]="item !== 'rssFeed'">
         <rss-feed [item]="item"
-            (newFeedEntries)="onNewItemCount($event, 'rssFeed')"
+            (newEntries)="onNewItems($event, 'rssFeed')"
             (toggleTab)="onToggleTab($event)">
         </rss-feed>
     </li>

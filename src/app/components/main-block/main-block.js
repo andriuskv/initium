@@ -12,7 +12,7 @@ import { Component, Input } from "@angular/core";
             <main-block-content
                 [choice]="item"
                 [setting]="mainBlockSetting"
-                (newItemCount)="onNewItemCount($event)"
+                (newItems)="onNewItems($event)"
                 (toggleTab)="onToggleTab($event)">
             </main-block-content>
         </div>
@@ -33,7 +33,7 @@ export class MainBlock {
         this.item = choice;
     }
 
-    onNewItemCount(item) {
+    onNewItems(item) {
         this.itemUpdate = Object.assign({}, item);
     }
 
