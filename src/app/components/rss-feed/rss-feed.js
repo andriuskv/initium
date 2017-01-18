@@ -7,7 +7,7 @@ import { NotificationService } from "./../../services/notificationService";
     templateUrl: "app/components/rss-feed/rss-feed.html"
 })
 export class RssFeed {
-    @Output() newFeedEntries = new EventEmitter();
+    @Output() newEntries = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
     @Input() item;
 
@@ -20,7 +20,6 @@ export class RssFeed {
         this.notification = notificationService;
         this.feeds = [];
         this.feedsToLoad = JSON.parse(localStorage.getItem("rss feeds")) || [];
-        this.addingNewFeed = false;
         this.activeFeed = "";
         this.latestActiveFeed = "";
         this.newEntryCount = 0;
@@ -83,61 +82,50 @@ export class RssFeed {
     }
 
     addNewFeed() {
-        this.addingNewFeed = !this.addingNewFeed;
-
-        if (!this.addingNewFeed && this.latestActiveFeed) {
-            this.activeFeed = this.latestActiveFeed;
-            this.latestActiveFeed = "";
-        }
-        else {
+        if (this.activeFeed) {
             this.latestActiveFeed = this.activeFeed;
             this.activeFeed = "";
+        }
+        else {
+            this.activeFeed = this.latestActiveFeed;
+            this.latestActiveFeed = "";
         }
     }
 
     removeFeed(index) {
         this.feeds.splice(index, 1);
         this.saveFeeds(this.feeds);
-
-        if (this.feeds.length) {
-            this.activeFeed = this.feeds[0].url;
-            this.addingNewFeed = false;
-        }
-        else {
-            this.addingNewFeed = true;
-        }
+        this.activeFeed = this.feeds.length ? this.feeds[0].url : "";
     }
 
     loadFeeds(feeds) {
         if (!feeds.length) {
-            this.addingNewFeed = true;
             return;
         }
         const feedsToLoad = feeds.map(feed => this.getFeed(feed.url, feed.title));
 
         Promise.all(feedsToLoad)
         .then(() => {
-            this.addingNewFeed = false;
             this.activeFeed = this.activeFeed || this.feeds[0].url;
-            clearTimeout(this.timeout);
-            this.getNewFeeds(this.feeds);
+            this.getNewFeeds();
         })
         .catch(error => {
             console.log(error);
         });
     }
 
-    getNewFeeds(feeds) {
-        if (feeds.length) {
-            this.timeout = setTimeout(() => {
-                this.updateFeeds(feeds);
-                this.getNewFeeds(feeds);
-            }, 1800000);
-        }
+    getNewFeeds() {
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+            if (this.feeds.length) {
+                this.updateFeeds();
+            }
+            this.getNewFeeds();
+        }, 1200000);
     }
 
-    updateFeeds(feeds) {
-        const feedsToUpdate = feeds.map(feed => this.updateFeed(feed));
+    updateFeeds() {
+        const feedsToUpdate = this.feeds.map(feed => this.updateFeed(feed));
 
         Promise.all(feedsToUpdate)
         .then(newEntryCount => {
@@ -149,10 +137,13 @@ export class RssFeed {
             this.newEntryCount += newEntryCount;
 
             if (!this.isActive) {
-                this.newFeedEntries.emit(this.newEntryCount);
+                this.newEntries.emit(true);
             }
             if (document.hidden) {
-                this.notification.send("RSS feed", `You have ${this.newEntryCount} new entries`)
+                this.notification.send(
+                    "RSS feed",
+                    `You have ${this.newEntryCount} new entries`
+                )
                 .then(disabled => {
                     if (!disabled) {
                         this.toggleTab.emit("rssFeed");
@@ -165,18 +156,23 @@ export class RssFeed {
         });
     }
 
+    getNewEntries(newFeed, feed) {
+        const urls = feed.entries.map(entry => entry.link);
+
+        return newFeed.entries.filter(entry => {
+            const link = typeof entry.link === "string" ? entry.link : entry.link.href;
+
+            return urls.indexOf(link) === -1;
+        });
+    }
+
     updateFeed(feed) {
         return this.feedService.fetchFeed(feed.url)
             .then(newFeed => {
                 if (!newFeed) {
                     return 0;
                 }
-                const urls = feed.entries.map(entry => entry.link);
-                let newEntries = newFeed.entries.filter(entry => {
-                    const link = typeof entry.link === "string" ? entry.link : entry.link.href;
-
-                    return urls.indexOf(link) === -1;
-                });
+                let newEntries = this.getNewEntries(newFeed, feed);
 
                 if (newEntries.length) {
                     newEntries = this.getEntries(newEntries, true);
@@ -206,8 +202,8 @@ export class RssFeed {
                 }, 4000);
                 return;
             }
-            this.addingNewFeed = false;
             this.activeFeed = url.value;
+            this.getNewFeeds();
             this.saveFeeds(this.feeds);
         });
     }
@@ -228,10 +224,6 @@ export class RssFeed {
     }
 
     showFeed(feed) {
-        if (this.addingNewFeed) {
-            this.addingNewFeed = false;
-        }
-
         if (feed.url !== this.activeFeed) {
             this.activeFeed = feed.url;
         }

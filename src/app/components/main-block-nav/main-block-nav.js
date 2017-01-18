@@ -14,12 +14,10 @@ export class MainBlockNav {
         this.item = this.getItem();
         this.items = {
             twitter: {
-                new: false,
-                count: 0
+                new: false
             },
             rssFeed: {
-                new: false,
-                count: 0
+                new: false
             }
         };
     }
@@ -31,19 +29,7 @@ export class MainBlockNav {
     ngOnChanges(changes) {
         if (changes.newItemUpdate && !changes.newItemUpdate.isFirstChange()) {
             const newItem = changes.newItemUpdate.currentValue;
-            const item = this.items[newItem.name];
-            const count = newItem.count || 0;
-
-            item.new = item.count !== count;
-            item.count = count;
-
-            if (item.count > 99) {
-                item.count = "99+";
-            }
-
-            setTimeout(() => {
-                item.new = false;
-            }, 1000);
+            this.items[newItem.name].new = newItem.isNew;
             return;
         }
 
@@ -67,12 +53,7 @@ export class MainBlockNav {
         this.item = item === this.item && !keepVisible ? "" : item;
 
         if (this.item === "twitter" || this.item === "rssFeed") {
-            const item = this.items[this.item];
-            const itemCount = Number.parseInt(item.count, 10);
-
-            if (itemCount) {
-                item.count = 0;
-            }
+            this.items[this.item].new = false;
         }
         this.choice.emit(this.item);
         localStorage.setItem("favorite tab", this.item);

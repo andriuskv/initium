@@ -31,21 +31,15 @@
         font-size: 16px;
     }
 }
-.count-indicator {
+.indicator {
     z-index: 1;
     position: absolute;
-    bottom: 0;
-    right: -2px;
-    padding: 1px 2px;
+    bottom: 2px;
+    right: 0;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background-color: $color3;
-    font-size: 9px;
-
-    &.visible {
-        animation-duration: 0.6s;
-        animation-timing-function: ease-in-out;
-        animation-name: pulse;
-    }
+    background-color: $brand-color;
 }
 .main-block-content {
     display: flex;
@@ -90,10 +84,4 @@
     padding-top: 1px;
     padding-bottom: 1px;
     border-radius: 0;
-}
-@keyframes pulse {
-    0% { transform: scale(1); }
-    25% { transform: scale(0.8); }
-    75% { transform: scale(1.2); }
-    100% { transform: scale(1); }
 }

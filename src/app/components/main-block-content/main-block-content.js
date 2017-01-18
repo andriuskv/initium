@@ -7,7 +7,7 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 export class MainBlockContent {
     @Input() choice;
     @Input() setting;
-    @Output() newItemCount = new EventEmitter();
+    @Output() newItems = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
 
     constructor() {
@@ -27,8 +27,8 @@ export class MainBlockContent {
         }
     }
 
-    onNewItemCount(count, name) {
-        this.newItemCount.emit({ count, name });
+    onNewItems(isNew, name) {
+        this.newItems.emit({ isNew, name });
     }
 
     onToggleTab(item) {

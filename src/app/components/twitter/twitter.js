@@ -9,7 +9,7 @@ import { NotificationService } from "./../../services/notificationService";
     templateUrl: "app/components/twitter/twitter.html"
 })
 export class Twitter {
-    @Output() newTweetCount = new EventEmitter();
+    @Output() newTweets = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
     @Input() item;
 
@@ -208,7 +208,6 @@ export class Twitter {
 
         this.tweets.unshift(...newTweets);
         this.tweetsToLoad.length = 0;
-        this.newTweetCount.emit(0);
         this.tweetsToRemove = Math.floor(this.tweetsToRemove / 2);
 
         if (this.tweetsToRemove) {
@@ -244,12 +243,12 @@ export class Twitter {
                         this.tweetsToRemove += newTweets.length;
 
                         if (!this.isActive) {
-                            this.newTweetCount.emit(this.tweetsToLoad.length);
+                            this.newTweets.emit(true);
                         }
                         if (document.hidden) {
                             this.notification.send(
                                 "Twitter",
-                                `You have ${this.tweetsToLoad.length} new tweets.`
+                                `You have ${this.tweetsToLoad.length} new tweets`
                             ).then(disabled => {
                                 if (!disabled) {
                                     this.toggleTab.emit("twitter");
