@@ -12,7 +12,7 @@
                 (click)="markTodoDone(i, done)"
                 [checked]="todo.done" #done>
                 <label [attr.for]="i" class="checkbox-label" *ngIf="todo.text"></label>
-                <span class="todo-item-text"
+                <span class="todo-text todo-item-text"
                     [ngClass]="{ done: todo.done, 'is-empty': !todo.text }"
                     (dblclick)="enableTodoEdit(todo, i)">{{ todo.text }}
                     <button class="icon-pin font-btn todo-pin-btn" title="Pin"
