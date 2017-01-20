@@ -1,19 +1,25 @@
 .rss-feed {
     height: 100%;
-
-    &.is-hero-visible {
-        background-color: $color2;
-    }
 }
 .feed-header {
     display: flex;
+    height: 20px;
     margin-bottom: 2px;
+
+    > .btn {
+        padding: 2px 4px;
+        margin-left: 2px;
+    }
 }
 .feed-titles {
     display: flex;
     align-items: stretch;
-    width: calc(100% - 32px);
-    margin-right: 2px;
+    width: calc(100% - 22px);
+
+    &.is-empty {
+        width: 100%;
+        background-color: $color2;
+    }
 }
 .feed-title {
     position: relative;
@@ -34,8 +40,8 @@
     &:hover {
         color: $brand-color;
 
-        .remove-feed-btn {
-            display: inline-block;
+        .entry-title-btn {
+            display: block;
         }
     }
     &:last-of-type {
@@ -45,13 +51,28 @@
         border-color: $brand-color;
     }
 }
-.remove-feed-btn {
+.entry-title-btn {
     position: absolute;
     top: 2px;
-    right: 2px;
     display: none;
     padding: 0;
-    box-shadow: -4px 0 8px $color2;
+    box-shadow: 2px 0 4px 4px $color2;
+}
+.remove-feed-btn {
+    right: 2px;
+}
+.mark-as-read-btn {
+    right: 20px;
+}
+.feed-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100% - 22px);
+
+    span {
+        font-size: 64px;
+    }
 }
 .feed-hero {
     display: flex;

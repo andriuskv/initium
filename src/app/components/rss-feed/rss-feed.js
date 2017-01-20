@@ -24,13 +24,13 @@ export class RssFeed {
         this.latestActiveFeed = "";
         this.newEntryCount = 0;
         this.timeout = 0;
+        this.loading = true;
     }
 
     ngOnInit() {
         const delay = this.isActive ? 2000 : 10000;
 
         this.initTimeout = setTimeout(() => {
-            this.initTimeout = null;
             this.loadFeeds(this.feedsToLoad);
         }, delay);
     }
@@ -44,7 +44,6 @@ export class RssFeed {
             }
             if (this.initTimeout) {
                 clearTimeout(this.initTimeout);
-                this.initTimeout = null;
                 this.loadFeeds(this.feedsToLoad);
             }
         }
@@ -59,26 +58,38 @@ export class RssFeed {
         localStorage.setItem("rss feeds", JSON.stringify(feedsToSave));
     }
 
-    getEntry(entry, newEntry = false) {
-        let desc = "";
-
-        if (entry.description) {
-            desc = entry.description;
+    getEntryLink(entry) {
+        if (typeof entry.link === "string") {
+            return entry.link;
         }
-        else if (typeof entry.content === "object") {
-            desc = entry.content.content || "";
+        if (entry.link && entry.link.href) {
+            return entry.link.href;
         }
-        return {
-            newEntry,
-            desc,
-            link: typeof entry.link === "string" ? entry.link : entry.link.href,
-            title: entry.title,
-            date: entry.pubDate || entry.updated || ""
-        };
+        if (entry.origEnclosureLink) {
+            return entry.origEnclosureLink;
+        }
     }
 
-    getEntries(entries, newEntries) {
-        return entries.map(entry => this.getEntry(entry, newEntries));
+    getEntryDesc(entry) {
+        if (entry.subtitle) {
+            return entry.subtitle;
+        }
+        if (entry.description) {
+            return entry.description;
+        }
+        if (typeof entry.content === "object") {
+            return entry.content.content || "";
+        }
+    }
+
+    parseEntries(entries, newEntry = false) {
+        return entries.map(entry => ({
+            newEntry,
+            desc: this.getEntryDesc(entry),
+            link: this.getEntryLink(entry),
+            title: entry.title,
+            date: entry.pubDate || entry.updated || ""
+        }));
     }
 
     addNewFeed() {
@@ -99,17 +110,23 @@ export class RssFeed {
     }
 
     loadFeeds(feeds) {
+        this.initTimeout = null;
+
         if (!feeds.length) {
+            this.loading = false;
             return;
         }
         const feedsToLoad = feeds.map(feed => this.getFeed(feed.url, feed.title));
 
         Promise.all(feedsToLoad)
         .then(() => {
+            this.loading = false;
             this.activeFeed = this.activeFeed || this.feeds[0].url;
+            this.feedsToLoad.length = 0;
             this.getNewFeeds();
         })
         .catch(error => {
+            this.loading = false;
             console.log(error);
         });
     }
@@ -121,7 +138,7 @@ export class RssFeed {
                 this.updateFeeds();
             }
             this.getNewFeeds();
-        }, 1200000);
+        }, 1500000);
     }
 
     updateFeeds() {
@@ -157,12 +174,12 @@ export class RssFeed {
     }
 
     getNewEntries(newFeed, feed) {
-        const urls = feed.entries.map(entry => entry.link);
+        return newFeed.entries.filter(newEntry => {
+            const link = this.getEntryLink(newEntry);
+            const title = newEntry.title;
+            const duplicate = feed.entries.some(entry => entry.link === link || entry.title === title);
 
-        return newFeed.entries.filter(entry => {
-            const link = typeof entry.link === "string" ? entry.link : entry.link.href;
-
-            return urls.indexOf(link) === -1;
+            return !duplicate;
         });
     }
 
@@ -175,12 +192,9 @@ export class RssFeed {
                 let newEntries = this.getNewEntries(newFeed, feed);
 
                 if (newEntries.length) {
-                    newEntries = this.getEntries(newEntries, true);
+                    newEntries = this.parseEntries(newEntries, true);
+                    feed.newEntries += newEntries.length;
                     feed.entries.unshift(...newEntries);
-
-                    if (this.activeFeed !== feed.url) {
-                        feed.newEntries += newEntries.length;
-                    }
                 }
                 return newEntries.length;
             });
@@ -218,7 +232,7 @@ export class RssFeed {
                     url,
                     title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
                     newEntries: 0,
-                    entries: this.getEntries(feed.entries)
+                    entries: this.parseEntries(feed.entries)
                 });
             });
     }
@@ -227,15 +241,23 @@ export class RssFeed {
         if (feed.url !== this.activeFeed) {
             this.activeFeed = feed.url;
         }
-
-        if (feed.newEntries > 0) {
-            feed.newEntries = 0;
-        }
     }
 
-    removeNewEntryLabel(entry) {
-        if (entry.newEntry) {
+    markEntriesAsRead(feed) {
+        feed.newEntries = 0;
+        feed.entries = feed.entries.map(entry => {
             entry.newEntry = false;
-        }
+            return entry;
+        });
+    }
+
+    markEntryAsRead(feed, entry) {
+        entry.newEntry = false;
+        feed.newEntries = feed.entries.reduce((count, entry) => {
+            if (entry.newEntry) {
+                count += 1;
+            }
+            return count;
+        }, 0);
     }
 }

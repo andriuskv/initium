@@ -1,18 +1,28 @@
-<div class="rss-feed" [class.is-hero-visible]="!feeds.length">
-    <div class="feed-header" *ngIf="feeds.length">
-        <ul class="feed-titles">
+<div class="rss-feed">
+    <div class="feed-header" *ngIf="!loading">
+        <ul class="feed-titles" [class.is-empty]="!feeds.length">
             <li class="feed-title"
                *ngFor="let feed of feeds; let i = index"
                [class.active]="feed.url === activeFeed"
                (click)="showFeed(feed)">
                 <span *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
                 <span>{{ feed.title }}</span>
-                <button class="icon-cancel btn remove-feed-btn" (click)="removeFeed(i)" title="Remove feed"></button>
+                <button class="icon-ok btn entry-title-btn mark-as-read-btn"
+                    title="Mark new entries as read"
+                    (click)="markEntriesAsRead(feed)"
+                    *ngIf="feed.newEntries"></button>
+                <button class="icon-cancel btn entry-title-btn remove-feed-btn"
+                    (click)="removeFeed(i)" title="Remove feed"></button>
             </li>
         </ul>
-        <button class="icon-plus btn" (click)="addNewFeed()" title="Add new feed"></button>
+        <button class="icon-plus btn" title="Add new feed"
+            (click)="addNewFeed()"
+            *ngIf="feeds.length"></button>
     </div>
-    <div class="feed-hero" *ngIf="!activeFeed">
+    <div class="feed-loader" *ngIf="loading">
+        <span class="icon-rss"></span>
+    </div>
+    <div class="feed-hero" *ngIf="!activeFeed && !loading">
         <h2 class="feed-hero-title">Add RSS Feed</h2>
         <div class="feed-input-container">
             <label for="feed-title-input" class="feed-input-label">Feed title</label>
@@ -28,7 +38,8 @@
         <li *ngFor="let feed of feeds">
             <ul *ngIf="feed.url === activeFeed">
                 <li class="feed-entry" *ngFor="let entry of feed.entries">
-                    <a href="{{ entry.link }}" class="feed-entry-link" (click)="removeNewEntryLabel(entry)" target="_blank">
+                    <a href="{{ entry.link }}" class="feed-entry-link"
+                        (click)="markEntryAsRead(feed, entry)" target="_blank">
                         <span class="feed-entry-title">{{ entry.title }}</span>
                     </a>
                     <p class="feed-entry-desc" [innerHTML]="entry.desc"></p>
