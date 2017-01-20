@@ -4,7 +4,7 @@ import { Component, Input } from "@angular/core";
     selector: "todo-pin",
     template: `
         <ul>
-            <li class="pinned-todo" *ngFor="let todo of todos; let i = index">{{todo.text}}</li>
+            <li class="todo-text pinned-todo" *ngFor="let todo of todos; let i = index">{{todo.text}}</li>
         </ul>
     `
 })
