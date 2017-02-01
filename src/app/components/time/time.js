@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { DateService } from "./../../services/dateService";
+import { DateService } from "Services/dateService";
 
 @Component({
     selector: "time",

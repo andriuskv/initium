@@ -1,8 +1,8 @@
 /* global Codebird */
 
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { DateService } from "./../../services/dateService";
-import { NotificationService } from "./../../services/notificationService";
+import { DateService } from "Services/dateService";
+import { NotificationService } from "Services/notificationService";
 
 @Component({
     selector: "twitter",
@@ -26,7 +26,6 @@ export class Twitter {
         this.twitterTimeout = 0;
         this.tweetTimeTimeout = 0;
         this.tweetUpdateTimeout = 0;
-        this.tweetsToRemove = 0;
     }
 
     ngOnInit() {
@@ -50,7 +49,7 @@ export class Twitter {
     initTwitter() {
         const script = document.createElement("script");
 
-        script.setAttribute("src", "js/libs/codebird.js");
+        script.setAttribute("src", "libs/codebird.js");
         document.getElementsByTagName("body")[0].appendChild(script);
         script.addEventListener("load", () => {
             if (this.isAuthenticated()) {
@@ -64,7 +63,8 @@ export class Twitter {
     }
 
     setKey(ref) {
-        ref.setConsumerKey("", "");
+        const keys = process.env.TWITTER_API_KEYS.split(" ");
+        ref.setConsumerKey(keys[0], keys[1]);
     }
 
     setInfo(ref, info) {
@@ -208,14 +208,6 @@ export class Twitter {
 
         this.tweets.unshift(...newTweets);
         this.tweetsToLoad.length = 0;
-        this.tweetsToRemove = Math.floor(this.tweetsToRemove / 2);
-
-        if (this.tweetsToRemove) {
-            this.tweets = this.tweets.slice(0, -this.tweetsToRemove);
-        }
-        else {
-            this.tweetsToRemove += 1;
-        }
     }
 
     updateTweetTime() {
@@ -240,7 +232,6 @@ export class Twitter {
                     if (newTweets.length) {
                         this.tweetsToLoad.unshift(...newTweets);
                         this.updateTimeline(userInfo, newTweets[0].id);
-                        this.tweetsToRemove += newTweets.length;
 
                         if (!this.isActive) {
                             this.newTweets.emit(true);
@@ -367,7 +358,6 @@ export class Twitter {
         this.isLoggedIn = false;
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
-        this.tweetsToRemove = 0;
     }
 
     fetchMoreTweets() {

@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from "@angular/core";
-import { SettingService } from "./../../services/settingService";
+import { SettingService } from "Services/settingService";
 
 @Component({
     selector: "settings",

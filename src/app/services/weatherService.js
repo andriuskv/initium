@@ -2,10 +2,9 @@ export class WeatherService {
     fetchWeather(params) {
         const url = "http://api.openweathermap.org/data/2.5/weather";
         const units = "metric";
-        const id = "";
 
-        return fetch(`${url}?${params}&units=${units}&appid=${id}`)
-        .then(response => response.json());
+        return fetch(`${url}?${params}&units=${units}&appid=${process.env.OWM_API_KEY}`)
+            .then(response => response.json());
     }
 
     getWeatherWithCityName(name) {

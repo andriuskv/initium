@@ -1,4 +1,4 @@
-import "reflect-metadata";
+import "core-js/es7/reflect";
 import "zone.js/dist/zone";
 
 import { NgModule, enableProdMode } from "@angular/core";
@@ -6,11 +6,11 @@ import { BrowserModule } from "@angular/platform-browser";
 import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
 import { FormsModule } from '@angular/forms';
 
-import { DateService } from "./services/dateService";
-import { SettingService } from "./services/settingService";
-import { WeatherService } from "./services/weatherService";
-import { NotificationService } from "./services/notificationService";
-import { FeedService } from "./services/feedService";
+import { DateService } from "Services/dateService";
+import { SettingService } from "Services/settingService";
+import { WeatherService } from "Services/weatherService";
+import { NotificationService } from "Services/notificationService";
+import { FeedService } from "Services/feedService";
 
 import { App } from './app';
 import { Background } from "./components/background/background";

@@ -1,26 +1,64 @@
+const webpack = require("webpack");
 const path = require("path");
+const plugins = [
+    new webpack.DefinePlugin({
+        "process.env": {
+            NODE_ENV: JSON.stringify("production"),
+            DROPBOX_API_KEY: JSON.stringify(process.env.DROPBOX_API_KEY),
+            OWM_API_KEY: JSON.stringify(process.env.OWM_API_KEY),
+            TWITTER_API_KEYS: JSON.stringify(process.env.TWITTER_API_KEYS)
+        }
+    })
+];
+
+if (process.env.ENV === "prod") {
+    plugins.push(
+        new webpack.optimize.UglifyJsPlugin({
+            comments: false,
+            compress: {
+                warnings: false,
+                unused: true,
+                dead_code: true,
+                screw_ie8: true,
+                conditionals: true,
+                evaluate: true,
+                unsafe: true,
+                drop_console: true,
+                comparisons: true,
+                sequences: true
+            }
+        })
+    );
+}
 
 module.exports = {
     entry: {
-        main: path.resolve( __dirname, "app/main.js")
+        main: "./src/app/main.js"
     },
     output: {
-        path: __dirname + "/js",
+        path: "./dist/js",
         filename: "[name].js"
     },
     resolve: {
-        extensions: ["", ".js"],
-        modules: [path.resolve(__dirname, "app"), "node_modules"]
+        modules: [path.resolve("src/app"), "node_modules"],
+        alias: {
+            Services: path.resolve(__dirname, "app/services/")
+        }
     },
     module: {
-        loaders: [{
+        rules: [{
             test: /\.js$/,
             loader: "babel-loader",
             exclude: /node_modules/,
-            query: {
-                plugins: ["transform-decorators-legacy"],
-                presets: ["latest", "angular2"]
+            options: {
+                plugins: [
+                    "transform-decorators-legacy",
+                    "transform-class-properties"
+                ],
+                presets: [["latest", { modules: false }]]
             }
         }]
-    }
+    },
+    devtool: process.env.ENV === "prod" ? false : "inline-source-map",
+    plugins
 };
