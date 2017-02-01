@@ -21,7 +21,11 @@ export class CalendarReminders {
             this.reminders = changes.newReminders.currentValue;
         }
         if (changes.setting && changes.setting.currentValue) {
-            this.disabled = changes.setting.currentValue.calendarRemindersDisabled;
+            const setting = changes.setting.currentValue;
+
+            if (typeof setting.calendarRemindersDisabled === "boolean") {
+                this.disabled = setting.calendarRemindersDisabled;
+            }
         }
     }
 }

@@ -33,10 +33,12 @@ export class Time {
             if (setting.timeDisplay) {
                 this.changeTimeDisplay(setting.timeDisplay);
             }
-            if (!setting.dateDisabled) {
-                this.date = this.dateService.getDate();
+            if (typeof setting.dateDisabled === "boolean") {
+                if (!setting.dateDisabled) {
+                    this.date = this.dateService.getDate();
+                }
+                this.dateDisabled = setting.dateDisabled;
             }
-            this.dateDisabled = setting.dateDisabled;
         }
     }
 
