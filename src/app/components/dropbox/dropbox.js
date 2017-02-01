@@ -1,7 +1,6 @@
-/* global Dropbox */
-
 import { Component, Output, EventEmitter } from "@angular/core";
-import { SettingService } from "./../../services/settingService";
+import { SettingService } from "Services/settingService";
+import Dropbox from "dropbox";
 
 @Component({
     selector: "dropbox",
@@ -34,7 +33,7 @@ export class DropboxComp {
 
     ngOnInit() {
         const token = localStorage.getItem("dropbox token");
-        this.dropbox = new Dropbox({ clientId: "" });
+        this.dropbox = new Dropbox({ clientId: process.env.DROPBOX_API_KEY });
 
         if (token) {
             this.init(token);
@@ -170,10 +169,10 @@ export class DropboxComp {
                 if (newEntry.isDir) {
                     newEntry.cached = false;
                     newEntry.items = [];
-                    newEntry.thumbnail = "./resources/images/folder-icon.png";
+                    newEntry.thumbnail = "./assets/images/folder-icon.png";
                 }
                 else {
-                    newEntry.thumbnail = "./resources/images/file-icon.png";
+                    newEntry.thumbnail = "./assets/images/file-icon.png";
                     if (this.isImage(entry.name)) {
                         this.getThumbnail(newEntry.path)
                         .then(thumbnail => {

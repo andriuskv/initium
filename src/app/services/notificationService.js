@@ -28,7 +28,7 @@ export class NotificationService {
 
                 notification = new Notification(title, {
                     body,
-                    icon: "./resources/images/128.png"
+                    icon: "./assets/images/128.png"
                 });
                 this.onBeforeUnload(notification);
                 this.closeNotification(notification, 6000);
