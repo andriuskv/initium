@@ -199,7 +199,9 @@ export class Twitter {
             profileImg: tweet.user.profile_image_url_https,
             text: this.replaceTweetEntities(tweet.text, entities),
             created: this.getTweetDate(tweet.created_at),
-            media: this.getMediaUrl(entities.media)
+            media: this.getMediaUrl(entities.media),
+            retweetCount: tweet.retweet_count,
+            likeCount: tweet.favorite_count
         };
     }
 

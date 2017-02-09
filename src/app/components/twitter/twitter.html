@@ -44,6 +44,12 @@
                     </div>
                     <p class="twitter-tweet-text" *ngIf="tweet.text" [innerHTML]="tweet.text"></p>
                     <img src="{{ tweet.media }}" class="twitter-tweet-img" *ngIf="tweet.media">
+                    <div class="twitter-tweet-stats-container">
+                        <span class="icon-retweet"></span>
+                        <span>{{ tweet.retweetCount }}</span>
+                        <span class="icon-heart"></span>
+                        <span>{{ tweet.likeCount }}</span>
+                    </div>
                 </a>
             </li>
             <li>
