@@ -17,7 +17,10 @@ import { Component } from "@angular/core";
             (setting)="onSetting($event)"
             (reminders)="onReminders($event)">
         </widget-menu>
-        <timer [toggle]="toggle.timer"></timer>
+        <timer
+            [toggle]="toggle.timer"
+            (hide)="onHide($event)">
+        </timer>
     `
 })
 export class App {
@@ -34,5 +37,9 @@ export class App {
 
     onReminders(reminders) {
         this.reminders = reminders;
+    }
+
+    onHide(component) {
+        this.toggle[component] = false;
     }
 }

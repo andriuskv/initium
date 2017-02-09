@@ -1,10 +1,11 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "timer",
     templateUrl: "app/components/timer/timer.html"
 })
 export class Timer {
+    @Output() hide = new EventEmitter();
     @Input() toggle;
 
     constructor() {
@@ -13,7 +14,7 @@ export class Timer {
             minutes: "00",
             seconds: "00"
         };
-        this.timerEnabled = false;
+        this.visible = false;
         this.isSet = false;
         this.timeout = 0;
         this.alarmOn = true;
@@ -21,7 +22,15 @@ export class Timer {
     }
 
     ngOnChanges(changes) {
-        this.timerEnabled = changes.toggle.currentValue;
+        const toggle = changes.toggle;
+
+        if (!toggle.isFirstChange()) {
+            this.visible = toggle.currentValue;
+        }
+    }
+
+    hideTimer() {
+        this.hide.emit("timer");
     }
 
     updateValues(selectionStart, currentKey, target) {
@@ -145,7 +154,7 @@ export class Timer {
     initAlarm() {
         if (!this.alarm) {
             this.alarm = document.createElement("audio");
-            this.alarm.setAttribute("src", "resources/alarm-clock.mp3");
+            this.alarm.setAttribute("src", "./assets/alarm-clock.mp3");
         }
     }
 

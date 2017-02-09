@@ -1,4 +1,5 @@
-<div class="container timer" *ngIf="timerEnabled">
+<div class="container timer" *ngIf="visible">
+    <button class="icon-cancel font-btn timer-hide-btn" (click)="hideTimer()"></button>
     <div class="timer-displays" (keypress)="onKeypress($event, hours, minutes, seconds)">
         <input type="text" class="timer-input" maxlength="2" #hours
             [(ngModel)]="timer.hours"

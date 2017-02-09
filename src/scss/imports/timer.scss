@@ -6,6 +6,11 @@
     width: 320px;
     margin: 0 auto;
 }
+.timer-hide-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
 .timer-displays {
     display: flex;
     align-items: baseline;
