@@ -1,3 +1,5 @@
+$tweet-offset: 56px;
+
 .twitter-container {
     position: relative;
     height: 100%;
@@ -148,7 +150,7 @@
 }
 .twitter-tweet-text {
     display: inline-block;
-    width: calc(100% - 56px);
+    width: calc(100% - #{$tweet-offset});
     margin-top: 0;
     margin-bottom: 0;
     font-size: 14px;
@@ -163,12 +165,22 @@
     }
 }
 .tweet-image-container {
-    margin-left: 56px;
+    margin-left: $tweet-offset;
 }
 .twitter-tweet-img {
     display: block;
     margin-top: 4px;
-    margin-left: 56px;
-    max-width: calc(100% - 56px);
+    margin-left: $tweet-offset;
+    max-width: calc(100% - #{$tweet-offset});
     border-radius: 4px;
+}
+.twitter-tweet-stats-container {
+    padding-top: 4px;
+    margin-left: $tweet-offset;
+    color: #aaa;
+
+    span:nth-of-type(even) {
+        margin-left: 2px;
+        margin-right: 8px;
+    }
 }
