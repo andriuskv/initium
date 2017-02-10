@@ -33,14 +33,13 @@
     }
 }
 .page-title {
+    @include text-truncate;
+
     height: 20px;
     padding: 0 4px;
     border-bottom: 1px solid #444;
     font-size: 12px;
     line-height: 1.66;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
 }
 .remove-page-btn {
     position: absolute;
