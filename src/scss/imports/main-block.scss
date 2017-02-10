@@ -71,13 +71,6 @@
         display: none;
     }
 }
-.main-block-notepad {
-    @include scrollbar($color3);
-
-    resize: none;
-    width: 100%;
-    height: 100%;
-}
 .main-block-expand-btn {
     width: 100%;
     margin-top: 2px;
