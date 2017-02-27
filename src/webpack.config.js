@@ -57,7 +57,13 @@ module.exports = function(env = {}) {
                         "transform-decorators-legacy",
                         "transform-class-properties"
                     ],
-                    presets: [["latest", { modules: false }]]
+                    presets: [["env", {
+                        modules: false,
+                        useBuiltIns: true,
+                        targets: {
+                            browsers: ["last 2 versions", "Chrome > 45"]
+                        }
+                    }]]
                 }
             }]
         },

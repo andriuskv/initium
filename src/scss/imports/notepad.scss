@@ -2,12 +2,15 @@
     display: flex;
     height: 20px;
     margin-bottom: 2px;
+
+    li:not(:last-of-type) {
+        margin-right: 2px;
+    }
 }
 
 .notepad-header-item {
     position: relative;
     flex: 1;
-    margin-right: 2px;
     border-bottom: 2px solid $color2;
 
     &:hover .notepad-remove-tab-btn {
@@ -17,15 +20,20 @@
     &.active {
         border-bottom-color: $brand-color;
     }
+}
 
-    .input, .btn {
-        width: 100%;
-        height: 100%;
-    }
+.notepad-select-tab-btn, .notepad-title-input {
+    width: 100%;
+    height: 100%;
+}
 
-    .btn {
-        @include text-truncate;
-    }
+.notepad-select-tab-btn {
+    @include text-truncate;
+}
+
+.notepad-title-input {
+    padding-bottom: 1px;
+    text-align: center;
 }
 
 .notepad-remove-tab-btn {
@@ -37,7 +45,7 @@
     box-shadow: -6px 0px 5px 0px $color2;
 }
 
-.notepad-create-new-btn {
+.notepad-shift-btn, .notepad-select-tab-btn, .notepad-create-new-btn {
     padding: 2px 4px;
 }
 

@@ -7,17 +7,25 @@ import { DOCUMENT } from "@angular/platform-browser";
     selector: "notepad",
     template: `
         <ul class="notepad-header">
+            <li *ngIf="tabs.length > 4">
+                <button class="icon-left-open btn notepad-shift-btn" (click)="prevVisibleTabs()"></button>
+            </li>
             <li class="notepad-header-item"
-                *ngFor="let tab of tabs; let i = index"
+                *ngFor="let tab of visibleTabs; let i = index"
                 [class.active]="activeTabIndex === i">
-                <button class="btn" (click)="hideInputAndSelectTab(i)" *ngIf="!tab.settingTitle">{{ tab.title }}</button>
+                <button class="btn notepad-select-tab-btn" (click)="hideInputAndSelectTab(i)"
+                    *ngIf="!tab.settingTitle">{{ tab.title }}</button>
                 <button class="icon-cancel font-btn notepad-remove-tab-btn"
                     (click)="removeTab(i)"
                     *ngIf="tabs.length > 1 && !tab.settingTitle">
                 </button>
                 <input class="input notepad-title-input" type="text" #input
-                    (keyup.enter)="setTitle(input)"
+                    (keyup.enter)="blurTitleInput(input)"
+                    (blur)="setTitle(input)"
                     *ngIf="tab.settingTitle">
+            </li>
+            <li *ngIf="tabs.length > 4">
+                <button class="icon-right-open btn notepad-shift-btn" (click)="nextVisibleTabs()"></button>
             </li>
             <li>
                 <button class="icon-plus btn notepad-create-new-btn" (click)="createNewTab()"></button>
@@ -41,6 +49,9 @@ export class Notepad {
             title: "Tab",
             content: ""
         }];
+
+        this.visibleTabs = [];
+        this.shift = 0;
         this.activeTabIndex = 0;
     }
 
@@ -52,12 +63,39 @@ export class Notepad {
             else if (storage.notepad && storage.notepad.length) {
                 this.tabs = storage.notepad;
             }
+            this.setVisibleTabs();
             this.hideInputAndSelectTab(this.activeTabIndex);
         });
     }
 
+    setVisibleTabs(shift = 0) {
+        this.visibleTabs = this.tabs.slice(shift, shift + 4);
+    }
+
+    prevVisibleTabs() {
+        if (this.shift <= 0) {
+            return;
+        }
+        const index = this.activeTabIndex;
+
+        this.shift -= 1;
+        this.setVisibleTabs(this.shift);
+        this.selectTab(index === this.visibleTabs.length - 1 ? index : index + 1);
+    }
+
+    nextVisibleTabs() {
+        if (this.shift + 4 >= this.tabs.length) {
+            return;
+        }
+        const index = this.activeTabIndex;
+
+        this.shift += 1;
+        this.setVisibleTabs(this.shift);
+        this.selectTab(index === 0 ? index : index - 1);
+    }
+
     hideTitleInput() {
-        this.tabs = this.tabs.map(tab => {
+        this.visibleTabs = this.visibleTabs.map(tab => {
             tab.settingTitle = false;
             return tab;
         });
@@ -70,7 +108,7 @@ export class Notepad {
 
     selectTab(index) {
         this.activeTabIndex = index;
-        this.activeTabContent = this.tabs[index].content;
+        this.activeTabContent = this.visibleTabs[index].content;
     }
 
     createNewTab() {
@@ -80,21 +118,46 @@ export class Notepad {
             content: "",
             settingTitle: true
         });
-        this.selectTab(this.tabs.length - 1);
+        this.shift = this.tabs.length - 4;
+
+        if (this.shift < 0) {
+            this.shift = 0;
+        }
+        this.setVisibleTabs(this.shift);
+        this.selectTab(this.visibleTabs.length - 1);
         setTimeout(() => {
             this.document.querySelector(".notepad-title-input").focus();
         });
     }
 
     removeTab(index) {
+        const tabIndex = this.shift + index;
+
         if (index === this.activeTabIndex) {
-            this.selectTab(0);
+            this.activeTabIndex = 0;
+            this.shift = 0;
         }
         else if (index < this.activeTabIndex) {
-            this.activeTabIndex -= 1;
+            if (this.tabs.length < 5) {
+                this.activeTabIndex -= 1;
+            }
+            else if (this.shift > 0) {
+                this.shift -= 1;
+            }
         }
-        this.tabs.splice(index, 1);
+        else if (this.tabs.length > 4 && this.shift + 4 >= this.tabs.length) {
+            this.shift -= 1;
+            this.activeTabIndex += 1;
+        }
+        this.tabs.splice(tabIndex, 1);
+        this.setVisibleTabs(this.shift);
+        this.selectTab(this.activeTabIndex);
         this.saveTabs();
+    }
+
+    blurTitleInput(input) {
+        input.blur();
+        this.document.querySelector(".notepad").focus();
     }
 
     setTitle(input) {
@@ -103,6 +166,7 @@ export class Notepad {
 
         tab.title = title ? title : "Tab";
         tab.settingTitle = false;
+        this.setVisibleTabs(this.shift);
         this.saveTabs();
     }
 
@@ -118,7 +182,7 @@ export class Notepad {
     }
 
     saveTabContent(content) {
-        this.tabs[this.activeTabIndex].content = content;
+        this.tabs[this.shift + this.activeTabIndex].content = content;
         this.saveTabs();
     }
 
