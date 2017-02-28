@@ -14,6 +14,8 @@ export class CalendarSelectedDay {
     constructor() {
         this.reminderInputEnabled = false;
         this.repeatEnabled = false;
+        this.isValidInput = true;
+        this.repeatGap = 0;
     }
 
     showCalendar() {
@@ -22,6 +24,8 @@ export class CalendarSelectedDay {
 
     toggleReminderInput() {
         this.reminderInputEnabled = !this.reminderInputEnabled;
+        this.repeatEnabled = false;
+        this.isValidInput = true;
     }
 
     toggleRepeat() {
@@ -34,30 +38,41 @@ export class CalendarSelectedDay {
         this.remove.emit(reminder);
     }
 
-    createReminder(reminder, gap) {
+    validateInput({ target }) {
+        const value = target.value.trim();
+
+        if (!value) {
+            this.isValidInput = false;
+            return;
+        }
+        this.isValidInput = value > 0 && /^[0-9]+$/g.test(value);
+
+        if (this.isValidInput) {
+            this.repeatGap = parseInt(value, 10);
+        }
+    }
+
+    createReminder(reminder) {
+        if (!reminder.value || !this.isValidInput) {
+            return;
+        }
         const newReminder = {
             text: reminder.value
         };
 
-        if (!reminder.value) {
-            return;
-        }
-
         if (this.repeatEnabled) {
-            const dayGap = Number.parseInt(gap.value, 10);
-
             newReminder.year = this.day.year;
             newReminder.month = this.day.month;
-            newReminder.day = this.day.number + dayGap;
-            newReminder.gap = dayGap;
+            newReminder.day = this.day.number + this.repeatGap;
+            newReminder.gap = this.repeatGap;
             newReminder.repeat = true;
             this.repeat.emit(newReminder);
             this.repeatEnabled = false;
-            gap.value = "1";
         }
         this.day.reminders.push(newReminder);
         this.notify.emit(this.day);
         this.showReminderInput = false;
+        this.reminderInputEnabled = false;
         reminder.value = "";
     }
 }

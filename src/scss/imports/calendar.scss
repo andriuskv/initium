@@ -2,39 +2,43 @@
     position: absolute;
     top: 6px;
     right: 8px;
-    color: $primary-text-color;
     font-size: 14px;
 }
+
 .calendar-header {
     display: flex;
     justify-content: center;
     margin-bottom: 4px;
     padding: 0 4px 4px 4px;
 }
+
 .month-btn:last-of-type {
     transform: rotate(180deg);
 }
+
 .calendar-title {
     margin-left: auto;
     margin-right: auto;
-    color: $primary-text-color;
     font-size: 16px;
 }
+
 .calendar-week-days {
     display: flex;
     justify-content: space-around;
     margin-bottom: 4px;
-    color: $primary-text-color;
 }
+
 .calendar-cell {
     width: 56px;
     font-size: 12px;
     text-align: center;
 }
+
 .calendar-month-days {
     display: flex;
     flex-wrap: wrap;
 }
+
 .calendar-month-day {
     height: 26px;
     padding-top: 6px;
@@ -54,13 +58,11 @@
     }
 
     &:hover {
-        background-color: #333;
+        background-color: $color2;
         cursor: pointer;
     }
 }
-.add-reminder-btn {
-    width: 100%;
-}
+
 .selected-day-remainders {
     @include scrollbar($color2);
 
@@ -69,54 +71,65 @@
     margin-bottom: 4px;
 
 }
+
 .selected-day-remainder {
     display: flex;
-    justify-content: flex-start;
-    margin-right: 4px;
-    margin-bottom: 4px;
+    align-items: center;
     padding-top: 4px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid #222;
+    padding-bottom: 4px;
+    border-bottom: 1px solid $color2;
     font-size: 14px;
-    color: $primary-text-color;
 
     .font-btn {
         margin-left: auto;
     }
 }
+
 .is-repeating {
     margin-right: 4px;
     color: #999;
 }
+
 .calendar-new-reminder-section {
+    position: absolute;
+    top: 58px;
+    right: 4px;
+    bottom: 4px;
+    left: 4px;
+    background-color: $color3;
+}
+
+.calendar-reminer-settings {
+    height: calc(100% - 48px);
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.calendar-reminder-setting {
     display: flex;
-
-    .btn {
-        margin-left: 1px;
-        padding: 2px 6px;
-    }
+    margin-bottom: 4px;
 }
+
+.repeat-setting-msg {
+    font-size: 12px;
+    color: #f8a89e;
+}
+
+.reminder-setting-desc {
+    display: flex;
+    margin-left: auto;
+}
+
+.reminder-setting-title {
+    margin-left: 4px;
+}
+
 .selected-day-input {
-    flex-grow: 1;
+    width: 100%;
+    margin-bottom: 4px;
 }
-.calendar-repeat-btn {
-    margin-left: 1px;
-    cursor: pointer;
 
-    .checked {
-        color: $brand-color;
-    }
-}
-.calendar-repeat-checkbox {
-    display: none;
-}
 .calendar-repeat-gap {
-    display: none;
-    width: 50px;
-    border-left: 1px solid $color3;
+    width: 40px;
     text-align: center;
-
-    &.visible {
-        display: block;
-    }
 }

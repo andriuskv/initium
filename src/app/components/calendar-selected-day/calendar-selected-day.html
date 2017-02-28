@@ -1,5 +1,5 @@
 <div class="calendar-header">
-    <button class="icon-cancel font-btn" (click)="showCalendar()" title="Show calendar"></button>
+    <button class="icon-left-big font-btn" (click)="showCalendar()" title="Back to calendar"></button>
     <span class="calendar-title">{{ day.date }}</span>
 </div>
 <ul class="selected-day-remainders" *ngIf="day.reminders.length">
@@ -9,20 +9,27 @@
         <button class="icon-cancel font-btn" (click)="removeReminder(i)" title="Remove"></button>
     </li>
 </ul>
-<button class="icon-plus btn add-reminder-btn" title="Add reminder"
-    (click)="toggleReminderInput()" *ngIf="!reminderInputEnabled">Add reminder
-</button>
-<div *ngIf="reminderInputEnabled">
-    <div class="calendar-new-reminder-section">
-        <input type="text" class="input selected-day-input" name="reminder" autocomplete="off"
-            (keyup.enter)="createReminder(reminder, gap)" #reminder>
-        <input type="number" class="input calendar-repeat-gap" name="repeat" autocomplete="off"
-            min="1" max="999" value="1" #gap [class.visible]="repeatEnabled">
-        <label for="calendar-repeat-checkbox" class="icon-retweet btn calendar-repeat-btn"
-            title="Toggle reminder repeat" [class.checked]="repeatEnabled"></label>
-        <input type="checkbox" id="calendar-repeat-checkbox" class="calendar-repeat-checkbox"
-            (click)="toggleRepeat()">
-        <button class="btn" (click)="createReminder(reminder, gap)">Create</button>
-        <button class="btn" (click)="toggleReminderInput()">Cancel</button>
+<button class="icon-plus btn add-reminder-btn" (click)="toggleReminderInput()">Add reminder</button>
+<div class="calendar-new-reminder-section" *ngIf="reminderInputEnabled">
+    <input type="text" class="input selected-day-input" name="reminder" autocomplete="off"
+        placeholder="Remind me to..."
+        (keyup.enter)="createReminder(reminder)" #reminder>
+    <div class="calendar-reminer-settings">
+        <div class="calendar-reminder-setting">
+            <div *ngIf="repeatEnabled">
+                <span>Repeat every</span>
+                <input class="input calendar-repeat-gap" autocomplete="off" (input)="validateInput($event)">
+                <span>days</span>
+                <div class="repeat-setting-msg" *ngIf="!isValidInput">Please insert a whole number</div>
+            </div>
+            <div class="reminder-setting-desc">
+                <input type="checkbox" id="calendar-repeat-checkbox" class="checkbox"
+                (click)="toggleRepeat()">
+                <label for="calendar-repeat-checkbox"></label>
+                <span class="reminder-setting-title">Repeat</span>
+            </div>
+        </div>
     </div>
+    <button class="btn" (click)="createReminder(reminder)">Create</button>
+    <button class="btn" (click)="toggleReminderInput()">Cancel</button>
 </div>

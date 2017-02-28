@@ -5,11 +5,11 @@ import { Component } from "@angular/core";
     template: `
         <background [setting]="settings.background"></background>
         <time [setting]="settings.time"></time>
-        <main-block [setting]="settings.mainBlock"></main-block>
         <calendar-reminders
-           [setting]="settings.time"
-           [newReminders]="reminders">
+            [setting]="settings.time"
+            [newReminders]="reminders">
         </calendar-reminders>
+        <main-block [setting]="settings.mainBlock"></main-block>
         <weather [setting]="settings.weather"></weather>
         <todo></todo>
         <widget-menu
