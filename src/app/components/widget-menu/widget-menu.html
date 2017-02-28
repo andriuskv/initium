@@ -2,7 +2,7 @@
     <div class="container widget-menu-container" [class.visible]="visible">
         <div class="menu-header">
             <h3 class="menu-title">{{ title }}</h3>
-            <button class="icon-left-big font-btn close-item-btn" title="Back to widget menu"
+            <button class="icon-cancel font-btn close-item-btn" title="Close"
                 *ngIf="selectedItem"
                 (click)="toggleWidget()"></button>
         </div>
