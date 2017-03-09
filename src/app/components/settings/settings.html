@@ -59,7 +59,7 @@
         <li class="setting" [class.active]="active === 'background'">
             <div class="setting-item">
                 <span>Reset background</span>
-                <button class="btn" (click)="onSetting('url', '', true)">Reset</button>
+                <button class="btn" (click)="onSetting('url', '')">Reset</button>
             </div>
         </li>
         <li class="setting" [class.active]="active === 'weather'">
@@ -80,7 +80,7 @@
             <div class="setting-item">
                 <span>City name (and country code)</span>
                 <input type="text" class="input setting-input"
-                    (keyup)="getWeatherWithCityName($event)"
+                    (keyup.enter)="getWeatherWithCityName($event)"
                     [value]="settings.weather.cityName">
             </div>
         </li>
@@ -94,7 +94,7 @@
             </div>
             <div class="setting-item">
                 <span>Reset top sites to Chrome's default</span>
-                <button class="btn" (click)="onSetting('resetMostVisited', true, true)">Reset</button>
+                <button class="btn" (click)="onSetting('resetMostVisited', true)">Reset</button>
            </div>
         </li>
     </ul>

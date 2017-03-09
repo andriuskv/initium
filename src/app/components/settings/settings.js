@@ -27,13 +27,13 @@ export class Settings {
         this.active = tab;
     }
 
-    getWeatherWithCityName(event) {
-        if (event.key === "Enter" && event.target.value !== this.settings.weather.cityName) {
-            this.onSetting("cityName", event.target.value);
+    getWeatherWithCityName({ target }) {
+        if (target.value !== this.settings.weather.cityName) {
+            this.onSetting("cityName", target.value);
         }
     }
 
-    onSetting(settingName, value, reset) {
+    onSetting(settingName, value) {
         const setting = {
             [this.active]: {
                 [settingName]: value
@@ -41,7 +41,8 @@ export class Settings {
         };
 
         this.setting.emit(setting);
-        if (!reset) {
+
+        if (settingName !== "resetMostVisited") {
             this.settings = this.settingService.updateSetting(setting);
         }
     }
