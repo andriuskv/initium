@@ -181,14 +181,15 @@ export class Twitter {
 
     getMediaUrl(media) {
         if (media.length) {
-            return media[0].media_url_https;
+            return media.map(item => item.media_url_https);
         }
     }
 
     getTweetContent(tweet) {
         const screenName = tweet.user.screen_name;
         const userUrl = `https://twitter.com/${screenName}`;
-        const entities = this.getTweetEntities(tweet.entities);
+        const media = tweet.extended_entities && tweet.extended_entities.media;
+        const entities = this.getTweetEntities(Object.assign(tweet.entities, { media }));
 
         return {
             userUrl,

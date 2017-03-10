@@ -29,26 +29,33 @@
         <ul class="twitter-tweets">
             <li class="twitter-tweet" *ngFor="let tweet of tweets">
                 <a href="{{ tweet.tweetUrl }}" target="_blank">
-                    <div class="twitter-retweet" *ngIf="tweet.retweetedBy">
-                        <span class="icon-retweet"></span>
-                        <a href="{{ tweet.retweetedBy.userUrl }}" class="twitter-retweet-by" target="_blank">{{ tweet.retweetedBy.name }}</a>
-                        <span>Retweeted</span>
-                    </div>
-                    <div>
-                        <a href="{{ tweet.userUrl }}" target="_blank">
-                            <img src="{{ tweet.profileImg }}" class="twitter-profile-image">
-                            <span class="twitter-tweet-by-name">{{ tweet.name }}</span>
-                            <span class="twitter-tweet-by-handle">{{ tweet.handle }}</span>
-                        </a>
-                        <a href="{{ tweet.tweetUrl }}" class="twitter-tweeted-on" target="_blank">{{ tweet.created.at }}</a>
-                    </div>
-                    <p class="twitter-tweet-text" *ngIf="tweet.text" [innerHTML]="tweet.text"></p>
-                    <img src="{{ tweet.media }}" class="twitter-tweet-img" *ngIf="tweet.media">
-                    <div class="twitter-tweet-stats-container">
-                        <span class="icon-retweet"></span>
-                        <span>{{ tweet.retweetCount }}</span>
-                        <span class="icon-heart"></span>
-                        <span>{{ tweet.likeCount }}</span>
+                    <div class="tweet-content">
+                        <div class="twitter-retweet" *ngIf="tweet.retweetedBy">
+                            <span class="icon-retweet tweet-retweet-icon"></span>
+                            <a href="{{ tweet.retweetedBy.userUrl }}" class="twitter-retweet-by" target="_blank">{{ tweet.retweetedBy.name }}</a>
+                            <span>Retweeted</span>
+                        </div>
+                        <div>
+                            <a href="{{ tweet.userUrl }}" class="tweet-header-profile" target="_blank">
+                                <img src="{{ tweet.profileImg }}" class="twitter-profile-image">
+                                <span class="twitter-tweet-by-name">{{ tweet.name }}</span>
+                                <span class="twitter-tweet-by-handle">{{ tweet.handle }}</span>
+                            </a>
+                            <a href="{{ tweet.tweetUrl }}" class="twitter-tweeted-on" target="_blank">{{ tweet.created.at }}</a>
+                        </div>
+                        <div>
+                            <p class="twitter-tweet-text" *ngIf="tweet.text" [innerHTML]="tweet.text"></p>
+                            <div class="tweet-image-container" *ngIf="tweet.media">
+                                <img src="{{ url }}" class="twitter-tweet-img" *ngFor="let url of tweet.media"
+                                [ngStyle]="{'max-width': 'calc(' + 100 / tweet.media.length + '% - 2px)' }">
+                            </div>
+                            <div class="twitter-tweet-stats-container">
+                                <span class="icon-retweet"></span>
+                                <span>{{ tweet.retweetCount }}</span>
+                                <span class="icon-heart"></span>
+                                <span>{{ tweet.likeCount }}</span>
+                            </div>
+                        </div>
                     </div>
                 </a>
             </li>

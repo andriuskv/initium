@@ -1,4 +1,6 @@
 $tweet-offset: 56px;
+$tweet-text-color: #fff;
+$tweet-text-color-alt: #bbb;
 
 .twitter-container {
     position: relative;
@@ -55,7 +57,7 @@ $tweet-offset: 56px;
 .twitter-user-name {
     margin-left: 4px;
     font-size: 12px;
-    color: #fff;
+    color: $tweet-text-color;
 
     &:hover {
         text-decoration: underline;
@@ -64,7 +66,7 @@ $tweet-offset: 56px;
 .twitter-user-handle {
     margin-left: 4px;
     font-size: 10px;
-    color: #bbb;
+    color: $tweet-text-color-alt;
 
     &:hover {
         text-decoration: underline;
@@ -110,32 +112,37 @@ $tweet-offset: 56px;
         background-color: lighten($color2, 2%);
     }
 }
+.tweet-content {
+    display: block;
+    margin-left: $tweet-offset;
+}
 .twitter-retweet {
-    margin-left: 36px;
     margin-bottom: 4px;
-    color: #bbb;
+    color: $tweet-text-color-alt;
     font-size: 12px;
+}
+.tweet-retweet-icon {
+    margin-left: -20px;
 }
 .twitter-retweet-by {
     margin-left: 4px;
-    color: #bbb;
+    color: $tweet-text-color-alt;
 
     &:hover {
         text-decoration: underline;
     }
+}
+.tweet-header-profile:hover .twitter-tweet-by-name {
+    text-decoration: underline;
+    color: $tweet-text-color-alt;
 }
 .twitter-tweet-by-name {
     font-size: 14px;
     font-weight: bold;
-    color: #fff;
-
-    &:hover {
-        color: #bbb;
-        text-decoration: underline;
-    }
+    color: $tweet-text-color;
 }
 .twitter-tweet-by-handle {
-    color: #bbb;
+    color: $tweet-text-color-alt;
     font-size: 12px;
 }
 .twitter-tweeted-on {
@@ -146,12 +153,11 @@ $tweet-offset: 56px;
 .twitter-profile-image {
     float: left;
     width: 48px;
-    border-radius: 4px;
+    margin-left: -$tweet-offset;
     margin-right: 8px;
+    border-radius: 4px;
 }
 .twitter-tweet-text {
-    display: inline-block;
-    width: calc(100% - #{$tweet-offset});
     margin-top: 0;
     margin-bottom: 0;
     font-size: 14px;
@@ -166,18 +172,18 @@ $tweet-offset: 56px;
     }
 }
 .tweet-image-container {
-    margin-left: $tweet-offset;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-top: 8px;
 }
 .twitter-tweet-img {
-    display: block;
-    margin-top: 4px;
-    margin-left: $tweet-offset;
-    max-width: calc(100% - #{$tweet-offset});
+    max-width: 100%;
     border-radius: 4px;
+    object-fit: scale-down;
 }
 .twitter-tweet-stats-container {
-    padding-top: 4px;
-    margin-left: $tweet-offset;
+    margin-top: 8px;
     color: #aaa;
 
     span:nth-of-type(even) {
