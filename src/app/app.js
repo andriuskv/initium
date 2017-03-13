@@ -18,17 +18,32 @@ import { Component } from "@angular/core";
             (reminders)="onReminders($event)">
         </widget-menu>
         <timer
-            [toggle]="toggle.timer"
+            [toggleComp]="toggle.timer"
             (hide)="onHide($event)">
         </timer>
+        <stopwatch
+            [toggleComp]="toggle.stopwatch"
+            (hide)="onHide($event)">
+        </stopwatch>
     `
 })
 export class App {
-    toggle = {};
-    settings = {};
+    constructor() {
+        this.toggle = {};
+        this.settings = {};
+    }
 
     onToggle(whatToToggle) {
         this.toggle[whatToToggle] = !this.toggle[whatToToggle] || false;
+
+        if (this.toggle[whatToToggle]) {
+            if (whatToToggle === "timer") {
+                this.toggle.stopwatch = false;
+            }
+            else if (whatToToggle === "stopwatch") {
+                this.toggle.timer = false;
+            }
+        }
     }
 
     onSetting(settings) {
