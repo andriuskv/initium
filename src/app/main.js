@@ -29,6 +29,7 @@ import { TodoPin } from "./components/todo-pin/todo-pin";
 import { Weather } from "./components/weather/weather";
 import { WidgetMenu } from "./components/widget-menu/widget-menu";
 import { Timer } from "./components/timer/timer";
+import { Stopwatch } from "./components/stopwatch/stopwatch";
 import { Settings } from "./components/settings/settings";
 import { DropboxComp } from "./components/dropbox/dropbox";
 import { Calendar } from "./components/calendar/calendar";
@@ -36,13 +37,11 @@ import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar
 
 @NgModule({
     imports: [BrowserModule, FormsModule],
-    providers: [
-        SettingService, DateService, WeatherService, NotificationService, FeedService
-    ],
+    providers: [SettingService, DateService, WeatherService, NotificationService, FeedService],
     declarations: [
         App, Settings, Background, Time, MainBlock, MainBlockNav, MainBlockContent,
         MostVisited, Notepad, Twitter, RssFeed, CalendarReminders, Weather,
-        WidgetMenu, TodoPin, TodoEdit, Todo, Timer, Calendar, CalendarSelectedDay, DropboxComp
+        WidgetMenu, TodoPin, TodoEdit, Todo, Timer, Stopwatch, Calendar, CalendarSelectedDay, DropboxComp
     ],
     bootstrap: [App]
 })

@@ -22,8 +22,8 @@ export class WidgetMenu {
         }
     }
 
-    toggleTimer() {
-        this.toggle.emit("timer");
+    toggleComp(comp) {
+        this.toggle.emit(comp);
     }
 
     toggleWidget(widget) {

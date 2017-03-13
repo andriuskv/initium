@@ -2,11 +2,41 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "timer",
-    templateUrl: "app/components/timer/timer.html"
+    template: `
+        <div class="container timer-stopwatch-container" *ngIf="visible">
+            <button class="icon-cancel font-btn timer-stopwatch-hide-btn" (click)="hideComp()"></button>
+            <div class="timer-displays" (keypress)="onKeypress($event, hours, minutes, seconds)">
+                <input type="text" class="timer-input" maxlength="2" #hours
+                    [(ngModel)]="timer.hours"
+                    [readonly]="isSet">
+                <div class="timer-input-sep">h</div>
+                <input type="text" class="timer-input" maxlength="2" #minutes
+                    [(ngModel)]="timer.minutes"
+                    [readonly]="isSet">
+                <div class="timer-input-sep">m</div>
+                <input type="text" class="timer-input" maxlength="2" #seconds
+                    [(ngModel)]="timer.seconds"
+                    [readonly]="isSet">
+                <div class="timer-input-sep">s</div>
+            </div>
+            <div class="timer-stopwatch-controls">
+                <button class="font-btn timer-control"
+                    (click)="startTimer(hours.value, minutes.value, seconds.value)"
+                    *ngIf="!isSet">Start</button>
+                <button class="font-btn timer-control"
+                    (click)="stopTimer(hours, minutes, seconds)" *ngIf="isSet">Stop</button>
+                <button class="font-btn timer-control"
+                    (click)="resetTimer(hours, minutes, seconds)">Reset</button>
+                <button class="font-btn timer-control"
+                    [ngClass]="{ 'icon-bell-alt': alarmOn, 'icon-bell-off': !alarmOn }"
+                    (click)="toggleAlarm()"></button>
+            </div>
+        </div>
+    `
 })
 export class Timer {
     @Output() hide = new EventEmitter();
-    @Input() toggle;
+    @Input() toggleComp;
 
     constructor() {
         this.timer = {
@@ -22,14 +52,14 @@ export class Timer {
     }
 
     ngOnChanges(changes) {
-        const toggle = changes.toggle;
+        const toggle = changes.toggleComp;
 
         if (!toggle.isFirstChange()) {
             this.visible = toggle.currentValue;
         }
     }
 
-    hideTimer() {
+    hideComp() {
         this.hide.emit("timer");
     }
 
