@@ -8,13 +8,8 @@
         </div>
         <ul class="menu-item-container" *ngIf="!selectedItem">
             <li class="menu-item">
-                <button class="icon-hourglass font-btn menu-item-icon" (click)="toggleComp('timer')">
-                    <div class="menu-item-title">Timer</div>
-                </button>
-            </li>
-            <li class="menu-item">
-                <button class="icon-stopwatch font-btn menu-item-icon" (click)="toggleComp('stopwatch')">
-                    <div class="menu-item-title">Stopwatch</div>
+                <button class="icon-clock font-btn menu-item-icon" (click)="toggleUpperBlockComp()">
+                    <div class="menu-item-title">Timer / Stopwatch</div>
                 </button>
             </li>
             <li class="menu-item">

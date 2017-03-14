@@ -17,14 +17,10 @@ import { Component } from "@angular/core";
             (setting)="onSetting($event)"
             (reminders)="onReminders($event)">
         </widget-menu>
-        <timer
-            [toggleComp]="toggle.timer"
+        <upper-block
+            [toggleComp]="toggle.upper"
             (hide)="onHide($event)">
-        </timer>
-        <stopwatch
-            [toggleComp]="toggle.stopwatch"
-            (hide)="onHide($event)">
-        </stopwatch>
+        </upper-block>
     `
 })
 export class App {
@@ -35,15 +31,6 @@ export class App {
 
     onToggle(whatToToggle) {
         this.toggle[whatToToggle] = !this.toggle[whatToToggle] || false;
-
-        if (this.toggle[whatToToggle]) {
-            if (whatToToggle === "timer") {
-                this.toggle.stopwatch = false;
-            }
-            else if (whatToToggle === "stopwatch") {
-                this.toggle.timer = false;
-            }
-        }
     }
 
     onSetting(settings) {

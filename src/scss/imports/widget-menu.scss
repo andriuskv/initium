@@ -37,7 +37,7 @@
 .menu-item {
     vertical-align: top;
 	display: inline-block;
-	width: 56px;
+	width: 60px;
 	margin-bottom: 4px;
 	text-align: center;
 }
@@ -46,8 +46,10 @@
     line-height: 1;
 }
 .menu-item-title {
+	margin-top: 2px;
 	font-size: 12px;
 	font-family: sans-serif;
+	word-break: break-word;
 }
 .menu-btn {
 	font-size: 20px;
