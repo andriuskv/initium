@@ -1,0 +1,107 @@
+.upper-block {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    right: 0;
+    display: none;
+    width: 400px;
+    margin: 0 auto;
+
+    &.visible {
+        display: block;
+    }
+}
+
+.upper-block-header {
+    display: flex;
+    margin-bottom: 4px;
+}
+
+.upper-block-header-item {
+    padding: 4px;
+    border-bottom: 2px solid transparent;
+    margin-right: 8px;
+
+    &.active {
+        border-bottom-color: $brand-color;
+    }
+
+    &:last-of-type {
+        margin-left: auto;
+        margin-right: 0;
+    }
+}
+
+.upper-block-item {
+    display: none;
+
+    &.visible {
+        display: block;
+    }
+}
+
+.timer-stopwatch-sep {
+    padding-right: 8px;
+    font-size: 32px;
+
+    &:last-of-type {
+        padding-right: 0;
+    }
+}
+
+.timer-stopwatch-controls {
+    display: flex;
+    padding-top: 4px;
+    border-top: 1px solid $color2;
+    margin-top: 4px;
+}
+
+.timer-stopwatch-control {
+    margin-right: 4px;
+}
+
+.timer, .stopwatch {
+    display: flex;
+    align-items: baseline;
+}
+
+.timer {
+    justify-content: center;
+}
+
+.timer-input {
+    width: 74px;
+    height: 74px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: $primary-text-color;
+    font-size: 64px;
+    text-align: center;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.timer-alarm-btn {
+    margin-left: auto;
+}
+
+.stopwatch {
+    height: 74px;
+    padding-left: 4px;
+    padding-right: 4px;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.stopwatch-digit {
+    font-size: 64px;
+}
+
+.stopwatch-milliseconds {
+    font-size: 32px;
+}

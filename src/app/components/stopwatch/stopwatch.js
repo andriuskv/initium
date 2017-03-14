@@ -1,50 +1,32 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
     selector: "stopwatch",
     template: `
-        <div class="container timer-stopwatch-container" *ngIf="visible">
-            <button class="icon-cancel font-btn timer-stopwatch-hide-btn" (click)="hideComp()"></button>
-            <div class="stopwatch" (click)="toggle()">
-                <span *ngIf="stopwatch.hours">
-                    <span class="stopwatch-digit">{{ stopwatch.hours }}</span>
-                    <span class="stopwatch-digit-sep">h</span>
-                </span>
-                <span *ngIf="stopwatch.minutes">
-                    <span class="stopwatch-digit">{{ stopwatch.minutes }}</span>
-                    <span class="stopwatch-digit-sep">m</span>
-                </span>
-                <span class="stopwatch-digit">{{ stopwatch.seconds }}</span>
-                <span class="stopwatch-digit-sep">s</span>
-                <span class="stopwatch-milliseconds">{{ stopwatch.milliseconds }}</span>
-            </div>
-            <div class="timer-stopwatch-controls">
-                <button class="font-btn stopwatch-control" (click)="start()" *ngIf="!isRunning">Start</button>
-                <button class="font-btn stopwatch-control" (click)="stop()" *ngIf="isRunning">Stop</button>
-                <button class="font-btn stopwatch-control" (click)="reset()">Reset</button>
-            </div>
-        <div>
+        <div class="stopwatch" (click)="toggle()">
+            <span *ngIf="stopwatch.hours">
+                <span class="stopwatch-digit">{{ stopwatch.hours }}</span>
+                <span class="timer-stopwatch-sep">h</span>
+            </span>
+            <span *ngIf="stopwatch.minutes">
+                <span class="stopwatch-digit">{{ stopwatch.minutes }}</span>
+                <span class="timer-stopwatch-sep">m</span>
+            </span>
+            <span class="stopwatch-digit">{{ stopwatch.seconds }}</span>
+            <span class="timer-stopwatch-sep">s</span>
+            <span class="stopwatch-milliseconds">{{ stopwatch.milliseconds }}</span>
+        </div>
+        <div class="timer-stopwatch-controls">
+            <button class="font-btn timer-stopwatch-control" (click)="start()" *ngIf="!isRunning">Start</button>
+            <button class="font-btn timer-stopwatch-control" (click)="stop()" *ngIf="isRunning">Stop</button>
+            <button class="font-btn timer-stopwatch-control" (click)="reset()">Reset</button>
+        </div>
     `
 })
 export class Stopwatch {
-    @Output() hide = new EventEmitter();
-    @Input() toggleComp;
-
     constructor() {
         this.isRunning = false;
         this.stopwatch = this.resetTime();
-    }
-
-    ngOnChanges(changes) {
-        const toggle = changes.toggleComp;
-
-        if (!toggle.isFirstChange()) {
-            this.visible = toggle.currentValue;
-        }
-    }
-
-    hideComp() {
-        this.hide.emit("stopwatch");
     }
 
     resetTime() {

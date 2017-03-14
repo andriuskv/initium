@@ -16,14 +16,15 @@ export class WidgetMenu {
 
     toggleMenu() {
         this.visible = !this.visible;
+
         if (!this.visible) {
             this.title = "Widgets";
             this.selectedItem = "";
         }
     }
 
-    toggleComp(comp) {
-        this.toggle.emit(comp);
+    toggleUpperBlockComp() {
+        this.toggle.emit("upper");
     }
 
     toggleWidget(widget) {

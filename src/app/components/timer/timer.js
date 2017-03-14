@@ -1,66 +1,45 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
     selector: "timer",
     template: `
-        <div class="container timer-stopwatch-container" *ngIf="visible">
-            <button class="icon-cancel font-btn timer-stopwatch-hide-btn" (click)="hideComp()"></button>
-            <div class="timer-displays" (keypress)="onKeypress($event, hours, minutes, seconds)">
-                <input type="text" class="timer-input" maxlength="2" #hours
-                    [(ngModel)]="timer.hours"
-                    [readonly]="isSet">
-                <div class="timer-input-sep">h</div>
-                <input type="text" class="timer-input" maxlength="2" #minutes
-                    [(ngModel)]="timer.minutes"
-                    [readonly]="isSet">
-                <div class="timer-input-sep">m</div>
-                <input type="text" class="timer-input" maxlength="2" #seconds
-                    [(ngModel)]="timer.seconds"
-                    [readonly]="isSet">
-                <div class="timer-input-sep">s</div>
-            </div>
-            <div class="timer-stopwatch-controls">
-                <button class="font-btn timer-control"
-                    (click)="startTimer(hours.value, minutes.value, seconds.value)"
-                    *ngIf="!isSet">Start</button>
-                <button class="font-btn timer-control"
-                    (click)="stopTimer(hours, minutes, seconds)" *ngIf="isSet">Stop</button>
-                <button class="font-btn timer-control"
-                    (click)="resetTimer(hours, minutes, seconds)">Reset</button>
-                <button class="font-btn timer-control"
-                    [ngClass]="{ 'icon-bell-alt': alarmOn, 'icon-bell-off': !alarmOn }"
-                    (click)="toggleAlarm()"></button>
-            </div>
+        <div class="timer" (keypress)="onKeypress($event, hours, minutes, seconds)">
+            <input type="text" class="timer-input" maxlength="2" #hours
+                [(ngModel)]="timer.hours"
+                [readonly]="isSet">
+            <div class="timer-stopwatch-sep">h</div>
+            <input type="text" class="timer-input" maxlength="2" #minutes
+                [(ngModel)]="timer.minutes"
+                [readonly]="isSet">
+            <div class="timer-stopwatch-sep">m</div>
+            <input type="text" class="timer-input" maxlength="2" #seconds
+                [(ngModel)]="timer.seconds"
+                [readonly]="isSet">
+            <div class="timer-stopwatch-sep">s</div>
         </div>
-    `
+        <div class="timer-stopwatch-controls">
+            <button class="font-btn timer-stopwatch-control"
+                (click)="start(hours.value, minutes.value, seconds.value)"
+                *ngIf="!isSet">Start</button>
+            <button class="font-btn timer-stopwatch-control" (click)="stop()" *ngIf="isSet">Stop</button>
+            <button class="font-btn timer-stopwatch-control" (click)="reset()">Reset</button>
+            <button class="font-btn timer-stopwatch-control timer-alarm-btn"
+                [ngClass]="{ 'icon-bell-alt': alarmOn, 'icon-bell-off': !alarmOn }"
+                (click)="toggleAlarm()"></button>
+        </div>
+        `
 })
 export class Timer {
-    @Output() hide = new EventEmitter();
-    @Input() toggleComp;
-
     constructor() {
         this.timer = {
             hours: "00",
             minutes: "00",
             seconds: "00"
         };
-        this.visible = false;
         this.isSet = false;
         this.timeout = 0;
         this.alarmOn = true;
         this.alarm = null;
-    }
-
-    ngOnChanges(changes) {
-        const toggle = changes.toggleComp;
-
-        if (!toggle.isFirstChange()) {
-            this.visible = toggle.currentValue;
-        }
-    }
-
-    hideComp() {
-        this.hide.emit("timer");
     }
 
     updateValues(selectionStart, currentKey, target) {
@@ -170,15 +149,15 @@ export class Timer {
     }
 
     updateTitle(hours, minutes, seconds) {
-        if (hours === 0 && minutes === 0 && seconds !== 0) {
-            document.title = `${seconds}s | Initium`;
+        let title = `${seconds}s | Initium`;
+
+        if (minutes) {
+            title = `${minutes}m ${title}`;
         }
-        else if (hours === 0 && minutes) {
-            document.title = `${minutes}m ${seconds}s | Initium`;
+        if (hours) {
+            title = `${hours}h ${title}`;
         }
-        else {
-            document.title = `${hours}h ${minutes}m ${seconds}s | Initium`;
-        }
+        document.title = title;
     }
 
     initAlarm() {
@@ -253,34 +232,25 @@ export class Timer {
         }
     }
 
-    startTimer(hours, minutes, seconds) {
+    start(hours, minutes, seconds) {
         hours = Number.parseInt(hours, 10) || 0;
         minutes = Number.parseInt(minutes, 10) || 0;
         seconds = Number.parseInt(seconds, 10) || 0;
 
-        if (hours !== 0 || minutes !== 0 || seconds !== 0) {
+        if (hours || minutes || seconds) {
             this.isSet = true;
             this.initAlarm();
             this.timer = this.initTimer(hours, minutes, seconds);
 
-            const start = performance.now();
+            const startTime = performance.now();
 
             setTimeout(() => {
-                this.updateTimer(start, 0);
+                this.updateTimer(startTime, 0);
             }, 1000);
         }
     }
 
-    assignValueToInput(input, value) {
-        if (input) {
-            input.value = value;
-        }
-    }
-
-    stopTimer(hoursInput, minutesInput, secondsInput) {
-        this.assignValueToInput(hoursInput, this.timer.hours);
-        this.assignValueToInput(minutesInput, this.timer.minutes);
-        this.assignValueToInput(secondsInput, this.timer.seconds);
+    stop() {
         this.isSet = false;
         clearTimeout(this.timeout);
         document.title = "Initium";
@@ -290,16 +260,13 @@ export class Timer {
         }
     }
 
-    resetTimer(hoursInput, minutesInput, secondsInput) {
+    reset() {
         if (this.isSet) {
             this.timer.hours = "00";
             this.timer.minutes = "00";
             this.timer.seconds = "00";
-            this.stopTimer();
+            this.stop();
             return;
         }
-        hoursInput.value = "00";
-        minutesInput.value = "00";
-        secondsInput.value = "00";
     }
 }
