@@ -3,31 +3,26 @@ import { Component } from "@angular/core";
 @Component({
     selector: "timer",
     template: `
-        <div class="timer" (keypress)="onKeypress($event, hours, minutes, seconds)">
-            <input type="text" class="timer-input" maxlength="2" #hours
-                [(ngModel)]="timer.hours"
-                [readonly]="isSet">
+        <div class="timer" (input)="onInput($event)">
+            <input type="text" class="timer-input" data-input="hours"
+                [(ngModel)]="timer.hours" [readonly]="isSet">
             <div class="timer-stopwatch-sep">h</div>
-            <input type="text" class="timer-input" maxlength="2" #minutes
-                [(ngModel)]="timer.minutes"
-                [readonly]="isSet">
+            <input type="text" class="timer-input" data-input="minutes"
+                [(ngModel)]="timer.minutes" [readonly]="isSet">
             <div class="timer-stopwatch-sep">m</div>
-            <input type="text" class="timer-input" maxlength="2" #seconds
-                [(ngModel)]="timer.seconds"
-                [readonly]="isSet">
+            <input type="text" class="timer-input" data-input="seconds"
+                [(ngModel)]="timer.seconds" [readonly]="isSet">
             <div class="timer-stopwatch-sep">s</div>
         </div>
         <div class="timer-stopwatch-controls">
-            <button class="font-btn timer-stopwatch-control"
-                (click)="start(hours.value, minutes.value, seconds.value)"
-                *ngIf="!isSet">Start</button>
+            <button class="font-btn timer-stopwatch-control" (click)="start()" *ngIf="!isSet">Start</button>
             <button class="font-btn timer-stopwatch-control" (click)="stop()" *ngIf="isSet">Stop</button>
             <button class="font-btn timer-stopwatch-control" (click)="reset()">Reset</button>
             <button class="font-btn timer-stopwatch-control timer-alarm-btn"
                 [ngClass]="{ 'icon-bell-alt': alarmOn, 'icon-bell-off': !alarmOn }"
                 (click)="toggleAlarm()"></button>
         </div>
-        `
+    `
 })
 export class Timer {
     constructor() {
@@ -36,94 +31,64 @@ export class Timer {
             minutes: "00",
             seconds: "00"
         };
+        this.timerInput = Object.assign({}, this.timer);
         this.isSet = false;
         this.timeout = 0;
         this.alarmOn = true;
         this.alarm = null;
     }
 
-    updateValues(selectionStart, currentKey, target) {
-        return (nextInput, targetInput) => {
-            if (selectionStart === 0) {
-                nextInput.value += currentKey;
-            }
-            else {
-                nextInput.value += targetInput.value[0];
-                if (selectionStart === 1) {
-                    targetInput.value = currentKey + targetInput.value[1];
+    onInput({ target }) {
+        const input = target.getAttribute("data-input");
+        const pos = target.selectionStart - 1;
+        let value = target.value;
 
-                    Promise.resolve().then(() => {
-                        target.setSelectionRange(1, 1);
-                    });
-                }
-                else {
-                    targetInput.value = targetInput.value[1] + currentKey;
-                }
-            }
-        };
-    }
-
-    onKeypress(event, hoursInput, minutesInput, secondsInput) {
-        const currentKey = String.fromCharCode(event.which);
-        const target = event.target;
-        const selectionStart = target.selectionStart;
-
-        if (/\D/.test(currentKey)) {
-            event.preventDefault();
+        if (/\D/.test(value)) {
+            target.value = this.timerInput[input];
+            target.selectionEnd = pos;
             return;
         }
 
-        if (selectionStart === target.selectionEnd && target.value.length === 2) {
-            const hours = hoursInput.value;
-            const updateInputs = this.updateValues(selectionStart, currentKey, target);
-
-            if (target === secondsInput) {
-                const minutes = minutesInput.value;
-
-                if (minutes.length === 2) {
-                    minutesInput.value = minutes[1];
-
-                    if (hours.length === 2) {
-                        hoursInput.value = hours[1] + minutes[0];
-                    }
-                    else if (hours.length === 1) {
-                        hoursInput.value = hours[0] + minutes[0];
-                    }
-                    else {
-                        hoursInput.value = minutes[0];
-                    }
-                }
-                updateInputs(minutesInput, secondsInput);
+        if (value.length > 2) {
+            if (input === "seconds") {
+                this.timer.hours = `${this.timer.hours + this.timer.minutes[0]}`.slice(-2);
+                this.timerInput.hours = this.timer.hours;
+                this.timer.minutes = `${this.timer.minutes + value[0]}`.slice(-2);
+                this.timerInput.minutes = this.timer.minutes;
             }
-            else if (target === minutesInput) {
-                if (hours.length === 2) {
-                    hoursInput.value = hours[1];
-                }
-                updateInputs(hoursInput, minutesInput);
+            else if (input === "minutes") {
+                this.timer.hours = `${this.timer.hours + value[0]}`.slice(-2);
+                this.timerInput.hours = this.timer.hours;
             }
-            else if (target === hoursInput) {
-                if (selectionStart === 0) {
-                    event.preventDefault();
-                }
-                else if (selectionStart === 1) {
-                    hoursInput.value = currentKey + hours[1];
-                    Promise.resolve().then(() => {
-                        target.setSelectionRange(1, 1);
-                    });
-                }
-                else {
-                    hoursInput.value = hours[1] + currentKey;
-                }
-            }
+            value = value.slice(1, 3);
+            target.value = value;
+            this.timerInput[input] = value;
+            target.selectionEnd = pos;
+        }
+        else {
+            this.timer = this.padTimer(this.timer);
+            this.timerInput[input] = this.timer[input];
         }
     }
 
-    checkTime(value) {
-        return /^\d{2}$/.test(value) ? value : `0${value}`;
+    padTime(time) {
+        return `00${time}`.slice(-2);
     }
 
-    checkInput(value) {
-        return !value ? "00" : this.checkTime(value);
+    padTimer(timer) {
+        return {
+            hours: this.padTime(timer.hours),
+            minutes: this.padTime(timer.minutes),
+            seconds: this.padTime(timer.seconds)
+        };
+    }
+
+    parseTimer(timer) {
+        return {
+            hours: Number.parseInt(timer.hours, 10) || 0,
+            minutes: Number.parseInt(timer.minutes, 10) || 0,
+            seconds: Number.parseInt(timer.seconds, 10) || 0
+        };
     }
 
     initTimer(hours, minutes, seconds) {
@@ -141,11 +106,7 @@ export class Timer {
             hours = 99;
         }
 
-        return {
-            hours: this.checkInput(hours),
-            minutes: this.checkInput(minutes),
-            seconds: this.checkInput(seconds)
-        };
+        return this.padTimer({ hours, minutes, seconds });
     }
 
     updateTitle(hours, minutes, seconds) {
@@ -171,7 +132,7 @@ export class Timer {
         if (this.alarmIsRunning && this.isSet && this.alarmOn) {
             clearTimeout(this.alarmTimeout);
             this.alarmIsRunning = false;
-            this.stopTimer();
+            this.stop();
         }
         this.alarmOn = !this.alarmOn;
     }
@@ -182,11 +143,11 @@ export class Timer {
             this.alarm.play();
             this.alarmTimeout = setTimeout(() => {
                 this.alarmIsRunning = false;
-                this.stopTimer();
+                this.stop();
             }, 9000);
         }
         else {
-            this.stopTimer();
+            this.stop();
         }
     }
 
@@ -201,26 +162,24 @@ export class Timer {
         elapsed += 1000;
         diff = ideal - elapsed;
 
-        let hours = Number.parseInt(this.timer.hours, 10);
-        let minutes = Number.parseInt(this.timer.minutes, 10);
-        let seconds = Number.parseInt(this.timer.seconds, 10);
+        let { hours, minutes, seconds } = this.parseTimer(this.timer);
 
         if (this.isSet && (seconds || minutes || hours)) {
-            if (minutes && seconds === 0) {
-                minutes -= 1;
-                seconds += 60;
-            }
-            else if (hours && minutes === 0 && seconds === 0) {
-                hours -= 1;
-                minutes += 59;
-                seconds += 60;
+            if (!seconds) {
+                if (minutes) {
+                    minutes -= 1;
+                    seconds += 60;
+                }
+                else if (hours) {
+                    hours -= 1;
+                    minutes += 59;
+                    seconds += 60;
+                }
             }
             seconds -= 1;
 
-            this.timer.hours = this.checkTime(hours);
-            this.timer.minutes = this.checkTime(minutes);
-            this.timer.seconds = this.checkTime(seconds);
-
+            this.timer = this.padTimer({ hours, minutes, seconds });
+            this.timerInput = Object.assign({}, this.timer);
             this.updateTitle(hours, minutes, seconds);
 
             this.timeout = setTimeout(() => {
@@ -232,10 +191,8 @@ export class Timer {
         }
     }
 
-    start(hours, minutes, seconds) {
-        hours = Number.parseInt(hours, 10) || 0;
-        minutes = Number.parseInt(minutes, 10) || 0;
-        seconds = Number.parseInt(seconds, 10) || 0;
+    start() {
+        const { hours, minutes, seconds } = this.parseTimer(this.timer);
 
         if (hours || minutes || seconds) {
             this.isSet = true;
@@ -261,12 +218,15 @@ export class Timer {
     }
 
     reset() {
+        this.timer = {
+            hours: "00",
+            minutes: "00",
+            seconds: "00"
+        };
+        this.timerInput = Object.assign({}, this.timer);
+
         if (this.isSet) {
-            this.timer.hours = "00";
-            this.timer.minutes = "00";
-            this.timer.seconds = "00";
             this.stop();
-            return;
         }
     }
 }
