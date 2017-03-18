@@ -1,30 +1,25 @@
-import { Component } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "timer",
     template: `
         <div class="timer" (input)="onInput($event)">
             <input type="text" class="timer-input" data-input="hours"
-                [(ngModel)]="timer.hours" [readonly]="isSet">
+                [(ngModel)]="timer.hours" [readonly]="isRunning">
             <div class="timer-stopwatch-sep">h</div>
             <input type="text" class="timer-input" data-input="minutes"
-                [(ngModel)]="timer.minutes" [readonly]="isSet">
+                [(ngModel)]="timer.minutes" [readonly]="isRunning">
             <div class="timer-stopwatch-sep">m</div>
             <input type="text" class="timer-input" data-input="seconds"
-                [(ngModel)]="timer.seconds" [readonly]="isSet">
+                [(ngModel)]="timer.seconds" [readonly]="isRunning">
             <div class="timer-stopwatch-sep">s</div>
-        </div>
-        <div class="timer-stopwatch-controls">
-            <button class="font-btn timer-stopwatch-control" (click)="start()" *ngIf="!isSet">Start</button>
-            <button class="font-btn timer-stopwatch-control" (click)="stop()" *ngIf="isSet">Stop</button>
-            <button class="font-btn timer-stopwatch-control" (click)="reset()">Reset</button>
-            <button class="font-btn timer-stopwatch-control timer-alarm-btn"
-                [ngClass]="{ 'icon-bell-alt': alarmOn, 'icon-bell-off': !alarmOn }"
-                (click)="toggleAlarm()"></button>
         </div>
     `
 })
 export class Timer {
+    @Output() running = new EventEmitter();
+    @Input() state;
+
     constructor() {
         this.timer = {
             hours: "00",
@@ -32,10 +27,19 @@ export class Timer {
             seconds: "00"
         };
         this.timerInput = Object.assign({}, this.timer);
-        this.isSet = false;
+        this.isRunning = false;
         this.timeout = 0;
         this.alarmOn = true;
         this.alarm = null;
+    }
+
+    ngOnChanges(changes) {
+        if (!changes.state.firstChange) {
+            const state = changes.state.currentValue;
+            this.isRunning = state.isRunning;
+            this.alarmOn = state.alarmOn;
+            this[state.command]();
+        }
     }
 
     onInput({ target }) {
@@ -129,12 +133,11 @@ export class Timer {
     }
 
     toggleAlarm() {
-        if (this.alarmIsRunning && this.isSet && this.alarmOn) {
+        if (this.alarmIsRunning && this.isRunning && this.alarmOn) {
             clearTimeout(this.alarmTimeout);
             this.alarmIsRunning = false;
             this.stop();
         }
-        this.alarmOn = !this.alarmOn;
     }
 
     runAlarm() {
@@ -152,7 +155,7 @@ export class Timer {
     }
 
     updateTimer(startTime, elapsed) {
-        if (!this.isSet) {
+        if (!this.isRunning) {
             return;
         }
 
@@ -164,7 +167,7 @@ export class Timer {
 
         let { hours, minutes, seconds } = this.parseTimer(this.timer);
 
-        if (this.isSet && (seconds || minutes || hours)) {
+        if (this.isRunning && (seconds || minutes || hours)) {
             if (!seconds) {
                 if (minutes) {
                     minutes -= 1;
@@ -192,10 +195,11 @@ export class Timer {
     }
 
     start() {
-        const { hours, minutes, seconds } = this.parseTimer(this.timer);
+        const { hours, minutes, seconds } = this.parseTimer(this.timerInput);
 
         if (hours || minutes || seconds) {
-            this.isSet = true;
+            this.isRunning = true;
+            this.running.emit(this.isRunning);
             this.initAlarm();
             this.timer = this.initTimer(hours, minutes, seconds);
 
@@ -208,7 +212,8 @@ export class Timer {
     }
 
     stop() {
-        this.isSet = false;
+        this.isRunning = false;
+        this.running.emit(this.isRunning);
         clearTimeout(this.timeout);
         document.title = "Initium";
 
@@ -225,7 +230,7 @@ export class Timer {
         };
         this.timerInput = Object.assign({}, this.timer);
 
-        if (this.isSet) {
+        if (this.isRunning) {
             this.stop();
         }
     }
