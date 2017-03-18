@@ -24,10 +24,29 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
                 </li>
             </ul>
             <div class="upper-block-item" [class.visible]="active === 'timer'">
-                <timer></timer>
+                <timer [state]="state.timer" (running)="onRunning($event, 'timer')"></timer>
             </div>
             <div class="upper-block-item" [class.visible]="active === 'stopwatch'">
-                <stopwatch></stopwatch>
+                <stopwatch [state]="state.stopwatch" (running)="onRunning($event, 'stopwatch')"></stopwatch>
+            </div>
+            <div class="timer-stopwatch-controls">
+                <button class="font-btn timer-stopwatch-control"
+                    (click)="setCommand('start')"
+                    *ngIf="!state[active].isRunning"
+                >Start</button>
+                <button class="font-btn timer-stopwatch-control"
+                    (click)="setCommand('stop')"
+                    *ngIf="state[active].isRunning"
+                >Stop</button>
+                <button class="font-btn timer-stopwatch-control" (click)="setCommand('reset')">Reset</button>
+                <button class="font-btn timer-stopwatch-control timer-alarm-btn"
+                    [ngClass]="{
+                        'icon-bell-alt': state.timer.alarmOn,
+                        'icon-bell-off': !state.timer.alarmOn
+                    }"
+                    (click)="setCommand('toggleAlarm')"
+                    *ngIf="active === 'timer'"
+                ></button>
             </div>
         </div>
     `
@@ -38,12 +57,21 @@ export class UpperBlock {
 
     constructor() {
         this.active = "timer";
+        this.state = {
+            timer: {
+                isRunning: false,
+                alarmOn: true
+            },
+            stopwatch: {
+                isRunning: false
+            }
+        };
     }
 
     ngOnChanges(changes) {
         const toggle = changes.toggleComp;
 
-        if (!toggle.isFirstChange()) {
+        if (!toggle.firstChange) {
             this.visible = toggle.currentValue;
         }
     }
@@ -54,5 +82,19 @@ export class UpperBlock {
 
     toggleTab(tab) {
         this.active = tab;
+    }
+
+    setCommand(command) {
+        const state = this.state[this.active];
+        state.command = command;
+
+        if (command === "toggleAlarm") {
+            state.alarmOn = !state.alarmOn;
+        }
+        this.state[this.active] = Object.assign({}, state);
+    }
+
+    onRunning(isRunning, component) {
+        this.state[component].isRunning = isRunning;
     }
 }

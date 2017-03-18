@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "stopwatch",
@@ -16,17 +16,23 @@ import { Component } from "@angular/core";
             <span class="timer-stopwatch-sep">s</span>
             <span class="stopwatch-milliseconds">{{ stopwatch.milliseconds }}</span>
         </div>
-        <div class="timer-stopwatch-controls">
-            <button class="font-btn timer-stopwatch-control" (click)="start()" *ngIf="!isRunning">Start</button>
-            <button class="font-btn timer-stopwatch-control" (click)="stop()" *ngIf="isRunning">Stop</button>
-            <button class="font-btn timer-stopwatch-control" (click)="reset()">Reset</button>
-        </div>
     `
 })
 export class Stopwatch {
+    @Output() running = new EventEmitter();
+    @Input() state;
+
     constructor() {
         this.isRunning = false;
         this.stopwatch = this.resetTime();
+    }
+
+    ngOnChanges(changes) {
+        if (!changes.state.firstChange) {
+            const state = changes.state.currentValue;
+            this.isRunning = state.isRunning;
+            this[state.command]();
+        }
     }
 
     resetTime() {
@@ -104,11 +110,13 @@ export class Stopwatch {
 
     start() {
         this.isRunning = true;
+        this.running.emit(this.isRunning);
         this.update(0);
     }
 
     stop() {
         this.isRunning = false;
+        this.running.emit(this.isRunning);
     }
 
     reset() {
