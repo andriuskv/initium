@@ -32,6 +32,29 @@
     }
 }
 
+.upper-block-content-wrapper {
+    font-size: 16px;
+
+    &:-webkit-full-screen {
+        width: 100vw;
+        height: 100vh;
+        padding: 24vh 12vw 0;
+        background-color: $color3;
+        font-size: 32px;
+
+        .timer-stopwatch-controls {
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.4s all;
+        }
+
+        .upper-block-content:hover .timer-stopwatch-controls {
+            visibility: visible;
+            opacity: 1;
+        }
+    }
+}
+
 .upper-block-item {
     display: none;
 
@@ -41,28 +64,25 @@
 }
 
 .timer-stopwatch-sep {
-    padding-right: 8px;
-    font-size: 32px;
-
-    &:last-of-type {
-        padding-right: 0;
-    }
+    padding-right: 0.25em;
+    font-size: 2em;
 }
 
 .timer-stopwatch-controls {
     display: flex;
-    padding-top: 4px;
+    padding-top: 0.25em;
     border-top: 1px solid $color2;
-    margin-top: 4px;
+    margin-top: 0.25em;
 }
 
 .timer-stopwatch-control {
-    margin-right: 4px;
+    margin-right: 0.25em;
 }
 
 .timer, .stopwatch {
     display: flex;
     align-items: baseline;
+    height: 4.625em;
 }
 
 .timer {
@@ -70,28 +90,26 @@
 }
 
 .timer-input {
-    width: 74px;
-    height: 74px;
+    width: 1.125em;
+    height: 100%;
     padding: 0;
     border: none;
     background-color: transparent;
     color: $primary-text-color;
-    font-size: 64px;
-    text-align: center;
+    font-size: 4em;
 
     &:focus {
         outline: none;
     }
 }
 
-.timer-alarm-btn {
-    margin-left: auto;
+.timer-stopwatch-reset-btn {
+    margin-right: auto;
 }
 
 .stopwatch {
-    height: 74px;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
 
     &:hover {
         cursor: pointer;
@@ -99,9 +117,9 @@
 }
 
 .stopwatch-digit {
-    font-size: 64px;
+    font-size: 4em;
 }
 
 .stopwatch-milliseconds {
-    font-size: 32px;
+    font-size: 2em;
 }
