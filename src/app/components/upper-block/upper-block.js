@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { Component, Input, Output, EventEmitter, Inject } from "@angular/core";
+import { DOCUMENT } from "@angular/platform-browser";
 
 @Component({
     selector: "upper-block",
@@ -23,30 +24,45 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
                     </button>
                 </li>
             </ul>
-            <div class="upper-block-item" [class.visible]="active === 'timer'">
-                <timer [state]="state.timer" (running)="onRunning($event, 'timer')"></timer>
-            </div>
-            <div class="upper-block-item" [class.visible]="active === 'stopwatch'">
-                <stopwatch [state]="state.stopwatch" (running)="onRunning($event, 'stopwatch')"></stopwatch>
-            </div>
-            <div class="timer-stopwatch-controls">
-                <button class="font-btn timer-stopwatch-control"
-                    (click)="setCommand('start')"
-                    *ngIf="!state[active].isRunning"
-                >Start</button>
-                <button class="font-btn timer-stopwatch-control"
-                    (click)="setCommand('stop')"
-                    *ngIf="state[active].isRunning"
-                >Stop</button>
-                <button class="font-btn timer-stopwatch-control" (click)="setCommand('reset')">Reset</button>
-                <button class="font-btn timer-stopwatch-control timer-alarm-btn"
-                    [ngClass]="{
-                        'icon-bell-alt': state.timer.alarmOn,
-                        'icon-bell-off': !state.timer.alarmOn
-                    }"
-                    (click)="setCommand('toggleAlarm')"
-                    *ngIf="active === 'timer'"
-                ></button>
+            <div class="upper-block-content-wrapper" #fullscreenTarget>
+                <div class="upper-block-content">
+                    <div class="upper-block-item" [class.visible]="active === 'timer'">
+                        <timer [state]="state.timer" (running)="onRunning($event, 'timer')"></timer>
+                    </div>
+                    <div class="upper-block-item" [class.visible]="active === 'stopwatch'">
+                        <stopwatch [state]="state.stopwatch" (running)="onRunning($event, 'stopwatch')"></stopwatch>
+                    </div>
+                    <div class="timer-stopwatch-controls">
+                        <button class="font-btn timer-stopwatch-control"
+                            (click)="setCommand('start')"
+                            *ngIf="!state[active].isRunning"
+                        >Start</button>
+                        <button class="font-btn timer-stopwatch-control"
+                            (click)="setCommand('stop')"
+                            *ngIf="state[active].isRunning"
+                        >Stop</button>
+                        <button class="font-btn timer-stopwatch-control timer-stopwatch-reset-btn"
+                            (click)="setCommand('reset')"
+                        >Reset</button>
+                        <button class="font-btn timer-stopwatch-control"
+                            title="Toggle alarm"
+                            [ngClass]="{
+                                'icon-bell-alt': state.timer.alarmOn,
+                                'icon-bell-off': !state.timer.alarmOn
+                            }"
+                            (click)="setCommand('toggleAlarm')"
+                            *ngIf="active === 'timer'"
+                        ></button>
+                        <button class="font-btn timer-stopwatch-control"
+                            [title]="fullscreenBtnTitle"
+                            [ngClass]="{
+                                'icon-resize-small': isInFullscreen,
+                                'icon-resize-full': !isInFullscreen
+                            }"
+                            (click)="toggleFullscreen(fullscreenTarget)"
+                        ></button>
+                    </div>
+                </div>
             </div>
         </div>
     `
@@ -55,7 +71,12 @@ export class UpperBlock {
     @Output() hide = new EventEmitter();
     @Input() toggleComp;
 
-    constructor() {
+    static get parameters() {
+        return [[new Inject(DOCUMENT)]];
+    }
+
+    constructor(document) {
+        this.document = document;
         this.active = "timer";
         this.state = {
             timer: {
@@ -66,6 +87,14 @@ export class UpperBlock {
                 isRunning: false
             }
         };
+        this.fullscreenBtnTitle = "Enter fullscreen";
+    }
+
+    ngOnInit() {
+        this.document.addEventListener("webkitfullscreenchange", () => {
+            this.isInFullscreen = this.document.webkitIsFullScreen;
+            this.fullscreenBtnTitle = `${this.isInFullscreen ? "Leave": "Enter"} fullscreen`;
+        }) ;
     }
 
     ngOnChanges(changes) {
@@ -96,5 +125,14 @@ export class UpperBlock {
 
     onRunning(isRunning, component) {
         this.state[component].isRunning = isRunning;
+    }
+
+    toggleFullscreen(target) {
+        if (this.document.webkitIsFullScreen) {
+            this.document.webkitExitFullscreen();
+        }
+        else {
+            target.webkitRequestFullScreen();
+        }
     }
 }
