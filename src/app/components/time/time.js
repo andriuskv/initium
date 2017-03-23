@@ -7,7 +7,7 @@ import { DateService } from "Services/dateService";
         <div class="time" *ngIf="clock">
             <div class="clock-container">
                 <div class="clock">{{ clock }}</div>
-                <div class="marker" *ngIf="marker">{{ marker }}</div>
+                <div class="period" *ngIf="period">{{ period }}</div>
             </div>
             <div class="date" *ngIf="!dateDisabled">{{ date }}</div>
         </div>
@@ -49,7 +49,7 @@ export class Time {
             this.updateTime(this.get12HourTime);
         }
         else {
-            this.marker = "";
+            this.period = "";
             this.updateTime(this.get24HourTime);
         }
     }
@@ -68,12 +68,13 @@ export class Time {
         const time = this.getCurrentTime();
         let hours = time.hours;
 
-        if (hours > 11) {
-            this.marker = "PM";
-            hours = hours > 13 ? hours - 12 : hours;
+        this.period = hours < 12 ? "AM" : "PM";
+
+        if (!hours) {
+            hours = 12;
         }
         else {
-            this.marker = "AM";
+            hours = hours > 12 ? hours - 12 : hours;
         }
         return `${hours}:${time.minutes}`;
     }
