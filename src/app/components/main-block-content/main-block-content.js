@@ -2,7 +2,37 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 
 @Component({
     selector: "main-block-content",
-    templateUrl: "app/components/main-block-content/main-block-content.html"
+    template: `
+        <ul class="container main-block-content"
+            [class.hidden]="!item"
+            [class.is-expanded]="itemState[item]"
+            [class.is-item-bar-hidden]="isItemBarHidden"
+            [class.is-twitter-active]="item === 'twitter'">
+            <li class="main-block-content-item" [class.hidden]="item !== 'mostVisited'">
+                <most-visited [setting]="mainBlockSetting"></most-visited>
+            <li>
+            <li class="main-block-content-item" [class.hidden]="item !== 'notepad'">
+                <notepad></notepad>
+            </li>
+            <li class="main-block-content-item" [class.hidden]="item !== 'twitter'">
+                <twitter [item]="item"
+                    (newTweets)="onNewItems($event, 'twitter')"
+                    (toggleTab)="onToggleTab($event)">
+                </twitter>
+            </li>
+            <li class="main-block-content-item" [class.hidden]="item !== 'rssFeed'">
+                <rss-feed [item]="item"
+                    (newEntries)="onNewItems($event, 'rssFeed')"
+                    (toggleTab)="onToggleTab($event)">
+                </rss-feed>
+            </li>
+            <li *ngIf="item !== 'mostVisited'">
+                <button class="btn main-block-expand-btn" (click)="toggleItemState()">
+                    {{ this.itemState[this.item] ? "Contract" : "Expand" }}
+                </button>
+            </li>
+    </ul>
+    `
 })
 export class MainBlockContent {
     @Input() choice;

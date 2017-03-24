@@ -4,7 +4,34 @@ import Dropbox from "dropbox";
 
 @Component({
     selector: "dropbox",
-    templateUrl: "app/components/dropbox/dropbox.html"
+    template: `
+        <div class="menu-item-container">
+            <div class="dropbox-header">
+                <button class="icon-left-big font-btn" title="Back"
+                (click)="goBack(activeDir)"
+                *ngIf="activeDir.path && activeDir.path !== '/'"></button>
+                <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
+            </div>
+            <button class="icon-cancel font-btn dropbox-logout-btn" title="Logout"
+                *ngIf="loggedIn"
+                (click)="logout()">
+            </button>
+            <div class="dropbox-hero" [class.show]="!showItems">
+                <div class="icon-dropbox dropbox-hero-icon"></div>
+                <button class="btn" *ngIf="showLogin" (click)="login()">Log in</button>
+                <div class="icon-spin4 animate-spin dropbox-spinner" *ngIf="fetching"></div>
+                <p class="dropbox-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+            </div>
+            <ul class="dropbox-items" [class.show]="showItems">
+                <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
+                    <img src="{{ item.thumbnail }}" class="dropbox-item-thumbnail">
+                    <span class="dropbox-item-name">{{ item.name }}</span>
+                    <span class="dropbox-item-error" [class.show]="item.error">Not an image</span>
+                    <span class="icon-spin4 animate-spin dropbox-spinner" *ngIf="item.fetching"></span>
+                </li>
+            </ul>
+        </div>
+    `
 })
 export class DropboxComp {
     @Output() background = new EventEmitter();

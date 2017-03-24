@@ -3,6 +3,10 @@ const path = require("path");
 
 module.exports = function(env = {}) {
     const plugins = [
+        new webpack.ContextReplacementPlugin(
+            /angular(\\|\/)core(\\|\/)@angular/,
+            path.resolve(__dirname, "../src")
+        ),
         new webpack.DefinePlugin({
             "process.env": {
                 NODE_ENV: JSON.stringify("production"),
@@ -38,7 +42,7 @@ module.exports = function(env = {}) {
             main: "./src/app/main.js"
         },
         output: {
-            path: "./dist/js",
+            path: path.resolve(__dirname, "../dist/js"),
             filename: "[name].js"
         },
         resolve: {
@@ -53,17 +57,13 @@ module.exports = function(env = {}) {
                 loader: "babel-loader",
                 exclude: /node_modules/,
                 options: {
-                    plugins: [
-                        "transform-decorators-legacy",
-                        "transform-class-properties"
-                    ],
                     presets: [["env", {
                         modules: false,
                         useBuiltIns: true,
                         targets: {
-                            browsers: ["last 2 versions", "Chrome > 45"]
+                            browsers: ["last 2 versions", "Chrome >= 47"]
                         }
-                    }]]
+                    }], "angular2"]
                 }
             }]
         },

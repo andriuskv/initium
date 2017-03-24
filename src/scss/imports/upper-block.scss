@@ -75,8 +75,8 @@
     margin-top: 0.25em;
 }
 
-.timer-stopwatch-control {
-    margin-right: 0.25em;
+.timer-stopwatch-control:not(:first-of-type) {
+    margin-left: 0.5em;
 }
 
 .timer, .stopwatch {

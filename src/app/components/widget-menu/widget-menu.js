@@ -18,8 +18,7 @@ export class WidgetMenu {
         this.visible = !this.visible;
 
         if (!this.visible) {
-            this.title = "Widgets";
-            this.selectedItem = "";
+            this.toggleWidget();
         }
     }
 
