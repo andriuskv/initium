@@ -94,8 +94,8 @@
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
         background-color: $color3;
 
-        .pinned-todo {
-            border-color: $color2;
+        .pinned-todo:not(:last-of-type) {
+            border-bottom-color: $color2;
         }
     }
 }

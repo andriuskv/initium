@@ -2,7 +2,26 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 
 @Component({
     selector: "main-block-nav",
-    templateUrl: "app/components/main-block-nav/main-block-nav.html"
+    template: `
+        <ul class="container main-block-nav" [class.hidden]="hideBar">
+            <li class="main-block-nav-item" title="Most visited">
+                <button class="icon-th font-btn" (click)="selectItem('mostVisited')"></button>
+            </li>
+            <li class="main-block-nav-item" title="Notepad">
+                <button class="icon-edit font-btn" (click)="selectItem('notepad')"></button>
+            </li>
+            <li class="main-block-nav-item" title="Twitter">
+                <button class="icon-twitter font-btn" (click)="selectItem('twitter')">
+                    <span class="indicator" *ngIf="items.twitter.new"></span>
+                </button>
+            </li>
+            <li class="main-block-nav-item" title="RSS feed">
+                <button class="icon-rss font-btn" (click)="selectItem('rssFeed')">
+                    <span class="indicator" *ngIf="items.rssFeed.new"></span>
+                </button>
+            </li>
+        </ul>
+    `
 })
 export class MainBlockNav {
     @Output() choice = new EventEmitter();
