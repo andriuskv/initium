@@ -121,5 +121,7 @@
 }
 
 .stopwatch-milliseconds {
+    overflow: hidden;
+    width: 36px;
     font-size: 2em;
 }

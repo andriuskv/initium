@@ -40,18 +40,8 @@ export class Stopwatch {
             hours: 0,
             minutes: 0,
             seconds: 0,
-            milliseconds: "000"
+            milliseconds: "00"
         };
-    }
-
-    padMilliseconds(num) {
-        if (num < 10) {
-            return `00${num}`;
-        }
-        if (num < 100) {
-            return `0${num}`;
-        }
-        return num;
     }
 
     update(elapsed) {
@@ -59,8 +49,8 @@ export class Stopwatch {
             return;
         }
         const start = performance.now();
-        const hours = this.stopwatch.hours;
-        let minutes = this.stopwatch.minutes;
+        let hours = this.stopwatch.hours;
+        let minutes = parseInt(this.stopwatch.minutes, 10);
         let seconds = parseInt(this.stopwatch.seconds, 10);
         let milliseconds = parseInt(this.stopwatch.milliseconds, 10) + elapsed;
 
@@ -72,25 +62,29 @@ export class Stopwatch {
         if (seconds >= 60) {
             seconds -= 60;
             minutes += 1;
-            this.stopwatch.minutes = minutes;
         }
 
         if (minutes >= 60) {
             minutes -= 60;
-            this.stopwatch.minutes = minutes;
-            this.stopwatch.hours = hours + 1;
-        }
-
-        if (minutes && seconds < 10) {
-            seconds = `0${seconds}`;
+            hours += 1;
         }
 
         if (hours && minutes < 10) {
             minutes = `0${minutes}`;
         }
 
-        this.stopwatch.milliseconds = this.padMilliseconds(milliseconds);
+        if (minutes && seconds < 10) {
+            seconds = `0${seconds}`;
+        }
+
+        if (milliseconds < 100) {
+            milliseconds = `0${milliseconds}`;
+        }
+
+        this.stopwatch.hours = hours;
+        this.stopwatch.minutes = minutes;
         this.stopwatch.seconds = seconds;
+        this.stopwatch.milliseconds = milliseconds;
 
         requestAnimationFrame(() => {
             const diff = Math.floor(performance.now() - start);
