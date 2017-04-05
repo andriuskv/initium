@@ -12,6 +12,8 @@ import { WeatherService } from "Services/weatherService";
 import { NotificationService } from "Services/notificationService";
 import { FeedService } from "Services/feedService";
 
+import { SlicePipe } from "./pipes/slicePipe";
+
 import { App } from './app';
 import { Background } from "./components/background/background";
 import { Time } from "./components/time/time";
@@ -43,7 +45,7 @@ import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar
         App, Settings, Background, Time, MainBlock, MainBlockNav, MainBlockContent,
         MostVisited, Notepad, Twitter, RssFeed, CalendarReminders, Weather,
         WidgetMenu, TodoPin, TodoEdit, Todo, UpperBlock,Timer, Stopwatch, Calendar,
-        CalendarSelectedDay, DropboxComp
+        CalendarSelectedDay, DropboxComp, SlicePipe
     ],
     bootstrap: [App]
 })

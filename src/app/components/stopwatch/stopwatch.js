@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from "@angular/core";
 
 @Component({
     selector: "stopwatch",
@@ -14,7 +14,7 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
             </span>
             <span class="stopwatch-digit">{{ stopwatch.seconds }}</span>
             <span class="timer-stopwatch-sep">s</span>
-            <span class="stopwatch-milliseconds">{{ stopwatch.milliseconds }}</span>
+            <span class="stopwatch-milliseconds">{{ stopwatch.milliseconds | slice: 2 }}</span>
         </div>
     `
 })
@@ -22,7 +22,12 @@ export class Stopwatch {
     @Output() running = new EventEmitter();
     @Input() state;
 
-    constructor() {
+    static get parameters() {
+        return [[ChangeDetectorRef]];
+    }
+
+    constructor(ref) {
+        this.ref = ref;
         this.isRunning = false;
         this.stopwatch = this.resetTime();
     }
@@ -35,6 +40,17 @@ export class Stopwatch {
         }
     }
 
+    ngOnViewInit() {
+        this.ref.detach();
+    }
+
+    initWorker() {
+        this.worker = new Worker("../ww.js");
+        this.worker.onmessage = event => {
+            this.update(performance.now() - event.data);
+        };
+    }
+
     resetTime() {
         return {
             hours: 0,
@@ -45,14 +61,10 @@ export class Stopwatch {
     }
 
     update(elapsed) {
-        if (!this.isRunning) {
-            return;
-        }
-        const start = performance.now();
         let hours = this.stopwatch.hours;
         let minutes = parseInt(this.stopwatch.minutes, 10);
         let seconds = parseInt(this.stopwatch.seconds, 10);
-        let milliseconds = parseInt(this.stopwatch.milliseconds, 10) + elapsed;
+        let milliseconds = parseFloat(this.stopwatch.milliseconds) + elapsed;
 
         if (milliseconds >= 1000) {
             seconds += 1;
@@ -80,17 +92,11 @@ export class Stopwatch {
         if (milliseconds < 100) {
             milliseconds = `0${milliseconds}`;
         }
-
         this.stopwatch.hours = hours;
         this.stopwatch.minutes = minutes;
         this.stopwatch.seconds = seconds;
         this.stopwatch.milliseconds = milliseconds;
-
-        requestAnimationFrame(() => {
-            const diff = Math.floor(performance.now() - start);
-
-            this.update(diff);
-        });
+        this.ref.detectChanges();
     }
 
     toggle() {
@@ -103,12 +109,14 @@ export class Stopwatch {
     }
 
     start() {
+        this.initWorker();
+        this.worker.postMessage("start");
         this.isRunning = true;
         this.running.emit(this.isRunning);
-        this.update(0);
     }
 
     stop() {
+        this.worker.postMessage("stop");
         this.isRunning = false;
         this.running.emit(this.isRunning);
     }
@@ -116,5 +124,6 @@ export class Stopwatch {
     reset() {
         this.stop();
         this.stopwatch = this.resetTime();
+        this.ref.detectChanges();
     }
 }
