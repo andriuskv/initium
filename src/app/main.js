@@ -52,7 +52,7 @@ import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar
 class AppModule {}
 
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./../sw.js");
+    navigator.serviceWorker.register("sw.js");
 }
 enableProdMode();
 platformBrowserDynamic().bootstrapModule(AppModule);

@@ -45,7 +45,7 @@ export class Stopwatch {
     }
 
     initWorker() {
-        this.worker = new Worker("../ww.js");
+        this.worker = new Worker("ww.js");
         this.worker.onmessage = event => {
             this.update(performance.now() - event.data);
         };
