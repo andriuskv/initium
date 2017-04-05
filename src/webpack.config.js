@@ -42,7 +42,7 @@ module.exports = function(env = {}) {
             main: "./src/app/main.js"
         },
         output: {
-            path: path.resolve(__dirname, "../dist/js"),
+            path: path.resolve(__dirname, "../dist"),
             filename: "[name].js"
         },
         resolve: {
