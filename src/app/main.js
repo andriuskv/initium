@@ -26,7 +26,6 @@ import { Twitter } from "./components/twitter/twitter";
 import { RssFeed } from "./components/rss-feed/rss-feed";
 import { CalendarReminders } from "./components/calendar-reminders/calendar-reminders";
 import { Todo } from "./components/todo/todo";
-import { TodoEdit } from "./components/todo-edit/todo-edit";
 import { TodoPin } from "./components/todo-pin/todo-pin";
 import { Weather } from "./components/weather/weather";
 import { WidgetMenu } from "./components/widget-menu/widget-menu";
@@ -44,7 +43,7 @@ import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar
     declarations: [
         App, Settings, Background, Time, MainBlock, MainBlockNav, MainBlockContent,
         MostVisited, Notepad, Twitter, RssFeed, CalendarReminders, Weather,
-        WidgetMenu, TodoPin, TodoEdit, Todo, UpperBlock,Timer, Stopwatch, Calendar,
+        WidgetMenu, TodoPin, Todo, UpperBlock,Timer, Stopwatch, Calendar,
         CalendarSelectedDay, DropboxComp, SlicePipe
     ],
     bootstrap: [App]

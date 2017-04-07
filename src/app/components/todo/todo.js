@@ -5,21 +5,16 @@ import { Component } from "@angular/core";
     templateUrl: "app/components/todo/todo.html"
 })
 export class Todo {
-    visible = false;
-
-    ngOnInit() {
-        this.todos = JSON.parse(localStorage.getItem("todos")) || this.populateWithEmptyTodos();
-        this.hasTodo = this.todos.some(todo => todo.text);
+    constructor() {
+        this.visible = false;
+        this.todos = JSON.parse(localStorage.getItem("todos")) || [];
         this.getPinnedTodos();
     }
 
     toggle() {
         this.visible = !this.visible;
 
-        if (this.visible) {
-            this.editedTodo = false;
-        }
-        else {
+        if (!this.visible) {
             this.getPinnedTodos();
         }
     }
@@ -28,37 +23,22 @@ export class Todo {
         this.todosToPin = this.todos.filter(todo => todo.pinned);
     }
 
-    populateWithEmptyTodos(num = 0) {
-        const todos = [];
-        let toAdd = 10 - num;
+    addTodo(input) {
+        const value = input.value.trim();
 
-        while (toAdd--) {
-            todos.push({ text: "", done: false });
+        if (!value) {
+            return;
         }
-        return todos;
+        this.todos.unshift({ text: value, done: false });
+        input.value = "";
+        this.saveTodos(this.todos);
     }
 
-    hasEmptyTodo() {
-        return this.todos.some(todo => !todo.text);
-    }
-
-    addTodo(todo) {
-        if (todo.value) {
-            this.todos.unshift({ text: todo.value, done: false });
-            todo.value = "";
-
-            if (this.hasEmptyTodo()) {
-                this.todos.pop();
-            }
-            this.hasTodo = this.todos.some(todo => todo.text);
-            this.saveTodos(this.todos);
-        }
-    }
-
-    markTodoDone(i, done) {
-        const todo = this.todos[i];
+    markTodoDone(index, done) {
+        const todo = this.todos[index];
 
         todo.done = done.checked;
+
         if (todo.done && todo.pinned) {
             todo.pinned = false;
         }
@@ -70,23 +50,13 @@ export class Todo {
         this.saveTodos(this.todos);
     }
 
-    removeTodo(i) {
-        this.todos.splice(i, 1);
-
-        if (this.todos.length < 10) {
-            this.todos.push({ text: "", done: false });
-        }
-        this.hasTodo = this.todos.some(todo => todo.text);
+    removeTodo(index) {
+        this.todos.splice(index, 1);
         this.saveTodos(this.todos);
     }
 
     removeTodos() {
         this.todos = this.todos.filter(todo => !todo.done);
-
-        if (this.todos.length < 10) {
-            this.todos = this.todos.concat(this.populateWithEmptyTodos(this.todos.length));
-        }
-        this.hasTodo = this.todos.some(todo => todo.text);
         this.saveTodos(this.todos);
     }
 
@@ -94,26 +64,21 @@ export class Todo {
         localStorage.setItem("todos", JSON.stringify(todos));
     }
 
-    enableTodoEdit(todo, i) {
-        if (!todo.text) {
-            return;
-        }
-        this.editedTodo = {
-            text: todo.text,
-            index: i
-        };
-        this.visible = false;
+    enableTodoEdit(text, index) {
+        this.todoBeingEdited = { text, index };
     }
 
-    onEdit(edit) {
-        const editedTodo = Object.assign({}, this.editedTodo);
-        this.editedTodo = null;
-        this.visible = edit.visible;
+    saveTodoEdit() {
+        const { text, index } = this.todoBeingEdited;
 
-        if (!edit.text || edit.text === this.todos[editedTodo.index].text) {
-            return;
+        if (text && text !== this.todos[index].text) {
+            this.todos[index].text = text;
+            this.saveTodos(this.todos);
         }
-        this.todos[editedTodo.index].text = edit.text;
-        this.saveTodos(this.todos);
+        this.cancelTodoEdit();
+    }
+
+    cancelTodoEdit() {
+        this.todoBeingEdited = null;
     }
 }
