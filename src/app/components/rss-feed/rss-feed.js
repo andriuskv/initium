@@ -1,3 +1,5 @@
+/* global chrome */
+
 import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { FeedService } from "Services/feedService";
 import { NotificationService } from "Services/notificationService";
@@ -19,7 +21,7 @@ export class RssFeed {
         this.feedService = feedService;
         this.notification = notificationService;
         this.feeds = [];
-        this.feedsToLoad = JSON.parse(localStorage.getItem("rss feeds")) || [];
+        this.feedsToLoad = [];
         this.activeFeed = "";
         this.latestActiveFeed = "";
         this.newEntryCount = 0;
@@ -31,7 +33,10 @@ export class RssFeed {
         const delay = this.isActive ? 2000 : 10000;
 
         this.initTimeout = setTimeout(() => {
-            this.loadFeeds(this.feedsToLoad);
+            chrome.storage.sync.get("rss", storage => {
+                this.feedsToLoad = storage.rss || JSON.parse(localStorage.getItem("rss feeds")) || [];
+                this.loadFeeds(this.feedsToLoad);
+            });
         }, delay);
     }
 
@@ -55,7 +60,7 @@ export class RssFeed {
             title: feed.title
         }));
 
-        localStorage.setItem("rss feeds", JSON.stringify(feedsToSave));
+        chrome.storage.sync.set({ rss:  feedsToSave });
     }
 
     getEntryLink(entry) {
