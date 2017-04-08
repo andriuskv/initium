@@ -1,3 +1,5 @@
+/* global chrome */
+
 import { Component } from "@angular/core";
 
 @Component({
@@ -7,20 +9,25 @@ import { Component } from "@angular/core";
 export class Todo {
     constructor() {
         this.visible = false;
-        this.todos = JSON.parse(localStorage.getItem("todos")) || [];
-        this.getPinnedTodos();
+        this.todos = [];
+        this.todosToPin = [];
+
+        chrome.storage.sync.get("todos", storage => {
+            this.todos = storage.todos || JSON.parse(localStorage.getItem("todos")) || [];
+            this.todosToPin = this.getPinnedTodos();
+        });
     }
 
     toggle() {
         this.visible = !this.visible;
 
         if (!this.visible) {
-            this.getPinnedTodos();
+            this.todosToPin = this.getPinnedTodos();
         }
     }
 
     getPinnedTodos() {
-        this.todosToPin = this.todos.filter(todo => todo.pinned);
+        return this.todos.filter(todo => todo.pinned);
     }
 
     addTodo(input) {
@@ -61,7 +68,7 @@ export class Todo {
     }
 
     saveTodos(todos) {
-        localStorage.setItem("todos", JSON.stringify(todos));
+        chrome.storage.sync.set({ todos });
     }
 
     enableTodoEdit(text, index) {

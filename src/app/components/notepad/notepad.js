@@ -57,12 +57,7 @@ export class Notepad {
 
     ngOnInit() {
         chrome.storage.sync.get("notepad", storage => {
-            if (typeof storage.notepad === "string") {
-                this.saveTabContent(storage.notepad);
-            }
-            else if (storage.notepad && storage.notepad.length) {
-                this.tabs = storage.notepad;
-            }
+            this.tabs = storage.notepad || this.tabs;
             this.setVisibleTabs();
             this.hideInputAndSelectTab(this.activeTabIndex);
         });
