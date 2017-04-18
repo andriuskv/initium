@@ -4,7 +4,7 @@ import { WeatherService } from "Services/weatherService";
 @Component({
     selector: "weather",
     template: `
-        <div class="weather" *ngIf="!weatherDisabled && showWeather"
+        <div class="weather" *ngIf="!disabled && showWeather"
             [class.is-fetching]="isFetching"
             [class.done-fetching]="doneFetcing"
             [title]="weather.description">
@@ -30,23 +30,26 @@ export class Weather {
         this.iconClassName = "weather-icon";
         this.showWeather = false;
         this.initialized = false;
+        this.disabled = false;
     }
 
     ngOnChanges(changes) {
-        const setting = changes.setting.currentValue;
+        const setting = changes.setting;
 
-        if (!setting) {
+        if (setting.firstChange) {
             return;
         }
+        const { disabled, useFarenheit, cityName } = setting.currentValue;
 
         if (this.timeout) {
             clearTimeout(this.timeout);
+            this.timeout = null;
         }
 
-        if (typeof setting.disabled === "boolean") {
-            this.weatherDisabled = setting.disabled;
+        if (typeof disabled === "boolean") {
+            this.disabled = disabled;
 
-            if (!this.weatherDisabled) {
+            if (!this.disabled) {
                 if (this.initialized) {
                     this.getWeather(this.cityName);
                 }
@@ -61,16 +64,16 @@ export class Weather {
                 this.initialized = true;
             }
         }
-        if (typeof setting.useFarenheit === "boolean") {
-            const units = setting.useFarenheit ? "F" : "C";
+        if (typeof useFarenheit === "boolean") {
+            const units = useFarenheit ? "F" : "C";
 
             this.units = units;
             this.weather.temp = this.getTemp(this.temperature, units);
         }
-        if (typeof setting.cityName === "string") {
-            this.cityName = setting.cityName;
+        if (typeof cityName === "string") {
+            this.cityName = cityName;
 
-            if (this.initialized) {
+            if (!this.disabled && this.initialized) {
                 this.isFetching = true;
                 this.getWeather(this.cityName);
             }
