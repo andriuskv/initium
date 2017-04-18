@@ -14,12 +14,8 @@ export class WidgetMenu {
         this.title = "Widgets";
     }
 
-    toggleMenu() {
-        this.visible = !this.visible;
-
-        if (!this.visible) {
-            this.toggleWidget();
-        }
+    showMenu() {
+        this.visible = true;
     }
 
     toggleUpperBlockComp() {
@@ -27,6 +23,9 @@ export class WidgetMenu {
     }
 
     toggleWidget(widget) {
+        if (!widget && !this.selectedItem) {
+            this.visible = false;
+        }
         this.selectedItem = widget || "";
         this.title = widget || "Widgets";
     }

@@ -1,12 +1,10 @@
-<div class="menu">
+<div class="widget-menu">
     <div class="container widget-menu-container" [class.visible]="visible">
-        <div class="menu-header">
+        <div class="menu-header menu-transition-target">
+            <button class="icon-cancel font-btn" title="Close" (click)="toggleWidget()"></button>
             <h3 class="menu-title">{{ title }}</h3>
-            <button class="icon-cancel font-btn close-item-btn" title="Close"
-                *ngIf="selectedItem"
-                (click)="toggleWidget()"></button>
         </div>
-        <ul class="menu-item-container" *ngIf="!selectedItem">
+        <ul class="menu-item-container menu-transition-target" *ngIf="!selectedItem">
             <li class="menu-item">
                 <button class="icon-clock font-btn menu-item-icon" (click)="toggleUpperBlockComp()">
                     <div class="menu-item-title">Timer / Stopwatch</div>
@@ -34,5 +32,5 @@
             (reminders)="onReminders($event)"
             [remidersDisabled]="remidersDisabled"></calendar>
     </div>
-    <button class="icon-menu font-btn menu-btn" (click)="toggleMenu()"></button>
+    <button class="icon-menu font-btn menu-btn" [class.hidden]="visible" (click)="showMenu()"></button>
 </div>

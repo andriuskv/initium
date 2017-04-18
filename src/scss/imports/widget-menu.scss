@@ -1,39 +1,63 @@
-.menu {
+.widget-menu {
 	position: absolute;
 	bottom: 4px;
 	right: 4px;
+	display: flex;
+	align-items: flex-end;
 }
+
 .widget-menu-container {
-    vertical-align: bottom;
     position: relative;
-    display: none;
+	right: -20px;
+	width: 20px;
+	height: 20px;
+	border-top-left-radius: 50%;
+	visibility: collapse;
+	opacity: 0;
+	transition: 0.2s all;
+
+	.menu-transition-target {
+		visibility: collapse;
+		opacity: 0;
+	}
 
     &.visible {
-		display: inline-block;
+		width: 400px;
+		height: 236px;
+		border-top-left-radius: 0;
+		visibility: visible;
+		opacity: 1;
+		transition-delay: 0s;
+
+		.menu-transition-target {
+			visibility: visible;
+			opacity: 1;
+            transition: 0.2s all;
+            transition-delay: 0.2s;
+        }
 	}
 }
+
 .menu-header {
+	display: flex;
+	align-items: center;
 	margin-bottom: 4px;
 	padding-bottom: 4px;
 	border-bottom: 1px solid #333;
 }
+
 .menu-title {
-	margin-top: 0;
-	margin-bottom: 0;
+	margin: 0 auto 0 auto;
 	text-align: center;
 	font-size: 18px;
 	font-weight: normal;
 }
-.close-item-btn {
-    position: absolute;
-    top: 6px;
-    left: 4px;
-    font-size: 16px;
-}
+
 .menu-item-container {
-    width: 392px;
-    height: 200px;
+	width: 100%;
+	height: calc(100% - 25px);
 }
+
 .menu-item {
     vertical-align: top;
 	display: inline-block;
@@ -41,17 +65,29 @@
 	margin-bottom: 4px;
 	text-align: center;
 }
+
 .menu-item-icon {
 	font-size: 28px;
     line-height: 1;
 }
+
 .menu-item-title {
 	margin-top: 2px;
 	font-size: 12px;
-	font-family: sans-serif;
 	word-break: break-word;
 }
+
 .menu-btn {
+	visibility: visible;
+	opacity: 1;
 	font-size: 20px;
     line-height: 1;
+	transition: 0.2s all;
+	transition-delay: 0.2s;
+
+	&.hidden {
+		visibility: collapse;
+		opacity: 0;
+		transition-delay: 0s;
+	}
 }
