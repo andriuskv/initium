@@ -25,7 +25,7 @@
         border-bottom-right-radius: 0;
 
         .todo-transition-target {
-            transition: 0.2s opacity;
+            transition: 0.2s all;
             transition-delay: 0.2s;
             opacity: 1;
         }
@@ -148,9 +148,11 @@
 .todo-item-btn {
     display: inline-flex;
     align-items: center;
-    margin-left: 2px;
-    margin-right: 2px;
     color: #777;
+
+    &:not(:last-of-type) {
+        margin-right: 4px;
+    }
 
     &:hover {
         color: $primary-text-color;
@@ -163,7 +165,7 @@
 }
 
 .todo-item-btn-name {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .todo-footer {
