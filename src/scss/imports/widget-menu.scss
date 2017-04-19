@@ -2,35 +2,26 @@
 	position: absolute;
 	bottom: 4px;
 	right: 4px;
-	display: flex;
-	align-items: flex-end;
 }
 
 .widget-menu-container {
-    position: relative;
-	right: -20px;
+	visibility: collapse;
 	width: 20px;
 	height: 20px;
 	border-top-left-radius: 50%;
-	visibility: collapse;
-	opacity: 0;
 	transition: 0.2s all;
 
 	.menu-transition-target {
-		visibility: collapse;
 		opacity: 0;
 	}
 
     &.visible {
+		visibility: visible;
 		width: 400px;
 		height: 236px;
 		border-top-left-radius: 0;
-		visibility: visible;
-		opacity: 1;
-		transition-delay: 0s;
 
 		.menu-transition-target {
-			visibility: visible;
 			opacity: 1;
             transition: 0.2s all;
             transition-delay: 0.2s;
@@ -39,15 +30,48 @@
 }
 
 .menu-header {
-	display: flex;
-	align-items: center;
 	margin-bottom: 4px;
 	padding-bottom: 4px;
 	border-bottom: 1px solid #333;
 }
 
+.menu-btn {
+	position: absolute;
+	top: 4px;
+	right: 0;
+	visibility: visible;
+
+	&.active {
+		right: 4px;
+
+		.menu-btn-bar-1 {
+			transform: translateY(6px) rotateZ(45deg);
+		}
+
+		.menu-btn-bar-2 {
+			opacity: 0;
+		}
+
+		.menu-btn-bar-3 {
+			transform: translateY(-6px) rotateZ(-45deg);
+		}
+	}
+}
+
+.menu-btn-bar {
+	height: 4px;
+	width: 20px;
+	background-color: $primary-text-color;
+	transition: 0.2s all;
+
+	&:not(:last-of-type) {
+		margin-bottom: 2px;
+	}
+}
+
 .menu-title {
-	margin: 0 auto 0 auto;
+	margin-top: 0;
+	margin-bottom: 0;
 	text-align: center;
 	font-size: 18px;
 	font-weight: normal;
@@ -75,19 +99,4 @@
 	margin-top: 2px;
 	font-size: 12px;
 	word-break: break-word;
-}
-
-.menu-btn {
-	visibility: visible;
-	opacity: 1;
-	font-size: 20px;
-    line-height: 1;
-	transition: 0.2s all;
-	transition-delay: 0.2s;
-
-	&.hidden {
-		visibility: collapse;
-		opacity: 0;
-		transition-delay: 0s;
-	}
 }

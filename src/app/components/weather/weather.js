@@ -34,12 +34,12 @@ export class Weather {
     }
 
     ngOnChanges(changes) {
-        const setting = changes.setting;
+        const { firstChange, currentValue } = changes.setting;
 
-        if (setting.firstChange) {
+        if (firstChange || !currentValue) {
             return;
         }
-        const { disabled, useFarenheit, cityName } = setting.currentValue;
+        const { disabled, useFarenheit, cityName } = currentValue;
 
         if (this.timeout) {
             clearTimeout(this.timeout);

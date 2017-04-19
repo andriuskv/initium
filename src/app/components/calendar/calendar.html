@@ -1,10 +1,9 @@
 <div class="menu-item-container">
-    <span class="calendar-year">{{ calendar.currentYear }}</span>
     <div *ngIf="!daySelected">
         <div class="calendar-header">
             <button class="icon-left-big font-btn month-btn"
                 (click)="setCurrentMonthAndYear(-1)" title="Previous month"></button>
-            <span class="calendar-title">{{ calendar.currentMonth.name }}</span>
+            <span class="calendar-title">{{ calendar.currentMonth.name }} {{ calendar.currentYear }}</span>
             <button class="icon-left-big font-btn month-btn"
                 (click)="setCurrentMonthAndYear(1)" title="Next month"></button>
         </div>

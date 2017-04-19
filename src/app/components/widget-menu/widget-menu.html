@@ -1,8 +1,12 @@
 <div class="widget-menu">
-    <div class="container widget-menu-container" [class.visible]="visible">
-        <div class="menu-header menu-transition-target">
-            <button class="icon-cancel font-btn" title="Close" (click)="toggleWidget()"></button>
-            <h3 class="menu-title">{{ title }}</h3>
+    <div class="widget-menu-container" [ngClass]="{ container: visible, visible: visible }">
+        <div class="menu-header">
+            <h3 class="menu-title menu-transition-target">{{ title }}</h3>
+            <button class="font-btn menu-btn" (click)="toggleWidget()" [class.active]="visible">
+                <div class="menu-btn-bar menu-btn-bar-1"></div>
+                <div class="menu-btn-bar menu-btn-bar-2"></div>
+                <div class="menu-btn-bar menu-btn-bar-3"></div>
+            </button>
         </div>
         <ul class="menu-item-container menu-transition-target" *ngIf="!selectedItem">
             <li class="menu-item">
@@ -32,5 +36,4 @@
             (reminders)="onReminders($event)"
             [remidersDisabled]="remidersDisabled"></calendar>
     </div>
-    <button class="icon-menu font-btn menu-btn" [class.hidden]="visible" (click)="showMenu()"></button>
 </div>

@@ -1,6 +1,6 @@
 <div class="calendar-header">
     <button class="icon-left-big font-btn" (click)="showCalendar()" title="Back to calendar"></button>
-    <span class="calendar-title">{{ day.date }}</span>
+    <span class="calendar-title">{{ day.date }}, {{ day.year }}</span>
 </div>
 <ul class="selected-day-remainders" *ngIf="day.reminders.length">
     <li class="selected-day-remainder" *ngFor="let reminder of day.reminders; let i = index;">
