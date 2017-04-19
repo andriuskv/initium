@@ -11,11 +11,11 @@ import Dropbox from "dropbox";
                 (click)="goBack(activeDir)"
                 *ngIf="activeDir.path && activeDir.path !== '/'"></button>
                 <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
+                <button class="icon-cancel font-btn" title="Logout"
+                    *ngIf="loggedIn"
+                    (click)="logout()">
+                </button>
             </div>
-            <button class="icon-cancel font-btn dropbox-logout-btn" title="Logout"
-                *ngIf="loggedIn"
-                (click)="logout()">
-            </button>
             <div class="dropbox-hero" [class.show]="!showItems">
                 <div class="icon-dropbox dropbox-hero-icon"></div>
                 <button class="btn" *ngIf="showLogin" (click)="login()">Log in</button>
