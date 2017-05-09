@@ -1,7 +1,7 @@
 <div class="todo">
     <div class="todo-container" [ngClass]="{ container: visible, visible: visible }">
         <header class="todo-header">
-            <button class="font-btn todo-toggle-btn" [class.is-active]="visible"
+            <button class="font-btn todo-toggle-btn" [class.active]="visible"
                 (click)="toggle()">todo</button>
             <div class="todo-header-input-container todo-transition-target" *ngIf="!todoBeingEdited">
                 <input class="input todo-input" type="text" #input (keyup.enter)="addTodo(input)">
@@ -52,7 +52,7 @@
             </button>
         </footer>
     </div>
-    <div class="todo-pin" *ngIf="todosToPin.length && !visible">
+    <div *ngIf="todosToPin.length && !visible">
         <todo-pin [todos]="todosToPin"></todo-pin>
     </div>
 </div>

@@ -3,8 +3,8 @@ import { Component, Input } from "@angular/core";
 @Component({
     selector: "calendar-reminders",
     template: `
-        <ul class="reminders" *ngIf="!disabled && reminders.length">
-            <li class="reminder" *ngFor="let reminder of reminders">{{ reminder.text }}</li>
+        <ul class="panel reminders" *ngIf="!disabled && reminders.length">
+            <li class="panel-item" *ngFor="let reminder of reminders">{{ reminder.text }}</li>
         </ul>`
 })
 export class CalendarReminders {
