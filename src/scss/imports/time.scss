@@ -7,20 +7,25 @@
     justify-content: center;
     height: 45vh;
     transform: translateX(-50%);
+    text-shadow: $text-shadow;
 }
+
 .clock-container {
     display: flex;
     align-items: baseline;
 }
+
 .clock {
     font-size: 140px;
     letter-spacing: -6px;
     line-height: 0.8;
 }
+
 .period {
     margin-left: 8px;
     font-size: 36px;
 }
+
 .date {
     text-align: right;
     font-size: 20px;

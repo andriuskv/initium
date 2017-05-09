@@ -44,7 +44,11 @@
     border-left: 4px solid $brand-color;
     font-size: 16px;
 
-    &.is-active {
+    &:not(:hover) {
+        text-shadow: $text-shadow;
+    }
+
+    &.active {
         border-color: transparent;
     }
 }
@@ -176,26 +180,4 @@
 
 .todo-footer-btn {
     padding: 4px 8px;
-}
-
-.todo-pin {
-    width: 240px;
-    padding: 4px;
-    border-left: 4px solid $brand-color;
-    transition: 0.1s background-color;
-
-    &:hover {
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
-        background-color: $color3;
-
-        .pinned-todo:not(:last-of-type) {
-            border-bottom-color: $color2;
-        }
-    }
-}
-
-.pinned-todo {
-    padding-top: 2px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid transparent;
 }

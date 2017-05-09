@@ -4,6 +4,7 @@
 	right: 8px;
 	text-align: right;
 	line-height: 1;
+	text-shadow: $text-shadow;
 
 	&.is-fetching {
 		animation-duration: 1s;
@@ -18,20 +19,24 @@
 		animation-name: blur-out;
 	}
 }
+
 .weather-temp,
 .weather-icon {
 	display: inline-block;
 }
+
 .weather-temp {
     vertical-align: top;
     margin-top: 4px;
     margin-right: 4px;
 	font-size: 22px;
 }
+
 .weather-icon {
     margin-bottom: 2px;
     font-size: 32px;
 }
+
 .weather-city-name {
 	font-size: 14px;
 }
@@ -41,6 +46,7 @@
     50% { filter: blur(2px); }
     100% { filter: blur(4px); }
 }
+
 @keyframes blur-out {
     0% { filter: blur(4px); }
     50% { filter: blur(2px); }

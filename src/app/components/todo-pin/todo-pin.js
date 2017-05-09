@@ -3,8 +3,8 @@ import { Component, Input } from "@angular/core";
 @Component({
     selector: "todo-pin",
     template: `
-        <ul>
-            <li class="todo-text pinned-todo" *ngFor="let todo of todos; let i = index">{{todo.text}}</li>
+        <ul class="panel">
+            <li class="todo-text panel-item" *ngFor="let todo of todos; let i = index">{{todo.text}}</li>
         </ul>
     `
 })
