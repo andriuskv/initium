@@ -61,7 +61,7 @@ module.exports = function(env = {}) {
                         modules: false,
                         useBuiltIns: true,
                         targets: {
-                            browsers: ["Chrome >= 49"]
+                            browsers: ["last 2 versions", "Chrome >= 49"]
                         }
                     }], "angular2"]
                 }

@@ -3,7 +3,7 @@ import { Component, Input } from "@angular/core";
 @Component({
     selector: "background",
     template: `
-        <img [src]="background" class="background" alt="" *ngIf="background">
+        <div class="background" [style.background-image]="background" *ngIf="background"></div>
     `
 })
 export class Background {
@@ -13,7 +13,7 @@ export class Background {
         const setting = changes.setting.currentValue;
 
         if (setting) {
-            this.background = setting.url || "https://source.unsplash.com/collection/825407/daily";
+            this.background = `url(${setting.url || "https://source.unsplash.com/collection/825407/daily"})`;
         }
     }
 }
