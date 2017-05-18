@@ -2,7 +2,8 @@
     <div class="widget-menu-container" [ngClass]="{ container: visible, visible: visible }">
         <div class="menu-header">
             <h3 class="menu-title menu-transition-target">{{ title }}</h3>
-            <button class="font-btn menu-btn" (click)="toggleWidget()" [class.active]="visible">
+            <button class="font-btn menu-btn" (click)="toggleWidget()" [class.active]="visible"
+                title="{{ visible ? 'Close' : 'Open menu'}}">
                 <div class="menu-btn-bar menu-btn-bar-1"></div>
                 <div class="menu-btn-bar menu-btn-bar-2"></div>
                 <div class="menu-btn-bar menu-btn-bar-3"></div>
