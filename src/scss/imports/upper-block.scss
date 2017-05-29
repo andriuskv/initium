@@ -3,12 +3,17 @@
     top: 4px;
     left: 0;
     right: 0;
-    display: none;
+    visibility: collapse;
     width: 400px;
     margin: 0 auto;
+    opacity: 0;
+    transform: rotateX(45deg) translateY(-80px) scale(0.94);
+    transition: transform 0.2s, opacity 0.18s, visibility 0.18s;
 
     &.visible {
-        display: block;
+        visibility: visible;
+        opacity: 1;
+        transform: none;
     }
 }
 

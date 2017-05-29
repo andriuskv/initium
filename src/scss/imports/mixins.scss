@@ -16,8 +16,6 @@
 @mixin btn-styles($color: $color2) {
     @include input-styles($color);
 
-    transition: 0.1s all;
-
     &:hover {
         color: $brand-color;
         cursor: pointer;
