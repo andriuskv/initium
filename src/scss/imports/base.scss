@@ -44,12 +44,14 @@ ul {
     @include btn-styles();
 
     padding: 2px 8px;
+    transition: 0.1s all;
 }
 
 .font-btn {
     @include btn-styles(transparent);
 
     padding: 0;
+    transition: 0.1s color;
 }
 
 .input {
