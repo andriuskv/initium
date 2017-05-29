@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { DateService } from "Services/dateService";
+import { DateService } from "../../services/dateService";
 
 @Component({
     selector: "calendar",

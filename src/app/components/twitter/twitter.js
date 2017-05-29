@@ -1,8 +1,8 @@
 /* global Codebird */
 
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { DateService } from "Services/dateService";
-import { NotificationService } from "Services/notificationService";
+import { DateService } from "../../services/dateService";
+import { NotificationService } from "../../services/notificationService";
 
 @Component({
     selector: "twitter",
