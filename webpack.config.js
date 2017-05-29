@@ -42,14 +42,11 @@ module.exports = function(env = {}) {
             main: "./src/app/main.js"
         },
         output: {
-            path: path.resolve(__dirname, "../dist"),
+            path: path.resolve(__dirname, "./dist"),
             filename: "[name].js"
         },
         resolve: {
-            modules: [path.resolve("src/app"), "node_modules"],
-            alias: {
-                Services: path.resolve(__dirname, "app/services/")
-            }
+            modules: [path.resolve("./src/app"), "node_modules"]
         },
         module: {
             rules: [{

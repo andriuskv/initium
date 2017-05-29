@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { WeatherService } from "Services/weatherService";
+import { WeatherService } from "../../services/weatherService";
 
 @Component({
     selector: "weather",
@@ -124,6 +124,7 @@ export class Weather {
 
         switch (id) {
             // Thunderstorm
+            case 201:
             case 211:
                 iconClassName = "icon-cloud-flash-inv";
                 break;
