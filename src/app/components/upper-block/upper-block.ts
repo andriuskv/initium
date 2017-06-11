@@ -19,7 +19,7 @@ import { DOCUMENT } from "@angular/platform-browser";
                     </button>
                 </li>
                 <li class="upper-block-header-item">
-                    <button class="font-btn" (click)="hideComp()">
+                    <button class="font-btn" (click)="hideComp()" title="Close">
                         <span class="icon-cancel"></span>
                     </button>
                 </li>
