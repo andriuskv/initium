@@ -22,14 +22,12 @@ export class Stopwatch {
     @Output() running = new EventEmitter();
     @Input() state;
 
-    static get parameters() {
-        return [[ChangeDetectorRef]];
-    }
+    isRunning: boolean = false;
+    stopwatch: any = this.resetTime();
+    worker: Worker;
 
-    constructor(ref) {
+    constructor(private ref: ChangeDetectorRef) {
         this.ref = ref;
-        this.isRunning = false;
-        this.stopwatch = this.resetTime();
     }
 
     ngOnChanges(changes) {
@@ -62,8 +60,8 @@ export class Stopwatch {
 
     update(elapsed) {
         let hours = this.stopwatch.hours;
-        let minutes = parseInt(this.stopwatch.minutes, 10);
-        let seconds = parseInt(this.stopwatch.seconds, 10);
+        let minutes: any = parseInt(this.stopwatch.minutes, 10);
+        let seconds: any = parseInt(this.stopwatch.seconds, 10);
         let milliseconds = parseFloat(this.stopwatch.milliseconds) + elapsed;
 
         if (milliseconds >= 1000) {

@@ -24,10 +24,9 @@ import { Component } from "@angular/core";
     `
 })
 export class App {
-    constructor() {
-        this.toggle = {};
-        this.settings = {};
-    }
+    toggle: any = {};
+    settings: any = {};
+    reminders: any;
 
     onToggle(whatToToggle) {
         this.toggle[whatToToggle] = !this.toggle[whatToToggle] || false;

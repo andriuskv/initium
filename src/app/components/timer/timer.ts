@@ -20,6 +20,15 @@ export class Timer {
     @Output() running = new EventEmitter();
     @Input() state;
 
+    isRunning: boolean = false;
+    alarmOn: boolean = true;
+    alarmIsRunning: boolean = false;
+    alarmTimeout: any;
+    timeout: any;
+    alarm: any = null;
+    timer: any;
+    timerInput: any;
+
     constructor() {
         this.timer = {
             hours: "00",
@@ -27,10 +36,6 @@ export class Timer {
             seconds: "00"
         };
         this.timerInput = Object.assign({}, this.timer);
-        this.isRunning = false;
-        this.timeout = 0;
-        this.alarmOn = true;
-        this.alarm = null;
     }
 
     ngOnChanges(changes) {

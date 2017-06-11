@@ -3,22 +3,21 @@ import { DateService } from "../../services/dateService";
 
 @Component({
     selector: "calendar",
-    templateUrl: "app/components/calendar/calendar.html"
+    templateUrl: "./calendar.html"
 })
 export class Calendar {
     @Output() reminders = new EventEmitter();
     @Input() remidersDisabled;
 
-    static get parameters() {
-        return [[DateService]];
-    }
+    initialized: boolean = false;
+    notify: boolean = true;
+    daySelected: boolean = false;
+    currentDate: any = this.getCurrentDate();
+    calendar: any;
+    selectedDay: any;
 
-    constructor(dateService) {
-        this.initialized = false;
-        this.notify = true;
+    constructor(private dateService: DateService) {
         this.dateService = dateService;
-        this.calendar = {};
-        this.currentDate = this.getCurrentDate();
     }
 
     ngOnInit() {

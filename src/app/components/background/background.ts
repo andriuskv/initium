@@ -9,6 +9,8 @@ import { Component, Input } from "@angular/core";
 export class Background {
     @Input() setting = {};
 
+    background: string;
+
     ngOnChanges(changes) {
         const setting = changes.setting.currentValue;
 

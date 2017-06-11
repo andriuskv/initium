@@ -4,14 +4,15 @@ import { Component } from "@angular/core";
 
 @Component({
     selector: "todo",
-    templateUrl: "app/components/todo/todo.html"
+    templateUrl: "./todo.html"
 })
 export class Todo {
-    constructor() {
-        this.visible = false;
-        this.todos = [];
-        this.todosToPin = [];
+    visible: boolean = false;
+    todos: Array<any> = [];
+    todosToPin: Array<any> = [];
+    todoBeingEdited: any;
 
+    ngOnInit() {
         chrome.storage.sync.get("todos", storage => {
             this.todos = storage.todos || JSON.parse(localStorage.getItem("todos")) || [];
             this.todosToPin = this.getPinnedTodos();

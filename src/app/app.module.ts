@@ -1,9 +1,5 @@
-import "core-js/es7/reflect";
-import "zone.js/dist/zone";
-
-import { NgModule, enableProdMode } from "@angular/core";
+import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
 import { FormsModule } from '@angular/forms';
 
 import { DateService } from "./services/dateService";
@@ -14,7 +10,7 @@ import { FeedService } from "./services/feedService";
 
 import { SlicePipe } from "./pipes/slicePipe";
 
-import { App } from './app';
+import { App } from './app.component';
 import { Background } from "./components/background/background";
 import { Time } from "./components/time/time";
 import { MainBlock } from "./components/main-block/main-block";
@@ -48,10 +44,4 @@ import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar
     ],
     bootstrap: [App]
 })
-class AppModule {}
-
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js");
-}
-enableProdMode();
-platformBrowserDynamic().bootstrapModule(AppModule);
+export class AppModule {}

@@ -23,7 +23,7 @@ export class NotificationService {
                 resolve(true);
                 return;
             }
-            if (Notification.permission === "granted") {
+            if ((Notification as any).permission === "granted") {
                 let notification = null;
 
                 notification = new Notification(title, {

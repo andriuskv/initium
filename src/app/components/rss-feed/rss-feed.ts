@@ -4,29 +4,32 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { FeedService } from "../../services/feedService";
 import { NotificationService } from "../../services/notificationService";
 
+declare const chrome;
+
 @Component({
     selector: "rss-feed",
-    templateUrl: "app/components/rss-feed/rss-feed.html"
+    templateUrl: "./rss-feed.html"
 })
 export class RssFeed {
     @Output() newEntries = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
     @Input() item;
 
-    static get parameters() {
-        return [[FeedService], [NotificationService]];
-    }
+    loading: boolean = true;
+    fetching: boolean;
+    isActive: boolean;
+    newEntryCount: number = 0;
+    activeFeed: string = "";
+    latestActiveFeed: string = "";
+    message: string = "";
+    feeds: Array<any> = [];
+    feedsToLoad: Array<any> = [];
+    timeout: any;
+    initTimeout: any;
 
-    constructor(feedService, notificationService) {
+    constructor(private feedService: FeedService, private notificationService: NotificationService) {
         this.feedService = feedService;
-        this.notification = notificationService;
-        this.feeds = [];
-        this.feedsToLoad = [];
-        this.activeFeed = "";
-        this.latestActiveFeed = "";
-        this.newEntryCount = 0;
-        this.timeout = 0;
-        this.loading = true;
+        this.notificationService = notificationService;
     }
 
     ngOnInit() {
@@ -151,18 +154,18 @@ export class RssFeed {
 
         Promise.all(feedsToUpdate)
         .then(newEntryCount => {
-            newEntryCount = newEntryCount.reduce((sum, entryCount) => sum + entryCount, 0);
+            const entryCountSum: number = newEntryCount.reduce((sum, entryCount) => sum + entryCount, 0);
 
-            if (!newEntryCount) {
+            if (!entryCountSum) {
                 return;
             }
-            this.newEntryCount += newEntryCount;
+            this.newEntryCount += entryCountSum;
 
             if (!this.isActive) {
                 this.newEntries.emit(true);
             }
             if (document.hidden) {
-                this.notification.send(
+                this.notificationService.send(
                     "RSS feed",
                     `You have ${this.newEntryCount} new entries`
                 )

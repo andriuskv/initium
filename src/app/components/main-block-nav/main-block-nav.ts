@@ -29,17 +29,16 @@ export class MainBlockNav {
     @Input() newItemUpdate;
     @Input() tabNameChange;
 
-    constructor() {
-        this.item = this.getItem();
-        this.items = {
-            twitter: {
-                new: false
-            },
-            rssFeed: {
-                new: false
-            }
-        };
-    }
+    hideBar: boolean;
+    item: string = this.getItem();
+    items: any = {
+        twitter: {
+            new: false
+        },
+        rssFeed: {
+            new: false
+        }
+    };
 
     ngOnInit() {
         this.choice.emit(this.item);

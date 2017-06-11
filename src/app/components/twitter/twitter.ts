@@ -4,28 +4,32 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { DateService } from "../../services/dateService";
 import { NotificationService } from "../../services/notificationService";
 
+declare const Codebird;
+declare const process;
+
 @Component({
     selector: "twitter",
-    templateUrl: "app/components/twitter/twitter.html"
+    templateUrl: "./twitter.html"
 })
 export class Twitter {
     @Output() newTweets = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
     @Input() item;
 
-    static get parameters() {
-        return [[DateService], [NotificationService]];
-    }
+    isLoggedIn: boolean;
+    isActive: boolean;
+    showPinInput: boolean;
+    tweets: Array<any> = [];
+    tweetsToLoad: Array<any> = [];
+    user: any = {};
+    twitterTimeout: any;
+    tweetTimeTimeout: any;
+    tweetUpdateTimeout: any;
+    cb: any;
 
-    constructor(dateService, notificationService) {
+    constructor(private dateService: DateService, private notificationService: NotificationService) {
         this.dateService = dateService;
-        this.notification = notificationService;
-        this.user = {};
-        this.tweets = [];
-        this.tweetsToLoad = [];
-        this.twitterTimeout = 0;
-        this.tweetTimeTimeout = 0;
-        this.tweetUpdateTimeout = 0;
+        this.notificationService = notificationService;
     }
 
     ngOnInit() {
@@ -79,8 +83,8 @@ export class Twitter {
     }
 
     getTweetDate(createdAt) {
-        const date = new Date();
-        const created = new Date(createdAt);
+        const date: any = new Date();
+        const created: any = new Date(createdAt);
         let minuteDiff = (date - created) / 1000 / 60;
         let at = "";
 
@@ -202,7 +206,8 @@ export class Twitter {
             created: this.getTweetDate(tweet.created_at),
             media: this.getMediaUrl(entities.media),
             retweetCount: tweet.retweet_count,
-            likeCount: tweet.favorite_count
+            likeCount: tweet.favorite_count,
+            retweetedBy: null
         };
     }
 
@@ -240,7 +245,7 @@ export class Twitter {
                             this.newTweets.emit(true);
                         }
                         if (document.hidden) {
-                            this.notification.send(
+                            this.notificationService.send(
                                 "Twitter",
                                 `You have ${this.tweetsToLoad.length} new tweets`
                             ).then(disabled => {
@@ -345,7 +350,7 @@ export class Twitter {
     }
 
     removeLeftoverImages() {
-        const imageElems = [...document.querySelectorAll(".twitter-tweet-img")];
+        const imageElems = Array.from(document.querySelectorAll(".twitter-tweet-img"));
 
         imageElems.forEach(image => {
             image.parentElement.removeChild(image);

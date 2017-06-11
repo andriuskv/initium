@@ -3,22 +3,22 @@
 import { Component, Input } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 
+declare const chrome;
+
 @Component({
     selector: "most-visited",
-    templateUrl: "app/components/most-visited/most-visited.html"
+    templateUrl: "./most-visited.html"
 })
 export class MostVisited {
     @Input() setting;
 
-    static get parameters() {
-        return [[DomSanitizer]];
-    }
+    hasBackup: boolean = true;
+    newThumbWindowVisible: boolean;
+    mostVisited: any = {};
+    newPage: any = {};
 
-    constructor(domSanitizer) {
-        this.sanitizer = domSanitizer;
-        this.mostVisited = {};
-        this.newPage = {};
-        this.hasBackup = true;
+    constructor(private domSanitizer: DomSanitizer) {
+        this.domSanitizer = domSanitizer;
     }
 
     ngOnInit() {
@@ -88,7 +88,7 @@ export class MostVisited {
         const a = document.createElement("a");
         a.href = url;
 
-        return this.sanitizer.bypassSecurityTrustUrl(`chrome://favicon/${a.protocol}//${a.hostname}${a.pathname}`);
+        return this.domSanitizer.bypassSecurityTrustUrl(`chrome://favicon/${a.protocol}//${a.hostname}${a.pathname}`);
     }
 
     addImages(pages) {
@@ -131,7 +131,7 @@ export class MostVisited {
         return new Promise(resolve => {
             const reader = new FileReader();
 
-            reader.onloadend = function(event) {
+            reader.onloadend = function(event: any) {
                 const image = new Image();
 
                 image.onload = function() {

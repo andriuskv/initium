@@ -1,3 +1,5 @@
+declare const process;
+
 export class WeatherService {
     fetchWeather(params) {
         const url = "http://api.openweathermap.org/data/2.5/weather";
@@ -24,7 +26,7 @@ export class WeatherService {
         });
     }
 
-    getWeatherWithCoords({ lat, lon }) {
+    getWeatherWithCoords({ lat, lon }: any) {
         return this.fetchWeather(`lat=${lat}&lon=${lon}`);
     }
 

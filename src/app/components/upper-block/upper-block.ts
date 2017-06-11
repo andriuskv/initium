@@ -71,13 +71,14 @@ export class UpperBlock {
     @Output() hide = new EventEmitter();
     @Input() toggleComp;
 
-    static get parameters() {
-        return [[new Inject(DOCUMENT)]];
-    }
+    active: string = "timer";
+    isInFullscreen: boolean = false;
+    visible: boolean = false;
+    state: any;
+    fullscreenBtnTitle: string = "Enter fullscreen";
 
-    constructor(document) {
+    constructor(@Inject(DOCUMENT) private document) {
         this.document = document;
-        this.active = "timer";
         this.state = {
             timer: {
                 isRunning: false,
@@ -87,7 +88,6 @@ export class UpperBlock {
                 isRunning: false
             }
         };
-        this.fullscreenBtnTitle = "Enter fullscreen";
     }
 
     ngOnInit() {

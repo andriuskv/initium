@@ -2,6 +2,8 @@ import { Component, Output, EventEmitter } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 import Dropbox from "dropbox";
 
+declare const process;
+
 @Component({
     selector: "dropbox",
     template: `
@@ -37,24 +39,24 @@ export class DropboxComp {
     @Output() background = new EventEmitter();
     @Output() setting = new EventEmitter();
 
-    fetching = true;
-    showItems = false;
-    showLogin = false;
-    rootDir = {
+    fetching: boolean = true;
+    showItems: boolean = false;
+    showLogin: boolean = false;
+    loggedIn: boolean = false;
+    dropbox: any;
+    activeDir: any = {};
+    rootDir: object = {
         name: "Root",
         isDir: true,
         path: "",
         pathForDisplay: "/",
         items: []
     };
+    dropboxContents: any;
+    errorMessage: string = "";
 
-    static get parameters() {
-        return [[SettingService]];
-    }
-
-    constructor(settingService) {
+    constructor(private settingService: SettingService) {
         this.settingService = settingService;
-        this.activeDir = {};
         this.dropboxContents = JSON.parse(localStorage.getItem("dropbox")) || this.rootDir;
     }
 
@@ -94,7 +96,7 @@ export class DropboxComp {
             if (event.key === "dropbox token") {
                 this.init(event.newValue);
             }
-            window.removeEventListener(onStorageChange);
+            window.removeEventListener("storage", onStorageChange);
         }.bind(this));
     }
 
@@ -185,7 +187,7 @@ export class DropboxComp {
         return this.dropbox.filesListFolder({ path: dir.path })
         .then(res => {
             res.entries.forEach(entry => {
-                const newEntry = {
+                const newEntry: any = {
                     name: entry.name,
                     isDir: entry[".tag"] === "folder",
                     path: entry.path_lower,

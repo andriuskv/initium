@@ -2,17 +2,17 @@ import { Component, Output, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "widget-menu",
-    templateUrl: "app/components/widget-menu/widget-menu.html"
+    templateUrl: "./widget-menu.html"
 })
 export class WidgetMenu {
     @Output() toggle = new EventEmitter();
     @Output() setting = new EventEmitter();
     @Output() reminders = new EventEmitter();
 
-    constructor() {
-        this.visible = false;
-        this.title = "Widgets";
-    }
+    visible: boolean = false;
+    title: string = "Widgets";
+    selectedItem: string;
+    remidersDisabled: boolean;
 
     toggleUpperBlockComp() {
         this.toggle.emit("upper");

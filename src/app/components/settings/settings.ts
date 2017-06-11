@@ -3,18 +3,15 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "settings",
-    templateUrl: "app/components/settings/settings.html"
+    templateUrl: "./settings.html"
 })
 export class Settings {
     @Output() setting = new EventEmitter();
 
-    active = "general";
+    active: string = "general";
+    settings: any;
 
-    static get parameters() {
-        return [[SettingService]];
-    }
-
-    constructor(settingService) {
+    constructor(private settingService: SettingService) {
         this.settingService = settingService;
     }
 
