@@ -4,19 +4,19 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
     selector: "main-block-nav",
     template: `
         <ul class="container main-block-nav" [class.hidden]="hideBar">
-            <li class="main-block-nav-item" title="Most visited">
-                <button class="icon-th font-btn" (click)="selectItem('mostVisited')"></button>
+            <li class="main-block-nav-item">
+                <button class="icon-th font-btn" (click)="selectItem('mostVisited')" title="Most visited"></button>
             </li>
-            <li class="main-block-nav-item" title="Notepad">
-                <button class="icon-edit font-btn" (click)="selectItem('notepad')"></button>
+            <li class="main-block-nav-item">
+                <button class="icon-edit font-btn" (click)="selectItem('notepad')" title="Notepad"></button>
             </li>
-            <li class="main-block-nav-item" title="Twitter">
-                <button class="icon-twitter font-btn" (click)="selectItem('twitter')">
+            <li class="main-block-nav-item">
+                <button class="icon-twitter font-btn" (click)="selectItem('twitter')" title="Twitter">
                     <span class="indicator" *ngIf="items.twitter.new"></span>
                 </button>
             </li>
-            <li class="main-block-nav-item" title="RSS feed">
-                <button class="icon-rss font-btn" (click)="selectItem('rssFeed')">
+            <li class="main-block-nav-item">
+                <button class="icon-rss font-btn" (click)="selectItem('rssFeed')" title="RSS feed">
                     <span class="indicator" *ngIf="items.rssFeed.new"></span>
                 </button>
             </li>
