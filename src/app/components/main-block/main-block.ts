@@ -21,6 +21,11 @@ import { Component, Input } from "@angular/core";
 export class MainBlock {
     @Input() setting;
 
+    item: string;
+    tabName: string;
+    itemUpdate: any;
+    mainBlockSetting: any;
+
     ngOnChanges(changes) {
         const settingValue = changes.setting.currentValue;
 

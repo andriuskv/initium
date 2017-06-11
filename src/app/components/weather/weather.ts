@@ -17,20 +17,20 @@ import { WeatherService } from "../../services/weatherService";
 export class Weather {
     @Input() setting;
 
-    static get parameters() {
-        return [[WeatherService]];
-    }
+    showWeather: boolean = false;
+    initialized: boolean = false;
+    disabled: boolean = false;
+    isFetching: boolean;
+    doneFetcing: boolean;
+    temperature: number = 0;
+    units: string = "C";
+    iconClassName: string = "weather-icon";
+    cityName: string;
+    timeout: any;
+    weather: any = {};
 
-    constructor(weatherService) {
+    constructor(private weatherService: WeatherService) {
         this.weatherService = weatherService;
-        this.weather = {};
-        this.temperature = 0;
-        this.units = "C";
-        this.timeout = 0;
-        this.iconClassName = "weather-icon";
-        this.showWeather = false;
-        this.initialized = false;
-        this.disabled = false;
     }
 
     ngOnChanges(changes) {

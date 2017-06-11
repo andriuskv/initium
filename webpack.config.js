@@ -1,25 +1,75 @@
-const webpack = require("webpack");
 const path = require("path");
+const { DefinePlugin, NoEmitOnErrorsPlugin, NamedModulesPlugin } = require('webpack');
+const { CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
+const ProgressPlugin = require('webpack/lib/ProgressPlugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { AotPlugin } = require('@ngtools/webpack');
 
 module.exports = function(env = {}) {
+    const nodeModules = path.join(process.cwd(), "node_modules");
+    const genDirNodeModules = path.join(process.cwd(), "src", "$$_gendir", "node_modules");
+    const entryPoints = ["polyfills", "vendor", "main"];
     const plugins = [
-        new webpack.ContextReplacementPlugin(
-            /angular(\\|\/)core(\\|\/)@angular/,
-            path.resolve(__dirname, "../src")
-        ),
-        new webpack.DefinePlugin({
+        new NoEmitOnErrorsPlugin(),
+        new DefinePlugin({
             "process.env": {
                 NODE_ENV: JSON.stringify("production"),
                 DROPBOX_API_KEY: JSON.stringify(process.env.DROPBOX_API_KEY),
                 OWM_API_KEY: JSON.stringify(process.env.OWM_API_KEY),
                 TWITTER_API_KEYS: JSON.stringify(process.env.TWITTER_API_KEYS)
             }
+        }),
+        new ProgressPlugin(),
+        new HtmlWebpackPlugin({
+            "template": "./src/index.html",
+            "filename": "./index.html",
+            "hash": false,
+            "inject": true,
+            "compile": true,
+            "favicon": false,
+            "minify": false,
+            "cache": true,
+            "showErrors": true,
+            "chunks": "all",
+            "excludeChunks": [],
+            "title": "Webpack App",
+            "xhtml": true,
+            "chunksSortMode": function sort(left, right) {
+                const leftIndex = entryPoints.indexOf(left.names[0]);
+                const rightindex = entryPoints.indexOf(right.names[0]);
+
+                if (leftIndex > rightindex) {
+                    return 1;
+                }
+                else if (leftIndex < rightindex) {
+                    return -1;
+                }
+                return 0;
+            }
+        }),
+        new CommonsChunkPlugin({
+            "name": [
+                "vendor"
+            ],
+            "minChunks": (module) => module.resource &&
+                    (module.resource.startsWith(nodeModules) || module.resource.startsWith(genDirNodeModules)),
+            "chunks": [
+                "main"
+            ]
+        }),
+        new NamedModulesPlugin({}),
+        new AotPlugin({
+          "mainPath": "./src/main.ts",
+          "hostReplacementPaths": {},
+          "exclude": [],
+          "tsConfigPath": "./tsconfig.json",
+          "skipCodeGeneration": true
         })
     ];
 
     if (env.prod) {
         plugins.push(
-            new webpack.optimize.UglifyJsPlugin({
+            new UglifyJsPlugin({
                 comments: false,
                 compress: {
                     warnings: false,
@@ -38,31 +88,48 @@ module.exports = function(env = {}) {
     }
 
     return {
-        entry: {
-            main: "./src/app/main.js"
+        "entry": {
+          "main": [
+            "./src/main.ts"
+          ],
+          "polyfills": [
+            "./src/polyfills.ts"
+          ]
         },
-        output: {
-            path: path.resolve(__dirname, "./dist"),
-            filename: "[name].js"
+        "output": {
+            "path": path.join(process.cwd(), "dist"),
+            "filename": "[name].bundle.js",
+            "chunkFilename": "[id].chunk.js"
         },
-        resolve: {
-            modules: [path.resolve("./src/app"), "node_modules"]
+        "resolve": {
+            "extensions": [
+                ".ts",
+                ".js"
+            ],
+            "modules": [
+                "./node_modules"
+            ]
+        },
+        "resolveLoader": {
+          "modules": [
+            "./node_modules"
+          ]
         },
         module: {
-            rules: [{
-                test: /\.js$/,
-                loader: "babel-loader",
-                exclude: /node_modules/,
-                options: {
-                    presets: [["env", {
-                        modules: false,
-                        useBuiltIns: true,
-                        targets: {
-                            browsers: ["last 2 versions", "Chrome >= 49"]
-                        }
-                    }], "angular2"]
+            rules: [
+                {
+                    "test": /\.html$/,
+                    "loader": "raw-loader"
+                },
+                {
+                  "test": /\.(jpg|png|gif|otf|ttf|woff|woff2|cur|ani)$/,
+                  "loader": "url-loader?name=[name].[hash:20].[ext]&limit=10000"
+                },
+                {
+                    "test": /\.ts$/,
+                    "loader": "@ngtools/webpack"
                 }
-            }]
+            ]
         },
         devtool: env.prod ? false : "inline-source-map",
         plugins

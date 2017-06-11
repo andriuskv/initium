@@ -11,10 +11,8 @@ export class CalendarReminders {
     @Input() setting;
     @Input() newReminders;
 
-    constructor() {
-        this.disabled = false;
-        this.reminders = [];
-    }
+    disabled: boolean = false;
+    reminders: Array<any> = [];
 
     ngOnChanges(changes) {
         if (changes.newReminders && !changes.newReminders.isFirstChange()) {

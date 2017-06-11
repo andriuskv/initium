@@ -16,14 +16,14 @@ import { DateService } from "../../services/dateService";
 export class Time {
     @Input() setting;
 
-    static get parameters() {
-        return [[DateService]];
-    }
+    dateDisabled: boolean = false;
+    date: string;
+    period: string;
+    clock: string;
+    timeout: any;
 
-    constructor(dateService) {
+    constructor(private dateService: DateService) {
         this.dateService = dateService;
-        this.dateDisabled = false;
-        this.timeout = 0;
     }
 
     ngOnChanges(changes) {

@@ -40,8 +40,12 @@ export class MainBlockContent {
     @Output() newItems = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
 
+    isItemBarHidden: boolean;
+    item: string = "";
+    mainBlockSetting: any;
+    itemState: any;
+
     constructor() {
-        this.item = "";
         this.itemState = JSON.parse(localStorage.getItem("main block item state")) || {};
     }
 

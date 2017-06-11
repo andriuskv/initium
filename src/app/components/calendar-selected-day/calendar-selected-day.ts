@@ -2,21 +2,21 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 
 @Component({
     selector: "calendar-selected-day",
-    templateUrl: "app/components/calendar-selected-day/calendar-selected-day.html"
+    templateUrl: "./calendar-selected-day.html"
 })
 export class CalendarSelectedDay {
     @Output() event = new EventEmitter();
     @Output() notify = new EventEmitter();
     @Output() remove = new EventEmitter();
     @Output() repeat = new EventEmitter();
-    @Input() day = {};
+    @Input() day: any = {};
 
-    constructor() {
-        this.reminderInputEnabled = false;
-        this.repeatEnabled = false;
-        this.isValidInput = true;
-        this.repeatGap = 0;
-    }
+    reminderInputEnabled: boolean = false;
+    repeatEnabled: boolean = false;
+    isValidInput: boolean = true;
+    repeatGap: number = 0;
+
+    constructor() {}
 
     showCalendar() {
         this.event.emit(false);
@@ -56,7 +56,7 @@ export class CalendarSelectedDay {
         if (!reminder.value || !this.isValidInput) {
             return;
         }
-        const newReminder = {
+        const newReminder: any = {
             text: reminder.value
         };
 
@@ -71,7 +71,6 @@ export class CalendarSelectedDay {
         }
         this.day.reminders.push(newReminder);
         this.notify.emit(this.day);
-        this.showReminderInput = false;
         this.reminderInputEnabled = false;
         reminder.value = "";
     }

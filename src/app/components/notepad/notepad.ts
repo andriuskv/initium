@@ -3,6 +3,8 @@
 import { Component, Inject } from "@angular/core";
 import { DOCUMENT } from "@angular/platform-browser";
 
+declare const chrome;
+
 @Component({
     selector: "notepad",
     template: `
@@ -39,20 +41,18 @@ import { DOCUMENT } from "@angular/platform-browser";
     `
 })
 export class Notepad {
-    static get parameters() {
-        return [[new Inject(DOCUMENT)]];
-    }
+    shift: number = 0;
+    activeTabIndex: number = 0;
+    activeTabContent: string = "";
+    tabs: Array<any>;
+    visibleTabs: Array<any> = [];
 
-    constructor(document) {
+    constructor(@Inject(DOCUMENT) private document) {
         this.document = document;
         this.tabs = [{
             title: "Tab",
             content: ""
         }];
-
-        this.visibleTabs = [];
-        this.shift = 0;
-        this.activeTabIndex = 0;
     }
 
     ngOnInit() {
