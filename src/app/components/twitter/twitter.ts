@@ -125,7 +125,7 @@ export class Twitter {
 
     replaceUserMentions(text, userMentions) {
         userMentions.forEach(user => {
-            const screenNameRegex = new RegExp(`@${user.screen_name}\\b`, "gi");
+            const screenNameRegex = new RegExp(`[@＠]${user.screen_name}\\b`, "gi");
             const mention = text.match(screenNameRegex)[0];
             const mentionRegex = new RegExp(`${mention}\\b`, "g");
             const href = `https://twitter.com/${user.screen_name}`;
