@@ -1,4 +1,3 @@
-$tweet-offset: 56px;
 $tweet-text-color: #fff;
 $tweet-text-color-alt: #bbb;
 
@@ -6,6 +5,7 @@ $tweet-text-color-alt: #bbb;
     position: relative;
     height: 100%;
 }
+
 .twitter-hero {
     opacity: 0;
     position: absolute;
@@ -20,11 +20,13 @@ $tweet-text-color-alt: #bbb;
         transform: translate(-50%, -50%) scale(1);
     }
 }
+
 .twitter-hero-icon {
     font-size: 64px;
     line-height: 1;
     color: #55acee;
 }
+
 .twitter-pin-input {
     display: none;
     width: 80px;
@@ -34,6 +36,7 @@ $tweet-text-color-alt: #bbb;
         display: inline-block;
     }
 }
+
 .twitter-header {
     position: relative;
     height: 20px;
@@ -45,15 +48,18 @@ $tweet-text-color-alt: #bbb;
         padding: 0;
     }
 }
+
 .twitter-user-image {
     width: 16px;
     border-radius: 2px;
 }
+
 .twitter-user {
     position: absolute;
     display: flex;
     align-items: center;
 }
+
 .twitter-user-name {
     margin-left: 4px;
     font-size: 12px;
@@ -63,6 +69,7 @@ $tweet-text-color-alt: #bbb;
         text-decoration: underline;
     }
 }
+
 .twitter-user-handle {
     margin-left: 4px;
     font-size: 10px;
@@ -72,15 +79,18 @@ $tweet-text-color-alt: #bbb;
         text-decoration: underline;
     }
 }
+
 .twitter-btn {
     width: 100%;
     padding: 4px 0;
 }
+
 .twitter-logout-btn {
     position: absolute;
     top: 1px;
     right: 2px;
 }
+
 .twitter-content {
     visibility: collapse;
     opacity: 0;
@@ -94,7 +104,8 @@ $tweet-text-color-alt: #bbb;
         transform: scale(1);
     }
 }
-.twitter-tweets {
+
+.tweets {
     @include scrollbar($color3);
 
     position: relative;
@@ -102,29 +113,30 @@ $tweet-text-color-alt: #bbb;
     height: calc(100% - 22px);
     background-color: $color2;
 }
-.twitter-tweet {
+
+.tweet {
     overflow: hidden;
-    padding: 4px;
+    padding: 4px 4px 4px 56px;
     border-bottom: 1px solid $color3;
     transition: background-color 0.2s;
+    cursor: pointer;
 
     &:hover {
         background-color: lighten($color2, 2%);
     }
 }
-.tweet-content {
-    display: block;
-    margin-left: $tweet-offset;
-}
-.twitter-retweet {
+
+.retweet {
     margin-bottom: 4px;
     color: $tweet-text-color-alt;
     font-size: 12px;
 }
+
 .tweet-retweet-icon {
     margin-left: -20px;
 }
-.twitter-retweet-by {
+
+.retweet-by {
     margin-left: 4px;
     color: $tweet-text-color-alt;
 
@@ -132,39 +144,46 @@ $tweet-text-color-alt: #bbb;
         text-decoration: underline;
     }
 }
-.tweet-header-profile:hover .twitter-tweet-by-name {
+
+.tweet-header-profile:hover .tweeted-by-name {
     text-decoration: underline;
     color: $tweet-text-color-alt;
 }
-.twitter-tweet-by-name {
+
+.tweeted-by-name {
     font-size: 14px;
     font-weight: bold;
     color: $tweet-text-color;
 }
-.twitter-tweet-by-handle {
+
+.tweeted-by-handle {
     color: $tweet-text-color-alt;
     font-size: 12px;
 }
-.twitter-tweeted-on {
-    @extend .twitter-retweet-by;
+
+.tweeted-on {
+    @extend .retweet-by;
 
     font-size: 12px;
 }
+
 .twitter-profile-image {
     float: left;
-    width: 48px;
-    margin-left: -$tweet-offset;
+    width: 44px;
+    margin-left: -52px;
     margin-right: 8px;
-    border-radius: 4px;
+    border-radius: 50%;
 }
-.twitter-tweet-text {
+
+.tweet-text {
     margin-top: 0;
     margin-bottom: 0;
     font-size: 14px;
     white-space: pre-wrap;
     word-wrap: break-word;
 }
-.twitter-tweet-link {
+
+.tweet-link {
     color: #109ACC;
     text-decoration: none;
 
@@ -172,18 +191,54 @@ $tweet-text-color-alt: #bbb;
         text-decoration: underline;
     }
 }
-.tweet-image-container {
+
+.tweet-media-container {
+    overflow: hidden;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     margin-top: 8px;
-}
-.twitter-tweet-img {
-    max-width: 100%;
     border-radius: 4px;
+}
+
+.tweet-media-item {
+    width: 100%;
+    max-height: 494px;
+
+    &:not(:first-of-type) {
+        margin-left: 1px;
+    }
+}
+
+.tweet-img {
+    display: block;
+    width: 100%;
+    height: 100%;
     object-fit: scale-down;
 }
-.twitter-tweet-stats-container {
+
+.tweet-video-container {
+    position: relative;
+}
+
+.tweet-video {
+    display: block;
+    width: 100%;
+}
+
+.tweet-video-play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 48px;
+    height: 48px;
+    transform: translate(-50%, -50%);
+    stroke-width: 0;
+    stroke: $tweet-text-color;
+    fill: $tweet-text-color;
+}
+
+.tweet-stats-container {
     margin-top: 8px;
     color: #aaa;
 
