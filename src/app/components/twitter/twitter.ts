@@ -129,7 +129,7 @@ export class Twitter {
             const mention = text.match(screenNameRegex)[0];
             const mentionRegex = new RegExp(`${mention}\\b`, "g");
             const href = `https://twitter.com/${user.screen_name}`;
-            const a = `<a href="${href}" class="twitter-tweet-link" target="_blank">${mention}</a>`;
+            const a = `<a href="${href}" class="tweet-link" target="_blank">${mention}</a>`;
 
             text = text.replace(mentionRegex, a);
         });
@@ -140,7 +140,7 @@ export class Twitter {
         hashtags.forEach(({ text: hashtag }) => {
             const regex = new RegExp(`#${hashtag}\\b`, "g");
             const href = `https://twitter.com/hashtag/${hashtag}?src=hash`;
-            const a = `<a href="${href}" class="twitter-tweet-link" target="_blank">#${hashtag}</a>`;
+            const a = `<a href="${href}" class="tweet-link" target="_blank">#${hashtag}</a>`;
 
             text = text.replace(regex, a);
         });
@@ -153,7 +153,7 @@ export class Twitter {
         })
         .forEach(({ url, display_url }) => {
             const regex = new RegExp(url, "g");
-            const a = `<a href="${url}" class="twitter-tweet-link" target="_blank">${display_url}</a>`;
+            const a = `<a href="${url}" class="tweet-link" target="_blank">${display_url}</a>`;
 
             text = text.replace(regex, a);
         });
@@ -185,7 +185,27 @@ export class Twitter {
 
     getMediaUrl(media) {
         if (media.length) {
-            return media.map(item => item.media_url_https);
+            return media.map(item => {
+                if (item.type === "animated_gif") {
+                    return {
+                        type: "gif",
+                        thumbUrl: item.media_url_https,
+                        url: item.video_info.variants[0].url
+                    }
+                }
+
+                if (item.type === "video") {
+                    return {
+                        type: item.type,
+                        thumbUrl: item.media_url_https,
+                        url: item.video_info.variants.find(variant => variant.content_type === "video/mp4").url
+                    }
+                }
+                return {
+                    type: item.type,
+                    url: item.media_url_https
+                };
+            });
         }
     }
 
@@ -209,6 +229,37 @@ export class Twitter {
             likeCount: tweet.favorite_count,
             retweetedBy: null
         };
+    }
+
+    isInsideLinkElement(element) {
+        while (element) {
+            if (element.nodeName === "A") {
+                return true;
+            }
+            element = element.parentElement;
+        }
+        return false;
+    }
+
+    handleClickOnTweet({ target }, url) {
+        if (this.isInsideLinkElement(target)) {
+            return;
+        }
+        window.open(url,'_blank');
+    }
+
+    handleVideoClick(event, media) {
+        const video = event.currentTarget.firstElementChild;
+
+        event.stopPropagation();
+        media.active = true;
+
+        if (video.paused) {
+            video.play();
+        }
+        else {
+            video.pause();
+        }
     }
 
     loadNewTweets() {
@@ -349,20 +400,11 @@ export class Twitter {
         }
     }
 
-    removeLeftoverImages() {
-        const imageElems = Array.from(document.querySelectorAll(".twitter-tweet-img"));
-
-        imageElems.forEach(image => {
-            image.parentElement.removeChild(image);
-        });
-    }
-
     logout() {
         clearTimeout(this.twitterTimeout);
         clearTimeout(this.tweetTimeTimeout);
         clearTimeout(this.tweetUpdateTimeout);
         localStorage.removeItem("userInfo");
-        this.removeLeftoverImages();
         this.isLoggedIn = false;
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
