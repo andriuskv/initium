@@ -1,8 +1,10 @@
 .most-visited {
     display: flex;
     flex-wrap: wrap;
-    height: 100%;
+    width: 500px;
+    height: 212px;
 }
+
 .most-visited-mask {
     position: absolute;
     top: 0;
@@ -11,6 +13,7 @@
     left: 0;
     background-color: transparentize($color3, 0.2);
 }
+
 .most-visited-item {
     overflow: hidden;
     position: relative;
@@ -32,6 +35,7 @@
         display: initial;
     }
 }
+
 .page-title {
     @include text-truncate;
 
@@ -41,6 +45,7 @@
     font-size: 12px;
     line-height: 1.66;
 }
+
 .remove-page-btn {
     position: absolute;
     top: 1px;
@@ -49,6 +54,7 @@
     padding: 0;
     box-shadow: -6px 0px 5px 0px $color2;
 }
+
 .add-page-btn {
     width: 100%;
     height: 100%;
@@ -58,12 +64,14 @@
         color: $brand-color;
     }
 }
+
 .page-thumbnail-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 80px;
 }
+
 .page-thumbnail {
     width: 24px;
     height: 24px;
@@ -73,6 +81,7 @@
         height: 80px;
     }
 }
+
 .new-thumbnail-window {
     position: absolute;
     top: 50%;
@@ -85,19 +94,23 @@
         margin-bottom: 4px;
     }
 }
+
 .new-thumbnail-window-title {
     font-weight: 200;
     margin-top: 0;
     margin-bottom: 4px;
     text-align: center;
 }
+
 .new-thumbnail-window-btn-container {
     display: flex;
     justify-content: space-between;
 }
+
 .image-upload-btn {
     cursor: pointer;
 }
+
 .file-input {
     display: none;
 }

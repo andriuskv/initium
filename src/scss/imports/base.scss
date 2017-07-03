@@ -24,6 +24,12 @@ ul {
     list-style: none;
 }
 
+svg {
+    stroke-width: 0;
+    stroke: currentColor;
+    fill: currentColor;
+}
+
 .container {
     padding: 4px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
@@ -54,8 +60,25 @@ ul {
     transition: 0.1s color;
 }
 
+.btn-icon {
+    @include btn-styles(transparent);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: color 0.1s;
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
 .input {
     @include input-styles();
+
+    padding: 2px 4px;
 }
 
 .checkbox {

@@ -14,10 +14,12 @@ declare const process;
 export class Twitter {
     @Output() newTweets = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
+    @Output() toggleSize = new EventEmitter();
     @Input() item;
 
     isLoggedIn: boolean;
     isActive: boolean;
+    isExpanded: boolean = false;
     showPinInput: boolean;
     tweets: Array<any> = [];
     tweetsToLoad: Array<any> = [];
@@ -400,6 +402,11 @@ export class Twitter {
         }
     }
 
+    toggleContainerSize() {
+        this.isExpanded = !this.isExpanded;
+        this.toggleSize.emit(this.isExpanded);
+    }
+
     logout() {
         clearTimeout(this.twitterTimeout);
         clearTimeout(this.tweetTimeTimeout);
@@ -408,6 +415,10 @@ export class Twitter {
         this.isLoggedIn = false;
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
+
+        if (this.isExpanded) {
+            this.toggleContainerSize();
+        }
     }
 
     fetchMoreTweets() {

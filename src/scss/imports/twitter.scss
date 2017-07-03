@@ -1,9 +1,12 @@
 $tweet-text-color: #fff;
 $tweet-text-color-alt: #bbb;
 
-.twitter-container {
-    position: relative;
-    height: 100%;
+.twitter {
+    transition: height 0.2s;
+
+    &.expanded {
+        height: calc(100vh - 16px);
+    }
 }
 
 .twitter-hero {
@@ -39,25 +42,26 @@ $tweet-text-color-alt: #bbb;
 
 .twitter-header {
     position: relative;
+    display: flex;
     height: 20px;
     padding: 2px;
     margin-bottom: 2px;
     background-color: $color2;
-
-    .twitter-btn {
-        padding: 0;
-    }
-}
-
-.twitter-user-image {
-    width: 16px;
-    border-radius: 2px;
 }
 
 .twitter-user {
-    position: absolute;
     display: flex;
     align-items: center;
+    height: 100%;
+}
+
+.twitter-user-image-container {
+    height: 100%;
+}
+
+.twitter-user-image {
+    height: 100%;
+    border-radius: 2px;
 }
 
 .twitter-user-name {
@@ -80,15 +84,17 @@ $tweet-text-color-alt: #bbb;
     }
 }
 
-.twitter-btn {
-    width: 100%;
-    padding: 4px 0;
+.twitter-header-btn-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: auto;
 }
 
-.twitter-logout-btn {
+.new-tweet-btn {
     position: absolute;
-    top: 1px;
-    right: 2px;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .twitter-content {
@@ -116,7 +122,7 @@ $tweet-text-color-alt: #bbb;
 
 .tweet {
     overflow: hidden;
-    padding: 4px 4px 4px 56px;
+    padding: 4px 4px 4px 60px;
     border-bottom: 1px solid $color3;
     transition: background-color 0.2s;
     cursor: pointer;
@@ -169,8 +175,8 @@ $tweet-text-color-alt: #bbb;
 
 .twitter-profile-image {
     float: left;
-    width: 44px;
-    margin-left: -52px;
+    width: 48px;
+    margin-left: -56px;
     margin-right: 8px;
     border-radius: 50%;
 }
@@ -194,16 +200,15 @@ $tweet-text-color-alt: #bbb;
 
 .tweet-media-container {
     overflow: hidden;
-    display: flex;
+    display: inline-flex;
     align-items: flex-start;
-    justify-content: space-between;
     margin-top: 8px;
     border-radius: 4px;
 }
 
 .tweet-media-item {
     width: 100%;
-    max-height: 494px;
+    max-height: 506px;
 
     &:not(:first-of-type) {
         margin-left: 1px;
@@ -212,9 +217,7 @@ $tweet-text-color-alt: #bbb;
 
 .tweet-img {
     display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: scale-down;
+    max-width: 100%;
 }
 
 .tweet-video-container {
@@ -223,7 +226,7 @@ $tweet-text-color-alt: #bbb;
 
 .tweet-video {
     display: block;
-    width: 100%;
+    width: 506px;
 }
 
 .tweet-video-play-icon {
@@ -233,9 +236,7 @@ $tweet-text-color-alt: #bbb;
     width: 48px;
     height: 48px;
     transform: translate(-50%, -50%);
-    stroke-width: 0;
-    stroke: $tweet-text-color;
-    fill: $tweet-text-color;
+    color: $tweet-text-color;
 }
 
 .tweet-stats-container {
@@ -246,4 +247,8 @@ $tweet-text-color-alt: #bbb;
         margin-left: 2px;
         margin-right: 8px;
     }
+}
+
+.more-tweets-btn {
+    width: 100%;
 }

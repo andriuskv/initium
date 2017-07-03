@@ -130,6 +130,7 @@ export class Weather {
                 break;
             // Rain
             case 300:
+            case 301:
             case 500:
                 iconClassName = "icon-drizzle-inv";
                 break;

@@ -8,36 +8,38 @@ declare const chrome;
 @Component({
     selector: "notepad",
     template: `
-        <ul class="notepad-header">
-            <li *ngIf="tabs.length > 4">
-                <button class="icon-left-open btn notepad-shift-btn" (click)="prevVisibleTabs()"></button>
-            </li>
-            <li class="notepad-header-item"
-                *ngFor="let tab of visibleTabs; let i = index"
-                [class.active]="activeTabIndex === i">
-                <button class="btn notepad-select-tab-btn" (click)="hideInputAndSelectTab(i)"
-                    *ngIf="!tab.settingTitle">{{ tab.title }}</button>
-                <button class="icon-cancel font-btn notepad-remove-tab-btn"
-                    (click)="removeTab(i)"
-                    *ngIf="tabs.length > 1 && !tab.settingTitle">
-                </button>
-                <input class="input notepad-title-input" type="text" #input
-                    (keyup.enter)="blurTitleInput(input)"
-                    (blur)="setTitle(input)"
-                    *ngIf="tab.settingTitle">
-            </li>
-            <li *ngIf="tabs.length > 4">
-                <button class="icon-right-open btn notepad-shift-btn" (click)="nextVisibleTabs()"></button>
-            </li>
-            <li>
-                <button class="icon-plus btn notepad-create-new-btn" (click)="createNewTab()"></button>
-            </li>
-        </ul>
-        <textarea class="input notepad"
-            [(ngModel)]="activeTabContent"
-            (input)="onInput($event)"
-            (keydown.tab)="preventLossOfFocus($event)">
-        </textarea>
+        <div class="main-block-item-container">
+            <ul class="notepad-header">
+                <li *ngIf="tabs.length > 4">
+                    <button class="icon-left-open btn notepad-shift-btn" (click)="prevVisibleTabs()"></button>
+                </li>
+                <li class="notepad-header-item"
+                    *ngFor="let tab of visibleTabs; let i = index"
+                    [class.active]="activeTabIndex === i">
+                    <button class="btn notepad-select-tab-btn" (click)="hideInputAndSelectTab(i)"
+                        *ngIf="!tab.settingTitle">{{ tab.title }}</button>
+                    <button class="icon-cancel font-btn notepad-remove-tab-btn"
+                        (click)="removeTab(i)"
+                        *ngIf="tabs.length > 1 && !tab.settingTitle">
+                    </button>
+                    <input class="input notepad-title-input" type="text" #input
+                        (keyup.enter)="blurTitleInput(input)"
+                        (blur)="setTitle(input)"
+                        *ngIf="tab.settingTitle">
+                </li>
+                <li *ngIf="tabs.length > 4">
+                    <button class="icon-right-open btn notepad-shift-btn" (click)="nextVisibleTabs()"></button>
+                </li>
+                <li>
+                    <button class="icon-plus btn notepad-create-new-btn" (click)="createNewTab()"></button>
+                </li>
+            </ul>
+            <textarea class="input notepad-input"
+                [(ngModel)]="activeTabContent"
+                (input)="onInput($event)"
+                (keydown.tab)="preventLossOfFocus($event)">
+            </textarea>
+        </div>
     `
 })
 export class Notepad {

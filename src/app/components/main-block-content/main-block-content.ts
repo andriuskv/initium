@@ -3,11 +3,7 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 @Component({
     selector: "main-block-content",
     template: `
-        <ul class="container main-block-content"
-            [class.hidden]="!item"
-            [class.is-expanded]="itemState[item]"
-            [class.is-item-bar-hidden]="isItemBarHidden"
-            [class.is-twitter-active]="item === 'twitter'">
+        <ul class="container main-block-content" [class.hidden]="!item">
             <li class="main-block-content-item" [class.hidden]="item !== 'mostVisited'">
                 <most-visited [setting]="mainBlockSetting"></most-visited>
             <li>
@@ -17,7 +13,8 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
             <li class="main-block-content-item" [class.hidden]="item !== 'twitter'">
                 <twitter [item]="item"
                     (newTweets)="onNewItems($event, 'twitter')"
-                    (toggleTab)="onToggleTab($event)">
+                    (toggleTab)="onToggleTab($event)"
+                    (toggleSize)="onToggleSize($event)">
                 </twitter>
             </li>
             <li class="main-block-content-item" [class.hidden]="item !== 'rssFeed'">
@@ -26,28 +23,20 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
                     (toggleTab)="onToggleTab($event)">
                 </rss-feed>
             </li>
-            <li *ngIf="item !== 'mostVisited'">
-                <button class="btn main-block-expand-btn" (click)="toggleItemState()">
-                    {{ this.itemState[this.item] ? "Contract" : "Expand" }}
-                </button>
-            </li>
-    </ul>
+        </ul>
     `
 })
 export class MainBlockContent {
     @Input() choice;
     @Input() setting;
     @Output() newItems = new EventEmitter();
+    @Output() navState = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
+    @Output() toggleSize = new EventEmitter();
 
     isItemBarHidden: boolean;
     item: string = "";
     mainBlockSetting: any;
-    itemState: any;
-
-    constructor() {
-        this.itemState = JSON.parse(localStorage.getItem("main block item state")) || {};
-    }
 
     ngOnChanges(changes) {
         if (changes.choice) {
@@ -57,7 +46,7 @@ export class MainBlockContent {
 
         if (changes.setting && !changes.setting.isFirstChange()) {
             this.mainBlockSetting = changes.setting.currentValue;
-            this.isItemBarHidden = this.mainBlockSetting.hideItemBar;
+            this.navState.emit(this.mainBlockSetting.hideItemBar);
         }
     }
 
@@ -69,8 +58,7 @@ export class MainBlockContent {
         this.toggleTab.emit(item);
     }
 
-    toggleItemState() {
-        this.itemState[this.item] = !this.itemState[this.item];
-        localStorage.setItem("main block item state", JSON.stringify(this.itemState));
+    onToggleSize(state) {
+        this.toggleSize.emit(state);
     }
 }
