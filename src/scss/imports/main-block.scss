@@ -1,10 +1,24 @@
 .main-block {
+    z-index: 1;
     position: absolute;
     top: 45vh;
-    bottom: 4px;
     left: 50%;
     transform: translateX(-50%);
+    transition: top 0.2s;
+
+    &.expanded {
+        top: -24px;
+
+        .main-block-nav {
+            transition: none;
+        }
+
+        &.is-nav-hidden {
+            top: 4px;
+        }
+    }
 }
+
 .main-block-nav {
     display: flex;
     justify-content: center;
@@ -22,6 +36,7 @@
         overflow: hidden;
     }
 }
+
 .main-block-nav-item {
     position: relative;
     margin: 1px 2px 0 2px;
@@ -30,6 +45,7 @@
         font-size: 16px;
     }
 }
+
 .indicator {
     z-index: 1;
     position: absolute;
@@ -41,40 +57,20 @@
     border: 1px solid $color3;
     background-color: $brand-color;
 }
-.main-block-content {
-    display: flex;
-    flex-direction: column;
-    width: 500px;
-    height: 212px;
-    transition: all 0.2s;
 
-    &.hidden {
-        display: none;
-    }
-    &.is-expanded {
-        height: calc(100% - 28px);
-
-        &.is-item-bar-hidden {
-            height: 100%;
-        }
-        &.is-twitter-active {
-            width: 572px;
-        }
-    }
+.main-block-content.hidden {
+    display: none;
 }
+
 .main-block-content-item {
     position: relative;
-    flex-grow: 1;
-    height: calc(100% - 24px);
 
     &.hidden {
         display: none;
     }
 }
-.main-block-expand-btn {
-    width: 100%;
-    margin-top: 2px;
-    padding-top: 1px;
-    padding-bottom: 1px;
-    border-radius: 0;
+
+.main-block-item-container {
+    width: 580px;
+    height: 318px;
 }

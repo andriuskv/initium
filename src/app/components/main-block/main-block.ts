@@ -3,7 +3,9 @@ import { Component, Input } from "@angular/core";
 @Component({
     selector: "main-block",
     template: `
-        <div class="main-block">
+        <div class="main-block"
+            [class.expanded]="isTwitterExpanded"
+            [class.is-nav-hidden]="isNavHidden">
             <main-block-nav (choice)="onChoice($event)"
                 [setting]="mainBlockSetting"
                 [newItemUpdate]="itemUpdate"
@@ -13,7 +15,9 @@ import { Component, Input } from "@angular/core";
                 [choice]="item"
                 [setting]="mainBlockSetting"
                 (newItems)="onNewItems($event)"
-                (toggleTab)="onToggleTab($event)">
+                (navState)="onNavState($event)"
+                (toggleTab)="onToggleTab($event)"
+                (toggleSize)="onToggleSize($event)">
             </main-block-content>
         </div>
     `
@@ -21,6 +25,8 @@ import { Component, Input } from "@angular/core";
 export class MainBlock {
     @Input() setting;
 
+    isNavHidden: boolean;
+    isTwitterExpanded: boolean;
     item: string;
     tabName: string;
     itemUpdate: any;
@@ -42,7 +48,15 @@ export class MainBlock {
         this.itemUpdate = Object.assign({}, item);
     }
 
+    onNavState(isHidden) {
+        this.isNavHidden = isHidden;
+    }
+
     onToggleTab(name) {
         this.tabName = name;
+    }
+
+    onToggleSize(state) {
+        this.isTwitterExpanded = state && this.item === "twitter";
     }
 }
