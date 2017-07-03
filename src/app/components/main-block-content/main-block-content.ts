@@ -30,7 +30,6 @@ export class MainBlockContent {
     @Input() choice;
     @Input() setting;
     @Output() newItems = new EventEmitter();
-    @Output() navState = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
     @Output() toggleSize = new EventEmitter();
 
@@ -46,7 +45,6 @@ export class MainBlockContent {
 
         if (changes.setting && !changes.setting.isFirstChange()) {
             this.mainBlockSetting = changes.setting.currentValue;
-            this.navState.emit(this.mainBlockSetting.hideItemBar);
         }
     }
 
