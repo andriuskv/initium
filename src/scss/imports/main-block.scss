@@ -7,14 +7,10 @@
     transition: top 0.2s;
 
     &.expanded {
-        top: -24px;
+        top: 4px;
 
         .main-block-nav {
-            transition: none;
-        }
-
-        &.is-nav-hidden {
-            top: 4px;
+            display: none;
         }
     }
 }
@@ -73,4 +69,5 @@
 .main-block-item-container {
     width: 580px;
     height: 318px;
+    max-height: calc(55vh - 40px);
 }
