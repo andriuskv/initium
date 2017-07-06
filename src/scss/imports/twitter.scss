@@ -183,7 +183,7 @@ $tweet-text-color-alt: #bbb;
 }
 
 .tweet-text {
-    margin-top: 0;
+    margin-top: 4px;
     margin-bottom: 0;
     font-size: 14px;
     white-space: pre-wrap;
@@ -201,22 +201,23 @@ $tweet-text-color-alt: #bbb;
 
 .tweet-media-container {
     overflow: hidden;
-    display: inline-flex;
-    align-items: flex-start;
+    display: inline-block;
     margin-top: 8px;
+    margin-bottom: -4px;
     border-radius: 4px;
 }
 
-.tweet-media-item {
-    width: 100%;
+.tweet-image-container {
+    display: flex;
+    align-items: flex-start;
     max-height: 506px;
-
-    &:not(:first-of-type) {
-        margin-left: 1px;
-    }
 }
 
-.tweet-img {
+.tweet-media-item:not(:last-of-type) {
+    margin-right: 1px;
+}
+
+.tweet-image {
     display: block;
     max-width: 100%;
 }
@@ -228,6 +229,8 @@ $tweet-text-color-alt: #bbb;
 .tweet-video {
     display: block;
     width: 506px;
+    max-height: 506px;
+    margin: 0 auto;
 }
 
 .tweet-video-play-icon {

@@ -9,7 +9,10 @@ import { Component } from "@angular/core";
             [setting]="settings.time"
             [newReminders]="reminders">
         </calendar-reminders>
-        <main-block [setting]="settings.mainBlock"></main-block>
+        <main-block
+            [setting]="settings.mainBlock"
+            (showViewer)="onShowViewer($event)">
+        </main-block>
         <weather [setting]="settings.weather"></weather>
         <todo></todo>
         <widget-menu
@@ -21,12 +24,14 @@ import { Component } from "@angular/core";
             [toggleComp]="toggle.upper"
             (hide)="onHide($event)">
         </upper-block>
+        <tweet-image-viewer [data]="imageData"></tweet-image-viewer>
     `
 })
 export class App {
     toggle: any = {};
     settings: any = {};
     reminders: any;
+    imageData: any;
 
     onToggle(whatToToggle) {
         this.toggle[whatToToggle] = !this.toggle[whatToToggle] || false;
@@ -42,5 +47,9 @@ export class App {
 
     onHide(component) {
         this.toggle[component] = false;
+    }
+
+    onShowViewer(data) {
+        this.imageData = data;
     }
 }

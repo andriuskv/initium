@@ -14,7 +14,8 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
                 <twitter [item]="item"
                     (newTweets)="onNewItems($event, 'twitter')"
                     (toggleTab)="onToggleTab($event)"
-                    (toggleSize)="onToggleSize($event)">
+                    (toggleSize)="onToggleSize($event)"
+                    (showViewer)="onShowViewer($event)">
                 </twitter>
             </li>
             <li class="main-block-content-item" [class.hidden]="item !== 'rssFeed'">
@@ -32,6 +33,7 @@ export class MainBlockContent {
     @Output() newItems = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
     @Output() toggleSize = new EventEmitter();
+    @Output() showViewer = new EventEmitter();
 
     isItemBarHidden: boolean;
     item: string = "";
@@ -58,5 +60,9 @@ export class MainBlockContent {
 
     onToggleSize(state) {
         this.toggleSize.emit(state);
+    }
+
+    onShowViewer(data) {
+        this.showViewer.emit(data);
     }
 }

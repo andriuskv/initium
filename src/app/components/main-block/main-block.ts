@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "main-block",
@@ -14,13 +14,15 @@ import { Component, Input } from "@angular/core";
                 [setting]="mainBlockSetting"
                 (newItems)="onNewItems($event)"
                 (toggleTab)="onToggleTab($event)"
-                (toggleSize)="onToggleSize($event)">
+                (toggleSize)="onToggleSize($event)"
+                (showViewer)="onShowViewer($event)">
             </main-block-content>
         </div>
     `
 })
 export class MainBlock {
     @Input() setting;
+    @Output() showViewer = new EventEmitter();
 
     isNavHidden: boolean;
     isTwitterExpanded: boolean;
@@ -51,5 +53,9 @@ export class MainBlock {
 
     onToggleSize(state) {
         this.isTwitterExpanded = state && this.item === "twitter";
+    }
+
+    onShowViewer(data) {
+        this.showViewer.emit(data);
     }
 }
