@@ -15,6 +15,7 @@ export class Twitter {
     @Output() newTweets = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
     @Output() toggleSize = new EventEmitter();
+    @Output() showViewer = new EventEmitter();
     @Input() item;
 
     isLoggedIn: boolean;
@@ -248,6 +249,16 @@ export class Twitter {
             return;
         }
         window.open(url,'_blank');
+    }
+
+    handleImageClick(event, media, index) {
+        event.stopPropagation();
+
+        this.showViewer.emit({
+            images: [].concat(media),
+            startIndex: index
+        });
+
     }
 
     handleVideoClick(event, media) {

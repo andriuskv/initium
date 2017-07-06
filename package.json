@@ -28,7 +28,7 @@
     "@angular/router": "^4.2.5",
     "core-js": "^2.4.1",
     "dropbox": "^2.5.4",
-    "rxjs": "^5.4.1",
+    "rxjs": "^5.4.2",
     "zone.js": "^0.8.12"
   },
   "devDependencies": {
@@ -36,13 +36,13 @@
     "@angular/compiler-cli": "^4.2.5",
     "@types/chrome": "^0.0.47",
     "autoprefixer": "^7.1.1",
-    "codelyzer": "^3.1.1",
+    "codelyzer": "^3.1.2",
     "csso-cli": "^1.0.0",
     "node-sass": "^4.5.3",
     "onchange": "^3.2.1",
     "postcss-cli": "^4.1.0",
     "raw-loader": "^0.5.1",
-    "tslint": "^5.4.3",
+    "tslint": "^5.5.0",
     "typescript": "2.4.1",
     "url-loader": "^0.5.9",
     "webpack": "^3.0.0"

@@ -32,6 +32,7 @@ import { Settings } from "./components/settings/settings";
 import { DropboxComp } from "./components/dropbox/dropbox";
 import { Calendar } from "./components/calendar/calendar";
 import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar-selected-day";
+import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-viewer";
 
 @NgModule({
     imports: [BrowserModule, FormsModule],
@@ -40,7 +41,7 @@ import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar
         App, Settings, Background, Time, MainBlock, MainBlockNav, MainBlockContent,
         MostVisited, Notepad, Twitter, RssFeed, CalendarReminders, Weather,
         WidgetMenu, TodoPin, Todo, UpperBlock,Timer, Stopwatch, Calendar,
-        CalendarSelectedDay, DropboxComp, SlicePipe
+        CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe
     ],
     bootstrap: [App]
 })

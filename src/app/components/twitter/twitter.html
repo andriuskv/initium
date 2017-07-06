@@ -12,7 +12,7 @@
         <div class="twitter-header">
            <div class="twitter-user">
                 <a href="{{ user.homepage }}" class="twitter-user-image-container" target="_blank">
-                    <img src="{{ user.profileImage }}" class="twitter-user-image">
+                    <img src="{{ user.profileImage }}" class="twitter-user-image" alt="">
                 </a>
                 <a href="{{ user.homepage }}" class="twitter-user-name" target="_blank">
                     <span>{{ user.name }}</span>
@@ -37,7 +37,7 @@
                 </button>
                 <button class="btn-icon" title="Log out" (click)="logout()">
                     <svg viewBox="0 0 24 24">
-                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                        <use href="#cross"></use>
                     </svg>
                 </button>
             </div>
@@ -50,7 +50,7 @@
                     <span>Retweeted</span>
                 </div>
                 <div>
-                    <a href="{{ tweet.userUrl }}" class="tweet-header-profile" target="_blank">
+                    <a href="{{ tweet.userUrl }}" class="tweet-header-profile" target="_blank" alt="">
                         <img src="{{ tweet.profileImg }}" class="twitter-profile-image">
                         <span class="tweeted-by-name">{{ tweet.name }}</span>
                         <span class="tweeted-by-handle">{{ tweet.handle }}</span>
@@ -59,23 +59,27 @@
                 </div>
                 <p class="tweet-text" *ngIf="tweet.text" [innerHTML]="tweet.text"></p>
                 <div class="tweet-media-container" *ngIf="tweet.media">
-                    <div class="tweet-media-item" *ngFor="let media of tweet.media"
-                        [ngStyle]="{'max-width': 'calc(' + 100 / tweet.media.length + '%)'}">
-                        <img src="{{ media.url }}" class="tweet-img" *ngIf="media.type === 'photo'; else elseBlock">
-                        <ng-template #elseBlock>
-                            <div class="tweet-video-container" (click)="handleVideoClick($event, media)">
-                                <video src="{{ media.url }}" class="tweet-video" [poster]="media.thumbUrl"
-                                    [controls]="media.type === 'video' && media.active" preload="none" loop>
-                                </video>
-                                <svg viewBox="0 0 24 24" class="tweet-video-play-icon" *ngIf="!media.active">
-                                    <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59, 4 12,
+                    <div class="tweet-image-container" *ngIf="tweet.media[0].type === 'photo'; else elseBlock">
+                        <div class="tweet-media-item"
+                            *ngFor="let media of tweet.media; let i = index"
+                            (click)="handleImageClick($event, tweet.media, i)">
+                            <img src="{{ media.url }}" class="tweet-image">
+                        </div>
+                    </div>
+                    <ng-template #elseBlock>
+                        <div class="tweet-video-container" (click)="handleVideoClick($event, tweet.media[0])">
+                            <video src="{{ tweet.media[0].url }}" class="tweet-video"
+                                [poster]="tweet.media[0].thumbUrl"
+                                [controls]="tweet.media[0].type === 'video' && tweet.media[0].active" preload="none" loop>
+                            </video>
+                            <svg viewBox="0 0 24 24" class="tweet-video-play-icon" *ngIf="!tweet.media[0].active">
+                                <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59, 4 12,
                                     4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,
                                     10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,
                                     0 12,2M10,16.5L16,12L10,7.5V16.5Z" />
-                                </svg>
-                            </div>
-                        </ng-template>
-                    </div>
+                            </svg>
+                        </div>
+                    </ng-template>
                 </div>
                 <div class="tweet-stats-container">
                     <span class="icon-retweet"></span>
