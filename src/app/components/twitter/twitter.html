@@ -70,7 +70,9 @@
                         <div class="tweet-video-container" (click)="handleVideoClick($event, tweet.media[0])">
                             <video src="{{ tweet.media[0].url }}" class="tweet-video"
                                 [poster]="tweet.media[0].thumbUrl"
-                                [controls]="tweet.media[0].type === 'video' && tweet.media[0].active" preload="none" loop>
+                                [controls]="tweet.media[0].type === 'video' && tweet.media[0].active"
+                                [loop]="tweet.media[0].type === 'gif'"
+                                preload="none">
                             </video>
                             <svg viewBox="0 0 24 24" class="tweet-video-play-icon" *ngIf="!tweet.media[0].active">
                                 <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59, 4 12,

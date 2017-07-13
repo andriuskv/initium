@@ -258,7 +258,6 @@ export class Twitter {
             images: [].concat(media),
             startIndex: index
         });
-
     }
 
     handleVideoClick(event, media) {
