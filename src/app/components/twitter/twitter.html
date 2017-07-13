@@ -91,7 +91,10 @@
                 </div>
             </li>
             <li>
-                <button class="btn more-tweets-btn" (click)="fetchMoreTweets()">Load more tweets</button>
+                <button class="btn more-tweets-btn" (click)="fetchMoreTweets()">
+                    <span class="icon-spin4 animate-spin" *ngIf="fetchingMoreTweets"></span>
+                    <span>Load more tweets</span>
+                </button>
             </li>
         </ul>
     </div>

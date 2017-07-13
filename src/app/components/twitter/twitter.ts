@@ -22,6 +22,7 @@ export class Twitter {
     isActive: boolean;
     isExpanded: boolean = false;
     showPinInput: boolean;
+    fetchingMoreTweets:boolean = false;
     tweets: Array<any> = [];
     tweetsToLoad: Array<any> = [];
     user: any = {};
@@ -433,12 +434,15 @@ export class Twitter {
 
     fetchMoreTweets() {
         const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
-        const { id: oldestTweetId } = this.tweets[this.tweets.length - 1];
-        const cb = new Codebird;
 
-        if (userInfo.token && userInfo.tokenSecret) {
+        if (!this.fetchingMoreTweets && userInfo.token && userInfo.tokenSecret) {
+            const { id: oldestTweetId } = this.tweets[this.tweets.length - 1];
+            const cb = new Codebird;
+            this.fetchingMoreTweets = true;
+
             this.setInfo(cb, userInfo);
             cb.__call("statuses_homeTimeline", `max_id=${oldestTweetId}`, tweets => {
+                this.fetchingMoreTweets = false;
                 tweets = tweets.filter(tweet => tweet.id !== oldestTweetId);
 
                 if (tweets.length) {
