@@ -1,4 +1,4 @@
-<div class="menu-item-container">
+<div class="settings-container">
     <ul class="settings-nav">
         <li class="settings-nav-item" [class.active]="active === 'general'">
             <button class="font-btn" (click)="setActiveTab('general')">General</button>
@@ -40,13 +40,6 @@
                     (click)="onSetting('dateDisabled', $event.target.checked)"
                     [checked]="settings.time.dateDisabled">
                 <label for="date-checkbox"></label>
-            </div>
-            <div class="setting-item">
-                <span>Disable calendar reminders</span>
-                <input type="checkbox" id="calendar-checkbox" class="checkbox"
-                    (click)="onSetting('calendarRemindersDisabled', $event.target.checked)"
-                    [checked]="settings.time.calendarRemindersDisabled">
-                <label for="calendar-checkbox"></label>
             </div>
             <div class="setting-item">
                 <span>Time display</span>

@@ -17,8 +17,7 @@ export class SettingService {
             },
             time: {
                 dateDisabled: false,
-                timeDisplay: "1",
-                calendarRemindersDisabled: false
+                timeDisplay: "1"
             },
             weather: {
                 disabled: false,

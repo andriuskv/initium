@@ -6,7 +6,7 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 })
 export class CalendarSelectedDay {
     @Output() event = new EventEmitter();
-    @Output() notify = new EventEmitter();
+    @Output() save = new EventEmitter();
     @Output() remove = new EventEmitter();
     @Output() repeat = new EventEmitter();
     @Input() day: any = {};
@@ -15,8 +15,6 @@ export class CalendarSelectedDay {
     repeatEnabled: boolean = false;
     isValidInput: boolean = true;
     repeatGap: number = 0;
-
-    constructor() {}
 
     showCalendar() {
         this.event.emit(false);
@@ -52,12 +50,17 @@ export class CalendarSelectedDay {
         }
     }
 
+    getRandomColor() {
+        return "hsl(" + Math.random() * 360 + ", 100%, 72%)";
+    }
+
     createReminder(reminder) {
         if (!reminder.value || !this.isValidInput) {
             return;
         }
         const newReminder: any = {
-            text: reminder.value
+            text: reminder.value,
+            color: this.getRandomColor()
         };
 
         if (this.repeatEnabled) {
@@ -70,7 +73,7 @@ export class CalendarSelectedDay {
             this.repeatEnabled = false;
         }
         this.day.reminders.push(newReminder);
-        this.notify.emit(this.day);
+        this.save.emit();
         this.reminderInputEnabled = false;
         reminder.value = "";
     }
