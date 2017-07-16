@@ -7,19 +7,26 @@ declare const process;
 @Component({
     selector: "dropbox",
     template: `
-        <div class="menu-item-container">
+        <div class="dropbox-container">
             <div class="dropbox-header">
-                <button class="icon-left-big font-btn" title="Back"
-                (click)="goBack(activeDir)"
-                *ngIf="activeDir.path && activeDir.path !== '/'"></button>
+                <button class="btn-icon" (click)="goBack(activeDir)" *ngIf="activeDir.path && activeDir.path !== '/'" title="Back">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#chevron-left"></use>
+                    </svg>
+                </button>
                 <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
-                <button class="icon-cancel font-btn" title="Logout"
-                    *ngIf="loggedIn"
-                    (click)="logout()">
+                <button class="btn-icon" title="Logout" *ngIf="loggedIn" (click)="logout()">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#cross"></use>
+                    </svg>
                 </button>
             </div>
             <div class="dropbox-hero" [class.show]="!showItems">
-                <div class="icon-dropbox dropbox-hero-icon"></div>
+                <div class="dropbox-hero-icon">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#dropbox"></use>
+                    </svg>
+                </div>
                 <button class="btn" *ngIf="showLogin" (click)="login()">Log in</button>
                 <div class="icon-spin4 animate-spin dropbox-spinner" *ngIf="fetching"></div>
                 <p class="dropbox-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>

@@ -20,11 +20,10 @@ import { MostVisited } from "./components/most-visited/most-visited";
 import { Notepad } from "./components/notepad/notepad";
 import { Twitter } from "./components/twitter/twitter";
 import { RssFeed } from "./components/rss-feed/rss-feed";
-import { CalendarReminders } from "./components/calendar-reminders/calendar-reminders";
 import { Todo } from "./components/todo/todo";
 import { TodoPin } from "./components/todo-pin/todo-pin";
 import { Weather } from "./components/weather/weather";
-import { WidgetMenu } from "./components/widget-menu/widget-menu";
+import { Menu } from "./components/menu/menu";
 import { UpperBlock } from "./components/upper-block/upper-block";
 import { Timer } from "./components/timer/timer";
 import { Stopwatch } from "./components/stopwatch/stopwatch";
@@ -39,9 +38,9 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
     providers: [SettingService, DateService, WeatherService, NotificationService, FeedService],
     declarations: [
         App, Settings, Background, Time, MainBlock, MainBlockNav, MainBlockContent,
-        MostVisited, Notepad, Twitter, RssFeed, CalendarReminders, Weather,
-        WidgetMenu, TodoPin, Todo, UpperBlock,Timer, Stopwatch, Calendar,
-        CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe
+        MostVisited, Notepad, Twitter, RssFeed, Weather, Menu, TodoPin, Todo,
+        UpperBlock,Timer, Stopwatch, Calendar, CalendarSelectedDay, DropboxComp,
+        TweetImageViewer, SlicePipe
     ],
     bootstrap: [App]
 })

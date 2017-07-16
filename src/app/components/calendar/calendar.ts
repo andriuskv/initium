@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input } from "@angular/core";
+import { Component } from "@angular/core";
 import { DateService } from "../../services/dateService";
 
 @Component({
@@ -6,13 +6,10 @@ import { DateService } from "../../services/dateService";
     templateUrl: "./calendar.html"
 })
 export class Calendar {
-    @Output() reminders = new EventEmitter();
-    @Input() remidersDisabled;
-
     initialized: boolean = false;
-    notify: boolean = true;
     daySelected: boolean = false;
     currentDate: any = this.getCurrentDate();
+    currentDay: any;
     calendar: any;
     selectedDay: any;
 
@@ -21,23 +18,7 @@ export class Calendar {
     }
 
     ngOnInit() {
-        if (!this.initialized) {
-            this.init();
-        }
-    }
-
-    ngOnChanges(changes) {
-        const disabled = changes.remidersDisabled.currentValue;
-
-        if (!disabled) {
-            if (!this.initialized) {
-                this.init();
-            }
-            const day = this.getCurrentDayInCalendar(this.calendar, this.currentDate);
-
-            this.reminders.emit(day.reminders);
-        }
-        this.notify = !disabled;
+        this.init();
     }
 
     init() {
@@ -60,6 +41,7 @@ export class Calendar {
             futureReminders: calendar.futureReminders || []
         });
         this.repeatFutureReminders(calendar.futureReminders);
+        this.currentDay = this.getCurrentDayInCalendar(this.calendar, this.currentDate);
         this.initialized = true;
     }
 
@@ -243,13 +225,6 @@ export class Calendar {
         this.daySelected = daySelected;
     }
 
-    sendReminders(selectedDay) {
-        if (selectedDay.currentDay && this.notify) {
-            this.reminders.emit(selectedDay.reminders);
-        }
-        localStorage.setItem("calendar", JSON.stringify(this.calendar));
-    }
-
     filterReminders(reminders, text) {
         return reminders.filter(reminder => reminder.text !== text);
     }
@@ -274,12 +249,7 @@ export class Calendar {
         if (reminder.repeat) {
             this.removeRepeatedReminder(reminder);
         }
-        if (this.notify) {
-            const day = this.getCurrentDayInCalendar(this.calendar, this.currentDate);
-
-            this.reminders.emit(day.reminders);
-        }
-        localStorage.setItem("calendar", JSON.stringify(this.calendar));
+        this.saveCalendar();
     }
 
     repeatReminder(reminder) {
@@ -301,6 +271,7 @@ export class Calendar {
 
                 if (currentDay.direction === 0) {
                     currentDay.reminders.push({
+                        color: reminder.color,
                         text: reminder.text,
                         repeat: reminder.repeat
                     });
@@ -329,5 +300,9 @@ export class Calendar {
                 }
             }
         }
+    }
+
+    saveCalendar() {
+        localStorage.setItem("calendar", JSON.stringify(this.calendar));
     }
 }

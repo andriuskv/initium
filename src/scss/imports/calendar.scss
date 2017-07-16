@@ -1,52 +1,87 @@
-.calendar-header {
+.calendar-container {
     display: flex;
-    justify-content: center;
-    margin-bottom: 4px;
-    padding: 0 4px 4px 4px;
+    height: 305px;
 }
 
-.month-btn:last-of-type {
-    transform: rotate(180deg);
+.current-day-reminder-container {
+    flex-shrink: 0;
+    width: 240px;
+    height: 100%;
+    margin-right: 8px;
+}
+
+.current-day-reminders {
+    @include scrollbar($color2);
+
+    overflow-y: auto;
+    height: 100%;
+}
+
+.current-day-reminder {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 4px;
+    border-left: 4px solid;
+
+    &:not(:first-of-type) {
+        margin-top: 4px;
+    }
+}
+
+.calendar {
+    width: 356px;
+    height: 100%;
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.calendar-header-btn {
+    svg {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 .calendar-title {
-    margin-left: auto;
-    margin-right: auto;
+    flex-grow: 1;
     font-size: 16px;
-}
-
-.calendar-week-days {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 4px;
-}
-
-.calendar-cell {
-    width: 56px;
-    font-size: 12px;
     text-align: center;
 }
 
+.calendar-week-days,
 .calendar-month-days {
     display: flex;
+    justify-content: space-between;
+}
+
+.calendar-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 38px;
+    margin-top: 1px;
+}
+
+.calendar-month-days {
     flex-wrap: wrap;
 }
 
 .calendar-month-day {
-    height: 26px;
-    padding-top: 6px;
-    color: #222;
+    position: relative;
+    color: #777;
 
     &.is-current-month-day {
         color: $primary-text-color;
     }
 
     &.current-day {
-        padding-top: 5px;
-        border: 1px solid;
-    }
-
-    &.has-reminder {
         color: $brand-color;
     }
 
@@ -56,51 +91,68 @@
     }
 }
 
+.day-reminders {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    width: 100%;
+    height: 4px;
+}
+
+.day-reminder {
+    flex-basis: 100%;
+
+    &:not(:last-of-type) {
+        margin-right: 1px;
+    }
+}
+
+.calendar-selected-day {
+    height: calc(100% - 32px);
+    padding: 4px;
+}
+
 .selected-day-remainders {
     @include scrollbar($color2);
 
     overflow-y: auto;
-    max-height: 150px;
+    max-height: calc(100% - 29px);
     margin-bottom: 4px;
 
 }
 
 .selected-day-remainder {
     display: flex;
-    align-items: center;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding: 4px;
     border-bottom: 1px solid $color2;
-    font-size: 14px;
 
-    .font-btn {
+    .btn-icon {
         margin-left: auto;
     }
 }
 
-.is-repeating {
+.reminder-repeat-icon {
+    flex-shrink: 0;
     margin-right: 4px;
     color: #999;
 }
 
-.calendar-new-reminder-section {
-    position: absolute;
-    top: 58px;
-    right: 4px;
-    bottom: 4px;
-    left: 4px;
-    background-color: $color3;
+.new-reminder-btn {
+    padding: 4px;
 }
 
 .calendar-reminer-settings {
-    height: calc(100% - 48px);
     margin-bottom: 4px;
-    font-size: 14px;
 }
 
 .calendar-reminder-setting {
+    float: right;
     display: flex;
-    margin-bottom: 4px;
+
+    &.is-input-visible {
+        float: none;
+    }
 }
 
 .repeat-setting-msg {
