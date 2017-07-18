@@ -35,19 +35,17 @@
             autocomplete="off"
             placeholder="Remind me to..."
             (keyup.enter)="createReminder(reminder)">
-        <div class="calendar-reminer-settings">
-            <div class="calendar-reminder-setting" [class.is-input-visible]="repeatEnabled">
-                <div *ngIf="repeatEnabled">
-                    <span>Repeat every</span>
-                    <input class="input calendar-repeat-gap" autocomplete="off" (input)="validateInput($event)">
-                    <span>days</span>
-                    <div class="repeat-setting-msg" *ngIf="!isValidInput">Please insert a whole number</div>
-                </div>
-                <div class="reminder-setting-desc">
-                    <input type="checkbox" id="calendar-repeat-checkbox" class="checkbox" (click)="toggleRepeat()">
-                    <label for="calendar-repeat-checkbox"></label>
-                    <span class="reminder-setting-title">Repeat</span>
-                </div>
+        <div class="calendar-reminder-setting" [class.is-input-visible]="repeatEnabled">
+            <div *ngIf="repeatEnabled">
+                <span>Repeat every</span>
+                <input class="input calendar-repeat-gap" autocomplete="off" (input)="validateInput($event)">
+                <span>days</span>
+                <div class="repeat-setting-msg" *ngIf="!isValidInput">Please insert a whole number</div>
+            </div>
+            <div class="reminder-setting-desc">
+                <input type="checkbox" id="calendar-repeat-checkbox" class="checkbox" (click)="toggleRepeat()">
+                <label for="calendar-repeat-checkbox"></label>
+                <span class="reminder-setting-title">Repeat</span>
             </div>
         </div>
         <button class="btn" (click)="createReminder(reminder)">Add</button>
