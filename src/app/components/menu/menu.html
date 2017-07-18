@@ -45,7 +45,7 @@
                 </svg>
             </button>
         </div>
-        <settings [hidden]="selectedItem !== 'settings'" (setting)="onSetting($event)"></settings>
+        <settings *ngIf="selectedItem === 'settings'" (setting)="onSetting($event)"></settings>
         <dropbox *ngIf="selectedItem === 'dropbox'" (setting)="onSetting($event)"></dropbox>
         <calendar *ngIf="selectedItem === 'calendar'"></calendar>
     </div>

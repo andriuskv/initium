@@ -1,6 +1,15 @@
 export class SettingService {
+    settings: any;
+
     constructor() {
-        localStorage.setItem("settings", JSON.stringify(this.getSettings()));
+        this.settings = this.initSettings();
+    }
+
+    initSettings() {
+        const defaultSettings = this.getDefault();
+        const storedSettings = JSON.parse(localStorage.getItem("settings")) || {};
+
+        return Object.assign(defaultSettings, storedSettings);
     }
 
     getDefault() {
@@ -28,14 +37,11 @@ export class SettingService {
     }
 
     getSettings() {
-        const defaultSettings = this.getDefault();
-        const storedSettings = JSON.parse(localStorage.getItem("settings")) || {};
-
-        return Object.assign(defaultSettings, storedSettings);
+        return this.settings;
     }
 
     updateSetting(setting) {
-        const settings = this.getSettings();
+        const settings = this.settings;
         const [settingFor] = Object.keys(setting);
 
         settings[settingFor] = Object.assign(settings[settingFor], setting[settingFor]);

@@ -17,7 +17,6 @@ export class Settings {
 
     ngOnInit() {
         this.settings = this.settingService.getSettings();
-        this.setting.emit(this.settings);
     }
 
     setActiveTab(tab) {
