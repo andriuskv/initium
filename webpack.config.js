@@ -1,6 +1,6 @@
 const path = require("path");
 const { DefinePlugin, NoEmitOnErrorsPlugin, NamedModulesPlugin } = require('webpack');
-const { CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
+const { ModuleConcatenationPlugin, CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
 const ProgressPlugin = require('webpack/lib/ProgressPlugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { AotPlugin } = require('@ngtools/webpack');
@@ -69,6 +69,7 @@ module.exports = function(env = {}) {
 
     if (env.prod) {
         plugins.push(
+            new ModuleConcatenationPlugin(),
             new UglifyJsPlugin({
                 comments: false,
                 compress: {
