@@ -1,4 +1,5 @@
 import { Component, Input } from "@angular/core";
+import { SettingService } from "../../services/settingService";
 import { WeatherService } from "../../services/weatherService";
 
 @Component({
@@ -29,8 +30,19 @@ export class Weather {
     timeout: any;
     weather: any = {};
 
-    constructor(private weatherService: WeatherService) {
+    constructor(private settingService: SettingService, private weatherService: WeatherService) {
+        this.settingService = settingService;
         this.weatherService = weatherService;
+    }
+
+    ngOnInit() {
+        const { weather: settings } = this.settingService.getSettings();
+
+        this.disabled = settings.disabled;
+        this.cityName = settings.cityName;
+        this.units = this.getTempUnits(settings.useFarenheit);
+
+        this.initWeather(settings.cityName, settings.disabled);
     }
 
     ngOnChanges(changes) {
@@ -41,46 +53,51 @@ export class Weather {
         }
         const { disabled, useFarenheit, cityName } = currentValue;
 
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-            this.timeout = null;
-        }
-
         if (typeof disabled === "boolean") {
             this.disabled = disabled;
 
-            if (!this.disabled) {
-                if (this.initialized) {
-                    this.getWeather(this.cityName);
-                }
-                else {
-                    setTimeout(() => {
-                        this.initialized = true;
-                        this.getWeather(this.cityName);
-                    }, 10000);
-                }
-            }
-            else {
-                this.initialized = true;
+            if (!disabled) {
+                this.getWeather(this.cityName);
             }
         }
+
         if (typeof useFarenheit === "boolean") {
-            const units = useFarenheit ? "F" : "C";
+            const units = this.getTempUnits(useFarenheit);
 
             this.units = units;
             this.weather.temp = this.getTemp(this.temperature, units);
         }
+
         if (typeof cityName === "string") {
             this.cityName = cityName;
 
             if (!this.disabled && this.initialized) {
                 this.isFetching = true;
-                this.getWeather(this.cityName);
+                this.getWeather(cityName);
             }
         }
     }
 
+    initWeather(cityName, isDisabled) {
+        if (isDisabled) {
+            this.initialized = true;
+            return;
+        }
+        setTimeout(() => {
+            this.initialized = true;
+            this.getWeather(cityName);
+        }, 10000);
+    }
+
+    getTempUnits(useFarenheit) {
+        return useFarenheit ? "F" : "C";
+    }
+
     getWeather(cityName) {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
         this.weatherService.getWeather(cityName)
         .then(data => {
             this.displayWeather(data);

@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
+import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "main-block-nav",
@@ -40,7 +41,14 @@ export class MainBlockNav {
         }
     };
 
+    constructor(private settingService: SettingService) {
+        this.settingService = settingService;
+    }
+
     ngOnInit() {
+        const { mainBlock: settings } = this.settingService.getSettings();
+
+        this.hideBar = settings.hideItemBar;
         this.choice.emit(this.item);
     }
 
