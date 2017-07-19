@@ -1,6 +1,10 @@
 <ul class="most-visited">
     <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index">
-        <button class="icon-cancel btn remove-page-btn" (click)="removePage(i)" title="Remove"></button>
+        <button class="btn-icon remove-page-btn" (click)="removePage(i)" title="Remove">
+            <svg viewBox="0 0 24 24">
+                <use href="#cross"></use>
+            </svg>
+        </button>
         <a [href]="page.url" [title]="page.title">
             <div class="page-title">{{ page.title }}</div>
             <div class="page-thumbnail-container">
@@ -10,11 +14,12 @@
             </div>
         </a>
     </li>
-    <li class="most-visited-item" title="Add new page"
-        *ngIf="!hasBackup"
-        [class.is-in-one-line]="mostVisited.display.length < 4"
-        (click)="showNewThumbWindow()">
-        <button class="icon-plus btn add-page-btn"></button>
+    <li class="most-visited-item" *ngIf="!hasBackup" [class.is-in-one-line]="mostVisited.display.length < 4" (click)="showNewThumbWindow()">
+        <button class="btn-icon add-page-btn" title="Add new page">
+            <svg viewBox="0 0 24 24">
+                <use href="#plus"></use>
+            </svg>
+        </button>
     </li>
 </ul>
 <div class="most-visited-mask" *ngIf="newThumbWindowVisible"></div>

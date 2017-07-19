@@ -1,13 +1,13 @@
 <div class="todo">
     <div class="todo-container" [ngClass]="{ container: visible, visible: visible }">
         <header class="todo-header">
-            <button class="font-btn todo-toggle-btn" [class.active]="visible"
+            <button class="btn-transparent todo-toggle-btn" [class.active]="visible"
                 (click)="toggle()">todo</button>
             <div class="todo-header-input-container todo-transition-target" *ngIf="!todoBeingEdited">
                 <input class="input todo-input" type="text" #input (keyup.enter)="addTodo(input)">
-                <button class="icon-plus btn" title="Add" (click)="addTodo(input)"></button>
+                <button class="btn" (click)="addTodo(input)">Add</button>
             </div>
-            <div class="todo-header-edit-btns todo-transition-target" *ngIf="todoBeingEdited">
+            <div class="todo-hader-edit-btns todo-transition-target" *ngIf="todoBeingEdited">
                 <button class="btn" (click)="saveTodoEdit()">Save</button>
                 <button class="btn" (click)="cancelTodoEdit()">Cancel</button>
             </div>
@@ -29,30 +29,30 @@
                         [class.done]="todo.done">{{ todo.text }}</span>
                 </div>
                 <div class="todo-item-footer">
-                    <button class="font-btn todo-item-btn" (click)="pinTodo(i)" *ngIf="!todo.done">
-                        <span class="icon-pin todo-item-btn-icon todo-pin-icon"
-                            [class.is-pinned]="todo.pinned"></span>
-                        <span class="todo-item-btn-name">Pin</span>
+                    <button class="btn-icon todo-item-btn" (click)="pinTodo(i)" *ngIf="!todo.done">
+                        <svg class="todo-pin-icon" [class.is-pinned]="todo.pinned" viewBox="0 0 24 24">
+                            <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+                        </svg>
+                        <span>Pin</span>
                     </button>
-                    <button class="font-btn todo-item-btn" (click)="enableTodoEdit(todo.text, i)">
-                        <span class="icon-pencil todo-item-btn-icon"></span>
-                        <span class="todo-item-btn-name">Edit</span>
+                    <button class="btn-icon todo-item-btn" (click)="enableTodoEdit(todo.text, i)">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                        </svg>
+                        <span>Edit</span>
                     </button>
-                    <button class="font-btn todo-item-btn" (click)="removeTodo(i)">
-                        <span class="icon-trash todo-item-btn-icon"></span>
-                        <span class="todo-item-btn-name">Remove</span>
+                    <button class="btn-icon todo-item-btn" (click)="removeTodo(i)">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                        </svg>
+                        <span>Remove</span>
                     </button>
                 </div>
             </li>
         </ul>
         <footer class="todo-footer todo-transition-target" *ngIf="todos.length">
-            <button class="btn todo-footer-btn" title="Remove done todos" (click)="removeTodos()">
-                <span class="icon-trash"></span>
-                <span>Remove</span>
-            </button>
+            <button class="btn todo-footer-btn" (click)="removeTodos()">Remove done</button>
         </footer>
     </div>
-    <div *ngIf="todosToPin.length && !visible">
-        <todo-pin [todos]="todosToPin"></todo-pin>
-    </div>
+    <todo-pin *ngIf="todosToPin.length && !visible" [todos]="todosToPin"></todo-pin>
 </div>

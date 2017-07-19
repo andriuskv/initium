@@ -1,26 +1,36 @@
 <div class="main-block-item-container">
     <div class="feed-header" *ngIf="!loading">
         <ul class="feed-titles" [class.is-empty]="!feeds.length">
-            <li class="feed-title"
-               *ngFor="let feed of feeds; let i = index"
+            <li class="feed-title" *ngFor="let feed of feeds; let i = index"
                [class.active]="feed.url === activeFeed"
                (click)="showFeed(feed)">
                 <span *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
                 <span>{{ feed.title }}</span>
-                <button class="icon-ok btn entry-title-btn mark-as-read-btn"
-                    title="Mark new entries as read"
-                    (click)="markEntriesAsRead(feed)"
-                    *ngIf="feed.newEntries"></button>
-                <button class="icon-cancel btn entry-title-btn remove-feed-btn"
-                    (click)="removeFeed(i)" title="Remove feed"></button>
+                <div class="feed-title-btns">
+                    <button class="btn-icon" title="Mark new entries as read" *ngIf="feed.newEntries" (click)="markEntriesAsRead(feed)">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                        </svg>
+                    </button>
+                    <button class="btn-icon" (click)="removeFeed(i)" title="Remove feed">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#cross"></use>
+                        </svg>
+                    </button>
+                </div>
             </li>
         </ul>
-        <button class="icon-plus btn" title="Add new feed"
-            (click)="addNewFeed()"
-            *ngIf="feeds.length"></button>
+        <button class="btn-icon add-new-feed-btn" title="Add new feed" (click)="addNewFeed()" *ngIf="feeds.length">
+            <svg viewBox="0 0 24 24">
+                <use href="#plus"></use>
+            </svg>
+        </button>
     </div>
     <div class="feed-loader" *ngIf="loading">
-        <span class="icon-rss"></span>
+        <svg viewBox="0 0 24 24">
+            <use href="#rss"></use>
+        </svg>
+        <span>RSS feed</span>
     </div>
     <div class="feed-hero" *ngIf="!activeFeed && !loading">
         <h2 class="feed-hero-title">Add RSS Feed</h2>
@@ -29,9 +39,11 @@
             <input type="text" id="feed-title-input" class="input feed-input" #feedTitle>
             <label for="feed-url-input" class="feed-input-label">Feed url</label>
             <input type="text" id="feed-url-input" class="input feed-input" #feedUrl>
-            <span class="icon-spin4 animate-spin" *ngIf="fetching"></span>
-            <span class="feed-message">{{ message }}</span>
-            <button class="btn" (click)="getFeedFromInput(feedUrl, feedTitle)">Add</button>
+            <div class="feed-add-btn-container">
+                <img src="./assets/images/ring.svg" *ngIf="fetching" alt="">
+                <span class="feed-message">{{ message }}</span>
+                <button class="btn" (click)="getFeedFromInput(feedUrl, feedTitle)">Add</button>
+            </div>
         </div>
     </div>
     <ul class="feeds" *ngIf="activeFeed && feeds.length">

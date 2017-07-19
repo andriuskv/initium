@@ -35,18 +35,19 @@ $brand-color: #2895F1;
 }
 
 .dropbox-hero-icon {
+    width: 64px;
+    height: 64px;
     margin-bottom: 12px;
     color: $brand-color;
+}
 
-    svg {
-        width: 64px;
-        height: 64px;
-    }
+.dropbox-login-btn-container {
+    display: flex;
+    justify-content: center;
 }
 
 .dropbox-spinner {
-    color: $brand-color;
-    font-size: 24px;
+    height: 20px;
 }
 
 .dropbox-error-message {

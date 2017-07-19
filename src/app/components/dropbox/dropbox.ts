@@ -22,21 +22,21 @@ declare const process;
                 </button>
             </div>
             <div class="dropbox-hero" [class.show]="!showItems">
-                <div class="dropbox-hero-icon">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#dropbox"></use>
-                    </svg>
+                <svg class="dropbox-hero-icon" viewBox="0 0 24 24">
+                    <use href="#dropbox"></use>
+                </svg>
+                <div class="dropbox-login-btn-container">
+                    <button class="btn" *ngIf="showLogin" (click)="login()">Log in</button>
+                    <img src="./assets/images/ring.svg" class="dropbox-spinner" *ngIf="fetching" alt="">
+                    <p class="dropbox-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
                 </div>
-                <button class="btn" *ngIf="showLogin" (click)="login()">Log in</button>
-                <div class="icon-spin4 animate-spin dropbox-spinner" *ngIf="fetching"></div>
-                <p class="dropbox-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
             </div>
             <ul class="dropbox-items" [class.show]="showItems">
                 <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
                     <img src="{{ item.thumbnail }}" class="dropbox-item-thumbnail">
                     <span class="dropbox-item-name">{{ item.name }}</span>
+                    <img src="./assets/images/ring.svg" class="dropbox-spinner" *ngIf="item.fetching" alt="">
                     <span class="dropbox-item-error" [class.show]="item.error">Not an image</span>
-                    <span class="icon-spin4 animate-spin dropbox-spinner" *ngIf="item.fetching"></span>
                 </li>
             </ul>
         </div>

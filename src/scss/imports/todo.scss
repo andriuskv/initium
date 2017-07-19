@@ -70,7 +70,7 @@
 
 .todo-input {
     flex-grow: 1;
-    margin-right: 4px;
+    margin-right: 2px;
 }
 
 .todo-edit-input {
@@ -125,7 +125,7 @@
 
 .done {
     text-decoration: line-through;
-    color: #777;
+    color: $secondary-text-color;
 }
 
 .todo-pin-icon {
@@ -146,31 +146,19 @@
 }
 
 .todo-item-footer {
+    display: flex;
     margin-top: 4px;
     margin-left: 18px;
 }
 
 .todo-item-btn {
-    display: inline-flex;
-    align-items: center;
-    color: #777;
-
-    &:not(:last-of-type) {
-        margin-right: 4px;
-    }
+    margin-right: 4px;
+    color: $secondary-text-color;
+    font-size: 12px;
 
     &:hover {
         color: $primary-text-color;
     }
-}
-
-.todo-item-btn-icon {
-    margin-right: 2px;
-    font-size: 14px;
-}
-
-.todo-item-btn-name {
-    font-size: 13px;
 }
 
 .todo-footer {

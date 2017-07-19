@@ -26,9 +26,14 @@ $tweet-text-color-alt: #bbb;
 }
 
 .twitter-hero-icon {
-    font-size: 64px;
-    line-height: 1;
+    display: flex;
+    justify-content: center;
     color: #55acee;
+
+    svg {
+        width: 64px;
+        height: 64px;
+    }
 }
 
 .twitter-pin-input {
@@ -134,6 +139,8 @@ $tweet-text-color-alt: #bbb;
 }
 
 .retweet {
+    display: flex;
+    align-items: center;
     margin-bottom: 4px;
     color: $tweet-text-color-alt;
     font-size: 12px;
@@ -145,6 +152,7 @@ $tweet-text-color-alt: #bbb;
 
 .retweet-by {
     margin-left: 4px;
+    margin-right: 4px;
     color: $tweet-text-color-alt;
 
     &:hover {
@@ -244,16 +252,27 @@ $tweet-text-color-alt: #bbb;
 }
 
 .tweet-stats-container {
+    display: flex;
+    align-items: center;
     margin-top: 8px;
     font-size: 12px;
     color: #aaa;
 
-    span:nth-of-type(even) {
+    span {
         margin-left: 2px;
         margin-right: 8px;
     }
 }
 
 .more-tweets-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
     width: 100%;
+
+    img {
+        height: 16px;
+        margin-right: 4px;
+    }
 }

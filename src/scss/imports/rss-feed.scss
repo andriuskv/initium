@@ -2,11 +2,6 @@
     display: flex;
     height: 20px;
     margin-bottom: 2px;
-
-    > .btn {
-        padding: 2px 4px;
-        margin-left: 2px;
-    }
 }
 
 .feed-titles {
@@ -21,6 +16,8 @@
 }
 
 .feed-title {
+    @include text-truncate;
+
     position: relative;
     flex: 1 1 100px;
     height: 20px;
@@ -30,17 +27,14 @@
     border-bottom: 2px solid $color2;
     background-color: $color2;
     text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
     cursor: pointer;
     user-select: none;
 
     &:hover {
         color: $brand-color;
 
-        .entry-title-btn {
-            display: block;
+        .feed-title-btns {
+            display: flex;
         }
     }
 
@@ -53,30 +47,36 @@
     }
 }
 
-.entry-title-btn {
+.feed-title-btns {
     position: absolute;
-    top: 2px;
+    top: 1px;
+    right: 2px;
     display: none;
-    padding: 0;
+    background-color: $color2;
     box-shadow: 2px 0 4px 4px $color2;
 }
 
-.remove-feed-btn {
-    right: 2px;
-}
-
-.mark-as-read-btn {
-    right: 20px;
+.add-new-feed-btn {
+    margin-left: 2px;
+    padding: 2px 4px;
+    background-color: $color2;
 }
 
 .feed-loader {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     height: calc(100% - 22px);
 
+    svg {
+        width: 64px;
+        height: 64px;
+        color: #fa9b39;
+    }
+
     span {
-        font-size: 64px;
+        font-size: 18px;
     }
 }
 
@@ -113,6 +113,17 @@
     display: block;
     width: 200px;
     margin-bottom: 4px;
+}
+
+.feed-add-btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    img {
+        height: 20px;
+        margin-right: 4px;
+    }
 }
 
 .feed-message {

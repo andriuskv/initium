@@ -75,7 +75,7 @@
 
 .calendar-month-day {
     position: relative;
-    color: #777;
+    color: $secondary-text-color;
 
     &.is-current-month-day {
         color: $primary-text-color;
@@ -97,8 +97,7 @@
     bottom: 0;
     display: flex;
     width: 100%;
-    height: 5px;
-    border-top: 1px solid $color3;
+    height: 4px;
 }
 
 .day-reminder {

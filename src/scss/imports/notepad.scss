@@ -6,6 +6,10 @@
     li:not(:last-of-type) {
         margin-right: 2px;
     }
+
+    .btn-icon {
+        background-color: $color2;
+    }
 }
 
 .notepad-header-item {
@@ -14,7 +18,7 @@
     border-bottom: 2px solid $color2;
 
     &:hover .notepad-remove-tab-btn {
-        display: block;
+        display: flex;
     }
 
     &.active {
@@ -42,7 +46,6 @@
     top: 1px;
     right: 2px;
     display: none;
-    background-color: $color2;
     box-shadow: -6px 0 5px 0 $color2;
 }
 
