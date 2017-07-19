@@ -11,16 +11,23 @@ declare const chrome;
         <div class="main-block-item-container">
             <ul class="notepad-header">
                 <li *ngIf="tabs.length > 4">
-                    <button class="icon-left-open btn notepad-shift-btn" (click)="prevVisibleTabs()"></button>
+                    <button class="btn-icon notepad-shift-btn" (click)="prevVisibleTabs()">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#chevron-left"></use>
+                        </svg>
+                    </button>
                 </li>
                 <li class="notepad-header-item"
                     *ngFor="let tab of visibleTabs; let i = index"
                     [class.active]="activeTabIndex === i">
                     <button class="btn notepad-select-tab-btn" (click)="hideInputAndSelectTab(i)"
                         *ngIf="!tab.settingTitle">{{ tab.title }}</button>
-                    <button class="icon-cancel font-btn notepad-remove-tab-btn"
-                        (click)="removeTab(i)"
-                        *ngIf="tabs.length > 1 && !tab.settingTitle">
+                    <button class="btn-icon notepad-remove-tab-btn" (click)="removeTab(i)"
+                        *ngIf="tabs.length > 1 && !tab.settingTitle"
+                        title="Remove tab">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#cross"></use>
+                        </svg>
                     </button>
                     <input class="input notepad-title-input" type="text" #input
                         (keyup.enter)="blurTitleInput(input)"
@@ -28,17 +35,21 @@ declare const chrome;
                         *ngIf="tab.settingTitle">
                 </li>
                 <li *ngIf="tabs.length > 4">
-                    <button class="icon-right-open btn notepad-shift-btn" (click)="nextVisibleTabs()"></button>
+                    <button class="btn-icon notepad-shift-btn" (click)="nextVisibleTabs()">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#chevron-right"></use>
+                        </svg>
+                    </button>
                 </li>
                 <li>
-                    <button class="icon-plus btn notepad-create-new-btn" (click)="createNewTab()"></button>
+                    <button class="btn-icon notepad-create-new-btn" (click)="createNewTab()" title="Add new tab">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#plus"></use>
+                        </svg>
+                    </button>
                 </li>
             </ul>
-            <textarea class="input notepad-input"
-                [(ngModel)]="activeTabContent"
-                (input)="onInput($event)"
-                (keydown.tab)="preventLossOfFocus($event)">
-            </textarea>
+            <textarea class="input notepad-input" [(ngModel)]="activeTabContent" (input)="onInput($event)"></textarea>
         </div>
     `
 })
@@ -154,7 +165,7 @@ export class Notepad {
 
     blurTitleInput(input) {
         input.blur();
-        this.document.querySelector(".notepad").focus();
+        this.document.querySelector(".notepad-input").focus();
     }
 
     setTitle(input) {
@@ -167,17 +178,6 @@ export class Notepad {
         this.saveTabs();
     }
 
-    insertSpace(elem) {
-        const selectionStart = elem.selectionStart;
-        const space = "\t";
-
-        elem.value = elem.value.substring(0, selectionStart) + space + elem.value.substring(elem.selectionEnd);
-
-        // Move caret to the end of inserted character.
-        elem.selectionStart = selectionStart + 1;
-        elem.selectionEnd = elem.selectionStart;
-    }
-
     saveTabContent(content) {
         this.tabs[this.shift + this.activeTabIndex].content = content;
         this.saveTabs();
@@ -188,12 +188,6 @@ export class Notepad {
     }
 
     onInput(event) {
-        this.saveTabContent(event.target.value);
-    }
-
-    preventLossOfFocus(event) {
-        event.preventDefault();
-        this.insertSpace(event.target);
         this.saveTabContent(event.target.value);
     }
 }

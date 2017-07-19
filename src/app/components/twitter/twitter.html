@@ -1,6 +1,10 @@
 <div class="main-block-item-container twitter" [class.expanded]="isExpanded">
     <div class="twitter-hero" [class.visible]="!tweets.length">
-        <div class="icon-twitter twitter-hero-icon"></div>
+        <div class="twitter-hero-icon">
+            <svg viewBox="0 0 24 24">
+                <use href="#twitter"></use>
+            </svg>
+        </div>
         <input type="text" id="js-twitter-pin" class="input twitter-pin-input"
             placeholder="Enter PIN"
             [class.visible]="showPinInput" #pin
@@ -45,7 +49,9 @@
         <ul class="tweets">
             <li class="tweet" *ngFor="let tweet of tweets" (click)= "handleClickOnTweet($event, tweet.tweetUrl)">
                 <div class="retweet" *ngIf="tweet.retweetedBy">
-                    <span class="icon-retweet tweet-retweet-icon"></span>
+                    <svg class="tweet-retweet-icon" viewBox="0 0 24 24">
+                        <use href="#retweet"></use>
+                    </svg>
                     <a href="{{ tweet.retweetedBy.userUrl }}" class="retweet-by" target="_blank">{{ tweet.retweetedBy.name }}</a>
                     <span>Retweeted</span>
                 </div>
@@ -84,15 +90,19 @@
                     </ng-template>
                 </div>
                 <div class="tweet-stats-container">
-                    <span class="icon-retweet"></span>
+                    <svg viewBox="0 0 24 24">
+                        <use href="#retweet"></use>
+                    </svg>
                     <span>{{ tweet.retweetCount }}</span>
-                    <span class="icon-heart"></span>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+                    </svg>
                     <span>{{ tweet.likeCount }}</span>
                 </div>
             </li>
             <li>
                 <button class="btn more-tweets-btn" (click)="fetchMoreTweets()">
-                    <span class="icon-spin4 animate-spin" *ngIf="fetchingMoreTweets"></span>
+                    <img src="./assets/images/ring.svg" *ngIf="fetchingMoreTweets" alt="">
                     <span>Load more tweets</span>
                 </button>
             </li>

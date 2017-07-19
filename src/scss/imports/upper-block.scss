@@ -36,6 +36,10 @@
         margin-left: auto;
         margin-right: 0;
     }
+
+    svg {
+        margin-right: 2px;
+    }
 }
 
 .upper-block-content-wrapper {
@@ -76,13 +80,17 @@
 
 .timer-stopwatch-controls {
     display: flex;
-    padding-top: 0.25em;
+    padding: 0.25em 0.25em 0 0.25em;
     border-top: 1px solid $color2;
     margin-top: 0.25em;
 }
 
-.timer-stopwatch-control:not(:first-of-type) {
-    margin-left: 0.5em;
+.timer-stopwatch-control {
+    padding: 0;
+
+    &:not(:first-of-type) {
+        margin-left: 0.5em;
+    }
 }
 
 .timer, .stopwatch {

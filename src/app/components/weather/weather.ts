@@ -9,9 +9,13 @@ import { WeatherService } from "../../services/weatherService";
             [class.is-fetching]="isFetching"
             [class.done-fetching]="doneFetcing"
             [title]="weather.description">
-            <div class="weather-temp">{{ weather.temp }}</div>
-            <div [class]="iconClassName"></div>
-            <div class="weather-city-name">{{ weather.city }}</div>
+            <div class="weather-temp-icon-container">
+                <span class="weather-temp">{{ weather.temp }}</span>
+                <svg class="weather-icon" viewBox="0 0 24 24">
+                    <use attr.href="#weather-{{ icon }}"></use>
+                </svg>
+            </div>
+            <div>{{ weather.city }}</div>
         </div>
     `
 })
@@ -25,7 +29,7 @@ export class Weather {
     doneFetcing: boolean;
     temperature: number = 0;
     units: string = "C";
-    iconClassName: string = "weather-icon";
+    icon: string = "";
     cityName: string;
     timeout: any;
     weather: any = {};
@@ -123,7 +127,7 @@ export class Weather {
         this.weather.temp = this.getTemp(data.temp, this.units);
         this.weather.city = data.city;
         this.weather.description = data.description;
-        this.displayIcon(data.icon.id, data.icon.code);
+        this.icon = this.getIcon(data.icon.id, data.icon.code);
         this.showWeather = true;
 
         if (this.isFetching) {
@@ -136,78 +140,52 @@ export class Weather {
         }
     }
 
-    displayIcon(id, code) {
-        let iconClassName = "";
-
+    getIcon(id, code) {
         switch (id) {
             // Thunderstorm
             case 201:
             case 211:
-                iconClassName = "icon-cloud-flash-inv";
-                break;
+                return "lightning";
             // Rain
             case 300:
             case 301:
             case 500:
-                iconClassName = "icon-drizzle-inv";
-                break;
+                return "rainy";
             // Shower rain
             case 501:
             case 502:
             case 520:
             case 521:
-                iconClassName = "icon-rain-inv";
-                break;
-            // Light snow, light shower sleet
+                return "pouring";
+            // Light snow, light shower sleet, snow, heavy snow
             case 600:
+            case 601:
+            case 602:
             case 612:
             case 615:
             case 620:
-                iconClassName = "icon-snow-inv";
-                break;
-            // Snow, heavy snow
-            case 601:
-            case 602:
             case 621:
-                iconClassName = "icon-snow-heavy-inv";
-                break;
-            case 701:
-                iconClassName = "icon-mist";
-                break;
+                return "snowy";
             // Fog
             case 741:
-                iconClassName = "icon-fog-cloud";
-                break;
-            // Clear sky, Broken clouds, overcast clouds, scattered clouds
+                return "fog";
+            // Clear sky, broken clouds, overcast clouds, scattered clouds
             case 800:
             case 801:
             case 802:
             case 803:
             case 804:
                 if (code === "01d") {
-                    iconClassName = "icon-sun-inv";
+                    return "sunny";
                 }
                 else if (code === "01n") {
-                    iconClassName = "icon-moon-inv";
+                    return "night";
                 }
-                else if (code === "02d") {
-                    iconClassName = "icon-cloud-sun-inv";
-                }
-                else if (code === "02n") {
-                    iconClassName = "icon-cloud-moon-inv";
-                }
-                else {
-                    iconClassName = "icon-clouds-inv";
-                }
-                break;
+                return "cloudy";
             // Hail
             case 906:
-                iconClassName = "icon-hail-inv";
-                break;
-            default:
-                iconClassName = "icon-na";
-                break;
+                return "hail";
         }
-        this.iconClassName = `weather-icon ${iconClassName}`;
+        return "";
     }
 }

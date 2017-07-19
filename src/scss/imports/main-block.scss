@@ -35,10 +35,14 @@
 
 .main-block-nav-item {
     position: relative;
-    margin: 1px 2px 0 2px;
 
-    .font-btn {
-        font-size: 16px;
+    &:not(:last-of-type) {
+        margin-right: 4px;
+    }
+
+    svg {
+        width: 20px;
+        height: 20px;
     }
 }
 

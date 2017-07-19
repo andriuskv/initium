@@ -3,42 +3,33 @@
     top: 4px;
 	right: 8px;
 	text-align: right;
-	line-height: 1;
 	text-shadow: $text-shadow;
+	animation-duration: 1s;
+	animation-timing-function: ease-in-out;
 
 	&.is-fetching {
-		animation-duration: 1s;
-		animation-timing-function: ease-in-out;
 		animation-name: blur-in;
 		animation-fill-mode: forwards;
 	}
 
 	&.done-fetching {
-		animation-duration: 1s;
-		animation-timing-function: ease-in-out;
 		animation-name: blur-out;
 	}
 }
 
-.weather-temp,
-.weather-icon {
-	display: inline-block;
+.weather-temp-icon-container {
+	display: flex;
+	align-items: center;
 }
 
 .weather-temp {
-    vertical-align: top;
-    margin-top: 4px;
-    margin-right: 4px;
+    margin-right: 8px;
 	font-size: 22px;
 }
 
 .weather-icon {
-    margin-bottom: 2px;
-    font-size: 32px;
-}
-
-.weather-city-name {
-	font-size: 14px;
+	width: 32px;
+	height: 32px;
 }
 
 @keyframes blur-in {
