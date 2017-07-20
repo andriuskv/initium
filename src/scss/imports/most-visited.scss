@@ -70,17 +70,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 80px;
+    height: 84px;
 }
 
-.page-thumbnail {
-    width: 24px;
-    height: 24px;
-
-    &.full {
-        width: 118px;
-        height: 80px;
-    }
+.page-thumbnail.full {
+    max-width: 122px;
+    max-height: 100%;
 }
 
 .new-thumbnail-window {

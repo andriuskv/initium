@@ -25,13 +25,13 @@
 <div class="most-visited-mask" *ngIf="newThumbWindowVisible"></div>
 <div class="container new-thumbnail-window" *ngIf="newThumbWindowVisible">
     <h2 class="new-thumbnail-window-title">Add new page</h2>
-    <form (ngSubmit)="addPage(fileInput)">
-        <input type="text" class="input" placeholder="title" name="title" [(ngModel)]="newPage.title" required>
+    <form (submit)="addPage(fileInput)">
+        <input type="text" class="input" placeholder="title" name="title" [(ngModel)]="newPage.title">
         <input type="text" class="input" placeholder="url" name="url" [(ngModel)]="newPage.url" required>
         <div class="new-thumbnail-window-btn-container">
             <label for="file-input" class="btn image-upload-btn">Choose thumbnail</label>
             <input type="file" id="file-input" class="file-input" #fileInput>
-            <button type="submit" class="btn">Add</button>
+            <button class="btn">Add</button>
             <button type="button" class="btn" (click)=hideNewThumbWindow()>Close</button>
         </div>
     </form>
