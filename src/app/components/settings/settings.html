@@ -20,26 +20,32 @@
         <li class="setting" [class.active]="active === 'general'">
             <div class="setting-item">
                 <span>Disable notifications</span>
-                <input type="checkbox" id="notification1-checkbox" class="checkbox"
-                    (click)="onSetting('notificationDisabled', $event.target.checked)"
-                    [checked]="settings.general.notificationDisabled">
-                <label for="notification1-checkbox"></label>
+                <label>
+                    <input type="checkbox" class="checkbox-input"
+                        (click)="onSetting('notificationDisabled', $event.target.checked)"
+                        [checked]="settings.general.notificationDisabled">
+                    <div class="checkbox"></div>
+                </label>
             </div>
             <div class="setting-item">
                 <span>Don't focus tab on notification click</span>
-                <input type="checkbox" id="notification2-checkbox" class="checkbox"
-                    (click)="onSetting('notificationFocusDisabled', $event.target.checked)"
-                    [checked]="settings.general.notificationFocusDisabled">
-                <label for="notification2-checkbox"></label>
+                <label>
+                    <input type="checkbox" class="checkbox-input"
+                        (click)="onSetting('notificationFocusDisabled', $event.target.checked)"
+                        [checked]="settings.general.notificationFocusDisabled">
+                    <div class="checkbox"></div>
+                </label>
             </div>
         </li>
         <li class="setting" [class.active]="active === 'time'">
             <div class="setting-item">
                 <span>Disable date</span>
-                <input type="checkbox" id="date-checkbox" class="checkbox"
-                    (click)="onSetting('dateDisabled', $event.target.checked)"
-                    [checked]="settings.time.dateDisabled">
-                <label for="date-checkbox"></label>
+                <label>
+                    <input type="checkbox" class="checkbox-input"
+                        (click)="onSetting('dateDisabled', $event.target.checked)"
+                        [checked]="settings.time.dateDisabled">
+                    <div class="checkbox"></div>
+                </label>
             </div>
             <div class="setting-item">
                 <span>Time display</span>
@@ -58,17 +64,21 @@
         <li class="setting" [class.active]="active === 'weather'">
             <div class="setting-item">
                 <span>Disable weather</span>
-                <input type="checkbox" id="weather-checkbox-1" class="checkbox"
-                    (click)="onSetting('disabled', $event.target.checked)"
-                    [checked]="settings.weather.disabled">
-                <label for="weather-checkbox-1"></label>
+                <label>
+                    <input type="checkbox" class="checkbox-input"
+                        (click)="onSetting('disabled', $event.target.checked)"
+                        [checked]="settings.weather.disabled">
+                    <div class="checkbox"></div>
+                </label>
             </div>
             <div class="setting-item">
                 <span>Show temperature in Farenheit</span>
-                <input type="checkbox" id="weather-checkbox-2" class="checkbox"
-                    (click)="onSetting('useFarenheit', $event.target.checked)"
-                    [checked]="settings.weather.useFarenheit">
-                <label for="weather-checkbox-2"></label>
+                <label>
+                    <input type="checkbox" class="checkbox-input"
+                        (click)="onSetting('useFarenheit', $event.target.checked)"
+                        [checked]="settings.weather.useFarenheit">
+                    <div class="checkbox"></div>
+                </label>
             </div>
             <div class="setting-item">
                 <span>City name (and country code)</span>
@@ -80,10 +90,12 @@
         <li class="setting" [class.active]="active === 'mainBlock'">
             <div class="setting-item">
                 <span>Hide item bar</span>
-                <input type="checkbox" id="main-block-checkbox" class="checkbox"
-                    (click)="onSetting('hideItemBar', $event.target.checked)"
-                    [checked]="settings.mainBlock.hideItemBar">
-                <label for="main-block-checkbox"></label>
+                <label>
+                    <input type="checkbox" class="checkbox-input"
+                        (click)="onSetting('hideItemBar', $event.target.checked)"
+                        [checked]="settings.mainBlock.hideItemBar">
+                    <div class="checkbox"></div>
+                </label>
             </div>
             <div class="setting-item">
                 <span>Reset top sites to Chrome's default</span>
