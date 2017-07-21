@@ -7,7 +7,7 @@
                 <input class="input todo-input" type="text" #input (keyup.enter)="addTodo(input)">
                 <button class="btn" (click)="addTodo(input)">Add</button>
             </div>
-            <div class="todo-hader-edit-btns todo-transition-target" *ngIf="todoBeingEdited">
+            <div class="todo-header-edit-btns todo-transition-target" *ngIf="todoBeingEdited">
                 <button class="btn" (click)="saveTodoEdit()">Save</button>
                 <button class="btn" (click)="cancelTodoEdit()">Cancel</button>
             </div>
@@ -21,10 +21,12 @@
             <li class="todo-item" *ngFor="let todo of todos; let i = index"
                 [class.hidden]="todoBeingEdited && todoBeingEdited.index === i">
                 <div class="todo-item-content">
-                    <input type="checkbox" class="checkbox" [attr.id]="i"
-                        (click)="markTodoDone(i, done)"
-                        [checked]="todo.done" #done>
-                    <label [attr.for]="i" class="checkbox-label"></label>
+                    <label>
+                        <input type="checkbox" class="checkbox-input"
+                            (click)="markTodoDone(i, done)"
+                            [checked]="todo.done" #done>
+                        <div class="checkbox"></div>
+                    </label>
                     <span class="todo-text todo-item-text"
                         [class.done]="todo.done">{{ todo.text }}</span>
                 </div>

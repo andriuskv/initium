@@ -43,8 +43,10 @@
                 <div class="repeat-setting-msg" *ngIf="!isValidInput">Please insert a whole number</div>
             </div>
             <div class="reminder-setting-desc">
-                <input type="checkbox" id="calendar-repeat-checkbox" class="checkbox" (click)="toggleRepeat()">
-                <label for="calendar-repeat-checkbox"></label>
+                <label>
+                    <input type="checkbox" class="checkbox-input" (click)="toggleRepeat()">
+                    <div class="checkbox"></div>
+                </label>
                 <span class="reminder-setting-title">Repeat</span>
             </div>
         </div>

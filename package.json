@@ -5,10 +5,10 @@
   "repository": "",
   "scripts": {
     "webpack": "source config/env && webpack --config ./webpack.config.js",
-    "scss": "node-sass --source-map-embed src/scss/main.scss dist/main.css && npm run postcss",
+    "scss": "node-sass --source-map-embed src/scss/index.scss dist/main.css && npm run postcss",
     "postcss": "postcss -u autoprefixer -r dist/main.css",
     "watch:js": "npm run webpack -- --watch",
-    "watch:css": "onchange 'src/scss/*.scss' 'src/scss/imports/*.scss' -v -i -- npm run scss",
+    "watch:css": "onchange 'src/scss/*.scss' -v -i -- npm run scss",
     "watch": "npm run watch:js & npm run watch:css",
     "start": "npm run dist && npm run watch",
     "predist": "rm -rf dist && mkdir -p ./dist/{assets,libs}",
@@ -27,12 +27,12 @@
     "@angular/platform-browser-dynamic": "^4.3.1",
     "@angular/router": "^4.3.1",
     "core-js": "^2.4.1",
-    "dropbox": "^2.5.5",
+    "dropbox": "^2.5.6",
     "rxjs": "^5.4.2",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {
-    "@angular/cli": "^1.2.1",
+    "@angular/cli": "^1.2.2",
     "@angular/compiler-cli": "^4.3.1",
     "@types/chrome": "^0.0.47",
     "autoprefixer": "^7.1.2",
