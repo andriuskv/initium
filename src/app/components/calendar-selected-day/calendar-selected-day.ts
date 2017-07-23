@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
+import { TimeDateService } from "../../services/timeDateService";
 
 @Component({
     selector: "calendar-selected-day",
@@ -6,24 +7,59 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 })
 export class CalendarSelectedDay {
     @Output() event = new EventEmitter();
-    @Output() save = new EventEmitter();
+    @Output() update = new EventEmitter();
     @Output() remove = new EventEmitter();
     @Output() repeat = new EventEmitter();
     @Input() day: any = {};
+    @Input() timeDisplay: number;
 
-    reminderInputEnabled: boolean = false;
+    formVisible: boolean = false;
     repeatEnabled: boolean = false;
-    isValidInput: boolean = true;
+    isGapInputValid: boolean = true;
+    isRangeVisible: boolean = false;
     repeatGap: number = 0;
+    range: any = {
+        from: {},
+        to: {}
+    };
+    rangeMessage: string = "Please provide valid range";
+    timePattern: string = "";
+    timeTable: Array<any> = [];
+
+    constructor(private timeDateService: TimeDateService) {
+        this.timeDateService = timeDateService;
+    }
+
+    ngOnInit() {
+        this.timePattern = this.timeDisplay ?
+            "^(([0-1]?[0-9])|(2[0-3])):[0-5]?[0-9]$" :
+            "^((0?[1-9])|(1[0-2])):[0-5]?[0-9] ?[a|p|A|P][m|M]$";
+        this.timeTable = this.generateTimeTable(this.timeDisplay);
+    }
 
     showCalendar() {
         this.event.emit(false);
     }
 
-    toggleReminderInput() {
-        this.reminderInputEnabled = !this.reminderInputEnabled;
+    showReminderForm() {
+        this.formVisible = true;
+    }
+
+    hideReminderForm() {
+        this.formVisible = false;
+        this.isRangeVisible = false;
         this.repeatEnabled = false;
-        this.isValidInput = true;
+        this.isGapInputValid = true;
+
+        this.resetRange();
+    }
+
+    toggleRange() {
+        this.isRangeVisible = !this.isRangeVisible;
+
+        if (!this.isRangeVisible) {
+            this.resetRange();
+        }
     }
 
     toggleRepeat() {
@@ -36,18 +72,98 @@ export class CalendarSelectedDay {
         this.remove.emit(reminder);
     }
 
-    validateInput({ target }) {
-        const value = target.value.trim();
+    validateGapInput({ target }) {
+        this.isGapInputValid = target.validity.valid;
 
-        if (!value) {
-            this.isValidInput = false;
+        if (this.isGapInputValid) {
+            this.repeatGap = parseInt(target.value, 10);
+        }
+    }
+
+    resetRange() {
+        this.range = {
+            from: {},
+            to: {}
+        };
+        this.rangeMessage = "Please provide valid range";
+    }
+
+    generateTimeTable(timeDisplay) {
+        const dataList = [];
+        let minutes = 0;
+        let hours = 0;
+
+        while (hours < 24) {
+            dataList.push({
+                string: this.timeDateService.getTimeString({ hours, minutes }, timeDisplay),
+                hours,
+                minutes
+            });
+            minutes += 30;
+
+            if (minutes === 60) {
+                hours += 1;
+                minutes = 0;
+            }
+        }
+        return dataList;
+    }
+
+    validateRangeInput({ target }, name) {
+        if (!target.validity.valid) {
+            this.rangeMessage = "Please provide valid time format";
             return;
         }
-        this.isValidInput = value > 0 && /^[0-9]+$/g.test(value);
+        const time = this.range[name];
+        const [hourString, minuteString] = time.string.toLowerCase().split(":");
+        const hours = parseInt(hourString, 10);
+        time.minutes = parseInt(minuteString, 10);
+        this.rangeMessage = "";
 
-        if (this.isValidInput) {
-            this.repeatGap = parseInt(value, 10);
+        if (this.timeDisplay) {
+            time.hours = hours;
         }
+        else if (minuteString.endsWith("am") && hours === 12) {
+            time.hours = 0;
+        }
+        else if (minuteString.endsWith("pm") && hours !== 12) {
+            time.hours = hours + 12;
+        }
+        else {
+            time.hours = hours;
+        }
+        this.updateTimeRange(time, name);
+    }
+
+    updateTimeRange(time, name) {
+        const regex = new RegExp(this.timePattern);
+
+        if (name === "to") {
+            this.range.to = Object.assign({}, time);
+
+            if (regex.test(this.range.from.string)) {
+                this.rangeMessage = "";
+            }
+        }
+        else {
+            this.range.from = Object.assign({}, time);
+
+            if (regex.test(this.range.to.string)) {
+                this.rangeMessage = "";
+            }
+        }
+        const { from, to } = this.range;
+
+        if (to.hours < from.hours || (to.hours === from.hours && to.minutes <= from.minutes)) {
+            this.rangeMessage = "Please provide valid range";
+        }
+    }
+
+    getRange() {
+        if (!this.isRangeVisible) {
+            return "All day";
+        }
+        return this.range;
     }
 
     getRandomColor() {
@@ -55,15 +171,16 @@ export class CalendarSelectedDay {
     }
 
     createReminder(reminder) {
-        if (!reminder.value || !this.isValidInput) {
+        if (!reminder.value || !this.isGapInputValid || (this.isRangeVisible && this.rangeMessage)) {
             return;
         }
         const newReminder: any = {
             text: reminder.value,
+            range: this.getRange(),
             color: this.getRandomColor()
         };
 
-        if (this.repeatEnabled) {
+        if (this.repeatEnabled && this.repeatGap) {
             newReminder.year = this.day.year;
             newReminder.month = this.day.month;
             newReminder.day = this.day.number + this.repeatGap;
@@ -73,8 +190,8 @@ export class CalendarSelectedDay {
             this.repeatEnabled = false;
         }
         this.day.reminders.push(newReminder);
-        this.save.emit();
-        this.reminderInputEnabled = false;
+        this.update.emit();
+        this.hideReminderForm();
         reminder.value = "";
     }
 }

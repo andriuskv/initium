@@ -1,3 +1,5 @@
+$color-danger: #f58678;
+
 .calendar-container {
     display: flex;
     height: 305px;
@@ -18,15 +20,18 @@
 }
 
 .current-day-reminder {
-    display: flex;
-    align-items: center;
-    min-height: 32px;
     padding: 4px;
-    border-left: 4px solid;
+    border-left: 2px solid;
 
     &:not(:first-of-type) {
         margin-top: 4px;
     }
+}
+
+.current-day-reminder-range {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #aaa;
 }
 
 .calendar {
@@ -108,7 +113,7 @@
     }
 }
 
-.calendar-selected-day {
+.selected-day {
     height: calc(100% - 32px);
     padding: 4px;
 }
@@ -142,36 +147,95 @@
     padding: 4px;
 }
 
-.calendar-reminder-setting {
-    float: right;
-    display: flex;
-    margin-bottom: 4px;
+.reminder-input {
+    width: 100%;
+    margin-bottom: 8px;
+}
 
-    &.is-input-visible {
-        float: none;
+.reminder-settings {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.reminder-setting {
+    display: flex;
+    align-items: center;
+
+    &:not(:last-of-type) {
+        margin-right: 8px;
     }
 }
 
-.repeat-setting-msg {
-    font-size: 12px;
-    color: #f8a89e;
-}
-
-.reminder-setting-desc {
-    display: flex;
-    margin-left: auto;
+.reminder-range-setting,
+.reminder-repeat-setting {
+    margin-bottom: 8px;
 }
 
 .reminder-setting-title {
     margin-left: 4px;
 }
 
-.selected-day-input {
-    width: 100%;
-    margin-bottom: 4px;
+.repeat-gap-input {
+    width: 40px;
+    margin-left: 4px;
+    margin-right: 4px;
 }
 
-.calendar-repeat-gap {
-    width: 40px;
+.repeat-gap-input,
+.range-input {
+    border: 1px solid $color2;
     text-align: center;
+
+    &:invalid {
+        border-color: transparentize($color-danger, 0.4);
+    }
+}
+
+.range-input-container {
+    position: relative;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.range-input {
+    width: 80px;
+
+    &.from:focus + .reminder-timetable {
+        display: block;
+    }
+
+    &.to:focus + .reminder-timetable {
+        display: block;
+    }
+}
+
+.reminder-timetable {
+    @include scrollbar($color3);
+
+    display: none;
+    overflow-y: auto;
+    position: absolute;
+    top: 24px;
+    right: 0;
+    width: 100%;
+    max-height: 120px;
+    background-color: $color2;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.reminder-timetable-item {
+    padding-top: 2px;
+    padding-bottom: 2px;
+
+    &:hover {
+        background-color: #3d3d3d;
+        cursor: default;
+    }
+}
+
+.reminder-error-message {
+    margin-top: 4px;
+    font-size: 12px;
+    color: $color-danger;
 }

@@ -1,4 +1,32 @@
-export class DateService {
+export class TimeDateService {
+    getTime(time, timeDisplay) {
+        let hours = time.hours;
+        let period = "";
+
+        if (!timeDisplay) {
+            period = hours > 11 ? "PM" : "AM";
+
+            if (!hours) {
+                hours = 12;
+            }
+            else if (hours > 12) {
+                hours -= 12;
+            }
+        }
+        return {
+            minutes: time.minutes,
+            hours,
+            period
+        };
+    }
+
+    getTimeString(time, timeDisplay) {
+        const { hours, minutes, period } = this.getTime(time, timeDisplay);
+        const minuteString = `00${minutes.toString()}`.slice(-2);
+
+        return `${hours}:${minuteString}${period && ` ${period}`}`;
+    }
+
     getDay(day) {
         switch (day) {
             case 0:

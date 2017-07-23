@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SettingService } from "../../services/settingService";
-import { DateService } from "../../services/dateService";
+import { TimeDateService } from "../../services/timeDateService";
 
 @Component({
     selector: "time",
@@ -24,8 +24,8 @@ export class Time {
     settings: any;
     timeout: any;
 
-    constructor(private settingService: SettingService, private dateService: DateService) {
-        this.dateService = dateService;
+    constructor(private settingService: SettingService, private timeDateService: TimeDateService) {
+        this.timeDateService = timeDateService;
         this.settingService = settingService;
     }
 
@@ -50,7 +50,7 @@ export class Time {
 
     initDate(isDisabled) {
         if (!isDisabled) {
-            this.date = this.dateService.getDate();
+            this.date = this.timeDateService.getDate();
         }
         this.dateDisabled = isDisabled;
     }

@@ -6,7 +6,7 @@
     </button>
     <span class="calendar-title">{{ day.date }}, {{ day.year }}</span>
 </div>
-<div class="calendar-selected-day" *ngIf="!reminderInputEnabled; else elseBlock">
+<div class="selected-day" *ngIf="!formVisible; else elseBlock">
     <ul class="selected-day-remainders" *ngIf="day.reminders.length">
         <li class="selected-day-remainder" *ngFor="let reminder of day.reminders; let i = index;">
             <svg viewBox="0 0 24 24" class="reminder-repeat-icon" *ngIf="reminder.repeat">
@@ -21,7 +21,7 @@
             </button>
         </li>
     </ul>
-    <button class="btn-icon new-reminder-btn" (click)="toggleReminderInput()">
+    <button class="btn-icon new-reminder-btn" (click)="showReminderForm()">
         <svg viewBox="0 0 24 24">
             <use href="#plus"></use>
         </svg>
@@ -29,20 +29,23 @@
     </button>
 </div>
 <ng-template #elseBlock>
-    <div class="calendar-selected-day">
-        <input type="text" class="input selected-day-input" #reminder
+    <div class="selected-day">
+        <input type="text" class="input reminder-input" #reminder
             name="reminder"
             autocomplete="off"
             placeholder="Remind me to..."
             (keyup.enter)="createReminder(reminder)">
-        <div class="calendar-reminder-setting" [class.is-input-visible]="repeatEnabled">
-            <div *ngIf="repeatEnabled">
-                <span>Repeat every</span>
-                <input class="input calendar-repeat-gap" autocomplete="off" (input)="validateInput($event)">
-                <span>days</span>
-                <div class="repeat-setting-msg" *ngIf="!isValidInput">Please insert a whole number</div>
+        <div class="reminder-settings">
+            <div class="reminder-setting">
+                <label>
+                    <input type="checkbox" class="checkbox-input"
+                        (click)="toggleRange()"
+                        [checked]="!isRangeVisible">
+                    <div class="checkbox"></div>
+                </label>
+                <span class="reminder-setting-title">All day</span>
             </div>
-            <div class="reminder-setting-desc">
+            <div class="reminder-setting">
                 <label>
                     <input type="checkbox" class="checkbox-input" (click)="toggleRepeat()">
                     <div class="checkbox"></div>
@@ -50,7 +53,44 @@
                 <span class="reminder-setting-title">Repeat</span>
             </div>
         </div>
+        <div class="reminder-range-setting" *ngIf="isRangeVisible">
+            <div class="reminder-setting">
+                <div>
+                    <span>From</span>
+                    <div class="range-input-container">
+                        <input type="text" class="input range-input from"
+                            (keyup)="validateRangeInput($event, 'from')"
+                            [pattern]="timePattern"
+                            [(ngModel)]="range.from.string" required>
+                        <ul class="reminder-timetable">
+                            <li class="reminder-timetable-item" *ngFor="let item of timeTable" (mousedown)="updateTimeRange(item, 'from')">{{ item.string }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <span>To</span>
+                    <div class="range-input-container">
+                        <input type="text" class="input range-input to"
+                            (keyup)="validateRangeInput($event, 'to')"
+                            [pattern]="timePattern"
+                            [(ngModel)]="range.to.string" required>
+                        <ul class="reminder-timetable">
+                            <li class="reminder-timetable-item" *ngFor="let item of timeTable" (mousedown)="updateTimeRange(item, 'to')">{{ item.string }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="reminder-error-message" *ngIf="rangeMessage">{{ rangeMessage }}</div>
+        </div>
+        <div class="reminder-repeat-setting" *ngIf="repeatEnabled">
+            <div class="reminder-setting">
+                <span>Repeat every</span>
+                <input class="input repeat-gap-input" autocomplete="off" (keyup)="validateGapInput($event)" pattern="^[0-9]+$">
+                <span>days</span>
+            </div>
+            <div class="reminder-error-message" *ngIf="!isGapInputValid">Please insert a whole number</div>
+        </div>
         <button class="btn" (click)="createReminder(reminder)">Add</button>
-        <button class="btn" (click)="toggleReminderInput()">Cancel</button>
+        <button class="btn" (click)="hideReminderForm()">Cancel</button>
     </div>
 </ng-template>
