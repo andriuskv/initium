@@ -1,7 +1,7 @@
 /* global Codebird */
 
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { DateService } from "../../services/dateService";
+import { TimeDateService } from "../../services/timeDateService";
 import { NotificationService } from "../../services/notificationService";
 
 declare const Codebird;
@@ -31,8 +31,8 @@ export class Twitter {
     tweetUpdateTimeout: any;
     cb: any;
 
-    constructor(private dateService: DateService, private notificationService: NotificationService) {
-        this.dateService = dateService;
+    constructor(private timeDateService: TimeDateService, private notificationService: NotificationService) {
+        this.timeDateService = timeDateService;
         this.notificationService = notificationService;
     }
 
@@ -103,7 +103,7 @@ export class Twitter {
             at = "1d";
         }
         else {
-            const monthName = this.dateService.getMonth(created.getMonth());
+            const monthName = this.timeDateService.getMonth(created.getMonth());
             const monthNameShort = monthName.slice(0, 3);
 
             at = `${monthNameShort} ${created.getDate()}`;

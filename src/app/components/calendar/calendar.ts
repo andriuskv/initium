@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
-import { DateService } from "../../services/dateService";
+import { TimeDateService } from "../../services/timeDateService";
+import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "calendar",
@@ -8,16 +9,21 @@ import { DateService } from "../../services/dateService";
 export class Calendar {
     initialized: boolean = false;
     daySelected: boolean = false;
+    timeDisplay: number = 1;
     currentDate: any = this.getCurrentDate();
     currentDay: any;
     calendar: any;
     selectedDay: any;
 
-    constructor(private dateService: DateService) {
-        this.dateService = dateService;
+    constructor(private timeDateService: TimeDateService, private settingService: SettingService) {
+        this.timeDateService = timeDateService;
+        this.settingService = settingService;
     }
 
     ngOnInit() {
+        const { time: settings } = this.settingService.getSettings();
+
+        this.timeDisplay = parseInt(settings.timeDisplay, 10);
         this.init();
     }
 
@@ -31,8 +37,8 @@ export class Calendar {
         }
         if (calendar.currentDay) {
             const day = calendar.currentDay;
-
-            calendar[day.year][day.month][day.index].currentDay = false;
+            const previousDay = this.findDay(calendar[day.year][day.month], day.number);
+            previousDay.isCurrentDay = false;
         }
         this.calendar = Object.assign(calendar, {
             currentYear: year,
@@ -41,26 +47,34 @@ export class Calendar {
             futureReminders: calendar.futureReminders || []
         });
         this.repeatFutureReminders(calendar.futureReminders);
-        this.currentDay = this.getCurrentDayInCalendar(this.calendar, this.currentDate);
+        this.currentDay = this.calendar.currentDay;
+        this.updateCurrentDayReminders();
         this.initialized = true;
     }
 
-    setCurrentDay(calendar, date) {
-        const currentDay = this.getCurrentDayInCalendar(calendar, date);
-        const currentMonth = calendar[date.year][date.month];
+    setReminderRangeString(reminder) {
+        const range = reminder.range;
 
-        for (let i = 0; i < currentMonth.length; i += 1) {
-            const day = currentMonth[i];
-
-            if (day.direction === 0 && day.number === currentDay.number) {
-                day.currentDay = true;
-                return {
-                    index: i,
-                    month: date.month,
-                    year: date.year
-                };
-            }
+        if (typeof range === "string") {
+            reminder.rangeString = range;
         }
+        else {
+            const fromString = this.timeDateService.getTimeString(range.from, this.timeDisplay);
+            const toString = this.timeDateService.getTimeString(range.to, this.timeDisplay);
+            reminder.rangeString = `${fromString} - ${toString}`;
+        }
+        return reminder;
+    }
+
+    updateCurrentDayReminders() {
+        this.currentDay.reminders = this.currentDay.reminders.map(this.setReminderRangeString.bind(this));
+    }
+
+    setCurrentDay(calendar, { year, month, day }) {
+        const currentDay = this.findDay(calendar[year][month], day);
+        currentDay.isCurrentDay = true;
+
+        return currentDay;
     }
 
     getCurrentDate() {
@@ -87,8 +101,8 @@ export class Calendar {
     }
 
     getSelectedDayDate(month, day) {
-        const monthName = this.dateService.getMonth(month);
-        const dayWithSuffix = this.dateService.getDayWithSuffix(day);
+        const monthName = this.timeDateService.getMonth(month);
+        const dayWithSuffix = this.timeDateService.getDayWithSuffix(day);
 
         return `${monthName} ${dayWithSuffix}`;
     }
@@ -142,7 +156,7 @@ export class Calendar {
     getCurrentMonth(calendar, year, month) {
         return {
             month,
-            name: this.dateService.getMonth(month),
+            name: this.timeDateService.getMonth(month),
             days: calendar[year][month]
         };
     }
@@ -187,9 +201,7 @@ export class Calendar {
         this.calendar.currentMonth = this.getCurrentMonth(this.calendar, year, month);
     }
 
-    getCurrentDayInCalendar(calendar, { year, month, day }) {
-        const days = calendar[year][month];
-
+    findDay(days, day) {
         return days.find(localDay => localDay.direction === 0 && localDay.number === day);
     }
 
@@ -207,8 +219,7 @@ export class Calendar {
             year += 1;
             month = 0;
         }
-        return this.calendar[year][month]
-            .find(day => day.number === selectedDay.number && day.direction === 0);
+        return this.findDay(this.calendar[year][month], selectedDay.number);
     }
 
     showDay(selectedDay) {
@@ -300,6 +311,14 @@ export class Calendar {
                 }
             }
         }
+    }
+
+    updateReminder() {
+        const day = this.selectedDay;
+        const reminder = day.reminders[day.reminders.length - 1];
+
+        this.setReminderRangeString(reminder);
+        this.saveCalendar();
     }
 
     saveCalendar() {

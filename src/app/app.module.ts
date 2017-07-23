@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { FormsModule } from '@angular/forms';
 
-import { DateService } from "./services/dateService";
+import { TimeDateService } from "./services/timeDateService";
 import { SettingService } from "./services/settingService";
 import { WeatherService } from "./services/weatherService";
 import { NotificationService } from "./services/notificationService";
@@ -35,7 +35,7 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
 
 @NgModule({
     imports: [BrowserModule, FormsModule],
-    providers: [SettingService, DateService, WeatherService, NotificationService, FeedService],
+    providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService],
     declarations: [
         App, Settings, Background, Time, MainBlock, MainBlockNav, MainBlockContent,
         MostVisited, Notepad, Twitter, RssFeed, Weather, Menu, TodoPin, Todo,

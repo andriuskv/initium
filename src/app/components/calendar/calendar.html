@@ -2,7 +2,10 @@
     <div class="current-day-reminder-container" *ngIf="currentDay.reminders.length">
         <ul class="current-day-reminders">
             <li class="current-day-reminder" *ngFor="let reminder of currentDay.reminders"
-            [ngStyle]="{ 'border-left-color': reminder.color }">{{ reminder.text }}</li>
+                [ngStyle]="{ 'border-left-color': reminder.color }">
+                <div>{{ reminder.text }}</div>
+                <div class="current-day-reminder-range">{{ reminder.rangeString }}</div>
+            </li>
         </ul>
     </div>
     <div class="calendar" *ngIf="!daySelected; else elseBlock">
@@ -32,7 +35,7 @@
             <li class="calendar-cell calendar-month-day"
                 *ngFor="let day of calendar.currentMonth.days; let i = index"
                 [class.is-current-month-day]="day.direction === 0"
-                [class.current-day]="day.currentDay"
+                [class.current-day]="day.isCurrentDay"
                 (click)="showDay(day, i)">
                 <div>{{ day.number }}</div>
                 <div class="day-reminders" *ngIf="day.reminders.length">
@@ -45,9 +48,10 @@
     <ng-template #elseBlock>
         <div class="calendar">
             <calendar-selected-day
+                [timeDisplay]="timeDisplay"
                 [day]="selectedDay"
                 (event)="showCalendar($event)"
-                (save)="saveCalendar($event)"
+                (update)="updateReminder($event)"
                 (remove)="removeReminder($event)"
                 (repeat)="repeatReminder($event)">
             </calendar-selected-day>
