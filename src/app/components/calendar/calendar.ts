@@ -58,10 +58,14 @@ export class Calendar {
         if (typeof range === "string") {
             reminder.rangeString = range;
         }
-        else {
+        else if (range.to) {
             const fromString = this.timeDateService.getTimeString(range.from, this.timeDisplay);
             const toString = this.timeDateService.getTimeString(range.to, this.timeDisplay);
             reminder.rangeString = `${fromString} - ${toString}`;
+        }
+        else {
+            reminder.rangeString = this.timeDateService.getTimeString(range, this.timeDisplay);
+
         }
         return reminder;
     }

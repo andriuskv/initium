@@ -73,7 +73,7 @@
                         <input type="text" class="input range-input to"
                             (keyup)="validateRangeInput($event, 'to')"
                             [pattern]="timePattern"
-                            [(ngModel)]="range.to.string" required>
+                            [(ngModel)]="range.to.string">
                         <ul class="reminder-timetable">
                             <li class="reminder-timetable-item" *ngFor="let item of timeTable" (mousedown)="updateTimeRange(item, 'to')">{{ item.string }}</li>
                         </ul>

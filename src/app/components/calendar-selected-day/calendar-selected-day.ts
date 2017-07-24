@@ -13,13 +13,15 @@ export class CalendarSelectedDay {
     @Input() day: any = {};
     @Input() timeDisplay: number;
 
+    RANGE_ERROR: string = "Please provide valid range";
+    FORMAT_ERROR: string = "Please provide valid time format";
     formVisible: boolean = false;
     repeatEnabled: boolean = false;
     isGapInputValid: boolean = true;
     isRangeVisible: boolean = false;
     repeatGap: number = 0;
     dateString: string = "";
-    rangeMessage: string = "Please provide valid range";
+    rangeMessage: string = this.FORMAT_ERROR;
     timePattern: string = "";
     range: any = {
         from: {},
@@ -94,7 +96,7 @@ export class CalendarSelectedDay {
             from: {},
             to: {}
         };
-        this.rangeMessage = "Please provide valid range";
+        this.rangeMessage = this.FORMAT_ERROR;
     }
 
     generateTimeTable(timeDisplay) {
@@ -120,7 +122,22 @@ export class CalendarSelectedDay {
 
     validateRangeInput({ target }, name) {
         if (!target.validity.valid) {
-            this.rangeMessage = "Please provide valid time format";
+            this.rangeMessage = this.FORMAT_ERROR;
+            return;
+        }
+
+        if (!target.value && name === "to") {
+            const regex = new RegExp(this.timePattern);
+
+            if (!this.range.from.string) {
+                this.rangeMessage = this.RANGE_ERROR;
+            }
+            else if (!regex.test(this.range.from.string)) {
+                this.rangeMessage = this.FORMAT_ERROR;
+            }
+            else {
+                this.rangeMessage = "";
+            }
             return;
         }
         const time = this.range[name];
@@ -157,6 +174,11 @@ export class CalendarSelectedDay {
         else {
             this.range.from = Object.assign({}, time);
 
+            if (!this.range.to.string) {
+                this.rangeMessage = "";
+                return;
+            }
+
             if (regex.test(this.range.to.string)) {
                 this.rangeMessage = "";
             }
@@ -164,7 +186,7 @@ export class CalendarSelectedDay {
         const { from, to } = this.range;
 
         if (to.hours < from.hours || (to.hours === from.hours && to.minutes <= from.minutes)) {
-            this.rangeMessage = "Please provide valid range";
+            this.rangeMessage = this.RANGE_ERROR;
         }
     }
 
@@ -172,7 +194,7 @@ export class CalendarSelectedDay {
         if (!this.isRangeVisible) {
             return "All day";
         }
-        return this.range;
+        return this.range.to.string ? this.range : this.range.from;
     }
 
     getRandomColor() {
