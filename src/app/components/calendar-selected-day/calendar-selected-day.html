@@ -4,7 +4,7 @@
             <use href="#chevron-left"></use>
         </svg>
     </button>
-    <span class="calendar-title">{{ day.date }}, {{ day.year }}</span>
+    <span class="calendar-title">{{ dateString }}</span>
 </div>
 <div class="selected-day" *ngIf="!formVisible; else elseBlock">
     <ul class="selected-day-remainders" *ngIf="day.reminders.length">

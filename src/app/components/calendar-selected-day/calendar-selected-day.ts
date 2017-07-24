@@ -18,12 +18,13 @@ export class CalendarSelectedDay {
     isGapInputValid: boolean = true;
     isRangeVisible: boolean = false;
     repeatGap: number = 0;
+    dateString: string = "";
+    rangeMessage: string = "Please provide valid range";
+    timePattern: string = "";
     range: any = {
         from: {},
         to: {}
     };
-    rangeMessage: string = "Please provide valid range";
-    timePattern: string = "";
     timeTable: Array<any> = [];
 
     constructor(private timeDateService: TimeDateService) {
@@ -31,6 +32,7 @@ export class CalendarSelectedDay {
     }
 
     ngOnInit() {
+        this.dateString = this.getDateString(this.day);
         this.timePattern = this.timeDisplay ?
             "^(([0-1]?[0-9])|(2[0-3])):[0-5]?[0-9]$" :
             "^((0?[1-9])|(1[0-2])):[0-5]?[0-9] ?[a|p|A|P][m|M]$";
@@ -52,6 +54,13 @@ export class CalendarSelectedDay {
         this.isGapInputValid = true;
 
         this.resetRange();
+    }
+
+    getDateString({ year, month, number }) {
+        const monthName = this.timeDateService.getMonth(month);
+        const dayWithSuffix = this.timeDateService.getDayWithSuffix(number);
+
+        return `${monthName} ${dayWithSuffix}, ${year}`;
     }
 
     toggleRange() {

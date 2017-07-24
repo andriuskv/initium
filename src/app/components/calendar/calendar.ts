@@ -100,13 +100,6 @@ export class Calendar {
         return day === -1 ? 6 : day;
     }
 
-    getSelectedDayDate(month, day) {
-        const monthName = this.timeDateService.getMonth(month);
-        const dayWithSuffix = this.timeDateService.getDayWithSuffix(day);
-
-        return `${monthName} ${dayWithSuffix}`;
-    }
-
     getYear(year) {
         const dayArray = Array(42).fill({});
         const monthArray = Array(12).fill(dayArray);
@@ -139,14 +132,11 @@ export class Calendar {
                     monthDay = currentMonthDay;
                 }
 
-                const realMonth = monthIndex + direction;
-
                 return {
                     direction,
                     year,
-                    month: realMonth,
+                    month: monthIndex + direction,
                     number: monthDay,
-                    date: this.getSelectedDayDate(realMonth, monthDay),
                     reminders: []
                 };
             });
