@@ -2,22 +2,22 @@
     <div class="todo-container" [ngClass]="{ container: visible, visible: visible }">
         <header class="todo-header">
             <button class="btn-transparent todo-toggle-btn" [class.active]="visible"
-                (click)="toggle()">todo</button>
-            <div class="todo-header-input-container todo-transition-target" *ngIf="!todoBeingEdited">
-                <input class="input todo-input" type="text" #input (keyup.enter)="addTodo(input)">
-                <button class="btn" (click)="addTodo(input)">Add</button>
-            </div>
-            <div class="todo-header-edit-btns todo-transition-target" *ngIf="todoBeingEdited">
+                (click)="toggle()">Todo</button>
+            <div class="todo-header-edit-btns todo-transition-target" *ngIf="todoBeingEdited; else elseHeaderBlock">
                 <button class="btn" (click)="saveTodoEdit()">Save</button>
                 <button class="btn" (click)="cancelTodoEdit()">Cancel</button>
             </div>
+            <ng-template #elseHeaderBlock>
+                <form class="todo-header-input-container todo-transition-target" (submit)="addTodo($event)">
+                    <input class="input todo-input" type="text" name="input" required>
+                    <button type="submit" class="btn">Add</button>
+                </form>
+            </ng-template>
         </header>
         <textarea class="input todo-edit-input todo-transition-target"
             [(ngModel)]="todoBeingEdited.text"
             *ngIf="todoBeingEdited"></textarea>
-        <div class="todo-transition-target todo-message"
-            *ngIf="!todos.length">Your todo list is empty.</div>
-        <ul class="todos todo-transition-target" *ngIf="todos.length">
+        <ul class="todos todo-transition-target" *ngIf="todos.length; else elseBlock">
             <li class="todo-item" *ngFor="let todo of todos; let i = index"
                 [class.hidden]="todoBeingEdited && todoBeingEdited.index === i">
                 <div class="todo-item-content">
@@ -52,6 +52,9 @@
                 </div>
             </li>
         </ul>
+        <ng-template #elseBlock>
+            <div class="todo-transition-target todo-message">Your todo list is empty</div>
+        </ng-template>
         <footer class="todo-footer todo-transition-target" *ngIf="todos.length">
             <button class="btn todo-footer-btn" (click)="removeTodos()">Remove done</button>
         </footer>

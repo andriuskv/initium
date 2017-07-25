@@ -31,15 +31,13 @@ export class Todo {
         return this.todos.filter(todo => todo.pinned);
     }
 
-    addTodo(input) {
-        const value = input.value.trim();
-
-        if (!value) {
+    addTodo({ target }) {
+        if (!target.checkValidity()) {
             return;
         }
-        this.todos.unshift({ text: value, done: false });
-        input.value = "";
+        this.todos.unshift({ text: target.elements.input.value, done: false });
         this.saveTodos(this.todos);
+        target.reset();
     }
 
     markTodoDone(index, done) {
