@@ -15,14 +15,18 @@ export class CalendarSelectedDay {
 
     RANGE_ERROR: string = "Please provide valid range";
     FORMAT_ERROR: string = "Please provide valid time format";
-    formVisible: boolean = false;
-    repeatEnabled: boolean = false;
+    isFormVisible: boolean = false;
+    isRepeatEnabled: boolean = false;
     isGapInputValid: boolean = true;
     isRangeVisible: boolean = false;
-    repeatGap: number = 0;
+    isRepeatCountInputEnabled: boolean = false;
+    isRepeatCountInputValid: boolean = false;
+    repeatGap: number = 1;
+    repeatCount: number = 0;
     dateString: string = "";
     rangeMessage: string = this.FORMAT_ERROR;
     timePattern: string = "";
+    occurences: string = "";
     range: any = {
         from: {},
         to: {}
@@ -46,16 +50,17 @@ export class CalendarSelectedDay {
     }
 
     showReminderForm() {
-        this.formVisible = true;
+        this.isFormVisible = true;
     }
 
     hideReminderForm() {
-        this.formVisible = false;
+        this.isFormVisible = false;
         this.isRangeVisible = false;
-        this.repeatEnabled = false;
+        this.isRepeatEnabled = false;
         this.isGapInputValid = true;
 
         this.resetRange();
+        this.resetOccurencesInput();
     }
 
     getDateString({ year, month, number }) {
@@ -74,7 +79,11 @@ export class CalendarSelectedDay {
     }
 
     toggleRepeat() {
-        this.repeatEnabled = !this.repeatEnabled;
+        this.isRepeatEnabled = !this.isRepeatEnabled;
+
+        if (!this.isRepeatEnabled) {
+            this.resetOccurencesInput();
+        }
     }
 
     removeReminder(index) {
@@ -190,6 +199,25 @@ export class CalendarSelectedDay {
         }
     }
 
+    resetOccurencesInput() {
+        this.repeatCount = 0;
+        this.isRepeatCountInputEnabled = false;
+        this.isRepeatCountInputValid = false;
+        this.occurences = "";
+    }
+
+    enableRepeatCountInput() {
+        this.isRepeatCountInputEnabled = true;
+    }
+
+    validateRepeatCountInput({ target }) {
+        this.isRepeatCountInputValid = target.validity.valid;
+
+        if (this.isRepeatCountInputValid) {
+            this.repeatCount = parseInt(target.value, 10);
+        }
+    }
+
     getRange() {
         if (!this.isRangeVisible) {
             return "All day";
@@ -201,28 +229,28 @@ export class CalendarSelectedDay {
         return "hsl(" + Math.random() * 360 + ", 100%, 72%)";
     }
 
-    createReminder(reminder) {
-        if (!reminder.value || !this.isGapInputValid || (this.isRangeVisible && this.rangeMessage)) {
+    createReminder({ target }) {
+        if (!target.checkValidity() || (this.isRangeVisible && this.rangeMessage)) {
             return;
         }
         const newReminder: any = {
-            text: reminder.value,
+            text: target.elements.reminder.value,
             range: this.getRange(),
             color: this.getRandomColor()
         };
 
-        if (this.repeatEnabled && this.repeatGap) {
+        if (this.isRepeatEnabled) {
             newReminder.year = this.day.year;
             newReminder.month = this.day.month;
             newReminder.day = this.day.number + this.repeatGap;
             newReminder.gap = this.repeatGap;
+            newReminder.repeatCount = this.repeatCount - 1;
             newReminder.repeat = true;
             this.repeat.emit(newReminder);
-            this.repeatEnabled = false;
+            this.isRepeatEnabled = false;
         }
         this.day.reminders.push(newReminder);
         this.update.emit();
         this.hideReminderForm();
-        reminder.value = "";
     }
 }
