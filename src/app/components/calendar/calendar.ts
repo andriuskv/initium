@@ -262,15 +262,17 @@ export class Calendar {
         const firstDayIndex = this.getFirstDayOfTheWeek(reminder.year, reminder.month);
         let dayIndex = reminder.day + firstDayIndex - 1;
         let monthIndex = reminder.month;
+        let count = reminder.repeatCount;
 
         if (!year) {
+            this.calendar.futureReminders.push(reminder);
             return;
         }
 
         while (monthIndex < year.length) {
             const currentMonth = year[monthIndex];
-
             monthIndex += 1;
+
             while (dayIndex < currentMonth.length) {
                 const currentDay = currentMonth[dayIndex];
 
@@ -281,6 +283,14 @@ export class Calendar {
                         repeat: reminder.repeat
                     });
                     dayIndex += reminder.gap;
+
+                    if (reminder.repeatCount > 0) {
+                        count -= 1;
+
+                        if (!count) {
+                            return;
+                        }
+                    }
                 }
                 else if (monthIndex < 12) {
                     const firstDayIndex = this.getFirstDayOfTheWeek(reminder.year, monthIndex);
@@ -289,18 +299,12 @@ export class Calendar {
                     break;
                 }
                 else {
-                    const nextYear = reminder.year + 1;
-
-                    reminder.year = nextYear;
+                    reminder.year = reminder.year + 1;
                     reminder.month = 0;
                     reminder.day = currentDay.number;
+                    reminder.repeatCount = count;
 
-                    if (!this.calendar[nextYear]) {
-                        this.calendar.futureReminders.push(reminder);
-                    }
-                    else {
-                        this.repeatReminder(reminder);
-                    }
+                    this.repeatReminder(reminder);
                     return;
                 }
             }
