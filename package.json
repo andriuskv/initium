@@ -32,7 +32,7 @@
     "zone.js": "^0.8.14"
   },
   "devDependencies": {
-    "@angular/cli": "^1.2.3",
+    "@angular/cli": "^1.2.4",
     "@angular/compiler-cli": "^4.3.1",
     "@types/chrome": "^0.0.47",
     "autoprefixer": "^7.1.2",
