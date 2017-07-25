@@ -143,10 +143,15 @@
     color: #999;
 }
 
+.empty-reminder-list-message {
+    margin-top: auto;
+    font-size: 20px;
+    text-align: center;
+}
+
 .new-reminder-btn {
     padding: 4px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto auto;
 }
 
 .reminder-input {
