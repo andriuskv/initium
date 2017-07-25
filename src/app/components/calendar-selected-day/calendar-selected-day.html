@@ -7,7 +7,7 @@
     <span class="calendar-title">{{ dateString }}</span>
 </div>
 <div class="selected-day" *ngIf="!isFormVisible; else elseBlock">
-    <ul class="selected-day-remainders" *ngIf="day.reminders.length">
+    <ul class="selected-day-remainders" *ngIf="day.reminders.length; else elseBlock">
         <li class="selected-day-remainder" *ngFor="let reminder of day.reminders; let i = index;">
             <svg viewBox="0 0 24 24" class="reminder-repeat-icon" *ngIf="reminder.repeat">
                 <title>Repeating</title>
@@ -21,6 +21,9 @@
             </button>
         </li>
     </ul>
+    <ng-template #elseBlock>
+        <div class="empty-reminder-list-message">You have no reminders</div>
+    </ng-template>
     <button class="btn-icon new-reminder-btn" (click)="showReminderForm()">
         <svg viewBox="0 0 24 24">
             <use href="#plus"></use>
