@@ -33,92 +33,86 @@
 </div>
 <ng-template #elseBlock>
     <form class="selected-day" (submit)="createReminder($event)">
-        <input type="text" class="input reminder-input" name="reminder" autocomplete="off" placeholder="Remind me to..." required>
-        <div class="reminder-settings">
-            <div class="reminder-setting">
-                <label>
-                    <input type="checkbox" class="checkbox-input"
-                        (click)="toggleRange()"
-                        [checked]="!isRangeVisible">
-                    <div class="checkbox"></div>
-                </label>
-                <span class="reminder-setting-title">All day</span>
-            </div>
-            <div class="reminder-setting">
-                <label>
-                    <input type="checkbox" class="checkbox-input" (click)="toggleRepeat()">
-                    <div class="checkbox"></div>
-                </label>
-                <span class="reminder-setting-title">Repeat</span>
-            </div>
+        <input type="text" class="input reminder-input reminder-form-item" name="reminder" autocomplete="off" placeholder="Remind me to..." required>
+        <div class="reminder-settings reminder-form-item">
+            <label class="checkbox-container">
+                <input type="checkbox" class="checkbox-input" (click)="toggleRange()" [checked]="!isRangeVisible">
+                <div class="checkbox"></div>
+                <span class="checkbox-label">All day</span>
+            </label>
+            <label class="checkbox-container">
+                <input type="checkbox" class="checkbox-input" (click)="toggleRepeat()">
+                <div class="checkbox"></div>
+                <span class="checkbox-label">Repeat</span>
+            </label>
         </div>
-        <div class="reminder-range-setting" *ngIf="isRangeVisible">
-            <div class="reminder-setting">
+        <div class="reminder-form-item" *ngIf="isRangeVisible">
+            <div class="reminder-settings">
                 <div>
                     <span>From</span>
-                    <div class="range-input-container">
-                        <input type="text" class="input range-input from" name="fromRange"
+                    <span class="range-input-container">
+                        <input type="text" class="input range-input" autocomplete="off"
+                            name="fromRange"
                             (keyup)="validateRangeInput($event, 'from')"
                             [pattern]="timePattern"
                             [(ngModel)]="range.from.string" required>
                         <ul class="reminder-timetable">
                             <li class="reminder-timetable-item" *ngFor="let item of timeTable" (mousedown)="updateTimeRange(item, 'from')">{{ item.string }}</li>
                         </ul>
-                    </div>
+                    </span>
                 </div>
                 <div>
                     <span>To</span>
-                    <div class="range-input-container">
-                        <input type="text" class="input range-input to" name="toRange"
+                    <span class="range-input-container">
+                        <input type="text" class="input range-input" autocomplete="off"
+                            name="toRange"
                             (keyup)="validateRangeInput($event, 'to')"
                             [pattern]="timePattern"
                             [(ngModel)]="range.to.string">
                         <ul class="reminder-timetable">
                             <li class="reminder-timetable-item" *ngFor="let item of timeTable" (mousedown)="updateTimeRange(item, 'to')">{{ item.string }}</li>
                         </ul>
-                    </div>
+                    </span>
                 </div>
             </div>
             <div class="reminder-error-message" *ngIf="rangeMessage">{{ rangeMessage }}</div>
         </div>
-        <div class="reminder-repeat-setting" *ngIf="isRepeatEnabled">
-            <div class="reminder-setting">
-                <span>Repeat every</span>
-                <input class="input repeat-gap-input" autocomplete="off" (keyup)="validateGapInput($event)" pattern="^0*[1-9][0-9]*$" [value]="repeatGap" required>
-                <span>days</span>
-            </div>
-            <div class="reminder-error-message" *ngIf="!isGapInputValid">Please insert a whole number</div>
-            <div class="reminder-length-setting-container">
-                <div class="reminder-setting">Ends</div>
-                <div class="reminder-setting">
-                    <label>
-                        <input type="radio" class="radio-input" name="ends"
-                            (click)="resetOccurencesInput()"
-                            [checked]="!repeatCount">
-                        <div class="radio"></div>
-                    </label>
-                    <span class="reminder-setting-title">Never</span>
+        <div *ngIf="isRepeatEnabled">
+            <div class="reminder-form-item">
+                <div>
+                    <span>Repeat every</span>
+                    <input class="input repeat-input" autocomplete="off" (keyup)="validateGapInput($event)" pattern="^0*[1-9][0-9]*$" [value]="repeatGap" required>
+                    <span>days</span>
                 </div>
-                <div class="reminder-setting">
-                    <label>
-                        <input type="radio" class="radio-input" name="ends" (click)="enableRepeatCountInput()">
-                        <div class="radio"></div>
-                    </label>
-                    <div class="reminder-setting">
-                        <span class="reminder-setting-title">After</span>
-                        <input class="input repeat-gap-input" autocomplete="off" name="occurences"
+                <div class="reminder-error-message" *ngIf="!isGapInputValid">Please insert a whole number</div>
+            </div>
+            <div>
+                <div class="reminder-form-row">Ends</div>
+                <label class="checkbox-container reminder-form-row">
+                    <input type="radio" class="radio-input" name="ends"
+                        (click)="resetOccurencesInput()"
+                        [checked]="!repeatCount">
+                    <div class="radio"></div>
+                    <span class="checkbox-label">Never</span>
+                </label>
+                <label class="checkbox-container">
+                    <input type="radio" class="radio-input" name="ends" (click)="enableRepeatCountInput()">
+                    <div class="radio"></div>
+                    <span>
+                        <span class="checkbox-label">After</span>
+                        <input class="input repeat-input" autocomplete="off" name="occurences"
                             pattern="^0*[1-9][0-9]*$"
                             (keyup)="validateRepeatCountInput($event)"
                             [value]="occurences"
                             [disabled]="!isRepeatCountInputEnabled"
                             [required]="isRepeatCountInputEnabled">
                         <span>occurences</span>
-                    </div>
-                </div>
+                    </span>
+                </label>
                 <div class="reminder-error-message" *ngIf="isRepeatCountInputEnabled && !isRepeatCountInputValid">Please insert a whole number</div>
             </div>
         </div>
-        <div class="reminder-btns">
+        <div class="reminder-form-btns">
             <button type="submit" class="btn">Add</button>
             <button type="button" class="btn" (click)="hideReminderForm()">Cancel</button>
         </div>
