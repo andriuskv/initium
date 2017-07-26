@@ -59,14 +59,23 @@ export class TweetImageViewer {
     }
 
     handleLoad({ target }) {
+        const image = this.images[this.index];
+        this.loading = false;
+
+        if (image.loaded) {
+            target.style.maxWidth = `${image.width}px`;
+            target.style.maxHeight = `${image.height}px`;
+            return;
+        }
         const maxWidth = target.parentElement.offsetWidth;
         const maxHeight = target.parentElement.offsetHeight - 20;
 
         target.style.maxWidth = `${maxWidth}px`;
         target.style.maxHeight = `${maxHeight}px`;
 
-        this.loading = false;
-        this.images[this.index].loaded = true;
+        image.loaded = true;
+        image.width = maxWidth;
+        image.height = maxHeight;
     }
 
     handleClick({ currentTarget, target }) {
