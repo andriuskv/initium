@@ -15,7 +15,6 @@ export class MostVisited {
     hasBackup: boolean = true;
     newThumbWindowVisible: boolean;
     mostVisited: any = {};
-    newPage: any = {};
 
     constructor(private domSanitizer: DomSanitizer) {
         this.domSanitizer = domSanitizer;
@@ -127,15 +126,14 @@ export class MostVisited {
         });
     }
 
-    async addPage(fileInput) {
-        if (!this.newPage.url) {
+    async addPage({ target }) {
+        if (!target.checkValidity()) {
             return;
         }
-        const title = this.newPage.title || this.newPage.url;
-        const url = this.appendProtocol(this.newPage.url);
-        const image = fileInput.files[0];
-        fileInput.value = "";
-        this.newPage = {};
+        const { elements } = target;
+        const url = this.appendProtocol(elements.url.value);
+        const title = elements.title.value || url;
+        const image = elements.thumb.files[0];
 
         this.mostVisited.display.push({
             image: image ? await this.processImage(image) : this.getImage(url),
@@ -146,5 +144,6 @@ export class MostVisited {
         localStorage.setItem("most visited", JSON.stringify(this.mostVisited));
         this.checkBackup();
         this.hideNewThumbWindow();
+        target.reset();
     }
 }

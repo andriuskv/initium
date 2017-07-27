@@ -34,17 +34,17 @@
     </div>
     <div class="feed-hero" *ngIf="!activeFeed && !loading">
         <h2 class="feed-hero-title">Add RSS Feed</h2>
-        <div class="feed-input-container">
-            <label for="feed-title-input" class="feed-input-label">Feed title</label>
-            <input type="text" id="feed-title-input" class="input input-light feed-input" #feedTitle>
-            <label for="feed-url-input" class="feed-input-label">Feed url</label>
-            <input type="text" id="feed-url-input" class="input input-light feed-input" #feedUrl>
+        <form class="feed-input-container" (submit)="handleFormSubmit($event)" ngNativeValidate>
+            <label for="feed-title-input" class="feed-input-label">Title</label>
+            <input type="text" id="feed-title-input" class="input input-light feed-input" name="title">
+            <label for="feed-url-input" class="feed-input-label">URL</label>
+            <input type="text" id="feed-url-input" class="input input-light feed-input" name="url" required>
             <div class="feed-add-btn-container">
                 <img src="./assets/images/ring.svg" *ngIf="fetching" alt="">
                 <span class="feed-message">{{ message }}</span>
-                <button class="btn" (click)="getFeedFromInput(feedUrl, feedTitle)">Add</button>
+                <button class="btn">Add</button>
             </div>
-        </div>
+        </form>
     </div>
     <ul class="feeds" *ngIf="activeFeed && feeds.length">
         <li *ngFor="let feed of feeds">

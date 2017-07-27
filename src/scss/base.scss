@@ -74,11 +74,6 @@ svg {
     @include input-styles();
 
     padding: 2px 4px;
-    border: 1px solid $color2;
-
-    &:invalid {
-        border-color: transparentize($color-danger, 0.4);
-    }
 }
 
 .input-light {

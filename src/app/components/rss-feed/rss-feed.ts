@@ -208,41 +208,47 @@ export class RssFeed {
             });
     }
 
-    getFeedFromInput(url, title) {
-        if (!url.value || this.fetching) {
+    handleFormSubmit({ target }) {
+        if (!target.checkValidity()) {
             return;
         }
+        const title = target.elements.title.value;
+        const url = target.elements.url.value;
         this.fetching = true;
-        this.getFeed(url.value, title.value)
-        .then(message => {
+
+        this.getFeed(url, title).then(message => {
             this.fetching = false;
 
             if (message) {
                 this.message = message;
+
                 setTimeout(() => {
                     this.message = "";
                 }, 4000);
                 return;
             }
-            this.activeFeed = url.value;
+            this.activeFeed = url;
             this.getNewFeeds();
             this.saveFeeds(this.feeds);
+            target.reset();
+        })
+        .catch(error => {
+            console.log(error);
         });
     }
 
     getFeed(url, title) {
-        return this.feedService.fetchFeed(url)
-            .then(feed => {
-                if (!feed) {
-                    return "No feed found";
-                }
-                this.feeds.push({
-                    url,
-                    title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
-                    newEntries: 0,
-                    entries: this.parseEntries(feed.entries)
-                });
+        return this.feedService.fetchFeed(url).then(feed => {
+            if (!feed) {
+                return "No feed found";
+            }
+            this.feeds.push({
+                url,
+                title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
+                newEntries: 0,
+                entries: this.parseEntries(feed.entries)
             });
+        });
     }
 
     showFeed(feed) {
