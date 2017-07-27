@@ -8,7 +8,7 @@
                 <button class="btn" (click)="cancelTodoEdit()">Cancel</button>
             </div>
             <ng-template #elseHeaderBlock>
-                <form class="todo-header-input-container todo-transition-target" (submit)="addTodo($event)">
+                <form class="todo-header-input-container todo-transition-target" (submit)="addTodo($event)" ngNativeValidate>
                     <input class="input todo-input" type="text" name="input" required>
                     <button type="submit" class="btn">Add</button>
                 </form>

@@ -32,7 +32,7 @@
     </button>
 </div>
 <ng-template #elseBlock>
-    <form class="selected-day" (submit)="createReminder($event)">
+    <form class="selected-day" (submit)="createReminder($event)" ngNativeValidate>
         <input type="text" class="input reminder-input reminder-form-item" name="reminder" autocomplete="off" placeholder="Remind me to..." required>
         <div class="reminder-settings reminder-form-item">
             <label class="checkbox-container">
