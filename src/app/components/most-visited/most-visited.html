@@ -1,4 +1,4 @@
-<ul class="most-visited">
+<ul class="container most-visited" [class.visible]="item === 'mostVisited'">
     <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index">
         <button class="btn-icon remove-page-btn" (click)="removePage(i)" title="Remove">
             <svg viewBox="0 0 24 24">
@@ -8,13 +8,11 @@
         <a [href]="page.url" [title]="page.title">
             <div class="page-title">{{ page.title }}</div>
             <div class="page-thumbnail-container">
-                <img class="page-thumbnail" alt=""
-                [src]="page.image"
-                [class.full]="page.uploaded">
+                <img class="page-thumbnail" alt="" [src]="page.image" [class.full]="page.uploaded">
             </div>
         </a>
     </li>
-    <li class="most-visited-item" *ngIf="!hasBackup" [class.is-in-one-line]="mostVisited.display.length < 4" (click)="showNewThumbWindow()">
+    <li class="most-visited-item" *ngIf="!hasBackup" (click)="showPanel()">
         <button class="btn-icon add-page-btn" title="Add new page">
             <svg viewBox="0 0 24 24">
                 <use href="#plus"></use>
@@ -22,19 +20,18 @@
         </button>
     </li>
 </ul>
-<div class="most-visited-mask" *ngIf="newThumbWindowVisible"></div>
-<div class="container new-thumbnail-window" *ngIf="newThumbWindowVisible">
-    <h2 class="new-thumbnail-window-title">Add new page</h2>
-    <form (submit)="addPage($event)" ngNativeValidate>
+<div class="new-page-panel" *ngIf="isNewPagePanelVisible">
+    <form (submit)="addPage($event)" class="container new-page-form" ngNativeValidate>
+        <h2 class="new-page-form-title">Add new page</h2>
         <input type="text" class="input" placeholder="Title" name="title">
         <input type="text" class="input" placeholder="URL" name="url" required>
-        <div class="new-thumbnail-window-btn-container">
-            <label class="btn image-upload-btn">
+        <div class="new-page-form-btn-container">
+            <label class="btn">
                 <span>Choose thumbnail</span>
                 <input type="file" class="file-input" name="thumb">
             </label>
             <button class="btn">Add</button>
-            <button type="button" class="btn" (click)=hideNewThumbWindow()>Close</button>
+            <button type="button" class="btn" (click)=hidePanel()>Close</button>
         </div>
     </form>
 </div>

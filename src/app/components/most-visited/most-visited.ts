@@ -10,10 +10,11 @@ declare const chrome;
     templateUrl: "./most-visited.html"
 })
 export class MostVisited {
+    @Input() item;
     @Input() setting;
 
     hasBackup: boolean = true;
-    newThumbWindowVisible: boolean;
+    isNewPagePanelVisible: boolean = false;
     mostVisited: any = {};
 
     constructor(private domSanitizer: DomSanitizer) {
@@ -37,10 +38,8 @@ export class MostVisited {
         this.getMostVisited();
     }
 
-    ngOnChanges(changes) {
-        const setting = changes.setting.currentValue;
-
-        if (setting && setting.resetMostVisited) {
+    ngOnChanges() {
+        if (this.setting && this.setting.resetMostVisited) {
             this.resetMostVisited();
         }
     }
@@ -87,12 +86,12 @@ export class MostVisited {
         return this.domSanitizer.bypassSecurityTrustUrl(`chrome://favicon/${url.origin}`);
     }
 
-    showNewThumbWindow() {
-        this.newThumbWindowVisible = true;
+    showPanel() {
+        this.isNewPagePanelVisible = true;
     }
 
-    hideNewThumbWindow() {
-        this.newThumbWindowVisible = false;
+    hidePanel() {
+        this.isNewPagePanelVisible = false;
     }
 
     appendProtocol(url) {
@@ -143,7 +142,7 @@ export class MostVisited {
         });
         localStorage.setItem("most visited", JSON.stringify(this.mostVisited));
         this.checkBackup();
-        this.hideNewThumbWindow();
+        this.hidePanel();
         target.reset();
     }
 }

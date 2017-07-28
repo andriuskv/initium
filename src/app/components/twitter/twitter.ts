@@ -19,10 +19,10 @@ export class Twitter {
     @Input() item;
 
     isLoggedIn: boolean;
-    isActive: boolean;
+    isVisible: boolean;
     isExpanded: boolean = false;
     showPinInput: boolean;
-    fetchingMoreTweets:boolean = false;
+    fetchingMoreTweets: boolean = false;
     tweets: Array<any> = [];
     tweetsToLoad: Array<any> = [];
     user: any = {};
@@ -41,14 +41,14 @@ export class Twitter {
         this.initTwitter();
     }
 
-    ngOnChanges(changes) {
-        this.isActive = changes.item.currentValue === "twitter";
+    ngOnChanges() {
+        this.isVisible = this.item === "twitter";
 
         if (!this.twitterTimeout) {
             return;
         }
 
-        if (this.isActive && !this.tweets.length && this.twitterTimeout.data.handleId > 0) {
+        if (this.isVisible && !this.tweets.length && this.twitterTimeout.data.handleId > 0) {
             clearTimeout(this.twitterTimeout);
             this.fetchTweets();
         }
@@ -61,7 +61,7 @@ export class Twitter {
         document.getElementsByTagName("body")[0].appendChild(script);
         script.addEventListener("load", () => {
             if (this.isAuthenticated()) {
-                const delay = this.isActive ? 2000 : 10000;
+                const delay = this.isVisible ? 2000 : 10000;
 
                 this.twitterTimeout = setTimeout(() => {
                     this.fetchTweets();
@@ -249,7 +249,7 @@ export class Twitter {
         if (this.isInsideLinkElement(target)) {
             return;
         }
-        window.open(url,'_blank');
+        window.open(url, "_blank");
     }
 
     handleImageClick(event, media, index) {
@@ -305,7 +305,7 @@ export class Twitter {
                         this.tweetsToLoad.unshift(...newTweets);
                         this.updateTimeline(userInfo, newTweets[0].id);
 
-                        if (!this.isActive) {
+                        if (!this.isVisible) {
                             this.newTweets.emit(true);
                         }
                         if (document.hidden) {

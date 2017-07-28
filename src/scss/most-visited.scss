@@ -1,17 +1,14 @@
 .most-visited {
-    display: flex;
+    position: relative;
+    display: none;
     flex-wrap: wrap;
-    width: 500px;
+    align-content: space-between;
+    width: 508px;
     height: 212px;
-}
 
-.most-visited-mask {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: transparentize($color3, 0.2);
+    &.visible {
+        display: flex;
+    }
 }
 
 .most-visited-item {
@@ -20,15 +17,10 @@
     width: calc(25% - 3px);
     height: calc(50% - 2px);
     margin-right: 4px;
-    margin-bottom: 4px;
     background-color: $color2;
 
     &:nth-of-type(4n) {
         margin-right: 0;
-    }
-
-    &:nth-of-type(n + 4) {
-        margin-bottom: 0;
     }
 
     &:hover .remove-page-btn {
@@ -78,11 +70,19 @@
     max-height: 100%;
 }
 
-.new-thumbnail-window {
+.new-page-panel {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 28px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparentize($color3, 0.2);
+}
+
+.new-page-form {
     width: 238px;
 
     .input {
@@ -91,20 +91,17 @@
     }
 }
 
-.new-thumbnail-window-title {
-    font-weight: 200;
-    margin-top: 0;
-    margin-bottom: 4px;
+.new-page-form-title {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: normal;
     text-align: center;
 }
 
-.new-thumbnail-window-btn-container {
+.new-page-form-btn-container {
     display: flex;
     justify-content: space-between;
-}
-
-.image-upload-btn {
-    cursor: pointer;
 }
 
 .file-input {

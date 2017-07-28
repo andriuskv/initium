@@ -15,7 +15,11 @@ import { SettingService } from "../../services/settingService";
             <li class="main-block-nav-item">
                 <button class="btn-icon" (click)="selectItem('notepad')" title="Notepad">
                     <svg viewBox="0 0 24 24">
-                        <path d="M19,19V5H5V19H19M19,3A2,2 0 0,1 21,5V19C21,20.11 20.1,21 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H19M16.7,9.35L15.7,10.35L13.65,8.3L14.65,7.3C14.86,7.08 15.21,7.08 15.42,7.3L16.7,8.58C16.92,8.79 16.92,9.14 16.7,9.35M7,14.94L13.06,8.88L15.12,10.94L9.06,17H7V14.94Z" />
+                        <path d="M19,19V5H5V19H19M19,3A2,2 0 0,1 21,5V19C21,20.11 20.1,
+                        21 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H19M16.7,9.35L15.7,
+                        10.35L13.65,8.3L14.65,7.3C14.86,7.08 15.21,7.08 15.42,7.3L16.7,
+                        8.58C16.92,8.79 16.92,9.14 16.7,9.35M7,14.94L13.06,8.88L15.12,
+                        10.94L9.06,17H7V14.94Z" />
                     </svg>
                 </button>
             </li>
@@ -45,7 +49,7 @@ export class MainBlockNav {
     @Input() tabNameChange;
 
     hideBar: boolean;
-    item: string = this.getItem();
+    item: string = localStorage.getItem("active tab") || "mostVisited";
     items: any = {
         twitter: {
             new: false
@@ -66,27 +70,20 @@ export class MainBlockNav {
         this.choice.emit(this.item);
     }
 
-    ngOnChanges(changes) {
-        if (changes.newItemUpdate && !changes.newItemUpdate.isFirstChange()) {
-            const newItem = changes.newItemUpdate.currentValue;
-            this.items[newItem.name].new = newItem.isNew;
-            return;
+    ngOnChanges() {
+        if (this.newItemUpdate) {
+            const { name, isNew } = this.newItemUpdate;
+
+            this.items[name].new = isNew;
         }
 
-        if (changes.tabNameChange && !changes.tabNameChange.isFirstChange()) {
-            this.selectItem(changes.tabNameChange.currentValue, true);
-            return;
+        if (this.tabNameChange) {
+            this.selectItem(this.tabNameChange, true);
         }
 
-        if (changes.setting && !changes.setting.isFirstChange()) {
-            this.hideBar = changes.setting.currentValue.hideItemBar;
+        if (this.setting && typeof this.setting.hideItemBar === "boolean") {
+            this.hideBar = this.setting.hideItemBar;
         }
-    }
-
-    getItem() {
-        const item = localStorage.getItem("favorite tab");
-
-        return typeof item === "string" ? item : "mostVisited";
     }
 
     selectItem(item, keepVisible) {
@@ -96,6 +93,6 @@ export class MainBlockNav {
             this.items[this.item].new = false;
         }
         this.choice.emit(this.item);
-        localStorage.setItem("favorite tab", this.item);
+        localStorage.setItem("active tab", this.item);
     }
 }

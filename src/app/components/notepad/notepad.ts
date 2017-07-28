@@ -1,6 +1,6 @@
 /* global chrome */
 
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, Input } from "@angular/core";
 import { DOCUMENT } from "@angular/platform-browser";
 
 declare const chrome;
@@ -8,7 +8,7 @@ declare const chrome;
 @Component({
     selector: "notepad",
     template: `
-        <div class="main-block-item-container">
+        <div class="container main-block-content" [class.visible]="item === 'notepad'">
             <ul class="notepad-header">
                 <li *ngIf="tabs.length > 4">
                     <button class="btn-icon notepad-shift-btn" (click)="prevVisibleTabs()">
@@ -54,6 +54,8 @@ declare const chrome;
     `
 })
 export class Notepad {
+    @Input() item;
+
     shift: number = 0;
     activeTabIndex: number = 0;
     activeTabContent: string = "";
@@ -72,7 +74,7 @@ export class Notepad {
         chrome.storage.sync.get("notepad", storage => {
             this.tabs = storage.notepad || this.tabs;
             this.setVisibleTabs();
-            this.hideInputAndSelectTab(this.activeTabIndex);
+            this.selectTab(this.activeTabIndex);
         });
     }
 
