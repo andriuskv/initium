@@ -58,20 +58,13 @@
     background-color: $brand-color;
 }
 
-.main-block-content.hidden {
+.main-block-content {
     display: none;
-}
-
-.main-block-content-item {
-    position: relative;
-
-    &.hidden {
-        display: none;
-    }
-}
-
-.main-block-item-container {
-    width: 580px;
+    width: 588px;
     height: 318px;
-    max-height: calc(55vh - 40px);
+    max-height: calc(55vh - 32px);
+
+    &.visible {
+        display: block;
+    }
 }

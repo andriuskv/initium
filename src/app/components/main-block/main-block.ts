@@ -5,13 +5,13 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
     template: `
         <div class="main-block" [class.expanded]="isTwitterExpanded">
             <main-block-nav (choice)="onChoice($event)"
-                [setting]="mainBlockSetting"
+                [setting]="setting"
                 [newItemUpdate]="itemUpdate"
                 [tabNameChange]="tabName">
             </main-block-nav>
             <main-block-content
-                [choice]="item"
-                [setting]="mainBlockSetting"
+                [item]="item"
+                [setting]="setting"
                 (newItems)="onNewItems($event)"
                 (toggleTab)="onToggleTab($event)"
                 (toggleSize)="onToggleSize($event)"
@@ -29,15 +29,6 @@ export class MainBlock {
     item: string;
     tabName: string;
     itemUpdate: any;
-    mainBlockSetting: any;
-
-    ngOnChanges(changes) {
-        const settingValue = changes.setting.currentValue;
-
-        if (settingValue) {
-            this.mainBlockSetting = settingValue;
-        }
-    }
 
     onChoice(choice) {
         this.item = choice;

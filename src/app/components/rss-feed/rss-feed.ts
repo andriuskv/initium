@@ -17,7 +17,7 @@ export class RssFeed {
 
     loading: boolean = true;
     fetching: boolean;
-    isActive: boolean;
+    isVisible: boolean = false;
     newEntryCount: number = 0;
     activeFeed: string = "";
     latestActiveFeed: string = "";
@@ -33,28 +33,33 @@ export class RssFeed {
     }
 
     ngOnInit() {
-        const delay = this.isActive ? 2000 : 10000;
+        const delay = this.isVisible ? 2000 : 10000;
 
         this.initTimeout = setTimeout(() => {
-            chrome.storage.sync.get("rss", storage => {
-                this.feedsToLoad = storage.rss || JSON.parse(localStorage.getItem("rss feeds")) || [];
-                this.loadFeeds(this.feedsToLoad);
-            });
+            this.initFeeds();
         }, delay);
     }
 
-    ngOnChanges(changes) {
-        this.isActive = changes.item.currentValue === "rssFeed";
+    ngOnChanges() {
+        this.isVisible = this.item === "rssFeed";
 
-        if (this.isActive) {
+        if (this.isVisible) {
             if (this.newEntryCount) {
                 this.newEntryCount = 0;
             }
+
             if (this.initTimeout) {
                 clearTimeout(this.initTimeout);
-                this.loadFeeds(this.feedsToLoad);
+                this.initFeeds();
             }
         }
+    }
+
+    initFeeds() {
+        chrome.storage.sync.get("rss", storage => {
+            this.feedsToLoad = storage.rss || JSON.parse(localStorage.getItem("rss feeds")) || [];
+            this.loadFeeds(this.feedsToLoad);
+        });
     }
 
     saveFeeds(feeds) {
@@ -161,7 +166,7 @@ export class RssFeed {
             }
             this.newEntryCount += entryCountSum;
 
-            if (!this.isActive) {
+            if (!this.isVisible) {
                 this.newEntries.emit(true);
             }
             if (document.hidden) {
