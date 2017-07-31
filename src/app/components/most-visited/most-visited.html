@@ -23,8 +23,8 @@
 <div class="new-page-panel" *ngIf="isNewPagePanelVisible">
     <form (submit)="addPage($event)" class="container new-page-form" ngNativeValidate>
         <h2 class="new-page-form-title">Add new page</h2>
-        <input type="text" class="input" placeholder="Title" name="title">
-        <input type="text" class="input" placeholder="URL" name="url" required>
+        <input type="text" class="input" placeholder="Title" name="title" autocomplete="off">
+        <input type="text" class="input" placeholder="URL" name="url" autocomplete="off" required>
         <div class="new-page-form-btn-container">
             <label class="btn">
                 <span>Choose thumbnail</span>
