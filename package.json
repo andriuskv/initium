@@ -5,11 +5,10 @@
   "repository": "",
   "scripts": {
     "webpack": "source config/env && webpack",
-    "watch": "npm run webpack -- --watch",
-    "start": "npm run dist && npm run watch",
+    "start": "npm run dist && npm run webpack -- --watch",
     "predist": "rm -rf dist && mkdir -p ./dist/{assets,libs}",
     "dist": "cp -R src/{assets,libs,index.html,manifest.json,receiver.html,sw.js,ww.js} dist",
-    "build": "npm run webpack -- --env.prod"
+    "build": "npm run dist && npm run webpack -- --env.prod"
   },
   "dependencies": {
     "@angular/common": "^4.3.2",
