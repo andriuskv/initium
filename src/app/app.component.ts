@@ -5,21 +5,11 @@ import { Component } from "@angular/core";
     template: `
         <background [setting]="settings.background"></background>
         <time [setting]="settings.time"></time>
-        <main-block
-            [setting]="settings.mainBlock"
-            (showViewer)="onShowViewer($event)">
-        </main-block>
+        <main-block [setting]="settings.mainBlock" (showViewer)="onShowViewer($event)"></main-block>
         <weather [setting]="settings.weather"></weather>
         <todo></todo>
-        <menu
-            (toggle)="onToggle($event)"
-            (setting)="onSetting($event)"
-            (reminders)="onReminders($event)">
-        </menu>
-        <upper-block
-            [toggleComp]="toggle.upper"
-            (hide)="onHide($event)">
-        </upper-block>
+        <menu (toggle)="onToggle($event)" (setting)="onSetting($event)"></menu>
+        <upper-block [toggleComp]="toggle.upper" (hide)="onHide($event)"></upper-block>
         <tweet-image-viewer [data]="imageData"></tweet-image-viewer>
     `
 })

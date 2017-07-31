@@ -3,6 +3,7 @@ const { DefinePlugin, NoEmitOnErrorsPlugin, NamedModulesPlugin } = require('webp
 const { ModuleConcatenationPlugin, CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
 const ProgressPlugin = require('webpack/lib/ProgressPlugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const { AotPlugin } = require('@ngtools/webpack');
 
 module.exports = function(env = {}) {
@@ -47,6 +48,7 @@ module.exports = function(env = {}) {
                 return 0;
             }
         }),
+        new ExtractTextPlugin("main.css"),
         new CommonsChunkPlugin({
             "name": [
                 "vendor"
@@ -119,12 +121,26 @@ module.exports = function(env = {}) {
         module: {
             rules: [
                 {
-                    "test": /\.html$/,
-                    "loader": "raw-loader"
+                    test: /\.scss$/,
+                    use: ExtractTextPlugin.extract({
+                        fallback: "style-loader",
+                        use: ["css-loader", {
+                            loader: "postcss-loader", options: {
+                                plugins: () => {
+                                    const plugins = [require("autoprefixer")()];
+
+                                    if (env.prod) {
+                                        plugins.push(require("cssnano")())
+                                    }
+                                    return plugins;
+                                }
+                            }}, "sass-loader"
+                        ]
+                    })
                 },
                 {
-                  "test": /\.(jpg|png|gif|otf|ttf|woff|woff2|cur|ani)$/,
-                  "loader": "url-loader?name=[name].[hash:20].[ext]&limit=10000"
+                    "test": /\.html$/,
+                    "loader": "raw-loader"
                 },
                 {
                     "test": /\.ts$/,
