@@ -188,29 +188,30 @@ export class Twitter {
     }
 
     getMediaUrl(media) {
-        if (media.length) {
-            return media.map(item => {
-                if (item.type === "animated_gif") {
-                    return {
-                        type: "gif",
-                        thumbUrl: item.media_url_https,
-                        url: item.video_info.variants[0].url
-                    }
+        if (!media.length) {
+            return;
+        }
+        return media.map(item => {
+            if (item.type === "animated_gif") {
+                return {
+                    type: "gif",
+                    thumbUrl: item.media_url_https,
+                    url: item.video_info.variants[0].url
                 }
+            }
 
-                if (item.type === "video") {
-                    return {
-                        type: item.type,
-                        thumbUrl: item.media_url_https,
-                        url: item.video_info.variants.find(variant => variant.content_type === "video/mp4").url
-                    }
-                }
+            if (item.type === "video") {
                 return {
                     type: item.type,
-                    url: item.media_url_https
-                };
-            });
-        }
+                    thumbUrl: item.media_url_https,
+                    url: item.video_info.variants.find(variant => variant.content_type === "video/mp4").url
+                }
+            }
+            return {
+                type: item.type,
+                url: item.media_url_https
+            };
+        });
     }
 
     getTweetContent(tweet) {

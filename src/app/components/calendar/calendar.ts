@@ -34,6 +34,8 @@ export class Calendar {
 
         if (!calendar[year]) {
             calendar[year] = this.getYear(year);
+            calendar.futureReminders =  calendar.futureReminders || [];
+            this.repeatFutureReminders(calendar);
         }
         if (calendar.currentDay) {
             const day = calendar.currentDay;
@@ -43,35 +45,25 @@ export class Calendar {
         this.calendar = Object.assign(calendar, {
             currentYear: year,
             currentMonth: this.getCurrentMonth(calendar, year, month),
-            currentDay: this.setCurrentDay(calendar, this.currentDate),
-            futureReminders: calendar.futureReminders || []
+            currentDay: this.setCurrentDay(calendar, this.currentDate)
         });
-        this.repeatFutureReminders(calendar.futureReminders);
         this.currentDay = this.calendar.currentDay;
-        this.updateCurrentDayReminders();
         this.initialized = true;
     }
 
-    setReminderRangeString(reminder) {
+    getReminderRangeString(reminder) {
         const range = reminder.range;
 
         if (typeof range === "string") {
-            reminder.rangeString = range;
+            return range;
         }
         else if (range.to) {
             const fromString = this.timeDateService.getTimeString(range.from, this.timeDisplay);
             const toString = this.timeDateService.getTimeString(range.to, this.timeDisplay);
-            reminder.rangeString = `${fromString} - ${toString}`;
-        }
-        else {
-            reminder.rangeString = this.timeDateService.getTimeString(range, this.timeDisplay);
 
+            return `${fromString} - ${toString}`;
         }
-        return reminder;
-    }
-
-    updateCurrentDayReminders() {
-        this.currentDay.reminders = this.currentDay.reminders.map(this.setReminderRangeString.bind(this));
+        return this.timeDateService.getTimeString(range, this.timeDisplay);
     }
 
     setCurrentDay(calendar, { year, month, day }) {
@@ -155,7 +147,8 @@ export class Calendar {
         };
     }
 
-    repeatFutureReminders(futureReminders) {
+    repeatFutureReminders(calendar) {
+        const { futureReminders } = calendar;
         let length = futureReminders.length;
 
         if (!length) {
@@ -165,7 +158,7 @@ export class Calendar {
         while (length) {
             const [reminder] = futureReminders.splice(length - 1);
 
-            this.repeatReminder(reminder);
+            this.repeatReminder(reminder, calendar);
             length -= 1;
         }
     }
@@ -188,7 +181,7 @@ export class Calendar {
             this.calendar[year] = this.getYear(year);
 
             if (direction === 1) {
-                this.repeatFutureReminders(this.calendar.futureReminders);
+                this.repeatFutureReminders(this.calendar);
             }
         }
         this.calendar.currentYear = year;
@@ -257,15 +250,19 @@ export class Calendar {
         this.saveCalendar();
     }
 
-    repeatReminder(reminder) {
-        const year = this.calendar[reminder.year];
+    repeatNewReminder(reminder) {
+        this.repeatReminder(reminder, this.calendar);
+    }
+
+    repeatReminder(reminder, calendar) {
+        const year = calendar[reminder.year];
         const firstDayIndex = this.getFirstDayOfTheWeek(reminder.year, reminder.month);
         let dayIndex = reminder.day + firstDayIndex - 1;
         let monthIndex = reminder.month;
         let count = reminder.repeatCount;
 
         if (!year) {
-            this.calendar.futureReminders.push(reminder);
+            calendar.futureReminders.push(reminder);
             return;
         }
 
@@ -280,7 +277,8 @@ export class Calendar {
                     currentDay.reminders.push({
                         color: reminder.color,
                         text: reminder.text,
-                        repeat: reminder.repeat
+                        repeat: reminder.repeat,
+                        rangeString: this.getReminderRangeString(reminder)
                     });
                     dayIndex += reminder.gap;
 
@@ -304,7 +302,7 @@ export class Calendar {
                     reminder.day = currentDay.number;
                     reminder.repeatCount = count;
 
-                    this.repeatReminder(reminder);
+                    this.repeatReminder(reminder, calendar);
                     return;
                 }
             }
@@ -315,7 +313,7 @@ export class Calendar {
         const day = this.selectedDay;
         const reminder = day.reminders[day.reminders.length - 1];
 
-        this.setReminderRangeString(reminder);
+        reminder.rangeString = this.getReminderRangeString(reminder);
         this.saveCalendar();
     }
 
