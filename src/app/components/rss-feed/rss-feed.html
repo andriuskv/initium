@@ -36,9 +36,9 @@
         <h2 class="feed-hero-title">Add RSS Feed</h2>
         <form class="feed-input-container" (submit)="handleFormSubmit($event)" ngNativeValidate>
             <label for="feed-title-input" class="feed-input-label">Title</label>
-            <input type="text" id="feed-title-input" class="input input-light feed-input" name="title">
+            <input type="text" id="feed-title-input" class="input input-light feed-input" name="title" autocomplete="off">
             <label for="feed-url-input" class="feed-input-label">URL</label>
-            <input type="text" id="feed-url-input" class="input input-light feed-input" name="url" required>
+            <input type="text" id="feed-url-input" class="input input-light feed-input" name="url" autocomplete="off" required>
             <div class="feed-add-btn-container">
                 <img src="./assets/images/ring.svg" *ngIf="fetching" alt="">
                 <span class="feed-message">{{ message }}</span>

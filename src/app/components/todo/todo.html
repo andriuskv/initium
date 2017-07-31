@@ -9,7 +9,7 @@
             </div>
             <ng-template #elseHeaderBlock>
                 <form class="todo-header-input-container todo-transition-target" (submit)="addTodo($event)" ngNativeValidate>
-                    <input class="input todo-input" type="text" name="input" required>
+                    <input class="input todo-input" type="text" name="input" autocomplete="off" required>
                     <button type="submit" class="btn">Add</button>
                 </form>
             </ng-template>
@@ -56,7 +56,7 @@
             <div class="todo-transition-target todo-message">Your todo list is empty</div>
         </ng-template>
         <footer class="todo-footer todo-transition-target" *ngIf="todos.length">
-            <button class="btn todo-footer-btn" (click)="removeTodos()">Remove done</button>
+            <button class="btn todo-footer-btn" (click)="removeTodos()">Remove completed</button>
         </footer>
     </div>
     <todo-pin *ngIf="todosToPin.length && !visible" [todos]="todosToPin"></todo-pin>
