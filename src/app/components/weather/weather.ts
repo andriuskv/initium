@@ -166,7 +166,8 @@ export class Weather {
             case 620:
             case 621:
                 return "snowy";
-            // Fog
+            // Mist, Fog
+            case 701:
             case 741:
                 return "fog";
             // Clear sky, broken clouds, overcast clouds, scattered clouds
