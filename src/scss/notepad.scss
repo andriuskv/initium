@@ -49,6 +49,15 @@
     box-shadow: -6px 0 5px 0 $color2;
 }
 
+.notepad-shift-btn:disabled {
+    color: $color3;
+
+    &:hover {
+        color: $color3;
+        cursor: default;
+    }
+}
+
 .notepad-shift-btn,
 .notepad-select-tab-btn,
 .notepad-create-new-btn {
