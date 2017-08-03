@@ -11,7 +11,7 @@ declare const chrome;
         <div class="container main-block-content" [class.visible]="item === 'notepad'">
             <ul class="notepad-header">
                 <li *ngIf="tabs.length > 4">
-                    <button class="btn-icon notepad-shift-btn" (click)="prevVisibleTabs()">
+                    <button class="btn-icon notepad-shift-btn" (click)="prevVisibleTabs()" [disabled]="shift <= 0">
                         <svg viewBox="0 0 24 24">
                             <use href="#chevron-left"></use>
                         </svg>
@@ -35,7 +35,7 @@ declare const chrome;
                         *ngIf="tab.settingTitle">
                 </li>
                 <li *ngIf="tabs.length > 4">
-                    <button class="btn-icon notepad-shift-btn" (click)="nextVisibleTabs()">
+                    <button class="btn-icon notepad-shift-btn" (click)="nextVisibleTabs()" [disabled]="shift + 4 >= tabs.length">
                         <svg viewBox="0 0 24 24">
                             <use href="#chevron-right"></use>
                         </svg>
@@ -83,9 +83,6 @@ export class Notepad {
     }
 
     prevVisibleTabs() {
-        if (this.shift <= 0) {
-            return;
-        }
         const index = this.activeTabIndex;
 
         this.shift -= 1;
@@ -94,9 +91,6 @@ export class Notepad {
     }
 
     nextVisibleTabs() {
-        if (this.shift + 4 >= this.tabs.length) {
-            return;
-        }
         const index = this.activeTabIndex;
 
         this.shift += 1;
