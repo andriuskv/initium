@@ -23,7 +23,6 @@ module.exports = function(env = {}) {
         new ProgressPlugin(),
         new HtmlWebpackPlugin({
             "template": "./src/index.html",
-            "filename": "./index.html",
             "hash": false,
             "inject": true,
             "compile": true,
@@ -32,8 +31,7 @@ module.exports = function(env = {}) {
             "cache": true,
             "showErrors": true,
             "chunks": "all",
-            "excludeChunks": [],
-            "title": "Webpack App",
+            "excludeChunks": ["ww", "sw"],
             "xhtml": true,
             "chunksSortMode": function sort(left, right) {
                 const leftIndex = entryPoints.indexOf(left.names[0]);
@@ -92,16 +90,14 @@ module.exports = function(env = {}) {
 
     return {
         "entry": {
-          "main": [
-            "./src/main.ts"
-          ],
-          "polyfills": [
-            "./src/polyfills.ts"
-          ]
+          "main": "./src/main.ts",
+          "polyfills": "./src/polyfills.ts",
+          "ww": "./src/ww.js",
+          "sw": "./src/sw.js"
         },
         "output": {
             "path": path.join(process.cwd(), "dist"),
-            "filename": "[name].bundle.js",
+            "filename": "[name].js",
             "chunkFilename": "[id].chunk.js"
         },
         "resolve": {
@@ -124,18 +120,30 @@ module.exports = function(env = {}) {
                     test: /\.scss$/,
                     use: ExtractTextPlugin.extract({
                         fallback: "style-loader",
-                        use: ["css-loader", {
-                            loader: "postcss-loader", options: {
+                        use: [{
+                            loader: "css-loader",
+                            options: {
+                                sourceMap: !env.prod
+                            }
+                        }, {
+                            loader: "postcss-loader",
+                            options: {
+                                sourceMap: !env.prod,
                                 plugins: () => {
                                     const plugins = [require("autoprefixer")()];
 
                                     if (env.prod) {
-                                        plugins.push(require("cssnano")())
+                                        plugins.push(require("cssnano")());
                                     }
                                     return plugins;
                                 }
-                            }}, "sass-loader"
-                        ]
+                            }
+                        }, {
+                            loader: "sass-loader",
+                            options: {
+                                sourceMap: !env.prod
+                            }
+                        }]
                     })
                 },
                 {
