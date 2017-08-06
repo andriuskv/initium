@@ -24,10 +24,12 @@ export class Stopwatch {
 
     isRunning: boolean = false;
     stopwatch: any = this.resetTime();
-    worker: Worker;
+    worker: Worker = new Worker("ww.js");
 
     constructor(private ref: ChangeDetectorRef) {
         this.ref = ref;
+
+        this.initWorker();
     }
 
     ngOnChanges(changes) {
@@ -43,9 +45,8 @@ export class Stopwatch {
     }
 
     initWorker() {
-        this.worker = new Worker("ww.js");
         this.worker.onmessage = event => {
-            this.update(performance.now() - event.data);
+            this.update(Date.now() - event.data);
         };
     }
 
@@ -62,7 +63,7 @@ export class Stopwatch {
         let hours = this.stopwatch.hours;
         let minutes: any = parseInt(this.stopwatch.minutes, 10);
         let seconds: any = parseInt(this.stopwatch.seconds, 10);
-        let milliseconds = parseFloat(this.stopwatch.milliseconds) + elapsed;
+        let milliseconds: any = parseFloat(this.stopwatch.milliseconds) + elapsed;
 
         if (milliseconds >= 1000) {
             seconds += 1;
@@ -107,7 +108,6 @@ export class Stopwatch {
     }
 
     start() {
-        this.initWorker();
         this.worker.postMessage("start");
         this.isRunning = true;
         this.running.emit(this.isRunning);
@@ -120,7 +120,9 @@ export class Stopwatch {
     }
 
     reset() {
-        this.stop();
+        if (this.isRunning) {
+            this.stop();
+        }
         this.stopwatch = this.resetTime();
         this.ref.detectChanges();
     }
