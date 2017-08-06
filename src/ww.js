@@ -1,22 +1,21 @@
 var timeout = 0;
 
 function startTimeout() {
-    var start = performance.now();
+    var start = Date.now();
 
-    timeout = setTimeout(() => {
+    timeout = setTimeout(function() {
         self.postMessage(start);
         startTimeout();
     }, 20);
 }
 
-self.addEventListener("message", event => {
+self.addEventListener("message", function(event) {
     switch (event.data) {
         case "start":
             startTimeout();
             break;
         case "stop":
             clearTimeout(timeout);
-            self.close();
             break;
     }
 });
