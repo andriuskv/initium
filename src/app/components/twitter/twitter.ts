@@ -324,7 +324,7 @@ export class Twitter {
                 }
                 this.updateTimeline(userInfo, latestTweetId);
             });
-        }, 240000);
+        }, 600000);
     }
 
     loadTweets(data) {
