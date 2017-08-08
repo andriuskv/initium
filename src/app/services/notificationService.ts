@@ -1,56 +1,60 @@
+import { Injectable } from "@angular/core";
+import { SettingService } from "../services/settingService";
+
+@Injectable()
 export class NotificationService {
-    closeNotification(notification, delay) {
-        setTimeout(() => {
-            if (notification) {
-                notification.close();
-            }
-        }, delay);
+    settings: any;
+    timeout: any;
+
+    constructor(private settingService: SettingService) {
+        this.settingService = settingService;
+        this.settings = this.settingService.getSettings().general;
     }
 
-    onBeforeUnload(notification) {
-        window.onbeforeunload = () => {
-            if (notification) {
-                notification.close();
-            }
-        };
-    }
+    send(title, body, cb) {
+        if (this.settings.notificationDisabled) {
+            return;
+        }
 
-    send(title, body) {
-        const settings = JSON.parse(localStorage.getItem("settings"));
+        if ((Notification as any).permission === "granted") {
+            let notification = new Notification(title, {
+                body,
+                icon: "./assets/images/128.png"
+            });
 
-        return new Promise(resolve => {
-            if (settings.general.notificationDisabled) {
-                resolve(true);
-                return;
-            }
-            if ((Notification as any).permission === "granted") {
-                let notification = null;
-
-                notification = new Notification(title, {
-                    body,
-                    icon: "./assets/images/128.png"
-                });
-                this.onBeforeUnload(notification);
-                this.closeNotification(notification, 6000);
-
-                notification.onclick = () => {
+            this.timeout = setTimeout(() => {
+                if (notification) {
                     notification.close();
-                    notification.onclick = null;
-                    notification = null;
-                    if (!settings.general.notificationFocusDisabled) {
-                        window.focus();
-                    }
-                    resolve();
-                };
-            }
-            else {
-                Notification.requestPermission()
-                .then(response => {
-                    if (response === "granted") {
-                        this.send(title, body);
-                    }
-                });
-            }
-        });
+                }
+            }, 5000);
+
+            window.onbeforeunload = () => {
+                if (notification) {
+                    notification.close();
+                }
+            };
+
+            notification.onclick = () => {
+                cb();
+                notification.close();
+
+                if (!this.settings.notificationFocusDisabled) {
+                    window.focus();
+                }
+            };
+
+            notification.onclose = () => {
+                clearTimeout(this.timeout);
+                this.timeout = null;
+                notification = null;
+            };
+        }
+        else {
+            Notification.requestPermission().then(response => {
+                if (response === "granted") {
+                    this.send(title, body, cb);
+                }
+            });
+        }
     }
 }

@@ -303,28 +303,24 @@ export class Twitter {
                     const newTweets = tweets.filter(tweet => tweet.id !== latestTweetId);
 
                     if (newTweets.length) {
+                        latestTweetId = newTweets[0].id;
                         this.tweetsToLoad.unshift(...newTweets);
-                        this.updateTimeline(userInfo, newTweets[0].id);
 
                         if (!this.isVisible) {
                             this.newTweets.emit(true);
                         }
+
                         if (document.hidden) {
                             this.notificationService.send(
                                 "Twitter",
-                                `You have ${this.tweetsToLoad.length} new tweets`
-                            ).then(disabled => {
-                                if (!disabled) {
-                                    this.toggleTab.emit("twitter");
-                                }
-                            });
+                                `You have ${this.tweetsToLoad.length} new tweets`,
+                                () => this.toggleTab.emit("twitter"));
                         }
-                        return;
                     }
                 }
                 this.updateTimeline(userInfo, latestTweetId);
             });
-        }, 600000);
+        }, 660000);
     }
 
     loadTweets(data) {
