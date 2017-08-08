@@ -157,8 +157,7 @@ export class RssFeed {
     updateFeeds() {
         const feedsToUpdate = this.feeds.map(feed => this.updateFeed(feed));
 
-        Promise.all(feedsToUpdate)
-        .then(newEntryCount => {
+        Promise.all(feedsToUpdate).then(newEntryCount => {
             const entryCountSum: number = newEntryCount.reduce((sum, entryCount) => sum + entryCount, 0);
 
             if (!entryCountSum) {
@@ -169,16 +168,12 @@ export class RssFeed {
             if (!this.isVisible) {
                 this.newEntries.emit(true);
             }
+
             if (document.hidden) {
                 this.notificationService.send(
                     "RSS feed",
-                    `You have ${this.newEntryCount} new entries`
-                )
-                .then(disabled => {
-                    if (!disabled) {
-                        this.toggleTab.emit("rssFeed");
-                    }
-                });
+                    `You have ${this.newEntryCount} new entries`,
+                    () => this.toggleTab.emit("rssFeed"));
             }
         })
         .catch(error => {
