@@ -36,15 +36,17 @@ export class Time {
         this.initDate(settings.dateDisabled);
     }
 
-    ngOnChanges(changes) {
-        const setting = changes.setting.currentValue || {};
-
-        if (setting.timeDisplay) {
-            this.changeTimeDisplay(setting.timeDisplay);
+    ngOnChanges() {
+        if (!this.setting) {
+            return;
         }
 
-        if (typeof setting.dateDisabled === "boolean") {
-            this.initDate(setting.dateDisabled);
+        if (this.setting.timeDisplay) {
+            this.changeTimeDisplay(this.setting.timeDisplay);
+        }
+
+        if (typeof this.setting.dateDisabled === "boolean") {
+            this.initDate(this.setting.dateDisabled);
         }
     }
 

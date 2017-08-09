@@ -27,7 +27,7 @@
   "devDependencies": {
     "@angular/cli": "^1.2.7",
     "@angular/compiler-cli": "^4.3.3",
-    "@types/chrome": "^0.0.47",
+    "@types/chrome": "^0.0.48",
     "autoprefixer": "^7.1.2",
     "codelyzer": "^3.1.2",
     "css-loader": "^0.28.4",
@@ -39,9 +39,9 @@
     "raw-loader": "^0.5.1",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
-    "tslint": "^5.5.0",
+    "tslint": "^5.6.0",
     "typescript": "2.4.2",
-    "webpack": "^3.4.1"
+    "webpack": "^3.5.1"
   },
   "browserslist": [
     "Chrome >= 49"

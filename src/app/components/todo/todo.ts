@@ -14,7 +14,7 @@ export class Todo {
 
     ngOnInit() {
         chrome.storage.sync.get("todos", storage => {
-            this.todos = storage.todos || JSON.parse(localStorage.getItem("todos")) || [];
+            this.todos = storage.todos || [];
             this.todosToPin = this.getPinnedTodos();
         });
     }
