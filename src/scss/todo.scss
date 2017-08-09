@@ -3,6 +3,10 @@
     position: absolute;
     top: 4px;
     left: 4px;
+
+    &.is-in-background {
+        z-index: 0;
+    }
 }
 
 .todo-container {
@@ -160,5 +164,6 @@
 }
 
 .todo-footer-btn {
-    padding: 4px 8px;
+    display: inline-flex;
+    padding: 4px;
 }

@@ -4,15 +4,15 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
     selector: "main-block",
     template: `
         <div class="main-block" [class.expanded]="isTwitterExpanded">
-            <main-block-nav (choice)="onChoice($event)"
+            <main-block-nav (activeTab)="onActiveTab($event)"
                 [setting]="setting"
-                [newItemUpdate]="itemUpdate"
-                [tabNameChange]="tabName">
+                [tabUpdate]="tabUpdate"
+                [tabChange]="tabName">
             </main-block-nav>
             <main-block-content
-                [item]="item"
+                [item]="activeTab"
                 [setting]="setting"
-                (newItems)="onNewItems($event)"
+                (newItems)="onTabUpdate($event)"
                 (toggleTab)="onToggleTab($event)"
                 (toggleSize)="onToggleSize($event)"
                 (showViewer)="onShowViewer($event)">
@@ -26,16 +26,16 @@ export class MainBlock {
 
     isNavHidden: boolean;
     isTwitterExpanded: boolean;
-    item: string;
+    activeTab: string;
     tabName: string;
-    itemUpdate: any;
+    tabUpdate: any;
 
-    onChoice(choice) {
-        this.item = choice;
+    onActiveTab(activeTab) {
+        this.activeTab = activeTab;
     }
 
-    onNewItems(item) {
-        this.itemUpdate = Object.assign({}, item);
+    onTabUpdate(tab) {
+        this.tabUpdate = Object.assign({}, tab);
     }
 
     onToggleTab(name) {
@@ -43,7 +43,7 @@ export class MainBlock {
     }
 
     onToggleSize(state) {
-        this.isTwitterExpanded = state && this.item === "twitter";
+        this.isTwitterExpanded = state && this.activeTab === "twitter";
     }
 
     onShowViewer(data) {
