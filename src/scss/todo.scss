@@ -46,16 +46,8 @@
 .todo-toggle-btn {
     visibility: visible;
     padding: 2px 8px 2px 4px;
-    border-left: 4px solid $brand-color;
     font-size: 16px;
-
-    &:not(:hover) {
-        text-shadow: $text-shadow;
-    }
-
-    &.active {
-        border-color: transparent;
-    }
+    text-shadow: $text-shadow;
 }
 
 .todo-header-input-container {
@@ -114,7 +106,7 @@
 }
 
 .todo-text {
-    word-break: break-word;
+    word-wrap: break-word;
     white-space: pre-wrap;
 }
 

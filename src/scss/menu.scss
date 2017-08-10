@@ -8,6 +8,7 @@
 .menu {
 	display: flex;
 	padding: 4px;
+	transition: background-color 0.2s;
 
 	svg {
 		width: 20px;
@@ -37,7 +38,7 @@
 	}
 }
 
-.menu-item:not(:last-of-type) {
+.menu-item {
 	margin-right: 8px;
 }
 

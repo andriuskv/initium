@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from "@angular/forms";
 
 import { TimeDateService } from "./services/timeDateService";
 import { SettingService } from "./services/settingService";
@@ -10,12 +10,10 @@ import { FeedService } from "./services/feedService";
 
 import { SlicePipe } from "./pipes/slicePipe";
 
-import { App } from './app.component';
+import { App } from "./app.component";
 import { Background } from "./components/background/background";
 import { Time } from "./components/time/time";
 import { MainBlock } from "./components/main-block/main-block";
-import { MainBlockNav } from "./components/main-block-nav/main-block-nav";
-import { MainBlockContent } from "./components/main-block-content/main-block-content";
 import { MostVisited } from "./components/most-visited/most-visited";
 import { Notepad } from "./components/notepad/notepad";
 import { Twitter } from "./components/twitter/twitter";
@@ -37,10 +35,9 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
     imports: [BrowserModule, FormsModule],
     providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService],
     declarations: [
-        App, Settings, Background, Time, MainBlock, MainBlockNav, MainBlockContent,
-        MostVisited, Notepad, Twitter, RssFeed, Weather, Menu, TodoPin, Todo,
-        UpperBlock,Timer, Stopwatch, Calendar, CalendarSelectedDay, DropboxComp,
-        TweetImageViewer, SlicePipe
+        App, Settings, Background, Time, MainBlock, MostVisited, Notepad, Twitter, RssFeed,
+        Weather, Menu, TodoPin, Todo, UpperBlock, Timer, Stopwatch, Calendar,
+        CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe
     ],
     bootstrap: [App]
 })
