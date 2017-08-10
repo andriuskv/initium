@@ -1,8 +1,7 @@
 <div class="todo" [class.is-in-background]="!visible">
     <div class="todo-container" [ngClass]="{ container: visible, visible: visible }">
         <header class="todo-header">
-            <button class="btn-transparent todo-toggle-btn" [class.active]="visible"
-                (click)="toggle()">Todo</button>
+            <button class="btn-transparent todo-toggle-btn" (click)="toggle()">Todo</button>
             <div class="todo-header-edit-btns todo-transition-target" *ngIf="todoBeingEdited; else elseHeaderBlock">
                 <button class="btn" (click)="saveTodoEdit()">Save</button>
                 <button class="btn" (click)="cancelTodoEdit()">Cancel</button>
