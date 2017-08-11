@@ -166,7 +166,7 @@ export class RssFeed {
             this.newEntryCount += entryCountSum;
 
             if (!this.isVisible) {
-                this.newEntries.emit(true);
+                this.newEntries.emit();
             }
 
             if (document.hidden) {
