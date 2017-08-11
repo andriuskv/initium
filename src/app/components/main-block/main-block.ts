@@ -44,13 +44,14 @@ import { SettingService } from "../../services/settingService";
             <most-visited [setting]="setting" [item]="tab"></most-visited>
             <notepad [item]="tab"></notepad>
             <twitter [item]="tab"
-                (newTweets)="onTabUpdate($event, 'twitter')"
+                [isExpanded]="isTwitterExpanded"
+                (newTweets)="onTabUpdate('twitter')"
                 (toggleTab)="selectTab($event, true)"
                 (toggleSize)="onToggleSize($event)"
                 (showViewer)="onShowViewer($event)">
             </twitter>
             <rss-feed [item]="tab"
-                (newEntries)="onTabUpdate($event, 'rssFeed')"
+                (newEntries)="onTabUpdate('rssFeed')"
                 (toggleTab)="selectTab($event, true)">
             </rss-feed>
         </div>
@@ -90,12 +91,12 @@ export class MainBlock {
         }
     }
 
-    onTabUpdate(isNew, name) {
-        this.tabs[name].new = isNew;
+    onTabUpdate(name) {
+        this.tabs[name].new = true;
     }
 
     onToggleSize(state) {
-        this.isTwitterExpanded = state && this.tab === "twitter";
+        this.isTwitterExpanded = state;
     }
 
     onShowViewer(data) {
@@ -107,6 +108,10 @@ export class MainBlock {
 
         if (this.tab === "twitter" || this.tab === "rssFeed") {
             this.tabs[this.tab].new = false;
+        }
+
+        if (this.tab !== "twitter" && this.isTwitterExpanded) {
+            this.isTwitterExpanded = false;
         }
         localStorage.setItem("active tab", this.tab);
     }

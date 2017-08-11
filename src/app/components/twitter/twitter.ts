@@ -17,10 +17,10 @@ export class Twitter {
     @Output() toggleSize = new EventEmitter();
     @Output() showViewer = new EventEmitter();
     @Input() item;
+    @Input() isExpanded;
 
     isLoggedIn: boolean;
     isVisible: boolean;
-    isExpanded: boolean = false;
     showPinInput: boolean;
     fetchingMoreTweets: boolean = false;
     tweets: Array<any> = [];
@@ -307,7 +307,7 @@ export class Twitter {
                         this.tweetsToLoad.unshift(...newTweets);
 
                         if (!this.isVisible) {
-                            this.newTweets.emit(true);
+                            this.newTweets.emit();
                         }
 
                         if (document.hidden) {
