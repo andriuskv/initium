@@ -1,42 +1,5 @@
 <div class="menu-container">
-    <div class="menu" [class.transparent]="!visible" *ngIf="!selectedItem">
-        <ul class="menu-item-container" [class.hidden]="!visible">
-            <li class="menu-item">
-                <button class="btn-icon" (click)="toggleUpperBlockComp()" title="Timer and stopwatch">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z" />
-                    </svg>
-                </button>
-            </li>
-            <li class="menu-item">
-                <button class="btn-icon" (click)="toggleItem('calendar')" title="Calendar">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#calendar"></use>
-                    </svg>
-                </button>
-            </li>
-            <li class="menu-item">
-                <button class="btn-icon" (click)="toggleItem('dropbox')" title="Dropbox">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#dropbox"></use>
-                    </svg>
-                </button>
-            </li>
-            <li class="menu-item">
-                <button class="btn-icon" (click)="toggleItem('settings')" title="Settings">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#settings"></use>
-                    </svg>
-                </button>
-            </li>
-        </ul>
-        <button class="btn-icon menu-toggle-btn" (click)="toggleMenu()" title="Toggle menu">
-            <svg viewBox="0 0 24 24">
-                <path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
-            </svg>
-        </button>
-    </div>
-    <div class="container" [class.hidden]="!selectedItem">
+    <div class="container menu-item-content-container" *ngIf="selectedItem; else elseBlock">
         <div class="menu-header">
             <h3 class="menu-title">{{ title }}</h3>
             <button class="btn-icon menu-close-btn" (click)="closeSelectedItem()">
@@ -49,4 +12,43 @@
         <dropbox *ngIf="selectedItem === 'dropbox'" (setting)="onSetting($event)"></dropbox>
         <calendar *ngIf="selectedItem === 'calendar'"></calendar>
     </div>
+    <ng-template #elseBlock>
+        <div class="menu" [class.transparent]="!visible">
+            <ul class="menu-item-container" [class.hidden]="!visible">
+                <li class="menu-item">
+                    <button class="btn-icon" (click)="toggleUpperBlockComp()" title="Timer and stopwatch">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z" />
+                        </svg>
+                    </button>
+                </li>
+                <li class="menu-item">
+                    <button class="btn-icon" (click)="toggleItem('calendar')" title="Calendar">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#calendar"></use>
+                        </svg>
+                    </button>
+                </li>
+                <li class="menu-item">
+                    <button class="btn-icon" (click)="toggleItem('dropbox')" title="Dropbox">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#dropbox"></use>
+                        </svg>
+                    </button>
+                </li>
+                <li class="menu-item">
+                    <button class="btn-icon" (click)="toggleItem('settings')" title="Settings">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#settings"></use>
+                        </svg>
+                    </button>
+                </li>
+            </ul>
+            <button class="btn-icon menu-toggle-btn" (click)="toggleMenu()" title="Toggle menu">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                </svg>
+            </button>
+        </div>
+    </ng-template>
 </div>

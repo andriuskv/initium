@@ -18,13 +18,11 @@
 .main-block-nav {
     display: flex;
     justify-content: center;
-    align-items: center;
     min-width: 508px;
-    height: 24px;
-    padding: 0;
-    margin-bottom: 4px;
-    user-select: none;
-    transition: all 0.2s;
+
+    &.is-tab-visible {
+        margin-bottom: 4px;
+    }
 
     &.hidden {
         height: 0;
@@ -62,7 +60,7 @@
     display: none;
     width: 588px;
     height: 318px;
-    max-height: calc(55vh - 32px);
+    max-height: calc(55vh - 36px);
 
     &.visible {
         display: block;

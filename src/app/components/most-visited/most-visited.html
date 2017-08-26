@@ -1,4 +1,4 @@
-<ul class="container most-visited" [class.visible]="item === 'mostVisited'">
+<ul class="main-block-content most-visited" [class.visible]="item === 'mostVisited'">
     <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index">
         <button class="btn-icon remove-page-btn" (click)="removePage(i)" title="Remove">
             <svg viewBox="0 0 24 24">
