@@ -8,7 +8,7 @@ declare const chrome;
 @Component({
     selector: "notepad",
     template: `
-        <div class="container main-block-content" [class.visible]="item === 'notepad'">
+        <div class="main-block-content" [class.visible]="item === 'notepad'">
             <ul class="notepad-header">
                 <li *ngIf="tabs.length > 4">
                     <button class="btn-icon notepad-shift-btn" (click)="prevVisibleTabs()" [disabled]="shift <= 0">

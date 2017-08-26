@@ -74,8 +74,11 @@
 }
 
 .timer-stopwatch-sep {
-    padding-right: 0.25em;
     font-size: 2em;
+
+    &:not(:last-of-type) {
+        padding-right: 0.25em;
+    }
 }
 
 .timer-stopwatch-controls {

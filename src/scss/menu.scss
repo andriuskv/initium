@@ -5,6 +5,15 @@
 	right: 0;
 }
 
+.menu-item-content-container {
+	border-top-left-radius: 50%;
+	transform: translate(50%, 50%) scale(0.2);
+	opacity: 0;
+    animation-name: reveal;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+}
+
 .menu {
 	display: flex;
 	padding: 4px;
@@ -25,7 +34,7 @@
 
 .menu-item-container {
 	display: flex;
-	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
+	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.4));
 
 	@media (max-width: 826px) {
 		&.hidden {
@@ -70,4 +79,26 @@
 		width: 20px;
 		height: 20px;
 	}
+}
+
+.menu-item-content {
+	opacity: 0;
+    animation-name: show;
+    animation-delay: 0.2s;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes reveal {
+    100% {
+		border-top-left-radius: 0;
+		transform: scale(1);
+		opacity: 1;
+    }
+}
+
+@keyframes show {
+    100% {
+        opacity: 1;
+    }
 }

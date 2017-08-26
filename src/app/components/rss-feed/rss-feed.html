@@ -1,4 +1,4 @@
-<div class="container main-block-content" [class.visible]="isVisible">
+<div class="main-block-content" [class.visible]="isVisible">
     <div class="feed-header" *ngIf="!loading">
         <ul class="feed-titles" [class.is-empty]="!feeds.length">
             <li class="feed-title" *ngFor="let feed of feeds; let i = index"

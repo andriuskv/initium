@@ -81,7 +81,7 @@
             <div class="reminder-form-item">
                 <div>
                     <span>Repeat every</span>
-                    <input class="input repeat-input" autocomplete="off" (keyup)="validateGapInput($event)" pattern="^0*[1-9][0-9]*$" [value]="repeatGap" required>
+                    <input type="text" class="input repeat-input" autocomplete="off" (keyup)="validateGapInput($event)" pattern="^0*[1-9][0-9]*$" [value]="repeatGap" required>
                     <span>days</span>
                 </div>
                 <div class="reminder-error-message" *ngIf="!isGapInputValid">Please insert a whole number</div>
@@ -100,10 +100,10 @@
                     <div class="radio"></div>
                     <span>
                         <span class="checkbox-label">After</span>
-                        <input class="input repeat-input" autocomplete="off" name="occurences"
+                        <input type="text" class="input repeat-input" autocomplete="off" name="occurences"
                             pattern="^0*[1-9][0-9]*$"
                             (keyup)="validateRepeatCountInput($event)"
-                            [value]="occurences"
+                            [(ngModel)]="occurences"
                             [disabled]="!isRepeatCountInputEnabled"
                             [required]="isRepeatCountInputEnabled">
                         <span>occurences</span>
