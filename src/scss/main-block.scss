@@ -6,6 +6,10 @@
     transform: translateX(-50%);
     transition: top 0.2s;
 
+    &.hidden {
+        display: none;
+    }
+
     &.expanded {
         top: 4px;
 
