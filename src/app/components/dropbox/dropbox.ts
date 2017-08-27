@@ -33,10 +33,15 @@ declare const process;
             </div>
             <ul class="dropbox-items" [class.show]="showItems">
                 <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
-                    <img src="{{ item.thumbnail }}" class="dropbox-item-thumbnail">
+                    <img src="{{ item.thumbnail }}" *ngIf="item.thumbnail; else elseBlock">
+                    <ng-template #elseBlock>
+                        <svg viewBox="0 0 24 24">
+                            <use attr.href="#{{item.icon}}"></use>
+                        </svg>
+                    </ng-template>
                     <span class="dropbox-item-name">{{ item.name }}</span>
                     <img src="./assets/images/ring.svg" class="dropbox-spinner" *ngIf="item.fetching" alt="">
-                    <span class="dropbox-item-error" [class.show]="item.error">Not an image</span>
+                    <span class="dropbox-item-error" *ngIf="item.error">Not an image</span>
                 </li>
             </ul>
         </div>
@@ -182,8 +187,7 @@ export class DropboxComp {
         this.showItems = false;
         this.fetching = true;
 
-        this.fetchDir(this.dropboxContents)
-        .then(() => {
+        this.fetchDir(this.dropboxContents).then(() => {
             this.showItems = true;
             this.fetching = false;
         });
@@ -191,8 +195,8 @@ export class DropboxComp {
 
     fetchDir(dir) {
         dir.fetching = true;
-        return this.dropbox.filesListFolder({ path: dir.path })
-        .then(res => {
+
+        return this.dropbox.filesListFolder({ path: dir.path }).then(res => {
             res.entries.forEach(entry => {
                 const newEntry: any = {
                     name: entry.name,
@@ -205,13 +209,13 @@ export class DropboxComp {
                 if (newEntry.isDir) {
                     newEntry.cached = false;
                     newEntry.items = [];
-                    newEntry.thumbnail = "./assets/images/folder-icon.png";
+                    newEntry.icon = "folder";
                 }
                 else {
-                    newEntry.thumbnail = "./assets/images/file-icon.png";
+                    newEntry.icon = "file";
+
                     if (this.isImage(entry.name)) {
-                        this.getThumbnail(newEntry.path)
-                        .then(thumbnail => {
+                        this.getThumbnail(newEntry.path).then(thumbnail => {
                             newEntry.thumbnail = thumbnail;
                             localStorage.setItem("dropbox", JSON.stringify(this.dropboxContents));
                         });
@@ -258,8 +262,8 @@ export class DropboxComp {
             return;
         }
         item.fetching = true;
-        this.dropbox.sharingGetSharedLinks({ path: item.path })
-        .then(res => {
+
+        this.dropbox.sharingGetSharedLinks({ path: item.path }).then(res => {
             const image = res.links.find(link => link.url.includes(item.name));
 
             if (!image) {
@@ -293,10 +297,12 @@ export class DropboxComp {
             }
             return;
         }
+
         if (item.cached) {
             this.activeDir = item;
             return;
         }
+
         if (!item.fetching) {
             this.fetchDir(item);
         }

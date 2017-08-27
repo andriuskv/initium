@@ -4,7 +4,7 @@ import { SettingService } from "../../services/settingService";
 @Component({
     selector: "main-block",
     template: `
-        <div class="container main-block" [class.expanded]="isTwitterExpanded">
+        <div class="container main-block" [class.expanded]="isTwitterExpanded" [class.hidden]="isNavHidden && !tab">
             <ul class="main-block-nav" [class.hidden]="isNavHidden" [class.is-tab-visible]="tab">
                 <li class="main-block-nav-item">
                     <button class="btn-icon" (click)="selectTab('mostVisited')" title="Most visited">

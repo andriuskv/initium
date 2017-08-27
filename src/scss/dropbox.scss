@@ -48,10 +48,11 @@ $brand-color: #2895F1;
 
 .dropbox-spinner {
     height: 20px;
+    margin-left: 4px;
 }
 
 .dropbox-error-message {
-    color: #fff;
+    color: $primary-text-color;
 }
 
 .dropbox-items {
@@ -63,6 +64,7 @@ $brand-color: #2895F1;
     height: calc(100% - 22px);
     margin-top: 4px;
     background-color: $color2;
+    font-size: 12px;
     transform: scale(.8);
     transition: all 0.4s;
 
@@ -78,47 +80,23 @@ $brand-color: #2895F1;
     position: relative;
     display: flex;
     align-items: center;
+    height: 24px;
     padding: 2px;
-    border-bottom: 1px solid $color3;
 
     &:hover {
         cursor: pointer;
-
-        .dropbox-item-name {
-            text-decoration: underline;
-        }
+        background-color: #3b3b3b;
     }
-
-    .dropbox-spinner {
-        margin-left: 4px;
-        font-size: 12px;
-    }
-}
-
-.dropbox-item-thumbnail {
-    vertical-align: top;
-    width: 32px;
-    height: 20px;
-    object-fit: scale-down;
 }
 
 .dropbox-item-name {
     margin-left: 4px;
-    font-size: 12px;
 }
 
 .dropbox-item-error {
-    opacity: 0;
-    visibility: hidden;
     position: absolute;
     right: 4px;
-    background-color: $color2;
-    box-shadow: 0 0 4px 8px $color2;
-    color: #888;
-    transition: all 0.2s;
-
-    &.show {
-        opacity: 1;
-        visibility: visible;
-    }
+    background-color: inherit;
+    box-shadow: 0 0 4px 8px inherit;
+    color: $secondary-text-color;
 }
