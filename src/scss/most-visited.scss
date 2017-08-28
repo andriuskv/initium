@@ -1,14 +1,15 @@
 .most-visited {
     position: relative;
-    display: none;
-    flex-wrap: wrap;
-    align-content: space-between;
     width: 508px;
     height: 212px;
+}
 
-    &.visible {
-        display: flex;
-    }
+.most-visited-items {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+    width: 100%;
+    height: 100%;
 }
 
 .most-visited-item {
@@ -70,9 +71,9 @@
     max-height: 100%;
 }
 
-.new-page-panel {
+.most-visited-mask {
     position: absolute;
-    top: 28px;
+    top: 0;
     right: 0;
     bottom: 0;
     left: 0;

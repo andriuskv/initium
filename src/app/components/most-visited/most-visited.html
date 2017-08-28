@@ -1,37 +1,43 @@
-<ul class="main-block-content most-visited" [class.visible]="item === 'mostVisited'">
-    <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index">
-        <button class="btn-icon remove-page-btn" (click)="removePage(i)" title="Remove">
-            <svg viewBox="0 0 24 24">
-                <use href="#cross"></use>
-            </svg>
-        </button>
-        <a [href]="page.url" [title]="page.title">
-            <div class="page-title">{{ page.title }}</div>
-            <div class="page-thumbnail-container">
-                <img class="page-thumbnail" alt="" [src]="page.image" [class.full]="page.uploaded">
+<div class="main-block-content most-visited" [class.visible]="item === 'mostVisited'">
+    <ul class="most-visited-items">
+        <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index">
+            <button class="btn-icon remove-page-btn" (click)="removePage(i)" title="Remove">
+                <svg viewBox="0 0 24 24">
+                    <use href="#cross"></use>
+                </svg>
+            </button>
+            <a [href]="page.url" [title]="page.title">
+                <div class="page-title">{{ page.title }}</div>
+                <div class="page-thumbnail-container">
+                    <img class="page-thumbnail" alt="" [src]="page.image" [class.full]="page.uploaded">
+                </div>
+            </a>
+        </li>
+        <li class="most-visited-item" *ngIf="!hasBackup" (click)="showPanel()">
+            <button class="btn-icon add-page-btn" title="Add new page">
+                <svg viewBox="0 0 24 24">
+                    <use href="#plus"></use>
+                </svg>
+            </button>
+        </li>
+    </ul>
+    <div class="most-visited-mask" *ngIf="isNewPagePanelVisible">
+        <form (submit)="addPage($event)" class="container new-page-form" ngNativeValidate>
+            <h2 class="new-page-form-title">Add new page</h2>
+            <input type="text" class="input" placeholder="Title" name="title" autocomplete="off">
+            <input type="text" class="input" placeholder="URL" name="url" autocomplete="off" required>
+            <div class="new-page-form-btn-container">
+                <label class="btn">
+                    <span>Choose thumbnail</span>
+                    <input type="file" class="file-input" name="thumb">
+                </label>
+                <button class="btn">Add</button>
+                <button type="button" class="btn" (click)=hidePanel()>Close</button>
             </div>
-        </a>
-    </li>
-    <li class="most-visited-item" *ngIf="!hasBackup" (click)="showPanel()">
-        <button class="btn-icon add-page-btn" title="Add new page">
-            <svg viewBox="0 0 24 24">
-                <use href="#plus"></use>
-            </svg>
-        </button>
-    </li>
-</ul>
-<div class="new-page-panel" *ngIf="isNewPagePanelVisible">
-    <form (submit)="addPage($event)" class="container new-page-form" ngNativeValidate>
-        <h2 class="new-page-form-title">Add new page</h2>
-        <input type="text" class="input" placeholder="Title" name="title" autocomplete="off">
-        <input type="text" class="input" placeholder="URL" name="url" autocomplete="off" required>
-        <div class="new-page-form-btn-container">
-            <label class="btn">
-                <span>Choose thumbnail</span>
-                <input type="file" class="file-input" name="thumb">
-            </label>
-            <button class="btn">Add</button>
-            <button type="button" class="btn" (click)=hidePanel()>Close</button>
-        </div>
-    </form>
+        </form>
+    </div>
+    <div class="most-visited-mask" *ngIf="isFetching">
+        <img src="./assets/images/ring.svg" alt="">
+    </div>
 </div>
+

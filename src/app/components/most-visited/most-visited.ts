@@ -15,6 +15,7 @@ export class MostVisited {
 
     hasBackup: boolean = true;
     isNewPagePanelVisible: boolean = false;
+    isFetching: boolean = false;
     mostVisited: any = {};
 
     constructor(private domSanitizer: DomSanitizer) {
@@ -54,10 +55,12 @@ export class MostVisited {
                 backup: data.slice(8)
             };
             this.checkBackup();
+            this.isFetching = false;
         });
     }
 
     resetMostVisited() {
+        this.isFetching = true;
         localStorage.removeItem("most visited");
         this.getMostVisited();
     }
