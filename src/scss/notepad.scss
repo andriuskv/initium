@@ -1,21 +1,16 @@
 .notepad-header {
     display: flex;
-    height: 20px;
-    margin-bottom: 2px;
-
-    li:not(:last-of-type) {
-        margin-right: 2px;
-    }
-
-    .btn-icon {
-        background-color: $color2;
-    }
+    height: 24px;
+    margin-bottom: 1px;
 }
 
 .notepad-header-item {
+    overflow: hidden;
     position: relative;
     flex: 1;
-    border-bottom: 2px solid $color2;
+    margin-right: 1px;
+    border-top: 1px solid $color2;
+    border-bottom: 1px solid $color2;
 
     &:hover .notepad-remove-tab-btn {
         display: flex;
@@ -46,22 +41,28 @@
     top: 1px;
     right: 2px;
     display: none;
-    box-shadow: -6px 0 5px 0 $color2;
+    background-color: $color2;
+    box-shadow: -2px 0 4px 0 $color2;
 }
 
-.notepad-shift-btn:disabled {
-    color: $color3;
+.notepad-shift-btn {
+    padding: 2px;
+    margin-right: 1px;
+    background-color: $color2;
 
-    &:hover {
+    &:disabled {
         color: $color3;
-        cursor: default;
+
+        &:hover {
+            color: $color3;
+            cursor: default;
+        }
     }
 }
 
-.notepad-shift-btn,
-.notepad-select-tab-btn,
 .notepad-create-new-btn {
     padding: 2px 4px;
+    background-color: $color2;
 }
 
 .notepad-input {
@@ -69,5 +70,5 @@
 
     resize: none;
     width: 100%;
-    height: calc(100% - 22px);
+    height: calc(100% - 25px);
 }

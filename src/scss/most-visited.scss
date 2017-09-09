@@ -32,11 +32,11 @@
 .page-title {
     @include text-truncate;
 
-    height: 20px;
+    height: 23px;
     padding: 0 4px;
     border-bottom: 1px solid #444;
     font-size: 12px;
-    line-height: 1.66;
+    line-height: 1.91;
 }
 
 .remove-page-btn {
@@ -44,9 +44,8 @@
     top: 1px;
     right: 2px;
     display: none;
-    padding: 0;
     background-color: $color2;
-    box-shadow: -6px 0 5px 0 $color2;
+    box-shadow: -2px 0 4px 0 $color2;
 }
 
 .add-page-btn {

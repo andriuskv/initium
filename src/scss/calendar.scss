@@ -121,11 +121,11 @@
     overflow-y: auto;
     max-height: calc(100% - 29px);
     margin-bottom: 4px;
-
 }
 
 .selected-day-remainder {
     display: flex;
+    align-items: center;
     padding: 4px;
     border-bottom: 1px solid $color2;
 
@@ -136,8 +136,10 @@
 
 .reminder-repeat-icon {
     flex-shrink: 0;
+    width: 16px;
+    height: 16px;
     margin-right: 4px;
-    color: #999;
+    color: $secondary-text-color;
 }
 
 .empty-reminder-list-message {
