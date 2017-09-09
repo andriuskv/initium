@@ -8,9 +8,10 @@ html, body {
 
 body {
     overflow: hidden;
-    font-family: $font-family;
     color: $primary-text-color;
+    font-family: $font-family;
     font-size: 14px;
+    font-display: optional;
 }
 
 a {
@@ -26,8 +27,8 @@ ul {
 }
 
 svg {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     stroke-width: 0;
     stroke: currentColor;
     fill: currentColor;
@@ -45,7 +46,7 @@ svg {
     left: 0;
     width: 100%;
     height: 100%;
-    background-size: 100% 100%;
+    background-size: cover;
     background-position: center;
 }
 

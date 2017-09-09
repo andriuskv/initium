@@ -7,6 +7,11 @@
     &.is-in-background {
         z-index: 0;
     }
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 .todo-container {
@@ -141,12 +146,16 @@
 }
 
 .todo-item-btn {
-    margin-right: 4px;
+    margin-right: 8px;
     color: $secondary-text-color;
     font-size: 12px;
 
     &:hover {
         color: $primary-text-color;
+    }
+
+    span {
+        margin-left: 2px;
     }
 }
 

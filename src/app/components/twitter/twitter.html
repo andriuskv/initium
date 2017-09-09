@@ -14,17 +14,11 @@
     </div>
     <div class="twitter-content" [class.visible]="tweets.length">
         <div class="twitter-header">
-           <div class="twitter-user">
-                <a href="{{ user.homepage }}" class="twitter-user-image-container" target="_blank">
-                    <img src="{{ user.profileImage }}" class="twitter-user-image" alt="">
-                </a>
-                <a href="{{ user.homepage }}" class="twitter-user-name" target="_blank">
-                    <span>{{ user.name }}</span>
-                </a>
-                <a href="{{ user.homepage }}" class="twitter-user-handle" target="_blank">
-                    <span>{{ user.handle }}</span>
-                </a>
-            </div>
+            <a href="{{ user.homepage }}" class="twitter-user" target="_blank">
+                <img src="{{ user.profileImage }}" class="twitter-user-image" alt="">
+                <span class="twitter-user-name">{{ user.name }}</span>
+                <span class="twitter-user-handle">{{ user.handle }}</span>
+            </a>
             <button class="btn new-tweet-btn" *ngIf="tweetsToLoad.length" (click)="loadNewTweets()">
                 <span>View {{ tweetsToLoad.length }} new tweet</span><span *ngIf="tweetsToLoad.length > 1">s</span>
             </button>

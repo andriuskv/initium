@@ -22,7 +22,7 @@ import { DOCUMENT } from "@angular/platform-browser";
                         <span>STOPWATCH</span>
                     </button>
                 </li>
-                <li class="upper-block-header-item">
+                <li class="upper-block-hide-btn">
                     <button class="btn-icon" (click)="hideComp()" title="Close">
                         <svg viewBox="0 0 24 24">
                             <use href="#cross"></use>

@@ -20,26 +20,26 @@
 
 .upper-block-header {
     display: flex;
+    align-items: flex-start;
     margin-bottom: 4px;
 }
 
 .upper-block-header-item {
-    padding: 4px;
-    border-bottom: 2px solid transparent;
+    padding-bottom: 2px;
     margin-right: 8px;
+    border-bottom: 1px solid transparent;
 
     &.active {
         border-bottom-color: $brand-color;
     }
 
-    &:last-of-type {
-        margin-left: auto;
-        margin-right: 0;
+    span {
+        margin-left: 2px;
     }
+}
 
-    svg {
-        margin-right: 2px;
-    }
+.upper-block-hide-btn {
+     margin-left: auto;
 }
 
 .upper-block-content-wrapper {

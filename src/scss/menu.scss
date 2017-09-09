@@ -19,11 +19,6 @@
 	padding: 4px;
 	transition: background-color 0.2s;
 
-	svg {
-		width: 20px;
-		height: 20px;
-	}
-
 	@media (max-width: 826px) {
 		&:not(.transparent) {
 			box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
@@ -74,11 +69,6 @@
 	position: absolute;
 	top: 4px;
 	right: 4px;
-
-	svg {
-		width: 20px;
-		height: 20px;
-	}
 }
 
 .menu-item-content {
