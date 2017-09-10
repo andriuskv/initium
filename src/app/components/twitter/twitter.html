@@ -19,9 +19,6 @@
                 <span class="twitter-user-name">{{ user.name }}</span>
                 <span class="twitter-user-handle">{{ user.handle }}</span>
             </a>
-            <button class="btn new-tweet-btn" *ngIf="tweetsToLoad.length" (click)="loadNewTweets()">
-                <span>View {{ tweetsToLoad.length }} new tweet</span><span *ngIf="tweetsToLoad.length > 1">s</span>
-            </button>
             <div class="twitter-header-btn-container">
                 <button class="btn-icon" title="Toggle size" (click)="toggleContainerSize()">
                     <svg viewBox="0 0 24 24" *ngIf="isExpanded; else elseBlock">
@@ -41,7 +38,12 @@
             </div>
         </div>
         <ul class="tweets">
-            <li class="tweet" *ngFor="let tweet of tweets" (click)= "handleClickOnTweet($event, tweet.tweetUrl)">
+            <li class="new-tweet-btn-container" [class.visible]="tweetsToLoad.length">
+                <button class="btn new-tweet-btn" (click)="loadNewTweets()">
+                    <span>View {{ tweetsToLoad.length }} new tweet</span><span *ngIf="tweetsToLoad.length > 1">s</span>
+                </button>
+            </li>
+            <li class="tweet" *ngFor="let tweet of tweets" (click)="handleClickOnTweet($event, tweet.tweetUrl)">
                 <div class="retweet" *ngIf="tweet.retweetedBy">
                     <svg class="tweet-retweet-icon" viewBox="0 0 24 24">
                         <use href="#retweet"></use>

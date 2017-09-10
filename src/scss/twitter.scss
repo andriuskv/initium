@@ -46,7 +46,6 @@ $tweet-text-color-alt: #bbb;
 }
 
 .twitter-header {
-    position: relative;
     display: flex;
     height: 25px;
     padding: 2px;
@@ -74,9 +73,10 @@ $tweet-text-color-alt: #bbb;
     }
 }
 
-.twitter-user-handle {
+.twitter-user-handle,
+.retweet-by,
+.tweeted-on {
     margin-left: 4px;
-    font-size: 12px;
     color: $tweet-text-color-alt;
 
     &:hover {
@@ -90,11 +90,25 @@ $tweet-text-color-alt: #bbb;
     margin-left: auto;
 }
 
-.new-tweet-btn {
-    position: absolute;
+.new-tweet-btn-container {
+    overflow: hidden;
+    z-index: 1;
+    position: sticky;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    visibility: hidden;
+    height: 0;
+    transition: all 0.2s;
+
+    &.visible {
+        visibility: visible;
+        height: 25px;
+        border-bottom: 1px solid $color3;
+    }
+}
+
+.new-tweet-btn {
+    width: 100%;
+    height: 100%;
 }
 
 .twitter-content {
@@ -116,12 +130,13 @@ $tweet-text-color-alt: #bbb;
     @include scrollbar($color3);
 
     overflow-y: auto;
+    backface-visibility: hidden;
     height: calc(100% - 25px);
 }
 
 .tweet {
     overflow: hidden;
-    padding: 4px 4px 4px 60px;
+    padding: 8px 4px 4px 64px;
     border-bottom: 1px solid $color3;
     transition: background-color 0.2s;
     cursor: pointer;
@@ -137,20 +152,17 @@ $tweet-text-color-alt: #bbb;
     margin-bottom: 4px;
     color: $tweet-text-color-alt;
     font-size: 12px;
+    line-height: 1;
 }
 
 .tweet-retweet-icon {
+    width: 16px;
+    height: 16px;
     margin-left: -20px;
 }
 
 .retweet-by {
-    margin-left: 4px;
     margin-right: 4px;
-    color: $tweet-text-color-alt;
-
-    &:hover {
-        text-decoration: underline;
-    }
 }
 
 .tweet-header-profile:hover .tweeted-by-name {
@@ -159,20 +171,13 @@ $tweet-text-color-alt: #bbb;
 }
 
 .tweeted-by-name {
-    font-size: 14px;
     font-weight: bold;
     color: $primary-text-color;
 }
 
 .tweeted-by-handle {
+    margin-left: 4px;
     color: $tweet-text-color-alt;
-    font-size: 12px;
-}
-
-.tweeted-on {
-    @extend .retweet-by;
-
-    font-size: 12px;
 }
 
 .twitter-profile-image {
@@ -186,7 +191,6 @@ $tweet-text-color-alt: #bbb;
 .tweet-text {
     margin-top: 4px;
     margin-bottom: 0;
-    font-size: 14px;
     white-space: pre-wrap;
     word-wrap: break-word;
 }
@@ -250,7 +254,9 @@ $tweet-text-color-alt: #bbb;
     align-items: center;
     margin-top: 8px;
     font-size: 12px;
-    color: #aaa;
+    font-weight: bold;
+    line-height: 1;
+    color: $tweet-text-color-alt;
 
     svg {
         width: 16px;
@@ -258,21 +264,19 @@ $tweet-text-color-alt: #bbb;
     }
 
     span {
-        margin-left: 2px;
-        margin-right: 8px;
+        margin-left: 4px;
+        margin-right: 12px;
     }
-
 }
 
 .more-tweets-btn {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 4px 8px;
+    height: 24px;
     width: 100%;
 
     img {
-        height: 16px;
-        margin-right: 4px;
+        height: 100%;
     }
 }
