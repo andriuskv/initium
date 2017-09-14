@@ -1,67 +1,64 @@
-<div class="todo" [class.is-in-background]="!visible">
-    <div class="todo-container" [ngClass]="{ container: visible, visible: visible }">
-        <header class="todo-header">
-            <button class="btn-transparent todo-toggle-btn" (click)="toggle()">Todo</button>
-            <div class="todo-header-edit-btns todo-transition-target" *ngIf="todoBeingEdited; else elseHeaderBlock">
-                <button class="btn" (click)="saveTodoEdit()">Save</button>
-                <button class="btn" (click)="cancelTodoEdit()">Cancel</button>
-            </div>
-            <ng-template #elseHeaderBlock>
-                <form class="todo-header-input-container todo-transition-target" (submit)="addTodo($event)" ngNativeValidate>
-                    <input class="input todo-input" type="text" name="input" autocomplete="off" required>
-                    <button type="submit" class="btn">Add</button>
-                </form>
-            </ng-template>
-        </header>
-        <textarea class="input todo-edit-input todo-transition-target"
-            [(ngModel)]="todoBeingEdited.text"
-            *ngIf="todoBeingEdited"></textarea>
-        <ul class="todos todo-transition-target" *ngIf="todos.length; else elseBlock">
-            <li class="todo-item" *ngFor="let todo of todos; let i = index"
-                [class.hidden]="todoBeingEdited && todoBeingEdited.index === i">
-                <div class="todo-item-content">
-                    <label>
-                        <input type="checkbox" class="checkbox-input"
-                            (click)="markTodoDone(i, done)"
-                            [checked]="todo.done" #done>
-                        <div class="checkbox"></div>
-                    </label>
-                    <span class="todo-text todo-item-text"
-                        [class.done]="todo.done">{{ todo.text }}</span>
-                </div>
-                <div class="todo-item-footer">
-                    <button class="btn-icon todo-item-btn" (click)="pinTodo(i)" *ngIf="!todo.done">
-                        <svg class="todo-pin-icon" [class.is-pinned]="todo.pinned" viewBox="0 0 24 24">
-                            <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
-                        </svg>
-                        <span>Pin</span>
-                    </button>
-                    <button class="btn-icon todo-item-btn" (click)="enableTodoEdit(todo.text, i)">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
-                        </svg>
-                        <span>Edit</span>
-                    </button>
-                    <button class="btn-icon todo-item-btn" (click)="removeTodo(i)">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
-                        </svg>
-                        <span>Remove</span>
-                    </button>
-                </div>
-            </li>
-        </ul>
-        <ng-template #elseBlock>
-            <div class="todo-transition-target todo-message">Your todo list is empty</div>
+<button class="btn-transparent todo-toggle-btn" [class.shifted]="visible" (click)="toggle()">Todo</button>
+<div class="container todo" [class.visible]="visible">
+    <header class="todo-header todo-transition-target">
+        <div class="todo-header-edit-btns" *ngIf="todoBeingEdited; else elseHeaderBlock">
+            <button class="btn" (click)="saveTodoEdit()">Save</button>
+            <button class="btn" (click)="cancelTodoEdit()">Cancel</button>
+        </div>
+        <ng-template #elseHeaderBlock>
+            <form class="todo-header-input-container" (submit)="addTodo($event)" ngNativeValidate>
+                <input class="input todo-input" type="text" name="input" autocomplete="off" required>
+                <button type="submit" class="btn">Add</button>
+            </form>
         </ng-template>
-        <footer class="todo-footer todo-transition-target" *ngIf="todos.length">
-            <button class="btn-icon todo-footer-btn" (click)="removeTodos()">
-                <svg viewBox="0 0 24 24">
-                    <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
-                </svg>
-                <span>Remove completed</span>
-            </button>
-        </footer>
-    </div>
-    <todo-pin *ngIf="todosToPin.length && !visible" [todos]="todosToPin"></todo-pin>
+    </header>
+    <textarea class="input todo-edit-input todo-transition-target"
+        [(ngModel)]="todoBeingEdited.text"
+        *ngIf="todoBeingEdited"></textarea>
+    <ul class="todos todo-transition-target" *ngIf="todos.length; else elseBlock">
+        <li class="todo-item" *ngFor="let todo of todos; let i = index"
+            [class.hidden]="todoBeingEdited && todoBeingEdited.index === i">
+            <div class="todo-item-content">
+                <label>
+                    <input type="checkbox" class="checkbox-input"
+                        (click)="markTodoDone(i, done)"
+                        [checked]="todo.done" #done>
+                    <div class="checkbox"></div>
+                </label>
+                <span class="todo-text todo-item-text"
+                    [class.done]="todo.done">{{ todo.text }}</span>
+            </div>
+            <div class="todo-item-footer">
+                <button class="btn-icon todo-item-btn" (click)="pinTodo(i)" *ngIf="!todo.done">
+                    <svg class="todo-pin-icon" [class.is-pinned]="todo.pinned" viewBox="0 0 24 24">
+                        <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+                    </svg>
+                    <span>Pin</span>
+                </button>
+                <button class="btn-icon todo-item-btn" (click)="enableTodoEdit(todo.text, i)">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                    </svg>
+                    <span>Edit</span>
+                </button>
+                <button class="btn-icon todo-item-btn" (click)="removeTodo(i)">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                    </svg>
+                    <span>Remove</span>
+                </button>
+            </div>
+        </li>
+    </ul>
+    <ng-template #elseBlock>
+        <div class="todo-transition-target todo-message">Your todo list is empty</div>
+    </ng-template>
+    <footer class="todo-footer todo-transition-target" *ngIf="todos.length">
+        <button class="btn-icon todo-footer-btn" (click)="removeTodos()">
+            <svg viewBox="0 0 24 24">
+                <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+            </svg>
+            <span>Remove completed</span>
+        </button>
+    </footer>
 </div>
