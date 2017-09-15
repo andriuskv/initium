@@ -9,6 +9,7 @@ export class Menu {
     @Output() setting = new EventEmitter();
 
     visible: boolean = false;
+    isClosing: boolean = false;
     title: string = "";
     selectedItem: string = "";
 
@@ -34,6 +35,11 @@ export class Menu {
     }
 
     closeSelectedItem() {
-        this.selectedItem = "";
+        this.isClosing = true;
+
+        setTimeout(() => {
+            this.selectedItem = "";
+            this.isClosing = false;
+        }, 500);
     }
 }
