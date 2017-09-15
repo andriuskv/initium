@@ -60,6 +60,7 @@ export class MostVisited {
     }
 
     resetMostVisited() {
+        this.setting = null;
         this.isFetching = true;
         localStorage.removeItem("most visited");
         this.getMostVisited();
