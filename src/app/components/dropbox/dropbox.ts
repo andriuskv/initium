@@ -7,7 +7,7 @@ declare const process;
 @Component({
     selector: "dropbox",
     template: `
-        <div class="menu-item-content dropbox-container">
+        <div class="dropbox-container">
             <div class="dropbox-header">
                 <button class="btn-icon" (click)="goBack(activeDir)" *ngIf="activeDir.path && activeDir.path !== '/'" title="Back">
                     <svg viewBox="0 0 24 24">
