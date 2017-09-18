@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from "@angular/core";
+import { updateTitle } from "../../utils";
 
 @Component({
     selector: "stopwatch",
@@ -68,6 +69,8 @@ export class Stopwatch {
         if (milliseconds >= 1000) {
             seconds += 1;
             milliseconds -= 1000;
+
+            updateTitle(hours, minutes, seconds);
         }
 
         if (seconds >= 60) {
@@ -117,6 +120,7 @@ export class Stopwatch {
         this.worker.postMessage("stop");
         this.isRunning = false;
         this.running.emit(this.isRunning);
+        document.title = "Initium";
     }
 
     reset() {

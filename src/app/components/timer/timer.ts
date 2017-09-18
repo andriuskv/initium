@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { updateTitle } from "../../utils";
 
 @Component({
     selector: "timer",
@@ -118,18 +119,6 @@ export class Timer {
         return this.padTimer({ hours, minutes, seconds });
     }
 
-    updateTitle(hours, minutes, seconds) {
-        let title = `${seconds}s | Initium`;
-
-        if (minutes) {
-            title = `${minutes}m ${title}`;
-        }
-        if (hours) {
-            title = `${hours}h ${title}`;
-        }
-        document.title = title;
-    }
-
     initAlarm() {
         if (!this.alarm) {
             this.alarm = document.createElement("audio");
@@ -188,7 +177,7 @@ export class Timer {
 
             this.timer = this.padTimer({ hours, minutes, seconds });
             this.timerInput = Object.assign({}, this.timer);
-            this.updateTitle(hours, minutes, seconds);
+            updateTitle(hours, minutes, seconds);
 
             this.timeout = setTimeout(() => {
                 this.updateTimer(startTime, elapsed);
