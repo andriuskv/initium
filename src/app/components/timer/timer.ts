@@ -152,7 +152,6 @@ export class Timer {
         if (!this.isRunning) {
             return;
         }
-
         const ideal = performance.now() - startTime;
         let diff = 0;
 
@@ -209,7 +208,6 @@ export class Timer {
         this.isRunning = false;
         this.running.emit(this.isRunning);
         clearTimeout(this.timeout);
-        document.title = "Initium";
 
         if (this.alarmOn) {
             this.alarm.pause();

@@ -120,7 +120,6 @@ export class Stopwatch {
         this.worker.postMessage("stop");
         this.isRunning = false;
         this.running.emit(this.isRunning);
-        document.title = "Initium";
     }
 
     reset() {

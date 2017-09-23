@@ -116,6 +116,10 @@ export class UpperBlock {
 
     onRunning(isRunning, component) {
         this.state[component].isRunning = isRunning;
+
+        if (!isRunning) {
+            document.title = "New Tab | Initium";
+        }
     }
 
     toggleFullscreen(target) {
