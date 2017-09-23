@@ -7,10 +7,10 @@ import { SettingService } from "../../services/settingService";
     templateUrl: "./calendar.html"
 })
 export class Calendar {
-    initialized: boolean = false;
     daySelected: boolean = false;
     timeDisplay: number = 1;
     currentDate: any = this.getCurrentDate();
+    visibleMonth: any;
     currentDay: any;
     calendar: any;
     selectedDay: any;
@@ -34,21 +34,21 @@ export class Calendar {
 
         if (!calendar[year]) {
             calendar[year] = this.getYear(year);
-            calendar.futureReminders =  calendar.futureReminders || [];
+            calendar.futureReminders = calendar.futureReminders || [];
             this.repeatFutureReminders(calendar);
         }
+
         if (calendar.currentDay) {
             const day = calendar.currentDay;
-            const previousDay = this.findDay(calendar[day.year][day.month], day.number);
+            const previousDay = calendar[day.year][day.month].days[day.number - 1];
             previousDay.isCurrentDay = false;
         }
         this.calendar = Object.assign(calendar, {
             currentYear: year,
-            currentMonth: this.getCurrentMonth(calendar, year, month),
             currentDay: this.setCurrentDay(calendar, this.currentDate)
         });
+        this.visibleMonth = this.getVisibleMonth(calendar, year, month);
         this.currentDay = this.calendar.currentDay;
-        this.initialized = true;
     }
 
     getReminderRangeString(reminder) {
@@ -67,7 +67,7 @@ export class Calendar {
     }
 
     setCurrentDay(calendar, { year, month, day }) {
-        const currentDay = this.findDay(calendar[year][month], day);
+        const currentDay = calendar[year][month].days[day - 1];
         currentDay.isCurrentDay = true;
 
         return currentDay;
@@ -84,66 +84,71 @@ export class Calendar {
     }
 
     getDaysInMonth(year, month) {
-        if (month === 0) {
-            year -= 1;
-        }
-        return new Date(year, month, 0).getDate();
+        return new Date(year, month + 1, 0).getDate();
     }
 
-    getFirstDayOfTheWeek(year, month) {
+    getFirstDayIndex(year, month) {
         const day = new Date(`${year}-${month + 1}-1`).getDay() - 1;
 
         return day === -1 ? 6 : day;
     }
 
     getYear(year) {
-        const dayArray = Array(42).fill({});
-        const monthArray = Array(12).fill(dayArray);
+        const months = [];
 
-        return monthArray.map((month, monthIndex) => {
-            const firstDayOfTheWeek = this.getFirstDayOfTheWeek(year, monthIndex);
-            const daysInAMonth = this.getDaysInMonth(year, monthIndex + 1);
-            let previousMonthDay = this.getDaysInMonth(year, monthIndex) - firstDayOfTheWeek;
-            let currentMonthDay = 0;
-            let nextMonthDay = 0;
-            let excess = 0;
+        for (let i = 0; i < 12; i++) {
+            const daysInMonth = this.getDaysInMonth(year, i);
+            const month = {
+                firstDayIndex: this.getFirstDayIndex(year, i),
+                days: []
+            };
 
-            return month.map((day, index) => {
-                let direction = 0;
-                let monthDay = 0;
-
-                if (index < firstDayOfTheWeek) {
-                    direction = -1;
-                    excess += 1;
-                    previousMonthDay += 1;
-                    monthDay = previousMonthDay;
-                }
-                else if (index >= daysInAMonth + excess) {
-                    direction = 1;
-                    nextMonthDay += 1;
-                    monthDay = nextMonthDay;
-                }
-                else {
-                    currentMonthDay += 1;
-                    monthDay = currentMonthDay;
-                }
-
-                return {
-                    direction,
+            for (let j = 0; j < daysInMonth; j++) {
+                month.days.push({
                     year,
-                    month: monthIndex + direction,
-                    number: monthDay,
+                    month: i,
+                    number: j + 1,
                     reminders: []
-                };
-            });
-        });
+                });
+            }
+            months.push(month);
+        }
+        return months;
     }
 
-    getCurrentMonth(calendar, year, month) {
+    getPreviousMonth(calendar, year, month, index) {
+        if (month < 0) {
+            year -= 1;
+            month = 11;
+            calendar[year] = calendar[year] || this.getYear(year);
+        }
         return {
-            month,
-            name: this.timeDateService.getMonth(month),
-            days: calendar[year][month]
+            days: index ? calendar[year][month].days.slice(-index) : []
+        };
+    }
+
+    getNextMonth(calendar, year, month, daysInMonth, index) {
+        if (month > 11) {
+            year += 1;
+            month = 0;
+            calendar[year] = calendar[year] || this.getYear(year);
+        }
+        return {
+            days: calendar[year][0].days.slice(0, 42 - daysInMonth - index)
+        };
+    }
+
+    getVisibleMonth(calendar, year, month) {
+        const { days, firstDayIndex } = calendar[year][month];
+
+        return {
+            previous: this.getPreviousMonth(calendar, year, month - 1, firstDayIndex),
+            next: this.getNextMonth(calendar, year, month + 1, days.length, firstDayIndex),
+            current: {
+                name: this.timeDateService.getMonth(month),
+                month,
+                days
+            }
         };
     }
 
@@ -156,18 +161,20 @@ export class Calendar {
         }
 
         while (length) {
-            const [reminder] = futureReminders.splice(length - 1);
+            const [reminder] = futureReminders;
 
-            this.repeatReminder(reminder, calendar);
+            if (calendar[reminder.year]) {
+                futureReminders.splice(0, 1);
+                this.repeatReminder(reminder, calendar);
+            }
             length -= 1;
         }
     }
 
-    setCurrentMonthAndYear(direction) {
+    setVisibleMonth(direction) {
         let year = this.calendar.currentYear;
-        let month = this.calendar.currentMonth.month;
+        let month = this.visibleMonth.current.month + direction;
 
-        month += direction;
         if (month < 0) {
             month = 11;
             year -= 1;
@@ -175,66 +182,38 @@ export class Calendar {
         else if (month > 11) {
             month = 0;
             year += 1;
-        }
 
-        if (!this.calendar[year]) {
-            this.calendar[year] = this.getYear(year);
-
-            if (direction === 1) {
-                this.repeatFutureReminders(this.calendar);
-            }
+            this.repeatFutureReminders(this.calendar);
+            this.saveCalendar();
         }
         this.calendar.currentYear = year;
-        this.calendar.currentMonth = this.getCurrentMonth(this.calendar, year, month);
+        this.visibleMonth = this.getVisibleMonth(this.calendar, year, month);
     }
 
-    findDay(days, day) {
-        return days.find(localDay => localDay.direction === 0 && localDay.number === day);
-    }
-
-    getSelectedDay(selectedDay) {
-        let year = this.calendar.currentYear;
-        let month = selectedDay.month;
-
-        if (month < 0) {
-            this.setCurrentMonthAndYear(-1);
-            year -= 1;
-            month = 11;
-        }
-        else if (month > 11) {
-            this.setCurrentMonthAndYear(1);
-            year += 1;
-            month = 0;
-        }
-        return this.findDay(this.calendar[year][month], selectedDay.number);
-    }
-
-    showDay(selectedDay) {
-        if (selectedDay.direction === 0) {
-            this.selectedDay = selectedDay;
-        }
-        else {
-            this.selectedDay = this.getSelectedDay(selectedDay);
-        }
+    showDay(day, direction = 0) {
+        this.selectedDay = day;
         this.daySelected = true;
+
+        if (direction) {
+            this.setVisibleMonth(direction);
+        }
     }
 
-    showCalendar(daySelected) {
-        this.daySelected = daySelected;
+    showCalendar() {
+        this.daySelected = false;
     }
 
     filterReminders(reminders, text) {
         return reminders.filter(reminder => reminder.text !== text);
     }
 
-    removeRepeatedReminder(reminder) {
-        const years = Object.keys(this.calendar).filter(key => Number.parseInt(key, 10));
-        const futureReminders = this.filterReminders(this.calendar.futureReminders, reminder.text);
+    removeRepeatedReminder(calendar, reminder) {
+        const years = Object.keys(calendar).filter(key => Number.parseInt(key, 10));
+        calendar.futureReminders = this.filterReminders(calendar.futureReminders, reminder.text);
 
-        this.calendar.futureReminders = futureReminders;
         years.forEach(year => {
-            this.calendar[year].forEach(month => {
-                month.forEach(day => {
+            calendar[year].forEach(month => {
+                month.days.forEach(day => {
                     if (day.reminders.length) {
                         day.reminders = this.filterReminders(day.reminders, reminder.text);
                     }
@@ -245,67 +224,88 @@ export class Calendar {
 
     removeReminder(reminder) {
         if (reminder.repeat) {
-            this.removeRepeatedReminder(reminder);
+            this.removeRepeatedReminder(this.calendar, reminder);
         }
         this.saveCalendar();
     }
 
     repeatNewReminder(reminder) {
         this.repeatReminder(reminder, this.calendar);
+        this.saveCalendar();
+    }
+
+    getNextReminderDate(calendar, year, monthIndex, dayIndex) {
+        let months = calendar[year];
+        let month = months[monthIndex];
+
+        while (dayIndex > month.days.length - 1) {
+            monthIndex += 1;
+            dayIndex -= month.days.length;
+
+            if (monthIndex > 11) {
+                year += 1;
+                monthIndex = 0;
+                months = calendar[year];
+
+                if (!months) {
+                    break;
+                }
+            }
+            month = months[monthIndex];
+        }
+        return {
+            day: dayIndex + 1,
+            month: monthIndex,
+            year
+        };
     }
 
     repeatReminder(reminder, calendar) {
-        const year = calendar[reminder.year];
-        const firstDayIndex = this.getFirstDayOfTheWeek(reminder.year, reminder.month);
-        let dayIndex = reminder.day + firstDayIndex - 1;
+        const gap = reminder.gap;
+        const months = calendar[reminder.year];
         let monthIndex = reminder.month;
-        let count = reminder.repeatCount;
+        let dayIndex = reminder.day - 1;
+        let month = months[monthIndex];
+        let day = month.days[dayIndex];
 
-        if (!year) {
-            calendar.futureReminders.push(reminder);
-            return;
-        }
+        while (true) {
+            if (!day) {
+                const date = this.getNextReminderDate(calendar, reminder.year, monthIndex, dayIndex);
 
-        while (monthIndex < year.length) {
-            const currentMonth = year[monthIndex];
-            monthIndex += 1;
+                if (date.year > reminder.year) {
+                    reminder.year = date.year;
+                    reminder.month = date.month;
+                    reminder.day = date.day;
 
-            while (dayIndex < currentMonth.length) {
-                const currentDay = currentMonth[dayIndex];
-
-                if (currentDay.direction === 0) {
-                    currentDay.reminders.push({
-                        color: reminder.color,
-                        text: reminder.text,
-                        repeat: reminder.repeat,
-                        rangeString: this.getReminderRangeString(reminder)
-                    });
-                    dayIndex += reminder.gap;
-
-                    if (reminder.repeatCount > 0) {
-                        count -= 1;
-
-                        if (!count) {
-                            return;
-                        }
+                    if (calendar[date.year]) {
+                        this.repeatReminder(reminder, calendar);
                     }
+                    else {
+                        calendar.futureReminders.push(reminder);
+                    }
+                    return;
                 }
-                else if (monthIndex < 12) {
-                    const firstDayIndex = this.getFirstDayOfTheWeek(reminder.year, monthIndex);
+                dayIndex = date.day - 1;
+                monthIndex = date.month;
+                month = months[monthIndex];
+                day = month.days[dayIndex];
+            }
+            day.reminders.push({
+                color: reminder.color,
+                text: reminder.text,
+                repeat: reminder.repeat,
+                rangeString: this.getReminderRangeString(reminder)
+            });
 
-                    dayIndex = currentDay.number + firstDayIndex - 1;
-                    break;
-                }
-                else {
-                    reminder.year = reminder.year + 1;
-                    reminder.month = 0;
-                    reminder.day = currentDay.number;
-                    reminder.repeatCount = count;
+            if (reminder.repeatCount > 0) {
+                reminder.repeatCount -= 1;
 
-                    this.repeatReminder(reminder, calendar);
+                if (!reminder.repeatCount) {
                     return;
                 }
             }
+            dayIndex += gap;
+            day = month.days[dayIndex];
         }
     }
 

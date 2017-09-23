@@ -46,7 +46,7 @@ export class CalendarSelectedDay {
     }
 
     showCalendar() {
-        this.event.emit(false);
+        this.event.emit();
     }
 
     showReminderForm() {
@@ -242,15 +242,17 @@ export class CalendarSelectedDay {
         if (this.isRepeatEnabled) {
             newReminder.year = this.day.year;
             newReminder.month = this.day.month;
-            newReminder.day = this.day.number + this.repeatGap;
+            newReminder.day = this.day.number;
             newReminder.gap = this.repeatGap;
-            newReminder.repeatCount = this.repeatCount - 1;
-            newReminder.repeat = true;
+            newReminder.repeatCount = this.repeatCount;
+            newReminder.repeat = !this.repeatCount || this.repeatCount > 1;
             this.repeat.emit(newReminder);
             this.isRepeatEnabled = false;
         }
-        this.day.reminders.push(newReminder);
-        this.update.emit();
+        else {
+            this.day.reminders.push(newReminder);
+            this.update.emit();
+        }
         this.hideReminderForm();
     }
 }

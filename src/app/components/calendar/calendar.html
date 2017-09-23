@@ -10,13 +10,13 @@
     </div>
     <div class="calendar" *ngIf="!daySelected; else elseBlock">
         <div class="calendar-header">
-            <button class="btn-icon calendar-header-btn" (click)="setCurrentMonthAndYear(-1)" title="Previous month">
+            <button class="btn-icon calendar-header-btn" (click)="setVisibleMonth(-1)" title="Previous month">
                 <svg viewBox="0 0 24 24">
                     <use href="#chevron-left"></use>
                 </svg>
             </button>
-            <span class="calendar-title">{{ calendar.currentMonth.name }} {{ calendar.currentYear }}</span>
-            <button class="btn-icon calendar-header-btn" (click)="setCurrentMonthAndYear(1)" title="Next month">
+            <span class="calendar-title">{{ visibleMonth.current.name }} {{ calendar.currentYear }}</span>
+            <button class="btn-icon calendar-header-btn" (click)="setVisibleMonth(1)" title="Next month">
                 <svg viewBox="0 0 24 24">
                     <use href="#chevron-right"></use>
                 </svg>
@@ -33,15 +33,22 @@
         </ul>
         <ul class="calendar-month-days">
             <li class="calendar-cell calendar-month-day"
-                *ngFor="let day of calendar.currentMonth.days; let i = index"
-                [class.is-current-month-day]="day.direction === 0"
+                *ngFor="let day of visibleMonth.previous.days"
+                (click)="showDay(day, -1)">
+                <div>{{ day.number }}</div>
+            </li>
+            <li class="calendar-cell calendar-month-day is-current-month-day"
+                *ngFor="let day of visibleMonth.current.days"
                 [class.current-day]="day.isCurrentDay"
-                (click)="showDay(day, i)">
+                (click)="showDay(day)">
                 <div>{{ day.number }}</div>
                 <div class="day-reminders" *ngIf="day.reminders.length">
                     <div class="day-reminder" *ngFor="let reminder of day.reminders"
                         [ngStyle]="{ 'background-color': reminder.color }"></div>
                 </div>
+            </li>
+            <li class="calendar-cell calendar-month-day" *ngFor="let day of visibleMonth.next.days" (click)="showDay(day, 1)">
+                <div>{{ day.number }}</div>
             </li>
         </ul>
     </div>
@@ -50,7 +57,7 @@
             <calendar-selected-day
                 [timeDisplay]="timeDisplay"
                 [day]="selectedDay"
-                (event)="showCalendar($event)"
+                (event)="showCalendar()"
                 (update)="updateReminder($event)"
                 (remove)="removeReminder($event)"
                 (repeat)="repeatNewReminder($event)">
