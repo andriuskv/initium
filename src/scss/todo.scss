@@ -6,9 +6,11 @@
     padding: 4px;
     text-shadow: $text-shadow;
     transition: 0.2s transform;
+    transition-delay: 0.2s;
 
     &.shifted {
         transform: translate(4px, 4px);
+        transition-delay: 0s;
     }
 }
 
