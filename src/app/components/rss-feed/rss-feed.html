@@ -1,7 +1,7 @@
 <div class="main-block-content" [class.visible]="isVisible">
     <ul class="feed-header" *ngIf="feeds.length">
         <li class="feed-header-item" *ngFor="let feed of feeds; let i = index" [class.active]="feed.url === activeFeed">
-            <button class="btn feed-select-btn" title="Select feed" (click)="showFeed(feed)">
+            <button class="btn-icon feed-select-btn" title="Select feed" (click)="showFeed(feed)">
                 <span *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
                 <span>{{ feed.title }}</span>
             </button>
@@ -27,18 +27,21 @@
         </li>
     </ul>
     <div class="feed-loader" *ngIf="loading">
-        <svg viewBox="0 0 24 24">
+        <svg viewBox="0 0 24 24" class="feed-icon">
             <use href="#rss"></use>
         </svg>
         <span>RSS feed</span>
     </div>
     <div class="feed-hero" [class.has-no-feeds]="!feeds.length" *ngIf="!activeFeed && !loading">
+        <svg viewBox="0 0 24 24" class="feed-icon">
+            <use href="#rss"></use>
+        </svg>
         <h2 class="feed-hero-title">Add RSS Feed</h2>
-        <form class="feed-input-container" (submit)="handleFormSubmit($event)" ngNativeValidate>
+        <form (submit)="handleFormSubmit($event)" ngNativeValidate>
             <label for="feed-title-input" class="feed-input-label">Title</label>
-            <input type="text" id="feed-title-input" class="input input-light feed-input" name="title" autocomplete="off">
+            <input type="text" id="feed-title-input" class="input feed-input" name="title" autocomplete="off">
             <label for="feed-url-input" class="feed-input-label">URL</label>
-            <input type="text" id="feed-url-input" class="input input-light feed-input" name="url" autocomplete="off" required>
+            <input type="text" id="feed-url-input" class="input feed-input" name="url" autocomplete="off" required>
             <div class="feed-add-btn-container">
                 <img src="./assets/images/ring.svg" *ngIf="fetching" alt="">
                 <span class="feed-message">{{ message }}</span>
