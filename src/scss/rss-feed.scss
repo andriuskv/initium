@@ -1,23 +1,20 @@
 .feed-header {
     display: flex;
-    height: 24px;
-    margin-bottom: 1px;
+    height: 25px;
+    border-bottom: 1px solid $color2;
 }
 
 .feed-header-item {
     overflow: hidden;
     position: relative;
     flex: 1;
-    margin-right: 1px;
-    border-top: 1px solid $color2;
-    border-bottom: 1px solid $color2;
 
     &:hover .feed-title-btns {
         display: flex;
     }
 
     &.active {
-        border-bottom-color: $brand-color;
+        box-shadow: 0 1px 0 0 $brand-color;
     }
 }
 
@@ -35,13 +32,12 @@
     top: 1px;
     right: 2px;
     display: none;
-    background-color: $color2;
-    box-shadow: 2px 0 4px 4px $color2;
+    background-color: $color3;
+    box-shadow: 2px 0 4px 4px $color3;
 }
 
 .add-new-feed-btn {
     padding: 2px 4px;
-    background-color: $color2;
 }
 
 .feed-loader {
@@ -50,12 +46,6 @@
     align-items: center;
     flex-direction: column;
     height: calc(100% - 22px);
-
-    svg {
-        width: 64px;
-        height: 64px;
-        color: #fa9b39;
-    }
 
     span {
         font-size: 18px;
@@ -68,24 +58,21 @@
     align-items: center;
     justify-content: center;
     height: calc(100% - 25px);
-    background-color: $color2;
 
     &.has-no-feeds {
         height: 100%;
     }
 }
 
+.feed-icon {
+    width: 64px;
+    height: 64px;
+    color: #fa9b39;
+}
+
 .feed-hero-title {
     margin-top: 0;
     margin-bottom: 8px;
-}
-
-.feed-input-container {
-    text-align: right;
-
-    .btn {
-        background-color: $color3;
-    }
 }
 
 .feed-input-label {
@@ -116,17 +103,16 @@
 }
 
 .feeds {
-    @include scrollbar($color3);
+    @include scrollbar($color2);
 
     overflow-y: auto;
     height: calc(100% - 25px);
-    background-color: $color2;
 }
 
 .feed-entry {
     padding: 4px;
     margin: 4px 4px 0 4px;
-    border-bottom: 1px solid $color3;
+    border-bottom: 1px solid $color2;
 
     &:last-of-type {
         border-bottom: none;

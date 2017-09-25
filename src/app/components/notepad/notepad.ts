@@ -20,7 +20,7 @@ declare const chrome;
                 <li class="notepad-header-item"
                     *ngFor="let tab of visibleTabs; let i = index"
                     [class.active]="activeTabIndex === i">
-                    <button class="btn notepad-select-tab-btn" (click)="hideInputAndSelectTab(i)"
+                    <button class="btn-icon notepad-select-tab-btn" (click)="hideInputAndSelectTab(i)"
                         *ngIf="!tab.settingTitle">{{ tab.title }}</button>
                     <button class="btn-icon notepad-remove-tab-btn" (click)="removeTab(i)"
                         *ngIf="tabs.length > 1 && !tab.settingTitle"
