@@ -31,13 +31,13 @@
             <li class="calendar-cell">Sat</li>
             <li class="calendar-cell">Sun</li>
         </ul>
-        <ul class="calendar-month-days">
-            <li class="calendar-cell calendar-month-day"
+        <ul class="calendar-days">
+            <li class="calendar-cell calendar-day"
                 *ngFor="let day of visibleMonth.previous.days"
                 (click)="showDay(day, -1)">
                 <div>{{ day.number }}</div>
             </li>
-            <li class="calendar-cell calendar-month-day is-current-month-day"
+            <li class="calendar-cell calendar-day is-current-month-day"
                 *ngFor="let day of visibleMonth.current.days"
                 [class.current-day]="day.isCurrentDay"
                 (click)="showDay(day)">
@@ -47,7 +47,7 @@
                         [ngStyle]="{ 'background-color': reminder.color }"></div>
                 </div>
             </li>
-            <li class="calendar-cell calendar-month-day" *ngFor="let day of visibleMonth.next.days" (click)="showDay(day, 1)">
+            <li class="calendar-cell calendar-day" *ngFor="let day of visibleMonth.next.days" (click)="showDay(day, 1)">
                 <div>{{ day.number }}</div>
             </li>
         </ul>

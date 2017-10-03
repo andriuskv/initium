@@ -1,6 +1,6 @@
 .calendar-container {
     display: flex;
-    height: 305px;
+    height: 300px;
 }
 
 .current-day-reminder-container {
@@ -56,7 +56,7 @@
 }
 
 .calendar-week-days,
-.calendar-month-days {
+.calendar-days {
     display: flex;
     justify-content: space-between;
 }
@@ -67,14 +67,14 @@
     align-items: center;
     width: 50px;
     height: 38px;
-    margin-top: 1px;
 }
 
-.calendar-month-days {
+.calendar-days {
     flex-wrap: wrap;
+    height: calc(100% - 70px);
 }
 
-.calendar-month-day {
+.calendar-day {
     position: relative;
     color: $secondary-text-color;
 

@@ -115,26 +115,3 @@ svg {
         background-color: $brand-color;
     }
 }
-
-.panel {
-    width: 240px;
-    padding: 4px;
-    border-left: 4px solid $brand-color;
-    transition: 0.1s background-color;
-
-    &:hover {
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
-        background-color: $color3;
-
-        .panel-item:not(:last-of-type) {
-            border-bottom-color: $color2;
-        }
-    }
-}
-
-.panel-item {
-    padding-top: 2px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid transparent;
-    text-shadow: $text-shadow;
-}
