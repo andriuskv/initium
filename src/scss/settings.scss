@@ -9,12 +9,8 @@
     margin-bottom: 4px;
 }
 
-.settings-nav-item {
-    border-bottom: 1px solid transparent;
-
-    &.active {
-        border-color: $brand-color;
-    }
+.settings-nav-item.active {
+    box-shadow: 0 1px 0 0 #268bd2;
 }
 
 .setting {
