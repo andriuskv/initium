@@ -39,7 +39,6 @@
 .calendar-header {
     display: flex;
     align-items: center;
-    padding-bottom: 4px;
 }
 
 .calendar-header-btn {
@@ -61,21 +60,25 @@
     justify-content: space-between;
 }
 
-.calendar-cell {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
+.calendar-week-days {
     height: 38px;
 }
 
 .calendar-days {
     flex-wrap: wrap;
-    height: calc(100% - 70px);
+    height: calc(100% - 66px);
+}
+
+.calendar-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
 }
 
 .calendar-day {
     position: relative;
+    margin-top: 1px;
     color: $secondary-text-color;
 
     &.is-current-month-day {
