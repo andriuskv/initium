@@ -48,8 +48,9 @@ export class Twitter {
             return;
         }
 
-        if (this.isVisible && !this.tweets.length && this.twitterTimeout.data.handleId > 0) {
+        if (this.isVisible && !this.tweets.length && this.twitterTimeout) {
             clearTimeout(this.twitterTimeout);
+            this.twitterTimeout = null;
             this.fetchTweets();
         }
     }
@@ -187,7 +188,7 @@ export class Twitter {
         return text;
     }
 
-    getMediaUrl(media) {
+    getMedia(media) {
         if (!media.length) {
             return;
         }
@@ -229,7 +230,7 @@ export class Twitter {
             profileImg: tweet.user.profile_image_url_https,
             text: this.replaceTweetEntities(tweet.text, entities),
             created: this.getTweetDate(tweet.created_at),
-            media: this.getMediaUrl(entities.media),
+            media: this.getMedia(entities.media),
             retweetCount: tweet.retweet_count,
             likeCount: tweet.favorite_count,
             retweetedBy: null
