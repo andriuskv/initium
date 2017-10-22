@@ -2,7 +2,7 @@
     <ul class="feed-header" *ngIf="feeds.length">
         <li class="feed-header-item" *ngFor="let feed of feeds; let i = index" [class.active]="feed.url === activeFeed">
             <button class="btn-icon feed-select-btn" title="Select feed" (click)="showFeed(feed)">
-                <span *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
+                <span class="feed-new-entry-count" *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
                 <span>{{ feed.title }}</span>
             </button>
             <div class="feed-title-btns">

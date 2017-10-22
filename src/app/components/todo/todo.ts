@@ -35,18 +35,15 @@ export class Todo {
 
     markTodoDone(index, done) {
         const todo = this.todos[index];
-        let firstDoneTodoIndex = this.todos.findIndex(todo => todo.done);
         todo.done = done.checked;
-        todo.pinned = false;
 
-        if (todo.done) {
-            if (firstDoneTodoIndex === -1) {
-                firstDoneTodoIndex = this.todos.length;
-            }
-            firstDoneTodoIndex -= 1;
+        if (todo.done && todo.pinned) {
+            const newIndex = this.todos.filter(todo => todo.pinned).length;
+            todo.pinned = false;
+
+            this.todos.splice(index, 1);
+            this.todos.splice(newIndex, 0, todo);
         }
-        this.todos.splice(index, 1);
-        this.todos.splice(firstDoneTodoIndex, 0, todo);
         this.saveTodos(this.todos);
     }
 

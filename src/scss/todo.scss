@@ -136,11 +136,12 @@
 }
 
 .todo-pin-icon {
-    transition: 0.2s transform;
+    transition: 0.2s transform, 0.2s color;
     transform: rotateZ(-45deg);
 
     &.is-pinned {
         transform: rotateZ(0);
+        color: $primary-text-color;
     }
 }
 
@@ -151,7 +152,7 @@
 
 .todo-item-footer {
     display: flex;
-    margin-top: 4px;
+    margin-top: 8px;
     margin-left: 18px;
 }
 
