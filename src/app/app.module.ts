@@ -7,6 +7,7 @@ import { SettingService } from "./services/settingService";
 import { WeatherService } from "./services/weatherService";
 import { NotificationService } from "./services/notificationService";
 import { FeedService } from "./services/feedService";
+import { ZIndexService } from "./services/zIndexService";
 
 import { SlicePipe } from "./pipes/slicePipe";
 
@@ -32,7 +33,7 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
 
 @NgModule({
     imports: [BrowserModule, FormsModule],
-    providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService],
+    providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService, ZIndexService],
     declarations: [
         App, Settings, Background, Time, MainBlock, MostVisited, Notepad, Twitter, RssFeed,
         Weather, Menu, Todo, UpperBlock, Timer, Stopwatch, Calendar,

@@ -1,6 +1,7 @@
 /* global chrome */
 
 import { Component } from "@angular/core";
+import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "todo",
@@ -10,6 +11,11 @@ export class Todo {
     visible: boolean = false;
     todos: Array<any> = [];
     todoBeingEdited: any;
+    zIndex: number = 0;
+
+    constructor(private zIndexService: ZIndexService) {
+        this.zIndexService = zIndexService;
+    }
 
     ngOnInit() {
         chrome.storage.sync.get("todos", storage => {
@@ -19,6 +25,10 @@ export class Todo {
 
     toggle() {
         this.visible = !this.visible;
+
+        if (this.visible) {
+            this.zIndex = this.zIndexService.inc();
+        }
     }
 
     addTodo({ target }) {
@@ -38,7 +48,7 @@ export class Todo {
         todo.done = done.checked;
 
         if (todo.done && todo.pinned) {
-            const newIndex = this.todos.filter(todo => todo.pinned).length;
+            const newIndex = this.todos.filter(todo => todo.pinned).length - 1;
             todo.pinned = false;
 
             this.todos.splice(index, 1);

@@ -1,10 +1,11 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { SettingService } from "../../services/settingService";
+import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "main-block",
     template: `
-        <div class="container main-block" [class.expanded]="isTwitterExpanded" [class.hidden]="isNavHidden && !tab">
+        <div class="container main-block" [class.expanded]="isTwitterExpanded" [class.hidden]="isNavHidden && !tab" [style.zIndex]="zIndex">
             <ul class="main-block-nav" [class.hidden]="isNavHidden" [class.is-tab-visible]="tab">
                 <li class="main-block-nav-item">
                     <button class="btn-icon" (click)="selectTab('mostVisited')" title="Most visited">
@@ -64,6 +65,7 @@ export class MainBlock {
     isNavHidden: boolean;
     isTwitterExpanded: boolean;
     tab: string = "";
+    zIndex: number = 0;
     tabs: any = {
         twitter: {
             new: false
@@ -73,8 +75,9 @@ export class MainBlock {
         }
     };
 
-    constructor(private settingService: SettingService) {
+    constructor(private settingService: SettingService, private zIndexService: ZIndexService) {
         this.settingService = settingService;
+        this.zIndexService = zIndexService;
     }
 
     ngOnInit() {
@@ -97,6 +100,10 @@ export class MainBlock {
 
     onToggleSize(state) {
         this.isTwitterExpanded = state;
+
+        if (state) {
+            this.zIndex = this.zIndexService.inc();
+        }
     }
 
     onShowViewer(data) {
@@ -105,6 +112,10 @@ export class MainBlock {
 
     selectTab(tab, keepVisible) {
         this.tab = tab === this.tab && !keepVisible ? "" : tab;
+
+        if (this.tab) {
+            this.zIndex = this.zIndexService.inc();
+        }
 
         if (this.tab === "twitter" || this.tab === "rssFeed") {
             this.tabs[this.tab].new = false;
