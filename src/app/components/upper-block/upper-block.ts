@@ -1,10 +1,11 @@
 import { Component, Input, Output, EventEmitter, Inject } from "@angular/core";
 import { DOCUMENT } from "@angular/platform-browser";
+import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "upper-block",
     template: `
-        <div class="container upper-block" [class.visible]="visible">
+        <div class="container upper-block" [class.visible]="visible" [style.zIndex]="zIndex">
             <ul class="upper-block-header">
                 <li class="upper-block-header-item" [class.active]="active === 'timer'">
                     <button class="btn-icon" (click)="toggleTab('timer')">
@@ -62,14 +63,16 @@ export class UpperBlock {
     @Output() hide = new EventEmitter();
     @Input() toggleComp;
 
-    active: string = "timer";
     isInFullscreen: boolean = false;
     visible: boolean = false;
-    state: any;
+    active: string = "timer";
     fullscreenBtnTitle: string = "Enter fullscreen";
+    zIndex: number = 0;
+    state: any;
 
-    constructor(@Inject(DOCUMENT) private document) {
+    constructor( @Inject(DOCUMENT) private document, private zIndexService: ZIndexService) {
         this.document = document;
+        this.zIndexService = zIndexService;
         this.state = {
             timer: {
                 isRunning: false,
@@ -93,6 +96,10 @@ export class UpperBlock {
 
         if (!toggle.firstChange) {
             this.visible = toggle.currentValue;
+
+            if (this.visible) {
+                this.zIndex = this.zIndexService.inc();
+            }
         }
     }
 

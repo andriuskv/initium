@@ -52,8 +52,8 @@
                     <span>Retweeted</span>
                 </div>
                 <div>
-                    <a href="{{ tweet.userUrl }}" class="tweet-header-profile" target="_blank" alt="">
-                        <img src="{{ tweet.profileImg }}" class="twitter-profile-image">
+                    <a href="{{ tweet.userUrl }}" class="tweet-header-profile" target="_blank">
+                        <img src="{{ tweet.profileImg }}" class="twitter-profile-image" alt="">
                         <span class="tweeted-by-name">{{ tweet.name }}</span>
                         <span class="tweeted-by-handle">{{ tweet.handle }}</span>
                     </a>
@@ -65,7 +65,7 @@
                         <div class="tweet-media-item"
                             *ngFor="let media of tweet.media; let i = index"
                             (click)="handleImageClick($event, tweet.media, i)">
-                            <img src="{{ media.url }}" class="tweet-image">
+                            <img src="{{ media.url }}" class="tweet-image" alt="">
                         </div>
                     </div>
                     <ng-template #elseBlock>

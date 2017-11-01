@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter } from "@angular/core";
+import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "menu",
@@ -12,6 +13,11 @@ export class Menu {
     isClosing: boolean = false;
     title: string = "";
     selectedItem: string = "";
+    zIndex: number = 0;
+
+    constructor(private zIndexService: ZIndexService) {
+        this.zIndexService = zIndexService;
+    }
 
     toggleUpperBlockComp() {
         this.toggle.emit("upper");
@@ -27,11 +33,16 @@ export class Menu {
 
     toggleMenu() {
         this.visible = !this.visible;
+
+        if (this.visible) {
+            this.zIndex = this.zIndexService.inc();
+        }
     }
 
     toggleItem(item) {
         this.selectedItem = item;
         this.title = this.capitalize(item);
+        this.zIndex = this.zIndexService.inc();
     }
 
     closeSelectedItem() {
