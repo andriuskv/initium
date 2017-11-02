@@ -18,8 +18,8 @@ export class SettingService {
                 url: ""
             },
             general: {
-                notificationDisabled: false,
-                notificationFocusDisabled: false
+                notificationDisabled: true,
+                notificationFocusDisabled: true
             },
             mainBlock: {
                 hideItemBar: false
