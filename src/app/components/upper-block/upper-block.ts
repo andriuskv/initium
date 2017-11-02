@@ -5,7 +5,10 @@ import { ZIndexService } from "../../services/zIndexService";
 @Component({
     selector: "upper-block",
     template: `
-        <div class="container upper-block" [class.visible]="visible" [style.zIndex]="zIndex">
+        <div class="container upper-block"
+            [class.visible]="visible"
+            [style.zIndex]="zIndex"
+            (click)="handleClickOnContainer()">
             <ul class="upper-block-header">
                 <li class="upper-block-header-item" [class.active]="active === 'timer'">
                     <button class="btn-icon" (click)="toggleTab('timer')">
@@ -136,5 +139,9 @@ export class UpperBlock {
         else {
             target.webkitRequestFullScreen();
         }
+    }
+
+    handleClickOnContainer() {
+        this.zIndex = this.zIndexService.incIfLess(this.zIndex);
     }
 }

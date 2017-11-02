@@ -33,16 +33,11 @@ export class Menu {
 
     toggleMenu() {
         this.visible = !this.visible;
-
-        if (this.visible) {
-            this.zIndex = this.zIndexService.inc();
-        }
     }
 
     toggleItem(item) {
         this.selectedItem = item;
         this.title = this.capitalize(item);
-        this.zIndex = this.zIndexService.inc();
     }
 
     closeSelectedItem() {
@@ -52,5 +47,9 @@ export class Menu {
             this.selectedItem = "";
             this.isClosing = false;
         }, 500);
+    }
+
+    handleClickOnContainer() {
+        this.zIndex = this.zIndexService.incIfLess(this.zIndex);
     }
 }

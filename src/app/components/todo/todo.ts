@@ -101,4 +101,8 @@ export class Todo {
     cancelTodoEdit() {
         this.todoBeingEdited = null;
     }
+
+    handleClickOnContainer() {
+        this.zIndex = this.zIndexService.incIfLess(this.zIndex);
+    }
 }

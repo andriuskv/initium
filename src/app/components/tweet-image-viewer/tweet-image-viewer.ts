@@ -1,9 +1,10 @@
 import { Component, Input } from "@angular/core";
+import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "tweet-image-viewer",
     template: `
-        <div class="tweet-image-viewer" *ngIf="images.length" (click)="handleClick($event)">
+        <div class="tweet-image-viewer" *ngIf="images.length" (click)="handleClick($event)" [style.zIndex]="zIndex">
             <div class="viewer-image-container">
                 <button class="btn-icon viewer-direction-btn left"
                     *ngIf="images.length > 1"
@@ -45,7 +46,12 @@ export class TweetImageViewer {
 
     images: Array<any> = [];
     loading: boolean = true;
+    zIndex: number = 0;
     index: number;
+
+    constructor(private zIndexService: ZIndexService) {
+        this.zIndexService = zIndexService;
+    }
 
     ngOnChanges(changes) {
         const data = changes.data;
@@ -55,6 +61,7 @@ export class TweetImageViewer {
         }
         this.index = data.currentValue.startIndex;
         this.images = data.currentValue.images;
+        this.zIndex = this.zIndexService.inc();
         this.loading = true;
     }
 
