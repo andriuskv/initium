@@ -1,5 +1,10 @@
-<button class="btn-transparent todo-toggle-btn" [class.shifted]="visible" (click)="toggle() " [style.zIndex]="zIndex + 1">Todo</button>
-<div class="container todo" [class.visible]="visible" [style.zIndex]="zIndex">
+<button class="btn-transparent todo-toggle-btn"
+    [class.shifted]="visible"
+    [style.zIndex]="zIndex + 1"
+    (click)="toggle()">Todo</button>
+<div class="container todo"
+    [class.visible]="visible"
+    [style.zIndex]="zIndex" (click)="handleClickOnContainer()">
     <header class="todo-header todo-transition-target">
         <div class="todo-header-edit-btns" *ngIf="todoBeingEdited; else elseHeaderBlock">
             <button class="btn" (click)="saveTodoEdit()">Save</button>

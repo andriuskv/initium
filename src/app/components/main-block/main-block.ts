@@ -5,7 +5,11 @@ import { ZIndexService } from "../../services/zIndexService";
 @Component({
     selector: "main-block",
     template: `
-        <div class="container main-block" [class.expanded]="isTwitterExpanded" [class.hidden]="isNavHidden && !tab" [style.zIndex]="zIndex">
+        <div class="container main-block"
+            [class.expanded]="isTwitterExpanded"
+            [class.hidden]="isNavHidden && !tab"
+            [style.zIndex]="zIndex"
+            (click)="handleClickOnContainer()">
             <ul class="main-block-nav" [class.hidden]="isNavHidden" [class.is-tab-visible]="tab">
                 <li class="main-block-nav-item">
                     <button class="btn-icon" (click)="selectTab('mostVisited')" title="Most visited">
@@ -100,10 +104,6 @@ export class MainBlock {
 
     onToggleSize(state) {
         this.isTwitterExpanded = state;
-
-        if (state) {
-            this.zIndex = this.zIndexService.inc();
-        }
     }
 
     onShowViewer(data) {
@@ -113,10 +113,6 @@ export class MainBlock {
     selectTab(tab, keepVisible) {
         this.tab = tab === this.tab && !keepVisible ? "" : tab;
 
-        if (this.tab) {
-            this.zIndex = this.zIndexService.inc();
-        }
-
         if (this.tab === "twitter" || this.tab === "rssFeed") {
             this.tabs[this.tab].new = false;
         }
@@ -125,5 +121,9 @@ export class MainBlock {
             this.isTwitterExpanded = false;
         }
         localStorage.setItem("active tab", this.tab);
+    }
+
+    handleClickOnContainer() {
+        this.zIndex = this.zIndexService.incIfLess(this.zIndex);
     }
 }
