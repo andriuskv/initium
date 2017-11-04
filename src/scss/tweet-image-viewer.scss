@@ -15,13 +15,20 @@
     position: relative;
     max-width: calc(100% - 80px);
     max-height: 100%;
+    animation-name: appear;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+
+    &.hidden {
+        display: none;
+    }
 }
 
 .viewer-direction-btn {
     position: absolute;
     top: 0;
     width: 50%;
-    height: calc(100% - 20px);
+    height: calc(100% - 24px);
 
     &.left {
         left: 0;
@@ -63,10 +70,6 @@
 .viewer-image {
     display: block;
     border-radius: 4px;
-
-    &.hidden {
-        opacity: 0;
-    }
 }
 
 .viewer-close-btn {
@@ -74,9 +77,13 @@
     position: absolute;
     top: 8px;
     right: 8px;
+}
 
-    svg {
-        width: 20px;
-        height: 20px;
+@keyframes appear {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }
