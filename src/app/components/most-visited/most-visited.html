@@ -1,13 +1,15 @@
 <div class="main-block-content most-visited" [class.visible]="item === 'mostVisited'">
     <ul class="most-visited-items">
         <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index">
-            <button class="btn-icon remove-page-btn" (click)="removePage(i)" title="Remove">
-                <svg viewBox="0 0 24 24">
-                    <use href="#cross"></use>
-                </svg>
-            </button>
             <a [href]="page.url" [title]="page.title">
-                <div class="page-title">{{ page.title }}</div>
+                <div class="page-title">
+                    <span>{{ page.title }}</span>
+                    <button class="btn-icon remove-page-btn" (click)="removePage($event, i)" title="Remove">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#cross"></use>
+                        </svg>
+                    </button>
+                </div>
                 <div class="page-thumbnail-container">
                     <img class="page-thumbnail" alt="" [src]="page.image" [class.full]="page.uploaded">
                 </div>
@@ -27,7 +29,7 @@
             <input type="text" class="input" placeholder="Title" name="title" autocomplete="off">
             <input type="text" class="input" placeholder="URL" name="url" autocomplete="off" required>
             <div class="new-page-form-btn-container">
-                <label class="btn">
+                <label class="btn file-input-btn">
                     <span>Choose thumbnail</span>
                     <input type="file" class="file-input" name="thumb">
                 </label>
