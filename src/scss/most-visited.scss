@@ -1,7 +1,6 @@
 .most-visited {
     position: relative;
-    width: 508px;
-    height: 212px;
+    height: 250px;
 }
 
 .most-visited-items {
@@ -30,8 +29,7 @@
 
 .most-visited-item {
     overflow: hidden;
-    position: relative;
-    background-color: $color2;
+    border: 1px solid $color2;
 
     &:hover .remove-page-btn {
         display: flex;
@@ -41,20 +39,21 @@
 .page-title {
     @include text-truncate;
 
-    height: 23px;
-    padding: 0 4px;
-    border-bottom: 1px solid #444;
+    position: relative;
+    padding: 6px 4px;
+    border-bottom: 1px solid $color2;
+    background-color: $color1;
     font-size: 12px;
-    line-height: 1.91;
 }
 
 .remove-page-btn {
     position: absolute;
-    top: 1px;
+    top: 50%;
     right: 2px;
     display: none;
-    background-color: $color2;
-    box-shadow: -2px 0 4px 0 $color2;
+    background-color: inherit;
+    box-shadow: -2px 0 4px 0 $color1;
+    transform: translateY(-50%);
 }
 
 .add-page-btn {
@@ -71,11 +70,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 84px;
+    height: calc(100% - 26px)
 }
 
 .page-thumbnail.full {
-    max-width: 122px;
+    max-width: 100%;
     max-height: 100%;
 }
 
@@ -85,14 +84,14 @@
     right: 0;
     bottom: 0;
     left: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background-color: transparentize($color3, 0.2);
 }
 
 .new-page-form {
-    width: 238px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
     .input {
         width: 100%;
@@ -110,9 +109,20 @@
 
 .new-page-form-btn-container {
     display: flex;
-    justify-content: space-between;
+
+    .btn {
+        flex-grow: 1;
+
+        &:not(.file-input-btn) {
+            margin-left: 2px;
+        }
+    }
 }
 
 .file-input {
     display: none;
+}
+
+.file-input-btn {
+    text-align: center;
 }

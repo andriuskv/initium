@@ -66,7 +66,9 @@ export class MostVisited {
         this.getMostVisited();
     }
 
-    removePage(index) {
+    removePage(event, index) {
+        event.preventDefault();
+
         if (this.mostVisited.backup.length) {
             const [page] = this.mostVisited.backup.splice(0, 1);
 
@@ -114,8 +116,8 @@ export class MostVisited {
 
                 image.onload = function() {
                     const canvas = document.createElement("canvas");
-                    const width = 122;
-                    const height = 84;
+                    const width = 142;
+                    const height = 95;
 
                     canvas.width = width;
                     canvas.height = height;
