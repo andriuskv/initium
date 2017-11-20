@@ -136,12 +136,14 @@ export class DropboxComp {
 
     getThumbnail(path) {
         return new Promise(resolve => {
+            const headers = new Headers({
+                "Authorization": `Bearer ${this.dropbox.accessToken}`,
+                "Dropbox-API-Arg": JSON.stringify({ path, size: "w32h32" })
+            });
+
             fetch("https://content.dropboxapi.com/2/files/get_thumbnail", {
                 method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${this.dropbox.accessToken}`,
-                    "Dropbox-API-Arg": JSON.stringify({ path, size: "w32h32" })
-                }
+                headers
             })
             .then(response => response.blob())
             .then(blob => {

@@ -20,9 +20,11 @@ declare const chrome;
                 <li class="notepad-header-item"
                     *ngFor="let tab of visibleTabs; let i = index"
                     [class.active]="activeTabIndex === i">
-                    <button class="btn-icon notepad-select-tab-btn" (click)="hideInputAndSelectTab(i)"
+                    <button class="btn-icon notepad-select-tab-btn"
+                        (click)="hideInputAndSelectTab(i)"
                         *ngIf="!tab.settingTitle">{{ tab.title }}</button>
-                    <button class="btn-icon notepad-remove-tab-btn" (click)="removeTab(i)"
+                    <button class="btn-icon notepad-remove-tab-btn"
+                        (click)="setTabForRemoval(i)"
                         *ngIf="tabs.length > 1 && !tab.settingTitle"
                         title="Remove tab">
                         <svg viewBox="0 0 24 24">
@@ -50,14 +52,25 @@ declare const chrome;
                 </li>
             </ul>
             <textarea class="input notepad-input" [(ngModel)]="activeTabContent" (input)="onInput($event)"></textarea>
+            <div class="main-block-mask" *ngIf="showingModal">
+                <div class="container main-block-mask-content notepad-modal">
+                    <p>Are you really want to remove this tab?</p>
+                    <div>
+                        <button class="btn" (click)="removeTab(tabToRemove)">Yes</button>
+                        <button class="btn" (click)="hideModal()">No</button>
+                    </div>
+                </div>
+            </div>
         </div>
     `
 })
 export class Notepad {
     @Input() item;
 
+    showingModal: boolean = false;
     shift: number = 0;
     activeTabIndex: number = 0;
+    tabToRemove: number = 0;
     activeTabContent: string = "";
     tabs: Array<any>;
     visibleTabs: Array<any> = [];
@@ -134,6 +147,20 @@ export class Notepad {
         });
     }
 
+    setTabForRemoval(index) {
+        if (this.tabs[this.shift + index].content) {
+            this.showingModal = true;
+            this.tabToRemove = index;
+        }
+        else {
+            this.removeTab(index);
+        }
+    }
+
+    hideModal() {
+        this.showingModal = false;
+    }
+
     removeTab(index) {
         const tabIndex = this.shift + index;
 
@@ -157,6 +184,7 @@ export class Notepad {
         this.setVisibleTabs(this.shift);
         this.selectTab(this.activeTabIndex);
         this.saveTabs();
+        this.hideModal();
     }
 
     blurTitleInput(input) {
