@@ -1,5 +1,4 @@
 .most-visited {
-    position: relative;
     height: 250px;
 }
 
@@ -70,7 +69,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100% - 26px)
+    height: calc(100% - 26px);
 }
 
 .page-thumbnail.full {
@@ -78,25 +77,9 @@
     max-height: 100%;
 }
 
-.most-visited-mask {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: transparentize($color3, 0.2);
-}
-
-.new-page-form {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    .input {
-        width: 100%;
-        margin-bottom: 4px;
-    }
+.new-page-form-input {
+    width: 100%;
+    margin-bottom: 4px;
 }
 
 .new-page-form-title {

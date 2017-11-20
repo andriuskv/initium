@@ -23,11 +23,11 @@
             </button>
         </li>
     </ul>
-    <div class="most-visited-mask" *ngIf="isNewPagePanelVisible">
-        <form (submit)="addPage($event)" class="container new-page-form" ngNativeValidate>
+    <div class="main-block-mask" *ngIf="isNewPagePanelVisible">
+        <form (submit)="addPage($event)" class="container main-block-mask-content" ngNativeValidate>
             <h2 class="new-page-form-title">Add new page</h2>
-            <input type="text" class="input" placeholder="Title" name="title" autocomplete="off">
-            <input type="text" class="input" placeholder="URL" name="url" autocomplete="off" required>
+            <input type="text" class="input new-page-form-input" placeholder="Title" name="title" autocomplete="off">
+            <input type="text" class="input new-page-form-input" placeholder="URL" name="url" autocomplete="off" required>
             <div class="new-page-form-btn-container">
                 <label class="btn file-input-btn">
                     <span>Choose thumbnail</span>
@@ -38,8 +38,8 @@
             </div>
         </form>
     </div>
-    <div class="most-visited-mask" *ngIf="isFetching">
-        <img src="./assets/images/ring.svg" alt="">
+    <div class="main-block-mask" *ngIf="isFetching">
+        <img src="./assets/images/ring.svg" class="main-block-mask-content" alt="">
     </div>
 </div>
 

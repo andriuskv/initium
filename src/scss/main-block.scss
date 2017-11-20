@@ -55,6 +55,7 @@
 }
 
 .main-block-content {
+    position: relative;
     display: none;
     width: 588px;
     height: 318px;
@@ -63,4 +64,20 @@
     &.visible {
         display: block;
     }
+}
+
+.main-block-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: transparentize($color3, 0.2);
+}
+
+.main-block-mask-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
