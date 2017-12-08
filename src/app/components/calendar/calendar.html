@@ -15,7 +15,7 @@
                     <use href="#chevron-left"></use>
                 </svg>
             </button>
-            <span class="calendar-title">{{ visibleMonth.current.name }} {{ calendar.currentYear }}</span>
+            <span class="calendar-title">{{ visibleMonth.current.name }} {{ currentYear }}</span>
             <button class="btn-icon calendar-header-btn" (click)="setVisibleMonth(1)" title="Next month">
                 <svg viewBox="0 0 24 24">
                     <use href="#chevron-right"></use>
@@ -58,9 +58,8 @@
                 [timeDisplay]="timeDisplay"
                 [day]="selectedDay"
                 (event)="showCalendar()"
-                (update)="updateReminder($event)"
-                (remove)="removeReminder($event)"
-                (repeat)="repeatNewReminder($event)">
+                (create)="createReminder($event)"
+                (remove)="removeReminder($event)">
             </calendar-selected-day>
         </div>
     </ng-template>

@@ -7,9 +7,8 @@ import { TimeDateService } from "../../services/timeDateService";
 })
 export class CalendarSelectedDay {
     @Output() event = new EventEmitter();
-    @Output() update = new EventEmitter();
     @Output() remove = new EventEmitter();
-    @Output() repeat = new EventEmitter();
+    @Output() create = new EventEmitter();
     @Input() day: any = {};
     @Input() timeDisplay: number;
 
@@ -84,12 +83,6 @@ export class CalendarSelectedDay {
         if (!this.isRepeatEnabled) {
             this.resetOccurencesInput();
         }
-    }
-
-    removeReminder(index) {
-        const [reminder] = this.day.reminders.splice(index, 1);
-
-        this.remove.emit(reminder);
     }
 
     validateGapInput({ target }) {
@@ -218,41 +211,97 @@ export class CalendarSelectedDay {
         }
     }
 
-    getRange() {
+    getReminderRangeString() {
         if (!this.isRangeVisible) {
             return "All day";
         }
-        return this.range.to.string ? this.range : this.range.from;
+        else if (this.range.to.string) {
+            const fromString = this.timeDateService.getTimeString(this.range.from, this.timeDisplay);
+            const toString = this.timeDateService.getTimeString(this.range.to, this.timeDisplay);
+
+            return `${fromString} - ${toString}`;
+        }
+        return this.timeDateService.getTimeString(this.range.from, this.timeDisplay);
     }
 
     getRandomColor() {
-        return "hsl(" + Math.random() * 360 + ", 100%, 72%)";
+        return `hsl(${Math.random() * 360}, 100%, 72%)`;
+    }
+
+    changeReminderColor(reminder) {
+        const color = this.getRandomColor();
+        reminder.color = color;
+
+        this.updateReminder({
+            id: reminder.id,
+            color
+        });
+    }
+
+    getId() {
+        return Math.random().toString(32).slice(2, 16);
     }
 
     createReminder({ target }) {
         if (!target.checkValidity() || (this.isRangeVisible && this.rangeMessage)) {
             return;
         }
-        const newReminder: any = {
-            text: target.elements.reminder.value,
-            range: this.getRange(),
-            color: this.getRandomColor()
+        const data: any = {
+            reminder: {
+                id: this.getId(),
+                text: target.elements.reminder.value,
+                color: this.getRandomColor(),
+                rangeString: this.getReminderRangeString(),
+                repeat: this.isRepeatEnabled && (!this.repeatCount || this.repeatCount > 1)
+            },
+            repeatData: {
+                year: this.day.year,
+                month: this.day.month,
+                day: this.day.number,
+                gap: this.repeatGap,
+                count: this.repeatCount
+            }
         };
 
-        if (this.isRepeatEnabled) {
-            newReminder.year = this.day.year;
-            newReminder.month = this.day.month;
-            newReminder.day = this.day.number;
-            newReminder.gap = this.repeatGap;
-            newReminder.repeatCount = this.repeatCount;
-            newReminder.repeat = !this.repeatCount || this.repeatCount > 1;
-            this.repeat.emit(newReminder);
-            this.isRepeatEnabled = false;
-        }
-        else {
-            this.day.reminders.push(newReminder);
-            this.update.emit();
-        }
+        this.addReminder(data);
+        this.create.emit(data);
         this.hideReminderForm();
+    }
+
+    getReminders() {
+        return JSON.parse(localStorage.getItem("reminders")) || [];
+    }
+
+    getReminderIndex(id, reminders) {
+        return reminders.findIndex(({ reminder }) => reminder.id === id);
+    }
+
+    addReminder(reminder) {
+        const reminders = this.getReminders();
+
+        reminders.push(reminder);
+        this.saveReminders(reminders);
+    }
+
+    removeReminder(id) {
+        const reminders = this.getReminders();
+        const index = this.getReminderIndex(id, reminders);
+        const [{ reminder }]: any = reminders.splice(index, 1);
+
+        this.remove.emit(reminder);
+        this.saveReminders(reminders);
+    }
+
+    updateReminder(data) {
+        const reminders = this.getReminders();
+        const index = this.getReminderIndex(data.id, reminders);
+        const reminder = reminders[index].reminder;
+
+        Object.assign(reminder, data);
+        this.saveReminders(reminders);
+    }
+
+    saveReminders(reminders) {
+        localStorage.setItem("reminders", JSON.stringify(reminders));
     }
 }
