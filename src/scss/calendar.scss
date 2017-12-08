@@ -19,6 +19,7 @@
 .current-day-reminder {
     padding: 4px;
     border-left: 2px solid;
+    transition: 0.2s border-left-color;
 
     &:not(:first-of-type) {
         margin-top: 4px;
@@ -129,11 +130,25 @@
 .selected-day-remainder {
     display: flex;
     align-items: center;
-    padding: 4px;
+    padding: 4px 4px 4px 0;
     border-bottom: 1px solid $color2;
 
     .btn-icon {
         margin-left: auto;
+    }
+}
+
+.selected-day-reminder-color {
+    flex-shrink: 0;
+    align-self: flex-start;
+    width: 4px;
+    height: 20px;
+    margin-left: 2px;
+    margin-right: 4px;
+    transition: 0.2s transform, 0.2s background-color;
+
+    &:hover {
+        transform: scaleX(2);
     }
 }
 

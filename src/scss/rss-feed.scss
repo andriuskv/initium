@@ -21,6 +21,7 @@
 .feed-select-btn {
     @include text-truncate;
 
+    display: block;
     width: 100%;
     height: 100%;
     padding-left: 4px;
