@@ -120,7 +120,7 @@ export class Calendar {
             calendar[year] = calendar[year] || this.getYear(year);
         }
         return {
-            days: calendar[year][0].days.slice(0, 42 - daysInMonth - index)
+            days: calendar[year][month].days.slice(0, 42 - daysInMonth - index)
         };
     }
 
