@@ -9,7 +9,7 @@ import { Component } from "@angular/core";
         <weather [setting]="settings.weather"></weather>
         <todo></todo>
         <menu (toggle)="onToggle($event)" (setting)="onSetting($event)"></menu>
-        <upper-block [toggleComp]="toggle.upper" (hide)="onHide($event)"></upper-block>
+        <upper-block [visible]="toggle.upper" (hide)="onHide($event)"></upper-block>
         <tweet-image-viewer [data]="imageData"></tweet-image-viewer>
     `
 })

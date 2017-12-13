@@ -3,6 +3,9 @@
         <li class="settings-nav-item" [class.active]="active === 'general'">
             <button class="btn-transparent" (click)="setActiveTab('general')">General</button>
         </li>
+        <li class="settings-nav-item" [class.active]="active === 'mainBlock'">
+            <button class="btn-transparent" (click)="setActiveTab('mainBlock')">Main Block</button>
+        </li>
         <li class="settings-nav-item" [class.active]="active === 'time'">
             <button class="btn-transparent" (click)="setActiveTab('time')">Time & Date</button>
         </li>
@@ -12,95 +15,122 @@
         <li class="settings-nav-item" [class.active]="active === 'weather'">
             <button class="btn-transparent" (click)="setActiveTab('weather')">Weather</button>
         </li>
-        <li class="settings-nav-item" [class.active]="active === 'mainBlock'">
-            <button class="btn-transparent" (click)="setActiveTab('mainBlock')">Main Block</button>
+        <li class="settings-nav-item" [class.active]="active === 'pomodoro'">
+            <button class="btn-transparent" (click)="setActiveTab('pomodoro')">Pomodoro</button>
         </li>
     </ul>
-    <ul>
-        <li class="setting" [class.active]="active === 'general'">
-            <div class="setting-item">
-                <span>Disable notifications</span>
-                <label>
-                    <input type="checkbox" class="checkbox-input"
-                        (click)="onSetting('notificationDisabled', $event.target.checked)"
-                        [checked]="settings.general.notificationDisabled">
-                    <div class="checkbox"></div>
-                </label>
+    <div class="setting" [class.active]="active === 'general'">
+        <div class="setting-item">
+            <span>Disable notifications</span>
+            <label>
+                <input type="checkbox" class="checkbox-input"
+                    [checked]="settings.general.notificationDisabled"
+                    (click)="onSetting('notificationDisabled', $event.target.checked)">
+                <div class="checkbox"></div>
+            </label>
+        </div>
+        <div class="setting-item">
+            <span>Don't focus tab on notification click</span>
+            <label>
+                <input type="checkbox" class="checkbox-input"
+                    [checked]="settings.general.notificationFocusDisabled"
+                    (click)="onSetting('notificationFocusDisabled', $event.target.checked)">
+                <div class="checkbox"></div>
+            </label>
+        </div>
+    </div>
+    <div class="setting" [class.active]="active === 'time'">
+        <div class="setting-item">
+            <span>Disable date</span>
+            <label>
+                <input type="checkbox" class="checkbox-input"
+                    [checked]="settings.time.dateDisabled"
+                    (click)="onSetting('dateDisabled', $event.target.checked)">
+                <div class="checkbox"></div>
+            </label>
+        </div>
+        <div class="setting-item">
+            <span>Time display</span>
+            <select class="btn setting-selection" (click)="onSetting('timeDisplay', $event.target.value)">
+                <option value="0" [selected]="settings.time.timeDisplay === '0'">12 hour</option>
+                <option value="1" [selected]="settings.time.timeDisplay === '1'">24 hour</option>
+            </select>
+        </div>
+    </div>
+    <div class="setting" [class.active]="active === 'background'">
+        <div class="setting-item">
+            <span>Reset background</span>
+            <button class="btn" (click)="onSetting('url', '')">Reset</button>
+        </div>
+    </div>
+    <div class="setting" [class.active]="active === 'weather'">
+        <div class="setting-item">
+            <span>Disable weather</span>
+            <label>
+                <input type="checkbox" class="checkbox-input"
+                    [checked]="settings.weather.disabled"
+                    (click)="onSetting('disabled', $event.target.checked)">
+                <div class="checkbox"></div>
+            </label>
+        </div>
+        <div class="setting-item">
+            <span>Show temperature in Farenheit</span>
+            <label>
+                <input type="checkbox" class="checkbox-input"
+                    [checked]="settings.weather.useFarenheit"
+                    (click)="onSetting('useFarenheit', $event.target.checked)">
+                <div class="checkbox"></div>
+            </label>
+        </div>
+        <div class="setting-item">
+            <span>City name (and country code)</span>
+            <input type="text" class="input setting-input" placeholder="Paris,fr"
+                [value]="settings.weather.cityName"
+                (keyup.enter)="getWeatherWithCityName($event.target.value)">
+        </div>
+    </div>
+    <div class="setting" [class.active]="active === 'mainBlock'">
+        <div class="setting-item">
+            <span>Hide item bar</span>
+            <label>
+                <input type="checkbox" class="checkbox-input"
+                    [checked]="settings.mainBlock.hideItemBar"
+                    (click)="onSetting('hideItemBar', $event.target.checked)">
+                <div class="checkbox"></div>
+            </label>
+        </div>
+        <div class="setting-item">
+            <span>Reset top sites to Chrome's default</span>
+            <button class="btn" (click)="onSetting('resetMostVisited', true)">Reset</button>
+        </div>
+    </div>
+    <div class="setting" [class.active]="active === 'pomodoro'">
+        <div class="setting-item">
+            <div>
+                <div>Pomodoro duration</div>
+                <div class="setting-item-add-desc">In minutes</div>
             </div>
-            <div class="setting-item">
-                <span>Don't focus tab on notification click</span>
-                <label>
-                    <input type="checkbox" class="checkbox-input"
-                        (click)="onSetting('notificationFocusDisabled', $event.target.checked)"
-                        [checked]="settings.general.notificationFocusDisabled">
-                    <div class="checkbox"></div>
-                </label>
+            <input type="number" class="input setting-input" min="1"
+                [value]="settings.pomodoro.duration"
+                (change)="setPomodoroDuration($event, 'duration')">
+        </div>
+        <div class="setting-item">
+            <div>
+                <div>Short break duration</div>
+                <div class="setting-item-add-desc">In minutes</div>
             </div>
-        </li>
-        <li class="setting" [class.active]="active === 'time'">
-            <div class="setting-item">
-                <span>Disable date</span>
-                <label>
-                    <input type="checkbox" class="checkbox-input"
-                        (click)="onSetting('dateDisabled', $event.target.checked)"
-                        [checked]="settings.time.dateDisabled">
-                    <div class="checkbox"></div>
-                </label>
+            <input type="number" class="input setting-input" min="1"
+                [value]="settings.pomodoro.short"
+                (change)="setPomodoroDuration($event, 'short')">
+        </div>
+        <div class="setting-item">
+            <div>
+                <div>Long break duration</div>
+                <div class="setting-item-add-desc">In minutes</div>
             </div>
-            <div class="setting-item">
-                <span>Time display</span>
-                <select class="btn setting-selection" (click)="onSetting('timeDisplay', $event.target.value)">
-                    <option value="0" [selected]="settings.time.timeDisplay === '0'">12 hour</option>
-                    <option value="1" [selected]="settings.time.timeDisplay === '1'">24 hour</option>
-                </select>
-            </div>
-        </li>
-        <li class="setting" [class.active]="active === 'background'">
-            <div class="setting-item">
-                <span>Reset background</span>
-                <button class="btn" (click)="onSetting('url', '')">Reset</button>
-            </div>
-        </li>
-        <li class="setting" [class.active]="active === 'weather'">
-            <div class="setting-item">
-                <span>Disable weather</span>
-                <label>
-                    <input type="checkbox" class="checkbox-input"
-                        (click)="onSetting('disabled', $event.target.checked)"
-                        [checked]="settings.weather.disabled">
-                    <div class="checkbox"></div>
-                </label>
-            </div>
-            <div class="setting-item">
-                <span>Show temperature in Farenheit</span>
-                <label>
-                    <input type="checkbox" class="checkbox-input"
-                        (click)="onSetting('useFarenheit', $event.target.checked)"
-                        [checked]="settings.weather.useFarenheit">
-                    <div class="checkbox"></div>
-                </label>
-            </div>
-            <div class="setting-item">
-                <span>City name (and country code)</span>
-                <input type="text" class="input setting-input"
-                    (keyup.enter)="getWeatherWithCityName($event)"
-                    [value]="settings.weather.cityName">
-            </div>
-        </li>
-        <li class="setting" [class.active]="active === 'mainBlock'">
-            <div class="setting-item">
-                <span>Hide item bar</span>
-                <label>
-                    <input type="checkbox" class="checkbox-input"
-                        (click)="onSetting('hideItemBar', $event.target.checked)"
-                        [checked]="settings.mainBlock.hideItemBar">
-                    <div class="checkbox"></div>
-                </label>
-            </div>
-            <div class="setting-item">
-                <span>Reset top sites to Chrome's default</span>
-                <button class="btn" (click)="onSetting('resetMostVisited', true)">Reset</button>
-           </div>
-        </li>
-    </ul>
+            <input type="number" class="input setting-input" min="1"
+                [value]="settings.pomodoro.long"
+                (change)="setPomodoroDuration($event, 'long')">
+        </div>
+    </div>
 </div>
