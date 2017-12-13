@@ -23,12 +23,6 @@ export class Settings {
         this.active = tab;
     }
 
-    getWeatherWithCityName({ target }) {
-        if (target.value !== this.settings.weather.cityName) {
-            this.onSetting("cityName", target.value);
-        }
-    }
-
     onSetting(settingName, value) {
         const setting = {
             [this.active]: {
@@ -41,5 +35,21 @@ export class Settings {
         if (settingName !== "resetMostVisited") {
             this.settings = this.settingService.updateSetting(setting);
         }
+    }
+
+    getWeatherWithCityName(value) {
+        if (value !== this.settings.weather.cityName) {
+            this.onSetting("cityName", value);
+        }
+    }
+
+    setPomodoroDuration({ target }, setting) {
+        let value = parseInt(target.value, 10);
+
+        if (!value || value <= 0) {
+            value = 1;
+            target.value = value;
+        }
+        this.onSetting(setting, value);
     }
 }

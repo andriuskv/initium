@@ -1,26 +1,26 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from "@angular/core";
-import { updateTitle } from "../../utils";
 
 @Component({
     selector: "stopwatch",
     template: `
         <div class="stopwatch" (click)="toggle()">
             <span *ngIf="stopwatch.hours">
-                <span class="stopwatch-digit">{{ stopwatch.hours }}</span>
-                <span class="timer-stopwatch-sep">h</span>
+                <span class="upper-block-digit">{{ stopwatch.hours }}</span>
+                <span class="upper-block-sep">h</span>
             </span>
             <span *ngIf="stopwatch.minutes">
-                <span class="stopwatch-digit">{{ stopwatch.minutes }}</span>
-                <span class="timer-stopwatch-sep">m</span>
+                <span class="upper-block-digit">{{ stopwatch.minutes }}</span>
+                <span class="upper-block-sep">m</span>
             </span>
-            <span class="stopwatch-digit">{{ stopwatch.seconds }}</span>
-            <span class="timer-stopwatch-sep">s</span>
+            <span class="upper-block-digit">{{ stopwatch.seconds }}</span>
+            <span class="upper-block-sep">s</span>
             <span class="stopwatch-milliseconds">{{ stopwatch.milliseconds | slice: 2 }}</span>
         </div>
     `
 })
 export class Stopwatch {
     @Output() running = new EventEmitter();
+    @Output() updateTitle = new EventEmitter();
     @Input() state;
 
     isRunning: boolean = false;
@@ -70,7 +70,7 @@ export class Stopwatch {
             seconds += 1;
             milliseconds -= 1000;
 
-            updateTitle(hours, minutes, seconds);
+            this.updateTitle.emit({ hours, minutes, seconds });
         }
 
         if (seconds >= 60) {

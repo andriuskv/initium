@@ -1,35 +1,31 @@
 .upper-block {
     position: absolute;
     top: 4px;
-    left: 0;
-    right: 0;
+    left: 50%;
     visibility: collapse;
-    width: 400px;
-    margin: 0 auto;
+    width: 420px;
     opacity: 0;
-    transform: rotateX(45deg) translateY(-80px) scale(0.94);
+    transform: rotateX(45deg) translate(-50%, -80px) scale(0.94);
     transition: transform 0.2s, opacity 0.18s, visibility 0.18s;
 
     &.visible {
         visibility: visible;
         opacity: 1;
-        transform: none;
+        transform: translateX(-50%);
     }
 }
 
 .upper-block-header {
     display: flex;
-    align-items: flex-start;
     margin-bottom: 4px;
 }
 
 .upper-block-header-item {
     padding-bottom: 2px;
     margin-right: 8px;
-    border-bottom: 1px solid transparent;
 
     &.active {
-        border-bottom-color: $brand-color;
+        box-shadow: 0 1px 0 0 $brand-color;
     }
 
     span {
@@ -51,61 +47,77 @@
         background-color: $color3;
         font-size: 32px;
 
-        .timer-stopwatch-controls {
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.4s all;
+        .pomodoro-timer-selection {
+            position: absolute;
+            top: -20px;
+            right: 0;
+            bottom: 0;
         }
 
-        .upper-block-content:hover .timer-stopwatch-controls {
-            visibility: visible;
-            opacity: 1;
+        .upper-block-controls, .pomodoro-timer-selection {
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s all;
+        }
+
+        .upper-block-content:hover {
+            .upper-block-controls, .pomodoro-timer-selection {
+                visibility: visible;
+                opacity: 1;
+            }
         }
     }
 }
 
 .upper-block-item {
+    position: relative;
     display: none;
+    height: 6em;
 
     &.visible {
         display: block;
     }
 }
 
-.timer-stopwatch-sep {
-    padding-right: 0.25em;
+.upper-block-sep {
+    padding-right: 0.125em;
     font-size: 2em;
 }
 
-.timer-stopwatch-controls {
+.upper-block-controls {
     display: flex;
     padding: 0.25em 0.25em 0 0.25em;
     border-top: 1px solid $color2;
     margin-top: 0.25em;
 }
 
-.timer-stopwatch-control {
-    padding: 0;
+.upper-block-control {
+    padding: 2px;
 
     &:not(:first-of-type) {
         margin-left: 0.5em;
     }
 }
 
-.timer, .stopwatch {
-    display: flex;
-    align-items: baseline;
-    height: 4.625em;
+.upper-block-reset-btn {
+    margin-right: auto;
 }
 
-.timer {
-    justify-content: center;
+.upper-block-digit {
+    font-size: 4em;
+}
+
+.timer, .stopwatch {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    text-align: center;
 }
 
 .timer-input {
     width: 1.125em;
-    height: 100%;
-    padding: 0;
     border: none;
     background-color: transparent;
     color: $primary-text-color;
@@ -116,23 +128,33 @@
     }
 }
 
-.timer-stopwatch-reset-btn {
-    margin-right: auto;
-}
-
-.stopwatch {
-    padding-left: 0.25em;
-    padding-right: 0.25em;
-
-    &:hover {
-        cursor: pointer;
-    }
-}
-
-.stopwatch-digit {
-    font-size: 4em;
+.stopwatch:hover {
+    cursor: pointer;
 }
 
 .stopwatch-milliseconds {
     font-size: 2em;
+}
+
+.pomodoro {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    text-align: center;
+}
+
+.pomodoro-timer {
+    flex-grow: 1;
+}
+
+.pomodoro-timer-btn {
+    width: 100%;
+    padding-bottom: 2px;
+    margin-bottom: 2px;
+
+    &.active {
+        box-shadow: 0 1px 0 0 $brand-color;
+    }
 }

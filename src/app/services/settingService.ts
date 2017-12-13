@@ -32,6 +32,11 @@ export class SettingService {
                 disabled: false,
                 cityName: "",
                 useFarenheit: false
+            },
+            pomodoro: {
+                duration: 25,
+                short: 5,
+                long: 15
             }
         };
     }

@@ -10,6 +10,7 @@ import { FeedService } from "./services/feedService";
 import { ZIndexService } from "./services/zIndexService";
 
 import { SlicePipe } from "./pipes/slicePipe";
+import { PadTimePipe } from "./pipes/padTimePipe";
 
 import { App } from "./app.component";
 import { Background } from "./components/background/background";
@@ -25,6 +26,7 @@ import { Menu } from "./components/menu/menu";
 import { UpperBlock } from "./components/upper-block/upper-block";
 import { Timer } from "./components/timer/timer";
 import { Stopwatch } from "./components/stopwatch/stopwatch";
+import { Pomodoro } from "./components/pomodoro/pomodoro";
 import { Settings } from "./components/settings/settings";
 import { DropboxComp } from "./components/dropbox/dropbox";
 import { Calendar } from "./components/calendar/calendar";
@@ -36,8 +38,8 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
     providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService, ZIndexService],
     declarations: [
         App, Settings, Background, Time, MainBlock, MostVisited, Notepad, Twitter, RssFeed,
-        Weather, Menu, Todo, UpperBlock, Timer, Stopwatch, Calendar,
-        CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe
+        Weather, Menu, Todo, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
+        CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe, PadTimePipe
     ],
     bootstrap: [App]
 })

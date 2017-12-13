@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
-import { updateTitle } from "../../utils";
 
 @Component({
     selector: "timer",
@@ -7,26 +6,25 @@ import { updateTitle } from "../../utils";
         <div class="timer" (input)="onInput($event)">
             <input type="text" class="timer-input" data-input="hours"
                 [(ngModel)]="timer.hours" [readonly]="isRunning">
-            <div class="timer-stopwatch-sep">h</div>
+            <span class="upper-block-sep">h</span>
             <input type="text" class="timer-input" data-input="minutes"
                 [(ngModel)]="timer.minutes" [readonly]="isRunning">
-            <div class="timer-stopwatch-sep">m</div>
+            <span class="upper-block-sep">m</span>
             <input type="text" class="timer-input" data-input="seconds"
                 [(ngModel)]="timer.seconds" [readonly]="isRunning">
-            <div class="timer-stopwatch-sep">s</div>
+            <span class="upper-block-sep">s</span>
         </div>
     `
 })
 export class Timer {
     @Output() running = new EventEmitter();
+    @Output() updateTitle = new EventEmitter();
+    @Output() alarm = new EventEmitter();
     @Input() state;
 
     isRunning: boolean = false;
     alarmOn: boolean = true;
-    alarmIsRunning: boolean = false;
-    alarmTimeout: any;
     timeout: any;
-    alarm: any = null;
     timer: any;
     timerInput: any;
 
@@ -39,12 +37,14 @@ export class Timer {
         this.timerInput = Object.assign({}, this.timer);
     }
 
-    ngOnChanges(changes) {
-        if (!changes.state.firstChange) {
-            const state = changes.state.currentValue;
-            this.isRunning = state.isRunning;
-            this.alarmOn = state.alarmOn;
-            this[state.command]();
+    ngOnChanges() {
+        if (this.state) {
+            this.isRunning = this.state.isRunning;
+            this.alarmOn = this.state.alarmOn;
+
+            if (this.state.command) {
+                this[this.state.command]();
+            }
         }
     }
 
@@ -95,13 +95,13 @@ export class Timer {
 
     parseTimer(timer) {
         return {
-            hours: Number.parseInt(timer.hours, 10) || 0,
-            minutes: Number.parseInt(timer.minutes, 10) || 0,
-            seconds: Number.parseInt(timer.seconds, 10) || 0
+            hours: parseInt(timer.hours, 10) || 0,
+            minutes: parseInt(timer.minutes, 10) || 0,
+            seconds: parseInt(timer.seconds, 10) || 0
         };
     }
 
-    initTimer(hours, minutes, seconds) {
+    normalizeTimer(hours, minutes, seconds) {
         if (seconds >= 60) {
             seconds -= 60;
             minutes += 1;
@@ -119,48 +119,18 @@ export class Timer {
         return this.padTimer({ hours, minutes, seconds });
     }
 
-    initAlarm() {
-        if (!this.alarm) {
-            this.alarm = document.createElement("audio");
-            this.alarm.setAttribute("src", "./assets/alarm-clock.mp3");
-        }
-    }
-
-    toggleAlarm() {
-        if (this.alarmIsRunning && this.isRunning && this.alarmOn) {
-            clearTimeout(this.alarmTimeout);
-            this.alarmIsRunning = false;
-            this.stop();
-        }
-    }
-
-    runAlarm() {
-        if (this.alarmOn) {
-            this.alarmIsRunning = true;
-            this.alarm.play();
-            this.alarmTimeout = setTimeout(() => {
-                this.alarmIsRunning = false;
-                this.stop();
-            }, 9000);
-        }
-        else {
-            this.stop();
-        }
-    }
-
     updateTimer(startTime, elapsed) {
         if (!this.isRunning) {
             return;
         }
         const ideal = performance.now() - startTime;
         let diff = 0;
-
         elapsed += 1000;
         diff = ideal - elapsed;
 
         let { hours, minutes, seconds } = this.parseTimer(this.timer);
 
-        if (this.isRunning && (seconds || minutes || hours)) {
+        if (seconds || minutes || hours) {
             if (!seconds) {
                 if (minutes) {
                     minutes -= 1;
@@ -176,14 +146,17 @@ export class Timer {
 
             this.timer = this.padTimer({ hours, minutes, seconds });
             this.timerInput = Object.assign({}, this.timer);
-            updateTitle(hours, minutes, seconds);
+            this.updateTitle.emit({ hours, minutes, seconds });
 
             this.timeout = setTimeout(() => {
                 this.updateTimer(startTime, elapsed);
             }, 1000 - diff);
         }
+        else if (this.alarmOn) {
+            this.alarm.emit("timer");
+        }
         else {
-            this.runAlarm();
+            this.reset();
         }
     }
 
@@ -193,8 +166,7 @@ export class Timer {
         if (hours || minutes || seconds) {
             this.isRunning = true;
             this.running.emit(this.isRunning);
-            this.initAlarm();
-            this.timer = this.initTimer(hours, minutes, seconds);
+            this.timer = this.normalizeTimer(hours, minutes, seconds);
 
             const startTime = performance.now();
 
@@ -208,10 +180,6 @@ export class Timer {
         this.isRunning = false;
         this.running.emit(this.isRunning);
         clearTimeout(this.timeout);
-
-        if (this.alarmOn) {
-            this.alarm.pause();
-        }
     }
 
     reset() {

@@ -1,18 +1,26 @@
 .settings-container {
+    display: flex;
+    width: 440px;
     height: 200px;
 }
 
 .settings-nav {
     display: flex;
-    justify-content: center;
-    margin-bottom: 4px;
+    flex-direction: column;
+    width: 100px;
 }
 
-.settings-nav-item.active {
-    box-shadow: 0 1px 0 0 #268bd2;
+.settings-nav-item {
+    transition: 0.2s transform;
+
+    &.active {
+        transform: translateX(2px);
+        box-shadow: -2px 0 0 0 $brand-color;
+    }
 }
 
 .setting {
+    flex-grow: 1;
     display: none;
 
     &.active {
@@ -28,10 +36,15 @@
     border-bottom: 1px solid $color2;
 }
 
+.setting-item-add-desc {
+    font-size: 13px;
+    color: $secondary-text-color;
+}
+
 .setting-input {
-    width: 128px;
+    width: 100px;
 }
 
 .setting-selection {
-    padding: 3px 8px;
+    padding: 2px 8px;
 }
