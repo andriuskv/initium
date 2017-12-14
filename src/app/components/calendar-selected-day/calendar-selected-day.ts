@@ -211,17 +211,8 @@ export class CalendarSelectedDay {
         }
     }
 
-    getReminderRangeString() {
-        if (!this.isRangeVisible) {
-            return "All day";
-        }
-        else if (this.range.to.string) {
-            const fromString = this.timeDateService.getTimeString(this.range.from, this.timeDisplay);
-            const toString = this.timeDateService.getTimeString(this.range.to, this.timeDisplay);
-
-            return `${fromString} - ${toString}`;
-        }
-        return this.timeDateService.getTimeString(this.range.from, this.timeDisplay);
+    getRange() {
+        return this.isRangeVisible ? this.range : -1;
     }
 
     getRandomColor() {
@@ -251,7 +242,7 @@ export class CalendarSelectedDay {
                 id: this.getId(),
                 text: target.elements.reminder.value,
                 color: this.getRandomColor(),
-                rangeString: this.getReminderRangeString(),
+                range: this.getRange(),
                 repeat: this.isRepeatEnabled && (!this.repeatCount || this.repeatCount > 1)
             },
             repeatData: {

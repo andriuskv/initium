@@ -187,6 +187,19 @@ export class Calendar {
         this.daySelected = false;
     }
 
+    getReminderRangeString(range) {
+        if (range === -1) {
+            return "All day";
+        }
+        else if (range.to.string) {
+            const fromString = this.timeDateService.getTimeString(range.from, this.timeDisplay);
+            const toString = this.timeDateService.getTimeString(range.to, this.timeDisplay);
+
+            return `${fromString} - ${toString}`;
+        }
+        return this.timeDateService.getTimeString(range.from, this.timeDisplay);
+    }
+
     filterReminders(reminders, id) {
         return reminders.filter(reminder => reminder.id !== id);
     }
@@ -214,6 +227,16 @@ export class Calendar {
         }
     }
 
+    addReminderRangeString(reminders) {
+        if (reminders.length) {
+            const reminder = reminders[reminders.length - 1];
+
+            if (!reminder.rangeString) {
+                reminder.rangeString = this.getReminderRangeString(reminder.range);
+            }
+        }
+    }
+
     createReminder(data) {
         if (data.reminder.repeat) {
             this.repeatReminder(data, this.calendar);
@@ -223,6 +246,7 @@ export class Calendar {
 
             day.reminders.push(data.reminder);
         }
+        this.addReminderRangeString(this.currentDay.reminders);
     }
 
     getNextReminderDate(calendar, year, monthIndex, dayIndex) {
