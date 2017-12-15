@@ -122,6 +122,7 @@
     background-color: transparent;
     color: $primary-text-color;
     font-size: 4em;
+    font-kerning: none;
 
     &:focus {
         outline: none;
