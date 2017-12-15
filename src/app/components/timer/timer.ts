@@ -1,17 +1,18 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { PadTimePipe } from "app/pipes/padTimePipe";
 
 @Component({
     selector: "timer",
     template: `
-        <div class="timer" (input)="onInput($event)">
+        <div class="timer" (input)="onInput($event, hoursInput.value, minutesInput.value)">
             <input type="text" class="timer-input" data-input="hours"
-                [(ngModel)]="timer.hours" [readonly]="isRunning">
+                [value]="hours | padTime" [readonly]="isRunning" #hoursInput>
             <span class="upper-block-sep">h</span>
             <input type="text" class="timer-input" data-input="minutes"
-                [(ngModel)]="timer.minutes" [readonly]="isRunning">
+                [value]="minutes | padTime" [readonly]="isRunning" #minutesInput>
             <span class="upper-block-sep">m</span>
             <input type="text" class="timer-input" data-input="seconds"
-                [(ngModel)]="timer.seconds" [readonly]="isRunning">
+                [value]="seconds | padTime" [readonly]="isRunning">
             <span class="upper-block-sep">s</span>
         </div>
     `
@@ -24,18 +25,11 @@ export class Timer {
 
     isRunning: boolean = false;
     alarmOn: boolean = true;
-    timeout: any;
-    timer: any;
-    timerInput: any;
-
-    constructor() {
-        this.timer = {
-            hours: "00",
-            minutes: "00",
-            seconds: "00"
-        };
-        this.timerInput = Object.assign({}, this.timer);
-    }
+    timeout: number = 0;
+    hours: number = 0;
+    minutes: number = 0;
+    seconds: number = 0;
+    padTime: PadTimePipe = new PadTimePipe();
 
     ngOnChanges() {
         if (this.state) {
@@ -48,109 +42,85 @@ export class Timer {
         }
     }
 
-    onInput({ target }) {
+    onInput({ target }, hours, minutes) {
         const input = target.getAttribute("data-input");
         const pos = target.selectionStart - 1;
-        let value = target.value;
+        const value = target.value;
 
         if (/\D/.test(value)) {
-            target.value = this.timerInput[input];
+            target.value = this.padTime.transform(this[input]);
             target.selectionEnd = pos;
+            return;
+        }
+        else if (!value) {
+            this[input] = 0;
             return;
         }
 
         if (value.length > 2) {
             if (input === "seconds") {
-                this.timer.hours = `${this.timer.hours + this.timer.minutes[0]}`.slice(-2);
-                this.timerInput.hours = this.timer.hours;
-                this.timer.minutes = `${this.timer.minutes + value[0]}`.slice(-2);
-                this.timerInput.minutes = this.timer.minutes;
+                this.hours = parseInt(hours[1] + minutes[0], 10);
+                this.minutes = parseInt(minutes[1] + value[0], 10);
             }
             else if (input === "minutes") {
-                this.timer.hours = `${this.timer.hours + value[0]}`.slice(-2);
-                this.timerInput.hours = this.timer.hours;
+                this.hours = parseInt(hours[1] + value[0], 10);
             }
-            value = value.slice(1, 3);
-            target.value = value;
-            this.timerInput[input] = value;
+            this[input] = parseInt(value.slice(1), 10);
+            target.value = this.padTime.transform(this[input]);
             target.selectionEnd = pos;
         }
         else {
-            this.timer = this.padTimer(this.timer);
-            this.timerInput[input] = this.timer[input];
+            this[input] = parseInt(value, 10);
+            target.value = this.padTime.transform(this[input]);
         }
     }
 
-    padTime(time) {
-        return `00${time}`.slice(-2);
-    }
-
-    padTimer(timer) {
-        return {
-            hours: this.padTime(timer.hours),
-            minutes: this.padTime(timer.minutes),
-            seconds: this.padTime(timer.seconds)
-        };
-    }
-
-    parseTimer(timer) {
-        return {
-            hours: parseInt(timer.hours, 10) || 0,
-            minutes: parseInt(timer.minutes, 10) || 0,
-            seconds: parseInt(timer.seconds, 10) || 0
-        };
-    }
-
-    normalizeTimer(hours, minutes, seconds) {
-        if (seconds >= 60) {
-            seconds -= 60;
-            minutes += 1;
+    normalizeTimer() {
+        if (this.seconds >= 60) {
+            this.seconds -= 60;
+            this.minutes += 1;
         }
 
-        if (minutes >= 60) {
-            minutes -= 60;
-            hours += 1;
+        if (this.minutes >= 60) {
+            this.minutes -= 60;
+            this.hours += 1;
         }
 
-        if (hours >= 99) {
-            hours = 99;
+        if (this.hours > 99) {
+            this.hours = 99;
         }
-
-        return this.padTimer({ hours, minutes, seconds });
     }
 
     updateTimer(startTime, elapsed) {
         if (!this.isRunning) {
             return;
         }
-        const ideal = performance.now() - startTime;
-        let diff = 0;
         elapsed += 1000;
-        diff = ideal - elapsed;
+        const diff = performance.now() - startTime - elapsed;
 
-        let { hours, minutes, seconds } = this.parseTimer(this.timer);
-
-        if (seconds || minutes || hours) {
-            if (!seconds) {
-                if (minutes) {
-                    minutes -= 1;
-                    seconds += 60;
+        if (this.seconds || this.minutes || this.hours) {
+            if (!this.seconds) {
+                if (this.minutes) {
+                    this.minutes -= 1;
+                    this.seconds += 60;
                 }
-                else if (hours) {
-                    hours -= 1;
-                    minutes += 59;
-                    seconds += 60;
+                else if (this.hours) {
+                    this.hours -= 1;
+                    this.minutes += 59;
+                    this.seconds += 60;
                 }
             }
-            seconds -= 1;
-
-            this.timer = this.padTimer({ hours, minutes, seconds });
-            this.timerInput = Object.assign({}, this.timer);
-            this.updateTitle.emit({ hours, minutes, seconds });
+            this.seconds -= 1;
 
             this.timeout = setTimeout(() => {
                 this.updateTimer(startTime, elapsed);
             }, 1000 - diff);
+
+            this.updateTitle.emit({
+                hours: this.hours,
+                minutes: this.minutes,
+                seconds: this.seconds
+            });
         }
         else if (this.alarmOn) {
             this.alarm.emit("timer");
@@ -161,16 +131,13 @@ export class Timer {
     }
 
     start() {
-        const { hours, minutes, seconds } = this.parseTimer(this.timerInput);
-
-        if (hours || minutes || seconds) {
-            this.isRunning = true;
-            this.running.emit(this.isRunning);
-            this.timer = this.normalizeTimer(hours, minutes, seconds);
-
+        if (this.seconds || this.minutes || this.hours) {
             const startTime = performance.now();
 
-            setTimeout(() => {
+            this.normalizeTimer();
+            this.isRunning = true;
+            this.running.emit(this.isRunning);
+            this.timeout = setTimeout(() => {
                 this.updateTimer(startTime, 0);
             }, 1000);
         }
@@ -183,12 +150,9 @@ export class Timer {
     }
 
     reset() {
-        this.timer = {
-            hours: "00",
-            minutes: "00",
-            seconds: "00"
-        };
-        this.timerInput = Object.assign({}, this.timer);
+        this.hours = 0;
+        this.minutes = 0;
+        this.seconds = 0;
 
         if (this.isRunning) {
             this.stop();
