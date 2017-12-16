@@ -45,15 +45,6 @@
 
 .notepad-shift-btn {
     padding: 2px;
-
-    &:disabled {
-        color: $color1;
-
-        &:hover {
-            color: $color1;
-            cursor: default;
-        }
-    }
 }
 
 .notepad-create-new-btn {

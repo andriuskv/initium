@@ -23,6 +23,11 @@
         cursor: pointer;
     }
 
+    &:disabled {
+        color: $secondary-text-color;
+        cursor: default;
+    }
+
     &:focus {
         outline: none;
     }
