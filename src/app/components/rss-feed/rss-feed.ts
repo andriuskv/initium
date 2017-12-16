@@ -16,16 +16,16 @@ export class RssFeed {
     @Input() item;
 
     loading: boolean = true;
-    fetching: boolean;
+    fetching: boolean = false;
     isVisible: boolean = false;
     newEntryCount: number = 0;
-    activeFeed: string = "";
+    timeout: number = 0;
+    initTimeout: number = 0;
     latestActiveFeed: string = "";
     message: string = "";
     feeds: Array<any> = [];
     feedsToLoad: Array<any> = [];
-    timeout: any;
-    initTimeout: any;
+    activeFeed: any = null;
 
     constructor(private feedService: FeedService, private notificationService: NotificationService) {
         this.feedService = feedService;
@@ -57,7 +57,7 @@ export class RssFeed {
 
     initFeeds() {
         chrome.storage.sync.get("rss", storage => {
-            this.feedsToLoad = storage.rss || JSON.parse(localStorage.getItem("rss feeds")) || [];
+            this.feedsToLoad = storage.rss || [];
             this.loadFeeds(this.feedsToLoad);
         });
     }
@@ -108,18 +108,18 @@ export class RssFeed {
     addNewFeed() {
         if (this.activeFeed) {
             this.latestActiveFeed = this.activeFeed;
-            this.activeFeed = "";
+            this.activeFeed = null;
         }
         else {
             this.activeFeed = this.latestActiveFeed;
-            this.latestActiveFeed = "";
+            this.latestActiveFeed = null;
         }
     }
 
     removeFeed(index) {
         this.feeds.splice(index, 1);
         this.saveFeeds(this.feeds);
-        this.activeFeed = this.feeds.length ? this.feeds[0].url : "";
+        this.activeFeed = this.feeds.length ? this.feeds[0] : null;
     }
 
     loadFeeds(feeds) {
@@ -134,7 +134,7 @@ export class RssFeed {
         Promise.all(feedsToLoad)
         .then(() => {
             this.loading = false;
-            this.activeFeed = this.activeFeed || this.feeds[0].url;
+            this.activeFeed = this.activeFeed || this.feeds[0];
             this.feedsToLoad.length = 0;
             this.getNewFeeds();
         })
@@ -173,7 +173,8 @@ export class RssFeed {
                 this.notificationService.send(
                     "RSS feed",
                     `You have ${this.newEntryCount} new entries`,
-                    () => this.toggleTab.emit("rssFeed"));
+                    () => this.toggleTab.emit("rssFeed")
+                );
             }
         })
         .catch(error => {
@@ -230,7 +231,7 @@ export class RssFeed {
                 }, 4000);
                 return;
             }
-            this.activeFeed = url;
+            this.activeFeed = this.feeds[this.feeds.length - 1];
             this.getNewFeeds();
             this.saveFeeds(this.feeds);
             event.target.reset();
@@ -255,8 +256,8 @@ export class RssFeed {
     }
 
     showFeed(feed) {
-        if (feed.url !== this.activeFeed) {
-            this.activeFeed = feed.url;
+        if (!this.activeFeed || feed.url !== this.activeFeed.url) {
+            this.activeFeed = feed;
         }
     }
 
@@ -269,12 +270,7 @@ export class RssFeed {
     }
 
     markEntryAsRead(feed, entry) {
+        feed.newEntries -= 1;
         entry.newEntry = false;
-        feed.newEntries = feed.entries.reduce((count, entry) => {
-            if (entry.newEntry) {
-                count += 1;
-            }
-            return count;
-        }, 0);
     }
 }
