@@ -1,6 +1,5 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { FormsModule } from "@angular/forms";
 
 import { TimeDateService } from "./services/timeDateService";
 import { SettingService } from "./services/settingService";
@@ -34,7 +33,7 @@ import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar
 import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-viewer";
 
 @NgModule({
-    imports: [BrowserModule, FormsModule],
+    imports: [BrowserModule],
     providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService, ZIndexService],
     declarations: [
         App, Settings, Background, Time, MainBlock, MostVisited, Notepad, Twitter, RssFeed,

@@ -1,6 +1,7 @@
 /* global chrome */
 
-import { Component } from "@angular/core";
+import { Component, Inject } from "@angular/core";
+import { DOCUMENT } from "@angular/platform-browser";
 import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
@@ -13,7 +14,8 @@ export class Todo {
     todoBeingEdited: any;
     zIndex: number = 0;
 
-    constructor(private zIndexService: ZIndexService) {
+    constructor( @Inject(DOCUMENT) private document, private zIndexService: ZIndexService) {
+        this.document = document;
         this.zIndexService = zIndexService;
     }
 
@@ -31,16 +33,18 @@ export class Todo {
         }
     }
 
-    addTodo({ target }) {
-        if (!target.checkValidity()) {
+    addTodo(event) {
+        event.preventDefault();
+
+        if (!event.target.checkValidity()) {
             return;
         }
-        const todo = { text: target.elements.input.value };
+        const todo = { text: event.target.elements.input.value };
         const index = this.todos.filter(todo => todo.pinned).length;
 
         this.todos.splice(index, 0, todo);
         this.saveTodos(this.todos);
-        target.reset();
+        event.target.reset();
     }
 
     markTodoDone(index, done) {
@@ -89,10 +93,12 @@ export class Todo {
     }
 
     saveTodoEdit() {
-        const { text, index } = this.todoBeingEdited;
+        const { value } = this.document.querySelector('.todo-edit-input');
+        const { index } = this.todoBeingEdited;
+        const todo = this.todos[index];
 
-        if (text && text !== this.todos[index].text) {
-            this.todos[index].text = text;
+        if (value && value !== todo.text) {
+            todo.text = value;
             this.saveTodos(this.todos);
         }
         this.cancelTodoEdit();

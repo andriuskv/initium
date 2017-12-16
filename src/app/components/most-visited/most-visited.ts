@@ -131,11 +131,13 @@ export class MostVisited {
         });
     }
 
-    async addPage({ target }) {
-        if (!target.checkValidity()) {
+    async addPage(event) {
+        event.preventDefault();
+
+        if (!event.target.checkValidity()) {
             return;
         }
-        const { elements } = target;
+        const { elements } = event.target;
         const url = this.appendProtocol(elements.url.value);
         const title = elements.title.value || url;
         const image = elements.thumb.files[0];
@@ -149,6 +151,6 @@ export class MostVisited {
         localStorage.setItem("most visited", JSON.stringify(this.mostVisited));
         this.checkBackup();
         this.hidePanel();
-        target.reset();
+        event.target.reset();
     }
 }
