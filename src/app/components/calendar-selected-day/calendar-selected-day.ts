@@ -27,8 +27,12 @@ export class CalendarSelectedDay {
     timePattern: string = "";
     occurences: string = "";
     range: any = {
-        from: {},
-        to: {}
+        from: {
+            string: ""
+        },
+        to: {
+            string: ""
+        }
     };
     timeTable: Array<any> = [];
 
@@ -143,6 +147,7 @@ export class CalendarSelectedDay {
             return;
         }
         const time = this.range[name];
+        time.string = target.value;
         const [hourString, minuteString] = time.string.toLowerCase().split(":");
         const hours = parseInt(hourString, 10);
         time.minutes = parseInt(minuteString, 10);
@@ -207,6 +212,7 @@ export class CalendarSelectedDay {
         this.isRepeatCountInputValid = target.validity.valid;
 
         if (this.isRepeatCountInputValid) {
+            this.occurences = target.value;
             this.repeatCount = parseInt(target.value, 10);
         }
     }
@@ -233,14 +239,16 @@ export class CalendarSelectedDay {
         return Math.random().toString(32).slice(2, 16);
     }
 
-    createReminder({ target }) {
-        if (!target.checkValidity() || (this.isRangeVisible && this.rangeMessage)) {
+    createReminder(event) {
+        event.preventDefault();
+
+        if (!event.target.checkValidity() || (this.isRangeVisible && this.rangeMessage)) {
             return;
         }
         const data: any = {
             reminder: {
                 id: this.getId(),
-                text: target.elements.reminder.value,
+                text: event.target.elements.reminder.value,
                 color: this.getRandomColor(),
                 range: this.getRange(),
                 repeat: this.isRepeatEnabled && (!this.repeatCount || this.repeatCount > 1)

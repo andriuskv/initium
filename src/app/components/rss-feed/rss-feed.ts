@@ -208,12 +208,15 @@ export class RssFeed {
             });
     }
 
-    handleFormSubmit({ target }) {
-        if (!target.checkValidity()) {
+    handleFormSubmit(event) {
+        event.preventDefault();
+
+        if (!event.target.checkValidity()) {
             return;
         }
-        const title = target.elements.title.value;
-        const url = target.elements.url.value;
+        const { elements } = event.target;
+        const title = elements.title.value;
+        const url = elements.url.value;
         this.fetching = true;
 
         this.getFeed(url, title).then(message => {
@@ -230,7 +233,7 @@ export class RssFeed {
             this.activeFeed = url;
             this.getNewFeeds();
             this.saveFeeds(this.feeds);
-            target.reset();
+            event.target.reset();
         })
         .catch(error => {
             console.log(error);

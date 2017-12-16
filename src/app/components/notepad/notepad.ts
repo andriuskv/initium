@@ -51,7 +51,7 @@ declare const chrome;
                     </button>
                 </li>
             </ul>
-            <textarea class="input notepad-input" [(ngModel)]="activeTabContent" (input)="onInput($event)"></textarea>
+            <textarea class="input notepad-input" [value]="activeTabContent" (input)="saveTabContent($event.target.value)"></textarea>
             <div class="main-block-mask" *ngIf="showingModal">
                 <div class="container main-block-mask-content notepad-modal">
                     <p>Are you really want to remove this tab?</p>
@@ -209,9 +209,5 @@ export class Notepad {
 
     saveTabs() {
         chrome.storage.sync.set({ notepad: this.tabs });
-    }
-
-    onInput(event) {
-        this.saveTabContent(event.target.value);
     }
 }

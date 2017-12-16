@@ -33,7 +33,7 @@
     </button>
 </div>
 <ng-template #elseBlock>
-    <form class="selected-day" (submit)="createReminder($event)" ngNativeValidate>
+    <form class="selected-day" (submit)="createReminder($event)">
         <input type="text" class="input reminder-input reminder-form-item" name="reminder" autocomplete="off" placeholder="Remind me to..." required>
         <div class="reminder-settings reminder-form-item">
             <label class="checkbox-container">
@@ -53,10 +53,9 @@
                     <span>From</span>
                     <span class="range-input-container">
                         <input type="text" class="input range-input" autocomplete="off"
-                            name="fromRange"
                             (keyup)="validateRangeInput($event, 'from')"
                             [pattern]="timePattern"
-                            [(ngModel)]="range.from.string" required>
+                            [value]="range.from.string" required>
                         <ul class="reminder-timetable">
                             <li class="reminder-timetable-item" *ngFor="let item of timeTable" (mousedown)="updateTimeRange(item, 'from')">{{ item.string }}</li>
                         </ul>
@@ -66,10 +65,9 @@
                     <span>To</span>
                     <span class="range-input-container">
                         <input type="text" class="input range-input" autocomplete="off"
-                            name="toRange"
                             (keyup)="validateRangeInput($event, 'to')"
                             [pattern]="timePattern"
-                            [(ngModel)]="range.to.string">
+                            [value]="range.to.string">
                         <ul class="reminder-timetable">
                             <li class="reminder-timetable-item" *ngFor="let item of timeTable" (mousedown)="updateTimeRange(item, 'to')">{{ item.string }}</li>
                         </ul>
@@ -101,10 +99,10 @@
                     <div class="radio"></div>
                     <span>
                         <span class="checkbox-label">After</span>
-                        <input type="text" class="input repeat-input" autocomplete="off" name="occurences"
+                        <input type="text" class="input repeat-input" autocomplete="off"
                             pattern="^0*[1-9][0-9]*$"
                             (keyup)="validateRepeatCountInput($event)"
-                            [(ngModel)]="occurences"
+                            [value]="occurences"
                             [disabled]="!isRepeatCountInputEnabled"
                             [required]="isRepeatCountInputEnabled">
                         <span>occurences</span>
