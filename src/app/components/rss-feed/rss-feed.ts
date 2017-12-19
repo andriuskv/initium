@@ -269,8 +269,10 @@ export class RssFeed {
         });
     }
 
-    markEntryAsRead(feed, entry) {
-        feed.newEntries -= 1;
-        entry.newEntry = false;
+    markEntryAsRead(entry) {
+        if (entry.newEntry) {
+            this.activeFeed.newEntries -= 1;
+            entry.newEntry = false;
+        }
     }
 }

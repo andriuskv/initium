@@ -26,35 +26,35 @@
             </button>
         </li>
     </ul>
-    <div class="feed-loader" *ngIf="loading">
-        <svg viewBox="0 0 24 24" class="feed-icon">
-            <use href="#rss"></use>
-        </svg>
-        <span>RSS Feed</span>
-    </div>
-    <div class="feed-hero" [class.has-no-feeds]="!feeds.length" *ngIf="!activeFeed && !loading">
-        <svg viewBox="0 0 24 24" class="feed-icon">
-            <use href="#rss"></use>
-        </svg>
-        <h2 class="feed-hero-title">RSS Feed</h2>
-        <form (submit)="handleFormSubmit($event)">
-            <label for="feed-title-input" class="feed-input-label">Title (optional)</label>
-            <input type="text" id="feed-title-input" class="input feed-input" name="title" autocomplete="off">
-            <label for="feed-url-input" class="feed-input-label">URL</label>
-            <input type="text" id="feed-url-input" class="input feed-input" name="url" autocomplete="off" required>
-            <div class="feed-add-btn-container">
-                <img src="./assets/images/ring.svg" *ngIf="fetching" alt="">
-                <span class="feed-message">{{ message }}</span>
-                <button class="btn" [disabled]="fetching">Add</button>
-            </div>
-        </form>
-    </div>
-    <ul class="feeds" *ngIf="activeFeed && feeds.length">
+    <ul class="feed" *ngIf="activeFeed; else elseBlock">
         <li class="feed-entry" *ngFor="let entry of activeFeed.entries">
-            <a href="{{ entry.link }}" class="feed-entry-link" (click)="markEntryAsRead(feed, entry)" target="_blank">{{ entry.title }}</a>
+            <a [href]="entry.link" class="feed-entry-link" (click)="markEntryAsRead(entry)" target="_blank">{{ entry.title }}</a>
             <p class="feed-entry-desc" [innerHTML]="entry.desc"></p>
             <span class="feed-entry-date" *ngIf="entry.date">{{ entry.date }}</span>
             <span class="is-new-entry" *ngIf="entry.newEntry">New</span>
         </li>
     </ul>
+    <ng-template #elseBlock>
+        <div class="feed-hero" [class.has-no-feeds]="!feeds.length">
+            <svg viewBox="0 0 24 24" class="feed-hero-icon">
+                <use href="#rss"></use>
+            </svg>
+            <h2 class="feed-hero-title">RSS Feed</h2>
+            <form (submit)="handleFormSubmit($event)" *ngIf="!loading">
+                <label class="feed-input-group">
+                    <div>Title (optional)</div>
+                    <input type="text" class="input feed-input" name="title" autocomplete="off">
+                </label>
+                <label class="feed-input-group">
+                    <div>URL</div>
+                    <input type="text" class="input feed-input" name="url" required>
+                </label>
+                <div class="feed-add-btn-container">
+                    <img src="./assets/images/ring.svg" *ngIf="fetching" alt="">
+                    <span>{{ message }}</span>
+                    <button class="btn" [disabled]="fetching">Add</button>
+                </div>
+            </form>
+        </div>
+    </ng-template>
 </div>

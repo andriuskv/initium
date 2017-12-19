@@ -46,18 +46,6 @@
     padding: 2px 4px;
 }
 
-.feed-loader {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: calc(100% - 22px);
-
-    span {
-        font-size: 18px;
-    }
-}
-
 .feed-hero {
     display: flex;
     flex-direction: column;
@@ -70,7 +58,7 @@
     }
 }
 
-.feed-icon {
+.feed-hero-icon {
     width: 64px;
     height: 64px;
     color: #fa9b39;
@@ -79,38 +67,30 @@
 .feed-hero-title {
     margin-top: 0;
     margin-bottom: 16px;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: normal;
 }
 
-.feed-input-label {
+.feed-input-group {
     display: block;
-    margin-bottom: 2px;
-    text-align: left;
-}
-
-.feed-input {
-    display: block;
-    width: 200px;
     margin-bottom: 4px;
 }
 
+.feed-input {
+    width: 200px;
+    margin-top: 2px;
+}
+
 .feed-add-btn-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    text-align: right;
 
     img {
         height: 20px;
-        margin-right: 4px;
+        vertical-align: middle;
     }
 }
 
-.feed-message {
-    margin-right: 4px;
-}
-
-.feeds {
+.feed {
     @include scrollbar($color2);
 
     overflow-y: auto;
@@ -118,13 +98,8 @@
 }
 
 .feed-entry {
-    padding: 4px;
-    margin: 4px 4px 0 4px;
+    padding: 8px 4px;
     border-bottom: 1px solid $color2;
-
-    &:last-of-type {
-        border-bottom: none;
-    }
 }
 
 .feed-entry-link:hover {
