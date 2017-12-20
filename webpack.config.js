@@ -1,10 +1,11 @@
 const path = require("path");
-const { DefinePlugin, NoEmitOnErrorsPlugin, NamedModulesPlugin } = require('webpack');
-const { ModuleConcatenationPlugin, CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
-const ProgressPlugin = require('webpack/lib/ProgressPlugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { DefinePlugin, NoEmitOnErrorsPlugin, NamedModulesPlugin, optimize } = require("webpack");
+const { ModuleConcatenationPlugin, CommonsChunkPlugin } = optimize;
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const ProgressPlugin = require("webpack/lib/ProgressPlugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const { AotPlugin } = require('@ngtools/webpack');
+const { AotPlugin } = require("@ngtools/webpack");
 
 module.exports = function(env = {}) {
     const nodeModules = path.join(process.cwd(), "node_modules");
@@ -71,18 +72,8 @@ module.exports = function(env = {}) {
         plugins.push(
             new ModuleConcatenationPlugin(),
             new UglifyJsPlugin({
-                comments: false,
-                compress: {
-                    warnings: false,
-                    unused: true,
-                    dead_code: true,
-                    screw_ie8: true,
-                    conditionals: true,
-                    evaluate: true,
-                    unsafe: true,
-                    drop_console: true,
-                    comparisons: true,
-                    sequences: true
+                uglifyOptions: {
+                    ecma: 8
                 }
             })
         );

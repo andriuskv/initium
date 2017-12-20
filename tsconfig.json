@@ -3,14 +3,14 @@
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
     "baseUrl": "src",
-    "module": "es2015",
+    "module": "esnext",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es5",
+    "target": "es2017",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -18,7 +18,7 @@
       "chrome"
     ],
     "lib": [
-      "es2016",
+      "es2017",
       "dom"
     ]
   }
