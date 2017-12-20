@@ -2,11 +2,11 @@
     <ul class="feed-header" *ngIf="feeds.length">
         <li class="feed-header-item" *ngFor="let feed of feeds; let i = index" [class.active]="activeFeed && feed.url === activeFeed.url">
             <button class="btn-icon feed-select-btn" title="Select feed" (click)="showFeed(feed)">
-                <span class="feed-new-entry-count" *ngIf="feed.newEntries">{{ feed.newEntries }}</span>
+                <span class="feed-new-entry-count" *ngIf="feed.newEntryCount">{{ feed.newEntryCount }}</span>
                 <span>{{ feed.title }}</span>
             </button>
             <div class="feed-title-btns">
-                <button class="btn-icon" title="Mark new entries as read" *ngIf="feed.newEntries" (click)="markEntriesAsRead(feed)">
+                <button class="btn-icon" title="Mark new entries as read" *ngIf="feed.newEntryCount" (click)="markEntriesAsRead(feed)">
                     <svg viewBox="0 0 24 24">
                         <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
                     </svg>
