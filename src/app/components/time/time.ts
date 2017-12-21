@@ -5,10 +5,10 @@ import { TimeDateService } from "../../services/timeDateService";
 @Component({
     selector: "time",
     template: `
-        <div class="time" *ngIf="clock">
-            <div class="clock-container">
-                <div class="clock">{{ clock }}</div>
-                <div class="period" *ngIf="period">{{ period }}</div>
+        <div class="time">
+            <div>
+                <span class="clock">{{ hours }}:{{ minutes | padTime }}</span>
+                <span class="period" *ngIf="period">{{ period }}</span>
             </div>
             <div class="date" *ngIf="!dateDisabled">{{ date }}</div>
         </div>
@@ -20,8 +20,8 @@ export class Time {
     dateDisabled: boolean = false;
     date: string;
     period: string;
-    clock: string;
-    settings: any;
+    hours: number;
+    minutes: number;
     timeout: any;
 
     constructor(private settingService: SettingService, private timeDateService: TimeDateService) {
@@ -71,18 +71,15 @@ export class Time {
 
     getCurrentTime() {
         const date = new Date();
-        const minutes = date.getMinutes();
 
         return {
             hours: date.getHours(),
-            minutes: minutes > 9 ? minutes : `0${minutes}`
+            minutes: date.getMinutes()
         };
     }
 
     get12HourTime() {
-        const time = this.getCurrentTime();
-        let hours = time.hours;
-
+        let { hours, minutes } = this.getCurrentTime();
         this.period = hours < 12 ? "AM" : "PM";
 
         if (!hours) {
@@ -91,18 +88,18 @@ export class Time {
         else {
             hours = hours > 12 ? hours - 12 : hours;
         }
-        return `${hours}:${time.minutes}`;
+        return { hours, minutes };
     }
 
     get24HourTime() {
-        const { hours, minutes } = this.getCurrentTime();
-
-        return `${hours}:${minutes}`;
+        return this.getCurrentTime();
     }
 
     updateTime(cb) {
-        this.clock = cb.call(this);
+        const { hours, minutes } = cb.call(this);
 
+        this.hours = hours;
+        this.minutes = minutes;
         this.timeout = setTimeout(() => {
             this.updateTime(cb);
         }, 1000);
