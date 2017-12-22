@@ -46,16 +46,17 @@ import { ZIndexService } from "../../services/zIndexService";
                     </button>
                 </li>
             </ul>
-            <most-visited [setting]="setting" [item]="tab"></most-visited>
-            <notepad [item]="tab"></notepad>
-            <twitter [item]="tab"
-                [isExpanded]="isTwitterExpanded"
+            <most-visited [setting]="setting"
+                [isVisible]="tab === 'mostVisited'">
+            </most-visited>
+            <notepad [isVisible]="tab === 'notepad'"></notepad>
+            <twitter [isVisible]="tab === 'twitter'"
                 (newTweets)="onTabUpdate('twitter')"
                 (toggleTab)="selectTab($event, true)"
                 (toggleSize)="onToggleSize($event)"
                 (showViewer)="onShowViewer($event)">
             </twitter>
-            <rss-feed [item]="tab"
+            <rss-feed [isVisible]="tab === 'rssFeed'"
                 (newEntries)="onTabUpdate('rssFeed')"
                 (toggleTab)="selectTab($event, true)">
             </rss-feed>

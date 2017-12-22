@@ -13,11 +13,10 @@ declare const chrome;
 export class RssFeed {
     @Output() newEntries = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
-    @Input() item;
+    @Input() isVisible: boolean = false;
 
     loading: boolean = true;
     fetching: boolean = false;
-    isVisible: boolean = false;
     newEntryCount: number = 0;
     timeout: number = 0;
     initTimeout: number = 0;
@@ -40,8 +39,6 @@ export class RssFeed {
     }
 
     ngOnChanges() {
-        this.isVisible = this.item === "rssFeed";
-
         if (this.isVisible) {
             if (this.newEntryCount) {
                 this.newEntryCount = 0;

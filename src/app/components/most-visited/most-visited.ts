@@ -10,7 +10,7 @@ declare const chrome;
     templateUrl: "./most-visited.html"
 })
 export class MostVisited {
-    @Input() item;
+    @Input() isVisible: boolean = false;
     @Input() setting;
 
     hasBackup: boolean = true;
