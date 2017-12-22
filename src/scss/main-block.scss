@@ -24,7 +24,7 @@
     min-width: 400px;
 
     &.is-tab-visible {
-        margin-bottom: 4px;
+        margin-bottom: 8px;
     }
 
     &.hidden {
@@ -59,11 +59,17 @@
     display: none;
     width: 588px;
     height: 318px;
-    max-height: calc(55vh - 36px);
+    max-height: calc(55vh - 40px);
 
     &.visible {
         display: block;
     }
+}
+
+.main-block-content-header {
+    display: flex;
+    height: 25px;
+    border-bottom: 1px solid $color2;
 }
 
 .main-block-mask {

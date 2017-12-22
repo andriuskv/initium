@@ -1,5 +1,5 @@
 <div class="main-block-content" [class.visible]="isVisible">
-    <ul class="feed-header" *ngIf="feeds.length">
+    <ul class="main-block-content-header" *ngIf="feeds.length">
         <li class="feed-header-item" *ngFor="let feed of feeds; let i = index" [class.active]="activeFeed && feed.url === activeFeed.url">
             <button class="btn-icon feed-select-btn" title="Select feed" (click)="showFeed(feed)">
                 <span class="feed-new-entry-count" *ngIf="feed.newEntryCount">{{ feed.newEntryCount }}</span>

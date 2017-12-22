@@ -1,19 +1,20 @@
 <div class="main-block-content twitter" [class.visible]="isVisible" [class.expanded]="isExpanded">
     <div class="twitter-hero" [class.visible]="!tweets.length">
-        <div class="twitter-hero-icon">
-            <svg viewBox="0 0 24 24">
-                <use href="#twitter"></use>
-            </svg>
+        <svg viewBox="0 0 24 24" class="twitter-hero-icon">
+            <use href="#twitter"></use>
+        </svg>
+        <div class="twitter-pin-input-container">
+            <input type="text" class="input twitter-pin-input" placeholder="Enter PIN"
+                [class.visible]="showPinInput" #pin
+                (keyup.enter)="login($event, pin)">
+            <img src="./assets/images/ring.svg" class="twitter-spinner" *ngIf="fetchingTweets" alt="">
+            <button class="btn" (click)="login($event, pin)" *ngIf="!isLoggedIn">Log in</button>
+            <button class="btn" *ngIf="errorMessage" (click)="logout()">Log out</button>
         </div>
-        <input type="text" id="js-twitter-pin" class="input twitter-pin-input"
-            placeholder="Enter PIN"
-            [class.visible]="showPinInput" #pin
-            (keyup)="login($event, pin)">
-        <button class="btn" title="Log in to Twitter" *ngIf="!isLoggedIn"
-            (click)="login($event, pin)">Log in</button>
+        <div class="twitter-error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
     </div>
     <div class="twitter-content" [class.visible]="tweets.length">
-        <div class="twitter-header">
+        <div class="main-block-content-header twitter-header">
             <a href="{{ user.homepage }}" class="twitter-user" target="_blank">
                 <img src="{{ user.profileImage }}" class="twitter-user-image" alt="">
                 <span class="twitter-user-name">{{ user.name }}</span>
@@ -98,7 +99,7 @@
             </li>
             <li>
                 <button class="btn-icon more-tweets-btn" (click)="fetchMoreTweets()">
-                    <img src="./assets/images/ring.svg" *ngIf="fetchingMoreTweets" alt="">
+                    <img src="./assets/images/ring.svg" class="twitter-spinner" *ngIf="fetchingMoreTweets" alt="">
                     <span>Load more tweets</span>
                 </button>
             </li>

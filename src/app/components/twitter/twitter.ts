@@ -16,13 +16,15 @@ export class Twitter {
     @Output() toggleTab = new EventEmitter();
     @Output() toggleSize = new EventEmitter();
     @Output() showViewer = new EventEmitter();
-    @Input() item;
-    @Input() isExpanded;
+    @Input() isVisible: boolean = false;
 
-    isLoggedIn: boolean;
-    isVisible: boolean;
-    showPinInput: boolean;
+    isLoggedIn: boolean = this.isAuthenticated();
+    showPinInput: boolean = false;
+    initialized: boolean = false;
     fetchingMoreTweets: boolean = false;
+    fetchingTweets: boolean = false;
+    isExpanded: boolean = false;
+    errorMessage: string = "";
     tweets: Array<any> = [];
     tweetsToLoad: Array<any> = [];
     user: any = {};
@@ -36,39 +38,39 @@ export class Twitter {
         this.notificationService = notificationService;
     }
 
-    ngOnInit() {
-        this.isLoggedIn = this.isAuthenticated();
-        this.initTwitter();
-    }
+    async ngOnChanges() {
+        this.isExpanded = this.isVisible && this.isExpanded;
 
-    ngOnChanges() {
-        this.isVisible = this.item === "twitter";
-
-        if (!this.twitterTimeout) {
+        if (this.twitterTimeout) {
+            clearTimeout(this.twitterTimeout);
+            this.twitterTimeout = 0;
+            this.fetchTweets();
             return;
         }
 
-        if (this.isVisible && !this.tweets.length && this.twitterTimeout) {
-            clearTimeout(this.twitterTimeout);
-            this.twitterTimeout = null;
-            this.fetchTweets();
+        if (this.isLoggedIn && !this.initialized) {
+            await this.initCodebird();
+
+            this.twitterTimeout = setTimeout(() => {
+                this.twitterTimeout = 0;
+                this.fetchTweets();
+            }, this.isVisible ? 2000 : 10000);
         }
     }
 
-    initTwitter() {
-        const script = document.createElement("script");
+    initCodebird() {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
 
-        script.setAttribute("src", "libs/codebird.js");
-        document.getElementsByTagName("body")[0].appendChild(script);
-        script.addEventListener("load", () => {
-            if (this.isAuthenticated()) {
-                const delay = this.isVisible ? 2000 : 10000;
+        return new Promise(resolve => {
+            const script = document.createElement("script");
 
-                this.twitterTimeout = setTimeout(() => {
-                    this.fetchTweets();
-                }, delay);
-            }
-        }, false);
+            script.setAttribute("src", "libs/codebird.js");
+            document.getElementsByTagName("body")[0].appendChild(script);
+            script.onload = resolve;
+        });
     }
 
     setKey(ref) {
@@ -342,7 +344,7 @@ export class Twitter {
         });
     }
 
-    getUserInfo(userInfo) {
+    getUser(userInfo) {
         const cb = new Codebird;
 
         this.setInfo(cb, userInfo);
@@ -355,18 +357,27 @@ export class Twitter {
     }
 
     fetchTweets() {
-        const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
+        const userInfo = this.getUserInfo();
 
         if (userInfo.token && userInfo.tokenSecret) {
             const cb = new Codebird;
+            this.fetchingTweets = true;
 
             this.setInfo(cb, userInfo);
             cb.__call("statuses_homeTimeline", {}, tweets => {
-                this.tweets = this.loadTweets(tweets);
-                this.updateTimeline(userInfo, tweets[0].id);
-                this.updateTweetTime();
+                this.fetchingTweets = false;
+
+                if (Array.isArray(tweets)) {
+                    this.tweets = this.loadTweets(tweets);
+
+                    this.updateTimeline(userInfo, tweets[0].id);
+                    this.updateTweetTime();
+                }
+                else {
+                    this.errorMessage = "There was an error during tweet retrieval.\nTry again later.";
+                }
             });
-            this.getUserInfo(userInfo);
+            this.getUser(userInfo);
         }
     }
 
@@ -388,27 +399,29 @@ export class Twitter {
         });
     }
 
-    login(event, pin) {
-        if (event.which === 1 || event.which === 13) {
-            if (pin.value) {
-                this.authenticateWithPin(pin);
-                return;
-            }
-            this.cb = new Codebird;
-            this.setKey(this.cb);
-            this.cb.__call("oauth_requestToken", { oauth_callback: "oob" }, (reply, rate, err) => {
-                if (err) {
-                    console.log("error response or timeout exceeded", err.error);
-                }
-                if (reply.httpstatus !== 401) {
-                    this.cb.setToken(reply.oauth_token, reply.oauth_token_secret);
-                    this.cb.__call("oauth_authorize", {}, url => {
-                        this.showPinInput = true;
-                        window.open(url, "_blank", "width=640,height=480");
-                    });
-                }
-            });
+    async login({ which }, pin) {
+        if (!this.initialized) {
+            await this.initCodebird();
         }
+
+        if (pin.value) {
+            this.authenticateWithPin(pin);
+            return;
+        }
+        this.cb = new Codebird;
+        this.setKey(this.cb);
+        this.cb.__call("oauth_requestToken", { oauth_callback: "oob" }, (reply, rate, err) => {
+            if (err) {
+                console.log("error response or timeout exceeded", err.error);
+            }
+            if (reply.httpstatus !== 401) {
+                this.cb.setToken(reply.oauth_token, reply.oauth_token_secret);
+                this.cb.__call("oauth_authorize", {}, url => {
+                    this.showPinInput = true;
+                    window.open(url, "_blank", "width=640,height=480");
+                });
+            }
+        });
     }
 
     toggleContainerSize() {
@@ -422,8 +435,10 @@ export class Twitter {
         clearTimeout(this.tweetUpdateTimeout);
         localStorage.removeItem("userInfo");
         this.isLoggedIn = false;
+        this.fetchingTweets = false;
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
+        this.errorMessage = "";
 
         if (this.isExpanded) {
             this.toggleContainerSize();
@@ -431,7 +446,7 @@ export class Twitter {
     }
 
     fetchMoreTweets() {
-        const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
+        const userInfo = this.getUserInfo();
 
         if (!this.fetchingMoreTweets && userInfo.token && userInfo.tokenSecret) {
             const { id: oldestTweetId } = this.tweets[this.tweets.length - 1];
@@ -450,5 +465,9 @@ export class Twitter {
                 }
             });
         }
+    }
+
+    getUserInfo() {
+        return JSON.parse(localStorage.getItem("userInfo")) || {};
     }
 }

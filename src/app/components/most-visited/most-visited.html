@@ -1,4 +1,4 @@
-<div class="main-block-content most-visited" [class.visible]="item === 'mostVisited'">
+<div class="main-block-content most-visited" [class.visible]="isVisible">
     <ul class="most-visited-items">
         <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index">
             <a [href]="page.url" [title]="page.title">

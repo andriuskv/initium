@@ -8,8 +8,8 @@ declare const chrome;
 @Component({
     selector: "notepad",
     template: `
-        <div class="main-block-content" [class.visible]="item === 'notepad'">
-            <ul class="notepad-header">
+        <div class="main-block-content" [class.visible]="isVisible">
+            <ul class="main-block-content-header">
                 <li *ngIf="tabs.length > 4">
                     <button class="btn-icon notepad-shift-btn" (click)="prevVisibleTabs()" [disabled]="shift <= 0">
                         <svg viewBox="0 0 24 24">
@@ -65,7 +65,7 @@ declare const chrome;
     `
 })
 export class Notepad {
-    @Input() item;
+    @Input() isVisible: boolean = false;
 
     showingModal: boolean = false;
     shift: number = 0;
