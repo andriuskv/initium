@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 import { TimeDateService } from "../../services/timeDateService";
 
@@ -15,8 +15,6 @@ import { TimeDateService } from "../../services/timeDateService";
     `
 })
 export class Time {
-    @Input() setting;
-
     dateDisabled: boolean = false;
     date: string;
     period: string;
@@ -30,23 +28,23 @@ export class Time {
     }
 
     ngOnInit() {
-        const { time: settings } = this.settingService.getSettings();
+        const { timeDisplay, dateDisabled } = this.settingService.getSetting("time");
 
-        this.changeTimeDisplay(settings.timeDisplay);
-        this.initDate(settings.dateDisabled);
+        this.changeTimeDisplay(timeDisplay);
+        this.initDate(dateDisabled);
+        this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
 
-    ngOnChanges() {
-        if (!this.setting) {
+    changeHandler({ time }) {
+        if (!time) {
             return;
         }
 
-        if (this.setting.timeDisplay) {
-            this.changeTimeDisplay(this.setting.timeDisplay);
+        if (time.timeDisplay) {
+            this.changeTimeDisplay(time.timeDisplay);
         }
-
-        if (typeof this.setting.dateDisabled === "boolean") {
-            this.initDate(this.setting.dateDisabled);
+        else if (typeof time.dateDisabled === "boolean") {
+            this.initDate(time.dateDisabled);
         }
     }
 

@@ -2,6 +2,7 @@
 
 import { Component, Input } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
+import { SettingService } from "../../services/settingService";
 
 declare const chrome;
 
@@ -11,19 +12,21 @@ declare const chrome;
 })
 export class MostVisited {
     @Input() isVisible: boolean = false;
-    @Input() setting;
 
     hasBackup: boolean = true;
     isNewPagePanelVisible: boolean = false;
     isFetching: boolean = false;
     mostVisited: any = {};
 
-    constructor(private domSanitizer: DomSanitizer) {
+    constructor(private settingService: SettingService, private domSanitizer: DomSanitizer) {
+        this.settingService = settingService;
         this.domSanitizer = domSanitizer;
     }
 
     ngOnInit() {
         const mostVisited = JSON.parse(localStorage.getItem("most visited"));
+
+        this.settingService.subscribeToChanges(this.changeHandler.bind(this));
 
         if (mostVisited) {
             mostVisited.display = mostVisited.display.map(page => {
@@ -39,8 +42,8 @@ export class MostVisited {
         this.getMostVisited();
     }
 
-    ngOnChanges() {
-        if (this.setting && this.setting.resetMostVisited) {
+    changeHandler({ mainBlock }) {
+        if (mainBlock && mainBlock.resetMostVisited) {
             this.resetMostVisited();
         }
     }
@@ -60,7 +63,6 @@ export class MostVisited {
     }
 
     resetMostVisited() {
-        this.setting = null;
         this.isFetching = true;
         localStorage.removeItem("most visited");
         this.getMostVisited();

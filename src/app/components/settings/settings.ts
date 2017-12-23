@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from "@angular/core";
+import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 
 @Component({
@@ -6,16 +6,11 @@ import { SettingService } from "../../services/settingService";
     templateUrl: "./settings.html"
 })
 export class Settings {
-    @Output() setting = new EventEmitter();
-
     active: string = "general";
     settings: any;
 
     constructor(private settingService: SettingService) {
         this.settingService = settingService;
-    }
-
-    ngOnInit() {
         this.settings = this.settingService.getSettings();
     }
 
@@ -24,17 +19,11 @@ export class Settings {
     }
 
     onSetting(settingName, value) {
-        const setting = {
+        this.settings = this.settingService.updateSetting({
             [this.active]: {
                 [settingName]: value
             }
-        };
-
-        this.setting.emit(setting);
-
-        if (settingName !== "resetMostVisited") {
-            this.settings = this.settingService.updateSetting(setting);
-        }
+        });
     }
 
     getWeatherWithCityName(value) {

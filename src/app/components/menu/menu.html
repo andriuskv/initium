@@ -9,8 +9,8 @@
             </button>
         </div>
         <div class="menu-transition-target">
-            <settings *ngIf="selectedItem === 'settings'" (setting)="onSetting($event)"></settings>
-            <dropbox *ngIf="selectedItem === 'dropbox'" (setting)="onSetting($event)"></dropbox>
+            <settings *ngIf="selectedItem === 'settings'"></settings>
+            <dropbox *ngIf="selectedItem === 'dropbox'"></dropbox>
             <calendar *ngIf="selectedItem === 'calendar'"></calendar>
         </div>
     </div>

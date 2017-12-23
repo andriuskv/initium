@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from "@angular/core";
+import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 import Dropbox from "dropbox";
 
@@ -48,9 +48,6 @@ declare const process;
     `
 })
 export class DropboxComp {
-    @Output() background = new EventEmitter();
-    @Output() setting = new EventEmitter();
-
     fetching: boolean = true;
     showItems: boolean = false;
     showLogin: boolean = false;
@@ -250,12 +247,9 @@ export class DropboxComp {
     }
 
     setBackground(url) {
-        const setting = {
+        this.settingService.updateSetting({
             background: { url }
-        };
-
-        this.setting.emit(setting);
-        this.settingService.updateSetting(setting);
+        });
     }
 
     setImageAsBackground(item) {
