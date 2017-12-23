@@ -4,17 +4,6 @@
 	right: 8px;
 	text-align: right;
 	filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
-	animation-duration: 1s;
-	animation-timing-function: ease-in-out;
-
-	&.is-fetching {
-		animation-name: blur-in;
-		animation-fill-mode: forwards;
-	}
-
-	&.done-fetching {
-		animation-name: blur-out;
-	}
 }
 
 .weather-temp-icon-container {
@@ -30,16 +19,4 @@
 .weather-icon {
 	width: 32px;
 	height: 32px;
-}
-
-@keyframes blur-in {
-    0% { filter: blur(0); }
-    50% { filter: blur(2px); }
-    100% { filter: blur(4px); }
-}
-
-@keyframes blur-out {
-    0% { filter: blur(4px); }
-    50% { filter: blur(2px); }
-    100% { filter: blur(0); }
 }
