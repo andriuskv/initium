@@ -7,7 +7,6 @@ import { ZIndexService } from "../../services/zIndexService";
 })
 export class Menu {
     @Output() toggle = new EventEmitter();
-    @Output() setting = new EventEmitter();
 
     visible: boolean = false;
     isClosing: boolean = false;
@@ -21,10 +20,6 @@ export class Menu {
 
     toggleUpperBlockComp() {
         this.toggle.emit("upper");
-    }
-
-    onSetting(setting) {
-        this.setting.emit(setting);
     }
 
     capitalize(string) {

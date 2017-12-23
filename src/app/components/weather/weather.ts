@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 import { WeatherService } from "../../services/weatherService";
 
@@ -20,8 +20,6 @@ import { WeatherService } from "../../services/weatherService";
     `
 })
 export class Weather {
-    @Input() setting;
-
     showWeather: boolean = false;
     initialized: boolean = false;
     disabled: boolean = false;
@@ -40,22 +38,21 @@ export class Weather {
     }
 
     ngOnInit() {
-        const { weather: settings } = this.settingService.getSettings();
+        const { disabled, cityName, useFarenheit } = this.settingService.getSetting("weather");
 
-        this.disabled = settings.disabled;
-        this.cityName = settings.cityName;
-        this.units = this.getTempUnits(settings.useFarenheit);
+        this.disabled = disabled;
+        this.cityName = cityName;
+        this.units = this.getTempUnits(useFarenheit);
 
-        this.initWeather(settings.cityName, settings.disabled);
+        this.initWeather(cityName, disabled);
+        this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
 
-    ngOnChanges(changes) {
-        const { firstChange, currentValue } = changes.setting;
-
-        if (firstChange || !currentValue) {
+    changeHandler({ weather }) {
+        if (!weather) {
             return;
         }
-        const { disabled, useFarenheit, cityName } = currentValue;
+        const { disabled, useFarenheit, cityName } = weather;
 
         if (typeof disabled === "boolean") {
             this.disabled = disabled;
@@ -64,15 +61,13 @@ export class Weather {
                 this.getWeather(this.cityName);
             }
         }
-
-        if (typeof useFarenheit === "boolean") {
+        else if (typeof useFarenheit === "boolean") {
             const units = this.getTempUnits(useFarenheit);
 
             this.units = units;
             this.weather.temp = this.getTemp(this.temperature, units);
         }
-
-        if (typeof cityName === "string") {
+        else if (typeof cityName === "string") {
             this.cityName = cityName;
 
             if (!this.disabled && this.initialized) {

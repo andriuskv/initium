@@ -1,9 +1,8 @@
-export class SettingService {
-    settings: any;
+import { Subject } from "rxjs/Subject";
 
-    constructor() {
-        this.settings = this.initSettings();
-    }
+export class SettingService {
+    settings: any = this.initSettings();
+    data: Subject<object> = new Subject();
 
     initSettings() {
         const defaultSettings = this.getDefault();
@@ -18,11 +17,11 @@ export class SettingService {
                 url: ""
             },
             general: {
-                notificationDisabled: true,
+                notificationsDisabled: true,
                 notificationFocusDisabled: true
             },
             mainBlock: {
-                hideItemBar: false
+                isNavHidden: false
             },
             time: {
                 dateDisabled: false,
@@ -45,10 +44,23 @@ export class SettingService {
         return this.settings;
     }
 
+    getSetting(setting) {
+        return this.settings[setting];
+    }
+
+    subscribeToChanges(nextHandler) {
+        this.data.subscribe(nextHandler);
+    }
+
     updateSetting(setting) {
         const settings = this.settings;
         const [settingFor] = Object.keys(setting);
 
+        this.data.next(setting);
+
+        if (settingFor === "mainBlock" && settings[settingFor].resetMostVisited) {
+            return settings;
+        }
         settings[settingFor] = Object.assign(settings[settingFor], setting[settingFor]);
         localStorage.setItem("settings", JSON.stringify(settings));
         return settings;

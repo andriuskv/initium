@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { Component, Output, EventEmitter } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 import { ZIndexService } from "../../services/zIndexService";
 
@@ -46,9 +46,7 @@ import { ZIndexService } from "../../services/zIndexService";
                     </button>
                 </li>
             </ul>
-            <most-visited [setting]="setting"
-                [isVisible]="tab === 'mostVisited'">
-            </most-visited>
+            <most-visited [isVisible]="tab === 'mostVisited'"></most-visited>
             <notepad [isVisible]="tab === 'notepad'"></notepad>
             <twitter [isVisible]="tab === 'twitter'"
                 (newTweets)="onTabUpdate('twitter')"
@@ -64,7 +62,6 @@ import { ZIndexService } from "../../services/zIndexService";
     `
 })
 export class MainBlock {
-    @Input() setting;
     @Output() showViewer = new EventEmitter();
 
     isNavHidden: boolean;
@@ -86,16 +83,17 @@ export class MainBlock {
     }
 
     ngOnInit() {
-        const { mainBlock: settings } = this.settingService.getSettings();
+        const { isNavHidden } = this.settingService.getSetting("mainBlock");
         const tab = localStorage.getItem("active tab");
 
         this.tab = typeof tab === "string" ? tab : "mostVisited";
-        this.isNavHidden = settings.hideItemBar;
+        this.isNavHidden = isNavHidden;
+        this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
 
-    ngOnChanges() {
-        if (this.setting && typeof this.setting.hideItemBar === "boolean") {
-            this.isNavHidden = this.setting.hideItemBar;
+    changeHandler({ mainBlock }) {
+        if (mainBlock && typeof mainBlock.isNavHidden === "boolean") {
+            this.isNavHidden = mainBlock.isNavHidden;
         }
     }
 

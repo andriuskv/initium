@@ -24,8 +24,8 @@
             <span>Disable notifications</span>
             <label>
                 <input type="checkbox" class="checkbox-input"
-                    [checked]="settings.general.notificationDisabled"
-                    (click)="onSetting('notificationDisabled', $event.target.checked)">
+                    [checked]="settings.general.notificationsDisabled"
+                    (click)="onSetting('notificationsDisabled', $event.target.checked)">
                 <div class="checkbox"></div>
             </label>
         </div>
@@ -52,8 +52,8 @@
         <div class="setting-item">
             <span>Time display</span>
             <select class="btn setting-selection" (click)="onSetting('timeDisplay', $event.target.value)">
-                <option value="0" [selected]="settings.time.timeDisplay === '0'">12 hour</option>
-                <option value="1" [selected]="settings.time.timeDisplay === '1'">24 hour</option>
+                <option value="0" [selected]="settings.time.timeDisplay === '0'">12 hours</option>
+                <option value="1" [selected]="settings.time.timeDisplay === '1'">24 hours</option>
             </select>
         </div>
     </div>
@@ -94,8 +94,8 @@
             <span>Hide item bar</span>
             <label>
                 <input type="checkbox" class="checkbox-input"
-                    [checked]="settings.mainBlock.hideItemBar"
-                    (click)="onSetting('hideItemBar', $event.target.checked)">
+                    [checked]="settings.mainBlock.isNavHidden"
+                    (click)="onSetting('isNavHidden', $event.target.checked)">
                 <div class="checkbox"></div>
             </label>
         </div>

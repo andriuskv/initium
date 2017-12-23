@@ -3,16 +3,16 @@ import { SettingService } from "../services/settingService";
 
 @Injectable()
 export class NotificationService {
-    settings: any;
     timeout: any;
 
     constructor(private settingService: SettingService) {
         this.settingService = settingService;
-        this.settings = this.settingService.getSettings().general;
     }
 
     send(title, body, cb) {
-        if (this.settings.notificationDisabled) {
+        const settings = this.settingService.getSetting("general");
+
+        if (settings.notificationsDisabled) {
             return;
         }
 
@@ -26,7 +26,7 @@ export class NotificationService {
                 if (notification) {
                     notification.close();
                 }
-            }, 5000);
+            }, 8000);
 
             window.onbeforeunload = () => {
                 if (notification) {
@@ -38,7 +38,7 @@ export class NotificationService {
                 cb();
                 notification.close();
 
-                if (!this.settings.notificationFocusDisabled) {
+                if (!settings.notificationFocusDisabled) {
                     window.focus();
                 }
             };

@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 
 @Component({
@@ -8,29 +8,26 @@ import { SettingService } from "../../services/settingService";
     `
 })
 export class Background {
-    @Input() setting = {};
-
-    background: string;
+    background: string = "";
 
     constructor(private settingService: SettingService) {
         this.settingService = settingService;
     }
 
     ngOnInit() {
-        const { background: settings } = this.settingService.getSettings();
+        const { url } = this.settingService.getSetting("background");
 
-        this.background = this.getBackground(settings.url);
+        this.setBackground(url);
+        this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
 
-    ngOnChanges(changes) {
-        const setting = changes.setting.currentValue;
-
-        if (setting) {
-            this.background = this.getBackground(setting.url);
+    changeHandler({ background }) {
+        if (background) {
+            this.setBackground(background.url);
         }
     }
 
-    getBackground(url) {
-        return `url(${url || "https://source.unsplash.com/collection/825407/daily"})`;
+    setBackground(url) {
+        this.background = `url(${url || "https://source.unsplash.com/collection/825407/daily"})`;
     }
 }

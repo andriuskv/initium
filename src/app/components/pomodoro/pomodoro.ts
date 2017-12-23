@@ -146,7 +146,7 @@ export class Pomodoro {
     }
 
     resetTimer(mode) {
-        const { pomodoro: settings } = this.settingService.getSettings();
+        const settings = this.settingService.getSetting("pomodoro");
         const minutes = this.getMinutes(mode, settings);
 
         this.hours = Math.floor(minutes / 60);
