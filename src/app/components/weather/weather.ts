@@ -5,32 +5,26 @@ import { WeatherService } from "../../services/weatherService";
 @Component({
     selector: "weather",
     template: `
-        <div class="weather" *ngIf="!disabled && showWeather"
-            [class.is-fetching]="isFetching"
-            [class.done-fetching]="doneFetcing"
-            [title]="weather.description">
+        <div class="weather" *ngIf="!disabled && city" [title]="description">
             <div class="weather-temp-icon-container">
-                <span class="weather-temp">{{ weather.temp }}</span>
+                <span class="weather-temp">{{ temperature }}°{{ units }}</span>
                 <svg class="weather-icon" viewBox="0 0 24 24">
                     <use attr.href="#weather-{{ icon }}"></use>
                 </svg>
             </div>
-            <div>{{ weather.city }}</div>
+            <div>{{ city }}</div>
         </div>
     `
 })
 export class Weather {
-    showWeather: boolean = false;
-    initialized: boolean = false;
     disabled: boolean = false;
-    isFetching: boolean;
-    doneFetcing: boolean;
     temperature: number = 0;
+    timeout: number = 0;
+    city: string = "";
+    description: string = "";
     units: string = "C";
     icon: string = "";
-    cityName: string;
-    timeout: any;
-    weather: any = {};
+    cityName: string = "";
 
     constructor(private settingService: SettingService, private weatherService: WeatherService) {
         this.settingService = settingService;
@@ -42,9 +36,11 @@ export class Weather {
 
         this.disabled = disabled;
         this.cityName = cityName;
-        this.units = this.getTempUnits(useFarenheit);
+        this.units = this.getTemperatureUnits(useFarenheit);
 
-        this.initWeather(cityName, disabled);
+        if (!disabled) {
+            this.initWeather(cityName);
+        }
         this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
 
@@ -57,82 +53,67 @@ export class Weather {
         if (typeof disabled === "boolean") {
             this.disabled = disabled;
 
-            if (!disabled) {
+            if (disabled) {
+                clearTimeout(this.timeout);
+            }
+            else {
                 this.getWeather(this.cityName);
             }
         }
         else if (typeof useFarenheit === "boolean") {
-            const units = this.getTempUnits(useFarenheit);
-
-            this.units = units;
-            this.weather.temp = this.getTemp(this.temperature, units);
+            this.units = this.getTemperatureUnits(useFarenheit);
+            this.temperature = this.convertTemperature(this.temperature, this.units);
         }
         else if (typeof cityName === "string") {
             this.cityName = cityName;
 
-            if (!this.disabled && this.initialized) {
-                this.isFetching = true;
+            if (!this.disabled) {
                 this.getWeather(cityName);
             }
         }
     }
 
-    initWeather(cityName, isDisabled) {
-        if (isDisabled) {
-            this.initialized = true;
-            return;
-        }
-        setTimeout(() => {
-            this.initialized = true;
+    initWeather(cityName) {
+        this.timeout = setTimeout(() => {
             this.getWeather(cityName);
         }, 10000);
     }
 
-    getTempUnits(useFarenheit) {
+    getTemperatureUnits(useFarenheit) {
         return useFarenheit ? "F" : "C";
     }
 
-    getWeather(cityName) {
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-            this.timeout = null;
-        }
-        this.weatherService.getWeather(cityName)
-        .then(data => {
-            this.displayWeather(data);
-        })
-        .catch(error => {
-            console.log(error);
-        });
+    async getWeather(cityName) {
+        clearTimeout(this.timeout);
 
+        try {
+            const data = await this.weatherService.getWeather(cityName);
+
+            this.displayWeather(data);
+        }
+        catch (e) {
+            console.log(e);
+        }
         this.timeout = setTimeout(() => {
-            this.getWeather(this.cityName);
+            this.getWeather(cityName);
         }, 960000);
     }
 
-    getTemp(temp, units = "C") {
+    convertTemperature(temp, units) {
         if (units === "F") {
-            temp = temp * 9 / 5 + 32;
+            temp = temp * 1.8 + 32;
         }
-        return `${Math.round(temp)}°${units}`;
+        else {
+            temp = (temp - 32) / 1.8;
+        }
+        return Math.round(temp);
     }
 
     displayWeather(data) {
-        this.temperature = data.temp;
-        this.weather.temp = this.getTemp(data.temp, this.units);
-        this.weather.city = data.city;
-        this.weather.description = data.description;
+        this.temperature = this.units === "C" ? data.temp : this.convertTemperature(data.temp, this.units);
+        this.city = data.city;
+        this.description = data.description;
         this.icon = this.getIcon(data.icon.id, data.icon.code);
-        this.showWeather = true;
-
-        if (this.isFetching) {
-            this.doneFetcing = true;
-
-            setTimeout(() => {
-                this.isFetching = false;
-                this.doneFetcing = false;
-            }, 1200);
-        }
     }
 
     getIcon(id, code) {
