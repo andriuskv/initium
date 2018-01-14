@@ -1,4 +1,9 @@
 {
+  "env": {
+    "berowser": true,
+    "webextensions": true,
+    "node": true
+  },
   "rulesDirectory": [
     "node_modules/codelyzer"
   ],

@@ -1,10 +1,6 @@
-/* global chrome */
-
 import { Component, Input } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { SettingService } from "../../services/settingService";
-
-declare const chrome;
 
 @Component({
     selector: "most-visited",
@@ -51,7 +47,7 @@ export class MostVisited {
     getMostVisited() {
         chrome.topSites.get(data => {
             this.mostVisited = {
-                display: data.slice(0, 8).map(page => {
+                display: data.slice(0, 8).map((page: any) => {
                     page.image = this.getImage(page.url);
                     return page;
                 }),

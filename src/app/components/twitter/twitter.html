@@ -38,12 +38,10 @@
                 </button>
             </div>
         </div>
+        <button class="btn new-tweet-btn" *ngIf="tweetsToLoad.length" (click)="loadNewTweets()">
+            <span>View {{ tweetsToLoad.length }} new tweet{{ tweetsToLoad.length > 1 ? "s": "" }}</span>
+        </button>
         <ul class="tweets">
-            <li class="new-tweet-btn-container" [class.visible]="tweetsToLoad.length">
-                <button class="btn new-tweet-btn" (click)="loadNewTweets()">
-                    <span>View {{ tweetsToLoad.length }} new tweet</span><span *ngIf="tweetsToLoad.length > 1">s</span>
-                </button>
-            </li>
             <li class="tweet" *ngFor="let tweet of tweets" (click)="handleClickOnTweet($event, tweet.tweetUrl)">
                 <div class="retweet" *ngIf="tweet.retweetedBy">
                     <svg class="tweet-retweet-icon" viewBox="0 0 24 24">
@@ -62,11 +60,17 @@
                 </div>
                 <p class="tweet-text" *ngIf="tweet.text" [innerHTML]="tweet.text"></p>
                 <div class="tweet-media-container" *ngIf="tweet.media">
-                    <div class="tweet-image-container" *ngIf="tweet.media[0].type === 'photo'; else elseBlock">
+                    <div class="tweet-image-container"
+                        *ngIf="tweet.media[0].type === 'photo'; else elseBlock"
+                        [class.two]="tweet.media.length === 2"
+                        [class.three]="tweet.media.length === 3"
+                        [class.four]="tweet.media.length === 4">
                         <div class="tweet-media-item"
                             *ngFor="let media of tweet.media; let i = index"
                             (click)="handleImageClick($event, tweet.media, i)">
-                            <img src="{{ media.url }}" class="tweet-image" alt="">
+                            <img src="{{ media.url }}" class="tweet-image" alt=""
+                                [class.width]="media.smallestDimension === 'width'"
+                                [class.height]="media.smallestDimension === 'height'">
                         </div>
                     </div>
                     <ng-template #elseBlock>

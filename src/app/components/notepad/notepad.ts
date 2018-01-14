@@ -1,9 +1,5 @@
-/* global chrome */
-
 import { Component, Inject, Input } from "@angular/core";
 import { DOCUMENT } from "@angular/platform-browser";
-
-declare const chrome;
 
 @Component({
     selector: "notepad",
