@@ -32,7 +32,6 @@ module.exports = function(env = {}) {
             "cache": true,
             "showErrors": true,
             "chunks": "all",
-            "excludeChunks": ["ww", "sw"],
             "xhtml": true,
             "chunksSortMode": function sort(left, right) {
                 const leftIndex = entryPoints.indexOf(left.names[0]);
@@ -82,9 +81,7 @@ module.exports = function(env = {}) {
     return {
         "entry": {
           "main": "./src/main.ts",
-          "polyfills": "./src/polyfills.ts",
-          "ww": "./src/ww.js",
-          "sw": "./src/sw.js"
+          "polyfills": "./src/polyfills.ts"
         },
         "output": {
             "path": path.join(process.cwd(), "dist"),

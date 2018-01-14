@@ -1,15 +1,15 @@
-var timeout = 0;
+let timeout = 0;
 
 function startTimeout() {
-    var start = Date.now();
+    let start = Date.now();
 
-    timeout = setTimeout(function() {
+    timeout = setTimeout(() => {
         self.postMessage(start);
         startTimeout();
     }, 20);
 }
 
-self.addEventListener("message", function(event) {
+self.addEventListener("message", event => {
     switch (event.data) {
         case "start":
             startTimeout();
