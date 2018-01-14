@@ -7,7 +7,7 @@
     "webpack": "source config/env && webpack",
     "start": "npm run dist && npm run webpack -- --watch",
     "predist": "rm -rf dist && mkdir -p ./dist/{assets,libs}",
-    "dist": "cp -R src/{assets,libs,manifest.json,receiver.html} dist",
+    "dist": "cp -R src/{assets,libs,manifest.json,receiver.html,ww.js,sw.js} dist",
     "build": "npm run dist && npm run webpack -- --env.prod"
   },
   "dependencies": {

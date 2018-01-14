@@ -1,6 +1,5 @@
 import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
-import Dropbox from "dropbox";
 
 declare const process;
 
@@ -69,7 +68,8 @@ export class DropboxComp {
         this.dropboxContents = JSON.parse(localStorage.getItem("dropbox")) || this.rootDir;
     }
 
-    ngOnInit() {
+    async ngOnInit() {
+        const Dropbox = await import("dropbox");
         const token = localStorage.getItem("dropbox token");
         this.dropbox = new Dropbox({ clientId: process.env.DROPBOX_API_KEY });
 
@@ -114,7 +114,7 @@ export class DropboxComp {
         this.dropbox.setAccessToken("");
         localStorage.removeItem("dropbox");
         localStorage.removeItem("dropbox token");
-        this.dropboxContents = Object.assign(this.rootDir);
+        this.dropboxContents = this.rootDir;
         this.activeDir = {};
         this.showItems = false;
         this.loggedIn = false;
