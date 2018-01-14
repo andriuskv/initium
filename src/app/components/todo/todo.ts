@@ -1,5 +1,3 @@
-/* global chrome */
-
 import { Component, Inject } from "@angular/core";
 import { DOCUMENT } from "@angular/platform-browser";
 import { ZIndexService } from "../../services/zIndexService";

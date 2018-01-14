@@ -1,10 +1,6 @@
-/* global chrome */
-
 import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { FeedService } from "../../services/feedService";
 import { NotificationService } from "../../services/notificationService";
-
-declare const chrome;
 
 @Component({
     selector: "rss-feed",

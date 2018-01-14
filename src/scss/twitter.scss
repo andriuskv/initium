@@ -2,6 +2,7 @@ $tweet-text-color-alt: #bbb;
 
 .twitter {
     transition: height 0.2s, max-height 0.2s;
+    will-change: height, max-height;
 
     &.expanded {
         height: 100vh;
@@ -105,26 +106,18 @@ $tweet-text-color-alt: #bbb;
     margin-left: auto;
 }
 
-.new-tweet-btn-container {
-    overflow: hidden;
-    z-index: 1;
-    position: sticky;
-    top: 0;
-    visibility: hidden;
-    height: 0;
-    transition: 0.2s height, 0.2s visibility;
-
-    &.visible {
-        visibility: visible;
-        height: 25px;
-        border-bottom: 1px solid $color2;
-    }
-}
-
 .new-tweet-btn {
     width: 100%;
-    height: 100%;
+    height: 0;
     background-color: $color3;
+    box-shadow: 0 1px 0 0 $color2;
+    animation-name: reveal;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+
+    & + .tweets {
+        height: calc(100% - 49px);
+    }
 }
 
 .twitter-content {
@@ -228,13 +221,51 @@ $tweet-text-color-alt: #bbb;
 }
 
 .tweet-image-container {
-    display: flex;
-    align-items: flex-start;
-    max-height: 506px;
-}
+    display: grid;
+    grid-gap: 1px;
+    max-height: 510px;
 
-.tweet-media-item:not(:last-of-type) {
-    margin-right: 1px;
+    &.two {
+        --image-count: 2;
+    }
+
+    &.three {
+        --image-count: 3;
+    }
+
+    &.four {
+        --image-count: 4;
+    }
+
+    &.two, &.three, &.four {
+        grid-template-rows: repeat(calc(var(--image-count) - 1), 1fr);
+        grid-template-columns: 1fr calc(100% / var(--image-count));
+        max-height: calc(510px * (var(--image-count) - 1) / var(--image-count));
+        width: 510px;
+
+        .tweet-media-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        &:not(.two) .tweet-media-item:first-of-type {
+            grid-row: span calc(var(--image-count) - 1);
+        }
+
+        .tweet-image {
+            max-width: none;
+
+            &.width {
+                width: 100%;
+            }
+
+            &.height {
+                height: 100%;
+            }
+        }
+    }
 }
 
 .tweet-image {
@@ -248,8 +279,8 @@ $tweet-text-color-alt: #bbb;
 
 .tweet-video {
     display: block;
-    width: 506px;
-    max-height: 506px;
+    width: 510px;
+    max-height: 510px;
     margin: 0 auto;
 }
 
@@ -287,4 +318,13 @@ $tweet-text-color-alt: #bbb;
 .more-tweets-btn {
     height: 24px;
     width: 100%;
+}
+
+@keyframes reveal {
+    from {
+        height: 0;
+    }
+    to {
+        height: 24px;
+    }
 }

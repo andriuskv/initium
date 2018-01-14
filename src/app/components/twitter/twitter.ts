@@ -212,9 +212,14 @@ export class Twitter {
             }
             return {
                 type: item.type,
-                url: item.media_url_https
+                url: item.media_url_https,
+                smallestDimension: this.getSmallestDimension(item.sizes.medium)
             };
         });
+    }
+
+    getSmallestDimension({ w, h }) {
+        return w > h ? "height" : "width";
     }
 
     getTweetContent(tweet) {
