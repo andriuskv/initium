@@ -2,7 +2,6 @@ const path = require("path");
 const { DefinePlugin, NoEmitOnErrorsPlugin, NamedModulesPlugin, optimize } = require("webpack");
 const { ModuleConcatenationPlugin, CommonsChunkPlugin } = optimize;
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const ProgressPlugin = require("webpack/lib/ProgressPlugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const { AotPlugin } = require("@ngtools/webpack");
@@ -21,7 +20,6 @@ module.exports = function(env = {}) {
                 TWITTER_API_KEYS: JSON.stringify(process.env.TWITTER_API_KEYS)
             }
         }),
-        new ProgressPlugin(),
         new HtmlWebpackPlugin({
             "template": "./src/index.html",
             "hash": false,
