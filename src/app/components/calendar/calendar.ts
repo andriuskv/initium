@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { ReminderService } from "../../services/reminderService";
 import { TimeDateService } from "../../services/timeDateService";
 import { SettingService } from "../../services/settingService";
 
@@ -17,19 +18,14 @@ export class Calendar {
     calendar: any;
     selectedDay: any;
 
-    constructor(private timeDateService: TimeDateService, private settingService: SettingService) {
+    constructor(private reminderService: ReminderService, private timeDateService: TimeDateService, private settingService: SettingService) {
+        this.reminderService = reminderService;
         this.timeDateService = timeDateService;
         this.settingService = settingService;
     }
 
     ngOnInit() {
-        const { time: settings } = this.settingService.getSettings();
-
-        this.timeDisplay = parseInt(settings.timeDisplay, 10);
-        this.init();
-    }
-
-    init() {
+        const { timeDisplay } = this.settingService.getSetting("time");
         const { year, month } = this.currentDate;
 
         this.calendar = {
@@ -38,12 +34,12 @@ export class Calendar {
         this.currentYear = year;
         this.currentDay = this.setCurrentDay(this.calendar, this.currentDate);
         this.visibleMonth = this.getVisibleMonth(this.calendar, year, month);
-
+        this.timeDisplay = parseInt(timeDisplay, 10);
         this.initReminders();
     }
 
-    initReminders() {
-        const reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+    async initReminders() {
+        const reminders: any = await this.reminderService.getReminders();
 
         reminders.forEach(reminder => this.createReminder(reminder));
     }
