@@ -5,8 +5,21 @@
 
 .current-day-reminder-container {
     flex-shrink: 0;
-    width: 220px;
+    width: 0;
     height: 100%;
+    will-change: width;
+    animation-name: inc-width;
+    animation-duration: 0.4s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes inc-width {
+    from {
+        width: 0;
+    }
+    to {
+        width: 220px;
+    }
 }
 
 .current-day-reminders {

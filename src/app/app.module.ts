@@ -7,6 +7,7 @@ import { WeatherService } from "./services/weatherService";
 import { NotificationService } from "./services/notificationService";
 import { FeedService } from "./services/feedService";
 import { ZIndexService } from "./services/zIndexService";
+import { ReminderService } from "./services/reminderService";
 
 import { SlicePipe } from "./pipes/slicePipe";
 import { PadTimePipe } from "./pipes/padTimePipe";
@@ -34,7 +35,7 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
 
 @NgModule({
     imports: [BrowserModule],
-    providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService, ZIndexService],
+    providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService, ZIndexService, ReminderService],
     declarations: [
         App, Settings, Background, Time, MainBlock, MostVisited, Notepad, Twitter, RssFeed,
         Weather, Menu, Todo, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,

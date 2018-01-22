@@ -119,9 +119,11 @@
     }
 
     a {
+        all: unset;
         color: lighten($brand-color, 20%);
 
         &:hover {
+            color: lighten($brand-color, 20%);
             text-decoration: underline;
         }
     }

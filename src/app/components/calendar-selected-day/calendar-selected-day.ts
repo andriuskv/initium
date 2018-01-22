@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
+import { ReminderService } from "../../services/reminderService";
 import { TimeDateService } from "../../services/timeDateService";
 
 @Component({
@@ -34,9 +35,11 @@ export class CalendarSelectedDay {
             string: ""
         }
     };
+    reminders: any;
     timeTable: Array<any> = [];
 
-    constructor(private timeDateService: TimeDateService) {
+    constructor(private reminderService: ReminderService, private timeDateService: TimeDateService) {
+        this.reminderService = reminderService;
         this.timeDateService = timeDateService;
     }
 
@@ -46,6 +49,8 @@ export class CalendarSelectedDay {
             "^(([0-1]?[0-9])|(2[0-3])):[0-5]?[0-9]$" :
             "^((0?[1-9])|(1[0-2])):[0-5]?[0-9] ?[a|p|A|P][m|M]$";
         this.timeTable = this.generateTimeTable(this.timeDisplay);
+
+        this.getReminders();
     }
 
     showCalendar() {
@@ -256,51 +261,52 @@ export class CalendarSelectedDay {
             repeatData: {
                 year: this.day.year,
                 month: this.day.month,
-                day: this.day.number,
-                gap: this.repeatGap,
-                count: this.repeatCount
+                day: this.day.number
             }
         };
+
+        if (data.reminder.repeat) {
+            Object.assign(data.repeatData, {
+                gap: this.repeatGap,
+                count: this.repeatCount
+            });
+        }
 
         this.addReminder(data);
         this.create.emit(data);
         this.hideReminderForm();
     }
 
-    getReminders() {
-        return JSON.parse(localStorage.getItem("reminders")) || [];
+    async getReminders() {
+        this.reminders = await this.reminderService.getReminders();
     }
 
-    getReminderIndex(id, reminders) {
-        return reminders.findIndex(({ reminder }) => reminder.id === id);
+    getReminderIndex(id) {
+        return this.reminders.findIndex(({ reminder }) => reminder.id === id);
     }
 
     addReminder(reminder) {
-        const reminders = this.getReminders();
-
-        reminders.push(reminder);
-        this.saveReminders(reminders);
+        this.reminders.push(reminder);
+        this.saveReminders();
     }
 
     removeReminder(id) {
-        const reminders = this.getReminders();
-        const index = this.getReminderIndex(id, reminders);
-        const [{ reminder }]: any = reminders.splice(index, 1);
+        const index = this.getReminderIndex(id);
+        const [{ reminder }] = this.reminders.splice(index, 1);
 
         this.remove.emit(reminder);
-        this.saveReminders(reminders);
+        this.saveReminders();
     }
 
     updateReminder(data) {
-        const reminders = this.getReminders();
-        const index = this.getReminderIndex(data.id, reminders);
-        const reminder = reminders[index].reminder;
+        const index = this.getReminderIndex(data.id);
+        const { reminder } = this.reminders[index];
 
         Object.assign(reminder, data);
-        this.saveReminders(reminders);
+        this.saveReminders();
     }
 
-    saveReminders(reminders) {
-        localStorage.setItem("reminders", JSON.stringify(reminders));
+    saveReminders() {
+        this.reminderService.saveReminders(this.reminders);
     }
 }
