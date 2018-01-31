@@ -1,25 +1,16 @@
 .calendar-container {
-    display: flex;
+    display: none;
     height: 302px;
+
+    &.visible {
+        display: flex;
+    }
 }
 
 .current-day-reminder-container {
     flex-shrink: 0;
-    width: 0;
+    width: 220px;
     height: 100%;
-    will-change: width;
-    animation-name: inc-width;
-    animation-duration: 0.4s;
-    animation-fill-mode: forwards;
-}
-
-@keyframes inc-width {
-    from {
-        width: 0;
-    }
-    to {
-        width: 220px;
-    }
 }
 
 .current-day-reminders {

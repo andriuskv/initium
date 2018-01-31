@@ -10,6 +10,7 @@ export class Menu {
 
     visible: boolean = false;
     isClosing: boolean = false;
+    reminderInicatorVisible: boolean = false;
     title: string = "";
     selectedItem: string = "";
     zIndex: number = 0;
@@ -33,6 +34,10 @@ export class Menu {
     toggleItem(item) {
         this.selectedItem = item;
         this.title = this.capitalize(item);
+
+        if (item === "calendar" && this.reminderInicatorVisible) {
+            this.reminderInicatorVisible = false;
+        }
     }
 
     closeSelectedItem() {
@@ -46,5 +51,9 @@ export class Menu {
 
     handleClickOnContainer() {
         this.zIndex = this.zIndexService.incIfLess(this.zIndex);
+    }
+
+    showReminderIndicator(visible) {
+        this.reminderInicatorVisible = visible;
     }
 }

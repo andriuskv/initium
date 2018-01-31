@@ -227,7 +227,8 @@ export class CalendarSelectedDay {
     }
 
     getRandomColor() {
-        return `hsl(${Math.random() * 360}, 100%, 72%)`;
+        const num = Math.floor(Math.random() * 360) + 1;
+        return `hsl(${num}, 100%, 72%)`;
     }
 
     changeReminderColor(reminder) {
