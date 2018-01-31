@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, Output, EventEmitter } from "@angular/core";
 import { ReminderService } from "../../services/reminderService";
 import { TimeDateService } from "../../services/timeDateService";
 import { SettingService } from "../../services/settingService";
@@ -8,6 +8,8 @@ import { SettingService } from "../../services/settingService";
     templateUrl: "./calendar.html"
 })
 export class Calendar {
+    @Output() reminderIndicatorVisible = new EventEmitter();
+
     daySelected: boolean = false;
     timeDisplay: number = 1;
     currentYear: number;
@@ -42,6 +44,7 @@ export class Calendar {
         const reminders: any = await this.reminderService.getReminders();
 
         reminders.forEach(reminder => this.createReminder(reminder));
+        this.reminderIndicatorVisible.emit(this.currentDay.reminders.length > 0);
     }
 
     getDay(calendar, { year, month, day }) {

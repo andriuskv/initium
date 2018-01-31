@@ -1,66 +1,64 @@
-<div class="calendar-container">
-    <div class="current-day-reminder-container" *ngIf="currentDay.reminders.length">
-        <ul class="current-day-reminders">
-            <li class="current-day-reminder" *ngFor="let reminder of currentDay.reminders"
-                [ngStyle]="{ 'border-left-color': reminder.color }">
-                <div>{{ reminder.text }}</div>
-                <div class="current-day-reminder-range">{{ reminder.rangeString }}</div>
-            </li>
-        </ul>
-    </div>
-    <div class="calendar" *ngIf="!daySelected; else elseBlock">
-        <div class="calendar-header">
-            <button class="btn-icon calendar-header-btn" (click)="setVisibleMonth(-1)" title="Previous month">
-                <svg viewBox="0 0 24 24">
-                    <use href="#chevron-left"></use>
-                </svg>
-            </button>
-            <span class="calendar-title">{{ visibleMonth.current.name }} {{ currentYear }}</span>
-            <button class="btn-icon calendar-header-btn" (click)="setVisibleMonth(1)" title="Next month">
-                <svg viewBox="0 0 24 24">
-                    <use href="#chevron-right"></use>
-                </svg>
-            </button>
-        </div>
-        <ul class="calendar-week-days">
-            <li class="calendar-cell">Mon</li>
-            <li class="calendar-cell">Tue</li>
-            <li class="calendar-cell">Wed</li>
-            <li class="calendar-cell">Thu</li>
-            <li class="calendar-cell">Fri</li>
-            <li class="calendar-cell">Sat</li>
-            <li class="calendar-cell">Sun</li>
-        </ul>
-        <ul class="calendar-days">
-            <li class="calendar-cell calendar-day"
-                *ngFor="let day of visibleMonth.previous.days"
-                (click)="showDay(day, -1)">
-                <div>{{ day.number }}</div>
-            </li>
-            <li class="calendar-cell calendar-day is-current-month-day"
-                *ngFor="let day of visibleMonth.current.days"
-                [class.current-day]="day.isCurrentDay"
-                (click)="showDay(day)">
-                <div>{{ day.number }}</div>
-                <div class="day-reminders" *ngIf="day.reminders.length">
-                    <div class="day-reminder" *ngFor="let reminder of day.reminders"
-                        [ngStyle]="{ 'background-color': reminder.color }"></div>
-                </div>
-            </li>
-            <li class="calendar-cell calendar-day" *ngFor="let day of visibleMonth.next.days" (click)="showDay(day, 1)">
-                <div>{{ day.number }}</div>
-            </li>
-        </ul>
-    </div>
-    <ng-template #elseBlock>
-        <div class="calendar">
-            <calendar-selected-day
-                [timeDisplay]="timeDisplay"
-                [day]="selectedDay"
-                (event)="showCalendar()"
-                (create)="createReminder($event)"
-                (remove)="removeReminder($event)">
-            </calendar-selected-day>
-        </div>
-    </ng-template>
+<div class="current-day-reminder-container" *ngIf="currentDay.reminders.length">
+    <ul class="current-day-reminders">
+        <li class="current-day-reminder" *ngFor="let reminder of currentDay.reminders"
+            [ngStyle]="{ 'border-left-color': reminder.color }">
+            <div>{{ reminder.text }}</div>
+            <div class="current-day-reminder-range">{{ reminder.rangeString }}</div>
+        </li>
+    </ul>
 </div>
+<div class="calendar" *ngIf="!daySelected; else elseBlock">
+    <div class="calendar-header">
+        <button class="btn-icon calendar-header-btn" (click)="setVisibleMonth(-1)" title="Previous month">
+            <svg viewBox="0 0 24 24">
+                <use href="#chevron-left"></use>
+            </svg>
+        </button>
+        <span class="calendar-title">{{ visibleMonth.current.name }} {{ currentYear }}</span>
+        <button class="btn-icon calendar-header-btn" (click)="setVisibleMonth(1)" title="Next month">
+            <svg viewBox="0 0 24 24">
+                <use href="#chevron-right"></use>
+            </svg>
+        </button>
+    </div>
+    <ul class="calendar-week-days">
+        <li class="calendar-cell">Mon</li>
+        <li class="calendar-cell">Tue</li>
+        <li class="calendar-cell">Wed</li>
+        <li class="calendar-cell">Thu</li>
+        <li class="calendar-cell">Fri</li>
+        <li class="calendar-cell">Sat</li>
+        <li class="calendar-cell">Sun</li>
+    </ul>
+    <ul class="calendar-days">
+        <li class="calendar-cell calendar-day"
+            *ngFor="let day of visibleMonth.previous.days"
+            (click)="showDay(day, -1)">
+            <div>{{ day.number }}</div>
+        </li>
+        <li class="calendar-cell calendar-day is-current-month-day"
+            *ngFor="let day of visibleMonth.current.days"
+            [class.current-day]="day.isCurrentDay"
+            (click)="showDay(day)">
+            <div>{{ day.number }}</div>
+            <div class="day-reminders" *ngIf="day.reminders.length">
+                <div class="day-reminder" *ngFor="let reminder of day.reminders"
+                    [ngStyle]="{ 'background-color': reminder.color }"></div>
+            </div>
+        </li>
+        <li class="calendar-cell calendar-day" *ngFor="let day of visibleMonth.next.days" (click)="showDay(day, 1)">
+            <div>{{ day.number }}</div>
+        </li>
+    </ul>
+</div>
+<ng-template #elseBlock>
+    <div class="calendar">
+        <calendar-selected-day
+            [timeDisplay]="timeDisplay"
+            [day]="selectedDay"
+            (event)="showCalendar()"
+            (create)="createReminder($event)"
+            (remove)="removeReminder($event)">
+        </calendar-selected-day>
+    </div>
+</ng-template>
