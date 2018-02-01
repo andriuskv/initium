@@ -18,8 +18,12 @@
         "storage",
         "chrome://favicon/"
     ],
-    "web_accessible_resources": ["receiver.html"],
+    "web_accessible_resources": [
+        "receiver.html"
+    ],
     "externally_connectable": {
-        "matches": ["*://*.dropbox.com/*"]
+        "matches": [
+            "*://*.dropbox.com/*"
+        ]
     }
 }
