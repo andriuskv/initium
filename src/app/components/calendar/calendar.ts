@@ -237,6 +237,10 @@ export class Calendar {
     }
 
     createReminder(data) {
+        if (data.repeatData.year !== this.currentDate.year) {
+            this.calendar[data.repeatData.year] = this.getYear(data.repeatData.year);
+        }
+
         if (data.reminder.repeat) {
             this.repeatReminder(data, this.calendar);
         }
