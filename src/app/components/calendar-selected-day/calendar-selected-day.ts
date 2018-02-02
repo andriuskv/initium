@@ -251,30 +251,25 @@ export class CalendarSelectedDay {
         if (!event.target.checkValidity() || (this.isRangeVisible && this.rangeMessage)) {
             return;
         }
-        const data: any = {
-            reminder: {
-                id: this.getId(),
-                text: event.target.elements.reminder.value,
-                color: this.getRandomColor(),
-                range: this.getRange(),
-                repeat: this.isRepeatEnabled && (!this.repeatCount || this.repeatCount > 1)
-            },
-            repeatData: {
-                year: this.day.year,
-                month: this.day.month,
-                day: this.day.number
-            }
+        const reminder = {
+            id: this.getId(),
+            text: event.target.elements.reminder.value,
+            color: this.getRandomColor(),
+            range: this.getRange(),
+            repeat: this.isRepeatEnabled && (!this.repeatCount || this.repeatCount > 1),
+            year: this.day.year,
+            month: this.day.month,
+            day: this.day.number
         };
 
-        if (data.reminder.repeat) {
-            Object.assign(data.repeatData, {
+        if (reminder.repeat) {
+            Object.assign(reminder, {
                 gap: this.repeatGap,
                 count: this.repeatCount
             });
         }
-
-        this.addReminder(data);
-        this.create.emit(data);
+        this.addReminder(reminder);
+        this.create.emit(reminder);
         this.hideReminderForm();
     }
 
@@ -283,7 +278,7 @@ export class CalendarSelectedDay {
     }
 
     getReminderIndex(id) {
-        return this.reminders.findIndex(({ reminder }) => reminder.id === id);
+        return this.reminders.findIndex(reminder => reminder.id === id);
     }
 
     addReminder(reminder) {
@@ -293,7 +288,7 @@ export class CalendarSelectedDay {
 
     removeReminder(id) {
         const index = this.getReminderIndex(id);
-        const [{ reminder }] = this.reminders.splice(index, 1);
+        const [reminder] = this.reminders.splice(index, 1);
 
         this.remove.emit(reminder);
         this.saveReminders();
@@ -301,9 +296,8 @@ export class CalendarSelectedDay {
 
     updateReminder(data) {
         const index = this.getReminderIndex(data.id);
-        const { reminder } = this.reminders[index];
 
-        Object.assign(reminder, data);
+        Object.assign(this.reminders[index], data);
         this.saveReminders();
     }
 

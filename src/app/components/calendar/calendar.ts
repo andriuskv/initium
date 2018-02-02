@@ -145,11 +145,11 @@ export class Calendar {
         }
 
         while (length) {
-            const [data] = reminders;
+            const [reminder] = reminders;
 
-            if (calendar[data.repeatData.year]) {
+            if (calendar[reminder.year]) {
                 reminders.splice(0, 1);
-                this.repeatReminder(data, calendar);
+                this.repeatReminder(reminder, calendar);
             }
             length -= 1;
         }
@@ -204,7 +204,7 @@ export class Calendar {
     }
 
     removeRepeatedReminder(id, calendar) {
-        this.futureReminders = this.futureReminders.filter(({ reminder }) => reminder.id !== id);
+        this.futureReminders = this.filterReminders(this.futureReminders, id);
 
         Object.keys(calendar).forEach(year => {
             calendar[year].forEach(month => {
@@ -236,18 +236,20 @@ export class Calendar {
         }
     }
 
-    createReminder(data) {
-        if (data.repeatData.year !== this.currentDate.year) {
-            this.calendar[data.repeatData.year] = this.getYear(data.repeatData.year);
+    createReminder(reminder) {
+        const { year } = reminder;
+
+        if (year !== this.currentDate.year && !this.calendar[year]) {
+            this.calendar[year] = this.getYear(year);
         }
 
-        if (data.reminder.repeat) {
-            this.repeatReminder(data, this.calendar);
+        if (reminder.repeat) {
+            this.repeatReminder(Object.assign({}, reminder), this.calendar);
         }
         else {
-            const day = this.getDay(this.calendar, data.repeatData);
+            const day = this.getDay(this.calendar, reminder);
 
-            day.reminders.push(data.reminder);
+            day.reminders.push(reminder);
         }
         this.addReminderRangeString(this.currentDay.reminders);
     }
@@ -278,26 +280,25 @@ export class Calendar {
         };
     }
 
-    repeatReminder(data, calendar) {
-        const repeatData = data.repeatData;
-        const months = calendar[repeatData.year];
-        let monthIndex = repeatData.month;
-        let dayIndex = repeatData.day - 1;
+    repeatReminder(reminder, calendar) {
+        const months = calendar[reminder.year];
+        let monthIndex = reminder.month;
+        let dayIndex = reminder.day - 1;
         let month = months[monthIndex];
         let day = month.days[dayIndex];
 
         while (true) {
             if (!day) {
-                const date = this.getNextReminderDate(calendar, repeatData.year, monthIndex, dayIndex);
+                const date = this.getNextReminderDate(calendar, reminder.year, monthIndex, dayIndex);
 
-                if (date.year > repeatData.year) {
-                    Object.assign(repeatData, date);
+                if (date.year > reminder.year) {
+                    Object.assign(reminder, date);
 
                     if (calendar[date.year]) {
-                        this.repeatReminder(data, calendar);
+                        this.repeatReminder(reminder, calendar);
                     }
                     else {
-                        this.futureReminders.push(data);
+                        this.futureReminders.push(reminder);
                     }
                     return;
                 }
@@ -306,16 +307,16 @@ export class Calendar {
                 month = months[monthIndex];
                 day = month.days[dayIndex];
             }
-            day.reminders.push(data.reminder);
+            day.reminders.push(reminder);
 
-            if (repeatData.count > 0) {
-                repeatData.count -= 1;
+            if (reminder.count > 0) {
+                reminder.count -= 1;
 
-                if (!repeatData.count) {
+                if (!reminder.count) {
                     return;
                 }
             }
-            dayIndex += repeatData.gap;
+            dayIndex += reminder.gap;
             day = month.days[dayIndex];
         }
     }
