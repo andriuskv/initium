@@ -25,7 +25,7 @@ function incVersion() {
 }
 
 function zipDist(version) {
-    exec(`cd dist && zip -r initium-${version} *`, (error, stdout, stderr) => {
+    exec(`cd dist && zip -r initium-${version}.zip *`, (error, stdout, stderr) => {
         console.log(`stdout: ${stdout}`);
 
         if (error !== null) {

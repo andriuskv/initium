@@ -7,7 +7,7 @@
     "webpack": "source config/env && webpack --progress",
     "start": "npm run dist && npm run webpack -- --watch",
     "predist": "rm -rf dist && mkdir -p ./dist/{assets,libs}",
-    "dist": "cp -R src/{assets,libs,receiver.html,ww.js,sw.js} dist",
+    "dist": "cp -R src/{assets,libs,receiver.html,manifest.json,ww.js,sw.js} dist",
     "build": "npm run dist && npm run webpack -- --env.prod && node build.js"
   },
   "dependencies": {
@@ -32,7 +32,7 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "html-webpack-plugin": "^2.30.1",
     "node-sass": "^4.7.2",
-    "postcss-loader": "^2.0.10",
+    "postcss-loader": "^2.1.0",
     "raw-loader": "^0.5.1",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.20.1",
