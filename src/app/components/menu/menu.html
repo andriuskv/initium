@@ -34,8 +34,8 @@
                     <svg viewBox="0 0 24 24">
                         <use href="#calendar"></use>
                     </svg>
+                    <div class="menu-item-indicator" *ngIf="reminderInicatorVisible"></div>
                 </button>
-                <div class="menu-item-indicator" *ngIf="reminderInicatorVisible"></div>
             </li>
             <li class="menu-item">
                 <button class="btn-icon" (click)="toggleItem('dropbox')" title="Dropbox">

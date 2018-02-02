@@ -418,7 +418,9 @@ export class Twitter {
         this.cb.__call("oauth_requestToken", { oauth_callback: "oob" }, (reply, rate, err) => {
             if (err) {
                 console.log("error response or timeout exceeded", err.error);
+                return;
             }
+
             if (reply.httpstatus !== 401) {
                 this.cb.setToken(reply.oauth_token, reply.oauth_token_secret);
                 this.cb.__call("oauth_authorize", {}, url => {
