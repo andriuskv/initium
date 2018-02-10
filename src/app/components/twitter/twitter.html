@@ -3,15 +3,17 @@
         <svg viewBox="0 0 24 24" class="twitter-hero-icon">
             <use href="#twitter"></use>
         </svg>
-        <div class="twitter-pin-input-container">
-            <input type="text" class="input twitter-pin-input" placeholder="Enter PIN"
-                [class.visible]="showPinInput" #pin
-                (keyup.enter)="login($event, pin)">
-            <img src="./assets/images/ring.svg" class="twitter-spinner" *ngIf="fetchingTweets" alt="">
-            <button class="btn" (click)="login($event, pin)" *ngIf="!isLoggedIn">Log in</button>
-            <button class="btn" *ngIf="isLoggedIn && errorMessage" (click)="logout()">Log out</button>
+        <div class="twitter-hero-content">
+            <img src="./assets/images/ring.svg" class="twitter-spinner" *ngIf="initializing; else elsePinBlock" alt="">
+            <ng-template #elsePinBlock>
+                <div class="twitter-pin-input-container">
+                    <input type="text" class="input twitter-pin-input" placeholder="Enter PIN"
+                        [class.visible]="showPinInput" #pin
+                        (keyup.enter)="login(pin)">
+                    <button class="btn" (click)="login(pin)" *ngIf="!isLoggedIn">Log in</button>
+                </div>
+            </ng-template>
         </div>
-        <div class="twitter-error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
     </div>
     <div class="twitter-content" [class.visible]="tweets.length">
         <div class="main-block-content-header twitter-header">

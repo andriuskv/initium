@@ -1,8 +1,6 @@
 import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 
-declare const process;
-
 @Component({
     selector: "dropbox",
     template: `
@@ -69,9 +67,9 @@ export class DropboxComp {
     }
 
     async ngOnInit() {
-        const Dropbox = await import("dropbox");
+        const Dropbox: any = await import("dropbox");
         const token = localStorage.getItem("dropbox token");
-        this.dropbox = new Dropbox({ clientId: process.env.DROPBOX_API_KEY });
+        this.dropbox = new Dropbox.Dropbox({ clientId: process.env.DROPBOX_API_KEY });
 
         if (token) {
             this.init(token);

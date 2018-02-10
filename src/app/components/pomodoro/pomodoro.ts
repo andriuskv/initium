@@ -84,7 +84,7 @@ export class Pomodoro {
             }
             this.seconds -= 1;
 
-            this.timeout = setTimeout(() => {
+            this.timeout = window.setTimeout(() => {
                 this.update(startTime, elapsed);
             }, 1000 - diff);
 
@@ -107,7 +107,7 @@ export class Pomodoro {
 
         this.isRunning = true;
         this.running.emit(this.isRunning);
-        this.timeout = setTimeout(() => {
+        this.timeout = window.setTimeout(() => {
             this.update(startTime, 0);
         }, 1000);
     }

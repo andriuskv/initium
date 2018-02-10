@@ -29,7 +29,7 @@ export class RssFeed {
     ngOnInit() {
         const delay = this.isVisible ? 2000 : 10000;
 
-        this.initTimeout = setTimeout(() => {
+        this.initTimeout = window.setTimeout(() => {
             this.initFeeds();
         }, delay);
     }
@@ -145,7 +145,7 @@ export class RssFeed {
 
     getNewFeeds() {
         clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
+        this.timeout = window.setTimeout(() => {
             this.updateFeeds();
             this.getNewFeeds();
         }, 1500000);

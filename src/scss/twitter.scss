@@ -37,10 +37,13 @@ $tweet-text-color-alt: #bbb;
     margin-bottom: 8px;
 }
 
+.twitter-hero-content {
+    height: 24px;
+}
+
 .twitter-pin-input-container {
     display: flex;
     align-items: center;
-    height: 24px;
 }
 
 .twitter-pin-input {
@@ -55,14 +58,7 @@ $tweet-text-color-alt: #bbb;
 }
 
 .twitter-spinner {
-    width: 22px;
-    margin-right: 4px;
-}
-
-.twitter-error-message {
-    margin-top: 8px;
-    white-space: pre-wrap;
-    text-align: center;
+    width: 24px;
 }
 
 .twitter-header {

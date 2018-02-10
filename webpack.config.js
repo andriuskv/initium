@@ -14,10 +14,10 @@ module.exports = function(env = {}) {
         new NoEmitOnErrorsPlugin(),
         new DefinePlugin({
             "process.env": {
-                NODE_ENV: JSON.stringify("production"),
+                NODE_ENV: JSON.stringify(env.prod ? "production" : "development"),
                 DROPBOX_API_KEY: JSON.stringify(process.env.DROPBOX_API_KEY),
                 OWM_API_KEY: JSON.stringify(process.env.OWM_API_KEY),
-                TWITTER_API_KEYS: JSON.stringify(process.env.TWITTER_API_KEYS)
+                PROXY_URL: JSON.stringify(process.env.PROXY_URL)
             }
         }),
         new HtmlWebpackPlugin({
@@ -92,7 +92,8 @@ module.exports = function(env = {}) {
                 ".js"
             ],
             "modules": [
-                "./node_modules"
+                "./node_modules",
+                "./src"
             ]
         },
         "resolveLoader": {

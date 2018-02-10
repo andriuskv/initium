@@ -74,7 +74,7 @@ export class Weather {
     }
 
     initWeather(cityName) {
-        this.timeout = setTimeout(() => {
+        this.timeout = window.setTimeout(() => {
             this.getWeather(cityName);
         }, 10000);
     }
@@ -94,7 +94,7 @@ export class Weather {
         catch (e) {
             console.log(e);
         }
-        this.timeout = setTimeout(() => {
+        this.timeout = window.setTimeout(() => {
             this.getWeather(cityName);
         }, 960000);
     }
