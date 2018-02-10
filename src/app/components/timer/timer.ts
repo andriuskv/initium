@@ -112,7 +112,7 @@ export class Timer {
             }
             this.seconds -= 1;
 
-            this.timeout = setTimeout(() => {
+            this.timeout = window.setTimeout(() => {
                 this.updateTimer(startTime, elapsed);
             }, 1000 - diff);
 
@@ -137,7 +137,7 @@ export class Timer {
             this.normalizeTimer();
             this.isRunning = true;
             this.running.emit(this.isRunning);
-            this.timeout = setTimeout(() => {
+            this.timeout = window.setTimeout(() => {
                 this.updateTimer(startTime, 0);
             }, 1000);
         }

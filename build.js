@@ -13,14 +13,19 @@ function incVersion() {
     }
     else if (label === "minor") {
         minor += 1;
+        patch = 0;
     }
     else if (label === "major") {
         major += 1;
+        minor = 0;
+        patch = 0;
     }
     data.version = `${major}.${minor}.${patch}`;
 
-    fs.writeFileSync(srcPath, JSON.stringify(data, null, 4));
-    fs.writeFileSync("./dist/manifest.json", fs.readFileSync(srcPath));
+    if (label) {
+        fs.writeFileSync(srcPath, JSON.stringify(data, null, 4));
+        fs.writeFileSync("./dist/manifest.json", fs.readFileSync(srcPath));
+    }
     return data.version;
 }
 

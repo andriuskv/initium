@@ -1,11 +1,7 @@
-/* global Codebird */
-
 import { Component, Output, EventEmitter, Input } from "@angular/core";
+import { TwitterProxyService } from "../../services/twitterProxyService";
 import { TimeDateService } from "../../services/timeDateService";
 import { NotificationService } from "../../services/notificationService";
-
-declare const Codebird;
-declare const process;
 
 @Component({
     selector: "twitter",
@@ -18,75 +14,59 @@ export class Twitter {
     @Output() showViewer = new EventEmitter();
     @Input() isVisible: boolean = false;
 
-    isLoggedIn: boolean = this.isAuthenticated();
+    initializing: boolean = true;
+    isLoggedIn: boolean = false;
     showPinInput: boolean = false;
-    initialized: boolean = false;
     fetchingMoreTweets: boolean = false;
-    fetchingTweets: boolean = false;
     isExpanded: boolean = false;
-    errorMessage: string = "";
     tweets: Array<any> = [];
     tweetsToLoad: Array<any> = [];
     user: any = {};
-    twitterTimeout: any;
-    tweetTimeTimeout: any;
-    tweetUpdateTimeout: any;
-    cb: any;
+    initTimeout: number = 0;
+    tweetTimeTimeout: number = 0;
+    tweetUpdateTimeout: number = 0;
 
-    constructor(private timeDateService: TimeDateService, private notificationService: NotificationService) {
+    constructor(
+        private twitterProxyService: TwitterProxyService,
+        private timeDateService: TimeDateService,
+        private notificationService: NotificationService
+    ) {
+        this.twitterProxyService = twitterProxyService;
         this.timeDateService = timeDateService;
         this.notificationService = notificationService;
+    }
+
+    ngOnInit() {
+        this.isLoggedIn = this.twitterProxyService.isLoggedIn();
+
+        if (this.isLoggedIn) {
+            this.initTimeout = window.setTimeout(async () => {
+                this.initTimeout = 0;
+
+                await this.initTwitter();
+
+                this.initializing = false;
+            }, this.isVisible ? 2000 : 10000);
+            return;
+        }
+        this.initializing = false;
     }
 
     async ngOnChanges() {
         this.isExpanded = this.isVisible && this.isExpanded;
 
-        if (this.twitterTimeout) {
-            clearTimeout(this.twitterTimeout);
-            this.twitterTimeout = 0;
-            this.fetchTweets();
-            return;
-        }
+        if (this.initTimeout && this.isVisible) {
+            clearTimeout(this.initTimeout);
+            this.initTimeout = 0;
 
-        if (this.isLoggedIn && !this.initialized) {
-            await this.initCodebird();
+            await this.initTwitter();
 
-            this.twitterTimeout = setTimeout(() => {
-                this.twitterTimeout = 0;
-                this.fetchTweets();
-            }, this.isVisible ? 2000 : 10000);
+            this.initializing = false;
         }
     }
 
-    initCodebird() {
-        if (this.initialized) {
-            return;
-        }
-        this.initialized = true;
-
-        return new Promise(resolve => {
-            const script = document.createElement("script");
-
-            script.setAttribute("src", "libs/codebird.js");
-            document.getElementsByTagName("body")[0].appendChild(script);
-            script.onload = resolve;
-        });
-    }
-
-    setKey(ref) {
-        const keys = process.env.TWITTER_API_KEYS.split(" ");
-        ref.setConsumerKey(keys[0], keys[1]);
-    }
-
-    setInfo(ref, info) {
-        this.setKey(ref);
-        ref.setToken(info.token, info.tokenSecret);
-    }
-
-    isAuthenticated() {
-        const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
-
-        return userInfo.token && userInfo.tokenSecret;
+    initTwitter() {
+        return Promise.all([this.getUser(), this.fetchInitialTimeline()]);
     }
 
     getTweetDate(createdAt) {
@@ -285,53 +265,13 @@ export class Twitter {
     }
 
     loadNewTweets() {
-        const newTweets = this.loadTweets(this.tweetsToLoad);
+        const tweets = this.parseTweets(this.tweetsToLoad);
 
-        this.tweets.unshift(...newTweets);
+        this.tweets.unshift(...tweets);
         this.tweetsToLoad.length = 0;
     }
 
-    updateTweetTime() {
-        this.tweetTimeTimeout = setTimeout(() => {
-            this.tweets.forEach(tweet => {
-                tweet.created = this.getTweetDate(tweet.created.createdAtDate);
-            });
-            this.updateTweetTime();
-        }, 60000);
-    }
-
-    updateTimeline(userInfo, latestTweetId) {
-        clearTimeout(this.tweetUpdateTimeout);
-        this.tweetUpdateTimeout = setTimeout(() => {
-            const cb = new Codebird;
-
-            this.setInfo(cb, userInfo);
-            cb.__call("statuses_homeTimeline", `since_id=${latestTweetId}`, tweets => {
-                if (tweets && tweets.length) {
-                    const newTweets = tweets.filter(tweet => tweet.id !== latestTweetId);
-
-                    if (newTweets.length) {
-                        latestTweetId = newTweets[0].id;
-                        this.tweetsToLoad.unshift(...newTweets);
-
-                        if (!this.isVisible) {
-                            this.newTweets.emit();
-                        }
-
-                        if (document.hidden) {
-                            this.notificationService.send(
-                                "Twitter",
-                                `You have ${this.tweetsToLoad.length} new tweets`,
-                                () => this.toggleTab.emit("twitter"));
-                        }
-                    }
-                }
-                this.updateTimeline(userInfo, latestTweetId);
-            });
-        }, 660000);
-    }
-
-    loadTweets(data) {
+    parseTweets(data) {
         return data.map(tweet => {
             const retweet = tweet.retweeted_status;
 
@@ -349,132 +289,136 @@ export class Twitter {
         });
     }
 
-    getUser(userInfo) {
-        const cb = new Codebird;
+    async getUser() {
+        const response = await this.twitterProxyService.getUser();
 
-        this.setInfo(cb, userInfo);
-        cb.__call("account_verifyCredentials", {}, user => {
-            this.user.name = user.name;
-            this.user.homepage = `https://twitter.com/${user.screen_name}`;
-            this.user.handle = `@${user.screen_name}`;
-            this.user.profileImage = user.profile_image_url_https;
-        });
+        if (response.statusCode === 200) {
+            this.user.name = response.user.name;
+            this.user.homepage = `https://twitter.com/${response.user.screen_name}`;
+            this.user.handle = `@${response.user.screen_name}`;
+            this.user.profileImage = response.user.profile_image_url_https;
+        }
     }
 
-    fetchTweets() {
-        const userInfo = this.getUserInfo();
+    async fetchInitialTimeline() {
+        const response = await this.twitterProxyService.getTimeline();
 
-        if (userInfo.token && userInfo.tokenSecret) {
-            const cb = new Codebird;
-            this.fetchingTweets = true;
+        if (response.statusCode === 200) {
+            this.tweets = this.parseTweets(response.tweets);
 
-            this.setInfo(cb, userInfo);
-            cb.__call("statuses_homeTimeline", {}, tweets => {
-                this.fetchingTweets = false;
+            this.updateTimeline(response.tweets[0].id);
+            this.updateTweetTime();
+        }
+    }
 
-                if (Array.isArray(tweets)) {
-                    this.tweets = this.loadTweets(tweets);
+    updateTimeline(latestTweetId) {
+        this.tweetUpdateTimeout = window.setTimeout(() => {
+            this.fetchNewTimeline(latestTweetId);
+        }, 480000);
+    }
 
-                    this.updateTimeline(userInfo, tweets[0].id);
-                    this.updateTweetTime();
-                }
-                else {
-                    this.errorMessage = "There was an error during tweet retrieval.\nTry again later.";
-                }
+    updateTweetTime() {
+        this.tweetTimeTimeout = window.setTimeout(() => {
+            this.tweets.forEach(tweet => {
+                tweet.created = this.getTweetDate(tweet.created.createdAtDate);
             });
-            this.getUser(userInfo);
-        }
+            this.updateTweetTime();
+        }, 60000);
     }
 
-    authenticateWithPin(pin) {
-        this.cb.__call("oauth_accessToken", { oauth_verifier: pin.value }, reply => {
-            if (reply.httpstatus === 200) {
-                this.cb.setToken(reply.oauth_token, reply.oauth_token_secret);
-                localStorage.setItem("userInfo", JSON.stringify({
-                    userId: reply.user_id,
-                    screenName: reply.screen_name,
-                    token: reply.oauth_token,
-                    tokenSecret: reply.oauth_token_secret
-                }));
-                this.isLoggedIn = true;
-                this.showPinInput = false;
-                this.fetchTweets();
-            }
-            pin.value = "";
+    async fetchNewTimeline(latestTweetId) {
+        const response = await this.twitterProxyService.getTimeline({
+            since_id: latestTweetId
         });
+        const tweets = response.tweets.filter(tweet => tweet.id !== latestTweetId);
+
+        if (tweets.length) {
+            latestTweetId = tweets[0].id;
+
+            this.tweetsToLoad.push(...tweets);
+
+            if (!this.isVisible) {
+                this.newTweets.emit();
+            }
+
+            if (document.hidden) {
+                this.notificationService.send(
+                    "Twitter",
+                    `You have ${this.tweetsToLoad.length} new tweets`,
+                    () => this.toggleTab.emit("twitter")
+                );
+            }
+        }
+        this.updateTimeline(latestTweetId);
     }
 
-    async login({ which }, pin) {
-        if (!this.initialized) {
-            await this.initCodebird();
+    async fetchMoreTweets() {
+        if (this.fetchingMoreTweets) {
+            return;
         }
+        this.fetchingMoreTweets = true;
 
+        const { id } = this.tweets[this.tweets.length - 1];
+        const response = await this.twitterProxyService.getTimeline({
+            max_id: id
+        });
+        const tweets = response.tweets.filter(tweet => tweet.id !== id);
+
+        if (tweets.length) {
+            const newTweets = this.parseTweets(tweets);
+
+            this.tweets.push(...newTweets);
+        }
+        this.fetchingMoreTweets = false;
+    }
+
+    async authenticateWithPin(pin) {
+        this.initializing = true;
+        this.showPinInput = false;
+
+        const response = await this.twitterProxyService.getAccessToken(pin.value);
+
+        if (response.statusCode === 200) {
+            this.isLoggedIn = true;
+            pin.value = "";
+
+            await this.initTwitter();
+        }
+        else {
+            this.showPinInput = true;
+        }
+        this.initializing = false;
+    }
+
+    async login(pin) {
         if (pin.value) {
             this.authenticateWithPin(pin);
             return;
         }
-        this.cb = new Codebird;
-        this.setKey(this.cb);
-        this.cb.__call("oauth_requestToken", { oauth_callback: "oob" }, (reply, rate, err) => {
-            if (err) {
-                console.log("error response or timeout exceeded", err.error);
-                return;
-            }
+        const response = await this.twitterProxyService.getLoginUrl();
 
-            if (reply.httpstatus !== 401) {
-                this.cb.setToken(reply.oauth_token, reply.oauth_token_secret);
-                this.cb.__call("oauth_authorize", {}, url => {
-                    this.showPinInput = true;
-                    window.open(url, "_blank", "width=640,height=480");
-                });
-            }
-        });
-    }
-
-    toggleContainerSize() {
-        this.isExpanded = !this.isExpanded;
-        this.toggleSize.emit(this.isExpanded);
+        if (response.statusCode === 200) {
+            this.showPinInput = true;
+            window.open(response.url, "_blank", "width=640,height=480");
+        }
     }
 
     logout() {
-        clearTimeout(this.twitterTimeout);
+        clearTimeout(this.initTimeout);
         clearTimeout(this.tweetTimeTimeout);
         clearTimeout(this.tweetUpdateTimeout);
-        localStorage.removeItem("userInfo");
+        localStorage.removeItem("oauth");
         this.isLoggedIn = false;
-        this.fetchingTweets = false;
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
-        this.errorMessage = "";
 
         if (this.isExpanded) {
             this.toggleContainerSize();
         }
     }
 
-    fetchMoreTweets() {
-        const userInfo = this.getUserInfo();
-
-        if (!this.fetchingMoreTweets && userInfo.token && userInfo.tokenSecret) {
-            const { id: oldestTweetId } = this.tweets[this.tweets.length - 1];
-            const cb = new Codebird;
-            this.fetchingMoreTweets = true;
-
-            this.setInfo(cb, userInfo);
-            cb.__call("statuses_homeTimeline", `max_id=${oldestTweetId}`, tweets => {
-                this.fetchingMoreTweets = false;
-                tweets = tweets.filter(tweet => tweet.id !== oldestTweetId);
-
-                if (tweets.length) {
-                    const newTweets = this.loadTweets(tweets);
-
-                    this.tweets.push(...newTweets);
-                }
-            });
-        }
-    }
-
-    getUserInfo() {
-        return JSON.parse(localStorage.getItem("userInfo")) || {};
+    toggleContainerSize() {
+        this.isExpanded = !this.isExpanded;
+        this.toggleSize.emit(this.isExpanded);
     }
 }
