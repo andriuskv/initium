@@ -23,7 +23,7 @@ import { Twitter } from "./components/twitter/twitter";
 import { RssFeed } from "./components/rss-feed/rss-feed";
 import { Todo } from "./components/todo/todo";
 import { Weather } from "./components/weather/weather";
-import { Menu } from "./components/menu/menu";
+import { WidgetMenu } from "./components/widget-menu/widget-menu";
 import { UpperBlock } from "./components/upper-block/upper-block";
 import { Timer } from "./components/timer/timer";
 import { Stopwatch } from "./components/stopwatch/stopwatch";
@@ -39,7 +39,7 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
     providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService, ZIndexService, ReminderService, TwitterProxyService],
     declarations: [
         App, Settings, Background, Time, MainBlock, MostVisited, Notepad, Twitter, RssFeed,
-        Weather, Menu, Todo, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
+        Weather, WidgetMenu, Todo, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
         CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe, PadTimePipe
     ],
     bootstrap: [App]

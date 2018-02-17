@@ -2,10 +2,10 @@ import { Component, Output, EventEmitter } from "@angular/core";
 import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
-    selector: "menu",
-    templateUrl: "./menu.html"
+    selector: "widget-menu",
+    templateUrl: "./widget-menu.html"
 })
-export class Menu {
+export class WidgetMenu {
     @Output() toggle = new EventEmitter();
 
     visible: boolean = false;
