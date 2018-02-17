@@ -40,10 +40,10 @@
                 </button>
             </div>
         </div>
-        <button class="btn new-tweet-btn" *ngIf="tweetsToLoad.length" (click)="loadNewTweets()">
-            <span>View {{ tweetsToLoad.length }} new tweet{{ tweetsToLoad.length > 1 ? "s": "" }}</span>
-        </button>
         <ul class="tweets">
+            <li *ngIf="tweetsToLoad.length">
+                <button class="btn new-tweet-btn" (click)="loadNewTweets()">View {{ tweetsToLoad.length }} new tweet{{ tweetsToLoad.length > 1 ? "s": "" }}</button>
+            </li>
             <li class="tweet" *ngFor="let tweet of tweets" (click)="handleClickOnTweet($event, tweet.tweetUrl)">
                 <div class="retweet" *ngIf="tweet.retweetedBy">
                     <svg class="tweet-retweet-icon" viewBox="0 0 24 24">

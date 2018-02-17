@@ -110,19 +110,15 @@ module.exports = function(env = {}) {
                         use: [{
                             loader: "css-loader",
                             options: {
-                                sourceMap: !env.prod
+                                sourceMap: !env.prod,
+                                minimize: env.prod
                             }
                         }, {
                             loader: "postcss-loader",
                             options: {
                                 sourceMap: !env.prod,
                                 plugins: () => {
-                                    const plugins = [require("autoprefixer")()];
-
-                                    if (env.prod) {
-                                        plugins.push(require("cssnano")());
-                                    }
-                                    return plugins;
+                                    return [require("autoprefixer")()];
                                 }
                             }
                         }, {

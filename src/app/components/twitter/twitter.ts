@@ -314,7 +314,7 @@ export class Twitter {
     updateTimeline(latestTweetId) {
         this.tweetUpdateTimeout = window.setTimeout(() => {
             this.fetchNewTimeline(latestTweetId);
-        }, 480000);
+        }, 720000);
     }
 
     updateTweetTime() {
