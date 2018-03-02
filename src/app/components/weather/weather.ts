@@ -110,7 +110,7 @@ export class Weather {
     }
 
     displayWeather(data) {
-        this.temperature = this.units === "C" ? data.temp : this.convertTemperature(data.temp, this.units);
+        this.temperature = this.units === "C" ? Math.round(data.temp) : this.convertTemperature(data.temp, this.units);
         this.city = data.city;
         this.description = data.description;
         this.icon = this.getIcon(data.icon.id, data.icon.code);

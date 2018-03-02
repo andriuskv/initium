@@ -66,7 +66,8 @@ export class Twitter {
     }
 
     initTwitter() {
-        return Promise.all([this.getUser(), this.fetchInitialTimeline()]);
+        return Promise.all([this.getUser(), this.fetchInitialTimeline()])
+            .catch(error => console.log(error));
     }
 
     getTweetDate(createdAt) {
@@ -199,7 +200,7 @@ export class Twitter {
     }
 
     getSmallestDimension({ w, h }) {
-        return w > h ? "height" : "width";
+        return w >= h ? "height" : "width";
     }
 
     getTweetContent(tweet) {
@@ -335,7 +336,7 @@ export class Twitter {
         if (tweets.length) {
             latestTweetId = tweets[0].id;
 
-            this.tweetsToLoad.push(...tweets);
+            this.tweetsToLoad.unshift(...tweets);
 
             if (!this.isVisible) {
                 this.newTweets.emit();

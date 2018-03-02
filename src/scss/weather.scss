@@ -3,12 +3,14 @@
     top: 4px;
 	right: 8px;
 	text-align: right;
+	letter-spacing: 1px;
 	filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
 }
 
 .weather-temp-icon-container {
 	display: flex;
 	align-items: center;
+	margin-bottom: 2px;
 }
 
 .weather-temp {
