@@ -22,18 +22,18 @@ import { SettingService } from "../../services/settingService";
                 <svg class="dropbox-hero-icon" viewBox="0 0 24 24">
                     <use href="#dropbox"></use>
                 </svg>
-                <div class="dropbox-login-btn-container">
-                    <button class="btn" *ngIf="showLogin" (click)="login()">Log in</button>
-                    <img src="./assets/images/ring.svg" class="dropbox-spinner" *ngIf="fetching" alt="">
-                    <p class="dropbox-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
-                </div>
+                <button class="btn dropbox-login-btn"
+                    *ngIf="showLogin"
+                    (click)="login()"
+                    [disabled]="fetching">Log in</button>
+                <p class="dropbox-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
             </div>
             <ul class="dropbox-items" [class.show]="showItems">
                 <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
                     <img src="{{ item.thumbnail }}" *ngIf="item.thumbnail; else elseBlock">
                     <ng-template #elseBlock>
                         <svg viewBox="0 0 24 24">
-                            <use attr.href="#{{item.icon}}"></use>
+                            <use attr.href="#{{ item.icon }}"></use>
                         </svg>
                     </ng-template>
                     <span class="dropbox-item-name">{{ item.name }}</span>

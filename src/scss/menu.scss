@@ -40,18 +40,19 @@
     justify-content: flex-end;
     padding: 4px;
     transition: background-color 0.2s;
+    filter: drop-shadow($text-shadow);
 
     @media (max-width: 826px) {
         &:not(.transparent) {
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
             background-color: $color3;
+            filter: none;
         }
     }
 }
 
 .menu-item-container {
     display: flex;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
 
     @media (max-width: 826px) {
         &.hidden {
@@ -76,7 +77,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    border: 1px solid $color2;
+    border: 1px solid $color3;
     background-color: $brand-color;
 }
 
@@ -85,7 +86,6 @@
 
     @media (max-width: 826px) {
         display: flex;
-        filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
     }
 }
 

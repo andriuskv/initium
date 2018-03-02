@@ -134,7 +134,7 @@
 }
 
 .todo-pin-icon {
-    transition: 0.2s transform, 0.2s color;
+    transition: 0.2s transform;
     transform: rotateZ(-45deg);
 
     &.is-pinned {
@@ -157,7 +157,7 @@
 .todo-item-btn {
     margin-right: 8px;
     color: $secondary-text-color;
-    font-size: 12px;
+    font-size: 13px;
 
     &:hover {
         color: $primary-text-color;
@@ -177,4 +177,8 @@
 .todo-footer-btn {
     display: inline-flex;
     padding: 4px;
+
+    svg {
+        margin-right: 4px;
+    }
 }

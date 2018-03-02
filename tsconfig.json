@@ -23,8 +23,8 @@
       "dom"
     ]
   },
-    "angularCompilerOptions": {
-      "fullTemplateTypeCheck": true,
-      "preserveWhiteSpace": false,
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "preserveWhiteSpace": false,
   }
 }

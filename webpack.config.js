@@ -8,7 +8,6 @@ const { AotPlugin } = require("@ngtools/webpack");
 
 module.exports = function(env = {}) {
     const nodeModules = path.join(process.cwd(), "node_modules");
-    const genDirNodeModules = path.join(process.cwd(), "src", "$$_gendir", "node_modules");
     const entryPoints = ["polyfills", "vendor", "main"];
     const plugins = [
         new NoEmitOnErrorsPlugin(),
@@ -22,15 +21,6 @@ module.exports = function(env = {}) {
         }),
         new HtmlWebpackPlugin({
             "template": "./src/index.html",
-            "hash": false,
-            "inject": true,
-            "compile": true,
-            "favicon": false,
-            "minify": false,
-            "cache": true,
-            "showErrors": true,
-            "chunks": "all",
-            "xhtml": true,
             "chunksSortMode": function sort(left, right) {
                 const leftIndex = entryPoints.indexOf(left.names[0]);
                 const rightindex = entryPoints.indexOf(right.names[0]);
@@ -46,22 +36,19 @@ module.exports = function(env = {}) {
         }),
         new ExtractTextPlugin("main.css"),
         new CommonsChunkPlugin({
-            "name": [
+            name: [
                 "vendor"
             ],
-            "minChunks": (module) => module.resource &&
-                    (module.resource.startsWith(nodeModules) || module.resource.startsWith(genDirNodeModules)),
-            "chunks": [
+            minChunks: module => module.resource && module.resource.startsWith(nodeModules),
+            chunks: [
                 "main"
             ]
         }),
-        new NamedModulesPlugin({}),
+        new NamedModulesPlugin(),
         new AotPlugin({
-          "mainPath": "./src/main.ts",
-          "hostReplacementPaths": {},
-          "exclude": [],
-          "tsConfigPath": "./tsconfig.json",
-          "skipCodeGeneration": true
+          mainPath: "./src/main.ts",
+          tsConfigPath: "./tsconfig.json",
+          skipCodeGeneration: true
         })
     ];
 
@@ -77,27 +64,27 @@ module.exports = function(env = {}) {
     }
 
     return {
-        "entry": {
-          "main": "./src/main.ts",
-          "polyfills": "./src/polyfills.ts"
+        entry: {
+            main: "./src/main.ts",
+            polyfills: "./src/polyfills.ts"
         },
-        "output": {
-            "path": path.join(process.cwd(), "dist"),
-            "filename": "[name].js",
-            "chunkFilename": "[id].chunk.js"
+        output: {
+            path: path.join(process.cwd(), "dist"),
+            filename: "[name].js",
+            chunkFilename: "[id].chunk.js"
         },
-        "resolve": {
-            "extensions": [
+        resolve: {
+            extensions: [
                 ".ts",
                 ".js"
             ],
-            "modules": [
+            modules: [
                 "./node_modules",
                 "./src"
             ]
         },
-        "resolveLoader": {
-          "modules": [
+        resolveLoader: {
+          modules: [
             "./node_modules"
           ]
         },
