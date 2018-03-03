@@ -1,54 +1,39 @@
 import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
+import { dispatchCustomEvent } from "../../utils/utils";
 
 @Component({
     selector: "dropbox",
     template: `
-        <div class="dropbox-container">
-            <div class="dropbox-header">
-                <button class="btn-icon" (click)="goBack(activeDir)" *ngIf="activeDir.path && activeDir.path !== '/'" title="Back">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#chevron-left"></use>
-                    </svg>
-                </button>
-                <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
-                <button class="btn-icon" title="Logout" *ngIf="loggedIn" (click)="logout()">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#cross"></use>
-                    </svg>
-                </button>
-            </div>
-            <div class="dropbox-hero" [class.show]="!showItems">
-                <svg class="dropbox-hero-icon" viewBox="0 0 24 24">
-                    <use href="#dropbox"></use>
+        <div class="dropbox-header">
+            <button class="btn-icon" (click)="goBack(activeDir)" *ngIf="activeDir.path && activeDir.path !== '/'" title="Back">
+                <svg viewBox="0 0 24 24">
+                    <use href="#chevron-left"></use>
                 </svg>
-                <button class="btn dropbox-login-btn"
-                    *ngIf="showLogin"
-                    (click)="login()"
-                    [disabled]="fetching">Log in</button>
-                <p class="dropbox-error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
-            </div>
-            <ul class="dropbox-items" [class.show]="showItems">
-                <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
-                    <img src="{{ item.thumbnail }}" *ngIf="item.thumbnail; else elseBlock">
-                    <ng-template #elseBlock>
-                        <svg viewBox="0 0 24 24">
-                            <use attr.href="#{{ item.icon }}"></use>
-                        </svg>
-                    </ng-template>
-                    <span class="dropbox-item-name">{{ item.name }}</span>
-                    <img src="./assets/images/ring.svg" class="dropbox-spinner" *ngIf="item.fetching" alt="">
-                    <span class="dropbox-item-error" *ngIf="item.error">Not an image</span>
-                </li>
-            </ul>
+            </button>
+            <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
+            <button class="btn-icon" title="Logout" (click)="logout()">
+                <svg viewBox="0 0 24 24">
+                    <use href="#cross"></use>
+                </svg>
+            </button>
         </div>
+        <ul class="dropbox-items">
+            <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
+                <img src="{{ item.thumbnail }}" *ngIf="item.thumbnail; else elseBlock">
+                <ng-template #elseBlock>
+                    <svg viewBox="0 0 24 24">
+                        <use attr.href="#{{ item.icon }}"></use>
+                    </svg>
+                </ng-template>
+                <span class="dropbox-item-name">{{ item.name }}</span>
+                <img src="./assets/images/ring.svg" class="dropbox-spinner" *ngIf="item.fetching" alt="">
+                <span class="dropbox-item-error" *ngIf="item.error">Not an image</span>
+            </li>
+        </ul>
     `
 })
 export class DropboxComp {
-    fetching: boolean = true;
-    showItems: boolean = false;
-    showLogin: boolean = false;
-    loggedIn: boolean = false;
     dropbox: any;
     activeDir: any = {};
     rootDir: object = {
@@ -59,36 +44,36 @@ export class DropboxComp {
         items: []
     };
     dropboxContents: any;
-    errorMessage: string = "";
 
     constructor(private settingService: SettingService) {
         this.settingService = settingService;
         this.dropboxContents = JSON.parse(localStorage.getItem("dropbox")) || this.rootDir;
     }
 
-    async ngOnInit() {
-        const Dropbox: any = await import("dropbox");
-        const token = localStorage.getItem("dropbox token");
-        this.dropbox = new Dropbox.Dropbox({ clientId: process.env.DROPBOX_API_KEY });
+    ngOnInit() {
+        window.addEventListener("dropbox-login", async () => {
+            const Dropbox: any = await import("dropbox");
+            const token = localStorage.getItem("dropbox token");
+            this.dropbox = new Dropbox.Dropbox({ clientId: process.env.DROPBOX_API_KEY });
 
-        if (token) {
-            this.init(token);
-        }
-        else {
-            this.fetching = false;
-            this.showLogin = true;
-        }
+            if (token) {
+                this.init(token);
+            }
+            else {
+                this.login();
+            }
+        });
     }
 
     init(token) {
         this.dropbox.setAccessToken(token);
-        this.loggedIn = true;
-        this.showLogin = false;
 
         if (this.dropboxContents.cached) {
             this.activeDir = this.dropboxContents;
-            this.showItems = true;
-            this.fetching = false;
+
+            dispatchCustomEvent("dropbox", {
+                loggedIn: true
+            });
         }
         else {
             this.fetchRootDir();
@@ -97,14 +82,20 @@ export class DropboxComp {
 
     login() {
         const authUrl = this.dropbox.getAuthenticationUrl(`${window.location.origin}/receiver.html`);
+        const authWindow: any = window.open(authUrl, "_blank", "width=640,height=480");
+        const intervalId = setInterval(() => {
+            if (authWindow.closed) {
+                clearInterval(intervalId);
 
-        window.open(authUrl);
-        window.addEventListener("storage", function onStorageChange(event) {
-            if (event.key === "dropbox token") {
-                this.init(event.newValue);
+                if (authWindow.token) {
+                    this.init(authWindow.token);
+                    localStorage.setItem("dropbox token", authWindow.token);
+                }
+                else {
+                    dispatchCustomEvent("dropbox-window-closed");
+                }
             }
-            window.removeEventListener("storage", onStorageChange);
-        }.bind(this));
+        }, 800);
     }
 
     logout() {
@@ -114,19 +105,10 @@ export class DropboxComp {
         localStorage.removeItem("dropbox token");
         this.dropboxContents = this.rootDir;
         this.activeDir = {};
-        this.showItems = false;
-        this.loggedIn = false;
-        this.fetching = false;
-        this.showLogin = true;
-    }
 
-    showErrorMessage(message) {
-        this.fetching = false;
-        this.errorMessage = message;
-
-        setTimeout(() => {
-            this.errorMessage = "";
-        }, 4000);
+        dispatchCustomEvent("dropbox", {
+            loggedIn: false
+        });
     }
 
     getThumbnail(path) {
@@ -181,12 +163,10 @@ export class DropboxComp {
     }
 
     fetchRootDir() {
-        this.showItems = false;
-        this.fetching = true;
-
         this.fetchDir(this.dropboxContents).then(() => {
-            this.showItems = true;
-            this.fetching = false;
+            dispatchCustomEvent("dropbox", {
+                loggedIn: true
+            });
         });
     }
 
@@ -285,6 +265,7 @@ export class DropboxComp {
             }
             else {
                 item.error = true;
+
                 setTimeout(() => {
                     item.error = false;
                 }, 800);

@@ -62,6 +62,16 @@
             <span>Reset background</span>
             <button class="btn" (click)="onSetting('url', '')">Reset</button>
         </div>
+        <div class="setting-item">
+            <button class="btn-icon dropbox-btn"
+                [disabled]="logginInToDropbox"
+                (click)="loginToDropbox()">
+                <svg viewBox="0 0 24 24">
+                    <use href="#dropbox"></use>
+                </svg>
+                <span>Dropbox</span>
+            </button>
+        </div>
     </div>
     <div class="setting" [class.active]="active === 'weather'">
         <div class="setting-item">
