@@ -13,7 +13,9 @@
         </div>
         <div class="menu-transition-target">
             <settings *ngIf="selectedItem === 'settings'"></settings>
-            <dropbox *ngIf="selectedItem === 'dropbox'"></dropbox>
+            <dropbox class="dropbox-container"
+                [class.visible]="selectedItem === 'dropbox'">
+            </dropbox>
             <calendar class="calendar-container"
                 [class.visible]="selectedItem === 'calendar'"
                 (reminderIndicatorVisible)="showReminderIndicator($event)">
@@ -35,13 +37,6 @@
                         <use href="#calendar"></use>
                     </svg>
                     <div class="menu-item-indicator" *ngIf="reminderInicatorVisible"></div>
-                </button>
-            </li>
-            <li class="menu-item">
-                <button class="btn-icon" (click)="toggleItem('dropbox')" title="Dropbox">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#dropbox"></use>
-                    </svg>
                 </button>
             </li>
             <li class="menu-item">

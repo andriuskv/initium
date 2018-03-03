@@ -19,6 +19,17 @@ export class WidgetMenu {
         this.zIndexService = zIndexService;
     }
 
+    ngOnInit() {
+        window.addEventListener("dropbox", (event: CustomEvent) => {
+            if (event.detail.loggedIn) {
+                this.toggleItem("dropbox");
+            }
+            else {
+                this.toggleItem("settings");
+            }
+        });
+    }
+
     toggleUpperBlockComp() {
         this.toggle.emit("upper");
     }
@@ -41,6 +52,10 @@ export class WidgetMenu {
     }
 
     closeSelectedItem() {
+        if (this.selectedItem === "dropbox") {
+            this.toggleItem("settings");
+            return;
+        }
         this.isClosing = true;
 
         setTimeout(() => {
