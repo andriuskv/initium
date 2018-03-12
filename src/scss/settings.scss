@@ -15,7 +15,7 @@
 
     &.active {
         transform: translateX(2px);
-        box-shadow: -2px 0 0 0 $brand-color;
+        box-shadow: -2px 0 0 0 $color-accent;
     }
 }
 
@@ -29,12 +29,24 @@
 }
 
 .setting-item {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     min-height: 33px;
     padding: 4px;
     border-bottom: 1px solid $color2;
+
+    &.disabled::after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: transparentize($color3, 0.2);
+    }
 }
 
 .setting-item-add-desc {
@@ -50,26 +62,6 @@
     padding: 2px 8px;
 }
 
-.dropbox-btn {
-    &:disabled {
-        position: relative;
-
-        &::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: block;
-            width: 20px;
-            height: 20px;
-            background-image: url("/assets/images/ring.svg");
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-    }
-
-    svg {
-        margin-right: 4px;
-    }
+.dropbox-btn-icon {
+    margin-right: 4px;
 }

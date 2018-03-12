@@ -29,7 +29,8 @@
                 <div class="checkbox"></div>
             </label>
         </div>
-        <div class="setting-item">
+        <div class="setting-item"
+            [class.disabled]="settings.general.notificationsDisabled">
             <span>Don't focus tab on notification click</span>
             <label>
                 <input type="checkbox" class="checkbox-input"
@@ -63,10 +64,8 @@
             <button class="btn" (click)="onSetting('url', '')">Reset</button>
         </div>
         <div class="setting-item">
-            <button class="btn-icon dropbox-btn"
-                [disabled]="logginInToDropbox"
-                (click)="loginToDropbox()">
-                <svg viewBox="0 0 24 24">
+            <button class="btn-icon" [disabled]="logginInToDropbox" (click)="loginToDropbox()">
+                <svg viewBox="0 0 24 24" class="dropbox-btn-icon">
                     <use href="#dropbox"></use>
                 </svg>
                 <span>Dropbox</span>
@@ -83,7 +82,8 @@
                 <div class="checkbox"></div>
             </label>
         </div>
-        <div class="setting-item">
+        <div class="setting-item"
+            [class.disabled]="settings.weather.disabled">
             <span>Show temperature in Farenheit</span>
             <label>
                 <input type="checkbox" class="checkbox-input"
@@ -92,7 +92,8 @@
                 <div class="checkbox"></div>
             </label>
         </div>
-        <div class="setting-item">
+        <div class="setting-item"
+            [class.disabled]="settings.weather.disabled">
             <span>City name (and country code)</span>
             <input type="text" class="input setting-input" placeholder="Paris,fr"
                 [value]="settings.weather.cityName"
