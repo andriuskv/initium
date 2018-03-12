@@ -69,16 +69,26 @@
     }
 }
 
+.menu-item-btn.indicator-visible {
+    svg {
+        -webkit-mask-box-image: url(./assets/images/calendar-icon-mask.svg);
+    }
+
+    .menu-item-indicator {
+        display: block;
+    }
+}
+
 .menu-item-indicator {
     z-index: 1;
     position: absolute;
     bottom: -2px;
     right: -2px;
-    width: 8px;
-    height: 8px;
+    display: none;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    border: 1px solid $color3;
-    background-color: $brand-color;
+    background-color: $color-accent;
 }
 
 .menu-toggle-btn {
