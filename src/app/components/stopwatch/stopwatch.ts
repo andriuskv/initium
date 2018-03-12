@@ -3,7 +3,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from "@angu
 @Component({
     selector: "stopwatch",
     template: `
-        <div class="stopwatch" (click)="toggle()">
+        <div class="upper-block-item-content stopwatch" (click)="toggle()">
             <span *ngIf="hours">
                 <span class="upper-block-digit">{{ hours }}</span>
                 <span class="upper-block-sep">h</span>
