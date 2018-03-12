@@ -1,23 +1,58 @@
-.upper-block {
+.upper-block-container {
     position: absolute;
     top: 4px;
     left: 50%;
     visibility: collapse;
     width: 420px;
     opacity: 0;
+    font-size: 16px;
     transform: rotateX(45deg) translate(-50%, -80px) scale(0.94);
     transition: transform 0.2s, opacity 0.18s, visibility 0.18s;
+    cursor: default;
 
     &.visible {
         visibility: visible;
         opacity: 1;
         transform: translateX(-50%);
     }
+
+    &.expanded, &:-webkit-full-screen {
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+        font-size: 32px;
+
+        .pomodoro-selection {
+            top: -24px;
+            right: 0;
+            transform: none;
+        }
+
+        .upper-block-group {
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s all;
+        }
+
+        .upper-block {
+            flex-shrink: 0;
+            flex-basis: 20em;
+
+            &:hover {
+                .upper-block-group {
+                    visibility: visible;
+                    opacity: 1;
+                }
+            }
+        }
+    }
 }
 
 .upper-block-header {
     display: flex;
-    margin-bottom: 4px;
 }
 
 .upper-block-header-item {
@@ -25,7 +60,7 @@
     margin-right: 8px;
 
     &.active {
-        box-shadow: 0 1px 0 0 $brand-color;
+        box-shadow: 0 1px 0 0 $color-accent;
     }
 
     span {
@@ -33,39 +68,18 @@
     }
 }
 
-.upper-block-hide-btn {
-     margin-left: auto;
+.upper-block-btns {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
 }
 
-.upper-block-content-wrapper {
-    font-size: 16px;
+.upper-block-expand-btn {
+    margin-right: 4px;
 
-    &:-webkit-full-screen {
-        width: 100vw;
-        height: 100vh;
-        padding: 24vh 12vw 0;
-        background-color: $color3;
-        font-size: 32px;
-
-        .pomodoro-timer-selection {
-            position: absolute;
-            top: -20px;
-            right: 0;
-            bottom: 0;
-        }
-
-        .upper-block-controls, .pomodoro-timer-selection {
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s all;
-        }
-
-        .upper-block-content:hover {
-            .upper-block-controls, .pomodoro-timer-selection {
-                visibility: visible;
-                opacity: 1;
-            }
-        }
+    &.hidden {
+        display: none;
     }
 }
 
@@ -73,14 +87,27 @@
     position: relative;
     display: none;
     height: 6em;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
 
     &.visible {
         display: block;
     }
 }
 
+.upper-block-item-content {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.upper-block-digit {
+    font-size: 4em;
+}
+
 .upper-block-sep {
-    padding-right: 0.125em;
+    margin-left: 0.125em;
+    margin-right: 0.25em;
     font-size: 2em;
 }
 
@@ -95,7 +122,7 @@
     padding: 2px;
 
     &:not(:first-of-type) {
-        margin-left: 0.5em;
+        margin-left: 4px;
     }
 }
 
@@ -103,21 +130,8 @@
     margin-right: auto;
 }
 
-.upper-block-digit {
-    font-size: 4em;
-}
-
-.timer, .stopwatch {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
-    text-align: center;
-}
-
 .timer-input {
-    width: 1.125em;
+    width: 2ch;
     border: none;
     background-color: transparent;
     color: $primary-text-color;
@@ -126,6 +140,10 @@
 
     &:focus {
         outline: none;
+    }
+
+    &:read-only {
+        cursor: default;
     }
 }
 
@@ -137,25 +155,16 @@
     font-size: 2em;
 }
 
-.pomodoro {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding-left: 0.25em;
-    padding-right: 0.25em;
-    text-align: center;
+.pomodoro-selection {
+    right: 0.25em;
 }
 
-.pomodoro-timer {
-    flex-grow: 1;
-}
-
-.pomodoro-timer-btn {
+.pomodoro-btn {
     width: 100%;
     padding-bottom: 2px;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 
     &.active {
-        box-shadow: 0 1px 0 0 $brand-color;
+        box-shadow: 0 1px 0 0 $color-accent;
     }
 }

@@ -4,7 +4,7 @@ import { PadTimePipe } from "app/pipes/padTimePipe";
 @Component({
     selector: "timer",
     template: `
-        <div class="timer" (input)="onInput($event, hoursInput.value, minutesInput.value)">
+        <div class="upper-block-item-content timer" (input)="onInput($event, hoursInput.value, minutesInput.value)">
             <input type="text" class="timer-input" data-input="hours"
                 [value]="hours | padTime" [readonly]="isRunning" #hoursInput>
             <span class="upper-block-sep">h</span>
