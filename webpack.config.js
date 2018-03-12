@@ -98,15 +98,14 @@ module.exports = function(env = {}) {
                             loader: "css-loader",
                             options: {
                                 sourceMap: !env.prod,
+                                url: false,
                                 minimize: env.prod
                             }
                         }, {
                             loader: "postcss-loader",
                             options: {
                                 sourceMap: !env.prod,
-                                plugins: () => {
-                                    return [require("autoprefixer")()];
-                                }
+                                plugins: () => [require("autoprefixer")()]
                             }
                         }, {
                             loader: "sass-loader",
@@ -125,11 +124,6 @@ module.exports = function(env = {}) {
                     "loader": "@ngtools/webpack"
                 }
             ]
-        },
-        watchOptions: {
-            aggregateTimeout: 300,
-            poll: 1000,
-            ignored: /node_modules/
         },
         devtool: env.prod ? false : "inline-source-map",
         plugins

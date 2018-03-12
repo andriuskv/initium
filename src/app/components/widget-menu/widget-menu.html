@@ -32,11 +32,13 @@
                 </button>
             </li>
             <li class="menu-item">
-                <button class="btn-icon" (click)="toggleItem('calendar')" title="Calendar">
+                <button class="btn-icon menu-item-btn"
+                    [class.indicator-visible]="reminderInicatorVisible"
+                    (click)="toggleItem('calendar')" title="Calendar">
                     <svg viewBox="0 0 24 24">
                         <use href="#calendar"></use>
                     </svg>
-                    <div class="menu-item-indicator" *ngIf="reminderInicatorVisible"></div>
+                    <div class="menu-item-indicator"></div>
                 </button>
             </li>
             <li class="menu-item">
