@@ -38,7 +38,10 @@ export class CalendarSelectedDay {
     reminders: any;
     timeTable: Array<any> = [];
 
-    constructor(private reminderService: ReminderService, private timeDateService: TimeDateService) {
+    constructor(
+        private reminderService: ReminderService,
+        private timeDateService: TimeDateService
+    ) {
         this.reminderService = reminderService;
         this.timeDateService = timeDateService;
     }
@@ -104,8 +107,12 @@ export class CalendarSelectedDay {
 
     resetRange() {
         this.range = {
-            from: {},
-            to: {}
+            from: {
+                string: ""
+            },
+            to: {
+                string: ""
+            }
         };
         this.rangeMessage = this.FORMAT_ERROR;
     }

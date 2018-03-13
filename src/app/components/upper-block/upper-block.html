@@ -60,13 +60,13 @@
                 (alarm)="runAlarm($event)"></pomodoro>
         </div>
         <div class="upper-block-controls upper-block-group">
-            <button class="btn-transparent upper-block-control"
+            <button class="btn-icon upper-block-control"
                 *ngIf="!state[active].isRunning"
                 (click)="setCommand('start')">Start</button>
-            <button class="btn-transparent upper-block-control"
+            <button class="btn-icon upper-block-control"
                 *ngIf="state[active].isRunning"
                 (click)="setCommand('stop')">Stop</button>
-            <button class="btn-transparent upper-block-control upper-block-reset-btn"
+            <button class="btn-icon upper-block-control upper-block-reset-btn"
                 (click)="setCommand('reset')">Reset</button>
             <button class="btn-icon upper-block-control" title="Toggle alarm"
                 *ngIf="active !== 'stopwatch'"

@@ -20,14 +20,30 @@ export class Calendar {
     calendar: any;
     selectedDay: any;
 
-    constructor(private reminderService: ReminderService, private timeDateService: TimeDateService, private settingService: SettingService) {
+    constructor(
+        private reminderService: ReminderService,
+        private timeDateService: TimeDateService,
+        private settingService: SettingService
+    ) {
         this.reminderService = reminderService;
         this.timeDateService = timeDateService;
         this.settingService = settingService;
     }
 
     ngOnInit() {
+        this.initTimeSettings();
+        this.initCalendar();
+        this.initReminders();
+    }
+
+    initTimeSettings() {
         const { timeDisplay } = this.settingService.getSetting("time");
+
+        this.timeDisplay = parseInt(timeDisplay, 10);
+        this.settingService.subscribeToChanges(this.timeSettingChangeHandler.bind(this));
+    }
+
+    initCalendar() {
         const { year, month } = this.currentDate;
 
         this.calendar = {
@@ -36,14 +52,13 @@ export class Calendar {
         this.currentYear = year;
         this.currentDay = this.setCurrentDay(this.calendar, this.currentDate);
         this.visibleMonth = this.getVisibleMonth(this.calendar, year, month);
-        this.timeDisplay = parseInt(timeDisplay, 10);
-        this.initReminders();
     }
 
     async initReminders() {
         const reminders: any = await this.reminderService.getReminders();
 
-        reminders.forEach(reminder => this.createReminder(reminder));
+        this.reminderService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
+        this.createReminders(reminders);
         this.reminderIndicatorVisible.emit(this.currentDay.reminders.length > 0);
     }
 
@@ -184,6 +199,7 @@ export class Calendar {
 
     showCalendar() {
         this.daySelected = false;
+        this.selectedDay = null;
     }
 
     getReminderRangeString(range) {
@@ -234,6 +250,10 @@ export class Calendar {
                 reminder.rangeString = this.getReminderRangeString(reminder.range);
             }
         }
+    }
+
+    createReminders(reminders) {
+        reminders.forEach(reminder => this.createReminder(reminder));
     }
 
     createReminder(reminder) {
@@ -318,6 +338,29 @@ export class Calendar {
             }
             dayIndex += reminder.gap;
             day = month.days[dayIndex];
+        }
+    }
+
+    timeSettingChangeHandler({ time }) {
+        if (time && time.timeDisplay) {
+            this.timeDisplay = parseInt(time.timeDisplay, 10);
+
+            this.currentDay.reminders = this.currentDay.reminders.map(reminder => {
+                reminder.rangeString = this.getReminderRangeString(reminder.range);
+
+                return reminder;
+            });
+        }
+    }
+
+    chromeStorageChangeHandler({ reminders }) {
+        if (reminders) {
+            this.initCalendar();
+            this.createReminders(reminders.newValue);
+
+            if (this.selectedDay) {
+                this.showCalendar();
+            }
         }
     }
 }

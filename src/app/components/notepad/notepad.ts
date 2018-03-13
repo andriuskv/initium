@@ -1,5 +1,6 @@
 import { Component, Inject, Input } from "@angular/core";
 import { DOCUMENT } from "@angular/platform-browser";
+import { ChromeStorageService } from "../../services/chromeStorageService";
 
 @Component({
     selector: "notepad",
@@ -67,12 +68,17 @@ export class Notepad {
     shift: number = 0;
     activeTabIndex: number = 0;
     tabToRemove: number = 0;
+    inputTimeoutId: number = 0;
     activeTabContent: string = "";
     tabs: Array<any>;
     visibleTabs: Array<any> = [];
 
-    constructor(@Inject(DOCUMENT) private document) {
+    constructor(
+        @Inject(DOCUMENT) private document,
+        private chromeStorageService: ChromeStorageService
+    ) {
         this.document = document;
+        this.chromeStorageService = chromeStorageService;
         this.tabs = [{
             title: "Tab",
             content: ""
@@ -80,10 +86,11 @@ export class Notepad {
     }
 
     ngOnInit() {
-        chrome.storage.sync.get("notepad", storage => {
+        this.chromeStorageService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
+        this.chromeStorageService.get("notepad", storage => {
             this.tabs = storage.notepad || this.tabs;
             this.setVisibleTabs();
-            this.selectTab(this.activeTabIndex);
+            this.selectTab();
         });
     }
 
@@ -119,7 +126,7 @@ export class Notepad {
         this.selectTab(index);
     }
 
-    selectTab(index) {
+    selectTab(index = 0) {
         this.activeTabIndex = index;
         this.activeTabContent = this.visibleTabs[index].content;
     }
@@ -199,11 +206,23 @@ export class Notepad {
     }
 
     saveTabContent(content) {
-        this.tabs[this.shift + this.activeTabIndex].content = content;
-        this.saveTabs();
+        clearTimeout(this.inputTimeoutId);
+
+        this.inputTimeoutId = window.setTimeout(() => {
+            this.tabs[this.shift + this.activeTabIndex].content = content;
+            this.saveTabs();
+        }, 400);
     }
 
     saveTabs() {
-        chrome.storage.sync.set({ notepad: this.tabs });
+        this.chromeStorageService.set({ notepad: this.tabs });
+    }
+
+    chromeStorageChangeHandler({ notepad }) {
+        if (notepad) {
+            this.tabs = [...notepad.newValue];
+            this.setVisibleTabs();
+            this.selectTab();
+        }
     }
 }

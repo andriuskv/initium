@@ -77,7 +77,10 @@ export class MainBlock {
         }
     };
 
-    constructor(private settingService: SettingService, private zIndexService: ZIndexService) {
+    constructor(
+        private settingService: SettingService,
+        private zIndexService: ZIndexService
+    ) {
         this.settingService = settingService;
         this.zIndexService = zIndexService;
     }

@@ -1,22 +1,22 @@
 <div class="settings-container">
     <ul class="settings-nav">
         <li class="settings-nav-item" [class.active]="active === 'general'">
-            <button class="btn-transparent" (click)="setActiveTab('general')">General</button>
+            <button class="btn-icon" (click)="setActiveTab('general')">General</button>
         </li>
         <li class="settings-nav-item" [class.active]="active === 'mainBlock'">
-            <button class="btn-transparent" (click)="setActiveTab('mainBlock')">Main Block</button>
+            <button class="btn-icon" (click)="setActiveTab('mainBlock')">Main Block</button>
         </li>
         <li class="settings-nav-item" [class.active]="active === 'time'">
-            <button class="btn-transparent" (click)="setActiveTab('time')">Time & Date</button>
+            <button class="btn-icon" (click)="setActiveTab('time')">Time & Date</button>
         </li>
         <li class="settings-nav-item" [class.active]="active === 'background'">
-            <button class="btn-transparent" (click)="setActiveTab('background')">Background</button>
+            <button class="btn-icon" (click)="setActiveTab('background')">Background</button>
         </li>
         <li class="settings-nav-item" [class.active]="active === 'weather'">
-            <button class="btn-transparent" (click)="setActiveTab('weather')">Weather</button>
+            <button class="btn-icon" (click)="setActiveTab('weather')">Weather</button>
         </li>
         <li class="settings-nav-item" [class.active]="active === 'pomodoro'">
-            <button class="btn-transparent" (click)="setActiveTab('pomodoro')">Pomodoro</button>
+            <button class="btn-icon" (click)="setActiveTab('pomodoro')">Pomodoro</button>
         </li>
     </ul>
     <div class="setting" [class.active]="active === 'general'">

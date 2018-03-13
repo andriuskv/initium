@@ -14,7 +14,10 @@ export class MostVisited {
     isFetching: boolean = false;
     mostVisited: any = {};
 
-    constructor(private settingService: SettingService, private domSanitizer: DomSanitizer) {
+    constructor(
+        private settingService: SettingService,
+        private domSanitizer: DomSanitizer
+    ) {
         this.settingService = settingService;
         this.domSanitizer = domSanitizer;
     }
