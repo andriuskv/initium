@@ -4,35 +4,6 @@
   white-space: nowrap;
 }
 
-@mixin input-styles($color: $color2) {
-    border: none;
-    background-color: $color;
-    color: $primary-text-color;
-    font-size: 14px;
-    font-family: $font-family;
-}
-
-@mixin btn-styles($color: $color2) {
-    @include input-styles($color);
-
-    padding: 4px 8px;
-    transition: color 0.2s;
-
-    &:hover {
-        color: $brand-color;
-        cursor: pointer;
-    }
-
-    &:disabled {
-        color: $secondary-text-color;
-        cursor: default;
-    }
-
-    &:focus {
-        outline: none;
-    }
-}
-
 @mixin scrollbar($color) {
     &::-webkit-scrollbar {
         width: 10px;

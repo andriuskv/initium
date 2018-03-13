@@ -8,7 +8,7 @@
     }
 
     &.active {
-         box-shadow: 0 1px 0 0 $brand-color;
+         box-shadow: 0 1px 0 0 $color-accent;
     }
 }
 
@@ -51,10 +51,15 @@
     resize: none;
     width: 100%;
     height: calc(100% - 25px);
+    padding: 4px;
     background-color: transparent;
 }
 
 .notepad-modal {
     min-width: 300px;
     text-align: center;
+
+    .btn:first-of-type {
+        margin-right: 4px;
+    }
 }

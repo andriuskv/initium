@@ -51,32 +51,66 @@ svg {
     background-repeat: no-repeat;
 }
 
-.btn {
-    @include btn-styles;
+%input-styles {
+    padding: 4px 8px;
+    border: none;
+    background-color: $color2;
+    color: $primary-text-color;
+    font-size: 14px;
+    font-family: $font-family;
 }
 
-.btn-transparent {
-    @include btn-styles(transparent);
+%btn-styles {
+    @extend %input-styles;
+
+    transition: color 0.2s;
+
+    &:hover {
+        color: $color-accent;
+        cursor: pointer;
+    }
+
+    &:disabled {
+        position: relative;
+        color: $secondary-text-color;
+        cursor: not-allowed;
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: block;
+            width: 20px;
+            height: 20px;
+            background-image: url("/assets/images/ring.svg");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    }
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.input {
+    @extend %input-styles;
+}
+
+.btn {
+    @extend %btn-styles;
 }
 
 .btn-icon {
-    @include btn-styles(transparent);
+    @extend %btn-styles;
 
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
-}
-
-.input {
-    @include input-styles;
-
-    padding: 4px;
-}
-
-.input-light {
-    background-color: $color3;
-    border-color: $color3;
+    background-color: transparent;
 }
 
 .checkbox::after {
@@ -87,7 +121,7 @@ svg {
     width: 16px;
     height: 16px;
     background-color: $color2;
-    color: $brand-color;
+    color: $color-accent;
 }
 
 .checkbox-input {
@@ -96,7 +130,6 @@ svg {
     &:checked + .checkbox::after {
         content: "\2713";
     }
-
 }
 
 .radio::after {
@@ -113,6 +146,6 @@ svg {
     display: none;
 
     &:checked + .radio::after {
-        background-color: $brand-color;
+        background-color: $color-accent;
     }
 }
