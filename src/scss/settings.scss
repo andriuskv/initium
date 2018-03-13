@@ -7,7 +7,7 @@
 .settings-nav {
     display: flex;
     flex-direction: column;
-    width: 100px;
+    width: 92px;
 }
 
 .settings-nav-item {
@@ -16,6 +16,10 @@
     &.active {
         transform: translateX(2px);
         box-shadow: -2px 0 0 0 $color-accent;
+    }
+
+    .btn-icon {
+        padding: 4px 6px;
     }
 }
 
