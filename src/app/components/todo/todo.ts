@@ -1,5 +1,6 @@
 import { Component, Inject } from "@angular/core";
 import { DOCUMENT } from "@angular/platform-browser";
+import { ChromeStorageService } from "../../services/chromeStorageService";
 import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
@@ -8,17 +9,23 @@ import { ZIndexService } from "../../services/zIndexService";
 })
 export class Todo {
     visible: boolean = false;
-    todos: Array<any> = [];
-    todoBeingEdited: any;
     zIndex: number = 0;
+    todos: Array<any> = [];
+    todoBeingEdited: any = null;
 
-    constructor( @Inject(DOCUMENT) private document, private zIndexService: ZIndexService) {
+    constructor(
+        @Inject(DOCUMENT) private document,
+        private chromeStorageService: ChromeStorageService,
+        private zIndexService: ZIndexService
+    ) {
         this.document = document;
+        this.chromeStorageService = chromeStorageService;
         this.zIndexService = zIndexService;
     }
 
     ngOnInit() {
-        chrome.storage.sync.get("todos", storage => {
+        this.chromeStorageService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
+        this.chromeStorageService.get("todos", storage => {
             this.todos = storage.todos || [];
         });
     }
@@ -83,7 +90,7 @@ export class Todo {
     }
 
     saveTodos(todos) {
-        chrome.storage.sync.set({ todos });
+        this.chromeStorageService.set({ todos });
     }
 
     enableTodoEdit(text, index) {
@@ -91,7 +98,7 @@ export class Todo {
     }
 
     saveTodoEdit() {
-        const { value } = this.document.querySelector('.todo-edit-input');
+        const { value } = this.document.querySelector(".todo-edit-input");
         const { index } = this.todoBeingEdited;
         const todo = this.todos[index];
 
@@ -108,5 +115,11 @@ export class Todo {
 
     handleClickOnContainer() {
         this.zIndex = this.zIndexService.incIfLess(this.zIndex);
+    }
+
+    chromeStorageChangeHandler({ todos }) {
+        if (todos) {
+            this.todos = [...todos.newValue];
+        }
     }
 }

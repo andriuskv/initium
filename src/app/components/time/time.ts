@@ -22,7 +22,10 @@ export class Time {
     minutes: number;
     timeout: any;
 
-    constructor(private settingService: SettingService, private timeDateService: TimeDateService) {
+    constructor(
+        private settingService: SettingService,
+        private timeDateService: TimeDateService
+    ) {
         this.timeDateService = timeDateService;
         this.settingService = settingService;
     }
