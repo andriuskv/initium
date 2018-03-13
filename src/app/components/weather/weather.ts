@@ -7,7 +7,10 @@ import { WeatherService } from "../../services/weatherService";
     template: `
         <div class="weather" *ngIf="!disabled && city" [title]="description">
             <div class="weather-temp-icon-container">
-                <span class="weather-temp">{{ temperature }}°{{ units }}</span>
+                <div>
+                    <span class="weather-temp">{{ temperature }}</span>
+                    <span class="weather-units">°{{ units }}</span>
+                </div>
                 <svg class="weather-icon" viewBox="0 0 24 24">
                     <use attr.href="#weather-{{ icon }}"></use>
                 </svg>
@@ -110,7 +113,9 @@ export class Weather {
     }
 
     displayWeather(data) {
-        this.temperature = this.units === "C" ? Math.round(data.temp) : this.convertTemperature(data.temp, this.units);
+        this.temperature = this.units === "C" ?
+            Math.round(data.temp) :
+            this.convertTemperature(data.temp, this.units);
         this.city = data.city;
         this.description = data.description;
         this.icon = this.getIcon(data.icon.id, data.icon.code);
