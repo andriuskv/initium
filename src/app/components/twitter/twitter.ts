@@ -73,10 +73,9 @@ export class Twitter {
     getTweetDate(createdAt) {
         const date: any = new Date();
         const created: any = new Date(createdAt);
-        let minuteDiff = (date - created) / 1000 / 60;
+        const minuteDiff = Math.round((date - created) / 1000 / 60);
         let at = "";
 
-        minuteDiff = Math.round(minuteDiff);
         if (minuteDiff <= 60) {
             at = `${minuteDiff}m`;
         }
@@ -181,7 +180,7 @@ export class Twitter {
                     type: "gif",
                     thumbUrl: item.media_url_https,
                     url: item.video_info.variants[0].url
-                }
+                };
             }
 
             if (item.type === "video") {
@@ -189,7 +188,7 @@ export class Twitter {
                     type: item.type,
                     thumbUrl: item.media_url_https,
                     url: item.video_info.variants.find(variant => variant.content_type === "video/mp4").url
-                }
+                };
             }
             return {
                 type: item.type,
@@ -304,7 +303,7 @@ export class Twitter {
     async fetchInitialTimeline() {
         const response = await this.twitterProxyService.getTimeline();
 
-        if (response.statusCode === 200) {
+        if (response && response.statusCode === 200) {
             this.tweets = this.parseTweets(response.tweets);
 
             this.updateTimeline(response.tweets[0].id);
@@ -331,6 +330,11 @@ export class Twitter {
         const response = await this.twitterProxyService.getTimeline({
             since_id: latestTweetId
         });
+
+        if (!response || response.statusCode !== 200) {
+            this.updateTimeline(latestTweetId);
+            return;
+        }
         const tweets = response.tweets.filter(tweet => tweet.id !== latestTweetId);
 
         if (tweets.length) {
@@ -363,6 +367,10 @@ export class Twitter {
         const response = await this.twitterProxyService.getTimeline({
             max_id: id
         });
+
+        if (!response || response.code !== 200) {
+            return;
+        }
         const tweets = response.tweets.filter(tweet => tweet.id !== id);
 
         if (tweets.length) {
@@ -379,7 +387,7 @@ export class Twitter {
 
         const response = await this.twitterProxyService.getAccessToken(pin.value);
 
-        if (response.statusCode === 200) {
+        if (response && response.statusCode === 200) {
             this.isLoggedIn = true;
             pin.value = "";
 
@@ -398,7 +406,7 @@ export class Twitter {
         }
         const response = await this.twitterProxyService.getLoginUrl();
 
-        if (response.statusCode === 200) {
+        if (response && response.statusCode === 200) {
             this.showPinInput = true;
             window.open(response.url, "_blank", "width=640,height=480");
         }
