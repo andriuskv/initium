@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
+import { ChromeStorageService } from "../../services/chromeStorageService";
 import { FeedService } from "../../services/feedService";
 import { NotificationService } from "../../services/notificationService";
 
@@ -21,7 +22,12 @@ export class RssFeed {
     feeds: Array<any> = [];
     activeFeed: any = null;
 
-    constructor(private feedService: FeedService, private notificationService: NotificationService) {
+    constructor(
+        private chromeStorageService: ChromeStorageService,
+        private feedService: FeedService,
+        private notificationService: NotificationService,
+    ) {
+        this.chromeStorageService = chromeStorageService;
         this.feedService = feedService;
         this.notificationService = notificationService;
     }
@@ -49,19 +55,17 @@ export class RssFeed {
 
     initFeeds() {
         this.initTimeout = 0;
-
-        chrome.storage.sync.get("rss", storage => {
-            this.loadFeeds(storage.rss || []);
+        this.chromeStorageService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
+        this.chromeStorageService.get("rss", storage => {
+            this.feedsToLoad = storage.rss || [];
+            this.loadFeeds(this.feedsToLoad);
         });
     }
 
     saveFeeds(feeds) {
-        const feedsToSave = feeds.map(feed => ({
-            url: feed.url,
-            title: feed.title
-        }));
+        const feedsToSave = feeds.map(({ url, title }) => ({ url, title }));
 
-        chrome.storage.sync.set({ rss:  feedsToSave });
+        this.chromeStorageService.set({ rss: feedsToSave });
     }
 
     getEntryLink(entry) {
@@ -265,6 +269,12 @@ export class RssFeed {
         if (entry.newEntry) {
             this.activeFeed.newEntryCount -= 1;
             entry.newEntry = false;
+        }
+    }
+
+    chromeStorageChangeHandler({ rss }) {
+        if (rss) {
+            this.loadFeeds(rss.newValue);
         }
     }
 }
