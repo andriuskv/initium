@@ -107,7 +107,7 @@ export class Calendar {
                 month.days.push({
                     year,
                     month: i,
-                    number: j + 1,
+                    day: j + 1,
                     reminders: []
                 });
             }

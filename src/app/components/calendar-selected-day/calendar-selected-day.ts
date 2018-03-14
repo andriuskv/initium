@@ -47,7 +47,7 @@ export class CalendarSelectedDay {
     }
 
     ngOnInit() {
-        this.dateString = this.getDateString(this.day);
+        this.dateString = this.timeDateService.getDate("month day, year", this.day);
         this.timePattern = this.timeDisplay ?
             "^(([0-1]?[0-9])|(2[0-3])):[0-5]?[0-9]$" :
             "^((0?[1-9])|(1[0-2])):[0-5]?[0-9] ?[a|p|A|P][m|M]$";
@@ -72,13 +72,6 @@ export class CalendarSelectedDay {
 
         this.resetRange();
         this.resetOccurencesInput();
-    }
-
-    getDateString({ year, month, number }) {
-        const monthName = this.timeDateService.getMonth(month);
-        const dayWithSuffix = this.timeDateService.getDayWithSuffix(number);
-
-        return `${monthName} ${dayWithSuffix}, ${year}`;
     }
 
     toggleRange() {
@@ -266,7 +259,7 @@ export class CalendarSelectedDay {
             repeat: this.isRepeatEnabled && (!this.repeatCount || this.repeatCount > 1),
             year: this.day.year,
             month: this.day.month,
-            day: this.day.number
+            day: this.day.day
         };
 
         if (reminder.repeat) {
