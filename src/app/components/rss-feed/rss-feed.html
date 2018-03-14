@@ -1,5 +1,5 @@
-<div class="main-block-content" [class.visible]="isVisible">
-    <ul class="main-block-content-header" *ngIf="feeds.length">
+<div class="main-block-content rss-feed" [class.visible]="isVisible">
+    <ul class="main-block-content-header feed-header" *ngIf="feeds.length">
         <li class="feed-header-item" *ngFor="let feed of feeds; let i = index" [class.active]="activeFeed && feed.url === activeFeed.url">
             <button class="btn-icon feed-select-btn" title="Select feed" (click)="showFeed(feed)">
                 <span class="feed-new-entry-count" *ngIf="feed.newEntryCount">{{ feed.newEntryCount }}</span>
@@ -26,35 +26,54 @@
             </button>
         </li>
     </ul>
-    <ul class="feed" *ngIf="activeFeed; else elseBlock">
-        <li class="feed-entry" *ngFor="let entry of activeFeed.entries">
-            <a [href]="entry.link" class="feed-entry-link" (click)="markEntryAsRead(entry)" target="_blank">{{ entry.title }}</a>
-            <p class="feed-entry-desc" [innerHTML]="entry.desc"></p>
-            <span class="feed-entry-date" *ngIf="entry.date">{{ entry.date }}</span>
+    <ul class="feeds" *ngIf="activeFeed; else elseBlock">
+        <li class="feed" *ngFor="let entry of activeFeed.entries">
+            <a [href]="entry.link" class="feed-link" (click)="markEntryAsRead(entry)" target="_blank">{{ entry.title }}</a>
+            <p class="feed-desc" [innerHTML]="entry.desc"></p>
+            <span class="feed-date" *ngIf="entry.date">{{ entry.date }}</span>
             <span class="is-new-entry" *ngIf="entry.newEntry">New</span>
         </li>
     </ul>
     <ng-template #elseBlock>
-        <div class="feed-hero" [class.has-no-feeds]="!feeds.length">
+        <div class="feed-hero">
             <svg viewBox="0 0 24 24" class="feed-hero-icon">
                 <use href="#rss"></use>
             </svg>
-            <h2 class="feed-hero-title">RSS Feed</h2>
-            <form (submit)="handleFormSubmit($event)" *ngIf="!loading">
-                <label class="feed-input-group">
-                    <div>Title (optional)</div>
-                    <input type="text" class="input feed-input" name="title" autocomplete="off">
-                </label>
-                <label class="feed-input-group">
-                    <div>URL</div>
-                    <input type="text" class="input feed-input" name="url" required>
-                </label>
-                <div class="feed-add-btn-container">
-                    <img src="./assets/images/ring.svg" *ngIf="fetching" alt="">
-                    <span>{{ message }}</span>
-                    <button class="btn" [disabled]="fetching">Add</button>
-                </div>
-            </form>
+            <div class="feed-hero-content">
+                <ul class="feed-initiation-status" *ngIf="feedsToLoad.length; else elseIf1">
+                    <li class="feed-initiation-item" *ngFor="let feed of feedsToLoad">
+                        <span class="feed-initiation-item-title">{{ feed.title }}</span>
+                        <div class="feed-initiation-item-status">
+                            <img src="./assets/images/ring.svg" *ngIf="feed.isLoading" alt="">
+                            <svg viewBox="0 0 24 24" class="feed-initiation-success" *ngIf="feed.success">
+                                <use href="#circle-tick"></use>
+                            </svg>
+                            <svg viewBox="0 0 24 24" class="feed-initiation-error" *ngIf="feed.error">
+                                <use href="#circle-cross"></use>
+                            </svg>
+                        </div>
+                    </li>
+                </ul>
+                <ng-template #elseIf1>
+                    <img src="./assets/images/ring.svg" *ngIf="loading; else elseIf2" alt="">
+                </ng-template>
+                <ng-template #elseIf2>
+                    <form (submit)="handleFormSubmit($event)">
+                        <label class="feed-input-group">
+                            <div>Title (optional)</div>
+                            <input type="text" class="input feed-input" name="title" autocomplete="off">
+                        </label>
+                        <label class="feed-input-group">
+                            <div>URL</div>
+                            <input type="text" class="input feed-input" name="url" required>
+                        </label>
+                        <div class="feed-add-btn-container">
+                            <div class="feed-message" *ngIf="message">{{ message }}</div>
+                            <button class="btn" [disabled]="fetching">Add</button>
+                        </div>
+                    </form>
+                </ng-template>
+            </div>
         </div>
     </ng-template>
 </div>

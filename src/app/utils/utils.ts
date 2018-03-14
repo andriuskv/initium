@@ -4,6 +4,13 @@ function dispatchCustomEvent(eventName, data = null) {
     window.dispatchEvent(event);
 }
 
+function delay(milliseconds) {
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
+}
+
 export {
-    dispatchCustomEvent
+    dispatchCustomEvent,
+    delay
 };
