@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 
+import { ChromeStorageService } from "./services/chromeStorageService";
 import { TimeDateService } from "./services/timeDateService";
 import { SettingService } from "./services/settingService";
 import { WeatherService } from "./services/weatherService";
@@ -36,7 +37,8 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
 
 @NgModule({
     imports: [BrowserModule],
-    providers: [SettingService, TimeDateService, WeatherService, NotificationService, FeedService, ZIndexService, ReminderService, TwitterProxyService],
+    providers: [ChromeStorageService, SettingService, TimeDateService, WeatherService,
+        NotificationService, FeedService, ZIndexService, ReminderService, TwitterProxyService],
     declarations: [
         App, Settings, Background, Time, MainBlock, MostVisited, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Todo, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
