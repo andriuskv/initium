@@ -86,10 +86,8 @@ export class Twitter {
             at = "1d";
         }
         else {
-            const monthName = this.timeDateService.getMonth(created.getMonth());
-            const monthNameShort = monthName.slice(0, 3);
-
-            at = `${monthNameShort} ${created.getDate()}`;
+            const month = this.timeDateService.getMonth(created.getMonth(), true);
+            at = `${month} ${created.getDate()}`;
         }
         return {
             createdAtDate: createdAt,

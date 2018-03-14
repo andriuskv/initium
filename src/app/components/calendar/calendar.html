@@ -34,20 +34,20 @@
         <li class="calendar-cell calendar-day"
             *ngFor="let day of visibleMonth.previous.days"
             (click)="showDay(day, -1)">
-            <div>{{ day.number }}</div>
+            <div>{{ day.day }}</div>
         </li>
         <li class="calendar-cell calendar-day is-current-month-day"
             *ngFor="let day of visibleMonth.current.days"
             [class.current-day]="day.isCurrentDay"
             (click)="showDay(day)">
-            <div>{{ day.number }}</div>
+            <div>{{ day.day }}</div>
             <div class="day-reminders" *ngIf="day.reminders.length">
                 <div class="day-reminder" *ngFor="let reminder of day.reminders"
                     [ngStyle]="{ 'background-color': reminder.color }"></div>
             </div>
         </li>
         <li class="calendar-cell calendar-day" *ngFor="let day of visibleMonth.next.days" (click)="showDay(day, 1)">
-            <div>{{ day.number }}</div>
+            <div>{{ day.day }}</div>
         </li>
     </ul>
 </div>

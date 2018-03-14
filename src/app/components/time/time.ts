@@ -33,7 +33,7 @@ export class Time {
     ngOnInit() {
         const { timeDisplay, dateDisabled } = this.settingService.getSetting("time");
 
-        this.changeTimeDisplay(timeDisplay);
+        this.updateTime(parseInt(timeDisplay, 10));
         this.initDate(dateDisabled);
         this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
@@ -44,7 +44,8 @@ export class Time {
         }
 
         if (time.timeDisplay) {
-            this.changeTimeDisplay(time.timeDisplay);
+            clearTimeout(this.timeout);
+            this.updateTime(parseInt(time.timeDisplay, 10));
         }
         else if (typeof time.dateDisabled === "boolean") {
             this.initDate(time.dateDisabled);
@@ -53,21 +54,9 @@ export class Time {
 
     initDate(isDisabled) {
         if (!isDisabled) {
-            this.date = this.timeDateService.getDate();
+            this.date = this.timeDateService.getDate("weekday, month day");
         }
         this.dateDisabled = isDisabled;
-    }
-
-    changeTimeDisplay(display) {
-        clearTimeout(this.timeout);
-
-        if (display === "0") {
-            this.updateTime(this.get12HourTime);
-        }
-        else {
-            this.period = "";
-            this.updateTime(this.get24HourTime);
-        }
     }
 
     getCurrentTime() {
@@ -79,30 +68,16 @@ export class Time {
         };
     }
 
-    get12HourTime() {
-        let { hours, minutes } = this.getCurrentTime();
-        this.period = hours < 12 ? "AM" : "PM";
-
-        if (!hours) {
-            hours = 12;
-        }
-        else {
-            hours = hours > 12 ? hours - 12 : hours;
-        }
-        return { hours, minutes };
-    }
-
-    get24HourTime() {
-        return this.getCurrentTime();
-    }
-
-    updateTime(cb) {
-        const { hours, minutes } = cb.call(this);
+    updateTime(timeDisplay) {
+        const currentTime = this.getCurrentTime();
+        const { hours, minutes, period } = this.timeDateService.getTime(currentTime, timeDisplay);
 
         this.hours = hours;
         this.minutes = minutes;
+        this.period = period;
+
         this.timeout = setTimeout(() => {
-            this.updateTime(cb);
+            this.updateTime(timeDisplay);
         }, 1000);
     }
 }

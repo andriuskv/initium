@@ -1,6 +1,5 @@
 export class TimeDateService {
-    getTime(time, timeDisplay) {
-        let hours = time.hours;
+    getTime({ hours, minutes }, timeDisplay) {
         let period = "";
 
         if (!timeDisplay) {
@@ -14,7 +13,7 @@ export class TimeDateService {
             }
         }
         return {
-            minutes: time.minutes,
+            minutes,
             hours,
             period
         };
@@ -22,57 +21,41 @@ export class TimeDateService {
 
     getTimeString(time, timeDisplay) {
         const { hours, minutes, period } = this.getTime(time, timeDisplay);
-        const minuteString = `00${minutes.toString()}`.slice(-2);
 
-        return `${hours}:${minuteString}${period && ` ${period}`}`;
+        return `${hours}:${`00${minutes}`.slice(-2)}${period && ` ${period}`}`;
     }
 
-    getDay(day) {
-        switch (day) {
-            case 0:
-                return "Sunday";
-            case 1:
-                return "Monday";
-            case 2:
-                return "Tuesday";
-            case 3:
-                return "Wednesday";
-            case 4:
-                return "Thursday";
-            case 5:
-                return "Friday";
-            case 6:
-                return "Saturday";
-        }
+    getWeekday(day) {
+        const weekdays = {
+            0: "Sunday",
+            1: "Monday",
+            2: "Tuesday",
+            3: "Wednesday",
+            4: "Thursday",
+            5: "Friday",
+            6: "Saturday",
+        };
+
+        return weekdays[day];
     }
 
-    getMonth(month) {
-        switch (month) {
-            case 0:
-                return "January";
-            case 1:
-                return "February";
-            case 2:
-                return "March";
-            case 3:
-                return "April";
-            case 4:
-                return "May";
-            case 5:
-                return "June";
-            case 6:
-                return "July";
-            case 7:
-                return "August";
-            case 8:
-                return "September";
-            case 9:
-                return "October";
-            case 10:
-                return "November";
-            case 11:
-                return "December";
-        }
+    getMonth(month, useShortName = false) {
+        const months = {
+            0: "January",
+            1: "February",
+            2: "March",
+            3: "April",
+            4: "May",
+            5: "June",
+            6: "July",
+            7: "August",
+            8: "September",
+            9: "October",
+            10: "November",
+            11: "December"
+        };
+
+        return useShortName ? months[month].slice(0, 3) : months[month];
     }
 
     getDayWithSuffix(day) {
@@ -88,12 +71,25 @@ export class TimeDateService {
         return `${day}th`;
     }
 
-    getDate() {
+    getCurrentDate() {
         const date = new Date();
-        const dayOfTheWeek = this.getDay(date.getDay());
-        const month = this.getMonth(date.getMonth());
-        const day = this.getDayWithSuffix(date.getDate());
 
-        return `${dayOfTheWeek}, ${month} ${day}`;
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+            weekday: date.getDay()
+        };
+    }
+
+    getDate(format, date = this.getCurrentDate()) {
+        const map = {
+            year: date.year,
+            month: this.getMonth(date.month),
+            day: this.getDayWithSuffix(date.day),
+            weekday: this.getWeekday(date.weekday)
+        };
+
+        return format.replace(/\w+/g, item => map[item]);
     }
 }
