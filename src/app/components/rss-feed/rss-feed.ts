@@ -1,4 +1,6 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
+import { delay } from "../../utils/utils";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { FeedService } from "../../services/feedService";
 import { NotificationService } from "../../services/notificationService";
@@ -19,6 +21,7 @@ export class RssFeed {
     initTimeout: number = 0;
     latestActiveFeed: string = "";
     message: string = "";
+    feedsToLoad: Array<any> = [];
     feeds: Array<any> = [];
     activeFeed: any = null;
 
@@ -26,10 +29,12 @@ export class RssFeed {
         private chromeStorageService: ChromeStorageService,
         private feedService: FeedService,
         private notificationService: NotificationService,
+        private domSanitizer: DomSanitizer
     ) {
         this.chromeStorageService = chromeStorageService;
         this.feedService = feedService;
         this.notificationService = notificationService;
+        this.domSanitizer = domSanitizer;
     }
 
     ngOnInit() {
@@ -99,7 +104,7 @@ export class RssFeed {
     parseEntries(entries, newEntry) {
         return entries.map(entry => ({
             newEntry,
-            desc: this.getEntryDesc(entry),
+            desc: this.domSanitizer.bypassSecurityTrustHtml(this.getEntryDesc(entry)),
             link: this.getEntryLink(entry),
             title: entry.title,
             date: entry.pubDate || entry.updated || ""
@@ -133,17 +138,35 @@ export class RssFeed {
     async loadFeeds(feeds) {
         if (!feeds.length) {
             this.loading = false;
+            this.activeFeed = null;
+            this.feeds.length = 0;
             return;
         }
+        const feedsToLoad = feeds.map(feed => {
+            feed.isLoading = true;
 
-        for (const { url, title } of feeds) {
-            const loadedFeed = await this.getFeed(url, title);
+            return this.getFeed(feed.url, feed.title).then(results => {
+                feed.isLoading = false;
 
-            this.feeds.push(loadedFeed);
+                if (results) {
+                    feed.success = true;
+                }
+                else {
+                    feed.error = true;
+                }
+                return results;
+            });
+        });
+        const loadedFeeds = await Promise.all(feedsToLoad);
+        await delay(1000);
+
+        this.feeds = [...loadedFeeds].filter(feed => feed);
+
+        if (!this.activeFeed || !this.feeds.some(({ url }) => url === this.activeFeed.url)) {
+            this.activeFeed = this.feeds[0];
         }
-        this.activeFeed = this.activeFeed || this.feeds[0];
         this.loading = false;
-
+        feeds.length = 0;
         this.getNewFeeds();
     }
 
@@ -217,9 +240,11 @@ export class RssFeed {
         try {
             const feed = await this.getFeed(url, title);
 
+            if (!feed) {
+                throw new Error("Feed was not found");
+            }
             this.feeds.push(feed);
             this.activeFeed = feed;
-
             this.getNewFeeds();
             this.saveFeeds(this.feeds);
             event.target.reset();
@@ -237,18 +262,17 @@ export class RssFeed {
         }
     }
 
-    async getFeed(url, title) {
-        const feed = await this.feedService.fetchFeed(url);
-
-        if (!feed) {
-            throw new Error("No feed found");
-        }
-        return {
-            url,
-            title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
-            newEntryCount: 0,
-            entries: this.parseEntries(feed.entries, false)
-        }
+    getFeed(url, title) {
+        return this.feedService.fetchFeed(url).then(feed => {
+            if (feed) {
+                return {
+                    url,
+                    title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
+                    newEntryCount: 0,
+                    entries: this.parseEntries(feed.entries, false)
+                };
+            }
+        });
     }
 
     showFeed(feed) {
