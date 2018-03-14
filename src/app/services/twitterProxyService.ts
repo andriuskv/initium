@@ -8,22 +8,32 @@ export class TwitterProxyService {
         return this.oauth.token && this.oauth.tokenSecret;
     }
 
-    async getLoginUrl() {
-        const response = await fetch(`${this.proxyUrl}/request_token`).then(response => response.json());
+    getLoginUrl(retry = true) {
+        return fetch(`${this.proxyUrl}/request_token`)
+            .then(response => response.json())
+            .then(json => {
+                if (json.statusCode === 200) {
+                    this.requestToken = json.data.token;
+                    this.requestTokenSecret = json.data.tokenSecret;
 
-        if (response.statusCode === 200) {
-            this.requestToken = response.data.token;
-            this.requestTokenSecret = response.data.tokenSecret;
+                    return {
+                        statusCode: json.statusCode,
+                        url: json.data.url
+                    };
+                }
+                return json;
+            })
+            .catch(error => {
+                console.log(error);
 
-            return {
-                statusCode: response.statusCode,
-                url: response.data.url
-            };
-        }
+                if (retry) {
+                    return this.getLoginUrl(false);
+                }
+            });
     }
 
-    async getAccessToken(pinCode) {
-        const response = await fetch(`${this.proxyUrl}/access_token`, {
+    getAccessToken(pinCode, retry = true) {
+        return fetch(`${this.proxyUrl}/access_token`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -33,29 +43,57 @@ export class TwitterProxyService {
                 token: this.requestToken,
                 tokenSecret: this.requestTokenSecret
             })
-        }).then(response => response.json());
+        })
+        .then(response => response.json())
+        .then(json => {
+            if (json.statusCode === 200) {
+                this.oauth = json.data;
+                localStorage.setItem("oauth", JSON.stringify(json.data));
 
-        if (response.statusCode === 200) {
-            this.oauth = response.data;
-            localStorage.setItem("oauth", JSON.stringify(response.data));
-        }
-        return {
-            statusCode: response.statusCode
-        };
+                return {
+                    statusCode: json.statusCode
+                };
+            }
+            return json;
+        })
+        .catch(error => {
+            console.log(error);
+
+            if (retry) {
+                return this.getAccessToken(pinCode, false);
+            }
+        });
+
     }
 
-    getUser() {
+    getUser(retry = true) {
         return fetch(`${this.proxyUrl}/user`, {
             method: "GET",
             headers: this.getAuthorizationHeaders()
-        }).then(response => response.json());
+        })
+        .then(response => response.json())
+        .catch(error => {
+            console.log(error);
+
+            if (retry) {
+                return this.getUser(false);
+            }
+        });
     }
 
-    getTimeline(params = {}) {
+    getTimeline(params = {}, retry = true) {
         return fetch(`${this.proxyUrl}/timeline${this.buildParams(params)}`, {
             method: "GET",
             headers: this.getAuthorizationHeaders()
-        }).then(response => response.json());
+        })
+        .then(response => response.json())
+        .catch(error => {
+            console.log(error);
+
+            if (retry) {
+                return this.getTimeline(params, false);
+            }
+        });
     }
 
     getAuthorizationHeaders() {
