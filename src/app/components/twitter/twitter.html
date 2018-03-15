@@ -104,10 +104,8 @@
                 </div>
             </li>
             <li>
-                <button class="btn-icon more-tweets-btn" (click)="fetchMoreTweets()">
-                    <img src="./assets/images/ring.svg" class="twitter-spinner" *ngIf="fetchingMoreTweets" alt="">
-                    <span>Load more tweets</span>
-                </button>
+                <button class="btn-icon more-tweets-btn" (click)="fetchMoreTweets()"
+                    [disabled]="fetchingMoreTweets">Load more tweets</button>
             </li>
         </ul>
     </div>

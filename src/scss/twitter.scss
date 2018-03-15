@@ -280,7 +280,7 @@ $tweet-text-color-alt: #bbb;
     height: 48px;
     color: $primary-text-color;
     transform: translate(-50%, -50%);
-    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.4));
+    filter: drop-shadow($text-shadow);
 }
 
 .tweet-stats-container {
@@ -304,10 +304,6 @@ $tweet-text-color-alt: #bbb;
 }
 
 .more-tweets-btn {
-    height: 24px;
     width: 100%;
-
-    .twitter-spinner {
-        margin-right: 4px;
-    }
+    padding: 4px 8px;
 }
