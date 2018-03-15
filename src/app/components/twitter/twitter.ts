@@ -366,7 +366,7 @@ export class Twitter {
             max_id: id
         });
 
-        if (!response || response.code !== 200) {
+        if (!response || response.statusCode !== 200) {
             return;
         }
         const tweets = response.tweets.filter(tweet => tweet.id !== id);

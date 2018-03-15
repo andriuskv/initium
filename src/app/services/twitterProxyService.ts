@@ -82,7 +82,13 @@ export class TwitterProxyService {
     }
 
     getTimeline(params = {}, retry = true) {
-        return fetch(`${this.proxyUrl}/timeline${this.buildParams(params)}`, {
+        const url = this.buildURL(`${this.proxyUrl}/timeline`, {
+            count: 30,
+            exclude_replies: true,
+            ...params
+        });
+
+        return fetch(url, {
             method: "GET",
             headers: this.getAuthorizationHeaders()
         })
@@ -102,12 +108,12 @@ export class TwitterProxyService {
         };
     }
 
-    buildParams(params) {
-        const arr = Object.keys(params);
+    buildURL(urlString, params) {
+        const url = new URL(urlString);
 
-        if (!arr.length) {
-            return "";
+        for (const [key, value] of Object.entries(params)) {
+            url.searchParams.set(key, (value as any));
         }
-        return "?" + arr.map(param => `${param}=${params[param]}`).join("&");
+        return url.href;
     }
 }
