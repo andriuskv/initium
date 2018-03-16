@@ -3,7 +3,7 @@
         <li class="feed-header-item" *ngFor="let feed of feeds; let i = index" [class.active]="activeFeed && feed.url === activeFeed.url">
             <button class="btn-icon feed-select-btn" title="Select feed" (click)="showFeed(feed)">
                 <span class="feed-new-entry-count" *ngIf="feed.newEntryCount">{{ feed.newEntryCount }}</span>
-                <span>{{ feed.title }}</span>
+                <span>{{ feed.title || "RSS Feed " + i }}</span>
             </button>
             <div class="feed-title-btns">
                 <button class="btn-icon" title="Mark new entries as read" *ngIf="feed.newEntryCount" (click)="markEntriesAsRead(feed)">
