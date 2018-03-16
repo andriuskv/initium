@@ -1,5 +1,4 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { DomSanitizer } from "@angular/platform-browser";
 import { delay } from "../../utils/utils";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { FeedService } from "../../services/feedService";
@@ -28,13 +27,11 @@ export class RssFeed {
     constructor(
         private chromeStorageService: ChromeStorageService,
         private feedService: FeedService,
-        private notificationService: NotificationService,
-        private domSanitizer: DomSanitizer
+        private notificationService: NotificationService
     ) {
         this.chromeStorageService = chromeStorageService;
         this.feedService = feedService;
         this.notificationService = notificationService;
-        this.domSanitizer = domSanitizer;
     }
 
     ngOnInit() {
@@ -73,44 +70,6 @@ export class RssFeed {
         this.chromeStorageService.set({ rss: feedsToSave });
     }
 
-    getEntryLink(entry) {
-        if (typeof entry.link === "string") {
-            return entry.link;
-        }
-
-        if (entry.link && entry.link.href) {
-            return entry.link.href;
-        }
-
-        if (entry.origEnclosureLink) {
-            return entry.origEnclosureLink;
-        }
-    }
-
-    getEntryDesc(entry) {
-        if (entry.subtitle) {
-            return entry.subtitle;
-        }
-
-        if (entry.description) {
-            return entry.description;
-        }
-
-        if (typeof entry.content === "object") {
-            return entry.content.content || "";
-        }
-    }
-
-    parseEntries(entries, newEntry) {
-        return entries.map(entry => ({
-            newEntry,
-            desc: this.domSanitizer.bypassSecurityTrustHtml(this.getEntryDesc(entry)),
-            link: this.getEntryLink(entry),
-            title: entry.title,
-            date: entry.pubDate || entry.updated || ""
-        }));
-    }
-
     addNewFeed() {
         if (this.activeFeed) {
             this.latestActiveFeed = this.activeFeed;
@@ -145,7 +104,7 @@ export class RssFeed {
         const feedsToLoad = feeds.map(feed => {
             feed.isLoading = true;
 
-            return this.getFeed(feed.url, feed.title).then(results => {
+            return this.feedService.getFeed(feed.url, feed.title).then(results => {
                 feed.isLoading = false;
 
                 if (results) {
@@ -200,26 +159,10 @@ export class RssFeed {
         }
     }
 
-    getNewEntries(newFeed, feed) {
-        return newFeed.entries.filter(newEntry => {
-            const link = this.getEntryLink(newEntry);
-            const title = newEntry.title;
-            const duplicate = feed.entries.some(entry => entry.link === link || entry.title === title);
-
-            return !duplicate;
-        });
-    }
-
     async updateFeed(feed) {
-        const updatedFeed = await this.feedService.fetchFeed(feed.url);
-
-        if (!updatedFeed) {
-            return;
-        }
-        let entries = this.getNewEntries(updatedFeed, feed);
+        const entries = await this.feedService.updateFeed(feed);
 
         if (entries.length) {
-            entries = this.parseEntries(entries, true);
             feed.newEntryCount += entries.length;
             this.newEntryCount += entries.length;
             feed.entries.unshift(...entries);
@@ -238,7 +181,7 @@ export class RssFeed {
         this.fetching = true;
 
         try {
-            const feed = await this.getFeed(url, title);
+            const feed = await this.feedService.getFeed(url, title);
 
             if (!feed) {
                 throw new Error("Feed was not found");
@@ -260,19 +203,6 @@ export class RssFeed {
         finally {
             this.fetching = false;
         }
-    }
-
-    getFeed(url, title) {
-        return this.feedService.fetchFeed(url).then(feed => {
-            if (feed) {
-                return {
-                    url,
-                    title: title || feed.title || `RSS Feed ${this.feeds.length + 1}`,
-                    newEntryCount: 0,
-                    entries: this.parseEntries(feed.entries, false)
-                };
-            }
-        });
     }
 
     showFeed(feed) {
