@@ -4,9 +4,6 @@
     "webextensions": true,
     "node": true
   },
-  "rulesDirectory": [
-    "node_modules/codelyzer"
-  ],
   "rules": {
     "arrow-return-shorthand": true,
     "callable-types": true,
@@ -34,21 +31,8 @@
       140
     ],
     "member-access": false,
-    "member-ordering": [
-      true,
-      "static-before-instance",
-      "variables-before-functions"
-    ],
     "no-arg": true,
     "no-bitwise": true,
-    "no-console": [
-      true,
-      "debug",
-      "info",
-      "time",
-      "timeEnd",
-      "trace"
-    ],
     "no-construct": true,
     "no-debugger": true,
     "no-duplicate-super": true,
@@ -77,9 +61,7 @@
       "double"
     ],
     "radix": true,
-    "semicolon": [
-      "always"
-    ],
+    "semicolon": true,
     "triple-equals": [
       true,
       "allow-null-check"

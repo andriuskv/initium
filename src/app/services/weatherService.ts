@@ -16,9 +16,7 @@ export class WeatherService {
             console.log(error);
         }
         return new Promise(resolve => {
-            navigator.geolocation.getCurrentPosition(position => {
-                const coords = position.coords;
-
+            navigator.geolocation.getCurrentPosition(({ coords }) => {
                 resolve({ lat: coords.latitude, lon: coords.longitude });
             }, geoError, { enableHighAccuracy: true });
         });

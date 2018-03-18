@@ -40,13 +40,15 @@
     justify-content: flex-end;
     padding: 4px;
     transition: background-color 0.2s;
-    filter: drop-shadow($text-shadow);
+
+    &.transparent {
+        filter: drop-shadow($text-shadow);
+    }
 
     @media (max-width: 826px) {
         &:not(.transparent) {
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
             background-color: $color3;
-            filter: none;
         }
     }
 }
@@ -61,26 +63,25 @@
     }
 }
 
-.menu-item {
-    position: relative;
-
-    &:not(:last-of-type) {
-        margin-right: 4px;
-    }
+.menu-item:not(:last-of-type) {
+    margin-right: 4px;
 }
 
-.menu-item-btn.indicator-visible {
-    svg {
-        -webkit-mask-box-image: url(./assets/images/calendar-icon-mask.svg);
-    }
+.menu-item-btn {
+    position: relative;
 
-    .menu-item-indicator {
-        display: block;
+    &.indicator-visible {
+        svg {
+            -webkit-mask-box-image: url(./assets/images/calendar-icon-mask.svg);
+        }
+
+        .menu-item-indicator {
+            display: block;
+        }
     }
 }
 
 .menu-item-indicator {
-    z-index: 1;
     position: absolute;
     bottom: -2px;
     right: -2px;
