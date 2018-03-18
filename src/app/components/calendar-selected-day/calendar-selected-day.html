@@ -50,8 +50,8 @@
         <div class="reminder-form-item" *ngIf="isRangeVisible">
             <div class="reminder-settings">
                 <div>
-                    <span>From</span>
-                    <span class="range-input-container">
+                    <div class="reminder-form-row">From</div>
+                    <div class="range-input-container">
                         <input type="text" class="input range-input" autocomplete="off"
                             (keyup)="validateRangeInput($event, 'from')"
                             [pattern]="timePattern"
@@ -59,11 +59,11 @@
                         <ul class="reminder-timetable">
                             <li class="reminder-timetable-item" *ngFor="let item of timeTable" (mousedown)="updateTimeRange(item, 'from')">{{ item.string }}</li>
                         </ul>
-                    </span>
+                    </div>
                 </div>
                 <div>
-                    <span>To</span>
-                    <span class="range-input-container">
+                    <div class="reminder-form-row">To</div>
+                    <div class="range-input-container">
                         <input type="text" class="input range-input" autocomplete="off"
                             (keyup)="validateRangeInput($event, 'to')"
                             [pattern]="timePattern"
@@ -71,7 +71,7 @@
                         <ul class="reminder-timetable">
                             <li class="reminder-timetable-item" *ngFor="let item of timeTable" (mousedown)="updateTimeRange(item, 'to')">{{ item.string }}</li>
                         </ul>
-                    </span>
+                    </div>
                 </div>
             </div>
             <div class="reminder-error-message" *ngIf="rangeMessage">{{ rangeMessage }}</div>

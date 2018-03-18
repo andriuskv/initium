@@ -1,60 +1,36 @@
 const path = require("path");
-const { DefinePlugin, NoEmitOnErrorsPlugin, NamedModulesPlugin, optimize } = require("webpack");
-const { ModuleConcatenationPlugin, CommonsChunkPlugin } = optimize;
+const { DefinePlugin } = require("webpack");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const { AotPlugin } = require("@ngtools/webpack");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { AngularCompilerPlugin } = require("@ngtools/webpack");
 
 module.exports = function(env = {}) {
-    const nodeModules = path.join(process.cwd(), "node_modules");
-    const entryPoints = ["polyfills", "vendor", "main"];
+    const mode = env.prod ? "production" : "development";
     const plugins = [
-        new NoEmitOnErrorsPlugin(),
         new DefinePlugin({
             "process.env": {
-                NODE_ENV: JSON.stringify(env.prod ? "production" : "development"),
+                NODE_ENV: JSON.stringify(mode),
                 DROPBOX_API_KEY: JSON.stringify(process.env.DROPBOX_API_KEY),
                 OWM_API_KEY: JSON.stringify(process.env.OWM_API_KEY),
                 PROXY_URL: JSON.stringify(process.env.PROXY_URL)
             }
         }),
+        new MiniCssExtractPlugin({
+            filename: "main.css",
+        }),
         new HtmlWebpackPlugin({
-            "template": "./src/index.html",
-            "chunksSortMode": function sort(left, right) {
-                const leftIndex = entryPoints.indexOf(left.names[0]);
-                const rightindex = entryPoints.indexOf(right.names[0]);
-
-                if (leftIndex > rightindex) {
-                    return 1;
-                }
-                else if (leftIndex < rightindex) {
-                    return -1;
-                }
-                return 0;
-            }
+            "template": "./src/index.html"
         }),
-        new ExtractTextPlugin("main.css"),
-        new CommonsChunkPlugin({
-            name: [
-                "vendor"
-            ],
-            minChunks: module => module.resource && module.resource.startsWith(nodeModules),
-            chunks: [
-                "main"
-            ]
-        }),
-        new NamedModulesPlugin(),
-        new AotPlugin({
-          mainPath: "./src/main.ts",
-          tsConfigPath: "./tsconfig.json",
-          skipCodeGeneration: true
+        new AngularCompilerPlugin({
+            mainPath: "./src/main.ts",
+            tsConfigPath: "./tsconfig.json",
+            skipCodeGeneration: true
         })
     ];
 
     if (env.prod) {
         plugins.push(
-            new ModuleConcatenationPlugin(),
             new UglifyJsPlugin({
                 uglifyOptions: {
                     ecma: 8
@@ -64,14 +40,13 @@ module.exports = function(env = {}) {
     }
 
     return {
+        mode,
         entry: {
-            main: "./src/main.ts",
-            polyfills: "./src/polyfills.ts"
+            main: "./src/main.ts"
         },
         output: {
-            path: path.join(process.cwd(), "dist"),
-            filename: "[name].js",
-            chunkFilename: "[id].chunk.js"
+            path: path.resolve(__dirname, "dist"),
+            filename: "[name].js"
         },
         resolve: {
             extensions: [
@@ -79,41 +54,49 @@ module.exports = function(env = {}) {
                 ".js"
             ],
             modules: [
-                "./node_modules",
-                "./src"
+                path.resolve(__dirname, "node_modules"),
+                path.resolve(__dirname, "src")
             ]
         },
-        resolveLoader: {
-          modules: [
-            "./node_modules"
-          ]
+        optimization: {
+            splitChunks: {
+                cacheGroups: {
+                    vendor: {
+                        test: /node_modules/,
+                        name: "vendor",
+                        chunks: "initial"
+                    }
+                }
+            }
         },
         module: {
             rules: [
                 {
-                    test: /\.scss$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: "style-loader",
-                        use: [{
+                    test: /\.s?css$/,
+                    loaders: [
+                        MiniCssExtractPlugin.loader,
+                        {
                             loader: "css-loader",
                             options: {
                                 sourceMap: !env.prod,
                                 url: false,
                                 minimize: env.prod
                             }
-                        }, {
+                        },
+                        {
                             loader: "postcss-loader",
                             options: {
                                 sourceMap: !env.prod,
                                 plugins: () => [require("autoprefixer")()]
                             }
-                        }, {
+                        },
+                        {
                             loader: "sass-loader",
                             options: {
                                 sourceMap: !env.prod
                             }
-                        }]
-                    })
+                        }
+                    ]
                 },
                 {
                     "test": /\.html$/,

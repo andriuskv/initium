@@ -42,7 +42,7 @@ export class Weather {
         this.units = this.getTemperatureUnits(useFarenheit);
 
         if (!disabled) {
-            this.initWeather(cityName);
+            this.scheduleWeatherUpdate();
         }
         this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
@@ -60,7 +60,7 @@ export class Weather {
                 clearTimeout(this.timeout);
             }
             else {
-                this.getWeather(this.cityName);
+                this.getWeather();
             }
         }
         else if (typeof useFarenheit === "boolean") {
@@ -71,35 +71,35 @@ export class Weather {
             this.cityName = cityName;
 
             if (!this.disabled) {
-                this.getWeather(cityName);
+                this.getWeather();
             }
         }
     }
 
-    initWeather(cityName) {
+    scheduleWeatherUpdate(delay = 10000) {
         this.timeout = window.setTimeout(() => {
-            this.getWeather(cityName);
-        }, 10000);
+            this.getWeather();
+        }, delay);
     }
 
     getTemperatureUnits(useFarenheit) {
         return useFarenheit ? "F" : "C";
     }
 
-    async getWeather(cityName) {
+    async getWeather() {
         clearTimeout(this.timeout);
 
         try {
-            const data = await this.weatherService.getWeather(cityName);
+            const data = await this.weatherService.getWeather(this.cityName);
 
             this.displayWeather(data);
         }
         catch (e) {
             console.log(e);
         }
-        this.timeout = window.setTimeout(() => {
-            this.getWeather(cityName);
-        }, 960000);
+        finally {
+            this.scheduleWeatherUpdate(960000);
+        }
     }
 
     convertTemperature(temp, units) {
