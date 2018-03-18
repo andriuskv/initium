@@ -74,20 +74,6 @@ svg {
         position: relative;
         color: $secondary-text-color;
         cursor: not-allowed;
-
-        &::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: block;
-            width: 20px;
-            height: 20px;
-            background-image: url("/assets/images/ring.svg");
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
     }
 
     &:focus {

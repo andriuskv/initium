@@ -66,6 +66,12 @@
     padding: 2px 8px;
 }
 
-.dropbox-btn-icon {
-    margin-right: 4px;
+.settings-dropbox-btn {
+    &:disabled {
+        @include spinner;
+    }
+
+    svg {
+         margin-right: 4px;
+    }
 }

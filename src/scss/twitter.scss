@@ -306,4 +306,8 @@ $tweet-text-color-alt: #bbb;
 .more-tweets-btn {
     width: 100%;
     padding: 4px 8px;
+
+    &:disabled {
+        @include spinner;
+    }
 }

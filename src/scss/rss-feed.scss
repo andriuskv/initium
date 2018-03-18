@@ -125,6 +125,10 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+
+    .btn:disabled {
+        @include spinner;
+    }
 }
 
 .feed-message {
