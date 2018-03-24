@@ -19,16 +19,14 @@
     &.expanded, &:-webkit-full-screen {
         top: 0;
         display: flex;
-        align-items: center;
-        justify-content: center;
         width: 100vw;
         height: 100vh;
         font-size: 32px;
 
         .pomodoro-selection {
-            top: -24px;
+            position: absolute;
+            top: 0;
             right: 0;
-            transform: none;
         }
 
         .upper-block-group {
@@ -38,8 +36,9 @@
         }
 
         .upper-block {
-            flex-shrink: 0;
-            flex-basis: 20em;
+            position: relative;
+            min-width: 20em;
+            margin: auto;
 
             &:hover {
                 .upper-block-group {
@@ -84,21 +83,12 @@
 }
 
 .upper-block-item {
-    position: relative;
     display: none;
-    height: 6em;
-    padding-left: 0.25em;
-    padding-right: 0.25em;
+    padding: 0.5em 0.25em;
 
     &.visible {
         display: block;
     }
-}
-
-.upper-block-item-content {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 .upper-block-digit {
@@ -109,6 +99,10 @@
     margin-left: 0.125em;
     margin-right: 0.25em;
     font-size: 2em;
+
+    &:last-of-type {
+        margin-right: 0;
+    }
 }
 
 .upper-block-controls {
@@ -132,6 +126,7 @@
 
 .timer-input {
     width: 2ch;
+    padding: 0;
     border: none;
     background-color: transparent;
     color: $primary-text-color;
@@ -155,8 +150,12 @@
     font-size: 2em;
 }
 
+.pomodoro {
+    display: flex;
+}
+
 .pomodoro-selection {
-    right: 0.25em;
+    margin-left: auto;
 }
 
 .pomodoro-btn {
