@@ -4,26 +4,28 @@ import { SettingService } from "../../services/settingService";
 @Component({
     selector: "pomodoro",
     template: `
-        <div class="upper-block-item-content">
-            <span *ngIf="hours">
-                <span class="upper-block-digit">{{ hours }}</span>
-                <span class="upper-block-sep">h</span>
-            </span>
-            <span class="upper-block-digit">{{ hours ? (minutes | padTime) : minutes }}</span>
-            <span class="upper-block-sep">m</span>
-            <span class="upper-block-digit">{{ seconds | padTime }}</span>
-            <span class="upper-block-sep">s</span>
-        </div>
-        <div class="upper-block-item-content upper-block-group pomodoro-selection">
-            <button class="btn-icon pomodoro-btn"
-                [class.active]="mode === 'pomodoro'"
-                (click)="setMode('pomodoro')">Pomodoro</button>
-            <button class="btn-icon pomodoro-btn"
-                [class.active]="mode === 'short'"
-                (click)="setMode('short')">Short Break</button>
-            <button class="btn-icon pomodoro-btn"
-                [class.active]="mode === 'long'"
-                (click)="setMode('long')">Long Break</button>
+        <div class="pomodoro">
+            <div>
+                <ng-container *ngIf="hours">
+                    <span class="upper-block-digit">{{ hours }}</span>
+                    <span class="upper-block-sep">h</span>
+                </ng-container>
+                <span class="upper-block-digit">{{ hours ? (minutes | padTime) : minutes }}</span>
+                <span class="upper-block-sep">m</span>
+                <span class="upper-block-digit">{{ seconds | padTime }}</span>
+                <span class="upper-block-sep">s</span>
+            </div>
+            <div class="upper-block-group pomodoro-selection">
+                <button class="btn-icon pomodoro-btn"
+                    [class.active]="mode === 'pomodoro'"
+                    (click)="setMode('pomodoro')">Pomodoro</button>
+                <button class="btn-icon pomodoro-btn"
+                    [class.active]="mode === 'short'"
+                    (click)="setMode('short')">Short Break</button>
+                <button class="btn-icon pomodoro-btn"
+                    [class.active]="mode === 'long'"
+                    (click)="setMode('long')">Long Break</button>
+            </div>
         </div>
     `
 })

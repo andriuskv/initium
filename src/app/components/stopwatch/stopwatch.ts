@@ -3,15 +3,15 @@ import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from "@angu
 @Component({
     selector: "stopwatch",
     template: `
-        <div class="upper-block-item-content stopwatch" (click)="toggle()">
-            <span *ngIf="hours">
+        <div class="stopwatch" (click)="toggle()">
+            <ng-container *ngIf="hours">
                 <span class="upper-block-digit">{{ hours }}</span>
                 <span class="upper-block-sep">h</span>
-            </span>
-            <span *ngIf="minutes">
+            </ng-container>
+            <ng-container *ngIf="minutes">
                 <span class="upper-block-digit">{{ hours ? (minutes | padTime) : minutes }}</span>
                 <span class="upper-block-sep">m</span>
-            </span>
+            </ng-container>
             <span class="upper-block-digit">{{ minutes ? (seconds | padTime) : seconds }}</span>
             <span class="upper-block-sep">s</span>
             <span class="stopwatch-milliseconds">{{ milliseconds | slice: 2 | padTime }}</span>
