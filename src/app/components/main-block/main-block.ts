@@ -6,7 +6,7 @@ import { ZIndexService } from "../../services/zIndexService";
     selector: "main-block",
     template: `
         <div class="container main-block"
-            [class.expanded]="isTwitterExpanded"
+            [class.expanded]="isExpanded"
             [class.hidden]="isNavHidden && !tab"
             [style.zIndex]="zIndex"
             (click)="handleClickOnContainer()">
@@ -30,19 +30,21 @@ import { ZIndexService } from "../../services/zIndexService";
                     </button>
                 </li>
                 <li class="main-block-nav-item">
-                    <button class="btn-icon" (click)="selectTab('twitter')" title="Twitter">
+                    <button class="btn-icon main-block-nav-item-btn"
+                        [class.indicator-visible]="tabs.twitter.new"
+                        (click)="selectTab('twitter')" title="Twitter">
                         <svg viewBox="0 0 24 24">
                             <use href="#twitter"></use>
                         </svg>
-                        <span class="indicator" *ngIf="tabs.twitter.new"></span>
                     </button>
                 </li>
                 <li class="main-block-nav-item">
-                    <button class="btn-icon" (click)="selectTab('rssFeed')" title="RSS feed">
+                    <button class="btn-icon main-block-nav-item-btn"
+                        [class.indicator-visible]="tabs.rssFeed.new"
+                        (click)="selectTab('rssFeed')" title="RSS feed">
                         <svg viewBox="0 0 24 24">
                             <use href="#rss"></use>
                         </svg>
-                        <span class="indicator" *ngIf="tabs.rssFeed.new"></span>
                     </button>
                 </li>
             </ul>
@@ -56,7 +58,8 @@ import { ZIndexService } from "../../services/zIndexService";
             </twitter>
             <rss-feed [isVisible]="tab === 'rssFeed'"
                 (newEntries)="onTabUpdate('rssFeed')"
-                (toggleTab)="selectTab($event, true)">
+                (toggleTab)="selectTab($event, true)"
+                (toggleSize)="onToggleSize()">
             </rss-feed>
         </div>
     `
@@ -64,8 +67,8 @@ import { ZIndexService } from "../../services/zIndexService";
 export class MainBlock {
     @Output() showViewer = new EventEmitter();
 
-    isNavHidden: boolean;
-    isTwitterExpanded: boolean;
+    isNavHidden: boolean = false;
+    isExpanded: boolean = false;
     tab: string = "";
     zIndex: number = 0;
     tabs: any = {
@@ -104,8 +107,9 @@ export class MainBlock {
         this.tabs[name].new = true;
     }
 
-    onToggleSize(state) {
-        this.isTwitterExpanded = state;
+
+    onToggleSize(state = !this.isExpanded) {
+        this.isExpanded = state;
     }
 
     onShowViewer(data) {
@@ -115,12 +119,11 @@ export class MainBlock {
     selectTab(tab, keepVisible) {
         this.tab = tab === this.tab && !keepVisible ? "" : tab;
 
-        if (this.tab === "twitter" || this.tab === "rssFeed") {
+        if (this.tabs[this.tab]) {
             this.tabs[this.tab].new = false;
         }
-
-        if (this.tab !== "twitter" && this.isTwitterExpanded) {
-            this.isTwitterExpanded = false;
+        else {
+            this.isExpanded = false;
         }
         localStorage.setItem("active tab", this.tab);
     }

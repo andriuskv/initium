@@ -18,10 +18,15 @@
                 </button>
             </div>
         </li>
-        <li>
-            <button class="btn-icon add-new-feed-btn" title="Add new feed" (click)="addNewFeed()">
+        <li class="feed-header-btns">
+            <button class="btn-icon" title="Add new feed" (click)="addNewFeed()">
                 <svg viewBox="0 0 24 24">
                     <use href="#plus"></use>
+                </svg>
+            </button>
+            <button class="btn-icon" title="Toggle size" (click)="toggleContainerSize()">
+                <svg viewBox="0 0 24 24">
+                    <use attr.href="#vertical-{{isExpanded ? 'shrink' : 'expand'}}"></use>
                 </svg>
             </button>
         </li>
