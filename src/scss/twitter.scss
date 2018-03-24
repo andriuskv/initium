@@ -1,15 +1,5 @@
 $tweet-text-color-alt: #bbb;
 
-.twitter {
-    transition: height 0.2s, max-height 0.2s;
-    will-change: height, max-height;
-
-    &.expanded {
-        height: 100vh;
-        max-height: calc(100vh - 16px);
-    }
-}
-
 .twitter-hero {
     opacity: 0;
     visibility: hidden;

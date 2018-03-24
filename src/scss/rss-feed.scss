@@ -45,8 +45,12 @@
     transform: translateY(-50%);
 }
 
-.add-new-feed-btn {
-    padding: 2px 4px;
+.feed-header-btns {
+    display: flex;
+
+    .btn-icon {
+        padding: 0 2px;
+    }
 }
 
 .feed-hero {
@@ -147,14 +151,19 @@
     border-bottom: 1px solid $color2;
 }
 
-.feed-link:hover {
-    text-decoration: underline;
+.feed-link {
+    font-size: 16px;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .feed-desc {
     margin-top: 4px;
     margin-bottom: 4px;
     overflow: hidden;
+    line-height: 1.4;
     word-break: break-word;
     white-space: pre-line;
 

@@ -18,7 +18,6 @@ export class Twitter {
     isLoggedIn: boolean = false;
     showPinInput: boolean = false;
     fetchingMoreTweets: boolean = false;
-    isExpanded: boolean = false;
     tweets: Array<any> = [];
     tweetsToLoad: Array<any> = [];
     user: any = {};
@@ -53,8 +52,6 @@ export class Twitter {
     }
 
     async ngOnChanges() {
-        this.isExpanded = this.isVisible && this.isExpanded;
-
         if (this.initTimeout && this.isVisible) {
             clearTimeout(this.initTimeout);
             this.initTimeout = 0;
@@ -419,13 +416,10 @@ export class Twitter {
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
 
-        if (this.isExpanded) {
-            this.toggleContainerSize();
-        }
+        this.toggleContainerSize(false);
     }
 
-    toggleContainerSize() {
-        this.isExpanded = !this.isExpanded;
-        this.toggleSize.emit(this.isExpanded);
+    toggleContainerSize(state) {
+        this.toggleSize.emit(state);
     }
 }
