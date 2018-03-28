@@ -60,6 +60,7 @@ export class RssFeed {
         this.initTimeout = 0;
         this.chromeStorageService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
         this.chromeStorageService.get("rss", storage => {
+            this.loading = false;
             this.feedsToLoad = storage.rss || [];
             this.loadFeeds(this.feedsToLoad);
         });
@@ -97,7 +98,6 @@ export class RssFeed {
 
     async loadFeeds(feeds) {
         if (!feeds.length) {
-            this.loading = false;
             this.activeFeed = null;
             this.feeds.length = 0;
             return;
@@ -125,7 +125,6 @@ export class RssFeed {
         if (!this.activeFeed || !this.feeds.some(({ url }) => url === this.activeFeed.url)) {
             this.activeFeed = this.feeds[0];
         }
-        this.loading = false;
         feeds.length = 0;
         this.getNewFeeds();
     }

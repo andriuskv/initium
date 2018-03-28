@@ -3,7 +3,7 @@
         <li class="feed-header-item" *ngFor="let feed of feeds; let i = index" [class.active]="activeFeed && feed.url === activeFeed.url">
             <button class="btn-icon feed-select-btn" title="Select feed" (click)="showFeed(feed)">
                 <span class="feed-new-entry-count" *ngIf="feed.newEntryCount">{{ feed.newEntryCount }}</span>
-                <span>{{ feed.title || "RSS Feed " + i }}</span>
+                <span class="feed-title">{{ feed.title || "RSS Feed " + i }}</span>
             </button>
             <div class="feed-title-btns">
                 <button class="btn-icon" title="Mark new entries as read" *ngIf="feed.newEntryCount" (click)="markEntriesAsRead(feed)">
@@ -44,7 +44,7 @@
             <svg viewBox="0 0 24 24" class="feed-hero-icon">
                 <use href="#rss"></use>
             </svg>
-            <div class="feed-hero-content">
+            <div class="feed-hero-content" [class.loading]="loading">
                 <ul class="feed-initiation-status" *ngIf="feedsToLoad.length; else elseIf1">
                     <li class="feed-initiation-item" *ngFor="let feed of feedsToLoad">
                         <span class="feed-initiation-item-title">{{ feed.title }}</span>
@@ -60,16 +60,16 @@
                     </li>
                 </ul>
                 <ng-template #elseIf1>
-                    <img src="./assets/images/ring.svg" *ngIf="loading; else elseIf2" alt="">
+                    <img src="./assets/images/ring.svg" class="feed-spinner" *ngIf="loading; else elseIf2" alt="">
                 </ng-template>
                 <ng-template #elseIf2>
                     <form (submit)="handleFormSubmit($event)">
                         <label class="feed-input-group">
-                            <div>Title (optional)</div>
+                            <div class="feed-input-name">TITLE (OPTIONAL)</div>
                             <input type="text" class="input feed-input" name="title" autocomplete="off">
                         </label>
                         <label class="feed-input-group">
-                            <div>URL</div>
+                            <div class="feed-input-name">URL</div>
                             <input type="text" class="input feed-input" name="url" required>
                         </label>
                         <div class="feed-add-btn-container">
