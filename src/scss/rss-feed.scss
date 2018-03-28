@@ -22,9 +22,9 @@
 }
 
 .feed-select-btn {
-    @include text-truncate;
-
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     height: 100%;
     padding-left: 4px;
@@ -32,7 +32,22 @@
 }
 
 .feed-new-entry-count {
-    margin-right: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+    border-radius: 50%;
+    background-color: $primary-text-color;
+    color: $color3;
+    font-size: 13px;
+}
+
+.feed-title {
+    @include text-truncate;
 }
 
 .feed-title-btns {
@@ -69,11 +84,13 @@
 }
 
 .feed-hero-content {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    width: 200px;
+    max-width: 200px;
     height: 136px;
+    transition: 0.2s height;
+
+    &.loading {
+        height: 24px;
+    }
 }
 
 .feed-initiation-status {
@@ -82,6 +99,11 @@
     overflow-y: auto;
     width: 100%;
     height: 100%;
+    opacity: 0;
+    animation-name: reveal;
+    animation-duration: 0.2s;
+    animation-delay: 0.2s;
+    animation-fill-mode: forwards;
 }
 
 .feed-initiation-item {
@@ -115,9 +137,18 @@
     color: #f15e4b;
 }
 
+.feed-spinner {
+    height: 24px;
+}
+
 .feed-input-group {
     display: block;
     margin-bottom: 8px;
+}
+
+.feed-input-name {
+    font-size: 13px;
+    letter-spacing: 1px;
 }
 
 .feed-input {
@@ -207,4 +238,13 @@
     float: right;
     color: $color-accent;
     font-style: italic;
+}
+
+@keyframes reveal {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
