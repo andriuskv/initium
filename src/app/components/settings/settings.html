@@ -111,8 +111,17 @@
             </label>
         </div>
         <div class="setting-item">
-            <span>Reset top sites to Chrome's default</span>
-            <button class="btn" (click)="onSetting('resetMostVisited', true)">Reset</button>
+            <span>Show one row of top sites</span>
+            <label>
+                <input type="checkbox" class="checkbox-input"
+                    [checked]="settings.mainBlock.showingOneRow"
+                    (click)="onSetting('showingOneRow', $event.target.checked)">
+                <div class="checkbox"></div>
+            </label>
+        </div>
+        <div class="setting-item">
+            <span>Reset top sites to default</span>
+            <button class="btn" (click)="onSetting('resetMostVisited', true, true)">Reset</button>
         </div>
     </div>
     <div class="setting" [class.active]="active === 'pomodoro'">

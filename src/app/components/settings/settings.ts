@@ -26,12 +26,12 @@ export class Settings {
         this.active = tab;
     }
 
-    onSetting(settingName, value) {
+    onSetting(settingName, value, dontSave = false) {
         this.settings = this.settingService.updateSetting({
             [this.active]: {
                 [settingName]: value
             }
-        });
+        }, dontSave);
     }
 
     getWeatherWithCityName(value) {

@@ -21,7 +21,8 @@ export class SettingService {
                 notificationFocusDisabled: true
             },
             mainBlock: {
-                isNavHidden: false
+                isNavHidden: false,
+                showingOneRow: false
             },
             time: {
                 dateDisabled: false,
@@ -52,13 +53,13 @@ export class SettingService {
         this.data.subscribe(nextHandler);
     }
 
-    updateSetting(setting) {
+    updateSetting(setting, dontSave = false) {
         const settings = this.settings;
         const [settingFor] = Object.keys(setting);
 
         this.data.next(setting);
 
-        if (settingFor === "mainBlock" && settings[settingFor].resetMostVisited) {
+        if (dontSave) {
             return settings;
         }
         settings[settingFor] = Object.assign(settings[settingFor], setting[settingFor]);
