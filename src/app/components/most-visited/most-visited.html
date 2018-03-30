@@ -1,6 +1,6 @@
-<div class="main-block-content most-visited" [class.visible]="isVisible">
+<div class="main-block-content most-visited" [class.visible]="isVisible" #root>
     <ul class="most-visited-items">
-        <li class="most-visited-item" *ngFor="let page of mostVisited.display; let i = index">
+        <li class="most-visited-item" *ngFor="let page of visibleSites; let i = index">
             <a [href]="page.url" [title]="page.title">
                 <div class="page-title">
                     <span>{{ page.title }}</span>
@@ -15,7 +15,7 @@
                 </div>
             </a>
         </li>
-        <li class="most-visited-item" *ngIf="!hasBackup" (click)="showPanel()">
+        <li class="most-visited-item" *ngIf="addButtonVisible" (click)="showPanel()">
             <button class="btn-icon add-page-btn" title="Add new page">
                 <svg viewBox="0 0 24 24">
                     <use href="#plus"></use>

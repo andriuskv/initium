@@ -1,12 +1,13 @@
 .most-visited {
-    height: 250px;
+    --rows: 1;
+
+    height: calc(var(--rows) * 125px);
 }
 
 .most-visited-items {
     display: grid;
-    grid-template: repeat(2, 1fr) / repeat(4, 1fr);
+    grid-template: repeat(var( --rows), 1fr) / repeat(4, 1fr);
     grid-gap: 4px;
-    width: 100%;
     height: 100%;
 }
 
@@ -23,10 +24,9 @@
     @include text-truncate;
 
     position: relative;
-    padding: 6px 4px;
-    border-bottom: 1px solid $color2;
+    padding: 6px;
     background-color: $color1;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .remove-page-btn {
@@ -44,8 +44,8 @@
     height: 100%;
 
     svg {
-        width: 50%;
-        height: 50%;
+        width: 64px;
+        height: 64px;
     }
 }
 

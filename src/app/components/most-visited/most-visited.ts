@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, ViewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { SettingService } from "../../services/settingService";
 
@@ -8,11 +8,15 @@ import { SettingService } from "../../services/settingService";
 })
 export class MostVisited {
     @Input() isVisible: boolean = false;
+    @ViewChild("root") root;
 
-    hasBackup: boolean = true;
+    addButtonVisible: boolean = false;
     isNewPagePanelVisible: boolean = false;
     isFetching: boolean = false;
-    mostVisited: any = {};
+    visibleSiteCount: number = 8;
+    mostVisited: Array<any> = [];
+    visibleSites: Array<any> = [];
+    rootStyles: any = null;
 
     constructor(
         private settingService: SettingService,
@@ -24,39 +28,50 @@ export class MostVisited {
 
     ngOnInit() {
         const mostVisited = JSON.parse(localStorage.getItem("most visited"));
+        const { showingOneRow } = this.settingService.getSetting("mainBlock");
 
         this.settingService.subscribeToChanges(this.changeHandler.bind(this));
 
-        if (mostVisited) {
-            mostVisited.display = mostVisited.display.map(page => {
-                if (!page.uploaded) {
-                    page.image = this.getImage(page.url);
-                }
-                return page;
-            });
-            this.mostVisited = mostVisited;
-            this.checkBackup();
-            return;
+        if (showingOneRow) {
+            this.visibleSiteCount = 4;
         }
-        this.getMostVisited();
+
+        if (mostVisited) {
+            if (Array.isArray(mostVisited)) {
+                this.mostVisited = this.resetImages(mostVisited);
+            }
+            else {
+                this.mostVisited = this.resetImages(mostVisited.display);
+                this.saveSites();
+            }
+            this.updateVisibleSites();
+        }
+        else {
+            this.getMostVisited();
+        }
     }
 
     changeHandler({ mainBlock }) {
-        if (mainBlock && mainBlock.resetMostVisited) {
+        if (!mainBlock) {
+            return;
+        }
+
+        if (mainBlock.resetMostVisited) {
             this.resetMostVisited();
+        }
+        else if (typeof mainBlock.showingOneRow === "boolean") {
+            this.visibleSiteCount = mainBlock.showingOneRow ? 4 : 8;
+            this.updateVisibleSites();
         }
     }
 
     getMostVisited() {
         chrome.topSites.get(data => {
-            this.mostVisited = {
-                display: data.slice(0, 8).map((page: any) => {
-                    page.image = this.getImage(page.url);
-                    return page;
-                }),
-                backup: data.slice(8)
-            };
-            this.checkBackup();
+            this.mostVisited = data.map((page: any) => {
+                page.image = this.getImage(page.url);
+                return page;
+            });
+            this.updateVisibleSites();
             this.isFetching = false;
         });
     }
@@ -70,27 +85,30 @@ export class MostVisited {
     removePage(event, index) {
         event.preventDefault();
 
-        if (this.mostVisited.backup.length) {
-            const [page] = this.mostVisited.backup.splice(0, 1);
-
-            page.image = this.getImage(page.url);
-            this.mostVisited.display.splice(index, 1, page);
-        }
-        else {
-            this.mostVisited.display.splice(index, 1);
-        }
-        this.checkBackup();
-        localStorage.setItem("most visited", JSON.stringify(this.mostVisited));
+        this.mostVisited.splice(index, 1);
+        this.updateVisibleSites();
+        this.saveSites();
     }
 
-    checkBackup() {
-        this.hasBackup = this.mostVisited.display.length === 8;
+    updateVisibleSites() {
+        this.root.nativeElement.style.setProperty("--rows", this.visibleSiteCount / 4);
+        this.visibleSites = this.mostVisited.slice(0, this.visibleSiteCount);
+        this.addButtonVisible = this.visibleSites.length < this.visibleSiteCount;
     }
 
     getImage(url) {
         url = new URL(url);
 
         return this.domSanitizer.bypassSecurityTrustUrl(`chrome://favicon/${url.origin}`);
+    }
+
+    resetImages(sites) {
+        return sites.map(site => {
+            if (!site.uploaded) {
+                site.image = this.getImage(site.url);
+            }
+            return site;
+        });
     }
 
     showPanel() {
@@ -143,15 +161,19 @@ export class MostVisited {
         const title = elements.title.value || url;
         const image = elements.thumb.files[0];
 
-        this.mostVisited.display.push({
+        this.mostVisited.push({
             image: image ? await this.processImage(image) : this.getImage(url),
             uploaded: !!image,
             title,
             url
         });
-        localStorage.setItem("most visited", JSON.stringify(this.mostVisited));
-        this.checkBackup();
+        this.updateVisibleSites();
         this.hidePanel();
+        this.saveSites();
         event.target.reset();
+    }
+
+    saveSites() {
+        localStorage.setItem("most visited", JSON.stringify(this.mostVisited));
     }
 }
