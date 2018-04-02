@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, ViewChild } from "@angular/core";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 
 @Component({
@@ -10,7 +10,7 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
             <div class="main-block-content-header">
                 <button class="btn-icon notepad-header-btn"
                     *ngIf="tabs.length > 4"
-                    (click)="prevVisibleTabs()"
+                    (click)="previousVisibleTabs()"
                     [disabled]="shift <= 0">
                     <svg viewBox="0 0 24 24">
                         <use href="#chevron-left"></use>
@@ -48,7 +48,7 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
                     </svg>
                 </button>
             </div>
-            <textarea class="input notepad-input"
+            <textarea class="input notepad-input" #textarea
                 [value]="tabs[activeTabIndex].content"
                 (input)="saveTabContent($event.target.value)"></textarea>
             <div class="main-block-mask" *ngIf="showingTabRemoveModal">
@@ -64,7 +64,7 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
                 <div class="container main-block-mask-content notepad-modal">
                     <h4 class="notepad-modal-title">Create new tab</h4>
                     <form (submit)="createTab($event)">
-                        <input type="text" class="input" name="title" placeholder="Title">
+                        <input type="text" class="input" name="title" placeholder="Title" #tabTitleInput>
                         <button class="btn">Create</button>
                     </form>
                     <button class="btn-icon notepad-modal-hide-btn" (click)="hideTabCreateModal()" title="Hide">
@@ -79,6 +79,8 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
 })
 export class Notepad {
     @Input() isVisible: boolean = false;
+    @ViewChild("textarea") textarea;
+    @ViewChild("tabTitleInput") tabTitleInput;
 
     initialized: boolean = false;
     showingTabRemoveModal: boolean = false;
@@ -107,7 +109,7 @@ export class Notepad {
         });
     }
 
-    prevVisibleTabs() {
+    previousVisibleTabs() {
         this.shift -= 1;
 
         if (this.activeTabIndex >= this.shift + 4) {
@@ -129,6 +131,10 @@ export class Notepad {
 
     showTabCreateModal() {
         this.showingTabCreateModal = true;
+
+        setTimeout(() => {
+            this.tabTitleInput.nativeElement.focus();
+        });
     }
 
     hideTabCreateModal() {
@@ -150,6 +156,10 @@ export class Notepad {
         this.selectTab(this.tabs.length - 1);
         this.saveTabs();
         this.hideTabCreateModal();
+
+        setTimeout(() => {
+            this.textarea.nativeElement.focus();
+        });
     }
 
     setTabForRemoval(index) {
@@ -168,9 +178,13 @@ export class Notepad {
     }
 
     removeTab(index) {
-        this.activeTabIndex = 0;
-        this.shift = 0;
+        if (index <= this.activeTabIndex) {
+            this.activeTabIndex -= 1;
+        }
 
+        if (this.shift && index >= this.tabs.length - 4) {
+            this.shift -= 1;
+        }
         this.tabs.splice(index, 1);
         this.selectTab(this.activeTabIndex);
         this.saveTabs();
