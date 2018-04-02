@@ -17,7 +17,7 @@ module.exports = function(env = {}) {
             }
         }),
         new MiniCssExtractPlugin({
-            filename: "main.css",
+            filename: "main.css"
         }),
         new HtmlWebpackPlugin({
             "template": "./src/index.html"
@@ -109,6 +109,10 @@ module.exports = function(env = {}) {
             ]
         },
         devtool: env.prod ? false : "inline-source-map",
-        plugins
+        plugins,
+        stats: {
+            entrypoints: false,
+            children: false
+        }
     };
 };

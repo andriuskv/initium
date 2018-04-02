@@ -12,7 +12,7 @@ import { ZIndexService } from "../../services/zIndexService";
             (click)="handleClickOnContainer()">
             <ul class="main-block-nav" [class.hidden]="isNavHidden" [class.is-tab-visible]="tab">
                 <li class="main-block-nav-item">
-                    <button class="btn-icon" (click)="selectTab('mostVisited')" title="Most visited">
+                    <button class="btn-icon" (click)="selectTab('topSites')" title="Top sites">
                         <svg viewBox="0 0 24 24">
                             <path d="M16,5V11H21V5M10,11H15V5H10M16,18H21V12H16M10,18H15V12H10M4,18H9V12H4M4,11H9V5H4V11Z" />
                         </svg>
@@ -48,7 +48,7 @@ import { ZIndexService } from "../../services/zIndexService";
                     </button>
                 </li>
             </ul>
-            <most-visited [isVisible]="tab === 'mostVisited'"></most-visited>
+            <top-sites [isVisible]="tab === 'topSites'"></top-sites>
             <notepad [isVisible]="tab === 'notepad'"></notepad>
             <twitter [isVisible]="tab === 'twitter'"
                 (newTweets)="onTabUpdate('twitter')"
@@ -92,7 +92,7 @@ export class MainBlock {
         const { isNavHidden } = this.settingService.getSetting("mainBlock");
         const tab = localStorage.getItem("active tab");
 
-        this.tab = typeof tab === "string" ? tab : "mostVisited";
+        this.tab = typeof tab === "string" ? tab : "topSites";
         this.isNavHidden = isNavHidden;
         this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
@@ -106,7 +106,6 @@ export class MainBlock {
     onTabUpdate(name) {
         this.tabs[name].new = true;
     }
-
 
     onToggleSize(state = !this.isExpanded) {
         this.isExpanded = state;
