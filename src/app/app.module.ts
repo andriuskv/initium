@@ -18,7 +18,7 @@ import { App } from "./app.component";
 import { Background } from "./components/background/background";
 import { Time } from "./components/time/time";
 import { MainBlock } from "./components/main-block/main-block";
-import { MostVisited } from "./components/most-visited/most-visited";
+import { TopSites } from "./components/top-sites/top-sites";
 import { Notepad } from "./components/notepad/notepad";
 import { Twitter } from "./components/twitter/twitter";
 import { RssFeed } from "./components/rss-feed/rss-feed";
@@ -40,7 +40,7 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
     providers: [ChromeStorageService, SettingService, TimeDateService, WeatherService,
         NotificationService, FeedService, ZIndexService, ReminderService, TwitterProxyService],
     declarations: [
-        App, Settings, Background, Time, MainBlock, MostVisited, Notepad, Twitter, RssFeed,
+        App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Todo, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
         CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe, PadTimePipe
     ],
