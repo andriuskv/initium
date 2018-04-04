@@ -86,7 +86,7 @@ export class TopSites {
         this.getTopSites();
     }
 
-    remoteSite(event, index) {
+    removeSite(event, index) {
         event.preventDefault();
 
         this.topSites.splice(index, 1);
