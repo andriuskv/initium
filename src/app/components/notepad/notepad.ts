@@ -3,79 +3,7 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
 
 @Component({
     selector: "notepad",
-    template: `
-        <div class="main-block-content notepad"
-            [class.visible]="isVisible"
-            [class.active]="initialized">
-            <div class="main-block-content-header">
-                <button class="btn-icon notepad-header-btn"
-                    *ngIf="tabs.length > 4"
-                    (click)="previousVisibleTabs()"
-                    [disabled]="shift <= 0">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#chevron-left"></use>
-                    </svg>
-                </button>
-                <ul class="notepad-tabs">
-                    <li class="notepad-tab"
-                        *ngFor="let tab of tabs; let i = index"
-                        [class.active]="activeTabIndex === i"
-                        [class.hidden]="i < shift || i >= shift + 4">
-                        <button class="btn-icon notepad-tab-select-btn"
-                            (click)="selectTab(i)">{{ tab.title }}</button>
-                        <button class="btn-icon notepad-tab-remove-btn"
-                            (click)="setTabForRemoval(i)"
-                            *ngIf="tabs.length > 1"
-                            title="Remove tab">
-                            <svg viewBox="0 0 24 24">
-                                <use href="#cross"></use>
-                            </svg>
-                        </button>
-                    </li>
-                </ul>
-                <button class="btn-icon notepad-header-btn"
-                    *ngIf="tabs.length > 4"
-                    (click)="nextVisibleTabs()"
-                    [disabled]="shift + 4 >= tabs.length">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#chevron-right"></use>
-                        </svg>
-                </button>
-                <button class="btn-icon notepad-header-btn"
-                    (click)="showTabCreateModal()" title="Create tab">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#plus"></use>
-                    </svg>
-                </button>
-            </div>
-            <textarea class="input notepad-input" #textarea
-                [value]="tabs[activeTabIndex].content"
-                (input)="saveTabContent($event.target.value)"></textarea>
-            <div class="main-block-mask" *ngIf="showingTabRemoveModal">
-                <div class="container main-block-mask-content notepad-modal">
-                    <h4 class="notepad-modal-title">Are you really want to remove this tab?</h4>
-                    <div>
-                        <button class="btn" (click)="removeTab(tabToRemove)">Yes</button>
-                        <button class="btn" (click)="hideTabRemoveModal()">No</button>
-                    </div>
-                </div>
-            </div>
-            <div class="main-block-mask" *ngIf="showingTabCreateModal">
-                <div class="container main-block-mask-content notepad-modal">
-                    <h4 class="notepad-modal-title">Create new tab</h4>
-                    <form (submit)="createTab($event)">
-                        <input type="text" class="input" name="title" placeholder="Title" #tabTitleInput>
-                        <button class="btn">Create</button>
-                    </form>
-                    <button class="btn-icon notepad-modal-hide-btn" (click)="hideTabCreateModal()" title="Hide">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#cross"></use>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `
+    templateUrl: "./notepad.html"
 })
 export class Notepad {
     @Input() isVisible: boolean = false;
@@ -178,7 +106,10 @@ export class Notepad {
     }
 
     removeTab(index) {
-        if (index <= this.activeTabIndex) {
+        if (index === 0 && index === this.activeTabIndex) {
+            this.activeTabIndex = 0;
+        }
+        else if (index <= this.activeTabIndex) {
             this.activeTabIndex -= 1;
         }
 

@@ -6,16 +6,16 @@ import { TimeDateService } from "../../services/timeDateService";
     selector: "time",
     template: `
         <div class="time">
-            <div>
+            <div class="clock-container">
                 <span class="clock">{{ hours }}:{{ minutes | padTime }}</span>
                 <span class="period" *ngIf="period">{{ period }}</span>
             </div>
-            <div class="date" *ngIf="!dateDisabled">{{ date }}</div>
+            <div class="date" *ngIf="!dateHidden">{{ date }}</div>
         </div>
     `
 })
 export class Time {
-    dateDisabled: boolean = false;
+    dateHidden: boolean = false;
     date: string;
     period: string;
     hours: number;
@@ -31,10 +31,10 @@ export class Time {
     }
 
     ngOnInit() {
-        const { timeDisplay, dateDisabled } = this.settingService.getSetting("time");
+        const { dateHidden, format } = this.settingService.getSetting("time");
 
-        this.updateTime(parseInt(timeDisplay, 10));
-        this.initDate(dateDisabled);
+        this.updateTime(format);
+        this.initDate(dateHidden);
         this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
 
@@ -42,21 +42,22 @@ export class Time {
         if (!time) {
             return;
         }
+        const { dateHidden, format } = time;
 
-        if (time.timeDisplay) {
+        if (format) {
             clearTimeout(this.timeout);
-            this.updateTime(parseInt(time.timeDisplay, 10));
+            this.updateTime(format);
         }
-        else if (typeof time.dateDisabled === "boolean") {
-            this.initDate(time.dateDisabled);
+        else if (typeof dateHidden === "boolean") {
+            this.initDate(dateHidden);
         }
     }
 
-    initDate(isDisabled) {
-        if (!isDisabled) {
+    initDate(hidden) {
+        if (!hidden) {
             this.date = this.timeDateService.getDate("weekday, month day");
         }
-        this.dateDisabled = isDisabled;
+        this.dateHidden = hidden;
     }
 
     getCurrentTime() {
@@ -68,16 +69,16 @@ export class Time {
         };
     }
 
-    updateTime(timeDisplay) {
+    updateTime(format) {
         const currentTime = this.getCurrentTime();
-        const { hours, minutes, period } = this.timeDateService.getTime(currentTime, timeDisplay);
+        const { hours, minutes, period } = this.timeDateService.getTime(currentTime, format);
 
         this.hours = hours;
         this.minutes = minutes;
         this.period = period;
 
         this.timeout = setTimeout(() => {
-            this.updateTime(timeDisplay);
+            this.updateTime(format);
         }, 1000);
     }
 }

@@ -1,10 +1,44 @@
-$color-accent: #419cdc;
-$primary-text-color: #f4f4f4;
-$secondary-text-color: #7f7f7f;
-$box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-$text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
-$color1: #3b3b3b;
-$color2: #333;
-$color3: #444;
-$color-danger: #f58678;
-$font-family: sans-serif;
+$color-blue: #359ee9;
+$color-blue-light: #75bdf0;
+
+$color-white: #f4f4f4;
+$color-white-4: rgba(255, 255, 255, 0.04);
+$color-white-10: rgba(255, 255, 255, 0.1);
+$color-white-20: rgba(255, 255, 255, 0.2);
+$color-white-40: rgba(255, 255, 255, 0.4);
+$color-white-60: rgba(255, 255, 255, 0.6);
+
+$color-black-20: rgba(0, 0, 0, 0.2);
+$color-black-40: rgba(0, 0, 0, 0.4);
+
+$color-grey-dark: #333;
+$color-grey-dark-light: #444;
+$color-grey-darker-72: rgba(34, 34, 34, 0.72);
+
+$color-success: #00ad45;
+$color-danger: #f77864;
+
+$primary-text-color: $color-white;
+$secondary-text-color: $color-white-60;
+
+$box-shadow: 0 1px 2px 0 $color-black-20;
+$text-shadow: 0 1px 1px $color-black-40;
+$icon-shadow: 0 1px 1px $color-black-40;
+
+$input-background-color: $color-white-10;
+$input-box-shadow-color: $color-white-4;
+$input-placeholder-color: $color-white-40;
+
+$button-disabled-color: $color-white-40;
+$button-hover-color: $color-blue-light;
+$button-background-color: $color-white-10;
+$button-hover-background-color: $color-white-20;
+
+$primary-container-background-color: $color-grey-darker-72;
+$secondary-container-background-color: $color-grey-dark;
+$container-box-shadow-color: $color-grey-darker-72;
+$container-inset-box-shadow-color: $color-white-10;
+
+$primary-border-color: $color-white-10;
+
+$large-number-font-family: "Lato", sans-serif;

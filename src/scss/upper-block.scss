@@ -2,18 +2,33 @@
     position: absolute;
     top: 4px;
     left: 50%;
-    visibility: collapse;
-    width: 420px;
     opacity: 0;
+    visibility: hidden;
+    width: 420px;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
     font-size: 16px;
-    transform: rotateX(45deg) translate(-50%, -80px) scale(0.94);
-    transition: transform 0.2s, opacity 0.18s, visibility 0.18s;
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: 0.2s opacity,
+                0.2s visibility,
+                0.2s transform,
+                0.2s border-bottom-left-radius,
+                0.2s border-bottom-right-radius;
+    transition-delay: 0.2s;
     cursor: default;
 
     &.visible {
-        visibility: visible;
         opacity: 1;
+        visibility: visible;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
         transform: translateX(-50%);
+        transition-delay: 0s;
+
+        .upper-block {
+            opacity: 1;
+            transition-delay: 0.2s;
+        }
     }
 
     &.expanded, &:-webkit-full-screen {
@@ -23,101 +38,92 @@
         height: 100vh;
         font-size: 32px;
 
-        .pomodoro-selection {
-            position: absolute;
-            top: 0;
-            right: 0;
-        }
-
         .upper-block-group {
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s all;
+            display: none;
         }
 
         .upper-block {
-            position: relative;
-            min-width: 20em;
             margin: auto;
-
-            &:hover {
-                .upper-block-group {
-                    visibility: visible;
-                    opacity: 1;
-                }
-            }
         }
     }
+}
+
+.upper-block {
+    opacity: 0;
+    transition: 0.2s opacity;
 }
 
 .upper-block-header {
     display: flex;
+    padding: 4px;
+    border-bottom: 1px solid $primary-border-color;
 }
 
 .upper-block-header-item {
-    padding-bottom: 2px;
+    position: relative;
     margin-right: 8px;
 
-    &.active {
-        box-shadow: 0 1px 0 0 $color-accent;
+    &.active::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        display: block;
+        width: 100%;
+        height: 1px;
+        background-color: $color-blue;
+        pointer-events: none;
     }
+}
+
+.upper-block-header-item-btn {
+    padding: 2px 6px;
 
     span {
-        margin-left: 2px;
+        margin-left: 4px;
     }
 }
 
-.upper-block-btns {
+.upper-block-hide-btn {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    display: flex;
-}
-
-.upper-block-expand-btn {
-    margin-right: 4px;
-
-    &.hidden {
-        display: none;
-    }
+    top: 5px;
+    right: 5px;
 }
 
 .upper-block-item {
     display: none;
-    padding: 0.5em 0.25em;
 
     &.visible {
         display: block;
     }
 }
 
+.upper-block-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 6em;
+}
+
 .upper-block-digit {
+    height: 2ch;
     font-size: 4em;
+    font-kerning: none;
+    font-family: $large-number-font-family;
 }
 
 .upper-block-sep {
     margin-left: 0.125em;
-    margin-right: 0.25em;
     font-size: 2em;
 
-    &:last-of-type {
-        margin-right: 0;
+    &:not(:last-of-type) {
+        margin-right: 0.25em;
     }
 }
 
-.upper-block-controls {
+.upper-block-item-controls {
     display: flex;
-    padding: 0.25em 0.25em 0 0.25em;
-    border-top: 1px solid $color2;
-    margin-top: 0.25em;
-}
-
-.upper-block-control {
-    padding: 2px;
-
-    &:not(:first-of-type) {
-        margin-left: 4px;
-    }
+    padding: 4px;
+    border-top: 1px solid $primary-border-color;
 }
 
 .upper-block-reset-btn {
@@ -125,13 +131,9 @@
 }
 
 .timer-input {
-    width: 2ch;
+    width: calc(2ch + 1px);
     padding: 0;
-    border: none;
     background-color: transparent;
-    color: $primary-text-color;
-    font-size: 4em;
-    font-kerning: none;
 
     &:focus {
         outline: none;
@@ -140,30 +142,45 @@
     &:read-only {
         cursor: default;
     }
+
+    &.one-digit {
+        width: 1ch;
+    }
 }
 
-.stopwatch:hover {
-    cursor: pointer;
+.stopwatch {
+    display: flex;
+    align-items: baseline;
 }
 
 .stopwatch-milliseconds {
+    width: 2ch;
     font-size: 2em;
 }
 
 .pomodoro {
     display: flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-grow: 1;
 }
 
 .pomodoro-selection {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
+    width: 100px;
     margin-left: auto;
+    border-left: 1px solid $primary-border-color;
 }
 
 .pomodoro-btn {
     width: 100%;
-    padding-bottom: 2px;
-    margin-bottom: 4px;
+    padding: 6px;
+    border-radius: 0;
 
     &.active {
-        box-shadow: 0 1px 0 0 $color-accent;
+        box-shadow: inset 2px 0 0 0 $color-blue;
     }
 }

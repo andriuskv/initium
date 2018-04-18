@@ -11,7 +11,7 @@ export class Calendar {
     @Output() reminderIndicatorVisible = new EventEmitter();
 
     daySelected: boolean = false;
-    timeDisplay: number = 1;
+    timeFormat: number = 24;
     currentYear: number;
     futureReminders: Array<any> = [];
     currentDate: any = this.getCurrentDate();
@@ -37,9 +37,9 @@ export class Calendar {
     }
 
     initTimeSettings() {
-        const { timeDisplay } = this.settingService.getSetting("time");
+        const { format } = this.settingService.getSetting("time");
 
-        this.timeDisplay = parseInt(timeDisplay, 10);
+        this.timeFormat = format;
         this.settingService.subscribeToChanges(this.timeSettingChangeHandler.bind(this));
     }
 
@@ -207,12 +207,12 @@ export class Calendar {
             return "All day";
         }
         else if (range.to.string) {
-            const fromString = this.timeDateService.getTimeString(range.from, this.timeDisplay);
-            const toString = this.timeDateService.getTimeString(range.to, this.timeDisplay);
+            const fromString = this.timeDateService.getTimeString(range.from, this.timeFormat);
+            const toString = this.timeDateService.getTimeString(range.to, this.timeFormat);
 
             return `${fromString} - ${toString}`;
         }
-        return this.timeDateService.getTimeString(range.from, this.timeDisplay);
+        return this.timeDateService.getTimeString(range.from, this.timeFormat);
     }
 
     filterReminders(reminders, id) {
@@ -342,8 +342,8 @@ export class Calendar {
     }
 
     timeSettingChangeHandler({ time }) {
-        if (time && time.timeDisplay) {
-            this.timeDisplay = parseInt(time.timeDisplay, 10);
+        if (time && time.format) {
+            this.timeFormat = time.format;
 
             this.currentDay.reminders = this.currentDay.reminders.map(reminder => {
                 reminder.rangeString = this.getReminderRangeString(reminder.range);

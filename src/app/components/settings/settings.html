@@ -1,156 +1,159 @@
-<div class="settings-container">
-    <ul class="settings-nav">
-        <li class="settings-nav-item" [class.active]="active === 'general'">
-            <button class="btn-icon" (click)="setActiveTab('general')">General</button>
-        </li>
-        <li class="settings-nav-item" [class.active]="active === 'mainBlock'">
-            <button class="btn-icon" (click)="setActiveTab('mainBlock')">Main Block</button>
-        </li>
-        <li class="settings-nav-item" [class.active]="active === 'time'">
-            <button class="btn-icon" (click)="setActiveTab('time')">Time & Date</button>
-        </li>
-        <li class="settings-nav-item" [class.active]="active === 'background'">
-            <button class="btn-icon" (click)="setActiveTab('background')">Background</button>
-        </li>
-        <li class="settings-nav-item" [class.active]="active === 'weather'">
-            <button class="btn-icon" (click)="setActiveTab('weather')">Weather</button>
-        </li>
-        <li class="settings-nav-item" [class.active]="active === 'pomodoro'">
-            <button class="btn-icon" (click)="setActiveTab('pomodoro')">Pomodoro</button>
-        </li>
-    </ul>
-    <div class="setting" [class.active]="active === 'general'">
-        <div class="setting-item">
-            <span>Disable notifications</span>
-            <label>
-                <input type="checkbox" class="checkbox-input"
-                    [checked]="settings.general.notificationsDisabled"
-                    (click)="onSetting('notificationsDisabled', $event.target.checked)">
-                <div class="checkbox"></div>
-            </label>
-        </div>
-        <div class="setting-item"
-            [class.disabled]="settings.general.notificationsDisabled">
-            <span>Don't focus tab on notification click</span>
-            <label>
-                <input type="checkbox" class="checkbox-input"
-                    [checked]="settings.general.notificationFocusDisabled"
-                    (click)="onSetting('notificationFocusDisabled', $event.target.checked)">
-                <div class="checkbox"></div>
-            </label>
+<ul class="settings-nav">
+    <li class="settings-nav-item" [class.active]="active === 'general'">
+        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+            (click)="setActiveTab('general')">General</button>
+    </li>
+    <li class="settings-nav-item" [class.active]="active === 'mainBlock'">
+        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+            (click)="setActiveTab('mainBlock')">Main Block</button>
+    </li>
+    <li class="settings-nav-item" [class.active]="active === 'time'">
+        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+            (click)="setActiveTab('time')">Time & Date</button>
+    </li>
+    <li class="settings-nav-item" [class.active]="active === 'background'">
+        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+            (click)="setActiveTab('background')">Background</button>
+    </li>
+    <li class="settings-nav-item" [class.active]="active === 'weather'">
+        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+            (click)="setActiveTab('weather')">Weather</button>
+    </li>
+    <li class="settings-nav-item" [class.active]="active === 'pomodoro'">
+        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+            (click)="setActiveTab('pomodoro')">Pomodoro</button>
+    </li>
+</ul>
+<div class="setting" [class.active]="active === 'general'">
+    <div class="setting-item">
+        <span>Disable notifications</span>
+        <div role="checkbox" class="checkbox" tabindex="0"
+            [class.checked]="settings.general.notificationsDisabled"
+            (click)="toggleSettingCheckbox('notificationsDisabled')"
+            (keyup.enter)="toggleSettingCheckbox('notificationsDisabled')"
+            [attr.aria-checked]="settings.general.notificationsDisabled"></div>
+    </div>
+    <div class="setting-item" [class.disabled]="settings.general.notificationsDisabled">
+        <span>Don't focus tab on notification click</span>
+        <div role="checkbox" class="checkbox" tabindex="0"
+            [class.checked]="settings.general.notificationFocusDisabled"
+            (click)="toggleSettingCheckbox('notificationFocusDisabled')"
+            (keyup.enter)="toggleSettingCheckbox('notificationFocusDisabled')"
+            [attr.aria-checked]="settings.general.notificationFocusDisabled"></div>
+    </div>
+</div>
+<div class="setting" [class.active]="active === 'time'">
+    <div class="setting-item">
+        <span id="time-setting-label-1">Hide date</span>
+        <div role="checkbox" class="checkbox" tabindex="0"
+            [class.checked]="settings.time.dateHidden"
+            (click)="toggleSettingCheckbox('dateHidden')"
+            (keyup.enter)="toggleSettingCheckbox('dateHidden')"
+            [attr.aria-checked]="settings.time.dateHidden"
+            aria-labelledby="time-setting-label-1"></div>
+    </div>
+    <div class="setting-item">
+        <span id="time-setting-label-2">Time display format</span>
+        <div class="toggle" tabindex="0"
+            [class.checked]="settings.time.format === 24"
+            (click)="toggleTimeFormat()"
+            (keyup.enter)="toggleTimeFormat()"
+            aria-labelledby="time-setting-label-2">
+            <div>12</div>
+            <div>24</div>
         </div>
     </div>
-    <div class="setting" [class.active]="active === 'time'">
-        <div class="setting-item">
-            <span>Disable date</span>
-            <label>
-                <input type="checkbox" class="checkbox-input"
-                    [checked]="settings.time.dateDisabled"
-                    (click)="onSetting('dateDisabled', $event.target.checked)">
-                <div class="checkbox"></div>
-            </label>
-        </div>
-        <div class="setting-item">
-            <span>Time display</span>
-            <select class="btn setting-selection" (click)="onSetting('timeDisplay', $event.target.value)">
-                <option value="0" [selected]="settings.time.timeDisplay === '0'">12 hours</option>
-                <option value="1" [selected]="settings.time.timeDisplay === '1'">24 hours</option>
-            </select>
+</div>
+<div class="setting" [class.active]="active === 'background'">
+    <div class="setting-item">
+        <span>Reset background</span>
+        <button class="btn" (click)="onSetting('url', '')">Reset</button>
+    </div>
+    <div class="setting-item">
+        <button class="btn-secondary settings-dropbox-btn" [disabled]="logginInToDropbox" (click)="loginToDropbox()">
+            <svg viewBox="0 0 24 24">
+                <use href="#dropbox"></use>
+            </svg>
+            <span>Dropbox</span>
+        </button>
+    </div>
+</div>
+<div class="setting" [class.active]="active === 'weather'">
+    <div class="setting-item">
+        <span id="weather-setting-label-1">Disable weather</span>
+        <div role="checkbox" class="checkbox" tabindex="0"
+            [class.checked]="settings.weather.disabled"
+            (click)="toggleSettingCheckbox('disabled')"
+            (keyup.enter)="toggleSettingCheckbox('disabled')"
+            [attr.aria-checked]="settings.weather.disabled"
+            aria-labelledby="weather-setting-label-1"></div>
+    </div>
+    <div class="setting-item" [class.disabled]="settings.weather.disabled">
+        <span id="weather-setting-label-2">Temperature units</span>
+        <div class="toggle" tabindex="0"
+            [class.checked]="settings.weather.units === 'F'"
+            (click)="toggleTemperatureUnits()"
+            (keyup.enter)="toggleTemperatureUnits()"
+            aria-labelledby="weather-setting-label-2">
+            <div>°C</div>
+            <div>°F</div>
         </div>
     </div>
-    <div class="setting" [class.active]="active === 'background'">
-        <div class="setting-item">
-            <span>Reset background</span>
-            <button class="btn" (click)="onSetting('url', '')">Reset</button>
-        </div>
-        <div class="setting-item">
-            <button class="btn-icon settings-dropbox-btn" [disabled]="logginInToDropbox" (click)="loginToDropbox()">
-                <svg viewBox="0 0 24 24">
-                    <use href="#dropbox"></use>
-                </svg>
-                <span>Dropbox</span>
-            </button>
-        </div>
+    <div class="setting-item" [class.disabled]="settings.weather.disabled">
+        <span>City name (and country code)</span>
+        <input type="text" class="input setting-input" placeholder="Paris,fr"
+            [value]="settings.weather.cityName"
+            (keyup.enter)="getWeatherWithCityName($event.target.value)">
     </div>
-    <div class="setting" [class.active]="active === 'weather'">
-        <div class="setting-item">
-            <span>Disable weather</span>
-            <label>
-                <input type="checkbox" class="checkbox-input"
-                    [checked]="settings.weather.disabled"
-                    (click)="onSetting('disabled', $event.target.checked)">
-                <div class="checkbox"></div>
-            </label>
-        </div>
-        <div class="setting-item"
-            [class.disabled]="settings.weather.disabled">
-            <span>Show temperature in Farenheit</span>
-            <label>
-                <input type="checkbox" class="checkbox-input"
-                    [checked]="settings.weather.useFarenheit"
-                    (click)="onSetting('useFarenheit', $event.target.checked)">
-                <div class="checkbox"></div>
-            </label>
-        </div>
-        <div class="setting-item"
-            [class.disabled]="settings.weather.disabled">
-            <span>City name (and country code)</span>
-            <input type="text" class="input setting-input" placeholder="Paris,fr"
-                [value]="settings.weather.cityName"
-                (keyup.enter)="getWeatherWithCityName($event.target.value)">
-        </div>
+</div>
+<div class="setting" [class.active]="active === 'mainBlock'">
+    <div class="setting-item">
+        <span>Hide item bar</span>
+        <div role="checkbox" class="checkbox" tabindex="0"
+            [class.checked]="settings.mainBlock.isNavHidden"
+            (click)="toggleSettingCheckbox('isNavHidden')"
+            (keyup.enter)="toggleSettingCheckbox('isNavHidden')"
+            [attr.aria-checked]="settings.mainBlock.isNavHidden"></div>
     </div>
-    <div class="setting" [class.active]="active === 'mainBlock'">
-        <div class="setting-item">
-            <span>Hide item bar</span>
-            <label>
-                <input type="checkbox" class="checkbox-input"
-                    [checked]="settings.mainBlock.isNavHidden"
-                    (click)="onSetting('isNavHidden', $event.target.checked)">
-                <div class="checkbox"></div>
-            </label>
-        </div>
-        <div class="setting-item">
-            <span>Show one row of top sites</span>
-            <label>
-                <input type="checkbox" class="checkbox-input"
-                    [checked]="settings.mainBlock.showingOneRow"
-                    (click)="onSetting('showingOneRow', $event.target.checked)">
-                <div class="checkbox"></div>
-            </label>
-        </div>
-        <div class="setting-item">
-            <span>Reset top sites to default</span>
-            <button class="btn" (click)="onSetting('resetTopSites', true, true)">Reset</button>
-        </div>
+    <div class="setting-item">
+        <span>Show one row of top sites</span>
+        <div role="checkbox" class="checkbox" tabindex="0"
+            [class.checked]="settings.mainBlock.showingOneRow"
+            (click)="toggleSettingCheckbox('showingOneRow')"
+            (keyup.enter)="toggleSettingCheckbox('showingOneRow')"
+            [attr.aria-checked]="settings.mainBlock.showingOneRow"></div>
     </div>
-    <div class="setting" [class.active]="active === 'pomodoro'">
-        <div class="setting-item">
-            <div>
-                <div>Pomodoro duration</div>
-                <div class="setting-item-add-desc">In minutes</div>
-            </div>
-            <input type="number" class="input setting-input" min="1"
-                [value]="settings.pomodoro.duration"
-                (change)="setPomodoroDuration($event, 'duration')">
+    <div class="setting-item">
+        <span>Reset top sites to default</span>
+        <button class="btn" (click)="onSetting('resetTopSites', true, true)">Reset</button>
+    </div>
+</div>
+<div class="setting" [class.active]="active === 'pomodoro'">
+    <div class="setting-item">
+        <div>
+            <div>Pomodoro duration</div>
+            <div class="setting-item-add-desc">In minutes</div>
         </div>
-        <div class="setting-item">
-            <div>
-                <div>Short break duration</div>
-                <div class="setting-item-add-desc">In minutes</div>
-            </div>
-            <input type="number" class="input setting-input" min="1"
-                [value]="settings.pomodoro.short"
-                (change)="setPomodoroDuration($event, 'short')">
+        <input type="number" class="input setting-input" min="1"
+            [value]="settings.pomodoro.duration"
+            (change)="setPomodoroDuration($event, 'duration')">
+    </div>
+    <div class="setting-item">
+        <div>
+            <div>Short break duration</div>
+            <div class="setting-item-add-desc">In minutes</div>
         </div>
-        <div class="setting-item">
-            <div>
-                <div>Long break duration</div>
-                <div class="setting-item-add-desc">In minutes</div>
-            </div>
-            <input type="number" class="input setting-input" min="1"
-                [value]="settings.pomodoro.long"
-                (change)="setPomodoroDuration($event, 'long')">
+        <input type="number" class="input setting-input" min="1"
+            [value]="settings.pomodoro.short"
+            (change)="setPomodoroDuration($event, 'short')">
+    </div>
+    <div class="setting-item">
+        <div>
+            <div>Long break duration</div>
+            <div class="setting-item-add-desc">In minutes</div>
         </div>
+        <input type="number" class="input setting-input" min="1"
+            [value]="settings.pomodoro.long"
+            (change)="setPomodoroDuration($event, 'long')">
     </div>
 </div>

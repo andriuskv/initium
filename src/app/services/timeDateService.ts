@@ -1,8 +1,8 @@
 export class TimeDateService {
-    getTime({ hours, minutes }, timeDisplay) {
+    getTime({ hours, minutes }, format) {
         let period = "";
 
-        if (!timeDisplay) {
+        if (format === 12) {
             period = hours > 11 ? "PM" : "AM";
 
             if (!hours) {
@@ -19,8 +19,8 @@ export class TimeDateService {
         };
     }
 
-    getTimeString(time, timeDisplay) {
-        const { hours, minutes, period } = this.getTime(time, timeDisplay);
+    getTimeString(time, format) {
+        const { hours, minutes, period } = this.getTime(time, format);
 
         return `${hours}:${`00${minutes}`.slice(-2)}${period && ` ${period}`}`;
     }

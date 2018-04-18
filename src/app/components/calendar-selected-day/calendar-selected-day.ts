@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { ReminderService } from "../../services/reminderService";
 import { TimeDateService } from "../../services/timeDateService";
+import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "calendar-selected-day",
@@ -11,7 +12,6 @@ export class CalendarSelectedDay {
     @Output() remove = new EventEmitter();
     @Output() create = new EventEmitter();
     @Input() day: any = {};
-    @Input() timeDisplay: number;
 
     RANGE_ERROR: string = "Please provide valid range";
     FORMAT_ERROR: string = "Please provide valid time format";
@@ -21,6 +21,7 @@ export class CalendarSelectedDay {
     isRangeVisible: boolean = false;
     isRepeatCountInputEnabled: boolean = false;
     isRepeatCountInputValid: boolean = false;
+    timeFormat: number = 24;
     repeatGap: number = 1;
     repeatCount: number = 0;
     dateString: string = "";
@@ -35,25 +36,33 @@ export class CalendarSelectedDay {
             string: ""
         }
     };
+    timeTable: any = {};
     reminders: any;
-    timeTable: Array<any> = [];
 
     constructor(
         private reminderService: ReminderService,
-        private timeDateService: TimeDateService
+        private timeDateService: TimeDateService,
+        private settingService: SettingService
     ) {
         this.reminderService = reminderService;
         this.timeDateService = timeDateService;
+        this.settingService = settingService;
     }
 
     ngOnInit() {
+        const { format } = this.settingService.getSetting("time");
+
         this.dateString = this.timeDateService.getDate("month day, year", this.day);
-        this.timePattern = this.timeDisplay ?
+        this.timeFormat = format;
+        this.timePattern = this.getTimePattern(format);
+        this.getReminders();
+        this.settingService.subscribeToChanges(this.timeSettingChangeHandler.bind(this));
+    }
+
+    getTimePattern(format) {
+        return format === 24 ?
             "^(([0-1]?[0-9])|(2[0-3])):[0-5]?[0-9]$" :
             "^((0?[1-9])|(1[0-2])):[0-5]?[0-9] ?[a|p|A|P][m|M]$";
-        this.timeTable = this.generateTimeTable(this.timeDisplay);
-
-        this.getReminders();
     }
 
     showCalendar() {
@@ -110,14 +119,21 @@ export class CalendarSelectedDay {
         this.rangeMessage = this.FORMAT_ERROR;
     }
 
-    generateTimeTable(timeDisplay) {
-        const dataList = [];
+    generateTimeTable() {
+        const timeTable = {
+            format: this.timeFormat,
+            items: []
+        };
         let minutes = 0;
         let hours = 0;
 
+        if (this.timeTable.format === timeTable.format) {
+            return;
+        }
+
         while (hours < 24) {
-            dataList.push({
-                string: this.timeDateService.getTimeString({ hours, minutes }, timeDisplay),
+            timeTable.items.push({
+                string: this.timeDateService.getTimeString({ hours, minutes }, this.timeFormat),
                 hours,
                 minutes
             });
@@ -128,7 +144,7 @@ export class CalendarSelectedDay {
                 minutes = 0;
             }
         }
-        return dataList;
+        this.timeTable = { ...timeTable };
     }
 
     validateRangeInput({ target }, name) {
@@ -158,7 +174,7 @@ export class CalendarSelectedDay {
         time.minutes = parseInt(minuteString, 10);
         this.rangeMessage = "";
 
-        if (this.timeDisplay) {
+        if (this.timeFormat === 24) {
             time.hours = hours;
         }
         else if (minuteString.endsWith("am") && hours === 12) {
@@ -303,5 +319,12 @@ export class CalendarSelectedDay {
 
     saveReminders() {
         this.reminderService.saveReminders(this.reminders);
+    }
+
+    timeSettingChangeHandler({ time }) {
+        if (time && time.format) {
+            this.timeFormat = time.format;
+            this.timePattern = this.getTimePattern(time.format);
+        }
     }
 }

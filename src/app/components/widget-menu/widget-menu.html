@@ -1,58 +1,61 @@
-<div class="menu-container" [style.zIndex]="zIndex" (click)="handleClickOnContainer()">
-    <div class="container menu-item-content-container" [class.visible]="selectedItem && !isClosing">
-        <div class="menu-header menu-transition-target">
+<div class="container menu-item-content-container" [class.visible]="selectedItem && !isClosing"
+    [style.zIndex]="zIndex"
+    (click)="increaseZIndex()">
+    <div class="menu-header menu-transition-target">
+        <svg viewBox="0 0 24 24">
+            <use [attr.href]="'#' + selectedItem"></use>
+        </svg>
+        <h3 class="menu-title">{{ selectedItem }}</h3>
+        <button class="btn-secondary btn-secondary-alt" (click)="closeSelectedItem()" title="Close">
             <svg viewBox="0 0 24 24">
-                <use [attr.href]="'#' + selectedItem"></use>
-            </svg>
-            <h3 class="menu-title">{{ title }}</h3>
-            <button class="btn-icon" (click)="closeSelectedItem()" title="Close">
-                <svg viewBox="0 0 24 24">
-                    <use href="#cross"></use>
-                </svg>
-            </button>
-        </div>
-        <div class="menu-transition-target">
-            <settings *ngIf="selectedItem === 'settings'"></settings>
-            <dropbox class="dropbox-container"
-                [class.visible]="selectedItem === 'dropbox'">
-            </dropbox>
-            <calendar class="calendar-container"
-                [class.visible]="selectedItem === 'calendar'"
-                (reminderIndicatorVisible)="showReminderIndicator($event)">
-            </calendar>
-        </div>
-    </div>
-    <div class="menu" [class.transparent]="!visible" *ngIf="!selectedItem && !isClosing">
-        <ul class="menu-item-container" [class.hidden]="!visible">
-            <li class="menu-item">
-                <button class="btn-icon" (click)="toggleUpperBlockComp()" title="Timers">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z" />
-                    </svg>
-                </button>
-            </li>
-            <li class="menu-item">
-                <button class="btn-icon menu-item-btn"
-                    [class.indicator-visible]="reminderInicatorVisible"
-                    (click)="toggleItem('calendar')" title="Calendar">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#calendar"></use>
-                    </svg>
-                    <div class="menu-item-indicator"></div>
-                </button>
-            </li>
-            <li class="menu-item">
-                <button class="btn-icon" (click)="toggleItem('settings')" title="Settings">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#settings"></use>
-                    </svg>
-                </button>
-            </li>
-        </ul>
-        <button class="btn-icon menu-toggle-btn" (click)="toggleMenu()" title="Toggle menu">
-            <svg viewBox="0 0 24 24">
-                <path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                <use href="#cross"></use>
             </svg>
         </button>
     </div>
+    <div class="menu-transition-target">
+        <settings class="settings-container"
+            *ngIf="selectedItem === 'settings'"></settings>
+        <dropbox class="dropbox-container"
+            [class.visible]="selectedItem === 'dropbox'">
+        </dropbox>
+        <calendar class="calendar-container"
+            [class.visible]="selectedItem === 'calendar'"
+            (reminderIndicatorVisible)="showReminderIndicator($event)">
+        </calendar>
+    </div>
+</div>
+<div class="menu" *ngIf="!selectedItem && !isClosing"
+    [class.hidden]="!visible"
+    [style.zIndex]="zIndex"
+    (click)="increaseZIndex()">
+    <ul class="menu-item-container">
+        <li class="menu-item">
+            <button class="btn-secondary menu-item-btn" (click)="toggleUpperBlock()" title="Timers">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z" />
+                </svg>
+            </button>
+        </li>
+        <li class="menu-item">
+            <button class="btn-secondary menu-item-btn"
+                [class.indicator-visible]="reminderInicatorVisible"
+                (click)="toggleItem('calendar')" title="Calendar">
+                <svg viewBox="0 0 24 24">
+                    <use href="#calendar"></use>
+                </svg>
+            </button>
+        </li>
+        <li class="menu-item">
+            <button class="btn-secondary menu-item-btn" (click)="toggleItem('settings')" title="Settings">
+                <svg viewBox="0 0 24 24">
+                    <use href="#settings"></use>
+                </svg>
+            </button>
+        </li>
+    </ul>
+    <button class="btn-secondary menu-toggle-btn" (click)="toggleMenu()" title="Toggle menu">
+        <svg viewBox="0 0 24 24">
+            <path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+        </svg>
+    </button>
 </div>

@@ -1,4 +1,4 @@
-import { Subject } from "rxjs/Subject";
+import { Subject } from "rxjs";
 
 export class SettingService {
     settings: any = this.initSettings();
@@ -22,16 +22,16 @@ export class SettingService {
             },
             mainBlock: {
                 isNavHidden: false,
-                showingOneRow: false
+                showingOneRow: true
             },
             time: {
-                dateDisabled: false,
-                timeDisplay: "1"
+                dateHidden: false,
+                format: 24
             },
             weather: {
                 disabled: false,
                 cityName: "",
-                useFarenheit: false
+                units: "C"
             },
             pomodoro: {
                 duration: 25,

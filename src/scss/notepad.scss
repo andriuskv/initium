@@ -2,92 +2,33 @@
     opacity: 0;
     visibility: hidden;
     transform: scale(0.8);
-    transition: 0.4s opacity, 0.4s visibility, 0.2s transform;
+    transform-origin: top center;
+    transition: 0.2s opacity,
+                0.2s visibility,
+                0.2s transform;
 
-    &.active {
+    &.initialized {
         opacity: 1;
         visibility: visible;
         transform: none;
     }
 }
 
-.notepad-tabs {
-    display: flex;
-    flex-grow: 1;
-}
-
-.notepad-tab {
-    overflow: hidden;
-    position: relative;
-    flex: 1;
-
-    &:hover .notepad-tab-remove-btn {
-        display: flex;
-    }
-
-    &.active {
-         box-shadow: 0 1px 0 0 $color-accent;
-    }
-
-    &.hidden {
-        display: none;
-    }
-}
-
-.notepad-tab-select-btn {
-    @include text-truncate;
-
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.notepad-tab-remove-btn {
-    position: absolute;
-    top: 1px;
-    right: 2px;
-    display: none;
-    background-color: $color3;
-    box-shadow: -2px 0 4px 0 $color3;
-}
-
-.notepad-header-btn {
-    padding: 2px;
-}
-
 .notepad-input {
-    @include scrollbar($color2);
-
-    resize: none;
-    width: 100%;
-    height: calc(100% - 25px);
-    padding: 4px;
+    flex-grow: 1;
     background-color: transparent;
 
     &:focus {
         outline: none;
-        box-shadow: 0 2px 0 0 $color-accent;
+        box-shadow: 0 2px 0 0 $color-blue;
     }
 }
 
-.notepad-modal {
-    min-width: 300px;
-    padding: 8px;
+.notepad-modal-form {
+    margin: auto;
     text-align: center;
 
     .btn:last-of-type {
         margin-left: 4px;
     }
-}
-
-.notepad-modal-title {
-    margin-top: 8px;
-    margin-bottom: 16px;
-    font-size: 16px;
-}
-
-.notepad-modal-hide-btn {
-    position: absolute;
-    top: 4px;
-    right: 4px;
 }

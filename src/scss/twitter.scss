@@ -1,34 +1,19 @@
-$tweet-text-color-alt: #bbb;
-
 .twitter-hero {
-    opacity: 0;
-    visibility: hidden;
-    position: absolute;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    transform: scale(0.8);
-    transition: all 0.6s;
-
-    &.visible {
-        opacity: 1;
-        visibility: visible;
-        transform: scale(1);
-    }
+    margin: auto;
 }
 
 .twitter-hero-icon {
     width: 64px;
     height: 64px;
-    color: #55acee;
     margin-bottom: 8px;
+    color: #55acee;
 }
 
 .twitter-hero-content {
-    height: 24px;
+    height: 28px;
 }
 
 .twitter-pin-input-container {
@@ -39,7 +24,7 @@ $tweet-text-color-alt: #bbb;
 .twitter-pin-input {
     display: none;
     width: 80px;
-    margin-right: 2px;
+    margin-right: 4px;
     text-align: center;
 
     &.visible {
@@ -47,88 +32,70 @@ $tweet-text-color-alt: #bbb;
     }
 }
 
-.twitter-spinner {
-    width: 24px;
+.twitter-hero-spinner {
+    height: 28px;
 }
 
-.twitter-header {
-    padding: 0 0 4px 4px;
+.twitter-content {
+    display: flex;
+    flex-direction: column;
 }
 
 .twitter-user {
     display: flex;
     align-items: center;
-    height: 100%;
+    margin-right: auto;
+
+    &:hover .twitter-user-name {
+        color: var(--profile-color, $secondary-text-color);
+        text-decoration: underline;
+    }
 }
 
 .twitter-user-image {
-    height: 100%;
+    height: 24px;
     border-radius: 50%;
 }
 
 .twitter-user-name {
     margin-left: 4px;
-    color: $primary-text-color;
-
-    &:hover {
-        text-decoration: underline;
-    }
+    margin-right: 4px;
+    font-weight: bold;
 }
 
-.twitter-user-handle,
-.retweet-by,
-.tweeted-on {
-    margin-left: 4px;
-    color: $tweet-text-color-alt;
-
-    &:hover {
-        text-decoration: underline;
-    }
+.twitter-user-handle {
+    color: $secondary-text-color;
 }
 
-.twitter-header-btn-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-left: auto;
+.new-tweet-btn,
+.more-tweets-btn {
+    width: 100%;
+    padding: 6px;
+
+    &:hover {
+        background-color: $color-white-4;
+    }
 }
 
 .new-tweet-btn {
-    width: 100%;
-    background-color: $color3;
-    box-shadow: 0 1px 0 0 $color2;
-}
-
-.twitter-content {
-    visibility: collapse;
-    opacity: 0;
-    height: 100%;
-    transform: scale(0.8);
-    transition: 0.6s all;
-
-    &.visible {
-        visibility: visible;
-        opacity: 1;
-        transform: scale(1);
-    }
+    border-bottom: 1px solid $primary-border-color;
 }
 
 .tweets {
-    @include scrollbar($color2);
+    @include scrollbar;
 
     overflow-y: auto;
-    backface-visibility: hidden;
-    height: calc(100% - 25px);
+    flex-grow: 1;
 }
 
 .tweet {
-    overflow: hidden;
     padding: 8px 4px 4px 64px;
-    border-bottom: 1px solid $color2;
-    transition: background-color 0.2s;
+    border-bottom: 1px solid $primary-border-color;
+    transition: 0.2s background-color;
     cursor: pointer;
 
     &:hover {
-        background-color: $color1;
+        background-color: $color-white-4;
     }
 }
 
@@ -136,34 +103,48 @@ $tweet-text-color-alt: #bbb;
     display: flex;
     align-items: center;
     margin-bottom: 4px;
-    color: $tweet-text-color-alt;
-    font-size: 12px;
-    line-height: 1;
+    font-size: 13px;
+    color: $secondary-text-color;
 }
 
-.tweet-retweet-icon {
-    width: 16px;
-    height: 16px;
-    margin-left: -20px;
+.retweet-icon {
+    width: 18px;
+    height: 18px;
+    margin-left: -22px;
 }
 
 .retweet-by {
+    margin-left: 4px;
     margin-right: 4px;
+
+    &:hover {
+        color: var(--profile-color);
+        text-decoration: underline;
+    }
+}
+
+.tweeted-on {
+    color: $secondary-text-color;
+
+    &:hover {
+        color: var(--profile-color);
+        text-decoration: underline;
+    }
 }
 
 .tweet-header-profile:hover .tweeted-by-name {
+    color: var(--profile-color, $secondary-text-color);
     text-decoration: underline;
-    color: $tweet-text-color-alt;
 }
 
 .tweeted-by-name {
     font-weight: bold;
-    color: $primary-text-color;
 }
 
 .tweeted-by-handle {
     margin-left: 4px;
-    color: $tweet-text-color-alt;
+    margin-right: 4px;
+    color: $secondary-text-color;
 }
 
 .twitter-profile-image {
@@ -177,12 +158,13 @@ $tweet-text-color-alt: #bbb;
 .tweet-text {
     margin-top: 4px;
     margin-bottom: 0;
+    line-height: 1.4;
     white-space: pre-wrap;
     word-wrap: break-word;
 }
 
 .tweet-link {
-    color: $color-accent;
+    color: var(--profile-color, $color-blue-light);
     text-decoration: none;
 
     &:hover {
@@ -201,7 +183,7 @@ $tweet-text-color-alt: #bbb;
 .tweet-image-container {
     display: grid;
     grid-gap: 1px;
-    max-height: 510px;
+    max-height: 508px;
 
     &.two {
         --image-count: 2;
@@ -218,8 +200,8 @@ $tweet-text-color-alt: #bbb;
     &.two, &.three, &.four {
         grid-template-rows: repeat(calc(var(--image-count) - 1), 1fr);
         grid-template-columns: 1fr calc(100% / var(--image-count));
-        max-height: calc(510px * (var(--image-count) - 1) / var(--image-count));
-        width: 510px;
+        max-height: calc(508px * (var(--image-count) - 1) / var(--image-count));
+        width: 508px;
 
         .tweet-media-item {
             display: flex;
@@ -257,8 +239,8 @@ $tweet-text-color-alt: #bbb;
 
 .tweet-video {
     display: block;
-    width: 510px;
-    max-height: 510px;
+    width: 508px;
+    max-height: 508px;
     margin: 0 auto;
 }
 
@@ -268,9 +250,9 @@ $tweet-text-color-alt: #bbb;
     left: 50%;
     width: 48px;
     height: 48px;
-    color: $primary-text-color;
+    border-radius: 50%;
+    background-color: $color-blue;
     transform: translate(-50%, -50%);
-    filter: drop-shadow($text-shadow);
 }
 
 .tweet-stats-container {
@@ -279,12 +261,11 @@ $tweet-text-color-alt: #bbb;
     margin-top: 8px;
     font-size: 12px;
     font-weight: bold;
-    line-height: 1;
-    color: $tweet-text-color-alt;
+    color: $secondary-text-color;
 
     svg {
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
     }
 
     span {
@@ -293,11 +274,6 @@ $tweet-text-color-alt: #bbb;
     }
 }
 
-.more-tweets-btn {
-    width: 100%;
-    padding: 4px 8px;
-
-    &:disabled {
-        @include spinner;
-    }
+.more-tweets-btn:disabled {
+    @include spinner;
 }
