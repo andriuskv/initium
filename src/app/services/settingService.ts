@@ -36,6 +36,7 @@ export class SettingService {
                 showingOneRow: true
             },
             time: {
+                disabled: false,
                 dateHidden: false,
                 format: 24
             },
