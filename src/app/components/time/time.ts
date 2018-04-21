@@ -5,7 +5,7 @@ import { TimeDateService } from "../../services/timeDateService";
 @Component({
     selector: "time",
     template: `
-        <div class="time">
+        <div class="time" *ngIf="!disabled">
             <div class="clock-container">
                 <span class="clock">{{ hours }}:{{ minutes | padTime }}</span>
                 <span class="period" *ngIf="period">{{ period }}</span>
@@ -15,9 +15,11 @@ import { TimeDateService } from "../../services/timeDateService";
     `
 })
 export class Time {
+    disabled: boolean = false;
     dateHidden: boolean = false;
     date: string;
     period: string;
+    format: number = 24;
     hours: number;
     minutes: number;
     timeout: any;
@@ -31,10 +33,18 @@ export class Time {
     }
 
     ngOnInit() {
-        const { dateHidden, format } = this.settingService.getSetting("time");
+        const { disabled, dateHidden, format } = this.settingService.getSetting("time");
 
-        this.updateTime(format);
-        this.initDate(dateHidden);
+        if (!disabled) {
+            this.updateTime(format);
+
+            if (!dateHidden) {
+                this.setDate();
+            }
+        }
+        this.disabled = disabled;
+        this.dateHidden = dateHidden;
+        this.format = format;
         this.settingService.subscribeToChanges(this.changeHandler.bind(this));
     }
 
@@ -42,22 +52,39 @@ export class Time {
         if (!time) {
             return;
         }
-        const { dateHidden, format } = time;
+        const { disabled, dateHidden, format } = time;
 
         if (format) {
             clearTimeout(this.timeout);
-            this.updateTime(format);
+
+            if (!this.disabled) {
+                this.updateTime(format);
+            }
+            this.format = format;
         }
         else if (typeof dateHidden === "boolean") {
-            this.initDate(dateHidden);
+            if (!dateHidden && !this.date) {
+                this.setDate();
+            }
+            this.dateHidden = dateHidden;
+        }
+        else if (typeof disabled === "boolean") {
+            if (disabled) {
+                clearTimeout(this.timeout);
+            }
+            else {
+                this.updateTime(this.format);
+
+                if (!this.dateHidden && !this.date) {
+                    this.setDate();
+                }
+            }
+            this.disabled = disabled;
         }
     }
 
-    initDate(hidden) {
-        if (!hidden) {
-            this.date = this.timeDateService.getDate("weekday, month day");
-        }
-        this.dateHidden = hidden;
+    setDate() {
+        this.date = this.timeDateService.getDate("weekday, month day");
     }
 
     getCurrentTime() {

@@ -44,21 +44,30 @@
 </div>
 <div class="setting" [class.active]="active === 'time'">
     <div class="setting-item">
-        <span id="time-setting-label-1">Hide date</span>
+        <span id="time-setting-label-1">Disable time</span>
+        <div role="checkbox" class="checkbox" tabindex="0"
+            [class.checked]="settings.time.disabled"
+            (click)="toggleSettingCheckbox('disabled')"
+            (keyup.enter)="toggleSettingCheckbox('disabled')"
+            [attr.aria-checked]="settings.time.disabled"
+            aria-labelledby="time-setting-label-1"></div>
+    </div>
+    <div class="setting-item" [class.disabled]="settings.time.disabled">
+        <span id="time-setting-label-2">Hide date</span>
         <div role="checkbox" class="checkbox" tabindex="0"
             [class.checked]="settings.time.dateHidden"
             (click)="toggleSettingCheckbox('dateHidden')"
             (keyup.enter)="toggleSettingCheckbox('dateHidden')"
             [attr.aria-checked]="settings.time.dateHidden"
-            aria-labelledby="time-setting-label-1"></div>
+            aria-labelledby="time-setting-label-2"></div>
     </div>
     <div class="setting-item">
-        <span id="time-setting-label-2">Time display format</span>
+        <span id="time-setting-label-3">Time display format</span>
         <div class="toggle" tabindex="0"
             [class.checked]="settings.time.format === 24"
             (click)="toggleTimeFormat()"
             (keyup.enter)="toggleTimeFormat()"
-            aria-labelledby="time-setting-label-2">
+            aria-labelledby="time-setting-label-3">
             <div>12</div>
             <div>24</div>
         </div>
