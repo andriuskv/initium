@@ -9,13 +9,13 @@
 </div>
 <div class="calendar" *ngIf="!daySelected; else elseBlock">
     <div class="calendar-header">
-        <button class="btn-icon calendar-header-btn" (click)="setVisibleMonth(-1)" title="Previous month">
+        <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(-1)" title="Previous month">
             <svg viewBox="0 0 24 24">
                 <use href="#chevron-left"></use>
             </svg>
         </button>
         <span class="calendar-title">{{ visibleMonth.current.name }} {{ currentYear }}</span>
-        <button class="btn-icon calendar-header-btn" (click)="setVisibleMonth(1)" title="Next month">
+        <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(1)" title="Next month">
             <svg viewBox="0 0 24 24">
                 <use href="#chevron-right"></use>
             </svg>
@@ -36,7 +36,7 @@
             (click)="showDay(day, -1)">
             <div>{{ day.day }}</div>
         </li>
-        <li class="calendar-cell calendar-day is-current-month-day"
+        <li class="calendar-cell calendar-day current-month-day"
             *ngFor="let day of visibleMonth.current.days"
             [class.current-day]="day.isCurrentDay"
             (click)="showDay(day)">
@@ -54,7 +54,6 @@
 <ng-template #elseBlock>
     <div class="calendar">
         <calendar-selected-day
-            [timeDisplay]="timeDisplay"
             [day]="selectedDay"
             (event)="showCalendar()"
             (create)="createReminder($event)"

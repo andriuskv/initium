@@ -1,10 +1,7 @@
-.menu-container {
+.menu-item-content-container {
     position: absolute;
     bottom: 4px;
     right: 4px;
-}
-
-.menu-item-content-container {
     opacity: 0;
     visibility: hidden;
     border-top-left-radius: 50%;
@@ -36,31 +33,32 @@
 }
 
 .menu {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
     display: flex;
-    justify-content: flex-end;
     padding: 4px;
-    transition: background-color 0.2s;
-
-    &.transparent {
-        filter: drop-shadow($text-shadow);
-    }
 
     @media (max-width: 826px) {
-        &:not(.transparent) {
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
-            background-color: $color3;
+        &:not(.hidden) {
+            background-color: $primary-container-background-color;
+            box-shadow: inset 0 0 0 1px $container-inset-box-shadow-color,
+                        0 0 0 1px $container-box-shadow-color;
+            backdrop-filter: blur(2px);
+
+            @supports not (backdrop-filter: blur(1px)) {
+                background-color: $secondary-container-background-color;
+            }
+        }
+
+        &.hidden .menu-item-container {
+            display: none;
         }
     }
 }
 
 .menu-item-container {
     display: flex;
-
-    @media (max-width: 826px) {
-        &.hidden {
-            display: none;
-        }
-    }
 }
 
 .menu-item:not(:last-of-type) {
@@ -69,31 +67,12 @@
 
 .menu-item-btn {
     position: relative;
-
-    &.indicator-visible {
-        svg {
-            -webkit-mask-box-image: url(./assets/images/calendar-icon-mask.svg);
-        }
-
-        .menu-item-indicator {
-            display: block;
-        }
-    }
-}
-
-.menu-item-indicator {
-    position: absolute;
-    bottom: -2px;
-    right: -2px;
-    display: none;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: $color-accent;
+    filter: drop-shadow($icon-shadow);
 }
 
 .menu-toggle-btn {
     display: none;
+    filter: drop-shadow($icon-shadow);
 
     @media (max-width: 826px) {
         display: flex;
@@ -104,9 +83,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid $color2;
+    padding: 4px;
+    border-bottom: 1px solid $primary-border-color;
 }
 
 .menu-title {
@@ -114,4 +92,5 @@
     margin-bottom: 0;
     font-size: 16px;
     font-weight: normal;
+    text-transform: capitalize;
 }

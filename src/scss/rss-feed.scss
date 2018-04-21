@@ -1,36 +1,3 @@
-.rss-feed.visible {
-    display: flex;
-    flex-direction: column;
-}
-
-.feed-header {
-    flex-shrink: 0;
-}
-
-.feed-header-item {
-    overflow: hidden;
-    position: relative;
-    flex: 1;
-
-    &:hover .feed-title-btns {
-        display: flex;
-    }
-
-    &.active {
-        box-shadow: 0 1px 0 0 $color-accent;
-    }
-}
-
-.feed-select-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    padding-left: 4px;
-    padding-right: 4px;
-}
-
 .feed-new-entry-count {
     display: flex;
     justify-content: center;
@@ -41,31 +8,9 @@
     height: 18px;
     margin-right: 4px;
     border-radius: 50%;
-    background-color: $primary-text-color;
-    color: $color3;
+    background-color: $color-white;
+    color: $color-grey-dark;
     font-size: 13px;
-}
-
-.feed-title {
-    @include text-truncate;
-}
-
-.feed-title-btns {
-    position: absolute;
-    top: 50%;
-    right: 2px;
-    display: none;
-    background-color: $color3;
-    box-shadow: 2px 0 4px 4px $color3;
-    transform: translateY(-50%);
-}
-
-.feed-header-btns {
-    display: flex;
-
-    .btn-icon {
-        padding: 0 2px;
-    }
 }
 
 .feed-hero {
@@ -79,28 +24,34 @@
 .feed-hero-icon {
     width: 64px;
     height: 64px;
-    margin-bottom: 8px;
     color: #fa9b39;
 }
 
+.feed-hero-spinner {
+    height: 28px;
+    margin-top: 8px;
+}
+
 .feed-hero-content {
-    max-width: 200px;
-    height: 136px;
+    display: flex;
+    justify-content: center;
+    width: 240px;
+    height: 144px;
     transition: 0.2s height;
 
     &.loading {
-        height: 24px;
+        height: 28px;
     }
 }
 
 .feed-initiation-status {
-    @include scrollbar($color2);
+    @include scrollbar;
 
     overflow-y: auto;
+    opacity: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
-    animation-name: reveal;
+    animation-name: opacity-up;
     animation-duration: 0.2s;
     animation-delay: 0.2s;
     animation-fill-mode: forwards;
@@ -109,15 +60,14 @@
 .feed-initiation-item {
     display: flex;
     align-items: center;
-    padding: 2px;
-    margin-bottom: 2px;
-    border-bottom: 1px solid $color2;
+    padding: 4px;
+    border-bottom: 1px solid $primary-border-color;
 }
 
 .feed-initiation-item-title {
     @include text-truncate;
 
-    margin-right: 2px;
+    margin-right: 4px;
 }
 
 .feed-initiation-item-status {
@@ -130,30 +80,16 @@
 }
 
 .feed-initiation-success {
-    color: #00ad45;
+    color: $color-success;
 }
 
 .feed-initiation-error {
-    color: #f15e4b;
-}
-
-.feed-spinner {
-    height: 24px;
-}
-
-.feed-input-group {
-    display: block;
-    margin-bottom: 8px;
-}
-
-.feed-input-name {
-    font-size: 13px;
-    letter-spacing: 1px;
+    color: $color-danger;
 }
 
 .feed-input {
-    width: 200px;
-    margin-top: 4px;
+    width: 100%;
+    margin-bottom: 8px;
 }
 
 .feed-add-btn-container {
@@ -167,19 +103,22 @@
 }
 
 .feed-message {
-    margin-right: 4px;
+    margin-right: 8px;
 }
 
 .feeds {
-    @include scrollbar($color2);
+    @include scrollbar;
 
     overflow-y: auto;
-    height: calc(100% - 25px);
+    flex-grow: 1;
 }
 
 .feed {
-    padding: 8px 4px;
-    border-bottom: 1px solid $color2;
+    padding: 8px;
+
+    &:not(:last-of-type) {
+        border-bottom: 1px solid $primary-border-color;
+    }
 }
 
 .feed-link {
@@ -210,10 +149,10 @@
 
     a {
         all: unset;
-        color: $color-accent;
+        color: $color-blue-light;
 
         &:hover {
-            color: $color-accent;
+            color: $color-blue-light;
             text-decoration: underline;
             cursor: pointer;
         }
@@ -231,20 +170,11 @@
 
 .feed-date {
     color: $secondary-text-color;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .is-new-entry {
     float: right;
-    color: $color-accent;
+    color: $color-blue-light;
     font-style: italic;
-}
-
-@keyframes reveal {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
 }

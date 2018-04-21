@@ -34,6 +34,22 @@ export class Settings {
         }, dontSave);
     }
 
+    toggleSettingCheckbox(settingName) {
+        this.onSetting(settingName, !this.settings[this.active][settingName]);
+    }
+
+    toggleTimeFormat() {
+        const { format } = this.settings[this.active];
+
+        this.onSetting("format", format === 24 ? 12 : 24);
+    }
+
+    toggleTemperatureUnits() {
+        const { units } = this.settings[this.active];
+
+        this.onSetting("units", units === "C" ? "F" : "C");
+    }
+
     getWeatherWithCityName(value) {
         if (value !== this.settings.weather.cityName) {
             this.onSetting("cityName", value);

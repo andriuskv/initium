@@ -170,15 +170,12 @@ export class RssFeed {
     }
 
     async handleFormSubmit(event) {
-        event.preventDefault();
-
-        if (!event.target.checkValidity()) {
-            return;
-        }
         const { elements } = event.target;
         const title = elements.title.value;
         const url = elements.url.value;
         this.fetching = true;
+
+        event.preventDefault();
 
         try {
             const feed = await this.feedService.getFeed(url, title);

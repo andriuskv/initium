@@ -13,6 +13,7 @@ import { TwitterProxyService } from "./services/twitterProxyService";
 
 import { SlicePipe } from "./pipes/slicePipe";
 import { PadTimePipe } from "./pipes/padTimePipe";
+import { SafeStylePipe } from "./pipes/safeStylePipe";
 
 import { App } from "./app.component";
 import { Background } from "./components/background/background";
@@ -42,7 +43,7 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
     declarations: [
         App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Todo, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
-        CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe, PadTimePipe
+        CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe, PadTimePipe, SafeStylePipe
     ],
     bootstrap: [App]
 })

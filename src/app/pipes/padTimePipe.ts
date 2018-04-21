@@ -4,7 +4,7 @@ import { Pipe } from "@angular/core";
     name: "padTime"
 })
 export class PadTimePipe {
-    transform(value) {
-        return `00${value}`.slice(-2);
+    transform(value, pad = true) {
+        return pad ? `00${value}`.slice(-2) : value;
     }
 }

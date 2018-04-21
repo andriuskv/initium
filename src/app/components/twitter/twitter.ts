@@ -292,6 +292,7 @@ export class Twitter {
             this.user.homepage = `https://twitter.com/${response.user.screen_name}`;
             this.user.handle = `@${response.user.screen_name}`;
             this.user.profileImage = response.user.profile_image_url_https;
+            this.user.profileColor = `#${response.user.profile_link_color}`;
         }
     }
 
@@ -413,6 +414,7 @@ export class Twitter {
         clearTimeout(this.tweetUpdateTimeout);
         localStorage.removeItem("oauth");
         this.isLoggedIn = false;
+        this.user = {};
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
 

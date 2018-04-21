@@ -11,7 +11,6 @@ export class WidgetMenu {
     visible: boolean = false;
     isClosing: boolean = false;
     reminderInicatorVisible: boolean = false;
-    title: string = "";
     selectedItem: string = "";
     zIndex: number = 0;
 
@@ -30,12 +29,8 @@ export class WidgetMenu {
         });
     }
 
-    toggleUpperBlockComp() {
+    toggleUpperBlock() {
         this.toggle.emit("upper");
-    }
-
-    capitalize(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     toggleMenu() {
@@ -43,12 +38,12 @@ export class WidgetMenu {
     }
 
     toggleItem(item) {
-        this.selectedItem = item;
-        this.title = this.capitalize(item);
+        this.increaseZIndex();
 
         if (item === "calendar" && this.reminderInicatorVisible) {
             this.reminderInicatorVisible = false;
         }
+        this.selectedItem = item;
     }
 
     closeSelectedItem() {
@@ -64,7 +59,7 @@ export class WidgetMenu {
         }, 500);
     }
 
-    handleClickOnContainer() {
+    increaseZIndex() {
         this.zIndex = this.zIndexService.incIfLess(this.zIndex);
     }
 

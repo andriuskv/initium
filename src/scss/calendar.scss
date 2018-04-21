@@ -1,6 +1,6 @@
 .calendar-container {
     display: none;
-    height: 302px;
+    height: 324px;
 
     &.visible {
         display: flex;
@@ -11,18 +11,20 @@
     flex-shrink: 0;
     width: 220px;
     height: 100%;
+    padding: 4px;
+    border-right: 1px solid $primary-border-color;
 }
 
 .current-day-reminders {
-    @include scrollbar($color2);
+    @include scrollbar;
 
     overflow-y: auto;
     height: 100%;
 }
 
 .current-day-reminder {
-    padding: 4px;
-    border-left: 2px solid;
+    padding: 4px 4px 4px 8px;
+    border-left: 2px solid transparent;
     transition: 0.2s border-left-color;
 
     &:not(:first-of-type) {
@@ -37,31 +39,32 @@
 }
 
 .calendar {
-    width: 356px;
+    width: 378px;
     height: 100%;
+    padding: 4px;
 }
 
 .calendar-header {
+    position: relative;
     display: flex;
     align-items: center;
-}
-
-.calendar-header-btn {
-    svg {
-        width: 28px;
-        height: 28px;
-    }
+    justify-content: center;
+    min-height: 24px;
 }
 
 .calendar-title {
-    flex-grow: 1;
+    min-width: 120px;
+    margin-left: 8px;
+    margin-right: 8px;
     font-size: 16px;
     text-align: center;
 }
 
 .calendar-week-days {
     display: flex;
-    height: 38px;
+    height: 32px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid $primary-border-color;
 
     .calendar-cell {
         flex: 1;
@@ -72,7 +75,7 @@
     display: grid;
     grid-gap: 1px;
     grid-template: repeat(6, 1fr) / repeat(7, 1fr);
-    height: calc(100% - 66px);
+    height: calc(100% - 60px);
 }
 
 .calendar-cell {
@@ -84,18 +87,15 @@
 .calendar-day {
     position: relative;
     color: $secondary-text-color;
+    transition: 0.2s background-color;
+    cursor: pointer;
 
-    &.is-current-month-day {
+    &.current-month-day {
         color: $primary-text-color;
     }
 
-    &.current-day {
-        background-color: $color2;
-    }
-
-    &:hover {
-        background-color: $color2;
-        cursor: pointer;
+    &:hover, &.current-day {
+        background-color: $button-hover-background-color;
     }
 }
 
@@ -116,27 +116,34 @@
     }
 }
 
+.selected-day-header-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 .selected-day {
     display: flex;
     flex-direction: column;
     height: calc(100% - 28px);
+    margin-top: 4px;
 }
 
 .selected-day-remainders {
-    @include scrollbar($color2);
+    @include scrollbar;
 
     overflow-y: auto;
-    max-height: calc(100% - 29px);
+    max-height: calc(100% - 24px);
     margin-bottom: 4px;
 }
 
 .selected-day-remainder {
     display: flex;
     align-items: center;
-    padding: 4px 4px 4px 0;
-    border-bottom: 1px solid $color2;
+    padding: 4px;
+    border-bottom: 1px solid $primary-border-color;
 
-    .btn-icon {
+    .btn-secondary {
         margin-left: auto;
     }
 }
@@ -145,9 +152,8 @@
     flex-shrink: 0;
     align-self: flex-start;
     width: 4px;
-    height: 20px;
-    margin-left: 2px;
-    margin-right: 4px;
+    height: 24px;
+    margin-right: 8px;
     transition: 0.2s transform, 0.2s background-color;
 
     &:hover {
@@ -157,8 +163,8 @@
 
 .reminder-repeat-icon {
     flex-shrink: 0;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     margin-right: 4px;
     color: $secondary-text-color;
 }
@@ -170,53 +176,53 @@
 }
 
 .new-reminder-btn {
-    padding: 4px;
-    margin: 0 auto auto;
-}
-
-.reminder-form-item {
-    margin-bottom: 8px;
-}
-
-.reminder-form-row {
-    margin-bottom: 4px;
+    margin-bottom: auto;
 }
 
 .reminder-input {
     width: 100%;
 }
 
-.reminder-settings {
+.reminder-form-row {
     display: flex;
+    align-items: center;
+}
 
-    .checkbox-container {
-        margin-right: 8px;
+.reminder-setting {
+    margin-top: 8px;
+
+    .reminder-form-row {
+        margin-top: 4px;
     }
 }
 
 .checkbox-container {
     display: flex;
     align-items: center;
+    margin-right: 12px;
 }
 
 .checkbox-label {
-    margin-left: 4px;
+    margin-left: 8px;
 }
 
 .repeat-input {
     width: 40px;
-    margin-left: 4px;
-    margin-right: 4px;
+    padding: 4px 6px;
+    margin-left: 8px;
+    margin-right: 8px;
     text-align: center;
 }
 
 .range-input-container {
     position: relative;
-    margin-right: 8px;
+    margin-left: 8px;
+    margin-right: 12px;
 }
 
 .range-input {
     width: 80px;
+    padding: 4px 6px;
     text-align: center;
 
     &:focus + .reminder-timetable {
@@ -225,26 +231,26 @@
 }
 
 .reminder-timetable {
-    @include scrollbar($color3);
+    @include scrollbar;
 
-    display: none;
     overflow-y: auto;
+    z-index: 1;
     position: absolute;
-    top: 24px;
+    top: 20px;
     right: 0;
+    display: none;
     width: 100%;
     max-height: 120px;
-    background-color: $color2;
+    background-color: $color-grey-dark-light;
     box-shadow: $box-shadow;
     text-align: center;
 }
 
 .reminder-timetable-item {
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding: 4px;
 
     &:hover {
-        background-color: $color1;
+        background-color: $button-hover-background-color;
         cursor: default;
     }
 }

@@ -35,11 +35,11 @@ export class Weather {
     }
 
     ngOnInit() {
-        const { disabled, cityName, useFarenheit } = this.settingService.getSetting("weather");
+        const { disabled, cityName, units } = this.settingService.getSetting("weather");
 
         this.disabled = disabled;
         this.cityName = cityName;
-        this.units = this.getTemperatureUnits(useFarenheit);
+        this.units = units;
 
         if (!disabled) {
             this.scheduleWeatherUpdate();
@@ -51,7 +51,7 @@ export class Weather {
         if (!weather) {
             return;
         }
-        const { disabled, useFarenheit, cityName } = weather;
+        const { disabled, cityName, units } = weather;
 
         if (typeof disabled === "boolean") {
             this.disabled = disabled;
@@ -63,9 +63,9 @@ export class Weather {
                 this.getWeather();
             }
         }
-        else if (typeof useFarenheit === "boolean") {
-            this.units = this.getTemperatureUnits(useFarenheit);
-            this.temperature = this.convertTemperature(this.temperature, this.units);
+        else if (units) {
+            this.units = units;
+            this.temperature = this.convertTemperature(this.temperature, units);
         }
         else if (typeof cityName === "string") {
             this.cityName = cityName;
@@ -80,10 +80,6 @@ export class Weather {
         this.timeout = window.setTimeout(() => {
             this.getWeather();
         }, delay);
-    }
-
-    getTemperatureUnits(useFarenheit) {
-        return useFarenheit ? "F" : "C";
     }
 
     async getWeather() {
@@ -138,12 +134,14 @@ export class Weather {
             case 520:
             case 521:
                 return "pouring";
-            // Light snow, light shower sleet, snow, heavy snow
+            // Light snow, light shower, sleet, snow, heavy snow, rain and snow
             case 600:
             case 601:
             case 602:
+            case 611:
             case 612:
             case 615:
+            case 616:
             case 620:
             case 621:
                 return "snowy";

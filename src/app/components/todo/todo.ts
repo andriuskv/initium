@@ -1,5 +1,4 @@
-import { Component, Inject } from "@angular/core";
-import { DOCUMENT } from "@angular/platform-browser";
+import { Component, ViewChild } from "@angular/core";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { ZIndexService } from "../../services/zIndexService";
 
@@ -8,17 +7,18 @@ import { ZIndexService } from "../../services/zIndexService";
     templateUrl: "./todo.html"
 })
 export class Todo {
+    @ViewChild("textarea") textarea;
+
     visible: boolean = false;
+    hasDoneTodos: boolean = false;
     zIndex: number = 0;
     todos: Array<any> = [];
     todoBeingEdited: any = null;
 
     constructor(
-        @Inject(DOCUMENT) private document,
         private chromeStorageService: ChromeStorageService,
         private zIndexService: ZIndexService
     ) {
-        this.document = document;
         this.chromeStorageService = chromeStorageService;
         this.zIndexService = zIndexService;
     }
@@ -27,6 +27,7 @@ export class Todo {
         this.chromeStorageService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
         this.chromeStorageService.get("todos", storage => {
             this.todos = storage.todos || [];
+            this.checkForDoneTodos();
         });
     }
 
@@ -39,22 +40,17 @@ export class Todo {
     }
 
     addTodo(event) {
-        event.preventDefault();
-
-        if (!event.target.checkValidity()) {
-            return;
-        }
         const todo = { text: event.target.elements.input.value };
         const index = this.todos.filter(todo => todo.pinned).length;
 
         this.todos.splice(index, 0, todo);
         this.saveTodos(this.todos);
+        event.preventDefault();
         event.target.reset();
     }
 
-    markTodoDone(index, done) {
-        const todo = this.todos[index];
-        todo.done = done.checked;
+    markTodoDone(todo, index) {
+        todo.done = !todo.done;
 
         if (todo.done && todo.pinned) {
             const newIndex = this.todos.filter(todo => todo.pinned).length - 1;
@@ -63,6 +59,7 @@ export class Todo {
             this.todos.splice(index, 1);
             this.todos.splice(newIndex, 0, todo);
         }
+        this.checkForDoneTodos();
         this.saveTodos(this.todos);
     }
 
@@ -81,11 +78,13 @@ export class Todo {
 
     removeTodo(index) {
         this.todos.splice(index, 1);
+        this.checkForDoneTodos();
         this.saveTodos(this.todos);
     }
 
     removeTodos() {
         this.todos = this.todos.filter(todo => !todo.done);
+        this.checkForDoneTodos();
         this.saveTodos(this.todos);
     }
 
@@ -93,12 +92,12 @@ export class Todo {
         this.chromeStorageService.set({ todos });
     }
 
-    enableTodoEdit(text, index) {
+    editTodo(text, index) {
         this.todoBeingEdited = { text, index };
     }
 
     saveTodoEdit() {
-        const { value } = this.document.querySelector(".todo-edit-input");
+        const { value } = this.textarea.nativeElement;
         const { index } = this.todoBeingEdited;
         const todo = this.todos[index];
 
@@ -107,6 +106,10 @@ export class Todo {
             this.saveTodos(this.todos);
         }
         this.cancelTodoEdit();
+    }
+
+    checkForDoneTodos() {
+        this.hasDoneTodos = this.todos.some(todo => todo.done);
     }
 
     cancelTodoEdit() {

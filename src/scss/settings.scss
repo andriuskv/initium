@@ -5,22 +5,18 @@
 }
 
 .settings-nav {
-    display: flex;
-    flex-direction: column;
-    width: 92px;
+    width: 100px;
+    border-right: 1px solid $primary-border-color;
 }
 
-.settings-nav-item {
-    transition: 0.2s transform;
+.settings-nav-item.active {
+    box-shadow: inset 2px 0 0 0 $color-blue;
+}
 
-    &.active {
-        transform: translateX(2px);
-        box-shadow: -2px 0 0 0 $color-accent;
-    }
-
-    .btn-icon {
-        padding: 4px 6px;
-    }
+.settings-nav-item-btn {
+    width: 100%;
+    padding: 6px;
+    border-radius: 0;
 }
 
 .setting {
@@ -37,19 +33,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 33px;
-    padding: 4px;
-    border-bottom: 1px solid $color2;
+    min-height: 38px;
+    padding: 4px 4px 4px 8px;
+    border-bottom: 1px solid $primary-border-color;
+    transition: 0.2s opacity;
 
-    &.disabled::after {
-        content: "";
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: transparentize($color3, 0.2);
+    &.disabled {
+        opacity: 0.4;
+
+        &::after {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
     }
 }
 
@@ -60,10 +60,6 @@
 
 .setting-input {
     width: 100px;
-}
-
-.setting-selection {
-    padding: 2px 8px;
 }
 
 .settings-dropbox-btn {

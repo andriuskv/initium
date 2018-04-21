@@ -7,9 +7,9 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
-    if (event.request.url.includes("https://www.dropbox.com/s/")) {
+    if (event.request.url.startsWith("https://www.dropbox.com/s/")) {
         event.respondWith(
-            caches.open("catche8").then(cache => {
+            caches.open("dropbox-cache").then(cache => {
                 return cache.match(event.request).then(response => {
                     if (response) {
                         return response;

@@ -1,47 +1,30 @@
-<div class="main-block-content" [class.visible]="isVisible">
-    <div class="twitter-hero" [class.visible]="!tweets.length">
-        <svg viewBox="0 0 24 24" class="twitter-hero-icon">
-            <use href="#twitter"></use>
-        </svg>
-        <div class="twitter-hero-content">
-            <img src="./assets/images/ring.svg" class="twitter-spinner" *ngIf="initializing; else elsePinBlock" alt="">
-            <ng-template #elsePinBlock>
-                <div class="twitter-pin-input-container">
-                    <input type="text" class="input twitter-pin-input" placeholder="Enter PIN"
-                        [class.visible]="showPinInput" #pin
-                        (keyup.enter)="login(pin)">
-                    <button class="btn" (click)="login(pin)" *ngIf="!isLoggedIn">Log in</button>
-                </div>
-            </ng-template>
-        </div>
-    </div>
-    <div class="twitter-content" [class.visible]="tweets.length">
-        <div class="main-block-content-header twitter-header">
+<div class="container main-block-content" [class.visible]="isVisible">
+    <div class="twitter-content" *ngIf="tweets.length; else elseBlock"
+        [style]="'--profile-color:' + user.profileColor | safeStyle">
+        <div class="main-block-content-header">
             <a href="{{ user.homepage }}" class="twitter-user" target="_blank">
                 <img src="{{ user.profileImage }}" class="twitter-user-image" alt="">
                 <span class="twitter-user-name">{{ user.name }}</span>
                 <span class="twitter-user-handle">{{ user.handle }}</span>
             </a>
-            <div class="twitter-header-btn-container">
-                <button class="btn-icon" title="Toggle size" (click)="toggleContainerSize()">
-                    <svg viewBox="0 0 24 24">
-                        <use attr.href="#vertical-{{isExpanded ? 'shrink' : 'expand'}}"></use>
-                    </svg>
-                </button>
-                <button class="btn-icon" title="Log out" (click)="logout()">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#cross"></use>
-                    </svg>
-                </button>
-            </div>
+            <button class="btn-secondary btn-secondary-alt" title="Toggle size" (click)="toggleContainerSize()">
+                <svg viewBox="0 0 24 24">
+                    <use attr.href="#vertical-{{isExpanded ? 'shrink' : 'expand'}}"></use>
+                </svg>
+            </button>
+            <button class="btn-secondary btn-secondary-alt" title="Log out" (click)="logout()">
+                <svg viewBox="0 0 24 24">
+                    <use href="#cross"></use>
+                </svg>
+            </button>
         </div>
         <ul class="tweets">
             <li *ngIf="tweetsToLoad.length">
-                <button class="btn new-tweet-btn" (click)="loadNewTweets()">View {{ tweetsToLoad.length }} new tweet{{ tweetsToLoad.length > 1 ? "s": "" }}</button>
+                <button class="btn-secondary new-tweet-btn" (click)="loadNewTweets()">View {{ tweetsToLoad.length }} new tweet{{ tweetsToLoad.length > 1 ? "s": "" }}</button>
             </li>
             <li class="tweet" *ngFor="let tweet of tweets" (click)="handleClickOnTweet($event, tweet.tweetUrl)">
                 <div class="retweet" *ngIf="tweet.retweetedBy">
-                    <svg class="tweet-retweet-icon" viewBox="0 0 24 24">
+                    <svg class="retweet-icon" viewBox="0 0 24 24">
                         <use href="#retweet"></use>
                     </svg>
                     <a href="{{ tweet.retweetedBy.userUrl }}" class="retweet-by" target="_blank">{{ tweet.retweetedBy.name }}</a>
@@ -99,9 +82,25 @@
                 </div>
             </li>
             <li>
-                <button class="btn-icon more-tweets-btn" (click)="fetchMoreTweets()"
+                <button class="btn-secondary more-tweets-btn" (click)="fetchMoreTweets()"
                     [disabled]="fetchingMoreTweets">Show More</button>
             </li>
         </ul>
     </div>
+    <ng-template #elseBlock>
+        <div class="twitter-hero">
+            <svg viewBox="0 0 24 24" class="twitter-hero-icon">
+                <use href="#twitter"></use>
+            </svg>
+            <div class="twitter-hero-content">
+                <img src="./assets/images/ring.svg" class="twitter-hero-spinner" *ngIf="initializing; else elsePinBlock" alt="">
+                <ng-template #elsePinBlock>
+                    <div class="twitter-pin-input-container">
+                        <input type="text" class="input twitter-pin-input" placeholder="Enter PIN" [class.visible]="showPinInput" #pin (keyup.enter)="login(pin)">
+                        <button class="btn" (click)="login(pin)" *ngIf="!isLoggedIn">Log in</button>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </ng-template>
 </div>

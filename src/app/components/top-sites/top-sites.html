@@ -1,45 +1,48 @@
 <div class="main-block-content top-sites-container" [class.visible]="isVisible" #root>
     <ul class="top-sites">
-        <li class="top-site" *ngFor="let site of visibleSites; let i = index">
+        <li class="container top-site" *ngFor="let site of visibleSites; let i = index">
             <a [href]="site.url" [title]="site.title">
-                <div class="site-title">
-                    <span>{{ site.title }}</span>
-                    <button class="btn-icon remove-site-btn" (click)="removeSite($event, i)" title="Remove">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#cross"></use>
-                        </svg>
-                    </button>
-                </div>
+                <div class="site-title">{{ site.title }}</div>
                 <div class="site-thumbnail-container">
-                    <img class="site-thumbnail" alt="" [src]="site.image" [class.full]="site.uploaded">
+                    <img class="site-thumbnail" [src]="site.image" alt="">
                 </div>
             </a>
-        </li>
-        <li class="top-site" *ngIf="addButtonVisible" (click)="showPanel()">
-            <button class="btn-icon add-site-btn" title="Add new site">
+            <button class="btn-secondary remove-site-btn" (click)="removeSite(i)" title="Remove">
                 <svg viewBox="0 0 24 24">
+                    <use href="#cross"></use>
+                </svg>
+            </button>
+        </li>
+        <li class="container top-site" *ngFor="let site of emptySites">
+            <button class="btn-secondary add-site-btn" (click)="showNewSiteForm()" title="Add new site">
+                <svg viewBox="0 0 24 24" class="add-site-btn-icon">
                     <use href="#plus"></use>
                 </svg>
             </button>
         </li>
     </ul>
-    <div class="main-block-mask" *ngIf="isNewSitePanelVisible">
-        <form class="container main-block-mask-content" (submit)="addSite($event)">
-            <h2 class="new-site-form-title">Add new site</h2>
+    <div class="container main-block-modal" *ngIf="isNewSiteFormVisible">
+        <form class="new-site-form" (submit)="addSite($event)">
+            <h3 class="main-block-modal-title">Add new site</h3>
             <input type="text" class="input new-site-form-input" placeholder="Title" name="title" autocomplete="off">
             <input type="text" class="input new-site-form-input" placeholder="URL" name="url" autocomplete="off" required>
             <div class="new-site-form-btn-container">
-                <label class="btn file-input-btn">
-                    <span>Choose thumbnail</span>
+                <label class="btn">
+                    <span>Select thumbnail</span>
                     <input type="file" class="file-input" name="thumb">
                 </label>
                 <button class="btn">Add</button>
-                <button type="button" class="btn" (click)=hidePanel()>Close</button>
             </div>
         </form>
+        <button class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
+            (click)="hideNewSiteForm()" title="Close">
+            <svg viewBox="0 0 24 24">
+                <use href="#cross"></use>
+            </svg>
+        </button>
     </div>
-    <div class="main-block-mask" *ngIf="isFetching">
-        <img src="./assets/images/ring.svg" class="main-block-mask-content" alt="">
+    <div class="top-sites-mask" *ngIf="isFetching">
+        <img src="./assets/images/ring.svg" alt="">
     </div>
 </div>
 

@@ -10,33 +10,26 @@ export class TopSites {
     @Input() isVisible: boolean = false;
     @ViewChild("root") root;
 
-    addButtonVisible: boolean = false;
-    isNewSitePanelVisible: boolean = false;
+    isNewSiteFormVisible: boolean = false;
     isFetching: boolean = false;
-    visibleSiteCount: number = 8;
+    visibleSiteCount: number = 4;
     topSites: Array<any> = [];
     visibleSites: Array<any> = [];
-    rootStyles: any = null;
+    emptySites: undefined[] = [];
 
-    constructor(
-        private settingService: SettingService,
-        private domSanitizer: DomSanitizer
-    ) {
+    constructor(private settingService: SettingService, private domSanitizer: DomSanitizer) {
         this.settingService = settingService;
         this.domSanitizer = domSanitizer;
     }
 
     ngOnInit() {
-        const topSites = JSON.parse(
-            localStorage.getItem("most visited") ||
-            localStorage.getItem("top sites")
-        );
+        const topSites = JSON.parse(localStorage.getItem("top sites"));
         const { showingOneRow } = this.settingService.getSetting("mainBlock");
 
         this.settingService.subscribeToChanges(this.changeHandler.bind(this));
 
-        if (showingOneRow) {
-            this.visibleSiteCount = 4;
+        if (!showingOneRow) {
+            this.visibleSiteCount = 8;
         }
 
         if (topSites) {
@@ -81,14 +74,11 @@ export class TopSites {
 
     resetTopSites() {
         this.isFetching = true;
-        localStorage.removeItem("most visited");
         localStorage.removeItem("top sites");
         this.getTopSites();
     }
 
-    removeSite(event, index) {
-        event.preventDefault();
-
+    removeSite(index) {
         this.topSites.splice(index, 1);
         this.updateVisibleSites();
         this.saveSites();
@@ -97,13 +87,13 @@ export class TopSites {
     updateVisibleSites() {
         this.root.nativeElement.style.setProperty("--rows", this.visibleSiteCount / 4);
         this.visibleSites = this.topSites.slice(0, this.visibleSiteCount);
-        this.addButtonVisible = this.visibleSites.length < this.visibleSiteCount;
+        this.emptySites.length = this.visibleSiteCount - this.visibleSites.length;
     }
 
     getImage(url) {
-        url = new URL(url);
+        const { origin } = new URL(url);
 
-        return this.domSanitizer.bypassSecurityTrustUrl(`chrome://favicon/${url.origin}`);
+        return this.domSanitizer.bypassSecurityTrustUrl(`chrome://favicon/${origin}`);
     }
 
     resetImages(sites) {
@@ -115,19 +105,19 @@ export class TopSites {
         });
     }
 
-    showPanel() {
-        this.isNewSitePanelVisible = true;
+    showNewSiteForm() {
+        this.isNewSiteFormVisible = true;
     }
 
-    hidePanel() {
-        this.isNewSitePanelVisible = false;
+    hideNewSiteForm() {
+        this.isNewSiteFormVisible = false;
     }
 
     appendProtocol(url) {
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            return `https://${url}`;
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            return url;
         }
-        return url;
+        return `https://${url}`;
     }
 
     processImage(image) {
@@ -139,8 +129,8 @@ export class TopSites {
 
                 image.onload = function() {
                     const canvas = document.createElement("canvas");
-                    const width = 142;
-                    const height = 95;
+                    const width = 144;
+                    const height = 96;
 
                     canvas.width = width;
                     canvas.height = height;
@@ -155,15 +145,12 @@ export class TopSites {
     }
 
     async addSite(event) {
-        event.preventDefault();
-
-        if (!event.target.checkValidity()) {
-            return;
-        }
         const { elements } = event.target;
         const url = this.appendProtocol(elements.url.value);
         const title = elements.title.value || url;
         const image = elements.thumb.files[0];
+
+        event.preventDefault();
 
         this.topSites.push({
             image: image ? await this.processImage(image) : this.getImage(url),
@@ -172,7 +159,7 @@ export class TopSites {
             url
         });
         this.updateVisibleSites();
-        this.hidePanel();
+        this.hideNewSiteForm();
         this.saveSites();
         event.target.reset();
     }

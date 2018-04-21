@@ -3,28 +3,49 @@ import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from "@angu
 @Component({
     selector: "stopwatch",
     template: `
-        <div class="stopwatch" (click)="toggle()">
-            <ng-container *ngIf="hours">
-                <span class="upper-block-digit">{{ hours }}</span>
-                <span class="upper-block-sep">h</span>
-            </ng-container>
-            <ng-container *ngIf="minutes">
-                <span class="upper-block-digit">{{ hours ? (minutes | padTime) : minutes }}</span>
-                <span class="upper-block-sep">m</span>
-            </ng-container>
-            <span class="upper-block-digit">{{ minutes ? (seconds | padTime) : seconds }}</span>
-            <span class="upper-block-sep">s</span>
-            <span class="stopwatch-milliseconds">{{ milliseconds | slice: 2 | padTime }}</span>
+        <div class="upper-block-item" [class.visible]="visible">
+            <div class="upper-block-item-content">
+                <div class="stopwatch">
+                    <ng-container *ngIf="hours">
+                        <span class="upper-block-digit">{{ hours }}</span>
+                        <span class="upper-block-sep">h</span>
+                    </ng-container>
+                    <ng-container *ngIf="minutes">
+                        <span class="upper-block-digit">{{ hours ? (minutes | padTime) : minutes }}</span>
+                        <span class="upper-block-sep">m</span>
+                    </ng-container>
+                    <span class="upper-block-digit">{{ minutes ? (seconds | padTime) : seconds }}</span>
+                    <span class="upper-block-sep">s</span>
+                    <span class="stopwatch-milliseconds">{{ milliseconds | slice: 2 | padTime }}</span>
+                </div>
+            </div>
+            <div class="upper-block-group upper-block-item-controls">
+                <button class="btn-secondary btn-secondary-alt btn-secondary-large"
+                    (click)="toggle()">{{ running ? "Stop" : "Start" }}</button>
+                <button class="btn-secondary  btn-secondary-alt btn-secondary-large upper-block-reset-btn"
+                    (click)="reset()">Reset</button>
+                <ng-container *ngIf="running">
+                    <button class="btn-secondary btn-secondary-alt" (click)="expandSize()" title="Expand">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#expand"></use>
+                        </svg>
+                    </button>
+                    <button class="btn-secondary btn-secondary-alt" (click)="enterFullscreen()" title="Enter fullscreen">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#fullscreen"></use>
+                        </svg>
+                    </button>
+                </ng-container>
+            </div>
         </div>
     `
 })
 export class Stopwatch {
-    @Output() running = new EventEmitter();
-    @Output() updateTitle = new EventEmitter();
-    @Input() state;
+    @Output() size = new EventEmitter();
+    @Output() fullscreen = new EventEmitter();
+    @Input() visible: boolean = false;
 
-    isRunning: boolean = false;
-    isWorkerInitialized: boolean = false;
+    running: boolean = false;
     hours: number = 0;
     minutes: number = 0;
     seconds: number = 0;
@@ -35,25 +56,17 @@ export class Stopwatch {
         this.ref = ref;
     }
 
-    ngOnChanges() {
-        if (this.state) {
-            this.isRunning = this.state.isRunning;
-
-            if (this.state.command) {
-                this[this.state.command]();
-            }
-        }
-    }
-
     ngOnViewInit() {
         this.ref.detach();
     }
 
     initWorker() {
-        this.isWorkerInitialized = true;
+        if (this.worker) {
+            return;
+        }
         this.worker = new Worker("ww.js");
         this.worker.onmessage = ({ data }) => {
-            if (this.isRunning) {
+            if (this.running) {
                 this.update(Date.now() - data);
             }
         };
@@ -75,17 +88,12 @@ export class Stopwatch {
                 this.minutes -= 60;
                 this.hours += 1;
             }
-            this.updateTitle.emit({
-                hours: this.hours,
-                minutes: this.minutes,
-                seconds: this.seconds
-            });
         }
         this.ref.detectChanges();
     }
 
     toggle() {
-        if (this.isRunning) {
+        if (this.running) {
             this.stop();
         }
         else {
@@ -94,18 +102,14 @@ export class Stopwatch {
     }
 
     start() {
-        if (!this.isWorkerInitialized) {
-            this.initWorker();
-        }
+        this.initWorker();
         this.worker.postMessage("start");
-        this.isRunning = true;
-        this.running.emit(this.isRunning);
+        this.running = true;
     }
 
     stop() {
         this.worker.postMessage("stop");
-        this.isRunning = false;
-        this.running.emit(this.isRunning);
+        this.running = false;
     }
 
     reset() {
@@ -114,9 +118,17 @@ export class Stopwatch {
         this.seconds = 0;
         this.milliseconds = 0;
 
-        if (this.isRunning) {
+        if (this.running) {
             this.stop();
         }
         this.ref.detectChanges();
+    }
+
+    expandSize() {
+        this.size.emit(true);
+    }
+
+    enterFullscreen() {
+        this.fullscreen.emit(true);
     }
 }

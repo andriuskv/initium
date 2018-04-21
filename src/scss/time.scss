@@ -8,21 +8,30 @@
     height: 45vh;
     transform: translateX(-50%);
     text-shadow: $text-shadow;
+    font-family: $large-number-font-family;
     cursor: default;
 }
 
+.clock-container {
+    position: relative;
+}
+
 .clock {
-    font-size: 120px;
+    font-size: 8.4em;
     line-height: 0.8;
 }
 
 .period {
-    font-size: 32px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    transform: translateX(calc(100% + 2px));
+    font-size: 2.2em;
     line-height: 1;
 }
 
 .date {
-    margin-top: 2px;
+    margin-top: 4px;
     text-align: right;
-    font-size: 18px;
+    font-size: 1.25em;
 }

@@ -13,83 +13,93 @@
 
 .top-site {
     overflow: hidden;
-    border: 1px solid $color2;
+    position: relative;
 
-    &:hover .remove-site-btn {
-        display: flex;
+    &:hover {
+        .remove-site-btn {
+            display: flex;
+        }
+
+        .add-site-btn-icon {
+            display: block;
+        }
+    }
+
+    &:focus-within .add-site-btn-icon {
+        display: block;
     }
 }
 
 .site-title {
     @include text-truncate;
 
-    position: relative;
     padding: 6px;
-    background-color: $color1;
+    border-bottom: 1px solid $primary-border-color;
     font-size: 13px;
 }
 
 .remove-site-btn {
     position: absolute;
-    top: 50%;
+    top: 2px;
     right: 2px;
     display: none;
-    background-color: inherit;
-    box-shadow: -2px 0 4px 0 $color1;
-    transform: translateY(-50%);
+    backdrop-filter: blur(1px);
 }
 
 .add-site-btn {
     width: 100%;
     height: 100%;
 
-    svg {
-        width: 64px;
-        height: 64px;
+    &:hover {
+        color: $primary-text-color;
     }
+}
+
+.add-site-btn-icon {
+    display: none;
+    width: 40px;
+    height: 40px;
 }
 
 .site-thumbnail-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100% - 26px);
+    height: calc(100% - 27px);
 }
 
-.site-thumbnail.full {
+.site-thumbnail {
     max-width: 100%;
     max-height: 100%;
 }
 
-.new-site-form-input {
-    width: 100%;
-    margin-bottom: 4px;
+.new-site-form {
+    width: 240px;
+    margin: auto;
 }
 
-.new-site-form-title {
-    margin-top: 4px;
+.new-site-form-input {
+    width: 100%;
     margin-bottom: 8px;
-    font-size: 18px;
-    font-weight: normal;
-    text-align: center;
 }
 
 .new-site-form-btn-container {
     display: flex;
-
-    .btn {
-        flex-grow: 1;
-
-        &:not(.file-input-btn) {
-            margin-left: 2px;
-        }
-    }
+    justify-content: space-between;
 }
 
 .file-input {
     display: none;
 }
 
-.file-input-btn {
-    text-align: center;
+.top-sites-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
 }

@@ -6,13 +6,15 @@ import { dispatchCustomEvent } from "../../utils/utils";
     selector: "dropbox",
     template: `
         <div class="dropbox-header">
-            <button class="btn-icon" (click)="goBack(activeDir)" *ngIf="activeDir.path && activeDir.path !== '/'" title="Back">
+            <button class="btn-secondary btn-secondary-alt"
+                *ngIf="activeDir.path && activeDir.path !== '/'"
+                (click)="goBack(activeDir)" title="Back">
                 <svg viewBox="0 0 24 24">
                     <use href="#chevron-left"></use>
                 </svg>
             </button>
             <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
-            <button class="btn-icon" title="Logout" (click)="logout()">
+            <button class="btn-secondary btn-secondary-alt" title="Logout" (click)="logout()">
                 <svg viewBox="0 0 24 24">
                     <use href="#cross"></use>
                 </svg>
@@ -108,6 +110,18 @@ export class DropboxComp {
 
         dispatchCustomEvent("dropbox", {
             loggedIn: false
+        });
+
+        this.deleteServiceWorkerCache();
+    }
+
+    deleteServiceWorkerCache() {
+        caches.keys().then(keys => {
+            keys.forEach(key => {
+                if (key.startsWith("dropbox")) {
+                    caches.delete(key);
+                }
+            });
         });
     }
 
@@ -238,7 +252,7 @@ export class DropboxComp {
         item.fetching = true;
 
         this.dropbox.sharingGetSharedLinks({ path: item.path }).then(res => {
-            const image = res.links.find(link => link.url.includes(item.name));
+            const image = res.links.find(link => link.path.includes(item.name));
 
             if (!image) {
                 return this.dropbox.sharingCreateSharedLinkWithSettings({ path: item.path })
@@ -255,6 +269,7 @@ export class DropboxComp {
         })
         .catch(error => {
             console.log(error);
+            item.fetching = false;
         });
     }
 
@@ -265,6 +280,7 @@ export class DropboxComp {
             }
             else {
                 item.error = true;
+                item.fetching = false;
 
                 setTimeout(() => {
                     item.error = false;
