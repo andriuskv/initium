@@ -5,10 +5,21 @@ export class SettingService {
     data: Subject<object> = new Subject();
 
     initSettings() {
-        const defaultSettings = this.getDefault();
-        const storedSettings = JSON.parse(localStorage.getItem("settings")) || {};
+        const settings = JSON.parse(localStorage.getItem("settings")) || {};
 
-        return Object.assign(defaultSettings, storedSettings);
+        return this.copyObject(settings, this.getDefault());
+    }
+
+    copyObject(obj, mainObj) {
+        for (const key of Object.keys(mainObj)) {
+            if (typeof obj[key] === "undefined") {
+                obj[key] = mainObj[key];
+            }
+            else if (typeof obj[key] === "object") {
+                obj[key] = this.copyObject(obj[key], mainObj[key]);
+            }
+        }
+        return obj;
     }
 
     getDefault() {
