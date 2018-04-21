@@ -38,12 +38,8 @@ export class WidgetMenu {
     }
 
     toggleItem(item) {
-        this.increaseZIndex();
-
-        if (item === "calendar" && this.reminderInicatorVisible) {
-            this.reminderInicatorVisible = false;
-        }
         this.selectedItem = item;
+        this.increaseZIndex();
     }
 
     closeSelectedItem() {

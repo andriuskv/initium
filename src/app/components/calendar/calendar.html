@@ -56,7 +56,7 @@
         <calendar-selected-day
             [day]="selectedDay"
             (event)="showCalendar()"
-            (create)="createReminder($event)"
+            (create)="handleReminderCreation($event)"
             (remove)="removeReminder($event)">
         </calendar-selected-day>
     </div>
