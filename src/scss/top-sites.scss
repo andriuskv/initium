@@ -1,19 +1,19 @@
 .top-sites-container {
     --rows: 1;
 
-    height: calc(var(--rows) * 125px);
+    height: auto;
 }
 
 .top-sites {
     display: grid;
-    grid-template: repeat(var( --rows), 1fr) / repeat(4, 1fr);
+    grid-template: repeat(var(--rows), 1fr) / repeat(4, 1fr);
     grid-gap: 4px;
-    height: 100%;
 }
 
 .top-site {
     overflow: hidden;
     position: relative;
+    height: 125px;
 
     &:hover {
         .remove-site-btn {
