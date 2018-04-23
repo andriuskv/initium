@@ -59,6 +59,9 @@ export class FeedService {
     getFeed(url, title, updating = false) {
         return this.fetchFeed(url).then(feed => {
             if (feed) {
+                if (!Array.isArray(feed.entries)) {
+                    throw new Error("Feed has no entries");
+                }
                 return {
                     url,
                     title: title || feed.title,
