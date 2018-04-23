@@ -115,6 +115,10 @@ export class RssFeed {
                     feed.error = true;
                 }
                 return results;
+            })
+            .catch(() => {
+                feed.isLoading = false;
+                feed.error = true;
             });
         });
         const loadedFeeds = await Promise.all(feedsToLoad);
