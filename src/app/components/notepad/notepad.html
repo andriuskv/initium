@@ -18,7 +18,7 @@
                     (click)="selectTab(i)">
                     <span class="main-block-content-header-item-title">{{ tab.title }}</span>
                 </button>
-                <button class="btn-secondary main-block-content-header-item-btn"
+                <button class="btn-secondary main-block-content-header-item-btn delay-reveal"
                     *ngIf="tabs.length > 1"
                     (click)="setTabForRemoval(i)" title="Remove tab">
                     <svg viewBox="0 0 24 24">
