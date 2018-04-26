@@ -1,16 +1,16 @@
 .main-block {
     position: absolute;
-    top: 45vh;
+    top: 44%;
     left: 50%;
     transform: translateX(-50%);
-    transition: top 0.2s;
+    transition: 0.2s transform;
 
     &.hidden {
         display: none;
     }
 
     &.expanded {
-        top: 4px;
+        transform: translate(-50%, -44%);
 
         .main-block-nav {
             position: absolute;
