@@ -3,20 +3,21 @@
     top: 44%;
     left: 50%;
     transform: translateX(-50%);
-    transition: 0.2s transform;
+    transition: 0.2s top;
 
     &.hidden {
         display: none;
     }
 
     &.expanded {
-        transform: translate(-50%, -44%);
+        top: 4px;
 
         .main-block-nav {
             position: absolute;
             opacity: 0;
             visibility: hidden;
             transform: translateY(100%);
+            transition-delay: 0s;
         }
 
         .main-block-content {
@@ -80,6 +81,7 @@
     display: flex;
     flex-grow: 1;
     width: 50%;
+    margin-right: 4px;
 }
 
 .main-block-content-header-item {
