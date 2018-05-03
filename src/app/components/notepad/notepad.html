@@ -2,7 +2,8 @@
     [class.visible]="isVisible"
     [class.initialized]="initialized">
     <div class="main-block-content-header">
-        <button class="btn-secondary btn-secondary-alt" *ngIf="tabs.length > 4"
+        <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+            *ngIf="tabs.length > 4"
             (click)="previousVisibleTabs()"
             [disabled]="shift <= 0">
             <svg viewBox="0 0 24 24">
@@ -27,14 +28,16 @@
                 </button>
             </li>
         </ul>
-        <button class="btn-secondary btn-secondary-alt" *ngIf="tabs.length > 4"
+        <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+            *ngIf="tabs.length > 4"
             (click)="nextVisibleTabs()"
             [disabled]="shift + 4 >= tabs.length">
             <svg viewBox="0 0 24 24">
                 <use href="#chevron-right"></use>
             </svg>
         </button>
-        <button class="btn-secondary btn-secondary-alt" (click)="showTabCreateModal()" title="Create tab">
+        <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+            (click)="showTabCreateModal()" title="Create tab">
             <svg viewBox="0 0 24 24">
                 <use href="#plus"></use>
             </svg>

@@ -138,6 +138,10 @@ textarea {
     &:hover {
         color: $button-hover-color;
     }
+
+    &:disabled:hover {
+        background-color: transparent;
+    }
 }
 
 .btn-secondary-alt {
@@ -145,7 +149,7 @@ textarea {
 
     &:hover {
         color: $primary-text-color;
-        background-color: $button-hover-background-color;
+        background-color: $secondary-button-hover-background-color;
     }
 }
 
