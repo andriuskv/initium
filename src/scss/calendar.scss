@@ -95,7 +95,7 @@
     }
 
     &:hover, &.current-day {
-        background-color: $button-hover-background-color;
+        background-color: $secondary-button-hover-background-color;
     }
 }
 
@@ -250,7 +250,7 @@
     padding: 4px;
 
     &:hover {
-        background-color: $button-hover-background-color;
+        background-color: $secondary-button-hover-background-color;
         cursor: default;
     }
 }

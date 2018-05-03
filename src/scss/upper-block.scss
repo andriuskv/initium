@@ -61,7 +61,6 @@
 
 .upper-block-header-item {
     position: relative;
-    margin-right: 8px;
 
     &.active::after {
         content: "";
@@ -124,6 +123,10 @@
     display: flex;
     padding: 4px;
     border-top: 1px solid $primary-border-color;
+
+    .btn-secondary:not(:first-of-type) {
+        margin-left: 4px;
+    }
 }
 
 .upper-block-reset-btn {
