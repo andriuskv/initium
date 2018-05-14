@@ -1,3 +1,8 @@
+import { Injectable } from "@angular/core";
+
+@Injectable({
+  providedIn: "root"
+})
 export class WeatherService {
     fetchWeather(params) {
         const url = "http://api.openweathermap.org/data/2.5/weather";

@@ -1,5 +1,9 @@
+import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
 
+@Injectable({
+  providedIn: "root"
+})
 export class SettingService {
     settings: any = this.initSettings();
     data: Subject<object> = new Subject();

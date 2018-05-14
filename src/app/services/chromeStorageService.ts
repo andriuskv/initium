@@ -1,5 +1,9 @@
+import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
 
+@Injectable({
+  providedIn: "root"
+})
 export class ChromeStorageService {
     isLocalChange: boolean = false;
     data: Subject<object> = new Subject();

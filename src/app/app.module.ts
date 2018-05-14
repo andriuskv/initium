@@ -1,16 +1,6 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 
-import { ChromeStorageService } from "./services/chromeStorageService";
-import { TimeDateService } from "./services/timeDateService";
-import { SettingService } from "./services/settingService";
-import { WeatherService } from "./services/weatherService";
-import { NotificationService } from "./services/notificationService";
-import { FeedService } from "./services/feedService";
-import { ZIndexService } from "./services/zIndexService";
-import { ReminderService } from "./services/reminderService";
-import { TwitterProxyService } from "./services/twitterProxyService";
-
 import { SlicePipe } from "./pipes/slicePipe";
 import { PadTimePipe } from "./pipes/padTimePipe";
 import { SafeStylePipe } from "./pipes/safeStylePipe";
@@ -38,8 +28,6 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
 
 @NgModule({
     imports: [BrowserModule],
-    providers: [ChromeStorageService, SettingService, TimeDateService, WeatherService,
-        NotificationService, FeedService, ZIndexService, ReminderService, TwitterProxyService],
     declarations: [
         App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Todo, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,

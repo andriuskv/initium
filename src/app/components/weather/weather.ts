@@ -120,6 +120,7 @@ export class Weather {
     getIcon(id, code) {
         switch (id) {
             // Thunderstorm
+            case 200:
             case 201:
             case 211:
                 return "lightning";

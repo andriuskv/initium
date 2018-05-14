@@ -1,7 +1,9 @@
 import { Injectable } from "@angular/core";
 import { ChromeStorageService } from "./chromeStorageService";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class ReminderService {
     constructor(private chromeStorageService: ChromeStorageService) {
         this.chromeStorageService = chromeStorageService;

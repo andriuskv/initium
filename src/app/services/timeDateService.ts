@@ -1,3 +1,8 @@
+import { Injectable } from "@angular/core";
+
+@Injectable({
+  providedIn: "root"
+})
 export class TimeDateService {
     getTime({ hours, minutes }, format) {
         let period = "";
@@ -82,14 +87,19 @@ export class TimeDateService {
         };
     }
 
-    getDate(format, date = this.getCurrentDate()) {
+    getDate(string, date: any = this.getCurrentDate()) {
         const map = {
             year: date.year,
             month: this.getMonth(date.month),
             day: this.getDayWithSuffix(date.day),
-            weekday: this.getWeekday(date.weekday)
+            weekday: this.getWeekday(date.weekday),
+            ...this.getTime(date, date.hourFormat)
         };
+        const regex = new RegExp(Object.keys(map).join("|"), "g");
 
-        return format.replace(/\w+/g, item => map[item]);
+        if (typeof map.minutes === "number") {
+            map.minutes = `00${map.minutes}`.slice(-2);
+        }
+        return string.replace(regex, item => map[item]);
     }
 }
