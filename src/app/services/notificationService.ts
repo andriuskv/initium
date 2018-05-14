@@ -1,7 +1,9 @@
 import { Injectable } from "@angular/core";
 import { SettingService } from "../services/settingService";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class NotificationService {
     timeout: any;
 

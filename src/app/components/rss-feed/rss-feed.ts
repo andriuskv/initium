@@ -14,12 +14,15 @@ export class RssFeed {
     @Output() toggleSize = new EventEmitter();
     @Input() isVisible: boolean = false;
 
+    initializing: boolean = true;
     loading: boolean = true;
     fetching: boolean = false;
+    showingFeedList: boolean = false;
+    showingForm: boolean = false;
+    showingFormCloseButton: boolean = false;
     newEntryCount: number = 0;
     timeout: number = 0;
     initTimeout: number = 0;
-    latestActiveFeed: string = "";
     message: string = "";
     feedsToLoad: Array<any> = [];
     feeds: Array<any> = [];
@@ -29,11 +32,7 @@ export class RssFeed {
         private chromeStorageService: ChromeStorageService,
         private feedService: FeedService,
         private notificationService: NotificationService
-    ) {
-        this.chromeStorageService = chromeStorageService;
-        this.feedService = feedService;
-        this.notificationService = notificationService;
-    }
+    ) {}
 
     ngOnInit() {
         const delay = this.isVisible ? 2000 : 10000;
@@ -66,21 +65,12 @@ export class RssFeed {
         });
     }
 
-    saveFeeds(feeds) {
-        const feedsToSave = feeds.map(({ url, title }) => ({ url, title }));
+    saveFeeds() {
+        const feeds = this.feeds
+            .map(({ url, title }) => ({ url, title }))
+            .concat(this.feedsToLoad);
 
-        this.chromeStorageService.set({ rss: feedsToSave });
-    }
-
-    addNewFeed() {
-        if (this.activeFeed) {
-            this.latestActiveFeed = this.activeFeed;
-            this.activeFeed = null;
-        }
-        else {
-            this.activeFeed = this.latestActiveFeed;
-            this.latestActiveFeed = null;
-        }
+        this.chromeStorageService.set({ rss: feeds });
     }
 
     removeFeed(index) {
@@ -89,20 +79,39 @@ export class RssFeed {
         if (!this.feeds.length) {
             this.activeFeed = null;
             clearTimeout(this.timeout);
+            this.showForm();
         }
         else {
             this.activeFeed = this.feeds[0];
         }
-        this.saveFeeds(this.feeds);
+        this.saveFeeds();
     }
 
-    async loadFeeds(feeds) {
-        if (!feeds.length) {
-            this.activeFeed = null;
-            this.feeds.length = 0;
-            return;
-        }
-        const feedsToLoad = feeds.map(feed => {
+    showForm(showButton = false) {
+        this.showingForm = true;
+        this.hideFeedList();
+        this.showingFormCloseButton = showButton;
+    }
+
+    backToFeedList() {
+        this.hideForm();
+        this.showFeedList();
+    }
+
+    hideForm() {
+        this.showingForm = false;
+    }
+
+    showFeedList() {
+        this.showingFeedList = true;
+    }
+
+    hideFeedList() {
+        this.showingFeedList = false;
+    }
+
+    getFeeds(feedsToLoad, failedToFetchFeeds) {
+        return feedsToLoad.map(feed => {
             feed.isLoading = true;
 
             return this.feedService.getFeed(feed.url, feed.title).then(results => {
@@ -119,25 +128,44 @@ export class RssFeed {
             .catch(() => {
                 feed.isLoading = false;
                 feed.error = true;
+                failedToFetchFeeds.push(feed);
             });
         });
-        const loadedFeeds = await Promise.all(feedsToLoad);
-        await delay(1000);
-
-        this.feeds = [...loadedFeeds].filter(feed => feed);
-
-        if (!this.activeFeed || !this.feeds.some(({ url }) => url === this.activeFeed.url)) {
-            this.activeFeed = this.feeds[0];
-        }
-        feeds.length = 0;
-        this.getNewFeeds();
     }
 
-    getNewFeeds() {
+    async loadFeeds(feedsToLoad) {
+        if (!feedsToLoad.length) {
+            this.initializing = false;
+            this.activeFeed = null;
+            this.feeds.length = 0;
+            this.showingForm = true;
+            return;
+        }
+        const failedToFetchFeeds = [];
+        const feeds = await Promise.all(this.getFeeds(feedsToLoad, failedToFetchFeeds));
+        await delay(1000);
+
+        this.feeds = [...feeds].filter(feed => feed);
+        this.feedsToLoad = failedToFetchFeeds;
+
+        if (this.feeds.length) {
+            this.activeFeed = this.feeds[0];
+        }
+        else if (this.feedsToLoad.length) {
+            this.showFeedList();
+        }
+        else {
+            this.showForm();
+        }
+        this.initializing = false;
+        this.scheduleFeedUpdate();
+    }
+
+    scheduleFeedUpdate() {
         clearTimeout(this.timeout);
         this.timeout = window.setTimeout(() => {
             this.updateFeeds();
-            this.getNewFeeds();
+            this.scheduleFeedUpdate();
         }, 1500000);
     }
 
@@ -164,13 +192,18 @@ export class RssFeed {
     }
 
     async updateFeed(feed) {
-        const entries = await this.feedService.updateFeed(feed);
+        const newFeed = await this.feedService.updateFeed(feed);
 
-        if (entries.length) {
-            feed.newEntryCount += entries.length;
-            this.newEntryCount += entries.length;
-            feed.entries.unshift(...entries);
+        if (!newFeed) {
+            return;
         }
+
+        if (newFeed.entries.length) {
+            feed.newEntryCount += newFeed.entries.length;
+            this.newEntryCount += newFeed.entries.length;
+            feed.entries.unshift(...newFeed.entries);
+        }
+        feed.updated = newFeed.updated;
     }
 
     async handleFormSubmit(event) {
@@ -189,8 +222,9 @@ export class RssFeed {
             }
             this.feeds.push(feed);
             this.activeFeed = feed;
-            this.getNewFeeds();
-            this.saveFeeds(this.feeds);
+            this.hideForm();
+            this.saveFeeds();
+            this.scheduleFeedUpdate();
             event.target.reset();
         }
         catch (e) {
@@ -206,10 +240,51 @@ export class RssFeed {
         }
     }
 
+    async refetchFeed(feed, index) {
+        feed.refeching = true;
+
+        try {
+            const newFeed = await this.feedService.getFeed(feed.url, feed.title);
+
+            if (newFeed.entries) {
+                this.feeds.push(newFeed);
+                this.feedsToLoad.splice(index, 1);
+                this.activeFeed = newFeed;
+                this.hideFeedList();
+                this.saveFeeds();
+                this.scheduleFeedUpdate();
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+        finally {
+            feed.refeching = false;
+        }
+    }
+
+    removeFailedToFetchFeed(index) {
+        this.feedsToLoad.splice(index, 1);
+    }
+
+    handleHeaderItemClick({ target }, feed) {
+        if (target.classList.contains("feed-new-entry-count")) {
+            this.markEntriesAsRead(feed);
+        }
+        else {
+            this.showFeed(feed);
+        }
+    }
+
     showFeed(feed) {
-        if (!this.activeFeed || feed.url !== this.activeFeed.url) {
+        if (feed.url !== this.activeFeed.url) {
             this.activeFeed = feed;
         }
+    }
+
+    showFeedFromList(feed) {
+        this.showFeed(feed);
+        this.hideFeedList();
     }
 
     markEntriesAsRead(feed) {

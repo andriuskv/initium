@@ -1,11 +1,16 @@
 import { Injectable } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
+import { TimeDateService } from "./timeDateService";
+import { SettingService } from "./settingService";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class FeedService {
-    constructor(private domSanitizer: DomSanitizer) {
-        this.domSanitizer = domSanitizer;
-    }
+    constructor(
+        private domSanitizer: DomSanitizer,
+        private timeDateService: TimeDateService,
+        private settingService: SettingService) {}
 
     getEntryLink(entry) {
         if (typeof entry.link === "string") {
@@ -19,7 +24,7 @@ export class FeedService {
         }
     }
 
-    getEntryDesc(entry) {
+    getEntryDescription(entry) {
         if (entry.subtitle) {
             return entry.subtitle;
         }
@@ -31,43 +36,72 @@ export class FeedService {
         }
     }
 
-    parseEntries(entries, newEntry) {
+    parseEntries(entries) {
         return entries.map(entry => ({
-            newEntry,
-            desc: this.domSanitizer.bypassSecurityTrustHtml(this.getEntryDesc(entry)),
-            link: this.getEntryLink(entry),
             title: entry.title,
-            date: entry.pubDate || entry.updated || ""
+            link: this.getEntryLink(entry),
+            description: this.domSanitizer.bypassSecurityTrustHtml(this.getEntryDescription(entry)),
+            date: this.parseDate(entry.pubDate || entry.updated || "")
         }));
     }
 
-    parseResults({ feed, rss }) {
-        let title = "";
-        let entries = null;
+    parseDate(dateStr) {
+        if (!dateStr) {
+            return;
+        }
+        const date = new Date(dateStr);
+        const { format } = this.settingService.getSetting("time");
 
-        if (rss) {
-            title = rss.channel.title;
-            entries = rss.channel.item;
-        }
-        else if (feed) {
-            title = feed.title;
-            entries = feed.entry;
-        }
-        return { title, entries };
+        return this.timeDateService.getDate("month day, year at hours:minutes period", {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+            hours: date.getHours(),
+            minutes: date.getMinutes(),
+            hourFormat: format
+        });
     }
 
-    getFeed(url, title, updating = false) {
+    parseResults({ feed, rss }) {
+        const newFeed: any = {};
+
+        if (rss) {
+            const { channel } = rss;
+
+            newFeed.title = channel.title;
+            newFeed.entries = channel.item;
+            newFeed.description = channel.description;
+            newFeed.updated = this.parseDate(channel.lastBuildDate);
+
+            if (channel.image) {
+                newFeed.image = channel.image.url;
+            }
+        }
+        else if (feed) {
+            newFeed.title = feed.title;
+            newFeed.description = feed.subtitle;
+            newFeed.entries = feed.entry;
+            newFeed.updated = this.parseDate(feed.updated);
+
+            if (feed.logo) {
+                newFeed.image = feed.logo;
+            }
+        }
+        return newFeed;
+    }
+
+    getFeed(url, title) {
         return this.fetchFeed(url).then(feed => {
             if (feed) {
                 if (!Array.isArray(feed.entries)) {
                     throw new Error("Feed has no entries");
                 }
-                return {
+                return Object.assign(feed, {
                     url,
-                    title: title || feed.title,
+                    title: title || feed.title || url,
                     newEntryCount: 0,
-                    entries: this.parseEntries(feed.entries, updating)
-                };
+                    entries: this.parseEntries(feed.entries)
+                });
             }
         });
     }
@@ -75,12 +109,20 @@ export class FeedService {
     getNewEntries(newEntries, entries) {
         return newEntries.filter(({ link, title }) => {
             return !entries.some(entry => entry.link === link || entry.title === title);
+        }).map(entry => {
+            entry.newEntry = true;
+            return entry;
         });
     }
 
     updateFeed({ url, title, entries }) {
-        return this.getFeed(url, title, true).then(newFeed => {
-            return newFeed ? this.getNewEntries(newFeed.entries, entries) : [];
+        return this.getFeed(url, title).then(feed => {
+            if (feed) {
+                return {
+                    updated: feed.updated,
+                    entries: this.getNewEntries(feed.entries, entries)
+                };
+            }
         });
     }
 

@@ -36,7 +36,7 @@
     display: flex;
     justify-content: center;
     width: 240px;
-    height: 144px;
+    height: 150px;
     transition: 0.2s height;
 
     &.loading {
@@ -106,14 +106,14 @@
     margin-right: 8px;
 }
 
-.feeds {
+.feed-entries {
     @include scrollbar;
 
     overflow-y: auto;
     flex-grow: 1;
 }
 
-.feed {
+.feed-entry {
     padding: 8px;
 
     &:not(:last-of-type) {
@@ -121,7 +121,7 @@
     }
 }
 
-.feed-link {
+.feed-entry-link {
     font-size: 16px;
 
     &:hover {
@@ -129,22 +129,21 @@
     }
 }
 
-.feed-desc {
+.is-new-entry {
+    margin-left: 8px;
+    color: $color-blue-light;
+    font-style: italic;
+}
+
+.feed-description {
     margin-top: 4px;
-    margin-bottom: 4px;
     overflow: hidden;
     line-height: 1.4;
     word-break: break-word;
     white-space: pre-line;
 
-    p {
-        margin-top: 0;
-        margin-bottom: 0;
-    }
-
     img {
-        max-width: 100px;
-        object-fit: scale-down;
+        max-height: 64px;
     }
 
     a {
@@ -163,18 +162,124 @@
     }
 
     td {
-        padding-right: 4px;
+        padding: 0 4px 0 0;
         white-space: normal;
     }
 }
 
 .feed-date {
+    margin-top: 4px;
     color: $secondary-text-color;
     font-size: 13px;
 }
 
-.is-new-entry {
-    float: right;
-    color: $color-blue-light;
-    font-style: italic;
+.feed-list-header {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 4px;
+    border-bottom: 1px solid $primary-border-color;
+
+    .btn-secondary {
+        margin-left: 4px;
+    }
+}
+
+.feed-list-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+}
+
+.feed-list-items {
+    @include scrollbar;
+
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.feed-list-item {
+    padding: 8px;
+    border-bottom: 1px solid $primary-border-color;
+
+    &.disabled {
+        position: relative;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: block;
+            background-image: url("./assets/images/ring.svg");
+            background-repeat: no-repeat;
+            background-position: center;
+            backdrop-filter: blur(2px);
+        }
+    }
+}
+
+.feed-list-item-header {
+    display: flex;
+    align-items: flex-start;
+
+    img {
+        height: 32px;
+        margin-right: 8px;
+    }
+}
+
+.feed-list-item-remove-btn {
+    margin-left: auto;
+    color: $secondary-text-color;
+
+    &:hover {
+        color: $primary-text-color;
+    }
+}
+
+.feed-list-item-title {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+
+    .feed-new-entry-count:hover {
+        color: $color-grey-dark;
+        cursor: pointer;
+    }
+}
+
+.feed-list-item-title-btn {
+    font-size: inherit;
+
+    &:hover {
+        color: $primary-text-color;
+        text-decoration: underline;
+    }
+}
+
+.feed-list-item-url {
+    font-size: 13px;
+    color: $secondary-text-color;
+}
+
+.feed-list-item-error {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    color: $color-danger;
+
+    .btn-secondary {
+        margin-left: 8px;
+        font-weight: bold;
+
+         &:hover {
+            color: $color-danger;
+         }
+    }
 }
