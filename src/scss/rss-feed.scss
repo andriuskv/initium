@@ -6,11 +6,17 @@
     flex-shrink: 0;
     width: 18px;
     height: 18px;
+    padding: 0;
     margin-right: 4px;
     border-radius: 50%;
     background-color: $color-white;
     color: $color-grey-dark;
     font-size: 13px;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+        box-shadow: 0 0 0 2px $color-white;
+    }
 }
 
 .feed-hero {
@@ -121,6 +127,12 @@
     }
 }
 
+.feed-entry-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
 .feed-entry-link {
     font-size: 16px;
 
@@ -130,13 +142,16 @@
 }
 
 .is-new-entry {
-    margin-left: 8px;
-    color: $color-blue-light;
-    font-style: italic;
+    padding: 2px 6px;
+    margin-right: 8px;
+    border-radius: 4px;
+    background-color: $color-blue-light;
+    color: $color-grey-dark;
+    font-size: 13px;
+    cursor: default;
 }
 
 .feed-description {
-    margin-top: 4px;
     overflow: hidden;
     line-height: 1.4;
     word-break: break-word;
@@ -227,20 +242,31 @@
 .feed-list-item-header {
     display: flex;
     align-items: flex-start;
+    margin-bottom: 4px;
 
     img {
-        height: 32px;
+        height: 36px;
         margin-right: 8px;
     }
 }
 
-.feed-list-item-remove-btn {
-    margin-left: auto;
+.feed-list-item-btn {
     color: $secondary-text-color;
+
+    &:first-of-type {
+        margin-left: auto;
+    }
 
     &:hover {
         color: $primary-text-color;
     }
+}
+
+.feed-list-item-title-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-right: 8px;
 }
 
 .feed-list-item-title {
@@ -255,12 +281,20 @@
 }
 
 .feed-list-item-title-btn {
+    padding: 2px 0;
     font-size: inherit;
 
     &:hover {
         color: $primary-text-color;
         text-decoration: underline;
     }
+}
+
+.feed-list-item-title-input {
+    padding: 2px 4px;
+    border-radius: 0;
+    background-color: transparent;
+    font-size: 16px;
 }
 
 .feed-list-item-url {

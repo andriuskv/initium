@@ -62,18 +62,32 @@
                 <li class="feed-list-item" *ngFor="let feed of feeds; let i = index">
                     <div class="feed-list-item-header">
                         <img [src]="feed.image" *ngIf="feed.image" alt="">
-                        <div>
-                            <h3 class="feed-list-item-title">
-                                <button class="btn-secondary feed-new-entry-count"
-                                    (click)="markEntriesAsRead(feed)"
-                                    *ngIf="feed.newEntryCount"
-                                    title="Mark new entries as read">{{ feed.newEntryCount }}</button>
-                                <button class="btn-secondary feed-list-item-title-btn"
-                                    (click)="showFeedFromList(feed)">{{ feed.title }}</button>
-                            </h3>
+                        <div class="feed-list-item-title-container">
+                            <input type="text" class="input feed-list-item-title-input"
+                                *ngIf="feed.editingTitle; else elseBlock" [value]="feed.title"
+                                (blur)="editTitle(feed)" (keyup.enter)="editTitle(feed)"
+                                #feedTitleInput>
+                            <ng-template #elseBlock>
+                                <h3 class="feed-list-item-title">
+                                    <button class="btn-secondary feed-new-entry-count"
+                                        (click)="markEntriesAsRead(feed)"
+                                        *ngIf="feed.newEntryCount"
+                                        title="Mark new entries as read">{{ feed.newEntryCount }}</button>
+                                    <button class="btn-secondary feed-list-item-title-btn"
+                                        (click)="showFeedFromList(feed)">{{ feed.title }}</button>
+                                </h3>
+                            </ng-template>
                             <div class="feed-list-item-url">{{ feed.url }}</div>
                         </div>
-                        <button class="btn-secondary feed-list-item-remove-btn" (click)="removeFeed(i)" title="Remove">
+                        <button class="btn-secondary feed-list-item-btn"
+                            *ngIf="!feed.editingTitle"
+                            (click)="enableTitleEdit(feed)" title="Edit title">
+                            <svg viewBox="0 0 24 24">
+                                <use href="#edit"></use>
+                            </svg>
+                        </button>
+                        <button class="btn-secondary feed-list-item-btn"
+                            (click)="removeFeed(i)" title="Remove">
                             <svg viewBox="0 0 24 24">
                                 <use href="#trash"></use>
                             </svg>
@@ -135,9 +149,9 @@
                 <li class="feed-entry"
                     (click)="markEntryAsRead(entry)"
                     *ngFor="let entry of activeFeed.entries">
-                    <div>
-                        <a [href]="entry.link" class="feed-entry-link" target="_blank">{{ entry.title }}</a>
+                    <div class="feed-entry-title">
                         <span class="is-new-entry" *ngIf="entry.newEntry">New</span>
+                        <a [href]="entry.link" class="feed-entry-link" target="_blank">{{ entry.title }}</a>
                     </div>
                     <p class="feed-description" [innerHTML]="entry.description"></p>
                     <div class="feed-date" *ngIf="entry.date">Posted on: {{ entry.date }}</div>

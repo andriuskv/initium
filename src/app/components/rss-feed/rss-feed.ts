@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input } from "@angular/core";
+import { Component, Output, EventEmitter, Input, ViewChild } from "@angular/core";
 import { delay } from "../../utils/utils";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { FeedService } from "../../services/feedService";
@@ -13,6 +13,7 @@ export class RssFeed {
     @Output() toggleTab = new EventEmitter();
     @Output() toggleSize = new EventEmitter();
     @Input() isVisible: boolean = false;
+    @ViewChild("feedTitleInput") feedTitleInput;
 
     initializing: boolean = true;
     loading: boolean = true;
@@ -299,6 +300,25 @@ export class RssFeed {
         if (entry.newEntry) {
             this.activeFeed.newEntryCount -= 1;
             entry.newEntry = false;
+        }
+    }
+
+    enableTitleEdit(feed) {
+        feed.editingTitle = true;
+
+        setTimeout(() => {
+            this.feedTitleInput.nativeElement.focus();
+        });
+    }
+
+    editTitle(feed) {
+        const oldTitle = feed.title;
+
+        feed.editingTitle = false;
+        feed.title = this.feedTitleInput.nativeElement.value || oldTitle;
+
+        if (feed.title !== oldTitle) {
+            this.saveFeeds();
         }
     }
 
