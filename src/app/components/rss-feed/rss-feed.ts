@@ -21,9 +21,12 @@ export class RssFeed {
     showingFeedList: boolean = false;
     showingForm: boolean = false;
     showingFormCloseButton: boolean = false;
+    VISIBLE_FEED_COUNT: number = 3;
     newEntryCount: number = 0;
     timeout: number = 0;
     initTimeout: number = 0;
+    shift: number = 0;
+    activeFeedIndex: number = 0;
     message: string = "";
     feedsToLoad: Array<any> = [];
     feeds: Array<any> = [];
@@ -74,16 +77,42 @@ export class RssFeed {
         this.chromeStorageService.set({ rss: feeds });
     }
 
+    showFeed(index = 0) {
+        this.activeFeedIndex = index;
+        this.activeFeed = this.feeds[index];
+    }
+
+    previousVisibleFeeds() {
+        this.shift -= 1;
+
+        if (this.activeFeedIndex >= this.shift + this.VISIBLE_FEED_COUNT) {
+            this.showFeed(this.activeFeedIndex - 1);
+        }
+    }
+
+    nextVisibleFeeds() {
+        this.shift += 1;
+
+        if (this.activeFeedIndex < this.shift) {
+            this.showFeed(this.activeFeedIndex + 1);
+        }
+    }
+
+    setShift(index = 0) {
+        this.shift = index >= this.VISIBLE_FEED_COUNT ? index - 2 : 0;
+    }
+
     removeFeed(index) {
         this.feeds.splice(index, 1);
 
         if (!this.feeds.length) {
             this.activeFeed = null;
-            clearTimeout(this.timeout);
             this.showForm();
+            clearTimeout(this.timeout);
         }
         else {
-            this.activeFeed = this.feeds[0];
+            this.setShift();
+            this.showFeed();
         }
         this.saveFeeds();
     }
@@ -139,7 +168,7 @@ export class RssFeed {
             this.initializing = false;
             this.activeFeed = null;
             this.feeds.length = 0;
-            this.showingForm = true;
+            this.showForm();
             return;
         }
         const failedToFetchFeeds = [];
@@ -150,7 +179,7 @@ export class RssFeed {
         this.feedsToLoad = failedToFetchFeeds;
 
         if (this.feeds.length) {
-            this.activeFeed = this.feeds[0];
+            this.showFeed();
         }
         else if (this.feedsToLoad.length) {
             this.showFeedList();
@@ -221,8 +250,11 @@ export class RssFeed {
             if (!feed) {
                 throw new Error("Feed was not found");
             }
+            const index = this.feeds.length;
+
             this.feeds.push(feed);
-            this.activeFeed = feed;
+            this.setShift(index);
+            this.showFeed(index);
             this.hideForm();
             this.saveFeeds();
             this.scheduleFeedUpdate();
@@ -248,9 +280,12 @@ export class RssFeed {
             const newFeed = await this.feedService.getFeed(feed.url, feed.title);
 
             if (newFeed.entries) {
+                const newFeedIndex = this.feeds.length;
+
                 this.feeds.push(newFeed);
                 this.feedsToLoad.splice(index, 1);
-                this.activeFeed = newFeed;
+                this.setShift(newFeedIndex);
+                this.showFeed(newFeedIndex);
                 this.hideFeedList();
                 this.saveFeeds();
                 this.scheduleFeedUpdate();
@@ -268,23 +303,18 @@ export class RssFeed {
         this.feedsToLoad.splice(index, 1);
     }
 
-    handleHeaderItemClick({ target }, feed) {
+    handleHeaderItemClick({ target }, feed, index) {
         if (target.classList.contains("feed-new-entry-count")) {
             this.markEntriesAsRead(feed);
         }
         else {
-            this.showFeed(feed);
+            this.showFeed(index);
         }
     }
 
-    showFeed(feed) {
-        if (feed.url !== this.activeFeed.url) {
-            this.activeFeed = feed;
-        }
-    }
-
-    showFeedFromList(feed) {
-        this.showFeed(feed);
+    showFeedFromList(index) {
+        this.setShift(index);
+        this.showFeed(index);
         this.hideFeedList();
     }
 

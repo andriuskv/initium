@@ -11,11 +11,11 @@
     "build": "npm run dist && npm run webpack -- --env.prod && node build.js"
   },
   "dependencies": {
-    "@angular/common": "^6.0.1",
-    "@angular/compiler": "^6.0.1",
-    "@angular/core": "^6.0.1",
-    "@angular/platform-browser": "^6.0.1",
-    "@angular/platform-browser-dynamic": "^6.0.1",
+    "@angular/common": "^6.0.2",
+    "@angular/compiler": "^6.0.2",
+    "@angular/core": "^6.0.2",
+    "@angular/platform-browser": "^6.0.2",
+    "@angular/platform-browser-dynamic": "^6.0.2",
     "core-js": "^2.5.6",
     "dropbox": "^4.0.4",
     "focus-visible": "^4.1.4",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@angular/cli": "^6.0.1",
-    "@angular/compiler-cli": "^6.0.1",
+    "@angular/compiler-cli": "^6.0.2",
     "@ngtools/webpack": "^6.0.1",
     "@types/chrome": "^0.0.65",
     "@types/node": "^10.0.9",
