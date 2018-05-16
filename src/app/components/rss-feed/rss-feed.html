@@ -74,7 +74,7 @@
                                         *ngIf="feed.newEntryCount"
                                         title="Mark new entries as read">{{ feed.newEntryCount }}</button>
                                     <button class="btn-secondary feed-list-item-title-btn"
-                                        (click)="showFeedFromList(feed)">{{ feed.title }}</button>
+                                        (click)="showFeedFromList(i)">{{ feed.title }}</button>
                                 </h3>
                             </ng-template>
                             <div class="feed-list-item-url">{{ feed.url }}</div>
@@ -121,17 +121,35 @@
     <ng-template #elseIf2>
         <ng-container *ngIf="activeFeed">
             <div class="main-block-content-header">
+                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+                    *ngIf="feeds.length > VISIBLE_FEED_COUNT"
+                    (click)="previousVisibleFeeds()"
+                    [disabled]="shift <= 0">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#chevron-left"></use>
+                    </svg>
+                </button>
                 <ul class="main-block-content-header-items">
                     <li class="main-block-content-header-item"
                         *ngFor="let feed of feeds; let i = index"
-                        [class.active]="feed.url === activeFeed.url">
+                        [class.active]="feed.url === activeFeed.url"
+                        [class.hidden]="i < shift || i >= shift + VISIBLE_FEED_COUNT">
                         <button class="btn-secondary main-block-content-header-item-select-btn"
-                            (click)="handleHeaderItemClick($event, feed)">
+                            (click)="handleHeaderItemClick($event, feed, i)">
                             <span class="feed-new-entry-count" *ngIf="feed.newEntryCount">{{ feed.newEntryCount }}</span>
                             <span class="main-block-content-header-item-title">{{ feed.title }}</span>
                         </button>
                     </li>
                 </ul>
+                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+                    *ngIf="feeds.length > VISIBLE_FEED_COUNT"
+                    (click)="nextVisibleFeeds()"
+                    [disabled]="shift + VISIBLE_FEED_COUNT >= feeds.length">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#chevron-right"></use>
+                    </svg>
+                </button>
+                <div class="main-block-content-header-separator"></div>
                 <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
                     (click)="toggleContainerSize()" title="Toggle size">
                     <svg viewBox="0 0 24 24">
