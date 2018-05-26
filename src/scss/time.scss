@@ -10,6 +10,10 @@
     text-shadow: $text-shadow;
     font-family: $large-number-font-family;
     cursor: default;
+
+    @media (max-height: 638px) {
+        height: 32%;
+    }
 }
 
 .clock-container {

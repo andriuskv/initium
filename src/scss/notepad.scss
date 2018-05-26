@@ -1,17 +1,5 @@
-.notepad {
-    opacity: 0;
-    visibility: hidden;
-    transform: scale(0.8);
-    transform-origin: top center;
-    transition: 0.2s opacity,
-                0.2s visibility,
-                0.2s transform;
-
-    &.initialized {
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-    }
+.notepad-spinner {
+    margin: auto;
 }
 
 .notepad-input {
