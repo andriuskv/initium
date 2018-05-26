@@ -24,6 +24,10 @@
             height: calc(100vh - 8px);
         }
     }
+
+    @media (max-height: 638px) {
+        top: 32%;
+    }
 }
 
 .main-block-nav {
