@@ -16,6 +16,7 @@ export class TopSites {
     topSites: Array<any> = [];
     visibleSites: Array<any> = [];
     emptySites: undefined[] = [];
+    editedSite: any = null;
 
     constructor(private settingService: SettingService, private domSanitizer: DomSanitizer) {
         this.settingService = settingService;
@@ -32,14 +33,8 @@ export class TopSites {
             this.visibleSiteCount = 8;
         }
 
-        if (topSites) {
-            if (Array.isArray(topSites)) {
-                this.topSites = this.resetImages(topSites);
-            }
-            else {
-                this.topSites = this.resetImages(topSites.display);
-                this.saveSites();
-            }
+        if (Array.isArray(topSites)) {
+            this.topSites = this.resetImages(topSites);
             this.updateVisibleSites();
         }
         else {
@@ -64,7 +59,7 @@ export class TopSites {
     getTopSites() {
         chrome.topSites.get(data => {
             this.topSites = data.map((site: any) => {
-                site.image = this.getImage(site.url);
+                site.image = this.getFavicon(site.url);
                 return site;
             });
             this.updateVisibleSites();
@@ -90,7 +85,7 @@ export class TopSites {
         this.emptySites.length = this.visibleSiteCount - this.visibleSites.length;
     }
 
-    getImage(url) {
+    getFavicon(url) {
         const { origin } = new URL(url);
 
         return this.domSanitizer.bypassSecurityTrustUrl(`chrome://favicon/${origin}`);
@@ -98,8 +93,8 @@ export class TopSites {
 
     resetImages(sites) {
         return sites.map(site => {
-            if (!site.uploaded) {
-                site.image = this.getImage(site.url);
+            if (typeof site.image === "object") {
+                site.image = this.getFavicon(site.url);
             }
             return site;
         });
@@ -130,7 +125,7 @@ export class TopSites {
                 image.onload = function() {
                     const canvas = document.createElement("canvas");
                     const width = 144;
-                    const height = 96;
+                    const height = 98;
 
                     canvas.width = width;
                     canvas.height = height;
@@ -147,21 +142,48 @@ export class TopSites {
     async addSite(event) {
         const { elements } = event.target;
         const url = this.appendProtocol(elements.url.value);
-        const title = elements.title.value || url;
-        const image = elements.thumb.files[0];
+        const title = elements.title.value;
+        const [file] = elements.thumb.files;
 
         event.preventDefault();
 
-        this.topSites.push({
-            image: image ? await this.processImage(image) : this.getImage(url),
-            uploaded: !!image,
-            title,
-            url
-        });
+        if (this.editedSite) {
+            await this.updateSite(title, url, file);
+        }
+        else {
+            this.topSites.push({
+                url,
+                image: file ? await this.processImage(file) : this.getFavicon(url),
+                title: title || url
+            });
+        }
         this.updateVisibleSites();
         this.hideNewSiteForm();
         this.saveSites();
         event.target.reset();
+    }
+
+    async updateSite(title, url, file) {
+        const { index, image: oldImage, title: oldTitle, url: oldUrl } = this.editedSite;
+        let image = null;
+
+        if (file) {
+            image = await this.processImage(file);
+        }
+        else if (url !== oldUrl || !oldImage) {
+            image = this.getFavicon(url);
+        }
+        this.topSites[index] = {
+            url,
+            image,
+            title: title || oldTitle
+        };
+        this.editedSite = null;
+    }
+
+    editSite(index) {
+        this.editedSite = { ...this.topSites[index], index };
+        this.showNewSiteForm();
     }
 
     saveSites() {

@@ -15,18 +15,15 @@
     position: relative;
     height: 125px;
 
-    &:hover {
-        .remove-site-btn {
+    &:hover, &:focus-within {
+        .remove-site-btn,
+        .edit-site-btn {
             display: flex;
         }
 
         .add-site-btn-icon {
             display: block;
         }
-    }
-
-    &:focus-within .add-site-btn-icon {
-        display: block;
     }
 }
 
@@ -38,12 +35,25 @@
     font-size: 13px;
 }
 
-.remove-site-btn {
+.remove-site-btn,
+.edit-site-btn {
     position: absolute;
-    top: 2px;
     right: 2px;
     display: none;
     backdrop-filter: blur(1px);
+}
+
+.remove-site-btn {
+    top: 2px;
+}
+
+.edit-site-btn {
+    bottom: 2px;
+    color: $secondary-text-color;
+
+    &:hover {
+        color: $primary-text-color;
+    }
 }
 
 .add-site-btn {
