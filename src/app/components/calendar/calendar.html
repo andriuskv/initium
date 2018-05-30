@@ -3,7 +3,7 @@
         <li class="current-day-reminder" *ngFor="let reminder of currentDay.reminders"
             [ngStyle]="{ 'border-left-color': reminder.color }">
             <div>{{ reminder.text }}</div>
-            <div class="current-day-reminder-range">{{ reminder.rangeString }}</div>
+            <div class="calendar-reminder-range">{{ reminder.rangeString }}</div>
         </li>
     </ul>
 </div>
