@@ -20,6 +20,7 @@
         </dropbox>
         <calendar class="calendar-container"
             [class.visible]="selectedItem === 'calendar'"
+            [isHidden]="!selectedItem"
             (reminderIndicatorVisible)="showReminderIndicator($event)">
         </calendar>
     </div>

@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from "@angular/core";
+import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { ReminderService } from "../../services/reminderService";
 import { TimeDateService } from "../../services/timeDateService";
 import { SettingService } from "../../services/settingService";
@@ -8,9 +8,10 @@ import { SettingService } from "../../services/settingService";
     templateUrl: "./calendar.html"
 })
 export class Calendar {
+    @Input() isHidden = true;
     @Output() reminderIndicatorVisible = new EventEmitter();
 
-    daySelected: boolean = false;
+    initialized: boolean = false;
     timeFormat: number = 24;
     currentYear: number;
     futureReminders: Array<any> = [];
@@ -36,6 +37,16 @@ export class Calendar {
         this.initReminders();
     }
 
+    ngOnChanges() {
+        if (this.initialized && this.isHidden) {
+            const { year, month } = this.currentDate;
+
+            this.selectedDay = null;
+            this.currentYear = year;
+            this.visibleMonth = this.getVisibleMonth(this.calendar, year, month);
+        }
+    }
+
     initTimeSettings() {
         const { format } = this.settingService.getSetting("time");
 
@@ -52,6 +63,7 @@ export class Calendar {
         this.currentYear = year;
         this.currentDay = this.setCurrentDay(this.calendar, this.currentDate);
         this.visibleMonth = this.getVisibleMonth(this.calendar, year, month);
+        this.initialized = true;
     }
 
     async initReminders() {
@@ -194,7 +206,6 @@ export class Calendar {
 
     showDay(day, direction = 0) {
         this.selectedDay = day;
-        this.daySelected = true;
 
         if (direction) {
             this.setVisibleMonth(direction);
@@ -202,7 +213,6 @@ export class Calendar {
     }
 
     showCalendar() {
-        this.daySelected = false;
         this.selectedDay = null;
     }
 
