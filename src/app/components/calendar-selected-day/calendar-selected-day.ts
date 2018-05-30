@@ -43,11 +43,7 @@ export class CalendarSelectedDay {
         private reminderService: ReminderService,
         private timeDateService: TimeDateService,
         private settingService: SettingService
-    ) {
-        this.reminderService = reminderService;
-        this.timeDateService = timeDateService;
-        this.settingService = settingService;
-    }
+    ) {}
 
     ngOnInit() {
         const { format } = this.settingService.getSetting("time");
@@ -56,7 +52,6 @@ export class CalendarSelectedDay {
         this.timeFormat = format;
         this.timePattern = this.getTimePattern(format);
         this.getReminders();
-        this.settingService.subscribeToChanges(this.timeSettingChangeHandler.bind(this));
     }
 
     getTimePattern(format) {
@@ -319,12 +314,5 @@ export class CalendarSelectedDay {
 
     saveReminders() {
         this.reminderService.saveReminders(this.reminders);
-    }
-
-    timeSettingChangeHandler({ time }) {
-        if (time && time.format) {
-            this.timeFormat = time.format;
-            this.timePattern = this.getTimePattern(time.format);
-        }
     }
 }
