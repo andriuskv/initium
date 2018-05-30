@@ -32,7 +32,7 @@
     }
 }
 
-.current-day-reminder-range {
+.calendar-reminder-range {
     margin-top: 4px;
     font-size: 13px;
     color: $secondary-text-color;
@@ -150,7 +150,6 @@
 
 .selected-day-reminder-color {
     flex-shrink: 0;
-    align-self: flex-start;
     width: 4px;
     height: 24px;
     margin-right: 8px;
