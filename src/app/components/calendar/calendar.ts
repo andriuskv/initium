@@ -12,6 +12,7 @@ export class Calendar {
     @Output() reminderIndicatorVisible = new EventEmitter();
 
     initialized: boolean = false;
+    remindersCollapsed: boolean = false;
     timeFormat: number = 24;
     currentYear: number;
     futureReminders: Array<any> = [];
@@ -25,11 +26,7 @@ export class Calendar {
         private reminderService: ReminderService,
         private timeDateService: TimeDateService,
         private settingService: SettingService
-    ) {
-        this.reminderService = reminderService;
-        this.timeDateService = timeDateService;
-        this.settingService = settingService;
-    }
+    ) {}
 
     ngOnInit() {
         this.initTimeSettings();
@@ -76,6 +73,10 @@ export class Calendar {
 
     updateIndicatorVisibility() {
         this.reminderIndicatorVisible.emit(this.currentDay.reminders.length > 0);
+    }
+
+    changeReminderSize() {
+        this.remindersCollapsed = !this.remindersCollapsed;
     }
 
     getDay(calendar, { year, month, day }) {
@@ -257,22 +258,13 @@ export class Calendar {
         this.updateIndicatorVisibility();
     }
 
-    addReminderRangeString(reminders) {
-        if (reminders.length) {
-            const reminder = reminders[reminders.length - 1];
-
-            if (!reminder.rangeString) {
-                reminder.rangeString = this.getReminderRangeString(reminder.range);
-            }
-        }
-    }
-
     createReminders(reminders) {
         reminders.forEach(reminder => this.createReminder(reminder));
     }
 
     createReminder(reminder) {
         const { repeat, year } = reminder;
+        reminder.rangeString = this.getReminderRangeString(reminder.range);
 
         if (year !== this.currentDate.year && !this.calendar[year]) {
             this.calendar[year] = this.getYear(year);
@@ -286,7 +278,6 @@ export class Calendar {
 
             day.reminders.push(reminder);
         }
-        this.addReminderRangeString(this.currentDay.reminders);
     }
 
     handleReminderCreation(reminder) {

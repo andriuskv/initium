@@ -1,4 +1,4 @@
-<div class="current-day-reminder-container" *ngIf="currentDay.reminders.length">
+<div class="current-day-reminder-container" [class.collapsed]="remindersCollapsed" *ngIf="currentDay.reminders.length">
     <ul class="current-day-reminders">
         <li class="current-day-reminder" *ngFor="let reminder of currentDay.reminders"
             [ngStyle]="{ 'border-left-color': reminder.color }">
@@ -6,6 +6,12 @@
             <div class="calendar-reminder-range">{{ reminder.rangeString }}</div>
         </li>
     </ul>
+    <button class="btn-secondary btn-secondary-alt" (click)="changeReminderSize()"
+        [title]="remindersCollapsed ? 'Expand' : 'Collapse'">
+        <svg viewBox="0 0 24 24">
+            <use attr.href="#arrow-expand-{{ remindersCollapsed ? 'left': 'right' }}"></use>
+        </svg>
+    </button>
 </div>
 <div class="calendar">
     <calendar-selected-day *ngIf="selectedDay; else elseBlock"

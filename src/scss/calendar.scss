@@ -8,18 +8,38 @@
 }
 
 .current-day-reminder-container {
-    flex-shrink: 0;
-    width: 220px;
-    height: 100%;
-    padding: 4px;
+    --initial-width: 220px;
+
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: var(--initial-width);
     border-right: 1px solid $primary-border-color;
+    transition: 0.2s width;
+
+    &.collapsed {
+        width: 33px;
+
+        .current-day-reminders {
+            opacity: 0.1;
+        }
+    }
+
+    .btn-secondary {
+        margin: 4px;
+        flex-shrink: 0;
+    }
 }
 
 .current-day-reminders {
     @include scrollbar;
 
     overflow-y: auto;
-    height: 100%;
+    flex-grow: 1;
+    width: var(--initial-width);
+    padding: 4px 0 4px 4px;
+    transition: 0.2s opacity;
 }
 
 .current-day-reminder {
@@ -41,7 +61,6 @@
 .calendar {
     width: 378px;
     height: 100%;
-    padding: 4px;
 }
 
 .calendar-header {
@@ -50,6 +69,7 @@
     align-items: center;
     justify-content: center;
     min-height: 24px;
+    margin-top: 4px;
 }
 
 .calendar-title {
@@ -63,7 +83,8 @@
 .calendar-week-days {
     display: flex;
     height: 32px;
-    margin-bottom: 4px;
+    margin-left: 4px;
+    margin-right: 4px;
     border-bottom: 1px solid $primary-border-color;
 
     .calendar-cell {
@@ -76,6 +97,7 @@
     grid-gap: 1px;
     grid-template: repeat(6, 1fr) / repeat(7, 1fr);
     height: calc(100% - 60px);
+    padding: 4px;
 }
 
 .calendar-cell {
@@ -119,22 +141,21 @@
 .selected-day-header-btn {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 4px;
 }
 
 .selected-day {
     display: flex;
     flex-direction: column;
     height: calc(100% - 28px);
-    margin-top: 4px;
+    padding-top: 4px;
 }
 
 .selected-day-remainders {
     @include scrollbar;
 
     overflow-y: auto;
-    max-height: calc(100% - 24px);
-    margin-bottom: 4px;
+    max-height: calc(100% - 28px);
 }
 
 .selected-day-remainder {
@@ -153,6 +174,7 @@
     width: 4px;
     height: 24px;
     margin-right: 8px;
+    margin-left: 2px;
     transition: 0.2s transform, 0.2s background-color;
 
     &:hover {
@@ -162,8 +184,6 @@
 
 .reminder-repeat-icon {
     flex-shrink: 0;
-    width: 18px;
-    height: 18px;
     margin-right: 4px;
     color: $secondary-text-color;
 }
@@ -175,7 +195,12 @@
 }
 
 .new-reminder-btn {
+    margin-top: 2px;
     margin-bottom: auto;
+}
+
+.selected-day-form {
+    padding: 4px;
 }
 
 .reminder-input {

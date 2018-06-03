@@ -38,15 +38,15 @@
     </button>
 </div>
 <ng-template #elseBlock>
-    <form class="selected-day" (submit)="createReminder($event)">
+    <form class="selected-day selected-day-form" (submit)="createReminder($event)">
         <input type="text" class="input reminder-input" name="reminder" autocomplete="off" placeholder="Remind me to..." required>
         <div class="reminder-form-row reminder-setting">
             <div class="checkbox-container">
                 <div role="checkbox" class="checkbox" tabindex="0"
-                    [class.checked]="isRangeVisible"
+                    [class.checked]="!isRangeVisible"
                     (click)="toggleRange()"
                     (keyup.enter)="toggleRange()"
-                    [attr.aria-checked]="isRangeVisible"></div>
+                    [attr.aria-checked]="!isRangeVisible"></div>
                 <span class="checkbox-label">All day</span>
             </div>
             <div class="checkbox-container">
