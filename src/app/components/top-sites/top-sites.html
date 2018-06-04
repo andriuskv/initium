@@ -19,32 +19,48 @@
             </button>
         </li>
         <li class="container top-site" *ngFor="let site of emptySites">
-            <button class="btn-secondary add-site-btn" (click)="showNewSiteForm()" title="Add new site">
+            <button class="btn-secondary add-site-btn" (click)="showForm()" title="Add new site">
                 <svg viewBox="0 0 24 24" class="add-site-btn-icon">
                     <use href="#plus"></use>
                 </svg>
             </button>
         </li>
     </ul>
-    <div class="container main-block-modal" *ngIf="isNewSiteFormVisible">
-        <form class="new-site-form" (submit)="addSite($event)">
-            <h3 class="main-block-modal-title">Add new site</h3>
-            <input type="text" class="input new-site-form-input"
-                [value]="editedSite?.title"
-                placeholder="Title" name="title" autocomplete="off">
-            <input type="text" class="input new-site-form-input"
-                [value]="editedSite?.url"
-                placeholder="URL" name="url" autocomplete="off" required>
-            <div class="new-site-form-btn-container">
-                <label class="btn">
-                    <span>Select thumbnail</span>
-                    <input type="file" class="file-input" name="thumb">
-                </label>
-                <button class="btn">Add</button>
+    <div class="container main-block-modal" *ngIf="isFormVisible">
+        <form class="top-site-form" (submit)="addSite($event)">
+            <h3 class="main-block-modal-title">{{ editedSite ? "Edit" : "Add new" }} site</h3>
+            <div class="top-site-form-content">
+                <div class="input site-thumbnail-container top-site-form-thumbnail">
+                    <ng-container *ngIf="formThumbnail; else elseBlock">
+                        <img [src]="formThumbnail" alt="">
+                        <button class="btn-secondary top-site-form-remove-btn"
+                            (click)="removeFormThumbnail()" title="Remove">
+                            <svg viewBox="0 0 24 24">
+                                <use href="#trash"></use>
+                            </svg>
+                        </button>
+                    </ng-container>
+                    <ng-template #elseBlock>
+                        <label class="top-site-file-input">
+                            <span>Select thumbnail</span>
+                            <input type="file" class="file-input" accept="image/*"
+                                (change)="handleFileInputChange($event)">
+                        </label>
+                    </ng-template>
+                </div>
+                <div>
+                    <input type="text" class="input top-site-form-input"
+                        [value]="editedSite?.title"
+                        placeholder="Title" name="title" autocomplete="off">
+                    <input type="text" class="input top-site-form-input"
+                        [value]="editedSite?.url"
+                        placeholder="URL" name="url" autocomplete="off" required>
+                    <button class="btn">{{ editedSite ? "Edit" : "Add" }}</button>
+                </div>
             </div>
         </form>
         <button class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
-            (click)="hideNewSiteForm()" title="Close">
+            (click)="hideForm()" title="Close">
             <svg viewBox="0 0 24 24">
                 <use href="#cross"></use>
             </svg>

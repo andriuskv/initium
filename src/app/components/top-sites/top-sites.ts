@@ -10,18 +10,16 @@ export class TopSites {
     @Input() isVisible: boolean = false;
     @ViewChild("root") root;
 
-    isNewSiteFormVisible: boolean = false;
+    isFormVisible: boolean = false;
     isFetching: boolean = false;
     visibleSiteCount: number = 4;
     topSites: Array<any> = [];
     visibleSites: Array<any> = [];
     emptySites: undefined[] = [];
     editedSite: any = null;
+    formThumbnail: any = null;
 
-    constructor(private settingService: SettingService, private domSanitizer: DomSanitizer) {
-        this.settingService = settingService;
-        this.domSanitizer = domSanitizer;
-    }
+    constructor(private settingService: SettingService, private domSanitizer: DomSanitizer) {}
 
     ngOnInit() {
         const topSites = JSON.parse(localStorage.getItem("top sites"));
@@ -100,12 +98,14 @@ export class TopSites {
         });
     }
 
-    showNewSiteForm() {
-        this.isNewSiteFormVisible = true;
+    showForm() {
+        this.isFormVisible = true;
     }
 
-    hideNewSiteForm() {
-        this.isNewSiteFormVisible = false;
+    hideForm() {
+        this.isFormVisible = false;
+        this.editedSite = null;
+        this.formThumbnail = null;
     }
 
     appendProtocol(url) {
@@ -139,51 +139,55 @@ export class TopSites {
         });
     }
 
-    async addSite(event) {
+    addSite(event) {
         const { elements } = event.target;
         const url = this.appendProtocol(elements.url.value);
         const title = elements.title.value;
-        const [file] = elements.thumb.files;
 
         event.preventDefault();
 
         if (this.editedSite) {
-            await this.updateSite(title, url, file);
+            this.updateSite(title, url);
         }
         else {
             this.topSites.push({
                 url,
-                image: file ? await this.processImage(file) : this.getFavicon(url),
+                image: this.formThumbnail || this.getFavicon(url),
                 title: title || url
             });
         }
         this.updateVisibleSites();
-        this.hideNewSiteForm();
+        this.hideForm();
         this.saveSites();
-        event.target.reset();
     }
 
-    async updateSite(title, url, file) {
-        const { index, image: oldImage, title: oldTitle, url: oldUrl } = this.editedSite;
-        let image = null;
+    updateSite(title, url) {
+        const { index, image: oldImage, title: oldTitle } = this.editedSite;
+        let image = oldImage;
 
-        if (file) {
-            image = await this.processImage(file);
-        }
-        else if (url !== oldUrl || !oldImage) {
-            image = this.getFavicon(url);
+        if (this.formThumbnail !== image) {
+            image = this.formThumbnail || this.getFavicon(url);
         }
         this.topSites[index] = {
             url,
             image,
             title: title || oldTitle
         };
-        this.editedSite = null;
     }
 
     editSite(index) {
         this.editedSite = { ...this.topSites[index], index };
-        this.showNewSiteForm();
+        this.formThumbnail = this.editedSite.image;
+        this.showForm();
+    }
+
+    removeFormThumbnail() {
+        this.formThumbnail = null;
+    }
+
+    async handleFileInputChange({ target }) {
+        this.formThumbnail = await this.processImage(target.files[0]);
+        target.value = "";
     }
 
     saveSites() {
