@@ -7,12 +7,7 @@
                 <span class="twitter-user-name">{{ user.name }}</span>
                 <span class="twitter-user-handle">{{ user.handle }}</span>
             </a>
-            <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
-                title="Toggle size" (click)="toggleContainerSize()">
-                <svg viewBox="0 0 24 24">
-                    <use attr.href="#vertical-{{isExpanded ? 'shrink' : 'expand'}}"></use>
-                </svg>
-            </button>
+            <div class="main-block-content-header-separator"></div>
             <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
                 title="Log out" (click)="logout()">
                 <svg viewBox="0 0 24 24">

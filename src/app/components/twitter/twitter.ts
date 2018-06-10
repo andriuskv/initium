@@ -10,7 +10,6 @@ import { NotificationService } from "../../services/notificationService";
 export class Twitter {
     @Output() newTweets = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
-    @Output() toggleSize = new EventEmitter();
     @Output() showViewer = new EventEmitter();
     @Input() isVisible: boolean = false;
 
@@ -417,11 +416,5 @@ export class Twitter {
         this.user = {};
         this.tweets.length = 0;
         this.tweetsToLoad.length = 0;
-
-        this.toggleContainerSize(false);
-    }
-
-    toggleContainerSize(state) {
-        this.toggleSize.emit(state);
     }
 }
