@@ -20,9 +20,17 @@
             transition-delay: 0s;
         }
 
+        .main-block-expand-btn {
+            top: 1px;
+        }
+
         .main-block-content {
             height: calc(100vh - 8px);
         }
+    }
+
+    &:hover .main-block-expand-btn {
+        display: flex;
     }
 
     @media (max-height: 638px) {
@@ -59,6 +67,14 @@
         width: 24px;
         height: 24px;
     }
+}
+
+.main-block-expand-btn {
+    position: absolute;
+    top: 33px;
+    right: -32px;
+    display: none;
+    padding: 6px;
 }
 
 .main-block-content {

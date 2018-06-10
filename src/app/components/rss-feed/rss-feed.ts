@@ -11,7 +11,6 @@ import { NotificationService } from "../../services/notificationService";
 export class RssFeed {
     @Output() newEntries = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
-    @Output() toggleSize = new EventEmitter();
     @Input() isVisible: boolean = false;
     @ViewChild("feedTitleInput") feedTitleInput;
 
@@ -356,9 +355,5 @@ export class RssFeed {
         if (rss) {
             this.loadFeeds(rss.newValue);
         }
-    }
-
-    toggleContainerSize() {
-        this.toggleSize.emit();
     }
 }
