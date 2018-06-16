@@ -49,11 +49,6 @@
 
 .edit-site-btn {
     bottom: 2px;
-    color: $secondary-text-color;
-
-    &:hover {
-        color: $primary-text-color;
-    }
 }
 
 .add-site-btn {
@@ -118,11 +113,6 @@
     position: absolute;
     top: 2px;
     right: 2px;
-    color: $secondary-text-color;
-
-    &:hover {
-        color: $primary-text-color;
-    }
 }
 
 .top-site-form-input {

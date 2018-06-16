@@ -250,16 +250,8 @@
     }
 }
 
-.feed-list-item-btn {
-    color: $secondary-text-color;
-
-    &:first-of-type {
-        margin-left: auto;
-    }
-
-    &:hover {
-        color: $primary-text-color;
-    }
+.feed-list-item-btn:first-of-type {
+    margin-left: auto;
 }
 
 .feed-list-item-title-container {

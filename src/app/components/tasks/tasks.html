@@ -1,0 +1,95 @@
+<button class="btn-secondary tasks-component-toggle-btn"
+    [class.shifted]="visible" [style.zIndex]="zIndex + 1"
+    (click)="toggle()">Tasks</button>
+<div class="container tasks-component" [class.visible]="visible" [style.zIndex]="zIndex"
+    (click)="handleClickOnContainer()">
+    <header class=" tasks-component-header task-transition-target">
+        <button class="btn-secondary btn-secondary-alt"
+            *ngIf="temporaryTask; else elseHeaderBlock"
+            (click)="hideForm()" title="Back">
+            <svg viewBox="0 0 24 24">
+                <use href="#chevron-right"></use>
+            </svg>
+        </button>
+        <ng-template #elseHeaderBlock>
+            <button class="btn-secondary btn-secondary-alt task-add-btn" (click)="showForm()">
+                <svg viewBox="0 0 24 24">
+                    <use href="#plus"></use>
+                </svg>
+                <span>Add task</span>
+            </button>
+        </ng-template>
+    </header>
+    <form class="task-form task-transition-target" *ngIf="temporaryTask; else elseBlock1" (submit)="handleFormSubmit($event)">
+        <textarea class="input task-input" name="text" [value]="temporaryTask.text"
+            placeholder="Enter your task" required></textarea>
+        <button type="button" class="btn-secondary btn-secondary-alt subtask-add-btn" (click)="addSubtask()">
+            <svg viewBox="0 0 24 24">
+                <use href="#plus"></use>
+            </svg>
+            <span>Add subtask</span>
+        </button>
+        <ul class="task-form-subtasks" *ngIf="temporaryTask.subtasks.length" #subtaskList>
+            <li class="task-form-subtask" *ngFor="let task of temporaryTask.subtasks; let i = index">
+                <input type="text" class="input" [value]="task.text">
+                <button type="button" class="btn-secondary btn-secondary-dim" (click)="removeTemporarySubtask(i)">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#trash"></use>
+                    </svg>
+                </button>
+            </li>
+        </ul>
+        <div class="task-form-footer">
+            <button type="submit" class="btn">{{ makingEdit ? "Edit" : "Add" }}</button>
+        </div>
+    </form>
+    <ng-template #elseBlock1>
+        <ul class="tasks task-transition-target" *ngIf="tasks.length; else elseBlock2">
+            <li class="task"  *ngFor="let task of tasks; let i = index">
+                <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
+                    [class.checked]="task.completed"
+                    (click)="completeTask(i)"
+                    (keyup.enter)="completeTask(i)"
+                    [attr.aria-checked]="task.completed"></div>
+                <div>
+                    <div class="task-text" [class.completed]="task.completed">{{ task.text }}</div>
+                    <ul class="subtasks" *ngIf="task.subtasks.length">
+                        <li class="subtask" *ngFor="let subtask of task.subtasks; let i = index">
+                            <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
+                                [class.checked]="task.completed || subtask.completed"
+                                (click)="comepleteSubtask(subtask)"
+                                (keyup.enter)="comepleteSubtask(subtask)"
+                                [attr.aria-checked]="task.completed || subtask.completed"></div>
+                            <span class="task-text" [class.completed]="task.completed || subtask.completed">{{ subtask.text }}</span>
+                        </li>
+                    </ul>
+                    <div class="task-footer">
+                        <ng-container *ngIf="!task.completed">
+                            <button class="btn-secondary btn-secondary-dim task-footer-btn" (click)="pinTask(i)">
+                                <svg class="task-pin-icon" [class.pinned]="task.pinned" viewBox="0 0 24 24">
+                                    <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+                                </svg>
+                                <span>Pin</span>
+                            </button>
+                            <button class="btn-secondary btn-secondary-dim task-footer-btn" (click)="editTask(i)">
+                                <svg viewBox="0 0 24 24">
+                                    <use href="#edit"></use>
+                                </svg>
+                                <span>Edit</span>
+                            </button>
+                        </ng-container>
+                        <button class="btn-secondary btn-secondary-dim task-footer-btn" (click)="removeTask(i)">
+                            <svg viewBox="0 0 24 24">
+                                <use href="#trash"></use>
+                            </svg>
+                            <span>Remove</span>
+                        </button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </ng-template>
+    <ng-template #elseBlock2>
+        <p class="task-transition-target task-notice">You have no tasks</p>
+    </ng-template>
+</div>

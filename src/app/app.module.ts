@@ -13,7 +13,7 @@ import { TopSites } from "./components/top-sites/top-sites";
 import { Notepad } from "./components/notepad/notepad";
 import { Twitter } from "./components/twitter/twitter";
 import { RssFeed } from "./components/rss-feed/rss-feed";
-import { Todo } from "./components/todo/todo";
+import { Tasks } from "./components/tasks/tasks";
 import { Weather } from "./components/weather/weather";
 import { WidgetMenu } from "./components/widget-menu/widget-menu";
 import { UpperBlock } from "./components/upper-block/upper-block";
@@ -30,7 +30,7 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
     imports: [BrowserModule],
     declarations: [
         App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
-        Weather, WidgetMenu, Todo, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
+        Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
         CalendarSelectedDay, DropboxComp, TweetImageViewer, SlicePipe, PadTimePipe, SafeStylePipe
     ],
     bootstrap: [App]

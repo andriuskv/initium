@@ -21,6 +21,10 @@ export class ChromeStorageService {
         chrome.storage.sync.set(value);
     }
 
+    remove(value) {
+        chrome.storage.sync.remove(value);
+    }
+
     listenToChanges() {
         chrome.storage.onChanged.addListener(changes => {
             if (this.isLocalChange) {
