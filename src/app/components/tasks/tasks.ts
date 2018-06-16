@@ -39,7 +39,13 @@ export class Tasks {
             const keys = Object.keys(storage);
 
             for (const key of keys) {
-                this.tasks = [...this.tasks, ...storage[key]];
+                const items = storage[key].map(item => {
+                    if (!item.subtasks) {
+                        item.subtasks = [];
+                    }
+                    return item;
+                });
+                this.tasks = [...this.tasks, ...items];
 
                 if (key === "todos") {
                     this.chromeStorageService.remove("todos");
