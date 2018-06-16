@@ -7,7 +7,7 @@ import { Component } from "@angular/core";
         <time></time>
         <main-block (showViewer)="onShowViewer($event)"></main-block>
         <weather></weather>
-        <todo></todo>
+        <tasks></tasks>
         <widget-menu (toggle)="onToggle($event)"></widget-menu>
         <upper-block [visible]="toggle.upper" (hide)="onHide($event)"></upper-block>
         <tweet-image-viewer [data]="imageData"></tweet-image-viewer>

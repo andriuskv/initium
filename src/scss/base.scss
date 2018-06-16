@@ -47,8 +47,7 @@ p {
 
 button,
 input,
-textarea,
-select {
+textarea {
     border: none;
     color: inherit;
     font-size: 14px;
@@ -97,7 +96,7 @@ textarea {
 
     &:disabled {
         color: $button-disabled-color;
-        cursor: not-allowed;
+        cursor: default;
 
         &:hover {
             color: $button-disabled-color;
@@ -111,12 +110,11 @@ textarea {
 .radio,
 .toggle {
     border-radius: 2px;
-    box-shadow: inset 0 0 0 1px $input-box-shadow-color;
     background-color: $input-background-color;
 }
 
 .input {
-    padding: 6px;
+    padding: 4px 6px;
 
     &::placeholder {
         color: $input-placeholder-color;
@@ -126,7 +124,7 @@ textarea {
 .btn {
     @extend %btn-styles;
 
-    padding: 6px 12px;
+    padding: 4px 12px;
 
     &:hover {
         background-color: $button-hover-background-color;
@@ -161,6 +159,14 @@ textarea {
     &:hover {
         color: $primary-text-color;
         background-color: $secondary-button-hover-background-color;
+    }
+}
+
+.btn-secondary-dim {
+    color: $secondary-text-color;
+
+    &:hover {
+        color: $primary-text-color;
     }
 }
 
@@ -235,7 +241,7 @@ textarea {
     }
 
     div {
-        padding: 4px 8px;
+        padding: 2px 8px;
         text-align: center;
     }
 }

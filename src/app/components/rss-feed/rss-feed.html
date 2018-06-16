@@ -80,14 +80,14 @@
                             </ng-template>
                             <div class="feed-list-item-url">{{ feed.url }}</div>
                         </div>
-                        <button class="btn-secondary feed-list-item-btn"
+                        <button class="btn-secondary btn-secondary-dim feed-list-item-btn"
                             *ngIf="!feed.editingTitle"
                             (click)="enableTitleEdit(feed)" title="Edit title">
                             <svg viewBox="0 0 24 24">
                                 <use href="#edit"></use>
                             </svg>
                         </button>
-                        <button class="btn-secondary feed-list-item-btn"
+                        <button class="btn-secondary btn-secondary-dim feed-list-item-btn"
                             (click)="removeFeed(i)" title="Remove">
                             <svg viewBox="0 0 24 24">
                                 <use href="#trash"></use>
@@ -104,7 +104,7 @@
                             <h3 class="feed-list-item-title">{{ feed.title }}</h3>
                             <div class="feed-list-item-url">{{ feed.url }}</div>
                         </div>
-                        <button class="btn-secondary feed-list-item-btn"
+                        <button class="btn-secondary btn-secondary-dim feed-list-item-btn"
                             (click)="removeFailedToFetchFeed(i)" title="Remove">
                             <svg viewBox="0 0 24 24">
                                 <use href="#trash"></use>
