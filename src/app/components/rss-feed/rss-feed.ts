@@ -60,7 +60,11 @@ export class RssFeed {
 
     initFeeds() {
         this.initTimeout = 0;
-        this.chromeStorageService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
+        this.chromeStorageService.subscribeToChanges(({ rss}) => {
+            if (rss) {
+                this.loadFeeds(rss.newValue);
+            }
+        });
         this.chromeStorageService.get("rss", storage => {
             this.loading = false;
             this.feedsToLoad = storage.rss || [];
@@ -151,6 +155,7 @@ export class RssFeed {
                 }
                 else {
                     feed.error = true;
+                    failedToFetchFeeds.push(feed);
                 }
                 return results;
             })
@@ -226,10 +231,11 @@ export class RssFeed {
         if (!newFeed) {
             return;
         }
+        const { length } = newFeed.entries;
 
-        if (newFeed.entries.length) {
-            feed.newEntryCount += newFeed.entries.length;
-            this.newEntryCount += newFeed.entries.length;
+        if (length) {
+            feed.newEntryCount += length;
+            this.newEntryCount += length;
             feed.entries.unshift(...newFeed.entries);
         }
         feed.updated = newFeed.updated;
@@ -348,12 +354,6 @@ export class RssFeed {
 
         if (feed.title !== oldTitle) {
             this.saveFeeds();
-        }
-    }
-
-    chromeStorageChangeHandler({ rss }) {
-        if (rss) {
-            this.loadFeeds(rss.newValue);
         }
     }
 }
