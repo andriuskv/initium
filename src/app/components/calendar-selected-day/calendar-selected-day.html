@@ -19,10 +19,10 @@
                 <div>{{ reminder.text }}</div>
                 <div class="calendar-reminder-range">{{ reminder.rangeString }}</div>
             </div>
-            <button class="btn-secondary btn-secondary-alt"
+            <button class="btn-secondary btn-secondary-dim"
                 (click)="removeReminder(reminder.id)" title="Remove">
                 <svg viewBox="0 0 24 24">
-                    <use href="#cross"></use>
+                    <use href="#trash"></use>
                 </svg>
             </button>
         </li>
