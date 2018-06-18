@@ -16,7 +16,7 @@
                 <svg viewBox="0 0 24 24">
                     <use href="#plus"></use>
                 </svg>
-                <span>Add task</span>
+                <span>Add a task</span>
             </button>
         </ng-template>
     </header>
@@ -27,7 +27,7 @@
             <svg viewBox="0 0 24 24">
                 <use href="#plus"></use>
             </svg>
-            <span>Add subtask</span>
+            <span>Add a subtask</span>
         </button>
         <ul class="task-form-subtasks" *ngIf="temporaryTask.subtasks.length" #subtaskList>
             <li class="task-form-subtask" *ngFor="let task of temporaryTask.subtasks; let i = index">
