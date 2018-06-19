@@ -66,6 +66,9 @@ export class TopSites {
     }
 
     resetTopSites() {
+        if (this.isFormVisible) {
+            this.hideForm();
+        }
         this.isFetching = true;
         localStorage.removeItem("top sites");
         this.getTopSites();
