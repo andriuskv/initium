@@ -1,81 +1,77 @@
 <div class="container main-block-content" [class.visible]="isVisible">
-    <ng-container *ngIf="initialized; else elseBlock">
-        <div class="main-block-content-header">
-            <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
-                *ngIf="tabs.length > 4"
-                (click)="previousVisibleTabs()"
-                [disabled]="shift <= 0">
-                <svg viewBox="0 0 24 24">
-                    <use href="#chevron-left"></use>
-                </svg>
-            </button>
-            <ul class="main-block-content-header-items">
-                <li class="main-block-content-header-item"
-                    *ngFor="let tab of tabs; let i = index"
-                    [class.active]="activeTabIndex === i"
-                    [class.hidden]="i < shift || i >= shift + 4">
-                    <button class="btn-secondary main-block-content-header-item-select-btn"
-                        (click)="selectTab(i)">
-                        <span class="main-block-content-header-item-title">{{ tab.title }}</span>
-                    </button>
-                    <button class="btn-secondary main-block-content-header-item-btn delay-reveal"
-                        *ngIf="tabs.length > 1"
-                        (click)="setTabForRemoval(i)" title="Remove tab">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#cross"></use>
-                        </svg>
-                    </button>
-                </li>
-            </ul>
-            <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
-                *ngIf="tabs.length > 4"
-                (click)="nextVisibleTabs()"
-                [disabled]="shift + 4 >= tabs.length">
-                <svg viewBox="0 0 24 24">
-                    <use href="#chevron-right"></use>
-                </svg>
-            </button>
-            <div class="main-block-content-header-separator"></div>
-            <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
-                (click)="showTabCreateModal()" title="Create tab">
-                <svg viewBox="0 0 24 24">
-                    <use href="#plus"></use>
-                </svg>
-            </button>
-        </div>
-        <textarea class="notepad-input" #textarea
-            (input)="saveTabContent($event.target.value)"
-            [value]="tabs[activeTabIndex].content"></textarea>
-        <div class="container main-block-modal" *ngIf="showingTabRemoveModal">
-            <div class="notepad-modal-form">
-                <h3 class="main-block-modal-title">Are you really want to remove this tab?</h3>
-                <div>
-                    <button class="btn" (click)="removeTab(tabToRemove)">Yes</button>
-                    <button class="btn" (click)="hideTabRemoveModal()">No</button>
-                </div>
+    <ng-container *ngIf="showingForm; else elseBlock1">
+        <div class="notepad-form" *ngIf="removingTab; else elseBlock">
+            <h3 class="main-block-modal-title">Are you really want to remove {{ tabs[tabToRemove].title }} tab?</h3>
+            <div>
+                <button class="btn" (click)="removeTab(tabToRemove)">Yes</button>
+                <button class="btn" (click)="hideForm()">No</button>
             </div>
-            <button class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
-                (click)="hideTabRemoveModal()" title="Close">
-                <svg viewBox="0 0 24 24">
-                    <use href="#cross"></use>
-                </svg>
-            </button>
         </div>
-        <div class="container main-block-modal" *ngIf="showingTabCreateModal">
-            <form (submit)="createTab($event)" class="notepad-modal-form">
+        <ng-template #elseBlock>
+            <form (submit)="createTab($event)" class="notepad-form">
                 <h3 class="main-block-modal-title">Create new tab</h3>
                 <input type="text" class="input" name="title" placeholder="Title" #tabTitleInput>
                 <button class="btn">Create</button>
             </form>
-            <button class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
-                (click)="hideTabCreateModal()" title="Close">
-                <svg viewBox="0 0 24 24">
-                    <use href="#cross"></use>
-                </svg>
-            </button>
-        </div>
+        </ng-template>
+        <button class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
+            (click)="hideForm()" title="Close">
+            <svg viewBox="0 0 24 24">
+                <use href="#cross"></use>
+            </svg>
+        </button>
     </ng-container>
-    <ng-template #elseBlock>
+    <ng-template #elseBlock1>
+        <ng-container *ngIf="initialized; else elseBlock3">
+            <div class="main-block-content-header">
+                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+                    *ngIf="tabs.length > 4"
+                    (click)="previousVisibleTabs()"
+                    [disabled]="shift <= 0">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#chevron-left"></use>
+                    </svg>
+                </button>
+                <ul class="main-block-content-header-items">
+                    <li class="main-block-content-header-item"
+                        *ngFor="let tab of tabs; let i = index"
+                        [class.active]="activeTabIndex === i"
+                        [class.hidden]="i < shift || i >= shift + 4">
+                        <button class="btn-secondary main-block-content-header-item-select-btn"
+                            (click)="selectTab(i)">
+                            <span class="main-block-content-header-item-title">{{ tab.title }}</span>
+                        </button>
+                        <button class="btn-secondary main-block-content-header-item-btn delay-reveal"
+                            *ngIf="tabs.length > 1"
+                            (click)="setTabForRemoval(i)" title="Remove">
+                            <svg viewBox="0 0 24 24">
+                                <use href="#cross"></use>
+                            </svg>
+                        </button>
+                    </li>
+                </ul>
+                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+                    *ngIf="tabs.length > 4"
+                    (click)="nextVisibleTabs()"
+                    [disabled]="shift + 4 >= tabs.length">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#chevron-right"></use>
+                    </svg>
+                </button>
+                <div class="main-block-content-header-separator"></div>
+                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+                    (click)="showForm()" title="Create tab">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#plus"></use>
+                    </svg>
+                </button>
+            </div>
+            <textarea class="notepad-input" #textarea
+                (input)="saveTabContent($event.target.value)"
+                [value]="tabs[activeTabIndex].content"></textarea>
+        </ng-container>
+    </ng-template>
+    <ng-template #elseBlock3>
         <img src="./assets/images/ring.svg" class="notepad-spinner" alt="">
     </ng-template>
 </div>
