@@ -26,10 +26,9 @@
     </div>
 </div>
 <div class="menu" *ngIf="!selectedItem && !isClosing"
-    [class.hidden]="!visible"
     [style.zIndex]="zIndex"
     (click)="increaseZIndex()">
-    <ul class="menu-item-container">
+    <ul class="menu-item-container" [class.hidden]="!visible">
         <li class="menu-item">
             <button class="btn-secondary menu-item-btn" (click)="toggleUpperBlock()" title="Timers">
                 <svg viewBox="0 0 24 24">

@@ -4,7 +4,7 @@ import { ZIndexService } from "../../services/zIndexService";
 @Component({
     selector: "tweet-image-viewer",
     template: `
-        <div class="tweet-image-viewer" *ngIf="images.length" (click)="handleClick($event)" [style.zIndex]="zIndex">
+        <div class="container tweet-image-viewer" *ngIf="images.length" (click)="handleClick($event)" [style.zIndex]="zIndex">
             <img src="./assets/images/ring.svg" *ngIf="loading" alt="">
             <div class="viewer-image-container" [class.hidden]="loading">
                 <button class="btn-secondary viewer-direction-btn left"

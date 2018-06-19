@@ -65,11 +65,24 @@ textarea {
 }
 
 .container {
+    position: relative;
     padding: 1px;
-    background-color: $primary-container-background-color;
-    box-shadow: inset 0 0 0 1px $container-inset-box-shadow-color,
-                0 0 0 1px $container-box-shadow-color;
-    backdrop-filter: blur(8px);
+    border: 1px solid transparent;
+    background-color: $color-grey-darker-60;
+    box-shadow: inset 0 0 0 1px $container-inset-box-shadow-color;
+    backdrop-filter: blur(16px);
+
+    &::before {
+        content: "";
+        z-index: -1;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        display: block;
+        background-image: url("./assets/images/img-noise-64x64.png");
+    }
 
     @supports not (backdrop-filter: blur(1px)) {
         background-color: $secondary-container-background-color;
