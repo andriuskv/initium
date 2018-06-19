@@ -11,8 +11,8 @@ export class Notepad {
     @ViewChild("tabTitleInput") tabTitleInput;
 
     initialized: boolean = false;
-    showingTabRemoveModal: boolean = false;
-    showingTabCreateModal: boolean = false;
+    showingForm: boolean = false;
+    removingTab: boolean = false;
     shift: number = 0;
     activeTabIndex: number = 0;
     tabToRemove: number = 0;
@@ -28,7 +28,12 @@ export class Notepad {
     }
 
     ngOnInit() {
-        this.chromeStorageService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
+        this.chromeStorageService.subscribeToChanges(({ notepad }) => {
+            if (notepad) {
+                this.tabs = [...notepad.newValue];
+                this.selectTab();
+            }
+        });
         this.chromeStorageService.get("notepad", storage => {
             this.tabs = storage.notepad || this.tabs;
             this.selectTab();
@@ -57,16 +62,17 @@ export class Notepad {
         this.activeTabIndex = index;
     }
 
-    showTabCreateModal() {
-        this.showingTabCreateModal = true;
+    showForm() {
+        this.showingForm = true;
 
         setTimeout(() => {
             this.tabTitleInput.nativeElement.focus();
         });
     }
 
-    hideTabCreateModal() {
-        this.showingTabCreateModal = false;
+    hideForm() {
+        this.showingForm = false;
+        this.removingTab = false;
     }
 
     createTab(event) {
@@ -83,7 +89,7 @@ export class Notepad {
         }
         this.selectTab(this.tabs.length - 1);
         this.saveTabs();
-        this.hideTabCreateModal();
+        this.hideForm();
 
         setTimeout(() => {
             this.textarea.nativeElement.focus();
@@ -92,17 +98,13 @@ export class Notepad {
 
     setTabForRemoval(index) {
         if (this.tabs[index].content) {
-            this.showingTabRemoveModal = true;
+            this.removingTab = true;
+            this.showingForm = true;
             this.tabToRemove = index;
-            this.selectTab(index);
         }
         else {
             this.removeTab(index);
         }
-    }
-
-    hideTabRemoveModal() {
-        this.showingTabRemoveModal = false;
     }
 
     removeTab(index) {
@@ -119,7 +121,7 @@ export class Notepad {
         this.tabs.splice(index, 1);
         this.selectTab(this.activeTabIndex);
         this.saveTabs();
-        this.hideTabRemoveModal();
+        this.hideForm();
     }
 
     saveTabContent(content) {
@@ -134,12 +136,5 @@ export class Notepad {
 
     saveTabs() {
         this.chromeStorageService.set({ notepad: this.tabs });
-    }
-
-    chromeStorageChangeHandler({ notepad }) {
-        if (notepad) {
-            this.tabs = [...notepad.newValue];
-            this.selectTab();
-        }
     }
 }
