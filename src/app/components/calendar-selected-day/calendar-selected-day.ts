@@ -1,5 +1,4 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { ReminderService } from "../../services/reminderService";
 import { TimeDateService } from "../../services/timeDateService";
 import { SettingService } from "../../services/settingService";
 
@@ -11,6 +10,8 @@ export class CalendarSelectedDay {
     @Output() event = new EventEmitter();
     @Output() remove = new EventEmitter();
     @Output() create = new EventEmitter();
+    @Output() update = new EventEmitter();
+    @Input() reminders = [];
     @Input() day: any = {};
 
     RANGE_ERROR: string = "Please provide valid range";
@@ -37,13 +38,8 @@ export class CalendarSelectedDay {
         }
     };
     timeTable: any = {};
-    reminders: any;
 
-    constructor(
-        private reminderService: ReminderService,
-        private timeDateService: TimeDateService,
-        private settingService: SettingService
-    ) {}
+    constructor(private timeDateService: TimeDateService, private settingService: SettingService) {}
 
     ngOnInit() {
         const { format } = this.settingService.getSetting("time");
@@ -51,7 +47,6 @@ export class CalendarSelectedDay {
         this.dateString = this.timeDateService.getDate("month day, year", this.day);
         this.timeFormat = format;
         this.timePattern = this.getTimePattern(format);
-        this.getReminders();
     }
 
     getTimePattern(format) {
@@ -239,14 +234,14 @@ export class CalendarSelectedDay {
 
     getRandomColor() {
         const num = Math.floor(Math.random() * 360) + 1;
-        return `hsl(${num}, 100%, 72%)`;
+        return `hsl(${num}, 100%, 68%)`;
     }
 
     changeReminderColor(reminder) {
         const color = this.getRandomColor();
         reminder.color = color;
 
-        this.updateReminder({
+        this.update.emit({
             id: reminder.id,
             color
         });
@@ -280,40 +275,12 @@ export class CalendarSelectedDay {
                 tooltip: `Repeating every ${this.repeatGap === 1 ? "day" : `${this.repeatGap} days`}`
             });
         }
-        this.addReminder(reminder);
         this.create.emit(reminder);
         this.hideReminderForm();
     }
 
-    async getReminders() {
-        this.reminders = await this.reminderService.getReminders();
-    }
-
-    getReminderIndex(id) {
-        return this.reminders.findIndex(reminder => reminder.id === id);
-    }
-
-    addReminder(reminder) {
-        this.reminders.push(reminder);
-        this.saveReminders();
-    }
-
-    removeReminder(id) {
-        const index = this.getReminderIndex(id);
-        const [reminder] = this.reminders.splice(index, 1);
-
-        this.remove.emit(reminder);
-        this.saveReminders();
-    }
-
-    updateReminder(data) {
-        const index = this.getReminderIndex(data.id);
-
-        Object.assign(this.reminders[index], data);
-        this.saveReminders();
-    }
-
-    saveReminders() {
-        this.reminderService.saveReminders(this.reminders);
+    removeReminder(id, index) {
+        this.day.reminders.splice(index, 1);
+        this.remove.emit(id);
     }
 }

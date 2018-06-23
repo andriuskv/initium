@@ -21,6 +21,7 @@ export class Calendar {
     currentDay: any;
     calendar: any;
     selectedDay: any;
+    reminders = [];
 
     constructor(
         private reminderService: ReminderService,
@@ -48,7 +49,6 @@ export class Calendar {
         const { format } = this.settingService.getSetting("time");
 
         this.timeFormat = format;
-        this.settingService.subscribeToChanges(this.timeSettingChangeHandler.bind(this));
     }
 
     initCalendar() {
@@ -64,10 +64,9 @@ export class Calendar {
     }
 
     async initReminders() {
-        const reminders: any = await this.reminderService.getReminders();
-
+        this.reminders = await this.reminderService.getReminders() as any;
         this.reminderService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
-        this.createReminders(reminders);
+        this.createReminders(this.reminders);
         this.updateIndicatorVisibility();
     }
 
@@ -217,6 +216,10 @@ export class Calendar {
         this.selectedDay = null;
     }
 
+    getReminderIndex(id) {
+        return this.reminders.findIndex(reminder => reminder.id === id);
+    }
+
     getReminderRangeString(range) {
         if (range === -1) {
             return "All day";
@@ -248,14 +251,22 @@ export class Calendar {
         });
     }
 
-    removeReminder(reminder) {
+    removeReminder(id) {
+        const index = this.getReminderIndex(id);
+        const [reminder] = this.reminders.splice(index, 1);
+
         if (reminder.repeat) {
             this.removeRepeatedReminder(reminder.id, this.calendar);
         }
-        else {
-            this.selectedDay.reminders = this.filterReminders(this.selectedDay.reminders, reminder.id);
-        }
         this.updateIndicatorVisibility();
+        this.saveReminders();
+    }
+
+    updateReminder(data) {
+        const index = this.getReminderIndex(data.id);
+
+        Object.assign(this.reminders[index], data);
+        this.saveReminders();
     }
 
     createReminders(reminders) {
@@ -281,8 +292,10 @@ export class Calendar {
     }
 
     handleReminderCreation(reminder) {
+        this.reminders.push(reminder);
         this.createReminder(reminder);
         this.updateIndicatorVisibility();
+        this.saveReminders();
     }
 
     getNextReminderDate(calendar, year, monthIndex, dayIndex) {
@@ -352,20 +365,14 @@ export class Calendar {
         }
     }
 
-    timeSettingChangeHandler({ time }) {
-        if (time && time.format) {
-            this.timeFormat = time.format;
-
-            this.currentDay.reminders = this.currentDay.reminders.map(reminder => {
-                reminder.rangeString = this.getReminderRangeString(reminder.range);
-
-                return reminder;
-            });
-        }
+    saveReminders() {
+        this.reminderService.saveReminders(this.reminders);
     }
 
     chromeStorageChangeHandler({ reminders }) {
         if (reminders) {
+            this.reminders = reminders.newValue;
+
             this.initCalendar();
             this.createReminders(reminders.newValue);
             this.updateIndicatorVisibility();

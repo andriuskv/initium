@@ -20,7 +20,7 @@
                 <div class="calendar-reminder-range">{{ reminder.rangeString }}</div>
             </div>
             <button class="btn-secondary btn-secondary-dim"
-                (click)="removeReminder(reminder.id)" title="Remove">
+                (click)="removeReminder(reminder.id, i)" title="Remove">
                 <svg viewBox="0 0 24 24">
                     <use href="#trash"></use>
                 </svg>
