@@ -16,9 +16,11 @@
 <div class="calendar">
     <calendar-selected-day *ngIf="selectedDay; else elseBlock"
         [day]="selectedDay"
+        [reminders]="reminders"
         (event)="showCalendar()"
         (create)="handleReminderCreation($event)"
-        (remove)="removeReminder($event)">
+        (remove)="removeReminder($event)"
+        (update)="updateReminder($event)">
     </calendar-selected-day>
     <ng-template #elseBlock>
         <div class="calendar-header">
