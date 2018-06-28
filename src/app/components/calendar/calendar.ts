@@ -13,6 +13,7 @@ export class Calendar {
 
     initialized: boolean = false;
     remindersCollapsed: boolean = false;
+    inYearView: boolean = false;
     timeFormat: number = 24;
     currentYear: number;
     futureReminders: Array<any> = [];
@@ -39,6 +40,7 @@ export class Calendar {
         if (this.initialized && this.isHidden) {
             const { year, month } = this.currentDate;
 
+            this.inYearView = false;
             this.selectedDay = null;
             this.currentYear = year;
             this.visibleMonth = this.getVisibleMonth(this.calendar, year, month);
@@ -59,6 +61,7 @@ export class Calendar {
         };
         this.currentYear = year;
         this.currentDay = this.setCurrentDay(this.calendar, this.currentDate);
+        this.setCurrentMonth(this.calendar, this.currentDate);
         this.visibleMonth = this.getVisibleMonth(this.calendar, year, month);
         this.initialized = true;
     }
@@ -68,6 +71,10 @@ export class Calendar {
         this.reminderService.subscribeToChanges(this.chromeStorageChangeHandler.bind(this));
         this.createReminders(this.reminders);
         this.updateIndicatorVisibility();
+    }
+
+    viewYear() {
+        this.inYearView = true;
     }
 
     updateIndicatorVisibility() {
@@ -87,6 +94,10 @@ export class Calendar {
         day.isCurrentDay = true;
 
         return day;
+    }
+
+    setCurrentMonth(calendar, { year, month }) {
+        calendar[year][month].isCurrentMonth = true;
     }
 
     getCurrentDate() {
@@ -116,7 +127,8 @@ export class Calendar {
             const daysInMonth = this.getDaysInMonth(year, i);
             const month = {
                 firstDayIndex: this.getFirstDayIndex(year, i),
-                days: []
+                name: this.timeDateService.getMonth(i),
+                days: [],
             };
 
             for (let j = 0; j < daysInMonth; j++) {
@@ -155,16 +167,12 @@ export class Calendar {
     }
 
     getVisibleMonth(calendar, year, month) {
-        const { days, firstDayIndex } = calendar[year][month];
+        const { days, firstDayIndex, name } = calendar[year][month];
 
         return {
             previous: this.getPreviousMonth(calendar, year, month - 1, firstDayIndex),
             next: this.getNextMonth(calendar, year, month + 1, days.length, firstDayIndex),
-            current: {
-                name: this.timeDateService.getMonth(month),
-                month,
-                days
-            }
+            current: { name, month, days }
         };
     }
 
@@ -212,6 +220,20 @@ export class Calendar {
         }
     }
 
+    setVisibleYear(direction) {
+        const year = this.currentYear + direction;
+
+        if (!this.calendar[year]) {
+            this.calendar[year] = this.getYear(year);
+        }
+        this.currentYear = year;
+    }
+
+    showMonth(index) {
+        this.visibleMonth = this.getVisibleMonth(this.calendar, this.currentYear, index);
+        this.inYearView = false;
+    }
+
     showCalendar() {
         this.selectedDay = null;
     }
@@ -231,6 +253,10 @@ export class Calendar {
             return `${fromString} - ${toString}`;
         }
         return this.timeDateService.getTimeString(range.from, this.timeFormat);
+    }
+
+    getReminderRepeatTooltip(gap, count) {
+        return `Repeating ${count > 1 ? `${count} times ` : ""}every ${gap === 1 ? "day" : `${gap} days`}`;
     }
 
     filterReminders(reminders, id) {
@@ -274,15 +300,16 @@ export class Calendar {
     }
 
     createReminder(reminder) {
-        const { repeat, year } = reminder;
-        reminder.rangeString = this.getReminderRangeString(reminder.range);
+        const { repeat, year, range } = reminder;
+        reminder.rangeString = this.getReminderRangeString(range);
 
         if (year !== this.currentDate.year && !this.calendar[year]) {
             this.calendar[year] = this.getYear(year);
         }
 
         if (repeat) {
-            this.repeatReminder({ ...reminder }, this.calendar);
+            reminder.tooltip = this.getReminderRepeatTooltip(reminder.gap, reminder.count);
+            this.repeatReminder(reminder, this.calendar);
         }
         else {
             const day = this.getDay(this.calendar, reminder);
@@ -293,7 +320,7 @@ export class Calendar {
 
     handleReminderCreation(reminder) {
         this.reminders.push(reminder);
-        this.createReminder(reminder);
+        this.createReminder({ ...reminder });
         this.updateIndicatorVisibility();
         this.saveReminders();
     }

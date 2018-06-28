@@ -14,7 +14,7 @@
     </button>
 </div>
 <div class="calendar">
-    <calendar-selected-day *ngIf="selectedDay; else elseBlock"
+    <calendar-selected-day *ngIf="selectedDay; else elseBlock1"
         [day]="selectedDay"
         [reminders]="reminders"
         (event)="showCalendar()"
@@ -22,14 +22,37 @@
         (remove)="removeReminder($event)"
         (update)="updateReminder($event)">
     </calendar-selected-day>
-    <ng-template #elseBlock>
+    <ng-template #elseBlock1>
+        <ng-container *ngIf="inYearView; else elseBlock2">
+            <div class="calendar-header">
+                <button class="btn-secondary btn-secondary-alt" (click)="setVisibleYear(-1)" title="Previous year">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#chevron-left"></use>
+                    </svg>
+                </button>
+                <span class="calendar-title">{{ currentYear }}</span>
+                <button class="btn-secondary btn-secondary-alt" (click)="setVisibleYear(1)" title="Next year">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#chevron-right"></use>
+                    </svg>
+                </button>
+            </div>
+            <ul class="calendar-months">
+                <li class="calendar-month" [class.current]="month.isCurrentMonth"
+                    *ngFor="let month of calendar[currentYear]; let i = index"
+                    (click)="showMonth(i)">{{ month.name }}</li>
+            </ul>
+        </ng-container>
+    </ng-template>
+    <ng-template #elseBlock2>
         <div class="calendar-header">
             <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(-1)" title="Previous month">
                 <svg viewBox="0 0 24 24">
                     <use href="#chevron-left"></use>
                 </svg>
             </button>
-            <span class="calendar-title">{{ visibleMonth.current.name }} {{ currentYear }}</span>
+            <button class="btn-secondary btn-secondary-alt calendar-title"
+                (click)="viewYear()">{{ visibleMonth.current.name }} {{ currentYear }}</button>
             <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(1)" title="Next month">
                 <svg viewBox="0 0 24 24">
                     <use href="#chevron-right"></use>
@@ -53,7 +76,7 @@
             </li>
             <li class="calendar-cell calendar-day current-month-day"
                 *ngFor="let day of visibleMonth.current.days"
-                [class.current-day]="day.isCurrentDay"
+                [class.current]="day.isCurrentDay"
                 (click)="showDay(day)">
                 <div>{{ day.day }}</div>
                 <div class="day-reminders" *ngIf="day.reminders.length">

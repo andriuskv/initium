@@ -72,7 +72,7 @@
 }
 
 .calendar-title {
-    min-width: 120px;
+    min-width: 130px;
     margin-left: 8px;
     margin-right: 8px;
     font-size: 16px;
@@ -82,8 +82,8 @@
 .calendar-week-days {
     display: flex;
     height: 32px;
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-left: 1px;
+    margin-right: 1px;
 
     .calendar-cell {
         flex: 1;
@@ -95,7 +95,7 @@
     grid-gap: 1px;
     grid-template: repeat(6, 1fr) / repeat(7, 1fr);
     height: calc(100% - 64px);
-    padding: 0 4px 4px 4px;
+    padding: 0 1px 1px 1px;
 }
 
 .calendar-cell {
@@ -108,14 +108,18 @@
     position: relative;
     border: 1px solid transparent;
     color: $secondary-text-color;
-    transition: 0.2s background-color;
+    transition: 0.2s background-color, 0.2s box-shadow;
     cursor: pointer;
+
+    &.current {
+        font-weight: bold;
+    }
 
     &.current-month-day {
         color: $primary-text-color;
     }
 
-    &:hover, &.current-day {
+    &:hover, &.current {
         background-color: $secondary-button-hover-background-color;
         box-shadow: inset 0 0 0 1px $color-grey-darker-60;
     }
@@ -123,10 +127,10 @@
 
 .day-reminders {
     position: absolute;
-    left: 0;
-    bottom: 0;
+    left: 1px;
+    bottom: 1px;
+    right: 1px;
     display: flex;
-    width: 100%;
     height: 2px;
 }
 
@@ -135,6 +139,34 @@
 
     &:not(:last-of-type) {
         margin-right: 1px;
+    }
+}
+
+.calendar-months {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: calc(100% - 32px);
+}
+
+.calendar-month {
+    padding: 4px;
+    border-top: 1px solid $primary-border-color;
+    transition: 0.2s background-color, 0.2s box-shadow;
+    cursor: pointer;
+
+    &.current {
+        font-weight: bold;
+    }
+
+    &:not(:nth-of-type(4n)) {
+        border-right: 1px solid $primary-border-color;
+    }
+
+    &:hover, &.current {
+        background-color: $secondary-button-hover-background-color;
+        box-shadow: inset 0 0 0 1px $color-grey-darker-60,
+                    -1px 0 0 0 $primary-border-color,
+                    0 1px 0 0 $primary-border-color;
     }
 }
 
