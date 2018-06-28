@@ -11,11 +11,11 @@
     "build": "npm run dist && npm run webpack -- --env.prod && node build.js"
   },
   "dependencies": {
-    "@angular/common": "^6.0.6",
-    "@angular/compiler": "^6.0.6",
-    "@angular/core": "^6.0.6",
-    "@angular/platform-browser": "^6.0.6",
-    "@angular/platform-browser-dynamic": "^6.0.6",
+    "@angular/common": "^6.0.7",
+    "@angular/compiler": "^6.0.7",
+    "@angular/core": "^6.0.7",
+    "@angular/platform-browser": "^6.0.7",
+    "@angular/platform-browser-dynamic": "^6.0.7",
     "core-js": "^2.5.7",
     "dropbox": "4.0.4",
     "focus-visible": "^4.1.4",
@@ -26,8 +26,8 @@
     "@angular/compiler-cli": "^6.0.6",
     "@ngtools/webpack": "^6.1.0-rc.0",
     "@types/chrome": "^0.0.69",
-    "@types/node": "10.3.4",
-    "autoprefixer": "^8.6.3",
+    "@types/node": "10.3.6",
+    "autoprefixer": "^8.6.4",
     "css-loader": "^0.28.11",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.4.0",
@@ -38,8 +38,8 @@
     "style-loader": "^0.21.0",
     "tslint": "^5.10.0",
     "typescript": "2.7.2",
-    "uglifyjs-webpack-plugin": "^1.2.6",
-    "webpack": "^4.12.0",
+    "uglifyjs-webpack-plugin": "^1.2.7",
+    "webpack": "^4.12.2",
     "webpack-cli": "^3.0.7"
   },
   "browserslist": [

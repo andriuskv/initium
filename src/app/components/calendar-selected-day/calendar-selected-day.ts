@@ -271,8 +271,7 @@ export class CalendarSelectedDay {
         if (reminder.repeat) {
             Object.assign(reminder, {
                 gap: this.repeatGap,
-                count: this.repeatCount,
-                tooltip: `Repeating every ${this.repeatGap === 1 ? "day" : `${this.repeatGap} days`}`
+                count: this.repeatCount
             });
         }
         this.create.emit(reminder);
