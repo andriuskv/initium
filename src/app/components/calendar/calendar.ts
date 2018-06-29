@@ -177,11 +177,7 @@ export class Calendar {
     }
 
     repeatFutureReminders(reminders, calendar) {
-        let length = reminders.length;
-
-        if (!length) {
-            return;
-        }
+        let { length } = reminders;
 
         while (length) {
             const [reminder] = reminders;
@@ -225,6 +221,7 @@ export class Calendar {
 
         if (!this.calendar[year]) {
             this.calendar[year] = this.getYear(year);
+            this.repeatFutureReminders(this.futureReminders, this.calendar);
         }
         this.currentYear = year;
     }
@@ -296,7 +293,7 @@ export class Calendar {
     }
 
     createReminders(reminders) {
-        reminders.forEach(reminder => this.createReminder(reminder));
+        reminders.forEach(reminder => this.createReminder({ ...reminder }));
     }
 
     createReminder(reminder) {
