@@ -46,15 +46,11 @@ export class RssFeed {
     }
 
     ngOnChanges() {
-        if (this.isVisible) {
-            if (this.newEntryCount) {
-                this.newEntryCount = 0;
-            }
+        this.newEntryCount = 0;
 
-            if (this.initTimeout) {
-                clearTimeout(this.initTimeout);
-                this.initFeeds();
-            }
+        if (this.isVisible && this.initTimeout) {
+            clearTimeout(this.initTimeout);
+            this.initFeeds();
         }
     }
 
@@ -149,14 +145,8 @@ export class RssFeed {
 
             return this.feedService.getFeed(feed.url, feed.title).then(results => {
                 feed.isLoading = false;
+                feed.success = true;
 
-                if (results) {
-                    feed.success = true;
-                }
-                else {
-                    feed.error = true;
-                    failedToFetchFeeds.push(feed);
-                }
                 return results;
             })
             .catch(() => {
@@ -226,19 +216,19 @@ export class RssFeed {
     }
 
     async updateFeed(feed) {
-        const newFeed = await this.feedService.updateFeed(feed);
+        try {
+            const newFeed = await this.feedService.updateFeed(feed);
+            const { length } = newFeed.entries;
 
-        if (!newFeed) {
-            return;
+            if (length) {
+                feed.newEntryCount += length;
+                this.newEntryCount += length;
+                feed.entries = newFeed.entries.concat(feed.entries);
+            }
+            feed.updated = newFeed.updated;
+        } catch (e) {
+            console.log(e);
         }
-        const { length } = newFeed.entries;
-
-        if (length) {
-            feed.newEntryCount += length;
-            this.newEntryCount += length;
-            feed.entries.unshift(...newFeed.entries);
-        }
-        feed.updated = newFeed.updated;
     }
 
     async handleFormSubmit(event) {
@@ -251,10 +241,6 @@ export class RssFeed {
 
         try {
             const feed = await this.feedService.getFeed(url, title);
-
-            if (!feed) {
-                throw new Error("Feed was not found");
-            }
             const index = this.feeds.length;
 
             this.feeds.push(feed);
@@ -283,23 +269,18 @@ export class RssFeed {
 
         try {
             const newFeed = await this.feedService.getFeed(feed.url, feed.title);
+            const newFeedIndex = this.feeds.length;
 
-            if (newFeed.entries) {
-                const newFeedIndex = this.feeds.length;
-
-                this.feeds.push(newFeed);
-                this.feedsToLoad.splice(index, 1);
-                this.setShift(newFeedIndex);
-                this.showFeed(newFeedIndex);
-                this.hideFeedList();
-                this.saveFeeds();
-                this.scheduleFeedUpdate();
-            }
-        }
-        catch (e) {
+            this.feeds.push(newFeed);
+            this.feedsToLoad.splice(index, 1);
+            this.setShift(newFeedIndex);
+            this.showFeed(newFeedIndex);
+            this.hideFeedList();
+            this.saveFeeds();
+            this.scheduleFeedUpdate();
+        } catch (e) {
             console.log(e);
-        }
-        finally {
+        } finally {
             feed.refeching = false;
         }
     }
