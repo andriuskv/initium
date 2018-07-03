@@ -13,7 +13,7 @@ module.exports = function(env = {}) {
                 NODE_ENV: JSON.stringify(mode),
                 DROPBOX_API_KEY: JSON.stringify(process.env.DROPBOX_API_KEY),
                 OWM_API_KEY: JSON.stringify(process.env.OWM_API_KEY),
-                PROXY_URL: JSON.stringify(process.env.PROXY_URL)
+                SERVER_URL: JSON.stringify(process.env.SERVER_URL)
             }
         }),
         new MiniCssExtractPlugin({
