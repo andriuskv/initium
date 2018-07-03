@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
-import { TwitterProxyService } from "../../services/twitterProxyService";
+import { TwitterService } from "../../services/twitterService";
 import { TimeDateService } from "../../services/timeDateService";
 import { NotificationService } from "../../services/notificationService";
 
@@ -17,6 +17,7 @@ export class Twitter {
     isLoggedIn: boolean = false;
     showPinInput: boolean = false;
     fetchingMoreTweets: boolean = false;
+    message: string = "";
     tweets: Array<any> = [];
     tweetsToLoad: Array<any> = [];
     user: any = {};
@@ -25,45 +26,44 @@ export class Twitter {
     tweetUpdateTimeout: number = 0;
 
     constructor(
-        private twitterProxyService: TwitterProxyService,
+        private twitterService: TwitterService,
         private timeDateService: TimeDateService,
         private notificationService: NotificationService
-    ) {
-        this.twitterProxyService = twitterProxyService;
-        this.timeDateService = timeDateService;
-        this.notificationService = notificationService;
-    }
+    ) {}
 
     ngOnInit() {
-        this.isLoggedIn = this.twitterProxyService.isLoggedIn();
+        this.isLoggedIn = this.twitterService.isLoggedIn();
 
         if (this.isLoggedIn) {
-            this.initTimeout = window.setTimeout(async () => {
+            this.initTimeout = window.setTimeout(() => {
                 this.initTimeout = 0;
-
-                await this.initTwitter();
-
-                this.initializing = false;
+                this.initTwitter();
             }, this.isVisible ? 2000 : 10000);
-            return;
         }
-        this.initializing = false;
     }
 
-    async ngOnChanges() {
+    ngOnChanges() {
         if (this.initTimeout && this.isVisible) {
             clearTimeout(this.initTimeout);
             this.initTimeout = 0;
-
-            await this.initTwitter();
-
-            this.initializing = false;
+            this.initTwitter();
         }
     }
 
     initTwitter() {
         return Promise.all([this.getUser(), this.fetchInitialTimeline()])
-            .catch(error => console.log(error));
+            .then(() => {
+                this.initializing = false;
+            }).catch(error => {
+                this.initializing = false;
+                this.isLoggedIn = false;
+                this.message = "Failed to fetch the content";
+
+                window.setTimeout(() => {
+                    this.message = "";
+                }, 4000);
+                console.log(error);
+            });
     }
 
     getTweetDate(createdAt) {
@@ -284,32 +284,33 @@ export class Twitter {
     }
 
     async getUser() {
-        const response = await this.twitterProxyService.getUser();
+        const response = await this.twitterService.getUser();
 
-        if (response.statusCode === 200) {
-            this.user.name = response.user.name;
-            this.user.homepage = `https://twitter.com/${response.user.screen_name}`;
-            this.user.handle = `@${response.user.screen_name}`;
-            this.user.profileImage = response.user.profile_image_url_https;
-            this.user.profileColor = `#${response.user.profile_link_color}`;
+        if (response && response.user) {
+            const { user } = response;
+            this.user.name = user.name;
+            this.user.homepage = `https://twitter.com/${user.screen_name}`;
+            this.user.handle = `@${user.screen_name}`;
+            this.user.profileImage = user.profile_image_url_https;
+            this.user.profileColor = `#${user.profile_link_color}`;
         }
     }
 
     async fetchInitialTimeline() {
-        const response = await this.twitterProxyService.getTimeline();
+        const response = await this.twitterService.getTimeline();
 
-        if (response && response.statusCode === 200) {
+        if (response && response.tweets) {
             this.tweets = this.parseTweets(response.tweets);
 
-            this.updateTimeline(response.tweets[0].id);
+            this.scheduleTimelineUpdate(response.tweets[0].id);
             this.updateTweetTime();
         }
     }
 
-    updateTimeline(latestTweetId) {
+    scheduleTimelineUpdate(latestTweetId) {
         this.tweetUpdateTimeout = window.setTimeout(() => {
             this.fetchNewTimeline(latestTweetId);
-        }, 720000);
+        }, 960000);
     }
 
     updateTweetTime() {
@@ -322,12 +323,12 @@ export class Twitter {
     }
 
     async fetchNewTimeline(latestTweetId) {
-        const response = await this.twitterProxyService.getTimeline({
+        const response = await this.twitterService.getTimeline({
             since_id: latestTweetId
         });
 
-        if (!response || response.statusCode !== 200) {
-            this.updateTimeline(latestTweetId);
+        if (!response || !response.tweets) {
+            this.scheduleTimelineUpdate(latestTweetId);
             return;
         }
         const tweets = response.tweets.filter(tweet => tweet.id !== latestTweetId);
@@ -349,7 +350,7 @@ export class Twitter {
                 );
             }
         }
-        this.updateTimeline(latestTweetId);
+        this.scheduleTimelineUpdate(latestTweetId);
     }
 
     async fetchMoreTweets() {
@@ -359,11 +360,11 @@ export class Twitter {
         this.fetchingMoreTweets = true;
 
         const { id } = this.tweets[this.tweets.length - 1];
-        const response = await this.twitterProxyService.getTimeline({
+        const response = await this.twitterService.getTimeline({
             max_id: id
         });
 
-        if (!response || response.statusCode !== 200) {
+        if (!response || !response.tweets) {
             return;
         }
         const tweets = response.tweets.filter(tweet => tweet.id !== id);
@@ -380,18 +381,18 @@ export class Twitter {
         this.initializing = true;
         this.showPinInput = false;
 
-        const response = await this.twitterProxyService.getAccessToken(pin.value);
+        const response = await this.twitterService.getAccessToken(pin.value);
 
-        if (response && response.statusCode === 200) {
+        if (response) {
             this.isLoggedIn = true;
             pin.value = "";
 
-            await this.initTwitter();
+            this.initTwitter();
         }
         else {
             this.showPinInput = true;
+            this.initializing = false;
         }
-        this.initializing = false;
     }
 
     async login(pin) {
@@ -399,11 +400,11 @@ export class Twitter {
             this.authenticateWithPin(pin);
             return;
         }
-        const response = await this.twitterProxyService.getLoginUrl();
+        const url = await this.twitterService.getLoginUrl();
 
-        if (response && response.statusCode === 200) {
+        if (url) {
             this.showPinInput = true;
-            window.open(response.url, "_blank", "width=640,height=480");
+            window.open(url, "_blank", "width=640,height=480");
         }
     }
 

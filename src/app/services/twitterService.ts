@@ -3,10 +3,10 @@ import { Injectable } from "@angular/core";
 @Injectable({
   providedIn: "root"
 })
-export class TwitterProxyService {
+export class TwitterService {
     requestToken: string = "";
     requestTokenSecret: string = "";
-    proxyUrl: string = process.env.PROXY_URL;
+    serverUrl: string = `${process.env.SERVER_URL}/twitter`;
     oauth: any = JSON.parse(localStorage.getItem("oauth")) || {};
 
     isLoggedIn() {
@@ -14,19 +14,15 @@ export class TwitterProxyService {
     }
 
     getLoginUrl(retry = true) {
-        return fetch(`${this.proxyUrl}/request_token`)
+        return fetch(`${this.serverUrl}/request_token`)
             .then(response => response.json())
             .then(json => {
-                if (json.statusCode === 200) {
-                    this.requestToken = json.data.token;
-                    this.requestTokenSecret = json.data.tokenSecret;
+                if (json.token) {
+                    this.requestToken = json.token;
+                    this.requestTokenSecret = json.tokenSecret;
 
-                    return {
-                        statusCode: json.statusCode,
-                        url: json.data.url
-                    };
+                    return json.url;
                 }
-                return json;
             })
             .catch(error => {
                 console.log(error);
@@ -38,7 +34,7 @@ export class TwitterProxyService {
     }
 
     getAccessToken(pinCode, retry = true) {
-        return fetch(`${this.proxyUrl}/access_token`, {
+        return fetch(`${this.serverUrl}/access_token`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -51,15 +47,12 @@ export class TwitterProxyService {
         })
         .then(response => response.json())
         .then(json => {
-            if (json.statusCode === 200) {
-                this.oauth = json.data;
-                localStorage.setItem("oauth", JSON.stringify(json.data));
+            if (json.token) {
+                this.oauth = json;
+                localStorage.setItem("oauth", JSON.stringify(json));
 
-                return {
-                    statusCode: json.statusCode
-                };
+                return true;
             }
-            return json;
         })
         .catch(error => {
             console.log(error);
@@ -72,7 +65,7 @@ export class TwitterProxyService {
     }
 
     getUser(retry = true) {
-        return fetch(`${this.proxyUrl}/user`, {
+        return fetch(`${this.serverUrl}/user`, {
             method: "GET",
             headers: this.getAuthorizationHeaders()
         })
@@ -83,11 +76,12 @@ export class TwitterProxyService {
             if (retry) {
                 return this.getUser(false);
             }
+            throw new Error(error);
         });
     }
 
     getTimeline(params = {}, retry = true) {
-        const url = this.buildURL(`${this.proxyUrl}/timeline`, {
+        const url = this.buildURL(`${this.serverUrl}/timeline`, {
             count: 30,
             exclude_replies: true,
             ...params
@@ -104,6 +98,7 @@ export class TwitterProxyService {
             if (retry) {
                 return this.getTimeline(params, false);
             }
+            throw new Error(error);
         });
     }
 

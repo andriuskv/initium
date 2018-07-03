@@ -96,6 +96,7 @@
                         <input type="text" class="input twitter-pin-input" placeholder="Enter PIN" [class.visible]="showPinInput" #pin (keyup.enter)="login(pin)">
                         <button class="btn" (click)="login(pin)" *ngIf="!isLoggedIn">Log in</button>
                     </div>
+                    <p *ngIf="message">{{ message }}</p>
                 </ng-template>
             </div>
         </div>
