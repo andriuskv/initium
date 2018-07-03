@@ -40,6 +40,9 @@ export class Twitter {
                 this.initTwitter();
             }, this.isVisible ? 2000 : 10000);
         }
+        else {
+            this.initializing = false;
+        }
     }
 
     ngOnChanges() {

@@ -20,6 +20,8 @@ export class RssFeed {
     showingFeedList: boolean = false;
     showingForm: boolean = false;
     showingFormCloseButton: boolean = false;
+    animatingRight: boolean = false;
+    animatingLeft: boolean = false;
     VISIBLE_FEED_COUNT: number = 3;
     newEntryCount: number = 0;
     timeout: number = 0;
@@ -83,6 +85,7 @@ export class RssFeed {
 
     previousVisibleFeeds() {
         this.shift -= 1;
+        this.animatingLeft = false;
 
         if (this.activeFeedIndex >= this.shift + this.VISIBLE_FEED_COUNT) {
             this.showFeed(this.activeFeedIndex - 1);
@@ -91,6 +94,7 @@ export class RssFeed {
 
     nextVisibleFeeds() {
         this.shift += 1;
+        this.animatingRight = false;
 
         if (this.activeFeedIndex < this.shift) {
             this.showFeed(this.activeFeedIndex + 1);
@@ -133,6 +137,8 @@ export class RssFeed {
 
     showFeedList() {
         this.showingFeedList = true;
+        this.animatingLeft = false;
+        this.animatingRight = false;
     }
 
     hideFeedList() {
@@ -194,8 +200,8 @@ export class RssFeed {
     }
 
     async updateFeeds() {
-        for (const feed of this.feeds) {
-            await this.updateFeed(feed);
+        for (const [index, feed] of this.feeds.entries()) {
+            await this.updateFeed(feed, index);
         }
 
         if (!this.newEntryCount) {
@@ -215,7 +221,7 @@ export class RssFeed {
         }
     }
 
-    async updateFeed(feed) {
+    async updateFeed(feed, index) {
         try {
             const newFeed = await this.feedService.updateFeed(feed);
             const { length } = newFeed.entries;
@@ -224,10 +230,24 @@ export class RssFeed {
                 feed.newEntryCount += length;
                 this.newEntryCount += length;
                 feed.entries = newFeed.entries.concat(feed.entries);
+                this.animateShiftButton(index);
             }
             feed.updated = newFeed.updated;
         } catch (e) {
             console.log(e);
+        }
+    }
+
+    animateShiftButton(index) {
+        if (this.showingFeedList || this.showingForm) {
+            return;
+        }
+
+        if (index >= this.shift + this.VISIBLE_FEED_COUNT) {
+            this.animatingRight = true;
+        }
+        else if (index < this.shift) {
+            this.animatingLeft = true;
         }
     }
 

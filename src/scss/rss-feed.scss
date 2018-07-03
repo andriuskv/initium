@@ -112,6 +112,39 @@
     margin-right: 8px;
 }
 
+.feed-shift-btn.active {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        z-index: -1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        content: "";
+        display: block;
+        border-radius: 50%;
+        animation-name: pulse;
+        animation-duration: 1.6s;
+        animation-fill-mode: both;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+    }
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(0);
+        background-color: transparent;
+    }
+    to {
+        transform: scale(2);
+        background-color: $button-background-color;
+    }
+}
+
 .feed-entries {
     @include scrollbar;
 
