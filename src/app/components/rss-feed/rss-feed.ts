@@ -85,19 +85,35 @@ export class RssFeed {
 
     previousVisibleFeeds() {
         this.shift -= 1;
-        this.animatingLeft = false;
 
         if (this.activeFeedIndex >= this.shift + this.VISIBLE_FEED_COUNT) {
             this.showFeed(this.activeFeedIndex - 1);
+        }
+
+        if (this.animatingLeft) {
+            const hasNewEntries = this.feeds.slice(0, this.shift)
+                .some(({ newEntryCount }) => newEntryCount > 0);
+
+            if (!hasNewEntries) {
+                this.animatingLeft = false;
+            }
         }
     }
 
     nextVisibleFeeds() {
         this.shift += 1;
-        this.animatingRight = false;
 
         if (this.activeFeedIndex < this.shift) {
             this.showFeed(this.activeFeedIndex + 1);
+        }
+
+        if (this.animatingRight) {
+            const hasNewEntries = this.feeds.slice(this.shift + this.VISIBLE_FEED_COUNT)
+                .some(({ newEntryCount }) => newEntryCount > 0);
+
+            if (!hasNewEntries) {
+                this.animatingRight = false;
+            }
         }
     }
 
