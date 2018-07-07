@@ -6,6 +6,7 @@ interface Task {
     text: string;
     completed?: boolean;
     pinned?: boolean;
+    removing?: boolean;
     subtasks: Subtask[];
 }
 
@@ -165,8 +166,12 @@ export class Tasks {
     }
 
     removeTask(index) {
-        this.tasks.splice(index, 1);
-        this.saveTasks();
+        this.tasks[index].removing = true;
+
+        window.setTimeout(() => {
+            this.tasks.splice(index, 1);
+            this.saveTasks();
+        }, 200);
     }
 
     comepleteSubtask(task) {

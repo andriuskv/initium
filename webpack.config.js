@@ -79,15 +79,21 @@ module.exports = function(env = {}) {
                             loader: "css-loader",
                             options: {
                                 sourceMap: !env.prod,
-                                url: false,
-                                minimize: env.prod
+                                url: false
                             }
                         },
                         {
                             loader: "postcss-loader",
                             options: {
                                 sourceMap: !env.prod,
-                                plugins: () => [require("autoprefixer")()]
+                                plugins() {
+                                    const plugins = [require("autoprefixer")()];
+
+                                    if (env.prod) {
+                                        plugins.push(require("cssnano")());
+                                    }
+                                    return plugins;
+                                }
                             }
                         },
                         {
