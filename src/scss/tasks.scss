@@ -72,11 +72,29 @@
 }
 
 .task {
+    overflow: hidden;
     display: flex;
     padding: 4px;
 
     &:not(:last-of-type) {
         border-bottom: 1px solid $primary-border-color;
+    }
+
+    &.removing {
+        animation-duration: 0.4s;
+        animation-name: collapse;
+        animation-fill-mode: both;
+    }
+}
+
+@keyframes collapse {
+    from {
+        opacity: 1;
+        max-height: 1000px;
+    }
+    to {
+        opacity: 0;
+        max-height: 0;
     }
 }
 

@@ -45,7 +45,7 @@
     </form>
     <ng-template #elseBlock1>
         <ul class="tasks task-transition-target" *ngIf="tasks.length; else elseBlock2">
-            <li class="task"  *ngFor="let task of tasks; let i = index">
+            <li class="task"  [class.removing]="task.removing" *ngFor="let task of tasks; let i = index">
                 <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
                     [class.checked]="task.completed"
                     (click)="completeTask(i)"
