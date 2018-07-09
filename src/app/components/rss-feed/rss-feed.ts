@@ -355,6 +355,10 @@ export class RssFeed {
         }
     }
 
+    expandEntry(entry) {
+        entry.truncated = false;
+    }
+
     enableTitleEdit(feed) {
         feed.editingTitle = true;
 

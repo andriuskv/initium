@@ -191,6 +191,14 @@
     word-break: break-word;
     white-space: pre-line;
 
+    &.truncated {
+         max-height: 180px;
+
+        & + .feed-entry-expand-btn {
+            display: block;
+        }
+    }
+
     img {
         max-height: 64px;
     }
@@ -211,8 +219,23 @@
     }
 
     td {
-        padding: 0 4px 0 0;
+        padding: 0;
         white-space: normal;
+    }
+
+    code {
+        white-space: pre-line;
+    }
+}
+
+.feed-entry-expand-btn {
+    display: none;
+    width: 100%;
+    padding: 6px;
+    border-top: 1px solid $color-white-10;
+
+    &:hover {
+        background-color: $color-white-4;
     }
 }
 

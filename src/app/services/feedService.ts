@@ -17,7 +17,7 @@ export class FeedService {
         return this.fetchFeed(url).then(feed => {
             if (feed) {
                 if (Array.isArray(feed.items)) {
-                    return { url, title, ...this.parseFeed(feed) };
+                    return { url, ...this.parseFeed(feed, title) };
                 }
                 throw new Error("Feed has no entries");
             }
@@ -26,19 +26,25 @@ export class FeedService {
     }
 
     getNewEntries(newEntries, entries) {
-        return newEntries.filter(({ link, title }) => {
-            return !entries.some(entry => entry.link === link || entry.title === title);
-        }).map(entry => {
-            entry.newEntry = true;
-            return entry;
-        });
+        return newEntries.reduce((newEntries, entry) => {
+            const notDuplicate = !entries.some(({ link }) => link === entry.link);
+
+            if (notDuplicate) {
+                newEntries.push(this.parseEntry(entry, true));
+            }
+            return newEntries;
+        }, []);
     }
 
-    updateFeed({ url, title, entries }) {
-        return this.getFeed(url, title).then(feed => ({
-            updated: feed.updated,
-            entries: this.getNewEntries(feed.entries, entries)
-        }));
+    updateFeed({ url, entries }) {
+        return this.fetchFeed(url).then(feed => {
+            if (feed) {
+                return {
+                    updated: this.parseDate(feed.lastBuildDate),
+                    entries: this.getNewEntries(feed.items, entries)
+                };
+            }
+        });
     }
 
     fetchFeed(url) {
@@ -50,9 +56,9 @@ export class FeedService {
             });
     }
 
-    parseFeed(feed) {
+    parseFeed(feed, title) {
         return {
-            title: feed.title,
+            title: title || feed.title,
             description: feed.description,
             image: feed.image ? feed.image.url : "",
             newEntryCount: 0,
@@ -62,12 +68,18 @@ export class FeedService {
     }
 
     parseEntries(entries) {
-        return entries.map(entry => ({
+        return entries.map(entry => this.parseEntry(entry));
+    }
+
+    parseEntry(entry, newEntry = false) {
+        return {
             title: entry.title,
             link: entry.link,
             description: this.domSanitizer.bypassSecurityTrustHtml(entry.content),
-            date: this.parseDate(entry.pubDate)
-        }));
+            date: this.parseDate(entry.pubDate),
+            truncated: this.needTruncation(entry.content),
+            newEntry
+        };
     }
 
     parseDate(dateStr) {
@@ -85,5 +97,21 @@ export class FeedService {
             minutes: date.getMinutes(),
             hourFormat: format
         });
+    }
+
+    needTruncation(content) {
+        const div = document.createElement("div");
+
+        div.insertAdjacentHTML("beforeend", content);
+        div.classList.add("feed-description");
+
+        // Add width to match original container width.
+        div.style.width = "558px";
+        document.body.appendChild(div);
+
+        const { offsetHeight } = div;
+
+        div.parentElement.removeChild(div);
+        return offsetHeight > 280;
     }
 }
