@@ -117,7 +117,6 @@
     overflow: hidden;
 
     &::before {
-        z-index: -1;
         position: absolute;
         top: 0;
         left: 0;
@@ -192,7 +191,7 @@
     white-space: pre-line;
 
     &.truncated {
-         max-height: 180px;
+         max-height: 160px;
 
         & + .feed-entry-expand-btn {
             display: block;

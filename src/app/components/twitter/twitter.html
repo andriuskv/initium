@@ -11,7 +11,7 @@
             <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
                 title="Log out" (click)="logout()">
                 <svg viewBox="0 0 24 24">
-                    <use href="#cross"></use>
+                    <use href="#logout"></use>
                 </svg>
             </button>
         </div>
@@ -36,7 +36,7 @@
                     <a href="{{ tweet.tweetUrl }}" class="tweeted-on" target="_blank">{{ tweet.created.at }}</a>
                 </div>
                 <p class="tweet-text" *ngIf="tweet.text" [innerHTML]="tweet.text"></p>
-                <div class="tweet-media-container" *ngIf="tweet.media">
+                <div class="tweet-media-container" *ngIf="tweet.media.length">
                     <div class="tweet-image-container"
                         *ngIf="tweet.media[0].type === 'photo'; else elseBlock"
                         [class.two]="tweet.media.length === 2"

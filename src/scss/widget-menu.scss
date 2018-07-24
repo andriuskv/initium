@@ -12,6 +12,7 @@
                 0.2s visibility,
                 0.2s border-top-left-radius;
     transition-delay: 0.2s;
+    will-change: border-top-left-radius;
 
     &.visible {
         opacity: 1;

@@ -6,6 +6,7 @@ $main-block-nav-height: 32px;
     left: 50%;
     transform: translateX(-50%);
     transition: 0.2s top;
+    will-change: top, height;
 
     &.hidden {
         display: none;
@@ -154,7 +155,6 @@ $main-block-nav-height: 32px;
     top: 0;
     right: 0;
     display: none;
-    backdrop-filter: blur(1px);
 }
 
 .main-block-modal {

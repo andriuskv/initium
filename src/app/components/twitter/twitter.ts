@@ -158,19 +158,13 @@ export class Twitter {
         }
 
         if (entities.media.length) {
-            const wordArray = text.split(" ");
-
-            wordArray.splice(wordArray.indexOf(entities.media[0].url));
-            text = wordArray.join(" ");
+            text = text.replace(entities.media[0].url, "").trim();
         }
 
         return text;
     }
 
     getMedia(media) {
-        if (!media.length) {
-            return;
-        }
         return media.map(item => {
             if (item.type === "animated_gif") {
                 return {
@@ -368,6 +362,7 @@ export class Twitter {
         });
 
         if (!response || !response.tweets) {
+            this.fetchingMoreTweets = false;
             return;
         }
         const tweets = response.tweets.filter(tweet => tweet.id !== id);
