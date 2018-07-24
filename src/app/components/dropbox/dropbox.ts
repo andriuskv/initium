@@ -14,9 +14,9 @@ import { dispatchCustomEvent } from "../../utils/utils";
                 </svg>
             </button>
             <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
-            <button class="btn-secondary btn-secondary-alt" title="Logout" (click)="logout()">
+            <button class="btn-secondary btn-secondary-alt" title="Log out" (click)="logout()">
                 <svg viewBox="0 0 24 24">
-                    <use href="#cross"></use>
+                    <use href="#logout"></use>
                 </svg>
             </button>
         </div>
