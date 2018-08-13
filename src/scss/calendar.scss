@@ -58,9 +58,33 @@
     color: $secondary-text-color;
 }
 
+.calendar-wrapper {
+    overflow: hidden;
+}
+
 .calendar {
+    position: relative;
     width: 378px;
     height: 100%;
+    transform-origin: var(--x) var(--y);
+
+    animation-duration: 0.2s;
+    animation-fill-mode: both;
+    animation-name: opacity-up;
+
+    &.transitioning {
+        animation-duration: 0.16s, 0.6s;
+        animation-name: opacity-down, calendar-scale-up;
+    }
+}
+
+@keyframes calendar-scale-up {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(4);
+    }
 }
 
 .calendar-header {

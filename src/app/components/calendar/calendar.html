@@ -1,4 +1,6 @@
-<div class="current-day-reminder-container" [class.collapsed]="remindersCollapsed" *ngIf="currentDay.reminders.length">
+<div class="current-day-reminder-container"
+    [class.collapsed]="remindersCollapsed"
+    *ngIf="currentDay.reminders.length">
     <ul class="current-day-reminders">
         <li class="current-day-reminder" *ngFor="let reminder of currentDay.reminders"
             [ngStyle]="{ 'border-left-color': reminder.color }">
@@ -13,17 +15,20 @@
         </svg>
     </button>
 </div>
-<div class="calendar">
-    <calendar-selected-day *ngIf="selectedDay; else elseBlock1"
-        [day]="selectedDay"
-        [reminders]="reminders"
-        (event)="showCalendar()"
-        (create)="handleReminderCreation($event)"
-        (remove)="removeReminder($event)"
-        (update)="updateReminder($event)">
-    </calendar-selected-day>
+<div class="calendar-wrapper"
+    [style]="'--x:' + transitionOriginX + 'px; --y:' + transitionOriginY + 'px' | safeStyle">
+    <div class="calendar" *ngIf="selectedDay; else elseBlock1">
+        <calendar-selected-day
+            [day]="selectedDay"
+            [reminders]="reminders"
+            (event)="showCalendar()"
+            (create)="handleReminderCreation($event)"
+            (remove)="removeReminder($event)"
+            (update)="updateReminder($event)">
+        </calendar-selected-day>
+    </div>
     <ng-template #elseBlock1>
-        <ng-container *ngIf="inYearView; else elseBlock2">
+        <div class="calendar" [class.transitioning]="transitioning" *ngIf="inYearView; else elseBlock2">
             <div class="calendar-header">
                 <button class="btn-secondary btn-secondary-alt" (click)="setVisibleYear(-1)" title="Previous year">
                     <svg viewBox="0 0 24 24">
@@ -39,54 +44,58 @@
             </div>
             <ul class="calendar-months">
                 <li class="calendar-month" [class.current]="month.isCurrentMonth"
-                    *ngFor="let month of calendar[currentYear]; let i = index"
-                    (click)="showMonth(i)">{{ month.name }}</li>
+                    *ngFor="let month of calendar[currentYear]; let i = index" #element
+                    (click)="makeTransition(showMonth, element, i)">{{ month.name }}</li>
             </ul>
-        </ng-container>
+        </div>
     </ng-template>
     <ng-template #elseBlock2>
-        <div class="calendar-header">
-            <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(-1)" title="Previous month">
-                <svg viewBox="0 0 24 24">
-                    <use href="#chevron-left"></use>
-                </svg>
-            </button>
-            <button class="btn-secondary btn-secondary-alt calendar-title"
-                (click)="viewYear()">{{ visibleMonth.current.name }} {{ currentYear }}</button>
-            <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(1)" title="Next month">
-                <svg viewBox="0 0 24 24">
-                    <use href="#chevron-right"></use>
-                </svg>
-            </button>
+        <div class="calendar" [class.transitioning]="transitioning">
+            <div class="calendar-header">
+                <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(-1)" title="Previous month">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#chevron-left"></use>
+                    </svg>
+                </button>
+                <button class="btn-secondary btn-secondary-alt calendar-title"
+                    (click)="viewYear()">{{ visibleMonth.current.name }} {{ currentYear }}</button>
+                <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(1)" title="Next month">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#chevron-right"></use>
+                    </svg>
+                </button>
+            </div>
+            <ul class="calendar-week-days">
+                <li class="calendar-cell">Mon</li>
+                <li class="calendar-cell">Tue</li>
+                <li class="calendar-cell">Wed</li>
+                <li class="calendar-cell">Thu</li>
+                <li class="calendar-cell">Fri</li>
+                <li class="calendar-cell">Sat</li>
+                <li class="calendar-cell">Sun</li>
+            </ul>
+            <ul class="calendar-days">
+                <li class="calendar-cell calendar-day"
+                    *ngFor="let day of visibleMonth.previous.days"
+                    (click)="makeTransition(showDay, element, day, -1)" #element>
+                    <div>{{ day.day }}</div>
+                </li>
+                <li class="calendar-cell calendar-day current-month-day"
+                    *ngFor="let day of visibleMonth.current.days"
+                    [class.current]="day.isCurrentDay"
+                    (click)="makeTransition(showDay, element, day)" #element>
+                    <div>{{ day.day }}</div>
+                    <div class="day-reminders" *ngIf="day.reminders.length">
+                        <div class="day-reminder" *ngFor="let reminder of day.reminders"
+                            [ngStyle]="{ 'background-color': reminder.color }"></div>
+                    </div>
+                </li>
+                <li class="calendar-cell calendar-day"
+                    *ngFor="let day of visibleMonth.next.days"
+                    (click)="makeTransition(showDay, element, day, 1)" #element>
+                    <div>{{ day.day }}</div>
+                </li>
+            </ul>
         </div>
-        <ul class="calendar-week-days">
-            <li class="calendar-cell">Mon</li>
-            <li class="calendar-cell">Tue</li>
-            <li class="calendar-cell">Wed</li>
-            <li class="calendar-cell">Thu</li>
-            <li class="calendar-cell">Fri</li>
-            <li class="calendar-cell">Sat</li>
-            <li class="calendar-cell">Sun</li>
-        </ul>
-        <ul class="calendar-days">
-            <li class="calendar-cell calendar-day"
-                *ngFor="let day of visibleMonth.previous.days"
-                (click)="showDay(day, -1)">
-                <div>{{ day.day }}</div>
-            </li>
-            <li class="calendar-cell calendar-day current-month-day"
-                *ngFor="let day of visibleMonth.current.days"
-                [class.current]="day.isCurrentDay"
-                (click)="showDay(day)">
-                <div>{{ day.day }}</div>
-                <div class="day-reminders" *ngIf="day.reminders.length">
-                    <div class="day-reminder" *ngFor="let reminder of day.reminders"
-                        [ngStyle]="{ 'background-color': reminder.color }"></div>
-                </div>
-            </li>
-            <li class="calendar-cell calendar-day" *ngFor="let day of visibleMonth.next.days" (click)="showDay(day, 1)">
-                <div>{{ day.day }}</div>
-            </li>
-        </ul>
     </ng-template>
 </div>

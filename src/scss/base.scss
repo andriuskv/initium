@@ -290,6 +290,15 @@ textarea {
     }
 }
 
+@keyframes opacity-down {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
 @keyframes make-visible {
     from {
         visibility: hidden;
