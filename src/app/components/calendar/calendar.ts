@@ -14,6 +14,9 @@ export class Calendar {
     initialized: boolean = false;
     remindersCollapsed: boolean = false;
     inYearView: boolean = false;
+    transitioning: boolean = false;
+    transitionOriginX: number = 0;
+    transitionOriginY: number = 0;
     timeFormat: number = 24;
     currentYear: number;
     futureReminders: Array<any> = [];
@@ -224,6 +227,17 @@ export class Calendar {
             this.repeatFutureReminders(this.futureReminders, this.calendar);
         }
         this.currentYear = year;
+    }
+
+    makeTransition(callback, element, ...params) {
+        this.transitionOriginX = element.offsetLeft + element.offsetWidth / 2;
+        this.transitionOriginY = element.offsetTop + element.offsetHeight / 2;
+        this.transitioning = true;
+
+        window.setTimeout(() => {
+            this.transitioning = false;
+            callback.call(this, ...params);
+        }, 320);
     }
 
     showMonth(index) {

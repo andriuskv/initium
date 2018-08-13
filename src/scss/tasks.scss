@@ -108,6 +108,7 @@
     margin-top: 1px;
     word-wrap: break-word;
     white-space: pre-wrap;
+    word-break: break-word;
     transition: 0.2s opacity;
 
     &.completed {
