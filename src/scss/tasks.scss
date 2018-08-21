@@ -82,20 +82,20 @@
     }
 
     &.removing {
-        animation-duration: 0.4s;
-        animation-name: collapse;
+        animation-duration: 0.2s, 0.4s;
+        animation-name: opacity-down, collapse;
         animation-fill-mode: both;
     }
 }
 
 @keyframes collapse {
     from {
-        opacity: 1;
         max-height: 1000px;
+        padding: 4px;
     }
     to {
-        opacity: 0;
         max-height: 0;
+        padding: 0 4px;
     }
 }
 

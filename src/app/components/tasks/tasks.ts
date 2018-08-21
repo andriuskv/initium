@@ -171,7 +171,7 @@ export class Tasks {
         window.setTimeout(() => {
             this.tasks.splice(index, 1);
             this.saveTasks();
-        }, 200);
+        }, 400);
     }
 
     comepleteSubtask(task) {
