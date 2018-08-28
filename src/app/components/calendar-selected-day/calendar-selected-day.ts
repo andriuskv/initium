@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { TimeDateService } from "../../services/timeDateService";
 import { SettingService } from "../../services/settingService";
+import { getRandomHslColor } from "../../utils/utils";
 
 @Component({
     selector: "calendar-selected-day",
@@ -233,8 +234,8 @@ export class CalendarSelectedDay {
     }
 
     getRandomColor() {
-        const num = Math.floor(Math.random() * 360) + 1;
-        return `hsl(${num}, 100%, 68%)`;
+        const { hue, saturation, lightness } = getRandomHslColor();
+        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
     }
 
     changeReminderColor(reminder) {

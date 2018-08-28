@@ -75,7 +75,9 @@
 .task {
     overflow: hidden;
     display: flex;
-    padding: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-top: 8px;
 
     &:not(:last-of-type) {
         border-bottom: 1px solid $primary-border-color;
@@ -91,17 +93,35 @@
 @keyframes collapse {
     from {
         max-height: 1000px;
-        padding: 4px;
+        margin-top: 8px;
     }
     to {
         max-height: 0;
-        padding: 0 4px;
+        margin-top: 0;
     }
 }
 
 .task-checkbox {
     flex-shrink: 0;
     margin-right: 6px;
+}
+
+.task-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    color: $secondary-text-color;
+}
+
+.task-label-color {
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+    border-radius: 50%;
+}
+
+.task-label-title {
+    font-size: 13px;
 }
 
 .task-text {
@@ -134,6 +154,7 @@
 .task-footer {
     display: flex;
     margin-top: 8px;
+    margin-bottom: 4px;
 }
 
 .task-pin-icon {
@@ -160,7 +181,54 @@
     flex-direction: column;
     align-items: flex-start;
     height: 100%;
-    padding-top: 4px;
+    padding-top: 8px;
+}
+
+.task-form-label-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: calc(100% - 4px);
+    margin-right: 4px;
+
+    .input {
+        flex-grow: 1;
+    }
+}
+
+.task-form-color-picker-container {
+    overflow: hidden;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    margin-left: 8px;
+    border-radius: 50%;
+}
+
+.task-form-color-picker {
+    opacity: 0;
+    cursor: pointer;
+}
+
+.task-from-label-remove-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.task-form-labels {
+    display: flex;
+    margin-top: 8px;
+}
+
+.task-form-label {
+    display: flex;
+    align-items: center;
+    margin-left: 4px;
+
+    button {
+        padding: 2px 4px;
+    }
 }
 
 .task-input {
@@ -168,7 +236,7 @@
     display: block;
     width: calc(100% - 8px);
     height: 80px;
-    margin: 0 4px 8px 4px;
+    margin: 8px 4px;
 }
 
 .subtask-add-btn {

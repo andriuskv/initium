@@ -21,6 +21,33 @@
         </ng-template>
     </header>
     <form class="task-form task-transition-target" *ngIf="temporaryTask; else elseBlock1" (submit)="handleFormSubmit($event)">
+        <div class="task-form-label-input-container">
+            <div class="task-form-color-picker-container"
+                [style.backgroundColor]="temporaryTask.labelColor">
+                <input type="color" name="color" class="task-form-color-picker"
+                    (input)="updateLabelColor($event)"
+                    [value]="temporaryTask.labelColor">
+            </div>
+            <input type="text" name="label" class="input"
+                placeholder="Task label" autocomplete="off"
+                (input)="updateLabelTitle($event)"
+                [value]="temporaryTask.labelTitle">
+            <button type="button" class="btn-secondary task-from-label-remove-btn"
+                *ngIf="temporaryTask.labelTitle" (click)="removeLabel()">
+                <svg viewBox="0 0 24 24">
+                    <use href="#cross"></use>
+                </svg>
+            </button>
+        </div>
+        <ul class="task-form-labels" *ngIf="taskLabels.length">
+            <li class="task-form-label" *ngFor="let label of taskLabels">
+                <button type="button" class="btn-secondary btn-secondary-alt" (click)="updateLabel(label)">
+                    <div class="task-label-color"
+                    [style.backgroundColor]="label.color"></div>
+                    <div class="task-label-title">{{ label.title }}</div>
+                </button>
+            </li>
+        </ul>
         <textarea class="input task-input" name="text" [value]="temporaryTask.text"
             placeholder="Enter your task" required></textarea>
         <button type="button" class="btn-secondary btn-secondary-alt subtask-add-btn" (click)="addSubtask()">
@@ -52,6 +79,11 @@
                     (keyup.enter)="completeTask(i)"
                     [attr.aria-checked]="task.completed"></div>
                 <div>
+                    <div class="task-label" *ngIf="task.labelTitle">
+                        <div class="task-label-color"
+                            [style.backgroundColor]="task.labelColor"></div>
+                        <div class="task-label-title">{{ task.labelTitle }}</div>
+                    </div>
                     <div class="task-text" [class.completed]="task.completed">{{ task.text }}</div>
                     <ul class="subtasks" *ngIf="task.subtasks.length">
                         <li class="subtask" *ngFor="let subtask of task.subtasks; let i = index">
