@@ -1,9 +1,12 @@
 import { Component, ViewChild } from "@angular/core";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { ZIndexService } from "../../services/zIndexService";
+import { getRandomHexColor } from "../../utils/utils";
 
 interface Task {
     text: string;
+    labelTitle?: string;
+    labelColor?: string;
     completed?: boolean;
     pinned?: boolean;
     removing?: boolean;
@@ -27,6 +30,7 @@ export class Tasks {
     zIndex: number = 0;
     tasks: Task[] = [];
     temporaryTask: any = null;
+    taskLabels: any = [];
 
     constructor(private chromeStorageService: ChromeStorageService, private zIndexService: ZIndexService) {}
 
@@ -66,14 +70,18 @@ export class Tasks {
 
     showForm() {
         this.temporaryTask = {
+            labelTitle: "",
+            labelColor: getRandomHexColor(),
             text: "",
             subtasks: []
         };
+        this.setTaskLabels();
     }
 
     hideForm() {
         this.temporaryTask = null;
         this.makingEdit = false;
+        this.taskLabels.length = 0;
     }
 
     addSubtask() {
@@ -102,14 +110,24 @@ export class Tasks {
     }
 
     handleFormSubmit(event) {
+        const { elements } = event.target;
         const task: Task = {
-            text: event.target.elements.text.value,
+            text: elements.text.value,
             subtasks: this.getSubtasks(this.temporaryTask.subtasks)
         };
+
+        if (elements.label.value) {
+            task.labelTitle = elements.label.value;
+            task.labelColor = elements.color.value;
+        }
 
         if (this.makingEdit) {
             const { index } = this.temporaryTask;
 
+            if (!elements.label.value) {
+                delete this.tasks[index].labelTitle;
+                delete this.tasks[index].labelColor;
+            }
             this.tasks[index] = { ...this.tasks[index], ...task };
         }
         else {
@@ -155,14 +173,17 @@ export class Tasks {
     }
 
     editTask(index) {
-        const { text, subtasks } = this.tasks[index];
+        const { labelTitle, labelColor, text, subtasks } = this.tasks[index];
 
         this.makingEdit = true;
         this.temporaryTask = {
             index,
+            labelTitle: labelTitle || "",
+            labelColor: labelColor || getRandomHexColor(),
             text,
             subtasks: [...subtasks]
         };
+        this.setTaskLabels({ title: labelTitle, color: labelColor });
     }
 
     removeTask(index) {
@@ -176,6 +197,46 @@ export class Tasks {
 
     comepleteSubtask(task) {
         task.completed = !task.completed;
+    }
+
+    setTaskLabels({ title, color } = {} as any) {
+        const tasks = this.tasks.filter(({ labelTitle, labelColor }) =>
+            labelTitle && (labelTitle !== title || labelColor !== color));
+
+        this.taskLabels = tasks.reduce((labels, { labelTitle, labelColor }) => {
+            const duplicate = labels.find(({ title, color }) => labelTitle === title && labelColor === color);
+
+            if (!duplicate) {
+                labels.push({
+                    title: labelTitle,
+                    color: labelColor
+                });
+            }
+            return labels;
+        }, []);
+    }
+
+    removeLabel() {
+        this.temporaryTask.labelTitle = "";
+        this.setTaskLabels();
+    }
+
+    updateLabelTitle({ target }) {
+        this.temporaryTask.labelTitle = target.value;
+        this.setTaskLabels({
+            title: this.temporaryTask.labelTitle,
+            color: this.temporaryTask.labelColor
+        });
+    }
+
+    updateLabelColor({ target }) {
+        this.temporaryTask.labelColor = target.value;
+    }
+
+    updateLabel({ title, color }) {
+        this.temporaryTask.labelTitle = title;
+        this.temporaryTask.labelColor = color;
+        this.setTaskLabels({ title, color });
     }
 
     handleClickOnContainer() {
