@@ -74,8 +74,7 @@
 
 .task {
     overflow: hidden;
-    display: flex;
-    padding-left: 4px;
+    padding-left: 24px;
     padding-right: 4px;
     margin-top: 8px;
 
@@ -102,15 +101,25 @@
 }
 
 .task-checkbox {
-    flex-shrink: 0;
+    float: left;
+    margin-left: -20px;
     margin-right: 6px;
+}
+
+.task-labels {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
 }
 
 .task-label {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
-    color: $secondary-text-color;
+    margin-bottom: 4px;
+
+    &:not(:last-of-type) {
+        margin-right: 8px;
+    }
 }
 
 .task-label-color {
@@ -125,10 +134,10 @@
 }
 
 .task-text {
-    margin-top: 1px;
     word-wrap: break-word;
     white-space: pre-wrap;
     word-break: break-word;
+    line-height: 1.2857;
     transition: 0.2s opacity;
 
     &.completed {
@@ -139,6 +148,7 @@
 
 .subtasks {
     margin-top: 4px;
+    margin-left: 20px;
 }
 
 .subtask {
@@ -176,10 +186,9 @@
     }
 }
 
-.task-form {
+.task-form-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     height: 100%;
     padding-top: 8px;
 }
@@ -189,11 +198,6 @@
     display: flex;
     align-items: center;
     width: calc(100% - 4px);
-    margin-right: 4px;
-
-    .input {
-        flex-grow: 1;
-    }
 }
 
 .task-form-color-picker-container {
@@ -210,25 +214,61 @@
     cursor: pointer;
 }
 
-.task-from-label-remove-btn {
-    position: absolute;
-    right: 0;
-    top: 0;
+.task-from-label-title-input {
+    flex-grow: 1;
+    margin-right: 4px;
 }
 
 .task-form-labels {
     display: flex;
-    margin-top: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
 }
 
 .task-form-label {
     display: flex;
     align-items: center;
+    margin-top: 4px;
     margin-left: 4px;
+}
 
-    button {
-        padding: 2px 4px;
+.task-form-label-btn {
+    position: relative;
+    padding: 4px;
+
+    &.flagged {
+        &::before {
+            content: "\2713";
+            z-index: 1;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: block;
+            color: $color-success;
+            font-size: 20px;
+        }
+
+        .task-label-color,
+        .task-label-title {
+            opacity: 0.4;
+        }
     }
+}
+
+.task-form-label-message {
+    margin-top: 4px;
+    margin-left: 4px;
+    font-size: 13px;
+    color: $color-danger;
+}
+
+.task-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 1;
 }
 
 .task-input {
@@ -241,7 +281,7 @@
 
 .subtask-add-btn {
     flex-shrink: 0;
-    padding: 2px 6px;
+    padding: 2px 4px;
     margin-left: 4px;
 }
 

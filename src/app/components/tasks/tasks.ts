@@ -1,16 +1,15 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component } from "@angular/core";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { ZIndexService } from "../../services/zIndexService";
 import { getRandomHexColor } from "../../utils/utils";
 
 interface Task {
     text: string;
-    labelTitle?: string;
-    labelColor?: string;
     completed?: boolean;
     pinned?: boolean;
     removing?: boolean;
     subtasks: Subtask[];
+    labels?: Label[];
 }
 
 interface Subtask {
@@ -18,19 +17,24 @@ interface Subtask {
     completed?: boolean;
 }
 
+interface Label {
+    color: string;
+    title: string;
+    flagged?: boolean;
+}
+
 @Component({
     selector: "tasks",
     templateUrl: "./tasks.html"
 })
 export class Tasks {
-    @ViewChild("subtaskList") subtaskList;
-
     visible: boolean = false;
     makingEdit: boolean = false;
     zIndex: number = 0;
     tasks: Task[] = [];
     temporaryTask: any = null;
-    taskLabels: any = [];
+    formColor: string = "";
+    labelMessage: string = "";
 
     constructor(private chromeStorageService: ChromeStorageService, private zIndexService: ZIndexService) {}
 
@@ -40,23 +44,8 @@ export class Tasks {
                 this.tasks = [...tasks.newValue];
             }
         });
-        this.chromeStorageService.get(["todos", "tasks"], storage => {
-            const keys = Object.keys(storage);
-
-            for (const key of keys) {
-                const items = storage[key].map(item => {
-                    if (!item.subtasks) {
-                        item.subtasks = [];
-                    }
-                    return item;
-                });
-                this.tasks = [...this.tasks, ...items];
-
-                if (key === "todos") {
-                    this.chromeStorageService.remove("todos");
-                    this.saveTasks();
-                }
-            }
+        this.chromeStorageService.get("tasks", storage => {
+            this.tasks = storage.tasks || [];
         });
     }
 
@@ -69,19 +58,17 @@ export class Tasks {
     }
 
     showForm() {
+        this.formColor = getRandomHexColor();
         this.temporaryTask = {
-            labelTitle: "",
-            labelColor: getRandomHexColor(),
+            labels: this.getUniqueLabels(),
             text: "",
             subtasks: []
         };
-        this.setTaskLabels();
     }
 
     hideForm() {
         this.temporaryTask = null;
         this.makingEdit = false;
-        this.taskLabels.length = 0;
     }
 
     addSubtask() {
@@ -92,42 +79,36 @@ export class Tasks {
         this.temporaryTask.subtasks.splice(index, 1);
     }
 
-    getSubtasks(subtasks) {
-        if (!this.subtaskList) {
+    getSubtasks(elements) {
+        if (!elements) {
             return [];
         }
-        const elements = this.subtaskList.nativeElement.querySelectorAll(".input");
-
-        return subtasks.reduce((tasks, task, index) => {
-            const text = elements[index].value;
-
-            if (text) {
-                task.text = text;
-                tasks.push(task);
-            }
-            return tasks;
-        }, []);
+        else if (elements.value) {
+            return [{
+                text: elements.value
+            }];
+        }
+        else if (elements.length) {
+            return Array.from(elements).reduce((tasks, { value }) => {
+                if (value) {
+                    tasks.push({ text: value } as Subtask);
+                }
+                return tasks;
+            }, [] as any);
+        }
     }
 
     handleFormSubmit(event) {
         const { elements } = event.target;
         const task: Task = {
             text: elements.text.value,
-            subtasks: this.getSubtasks(this.temporaryTask.subtasks)
+            subtasks: this.getSubtasks(elements.subtask),
+            labels: this.getFlaggedLabels()
         };
-
-        if (elements.label.value) {
-            task.labelTitle = elements.label.value;
-            task.labelColor = elements.color.value;
-        }
 
         if (this.makingEdit) {
             const { index } = this.temporaryTask;
 
-            if (!elements.label.value) {
-                delete this.tasks[index].labelTitle;
-                delete this.tasks[index].labelColor;
-            }
             this.tasks[index] = { ...this.tasks[index], ...task };
         }
         else {
@@ -173,17 +154,16 @@ export class Tasks {
     }
 
     editTask(index) {
-        const { labelTitle, labelColor, text, subtasks } = this.tasks[index];
+        const { text, subtasks } = this.tasks[index];
 
         this.makingEdit = true;
+        this.formColor = getRandomHexColor();
         this.temporaryTask = {
             index,
-            labelTitle: labelTitle || "",
-            labelColor: labelColor || getRandomHexColor(),
+            labels: this.getUniqueLabels(index),
             text,
             subtasks: [...subtasks]
         };
-        this.setTaskLabels({ title: labelTitle, color: labelColor });
     }
 
     removeTask(index) {
@@ -197,46 +177,68 @@ export class Tasks {
 
     comepleteSubtask(task) {
         task.completed = !task.completed;
+        this.saveTasks();
     }
 
-    setTaskLabels({ title, color } = {} as any) {
-        const tasks = this.tasks.filter(({ labelTitle, labelColor }) =>
-            labelTitle && (labelTitle !== title || labelColor !== color));
+    findLabel(labels, { title, color }) {
+        return labels.find(label => label.title === title && label.color === color);
+    }
 
-        this.taskLabels = tasks.reduce((labels, { labelTitle, labelColor }) => {
-            const duplicate = labels.find(({ title, color }) => labelTitle === title && labelColor === color);
+    getFlaggedLabels() {
+        return this.temporaryTask.labels.reduce((labels, label) => {
+            if (label.flagged) {
+                delete label.flagged;
+                labels.push(label);
+            }
+            return labels;
+        }, []);
+    }
 
-            if (!duplicate) {
-                labels.push({
-                    title: labelTitle,
-                    color: labelColor
+    getUniqueLabels(taskIndex = -1) {
+        return this.tasks.reduce((labels, task, index) => {
+            if (task.labels) {
+                task.labels.forEach(label => {
+                    const foundLabel = this.findLabel(labels, label);
+
+                    if (!foundLabel) {
+                        labels.push({ ...label, flagged: taskIndex === index });
+                    }
+                    else if (taskIndex === index) {
+                        foundLabel.flagged = true;
+                    }
                 });
             }
             return labels;
         }, []);
     }
 
-    removeLabel() {
-        this.temporaryTask.labelTitle = "";
-        this.setTaskLabels();
+    createLabel(event) {
+        const { elements } = event.target;
+        const title = elements.title.value;
+        const color = elements.color.value;
+        const label = this.findLabel(this.temporaryTask.labels, { title, color });
+
+        if (label) {
+            this.labelMessage = "Label with current title and color combination already exists";
+
+            setTimeout(() => {
+                this.labelMessage = "";
+            }, 6000);
+        }
+        else if (title && color) {
+            this.temporaryTask.labels.push({ title, color, flagged: true });
+            this.formColor = getRandomHexColor();
+            elements.title.value = "";
+        }
+        event.preventDefault();
     }
 
-    updateLabelTitle({ target }) {
-        this.temporaryTask.labelTitle = target.value;
-        this.setTaskLabels({
-            title: this.temporaryTask.labelTitle,
-            color: this.temporaryTask.labelColor
-        });
+    flagLabel(label) {
+        label.flagged = !label.flagged;
     }
 
     updateLabelColor({ target }) {
-        this.temporaryTask.labelColor = target.value;
-    }
-
-    updateLabel({ title, color }) {
-        this.temporaryTask.labelTitle = title;
-        this.temporaryTask.labelColor = color;
-        this.setTaskLabels({ title, color });
+        this.formColor = target.value;
     }
 
     handleClickOnContainer() {

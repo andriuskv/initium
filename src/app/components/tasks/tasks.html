@@ -16,107 +16,105 @@
                 <svg viewBox="0 0 24 24">
                     <use href="#plus"></use>
                 </svg>
-                <span>Add a task</span>
+                <span>Add task</span>
             </button>
         </ng-template>
     </header>
-    <form class="task-form task-transition-target" *ngIf="temporaryTask; else elseBlock1" (submit)="handleFormSubmit($event)">
-        <div class="task-form-label-input-container">
-            <div class="task-form-color-picker-container"
-                [style.backgroundColor]="temporaryTask.labelColor">
-                <input type="color" name="color" class="task-form-color-picker"
-                    (input)="updateLabelColor($event)"
-                    [value]="temporaryTask.labelColor">
+    <div class="task-form-container task-transition-target" *ngIf="temporaryTask; else elseBlock1">
+        <form (submit)="createLabel($event)">
+            <div class="task-form-label-input-container">
+                <div class="task-form-color-picker-container" [style.backgroundColor]="formColor">
+                    <input type="color" name="color" class="task-form-color-picker"
+                        (input)="updateLabelColor($event)"
+                        [value]="formColor">
+                </div>
+                <input type="text" name="title" class="input task-from-label-title-input"
+                    placeholder="Label" autocomplete="off" required>
+                <button class="btn">Create</button>
             </div>
-            <input type="text" name="label" class="input"
-                placeholder="Task label" autocomplete="off"
-                (input)="updateLabelTitle($event)"
-                [value]="temporaryTask.labelTitle">
-            <button type="button" class="btn-secondary task-from-label-remove-btn"
-                *ngIf="temporaryTask.labelTitle" (click)="removeLabel()">
+            <p class="task-form-label-message" *ngIf="labelMessage">{{ labelMessage }}</p>
+            <ul class="task-form-labels" *ngIf="temporaryTask.labels.length">
+                <li class="task-form-label" *ngFor="let label of temporaryTask.labels">
+                    <button type="button" class="btn-secondary btn-secondary-alt task-form-label-btn"
+                        [class.flagged]="label.flagged" (click)="flagLabel(label)">
+                        <div class="task-label-color" [style.backgroundColor]="label.color"></div>
+                        <div class="task-label-title">{{ label.title }}</div>
+                    </button>
+                </li>
+            </ul>
+        </form>
+        <form class="task-form" (submit)="handleFormSubmit($event)">
+            <textarea class="input task-input" name="text" [value]="temporaryTask.text"
+                placeholder="Enter details" required></textarea>
+            <button type="button" class="btn-secondary btn-secondary-alt subtask-add-btn" (click)="addSubtask()">
                 <svg viewBox="0 0 24 24">
-                    <use href="#cross"></use>
+                    <use href="#plus"></use>
                 </svg>
+                <span>Add subtask</span>
             </button>
-        </div>
-        <ul class="task-form-labels" *ngIf="taskLabels.length">
-            <li class="task-form-label" *ngFor="let label of taskLabels">
-                <button type="button" class="btn-secondary btn-secondary-alt" (click)="updateLabel(label)">
-                    <div class="task-label-color"
-                    [style.backgroundColor]="label.color"></div>
-                    <div class="task-label-title">{{ label.title }}</div>
-                </button>
-            </li>
-        </ul>
-        <textarea class="input task-input" name="text" [value]="temporaryTask.text"
-            placeholder="Enter your task" required></textarea>
-        <button type="button" class="btn-secondary btn-secondary-alt subtask-add-btn" (click)="addSubtask()">
-            <svg viewBox="0 0 24 24">
-                <use href="#plus"></use>
-            </svg>
-            <span>Add a subtask</span>
-        </button>
-        <ul class="task-form-subtasks" *ngIf="temporaryTask.subtasks.length" #subtaskList>
-            <li class="task-form-subtask" *ngFor="let task of temporaryTask.subtasks; let i = index">
-                <input type="text" class="input" [value]="task.text">
-                <button type="button" class="btn-secondary btn-secondary-dim" (click)="removeTemporarySubtask(i)">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#trash"></use>
-                    </svg>
-                </button>
-            </li>
-        </ul>
-        <div class="task-form-footer">
-            <button type="submit" class="btn">{{ makingEdit ? "Edit" : "Add" }}</button>
-        </div>
-    </form>
+            <ul class="task-form-subtasks" *ngIf="temporaryTask.subtasks.length">
+                <li class="task-form-subtask" *ngFor="let task of temporaryTask.subtasks; let i = index">
+                    <input type="text" name="subtask" class="input" [value]="task.text" autocomplete="off">
+                    <button type="button" class="btn-secondary btn-secondary-dim" (click)="removeTemporarySubtask(i)">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#trash"></use>
+                        </svg>
+                    </button>
+                </li>
+            </ul>
+            <div class="task-form-footer">
+                <button type="submit" class="btn">Done</button>
+            </div>
+        </form>
+    </div>
     <ng-template #elseBlock1>
         <ul class="tasks task-transition-target" *ngIf="tasks.length; else elseBlock2">
-            <li class="task"  [class.removing]="task.removing" *ngFor="let task of tasks; let i = index">
-                <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
-                    [class.checked]="task.completed"
-                    (click)="completeTask(i)"
-                    (keyup.enter)="completeTask(i)"
-                    [attr.aria-checked]="task.completed"></div>
+            <li class="task" [class.removing]="task.removing" *ngFor="let task of tasks; let i = index">
+                <ul class="task-labels" *ngIf="task.labels">
+                    <li class="task-label" *ngFor="let label of task.labels">
+                        <div class="task-label-color" [style.backgroundColor]="label.color"></div>
+                        <div class="task-label-title">{{ label.title }}</div>
+                    </li>
+                </ul>
                 <div>
-                    <div class="task-label" *ngIf="task.labelTitle">
-                        <div class="task-label-color"
-                            [style.backgroundColor]="task.labelColor"></div>
-                        <div class="task-label-title">{{ task.labelTitle }}</div>
-                    </div>
+                    <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
+                        [class.checked]="task.completed"
+                        (click)="completeTask(i)"
+                        (keyup.enter)="completeTask(i)"
+                        [attr.aria-checked]="task.completed"></div>
                     <div class="task-text" [class.completed]="task.completed">{{ task.text }}</div>
-                    <ul class="subtasks" *ngIf="task.subtasks.length">
-                        <li class="subtask" *ngFor="let subtask of task.subtasks; let i = index">
-                            <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
-                                [class.checked]="task.completed || subtask.completed"
-                                (click)="comepleteSubtask(subtask)"
-                                (keyup.enter)="comepleteSubtask(subtask)"
-                                [attr.aria-checked]="task.completed || subtask.completed"></div>
-                            <span class="task-text" [class.completed]="task.completed || subtask.completed">{{ subtask.text }}</span>
-                        </li>
-                    </ul>
-                    <div class="task-footer">
-                        <ng-container *ngIf="!task.completed">
-                            <button class="btn-secondary btn-secondary-dim task-footer-btn" (click)="pinTask(i)">
-                                <svg class="task-pin-icon" [class.pinned]="task.pinned" viewBox="0 0 24 24">
-                                    <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
-                                </svg>
-                                <span>Pin</span>
-                            </button>
-                            <button class="btn-secondary btn-secondary-dim task-footer-btn" (click)="editTask(i)">
-                                <svg viewBox="0 0 24 24">
-                                    <use href="#edit"></use>
-                                </svg>
-                                <span>Edit</span>
-                            </button>
-                        </ng-container>
-                        <button class="btn-secondary btn-secondary-dim task-footer-btn" (click)="removeTask(i)">
-                            <svg viewBox="0 0 24 24">
-                                <use href="#trash"></use>
+                </div>
+                <ul class="subtasks" *ngIf="task.subtasks.length">
+                    <li class="subtask" *ngFor="let subtask of task.subtasks; let i = index">
+                        <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
+                            [class.checked]="task.completed || subtask.completed"
+                            (click)="comepleteSubtask(subtask)"
+                            (keyup.enter)="comepleteSubtask(subtask)"
+                            [attr.aria-checked]="task.completed || subtask.completed"></div>
+                        <span class="task-text" [class.completed]="task.completed || subtask.completed">{{ subtask.text }}</span>
+                    </li>
+                </ul>
+                <div class="task-footer">
+                    <ng-container *ngIf="!task.completed">
+                        <button class="btn-secondary btn-secondary-dim task-footer-btn" (click)="pinTask(i)">
+                            <svg class="task-pin-icon" [class.pinned]="task.pinned" viewBox="0 0 24 24">
+                                <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
                             </svg>
-                            <span>Remove</span>
+                            <span>Pin</span>
                         </button>
-                    </div>
+                        <button class="btn-secondary btn-secondary-dim task-footer-btn" (click)="editTask(i)">
+                            <svg viewBox="0 0 24 24">
+                                <use href="#edit"></use>
+                            </svg>
+                            <span>Edit</span>
+                        </button>
+                    </ng-container>
+                    <button class="btn-secondary btn-secondary-dim task-footer-btn" (click)="removeTask(i)">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#trash"></use>
+                        </svg>
+                        <span>Remove</span>
+                    </button>
                 </div>
             </li>
         </ul>
