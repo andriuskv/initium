@@ -171,7 +171,7 @@
                     <p class="feed-description"
                         [class.truncated]="entry.truncated"
                         [innerHTML]="entry.description"></p>
-                    <button class="btn-secondary feed-entry-expand-btn" (click)="expandEntry(entry)">Show all</button>
+                    <button class="btn-secondary feed-entry-expand-btn" (click)="expandEntry(entry)">Show More</button>
                     <div class="feed-date" *ngIf="entry.date">Posted on: {{ entry.date }}</div>
                 </li>
             </ul>
