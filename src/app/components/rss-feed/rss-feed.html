@@ -1,10 +1,33 @@
 <div class="container main-block-content" [class.visible]="isVisible">
-    <div class="feed-hero" *ngIf="initializing || showingForm; else elseIf1">
-        <svg viewBox="0 0 24 24" class="feed-hero-icon">
+    <ng-container *ngIf="initializing; else elseIf1">
+        <svg viewBox="0 0 24 24" class="rss-feed-icon">
             <use href="#rss"></use>
         </svg>
-        <div class="feed-hero-content" [class.loading]="loading">
-            <form (submit)="handleFormSubmit($event)" *ngIf="showingForm; else elseIf1">
+        <ul class="feed-initiation-status" *ngIf="feedsToLoad.length; else elseIf">
+            <li class="feed-initiation-item" [class.hidding]="feed.status === 'finished'"
+                *ngFor="let feed of loadingFeeds">
+                <span class="feed-initiation-item-title">{{ feed.title }}</span>
+                <div class="feed-initiation-item-status">
+                    <img src="./assets/images/ring.svg" *ngIf="feed.status === 'loading'" alt="">
+                    <svg viewBox="0 0 24 24" class="feed-initiation-success" *ngIf="feed.status === 'success'">
+                        <use href="#circle-tick"></use>
+                    </svg>
+                    <svg viewBox="0 0 24 24" class="feed-initiation-error" *ngIf="feed.status === 'error'">
+                        <use href="#circle-cross"></use>
+                    </svg>
+                </div>
+            </li>
+        </ul>
+        <ng-template #elseIf>
+            <img src="./assets/images/ring.svg" class="feed-init-spinner" alt="">
+        </ng-template>
+    </ng-container>
+    <ng-template #elseIf1>
+        <ng-container *ngIf="showingForm; else elseIf2">
+            <svg viewBox="0 0 24 24" class="rss-feed-icon">
+                <use href="#rss"></use>
+            </svg>
+            <form class="feed-form" (submit)="handleFormSubmit($event)" *ngIf="showingForm; else elseIf1">
                 <h3 class="main-block-modal-title">Add new feed</h3>
                 <input type="text" class="input feed-input" name="title" placeholder="Title" autocomplete="off">
                 <input type="text" class="input feed-input" name="url" placeholder="URL" required>
@@ -20,29 +43,10 @@
                     </svg>
                 </button>
             </form>
-            <ng-template #elseIf1>
-                <ul class="feed-initiation-status" *ngIf="feedsToLoad.length; else elseIf2">
-                    <li class="feed-initiation-item" *ngFor="let feed of feedsToLoad">
-                        <span class="feed-initiation-item-title">{{ feed.title }}</span>
-                        <div class="feed-initiation-item-status">
-                            <img src="./assets/images/ring.svg" *ngIf="feed.isLoading" alt="">
-                            <svg viewBox="0 0 24 24" class="feed-initiation-success" *ngIf="feed.success">
-                                <use href="#circle-tick"></use>
-                            </svg>
-                            <svg viewBox="0 0 24 24" class="feed-initiation-error" *ngIf="feed.error">
-                                <use href="#circle-cross"></use>
-                            </svg>
-                        </div>
-                    </li>
-                </ul>
-            </ng-template>
-            <ng-template #elseIf2>
-                <img src="./assets/images/ring.svg" class="feed-hero-spinner" alt="">
-            </ng-template>
-        </div>
-    </div>
-    <ng-template #elseIf1>
-        <ng-container *ngIf="showingFeedList; else elseIf2">
+        </ng-container>
+    </ng-template>
+    <ng-template #elseIf2>
+        <ng-container *ngIf="showingFeedList; else elseIf3">
             <div class="feed-list-header">
                 <h2 class="feed-list-title">Your feeds</h2>
                 <button class="btn-secondary btn-secondary-alt"
@@ -65,7 +69,7 @@
                         <img [src]="feed.image" *ngIf="feed.image" alt="">
                         <div class="feed-list-item-title-container">
                             <input type="text" class="input feed-list-item-title-input"
-                                *ngIf="feed.editingTitle; else elseBlock" [value]="feed.title"
+                                *ngIf="feed.makingTitleEdit; else elseBlock" [value]="feed.title"
                                 (blur)="editTitle(feed)" (keyup.enter)="editTitle(feed)"
                                 #feedTitleInput>
                             <ng-template #elseBlock>
@@ -81,7 +85,7 @@
                             <div class="feed-list-item-url">{{ feed.url }}</div>
                         </div>
                         <button class="btn-secondary btn-secondary-dim feed-list-item-btn"
-                            *ngIf="!feed.editingTitle"
+                            *ngIf="!feed.makingTitleEdit"
                             (click)="enableTitleEdit(feed)" title="Edit title">
                             <svg viewBox="0 0 24 24">
                                 <use href="#edit"></use>
@@ -119,7 +123,7 @@
             </ul>
         </ng-container>
     </ng-template>
-    <ng-template #elseIf2>
+    <ng-template #elseIf3>
         <ng-container *ngIf="activeFeed">
             <div class="main-block-content-header">
                 <button class="btn-secondary btn-secondary-alt main-block-content-header-btn feed-shift-btn"

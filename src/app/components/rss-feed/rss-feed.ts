@@ -15,7 +15,6 @@ export class RssFeed {
     @ViewChild("feedTitleInput") feedTitleInput;
 
     initializing: boolean = true;
-    loading: boolean = true;
     fetching: boolean = false;
     showingFeedList: boolean = false;
     showingForm: boolean = false;
@@ -31,6 +30,7 @@ export class RssFeed {
     message: string = "";
     feedsToLoad: Array<any> = [];
     feeds: Array<any> = [];
+    loadingFeeds: Array<any> = [];
     activeFeed: any = null;
 
     constructor(
@@ -161,50 +161,58 @@ export class RssFeed {
         this.showingFeedList = false;
     }
 
-    getFeeds(feedsToLoad, failedToFetchFeeds) {
-        return feedsToLoad.map(feed => {
-            feed.isLoading = true;
+    async getInitialFeeds(feedsToLoad) {
+        const feeds = [];
+        const failedToFetchFeeds = [];
+        const promises = [];
 
-            return this.feedService.getFeed(feed.url, feed.title).then(results => {
-                feed.isLoading = false;
-                feed.success = true;
+        for (const feed of feedsToLoad) {
+            feed.status = "loading";
+            this.loadingFeeds.push(feed);
 
-                return results;
-            })
-            .catch(() => {
-                feed.isLoading = false;
-                feed.error = true;
+            const promise = this.feedService.getFeed(feed.url, feed.title).then(results => {
+                feed.status = "success";
+                feeds.push(results);
+            }).catch(() => {
+                feed.status = "error";
                 failedToFetchFeeds.push(feed);
+            }).finally(() => {
+                setTimeout(() => {
+                    feed.status = "finished";
+                }, 1000);
             });
-        });
+
+            promises.push(promise);
+        }
+        await Promise.all(promises);
+        await delay(2000);
+
+        this.loadingFeeds.length = 0;
+        return { feeds, failedToFetchFeeds };
     }
 
     async loadFeeds(feedsToLoad) {
-        if (!feedsToLoad.length) {
-            this.initializing = false;
-            this.activeFeed = null;
-            this.feeds.length = 0;
-            this.showForm();
-            return;
-        }
-        const failedToFetchFeeds = [];
-        const feeds = await Promise.all(this.getFeeds(feedsToLoad, failedToFetchFeeds));
-        await delay(1000);
+        if (feedsToLoad.length) {
+            const { feeds, failedToFetchFeeds } = await this.getInitialFeeds(feedsToLoad);
 
-        this.feeds = [...feeds].filter(feed => feed);
-        this.feedsToLoad = failedToFetchFeeds;
+            this.feeds = feeds;
+            this.feedsToLoad = failedToFetchFeeds;
 
-        if (this.feeds.length) {
-            this.showFeed();
-        }
-        else if (this.feedsToLoad.length) {
-            this.showFeedList();
+            if (feeds.length) {
+                this.showFeed();
+            }
+            else if (failedToFetchFeeds.length) {
+                this.showFeedList();
+            }
+            else {
+                this.showForm();
+            }
+            this.scheduleFeedUpdate();
         }
         else {
             this.showForm();
         }
         this.initializing = false;
-        this.scheduleFeedUpdate();
     }
 
     scheduleFeedUpdate() {
@@ -323,6 +331,7 @@ export class RssFeed {
 
     removeFailedToFetchFeed(index) {
         this.feedsToLoad.splice(index, 1);
+        this.saveFeeds();
     }
 
     handleHeaderItemClick({ target }, feed, index) {
@@ -360,7 +369,7 @@ export class RssFeed {
     }
 
     enableTitleEdit(feed) {
-        feed.editingTitle = true;
+        feed.makingTitleEdit = true;
 
         setTimeout(() => {
             this.feedTitleInput.nativeElement.focus();
@@ -370,7 +379,7 @@ export class RssFeed {
     editTitle(feed) {
         const oldTitle = feed.title;
 
-        feed.editingTitle = false;
+        feed.makingTitleEdit = false;
         feed.title = this.feedTitleInput.nativeElement.value || oldTitle;
 
         if (feed.title !== oldTitle) {

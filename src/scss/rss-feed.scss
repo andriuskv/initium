@@ -19,55 +19,48 @@
     }
 }
 
-.feed-hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-
-.feed-hero-icon {
+.rss-feed-icon {
+    flex-shrink: 0;
     width: 64px;
     height: 64px;
+    margin: 56px auto 0 auto;
     color: #fa9b39;
 }
 
-.feed-hero-spinner {
+.feed-init-spinner {
+    display: block;
     height: 28px;
-    margin-top: 8px;
-}
-
-.feed-hero-content {
-    display: flex;
-    justify-content: center;
-    width: 240px;
-    height: 150px;
-    transition: 0.2s height;
-
-    &.loading {
-        height: 28px;
-    }
+    margin: 8px auto 0 auto;
 }
 
 .feed-initiation-status {
-    @include scrollbar;
-
-    overflow-y: auto;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    animation-name: opacity-up;
-    animation-duration: 0.2s;
-    animation-delay: 0.2s;
-    animation-fill-mode: forwards;
+    width: 240px;
+    margin: 0 auto;
 }
 
 .feed-initiation-item {
     display: flex;
     align-items: center;
-    padding: 4px;
+    padding: 0 4px;
     border-bottom: 1px solid $primary-border-color;
+    animation-name: opacity-up;
+    animation-duration: 0.2s;
+    animation-fill-mode: both;
+
+    &.hidding {
+        overflow: hidden;
+        animation-name: opacity-down, down;
+        animation-duration: 0.2s, 0.4s;
+    }
+}
+
+@keyframes down {
+    from {
+        height: 25px;
+    }
+    to {
+        height: 0;
+    }
 }
 
 .feed-initiation-item-title {
@@ -77,8 +70,8 @@
 }
 
 .feed-initiation-item-status {
-    margin-left: auto;
     height: 20px;
+    margin: 2px 0 2px auto;
 
     img {
         height: 100%;
@@ -91,6 +84,11 @@
 
 .feed-initiation-error {
     color: $color-danger;
+}
+
+.feed-form {
+    width: 240px;
+    margin: 0 auto;
 }
 
 .feed-input {

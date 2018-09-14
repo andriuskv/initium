@@ -79,6 +79,7 @@ $main-block-nav-height: 32px;
 }
 
 .main-block-content {
+    overflow: hidden;
     position: relative;
     display: none;
     flex-direction: column;
