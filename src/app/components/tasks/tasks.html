@@ -70,20 +70,18 @@
     <ng-template #elseBlock1>
         <ul class="tasks task-transition-target" *ngIf="tasks.length; else elseBlock2">
             <li class="task" [class.removing]="task.removing" *ngFor="let task of tasks; let i = index">
-                <ul class="task-labels" *ngIf="task.labels">
+                <ul class="task-labels">
                     <li class="task-label" *ngFor="let label of task.labels">
                         <div class="task-label-color" [style.backgroundColor]="label.color"></div>
                         <div class="task-label-title">{{ label.title }}</div>
                     </li>
                 </ul>
-                <div>
-                    <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
-                        [class.checked]="task.completed"
-                        (click)="completeTask(i)"
-                        (keyup.enter)="completeTask(i)"
-                        [attr.aria-checked]="task.completed"></div>
-                    <div class="task-text" [class.completed]="task.completed">{{ task.text }}</div>
-                </div>
+                <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
+                    [class.checked]="task.completed"
+                    (click)="completeTask(i)"
+                    (keyup.enter)="completeTask(i)"
+                    [attr.aria-checked]="task.completed"></div>
+                <div class="task-text" [class.completed]="task.completed">{{ task.text }}</div>
                 <ul class="subtasks" *ngIf="task.subtasks.length">
                     <li class="subtask" *ngFor="let subtask of task.subtasks; let i = index">
                         <div role="checkbox" class="checkbox task-checkbox" tabindex="0"

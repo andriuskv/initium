@@ -76,7 +76,6 @@
     overflow: hidden;
     padding-left: 24px;
     padding-right: 4px;
-    margin-top: 8px;
 
     &:not(:last-of-type) {
         border-bottom: 1px solid $primary-border-color;
@@ -92,11 +91,9 @@
 @keyframes collapse {
     from {
         max-height: 1000px;
-        margin-top: 8px;
     }
     to {
         max-height: 0;
-        margin-top: 0;
     }
 }
 
@@ -109,7 +106,8 @@
 .task-labels {
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 4px;
+    margin-top: 8px;
+    margin-left: 2px;
 }
 
 .task-label {
@@ -137,7 +135,6 @@
     word-wrap: break-word;
     white-space: pre-wrap;
     word-break: break-word;
-    line-height: 1.2857;
     transition: 0.2s opacity;
 
     &.completed {
