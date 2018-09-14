@@ -176,8 +176,8 @@ textarea {
 }
 
 .checkbox {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
 
     &.checked::after {
         content: "\2713";
@@ -193,8 +193,8 @@ textarea {
 }
 
 .radio {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     padding: 5px;
     border-radius: 50%;
 }

@@ -223,7 +223,7 @@ export class Tasks {
 
             setTimeout(() => {
                 this.labelMessage = "";
-            }, 6000);
+            }, 4000);
         }
         else if (title && color) {
             this.temporaryTask.labels.push({ title, color, flagged: true });
