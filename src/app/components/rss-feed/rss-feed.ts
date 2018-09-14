@@ -58,24 +58,50 @@ export class RssFeed {
 
     initFeeds() {
         this.initTimeout = 0;
-        this.chromeStorageService.subscribeToChanges(({ rss}) => {
-            if (rss) {
-                this.loadFeeds(rss.newValue);
+        this.chromeStorageService.subscribeToChanges(({ feeds }) => {
+            if (feeds) {
+                this.syncFeeds(feeds.newValue);
             }
         });
-        this.chromeStorageService.get("rss", storage => {
-            this.loading = false;
-            this.feedsToLoad = storage.rss || [];
+        this.chromeStorageService.get(["feeds", "rss"], ({ feeds, rss }) => {
+            if (rss) {
+                this.feedsToLoad = rss;
+                this.chromeStorageService.remove("rss");
+                this.saveFeeds();
+            }
+            else {
+                this.feedsToLoad = feeds || [];
+            }
             this.loadFeeds(this.feedsToLoad);
         });
     }
 
-    saveFeeds() {
-        const feeds = this.feeds
-            .map(({ url, title }) => ({ url, title }))
-            .concat(this.feedsToLoad);
+    async syncFeeds(feeds) {
+        const length = Math.max(feeds.length, this.feeds.length);
 
-        this.chromeStorageService.set({ rss: feeds });
+        for (let i = 0; i < length; i++) {
+            if (feeds[i]) {
+                const match = this.feeds.find(({ url }) => feeds[i].url === url);
+
+                if (!match) {
+                    try {
+                        const feed = await this.feedService.getFeed(feeds[i].url, feeds[i].title);
+
+                        this.feeds.push(feed);
+                    } catch (e) {
+                        console.log(e);
+                        this.feedsToLoad.push(feeds[i]);
+                    }
+                }
+                else if (match.title !== feeds[i].title) {
+                    match.title = feeds[i].title;
+                }
+            }
+
+            if (this.feeds[i] && !feeds.some(({ url }) => this.feeds[i].url === url)) {
+                this.removeFeed(i, true);
+            }
+        }
     }
 
     showFeed(index = 0) {
@@ -118,22 +144,25 @@ export class RssFeed {
     }
 
     setShift(index = 0) {
-        this.shift = index >= this.VISIBLE_FEED_COUNT ? index - 2 : 0;
+        this.shift = index >= this.VISIBLE_FEED_COUNT ? index - this.VISIBLE_FEED_COUNT - 1 : 0;
     }
 
-    removeFeed(index) {
+    removeFeed(index, isRemoveChange = false) {
         this.feeds.splice(index, 1);
 
-        if (!this.feeds.length) {
+        if (this.feeds.length) {
+            this.setShift();
+            this.showFeed();
+        }
+        else {
             this.activeFeed = null;
             this.showForm();
             clearTimeout(this.timeout);
         }
-        else {
-            this.setShift();
-            this.showFeed();
+
+        if (!isRemoveChange) {
+            this.saveFeeds();
         }
-        this.saveFeeds();
     }
 
     showForm(showButton = false) {
@@ -385,5 +414,12 @@ export class RssFeed {
         if (feed.title !== oldTitle) {
             this.saveFeeds();
         }
+    }
+
+    saveFeeds() {
+        const feeds = this.feeds.concat(this.feedsToLoad)
+            .map(({ url, title }) => ({ url, title }));
+
+        this.chromeStorageService.set({ feeds });
     }
 }
