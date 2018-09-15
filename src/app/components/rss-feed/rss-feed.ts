@@ -30,7 +30,6 @@ export class RssFeed {
     message: string = "";
     feedsToLoad: Array<any> = [];
     feeds: Array<any> = [];
-    loadingFeeds: Array<any> = [];
     activeFeed: any = null;
 
     constructor(
@@ -193,30 +192,26 @@ export class RssFeed {
     async getInitialFeeds(feedsToLoad) {
         const feeds = [];
         const failedToFetchFeeds = [];
-        const promises = [];
 
         for (const feed of feedsToLoad) {
             feed.status = "loading";
-            this.loadingFeeds.push(feed);
 
-            const promise = this.feedService.getFeed(feed.url, feed.title).then(results => {
+            try {
+                const result = await this.feedService.getFeed(feed.url, feed.title);
+
                 feed.status = "success";
-                feeds.push(results);
-            }).catch(() => {
+                feeds.push(result);
+            } catch (e) {
                 feed.status = "error";
                 failedToFetchFeeds.push(feed);
-            }).finally(() => {
+            } finally {
                 setTimeout(() => {
                     feed.status = "finished";
                 }, 1000);
-            });
-
-            promises.push(promise);
+            }
         }
-        await Promise.all(promises);
         await delay(2000);
 
-        this.loadingFeeds.length = 0;
         return { feeds, failedToFetchFeeds };
     }
 

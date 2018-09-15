@@ -3,7 +3,7 @@
         <form class="top-site-form" (submit)="addSite($event)">
             <h3 class="main-block-modal-title">{{ editedSite ? "Edit" : "Add new" }} site</h3>
             <div class="top-site-form-content">
-                <div class="input site-thumbnail-container top-site-form-thumbnail">
+                <div class="site-thumbnail-container top-site-form-thumbnail">
                     <ng-container *ngIf="formThumbnail; else elseBlock">
                         <img [src]="formThumbnail" alt="">
                         <button class="btn-secondary btn-secondary-dim top-site-form-remove-btn"
@@ -14,7 +14,7 @@
                         </button>
                     </ng-container>
                     <ng-template #elseBlock>
-                        <label class="top-site-file-input">
+                        <label class="btn top-site-file-input">
                             <span>Select thumbnail</span>
                             <input type="file" class="file-input" accept="image/*"
                                 (change)="handleFileInputChange($event)">
