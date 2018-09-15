@@ -5,7 +5,7 @@
         </svg>
         <ul class="feed-initiation-status" *ngIf="feedsToLoad.length; else elseIf">
             <li class="feed-initiation-item" [class.hidding]="feed.status === 'finished'"
-                *ngFor="let feed of loadingFeeds">
+                *ngFor="let feed of feedsToLoad">
                 <span class="feed-initiation-item-title">{{ feed.title }}</span>
                 <div class="feed-initiation-item-status">
                     <img src="./assets/images/ring.svg" *ngIf="feed.status === 'loading'" alt="">
