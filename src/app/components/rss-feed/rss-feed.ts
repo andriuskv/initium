@@ -143,7 +143,7 @@ export class RssFeed {
     }
 
     setShift(index = 0) {
-        this.shift = index >= this.VISIBLE_FEED_COUNT ? index - this.VISIBLE_FEED_COUNT - 1 : 0;
+        this.shift = index >= this.VISIBLE_FEED_COUNT ? index - (this.VISIBLE_FEED_COUNT - 1) : 0;
     }
 
     removeFeed(index, isRemoveChange = false) {
@@ -299,18 +299,32 @@ export class RssFeed {
         }
     }
 
+    showFormMessage(message) {
+        this.message = message;
+
+        setTimeout(() => {
+            this.message = "";
+        }, 4000);
+    }
+
     async handleFormSubmit(event) {
         const { elements } = event.target;
         const title = elements.title.value;
         const url = elements.url.value;
-        this.fetching = true;
 
         event.preventDefault();
+
+        if (this.feeds.some(feed => feed.url === url)) {
+            this.showFormMessage("Feed already exists");
+            return;
+        }
+        this.fetching = true;
 
         try {
             const feed = await this.feedService.getFeed(url, title);
             const index = this.feeds.length;
 
+            this.feedsToLoad = this.feedsToLoad.filter(feed => feed.url !== url);
             this.feeds.push(feed);
             this.setShift(index);
             this.showFeed(index);
@@ -320,12 +334,8 @@ export class RssFeed {
             event.target.reset();
         }
         catch (e) {
+            this.showFormMessage(e.message);
             console.log(e);
-            this.message = e.message;
-
-            setTimeout(() => {
-                this.message = "";
-            }, 4000);
         }
         finally {
             this.fetching = false;
