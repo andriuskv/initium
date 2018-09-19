@@ -191,18 +191,17 @@
 }
 
 .task-form-label-input-container {
-    position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
     align-items: center;
-    width: calc(100% - 4px);
+    margin-right: 4px;
 }
 
 .task-form-color-picker-container {
     overflow: hidden;
     width: 16px;
     height: 16px;
-    margin-right: 8px;
-    margin-left: 8px;
+    margin: 0 auto;
     border-radius: 50%;
 }
 
