@@ -191,8 +191,7 @@
 }
 
 .task-form-label-input-container {
-    display: grid;
-    grid-template-columns: 32px 1fr auto;
+    display: flex;
     align-items: center;
     margin-right: 4px;
 }
@@ -201,7 +200,8 @@
     overflow: hidden;
     width: 16px;
     height: 16px;
-    margin: 0 auto;
+    margin-left: 8px;
+    margin-right: 8px;
     border-radius: 50%;
 }
 
@@ -212,6 +212,7 @@
 
 .task-from-label-title-input {
     flex-grow: 1;
+    width: 50%;
     margin-right: 4px;
 }
 
