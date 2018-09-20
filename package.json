@@ -11,11 +11,11 @@
     "build": "npm run dist && npm run webpack -- --env.prod && node build.js"
   },
   "dependencies": {
-    "@angular/common": "^7.0.0-beta.5",
-    "@angular/compiler": "^7.0.0-beta.5",
-    "@angular/core": "^7.0.0-beta.5",
-    "@angular/platform-browser": "^7.0.0-beta.5",
-    "@angular/platform-browser-dynamic": "^7.0.0-beta.5",
+    "@angular/common": "^7.0.0-beta.6",
+    "@angular/compiler": "^7.0.0-beta.6",
+    "@angular/core": "^7.0.0-beta.6",
+    "@angular/platform-browser": "^7.0.0-beta.6",
+    "@angular/platform-browser-dynamic": "^7.0.0-beta.6",
     "color-convert": "^1.9.3",
     "core-js": "^2.5.7",
     "dropbox": "^4.0.9",
@@ -24,9 +24,9 @@
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "^7.0.0-beta.5",
-    "@ngtools/webpack": "^6.2.2",
-    "@types/chrome": "^0.0.73",
+    "@angular/compiler-cli": "^7.0.0-beta.6",
+    "@ngtools/webpack": "^6.2.3",
+    "@types/chrome": "^0.0.74",
     "@types/node": "^10.10.1",
     "autoprefixer": "^9.1.5",
     "css-loader": "^1.0.0",
