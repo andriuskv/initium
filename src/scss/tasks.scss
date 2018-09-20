@@ -100,14 +100,13 @@
 .task-checkbox {
     float: left;
     margin-left: -20px;
-    margin-right: 6px;
+    margin-right: 4px;
 }
 
 .task-labels {
     display: flex;
     flex-wrap: wrap;
     margin-top: 8px;
-    margin-left: 2px;
 }
 
 .task-label {
@@ -245,6 +244,7 @@
             display: block;
             color: $color-success;
             font-size: 20px;
+            font-weight: bold;
         }
 
         .task-label-color,
