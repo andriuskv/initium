@@ -1,4 +1,5 @@
 import "scss/normalize.css";
+import "scss/weather-icons.min.css";
 import "scss/index.scss";
 
 import "core-js/es7/reflect";
