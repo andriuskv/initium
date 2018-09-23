@@ -11,11 +11,9 @@ import { WeatherService } from "../../services/weatherService";
                     <span class="weather-temp">{{ temperature }}</span>
                     <span class="weather-units">°{{ units }}</span>
                 </div>
-                <svg class="weather-icon" viewBox="0 0 24 24">
-                    <use attr.href="#weather-{{ icon }}"></use>
-                </svg>
+                <i class="wi wi-owm-{{ icon }} weather-icon"></i>
             </div>
-            <div>{{ city }}</div>
+            <div class="weather-city">{{ city }}</div>
         </div>
     `
 })
@@ -26,13 +24,10 @@ export class Weather {
     city: string = "";
     description: string = "";
     units: string = "C";
-    icon: string = "";
+    icon: number | string;
     cityName: string = "";
 
-    constructor(private settingService: SettingService, private weatherService: WeatherService) {
-        this.settingService = settingService;
-        this.weatherService = weatherService;
-    }
+    constructor(private settingService: SettingService, private weatherService: WeatherService) {}
 
     ngOnInit() {
         const { disabled, cityName, units } = this.settingService.getSetting("weather");
@@ -118,55 +113,11 @@ export class Weather {
     }
 
     getIcon(id, code) {
-        switch (id) {
-            // Thunderstorm
-            case 200:
-            case 201:
-            case 211:
-                return "lightning";
-            // Rain
-            case 300:
-            case 301:
-            case 500:
-                return "rainy";
-            // Shower rain
-            case 501:
-            case 502:
-            case 520:
-            case 521:
-                return "pouring";
-            // Light snow, light shower, sleet, snow, heavy snow, rain and snow
-            case 600:
-            case 601:
-            case 602:
-            case 611:
-            case 612:
-            case 615:
-            case 616:
-            case 620:
-            case 621:
-                return "snowy";
-            // Mist, Fog
-            case 701:
-            case 741:
-                return "fog";
-            // Clear sky, broken clouds, overcast clouds, scattered clouds
-            case 800:
-            case 801:
-            case 802:
-            case 803:
-            case 804:
-                if (code === "01d") {
-                    return "sunny";
-                }
-                else if (code === "01n") {
-                    return "night";
-                }
-                return "cloudy";
-            // Hail
-            case 906:
-                return "hail";
+        if (id === 800) {
+            const partOfDay = code.slice(-1) === "n" ? "night" : "day";
+
+            return `${partOfDay}-${id}`;
         }
-        return "";
+        return id;
     }
 }
