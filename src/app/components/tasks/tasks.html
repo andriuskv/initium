@@ -85,11 +85,11 @@
                 <ul class="subtasks" *ngIf="task.subtasks.length">
                     <li class="subtask" *ngFor="let subtask of task.subtasks; let i = index">
                         <div role="checkbox" class="checkbox task-checkbox" tabindex="0"
-                            [class.checked]="task.completed || subtask.completed"
+                            [class.checked]="subtask.completed"
                             (click)="comepleteSubtask(subtask)"
                             (keyup.enter)="comepleteSubtask(subtask)"
-                            [attr.aria-checked]="task.completed || subtask.completed"></div>
-                        <span class="task-text" [class.completed]="task.completed || subtask.completed">{{ subtask.text }}</span>
+                            [attr.aria-checked]="subtask.completed"></div>
+                        <span class="task-text" [class.completed]="subtask.completed">{{ subtask.text }}</span>
                     </li>
                 </ul>
                 <div class="task-footer">

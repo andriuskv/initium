@@ -11,26 +11,26 @@
     "build": "npm run dist && npm run webpack -- --env.prod && node build.js"
   },
   "dependencies": {
-    "@angular/common": "^7.0.0-beta.6",
-    "@angular/compiler": "^7.0.0-beta.6",
-    "@angular/core": "^7.0.0-beta.6",
-    "@angular/platform-browser": "^7.0.0-beta.6",
-    "@angular/platform-browser-dynamic": "^7.0.0-beta.6",
+    "@angular/common": "^7.0.0-rc.0",
+    "@angular/compiler": "^7.0.0-rc.0",
+    "@angular/core": "^7.0.0-rc.0",
+    "@angular/platform-browser": "^7.0.0-rc.0",
+    "@angular/platform-browser-dynamic": "^7.0.0-rc.0",
     "color-convert": "^1.9.3",
     "core-js": "^2.5.7",
     "dropbox": "^4.0.9",
     "focus-visible": "^4.1.5",
-    "rxjs": "^6.3.2",
+    "rxjs": "^6.3.3",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "^7.0.0-beta.6",
-    "@ngtools/webpack": "^6.2.3",
+    "@angular/compiler-cli": "^7.0.0-rc.0",
+    "@ngtools/webpack": "^7.0.0-rc.1",
     "@types/chrome": "^0.0.74",
-    "@types/node": "^10.10.3",
+    "@types/node": "^10.11.3",
     "autoprefixer": "^9.1.5",
     "css-loader": "^1.0.0",
-    "cssnano": "^4.1.0",
+    "cssnano": "^4.1.4",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.4.3",
     "node-sass": "^4.9.3",
@@ -40,9 +40,9 @@
     "style-loader": "^0.23.0",
     "terser-webpack-plugin": "^1.1.0",
     "tslint": "^5.11.0",
-    "typescript": "3.0.3",
-    "webpack": "^4.19.1",
-    "webpack-cli": "^3.1.1"
+    "typescript": "3.1.1",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
   },
   "browserslist": [
     "Chrome >= 63"
