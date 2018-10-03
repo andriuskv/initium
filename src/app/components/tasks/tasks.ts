@@ -124,6 +124,7 @@ export class Tasks {
     completeTask(index) {
         const task = this.tasks[index];
         task.completed = !task.completed;
+        task.subtasks = this.completeSubtasks(task.subtasks, task.completed);
 
         if (task.completed && task.pinned) {
             const newIndex = this.tasks.filter(task => task.pinned).length - 1;
@@ -173,6 +174,13 @@ export class Tasks {
             this.tasks.splice(index, 1);
             this.saveTasks();
         }, 400);
+    }
+
+    completeSubtasks(tasks, completed) {
+        return tasks.map(task => {
+            task.completed = completed;
+            return task;
+        });
     }
 
     comepleteSubtask(task) {
