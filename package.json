@@ -27,7 +27,7 @@
     "@angular/compiler-cli": "^7.0.0-rc.0",
     "@ngtools/webpack": "^7.0.0-rc.1",
     "@types/chrome": "^0.0.74",
-    "@types/node": "^10.11.3",
+    "@types/node": "^10.11.4",
     "autoprefixer": "^9.1.5",
     "css-loader": "^1.0.0",
     "cssnano": "^4.1.4",

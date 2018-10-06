@@ -75,7 +75,7 @@ export class Twitter {
         const minuteDiff = Math.round((date - created) / 1000 / 60);
         let at = "";
 
-        if (minuteDiff <= 60) {
+        if (minuteDiff < 60) {
             at = `${minuteDiff}m`;
         }
         else if (minuteDiff <= 1440) {
