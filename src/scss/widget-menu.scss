@@ -40,16 +40,6 @@
     display: flex;
 }
 
-.menu-item-container {
-    display: flex;
-
-    @media (max-width: 826px) {
-        &.hidden {
-            display: none;
-        }
-    }
-}
-
 .menu-item:not(:last-of-type) {
     margin-right: 4px;
 }
@@ -57,15 +47,6 @@
 .menu-item-btn {
     position: relative;
     filter: drop-shadow($icon-shadow);
-}
-
-.menu-toggle-btn {
-    display: none;
-    filter: drop-shadow($icon-shadow);
-
-    @media (max-width: 826px) {
-        display: flex;
-    }
 }
 
 .menu-header {

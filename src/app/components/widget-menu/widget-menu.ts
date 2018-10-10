@@ -8,23 +8,20 @@ import { ZIndexService } from "../../services/zIndexService";
 export class WidgetMenu {
     @Output() toggle = new EventEmitter();
 
-    visible: boolean = false;
     isClosing: boolean = false;
     reminderInicatorVisible: boolean = false;
-    selectedItem: string = "";
     zIndex: number = 0;
+    item: any = {};
 
-    constructor(private zIndexService: ZIndexService) {
-        this.zIndexService = zIndexService;
-    }
+    constructor(private zIndexService: ZIndexService) {}
 
     ngOnInit() {
         window.addEventListener("dropbox", (event: CustomEvent) => {
             if (event.detail.loggedIn) {
-                this.toggleItem("dropbox");
+                this.showItem("dropbox");
             }
             else {
-                this.toggleItem("settings");
+                this.showItem("settings");
             }
         });
     }
@@ -33,24 +30,20 @@ export class WidgetMenu {
         this.toggle.emit("upper");
     }
 
-    toggleMenu() {
-        this.visible = !this.visible;
-    }
-
-    toggleItem(item) {
-        this.selectedItem = item;
+    showItem(id, title = id, iconId = id) {
+        this.item = { id, title, iconId };
         this.increaseZIndex();
     }
 
-    closeSelectedItem() {
-        if (this.selectedItem === "dropbox") {
-            this.toggleItem("settings");
+    hideItem() {
+        if (this.item.id === "dropbox") {
+            this.showItem("settings");
             return;
         }
         this.isClosing = true;
 
         setTimeout(() => {
-            this.selectedItem = "";
+            this.item = {};
             this.isClosing = false;
         }, 500);
     }
