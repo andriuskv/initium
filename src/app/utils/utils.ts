@@ -1,5 +1,3 @@
-import { hsl } from "color-convert";
-
 function dispatchCustomEvent(eventName, data = null) {
     const event: CustomEvent = new CustomEvent(eventName, { detail: data });
 
@@ -12,10 +10,6 @@ function delay(milliseconds) {
     });
 }
 
-function hslToHex({ hue, saturation, lightness }) {
-    return hsl.hex(hue, saturation, lightness);
-}
-
 function getRandomHslColor() {
     return {
         hue: Math.floor(Math.random() * 360) + 1,
@@ -25,7 +19,13 @@ function getRandomHslColor() {
 }
 
 function getRandomHexColor() {
-    return `#${hslToHex(getRandomHslColor())}`;
+    const letters = "6789ABCDEF";
+    let color = "#";
+
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * letters.length)];
+    }
+    return color;
 }
 
 export {
