@@ -13,16 +13,14 @@
         </button>
     </div>
     <div class="menu-transition-target">
-        <settings class="settings-container"
-            *ngIf="item.id === 'settings'"></settings>
-        <dropbox class="dropbox-container"
-            [class.visible]="item.id === 'dropbox'">
-        </dropbox>
-        <calendar class="calendar-container"
-            [class.visible]="item.id === 'calendar'"
+        <settings class="settings-container" *ngIf="item.id === 'settings'"></settings>
+        <dropbox class="dropbox-container" [class.visible]="item.id === 'dropbox'"></dropbox>
+        <calendar class="calendar-container" [class.visible]="item.id === 'calendar'"
             [isHidden]="!item.id"
             (reminderIndicatorVisible)="showReminderIndicator($event)">
         </calendar>
+        <google-apps class="apps-container" [class.visible]="item.id === 'google-apps'">
+        </google-apps>
     </div>
 </div>
 <ul class="menu" *ngIf="!item.id && !isClosing"
@@ -41,6 +39,14 @@
             (click)="showItem('calendar')" title="Calendar">
             <svg viewBox="0 0 24 24">
                 <use href="#calendar"></use>
+            </svg>
+        </button>
+    </li>
+    <li class="menu-item">
+        <button class="btn-secondary menu-item-btn"
+            (click)="showItem('google-apps', 'Google Apps', 'grid')" title="Google Apps">
+            <svg viewBox="0 0 24 24">
+                <use href="#grid"></use>
             </svg>
         </button>
     </li>
