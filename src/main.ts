@@ -1,4 +1,3 @@
-import "scss/normalize.css";
 import "scss/weather-icons.min.css";
 import "scss/index.scss";
 

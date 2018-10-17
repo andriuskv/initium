@@ -7,12 +7,14 @@ html, body {
 }
 
 body {
-    overflow: hidden;
+    margin: 0;
     background-color: $color-grey-light;
     color: $primary-text-color;
     font-family: sans-serif;
     font-size: 14px;
+    line-height: 1.15;
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
 }
 
 a {
@@ -50,6 +52,7 @@ input,
 textarea {
     border: none;
     color: inherit;
+    font-family: inherit;
     font-size: 14px;
 }
 
