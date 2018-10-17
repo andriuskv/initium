@@ -76,6 +76,7 @@ $main-block-nav-height: 32px;
     left: 100%;
     display: none;
     padding: 6px;
+    filter: drop-shadow($icon-shadow);
 }
 
 .main-block-content {
