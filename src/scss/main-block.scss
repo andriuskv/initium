@@ -61,8 +61,6 @@ $main-block-nav-height: 32px;
 
 .main-block-nav-item-btn {
     position: relative;
-    padding: 0;
-    filter: drop-shadow($icon-shadow);
 
     svg {
         width: 24px;
@@ -76,7 +74,6 @@ $main-block-nav-height: 32px;
     left: 100%;
     display: none;
     padding: 6px;
-    filter: drop-shadow($icon-shadow);
 }
 
 .main-block-content {

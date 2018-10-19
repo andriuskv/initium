@@ -51,6 +51,7 @@ button,
 input,
 textarea {
     border: none;
+    background-color: transparent;
     color: inherit;
     font-family: inherit;
     font-size: 14px;
@@ -146,7 +147,6 @@ textarea {
     align-items: center;
     justify-content: center;
     padding: 2px;
-    background-color: transparent;
 
     &:hover {
         color: $button-hover-color;
@@ -176,6 +176,16 @@ textarea {
 
 .btn-secondary-large {
     padding: 4px 8px;
+}
+
+.btn-outside {
+    padding: 0;
+    filter: drop-shadow($icon-shadow);
+    cursor: pointer;
+
+    &:hover {
+        transform: scale(1.1);
+    }
 }
 
 .checkbox {
