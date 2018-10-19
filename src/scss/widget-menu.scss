@@ -41,12 +41,11 @@
 }
 
 .menu-item:not(:last-of-type) {
-    margin-right: 4px;
+    margin-right: 8px;
 }
 
 .menu-item-btn {
     position: relative;
-    filter: drop-shadow($icon-shadow);
 }
 
 .menu-header {

@@ -27,14 +27,22 @@
     [style.zIndex]="zIndex"
     (click)="increaseZIndex()">
     <li class="menu-item">
-        <button class="btn-secondary menu-item-btn" (click)="toggleUpperBlock()" title="Timers">
+        <button class="btn-outside menu-item-btn"
+            (click)="showItem('google-apps', 'Google Apps', 'grid')" title="Google Apps">
+            <svg viewBox="0 0 24 24">
+                <use href="#grid"></use>
+            </svg>
+        </button>
+    </li>
+    <li class="menu-item">
+        <button class="btn-outside menu-item-btn" (click)="toggleUpperBlock()" title="Timers">
             <svg viewBox="0 0 24 24">
                 <use href="#clock"></use>
             </svg>
         </button>
     </li>
     <li class="menu-item">
-        <button class="btn-secondary menu-item-btn"
+        <button class="btn-outside menu-item-btn"
             [class.indicator-visible]="reminderInicatorVisible"
             (click)="showItem('calendar')" title="Calendar">
             <svg viewBox="0 0 24 24">
@@ -43,15 +51,7 @@
         </button>
     </li>
     <li class="menu-item">
-        <button class="btn-secondary menu-item-btn"
-            (click)="showItem('google-apps', 'Google Apps', 'grid')" title="Google Apps">
-            <svg viewBox="0 0 24 24">
-                <use href="#grid"></use>
-            </svg>
-        </button>
-    </li>
-    <li class="menu-item">
-        <button class="btn-secondary menu-item-btn" (click)="showItem('settings')" title="Settings">
+        <button class="btn-outside menu-item-btn" (click)="showItem('settings')" title="Settings">
             <svg viewBox="0 0 24 24">
                 <use href="#settings"></use>
             </svg>
