@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { apps } from "../../data/google-apps.json";
 
 @Component({
     selector: "google-apps",
@@ -14,10 +15,5 @@ import { Component } from "@angular/core";
     `
 })
 export class GoogleApps {
-    apps: any[] = [];
-
-    async ngOnInit() {
-        const { apps } = await fetch("assets/google-apps.json").then(res => res.json());
-        this.apps = apps;
-    }
+    apps: any[] = apps;
 }

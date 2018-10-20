@@ -9,6 +9,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "target": "es2018",
     "typeRoots": [
