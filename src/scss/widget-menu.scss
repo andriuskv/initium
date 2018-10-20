@@ -41,11 +41,12 @@
 }
 
 .menu-item:not(:last-of-type) {
-    margin-right: 8px;
+    margin-right: 4px;
 }
 
 .menu-item-btn {
     position: relative;
+    padding: 2px;
 }
 
 .menu-header {
