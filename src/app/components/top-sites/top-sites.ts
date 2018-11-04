@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { SettingService } from "../../services/settingService";
 
@@ -8,14 +8,12 @@ import { SettingService } from "../../services/settingService";
 })
 export class TopSites {
     @Input() isVisible: boolean = false;
-    @ViewChild("root") root;
 
     isFormVisible: boolean = false;
     isFetching: boolean = false;
     visibleSiteCount: number = 4;
     topSites: Array<any> = [];
     visibleSites: Array<any> = [];
-    emptySites: undefined[] = [];
     editedSite: any = null;
     formThumbnail: any = null;
 
@@ -81,9 +79,7 @@ export class TopSites {
     }
 
     updateVisibleSites() {
-        this.root.nativeElement.style.setProperty("--rows", this.visibleSiteCount / 4);
         this.visibleSites = this.topSites.slice(0, this.visibleSiteCount);
-        this.emptySites.length = this.visibleSiteCount - this.visibleSites.length;
     }
 
     getFavicon(url) {
