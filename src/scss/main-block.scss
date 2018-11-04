@@ -7,6 +7,7 @@ $main-block-nav-height: 32px;
     transform: translateX(-50%);
     transition: 0.2s top;
     will-change: top, height;
+    pointer-events: none;
 
     &.hidden {
         display: none;
@@ -45,6 +46,7 @@ $main-block-nav-height: 32px;
                 0.2s visibility,
                 0.2s transform;
     transition-delay: 0.2s;
+    pointer-events: auto;
 
     &.hidden {
         display: none;
@@ -100,6 +102,7 @@ $main-block-nav-height: 32px;
     width: 588px;
     height: 320px;
     transition: height 0.2s;
+    pointer-events: auto;
 
     &.visible {
         display: flex;
@@ -170,12 +173,6 @@ $main-block-nav-height: 32px;
     top: 0;
     right: 0;
     display: none;
-}
-
-.main-block-modal {
-    display: flex;
-    height: 100%;
-    padding: 4px;
 }
 
 .main-block-modal-title {
