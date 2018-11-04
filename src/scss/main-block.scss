@@ -27,10 +27,6 @@ $main-block-nav-height: 32px;
         }
     }
 
-    &:hover .main-block-expand-btn {
-        display: flex;
-    }
-
     @media (max-height: 638px) {
         top: calc(36% + #{$main-block-nav-height});
     }
@@ -68,12 +64,32 @@ $main-block-nav-height: 32px;
     }
 }
 
-.main-block-expand-btn {
+.main-block-sidebar {
     position: absolute;
-    top: 1px;
+    top: 0;
     left: 100%;
-    display: none;
-    padding: 6px;
+    pointer-events: auto;
+    transform: translate(-8px, 4px);
+    transition: 0.2s transform;
+
+    &.expanded {
+        transform: translateX(4px);
+    }
+}
+
+.main-block-sidebar-show-btn {
+    display: block;
+    width: 12px;
+    height: 22px;
+
+    &:hover {
+        background-color: $color-white-10;
+        cursor: pointer;
+    }
+}
+
+.main-block-sidebar-btn {
+    margin: 4px;
 }
 
 .main-block-content {

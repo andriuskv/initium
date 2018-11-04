@@ -12,6 +12,7 @@ export class MainBlock {
     isNavHidden: boolean = false;
     isExpanded: boolean = false;
     isTabExpandable: boolean = false;
+    isSidebarExpanded: boolean = false;
     tab: string = "";
     zIndex: number = 0;
     tabs: any = {
@@ -47,6 +48,14 @@ export class MainBlock {
 
     toggleSize() {
          this.isExpanded = !this.isExpanded;
+    }
+
+    showSidebar() {
+        this.isSidebarExpanded = true;
+    }
+
+    hideSidebar() {
+        this.isSidebarExpanded = false;
     }
 
     onShowViewer(data) {
