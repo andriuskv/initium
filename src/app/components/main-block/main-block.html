@@ -37,12 +37,25 @@
             </button>
         </li>
     </ul>
-    <button class="btn-outside main-block-expand-btn"
-        *ngIf="isTabExpandable"  (click)="toggleSize()" title="Toggle size">
-        <svg viewBox="0 0 24 24">
-            <use attr.href="#vertical-{{ isExpanded ? 'shrink' : 'expand' }}"></use>
-        </svg>
-    </button>
+    <div class="container main-block-sidebar" [class.expanded]="isSidebarExpanded"
+        *ngIf="isTabExpandable">
+        <button class="main-block-sidebar-show-btn" *ngIf="!isSidebarExpanded"
+            (click)="showSidebar()" title="Show sidebar"></button>
+        <div class="main-block-sidebar-btns" *ngIf="isSidebarExpanded">
+            <button class="btn-secondary btn-secondary-alt main-block-sidebar-btn"
+                (click)="hideSidebar()" title="Hide">
+                <svg viewBox="0 0 24 24">
+                    <use href="#chevron-left"></use>
+                </svg>
+            </button>
+            <button class="btn-secondary btn-secondary-alt main-block-sidebar-btn"
+                (click)="toggleSize()" title="Toggle size">
+                <svg viewBox="0 0 24 24">
+                    <use attr.href="#vertical-{{ isExpanded ? 'shrink' : 'expand' }}"></use>
+                </svg>
+            </button>
+        </div>
+    </div>
     <top-sites [isVisible]="tab === 'topSites'"></top-sites>
     <notepad [isVisible]="tab === 'notepad'"></notepad>
     <twitter [isVisible]="tab === 'twitter'"
