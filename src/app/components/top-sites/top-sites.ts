@@ -11,6 +11,7 @@ export class TopSites {
 
     isFormVisible: boolean = false;
     isFetching: boolean = false;
+    addSiteButtonVisible: boolean = false;
     visibleSiteCount: number = 4;
     topSites: Array<any> = [];
     visibleSites: Array<any> = [];
@@ -80,6 +81,7 @@ export class TopSites {
 
     updateVisibleSites() {
         this.visibleSites = this.topSites.slice(0, this.visibleSiteCount);
+        this.addSiteButtonVisible = this.visibleSites.length < this.visibleSiteCount;
     }
 
     getFavicon(url) {
