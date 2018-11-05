@@ -58,7 +58,7 @@
                     </svg>
                 </button>
             </li>
-            <li class="container top-site" *ngIf="visibleSites.length < visibleSiteCount">
+            <li class="container top-site" *ngIf="addSiteButtonVisible">
                 <button class="btn-secondary add-site-btn" (click)="showForm()" title="Add new site">
                     <svg viewBox="0 0 24 24" class="add-site-btn-icon">
                         <use href="#plus"></use>
