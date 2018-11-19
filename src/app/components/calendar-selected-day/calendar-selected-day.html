@@ -67,7 +67,7 @@
                         (keyup)="validateRangeInput($event, 'from')"
                         [pattern]="timePattern"
                         [value]="range.from.string" required>
-                    <ul class="reminder-timetable">
+                    <ul class="container reminder-timetable">
                         <li class="reminder-timetable-item" *ngFor="let item of timeTable.items"
                             (mousedown)="updateTimeRange(item, 'from')">{{ item.string }}</li>
                     </ul>
@@ -79,7 +79,7 @@
                         (keyup)="validateRangeInput($event, 'to')"
                         [pattern]="timePattern"
                         [value]="range.to.string">
-                    <ul class="reminder-timetable">
+                    <ul class="container reminder-timetable">
                         <li class="reminder-timetable-item" *ngFor="let item of timeTable.items"
                             (mousedown)="updateTimeRange(item, 'to')">{{ item.string }}</li>
                     </ul>

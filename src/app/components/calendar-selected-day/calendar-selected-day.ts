@@ -113,7 +113,7 @@ export class CalendarSelectedDay {
     generateTimeTable() {
         const timeTable = {
             format: this.timeFormat,
-            items: []
+            items: [{ string: "" } as any]
         };
         let minutes = 0;
         let hours = 0;
@@ -138,71 +138,66 @@ export class CalendarSelectedDay {
         this.timeTable = { ...timeTable };
     }
 
-    validateRangeInput({ target }, name) {
-        if (!target.validity.valid) {
-            this.rangeMessage = this.FORMAT_ERROR;
-            return;
-        }
-
-        if (!target.value && name === "to") {
-            const regex = new RegExp(this.timePattern);
-
-            if (!this.range.from.string) {
-                this.rangeMessage = this.RANGE_ERROR;
-            }
-            else if (!regex.test(this.range.from.string)) {
-                this.rangeMessage = this.FORMAT_ERROR;
-            }
-            else {
-                this.rangeMessage = "";
-            }
-            return;
-        }
-        const time = this.range[name];
-        time.string = target.value;
-        const [hourString, minuteString] = time.string.toLowerCase().split(":");
-        const hours = parseInt(hourString, 10);
-        time.minutes = parseInt(minuteString, 10);
-        this.rangeMessage = "";
+    parseTimeString(string) {
+        const [hourString, minuteString] = string.toLowerCase().split(":");
+        const minutes = parseInt(minuteString, 10);
+        let hours = parseInt(hourString, 10);
 
         if (this.timeFormat === 24) {
-            time.hours = hours;
+            hours = hours;
         }
         else if (minuteString.endsWith("am") && hours === 12) {
-            time.hours = 0;
+            hours = 0;
         }
         else if (minuteString.endsWith("pm") && hours !== 12) {
-            time.hours = hours + 12;
+            hours = hours + 12;
         }
         else {
-            time.hours = hours;
+            hours = hours;
+        }
+
+        return { hours, minutes };
+    }
+
+    validateRangeInput({ target }, name) {
+        if (target.validity.valid) {
+            this.rangeMessage = "";
+        }
+        else {
+            this.rangeMessage = this.FORMAT_ERROR;
+
+            if (name === "from" && !target.value) {
+                this.range[name].string = "";
+            }
+            return;
+        }
+        let time = this.range[name];
+        time.string = target.value;
+
+        if (target.value) {
+            time = { ...time, ...this.parseTimeString(target.value) };
         }
         this.updateTimeRange(time, name);
     }
 
     updateTimeRange(time, name) {
+        this.range[name] = { ...time };
+
+        if (!this.range.from.string) {
+            this.rangeMessage = this.FORMAT_ERROR;
+            return;
+        }
+
+        if (!this.range.to.string) {
+            this.rangeMessage = "";
+            return;
+        }
         const regex = new RegExp(this.timePattern);
-
-        if (name === "to") {
-            this.range.to = Object.assign({}, time);
-
-            if (regex.test(this.range.from.string)) {
-                this.rangeMessage = "";
-            }
-        }
-        else {
-            this.range.from = Object.assign({}, time);
-
-            if (!this.range.to.string) {
-                this.rangeMessage = "";
-                return;
-            }
-
-            if (regex.test(this.range.to.string)) {
-                this.rangeMessage = "";
-            }
-        }
         const { from, to } = this.range;
+
+        if (regex.test(time.string)) {
+            this.rangeMessage = "";
+        }
 
         if (to.hours < from.hours || (to.hours === from.hours && to.minutes <= from.minutes)) {
             this.rangeMessage = this.RANGE_ERROR;
