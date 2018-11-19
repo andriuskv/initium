@@ -297,6 +297,10 @@
     margin-left: 8px;
     margin-right: 8px;
     text-align: center;
+
+    &:invalid {
+        outline: 1px auto transparentize($color-danger, 0.2);
+    }
 }
 
 .range-input-container {
@@ -312,6 +316,10 @@
     &:focus + .reminder-timetable {
         display: block;
     }
+
+    &:invalid {
+        outline: 1px auto transparentize($color-danger, 0.2);
+    }
 }
 
 .reminder-timetable {
@@ -325,17 +333,16 @@
     display: none;
     width: 100%;
     max-height: 120px;
-    background-color: $color-grey-light;
-    box-shadow: $box-shadow;
     text-align: center;
 }
 
 .reminder-timetable-item {
+    height: 24px;
     padding: 4px;
 
     &:hover {
         background-color: $secondary-button-hover-background-color;
-        cursor: default;
+        cursor: pointer;
     }
 }
 

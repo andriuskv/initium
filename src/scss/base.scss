@@ -192,7 +192,7 @@ textarea {
     width: 16px;
     height: 16px;
 
-    &.checked::after {
+    &::after {
         content: "\2713";
         display: block;
         color: $color-blue;
@@ -200,9 +200,11 @@ textarea {
         font-weight: bold;
         text-align: center;
         transform: scale(0);
-        animation-name: scale-up;
-        animation-duration: 0.2s;
-        animation-fill-mode: forwards;
+        transition: 0.2s transform;
+    }
+
+    &.checked::after {
+        transform: scale(1);
     }
 }
 
@@ -211,12 +213,8 @@ textarea {
     height: 16px;
     padding: 5px;
     border-radius: 50%;
-}
 
-.radio-input {
-    display: none;
-
-    &:checked + .radio::after {
+    &::after {
         content: "";
         display: block;
         width: 100%;
@@ -224,9 +222,15 @@ textarea {
         border-radius: 50%;
         background-color: $color-blue;
         transform: scale(0);
-        animation-name: scale-up;
-        animation-duration: 0.2s;
-        animation-fill-mode: forwards;
+        transition: 0.2s transform;
+    }
+}
+
+.radio-input {
+    display: none;
+
+    &:checked + .radio::after {
+        transform: scale(1);
     }
 }
 
