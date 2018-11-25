@@ -77,30 +77,23 @@ export class Pomodoro {
         this.resetTimer();
     }
 
-    update(startTime, elapsed) {
+    update(duration, elapsed) {
         if (!this.running) {
             return;
         }
-        elapsed += 1000;
-        const diff = performance.now() - startTime - elapsed;
+        const interval = 1000;
+        const diff = performance.now() - elapsed;
+        elapsed += interval;
+        duration -= 1;
 
-        if (this.seconds || this.minutes || this.hours) {
-            if (!this.seconds) {
-                if (this.minutes) {
-                    this.minutes -= 1;
-                    this.seconds += 60;
-                }
-                else if (this.hours) {
-                   this.hours -= 1;
-                    this.minutes += 59;
-                    this.seconds += 60;
-                }
-            }
-            this.seconds -= 1;
+        this.hours = Math.floor(duration / 3600);
+        this.minutes = Math.floor(duration / 60 % 60);
+        this.seconds = duration % 60;
 
+        if (duration) {
             this.timeout = window.setTimeout(() => {
-                this.update(startTime, elapsed);
-            }, 1000 - diff);
+                this.update(duration, elapsed);
+            }, interval - diff);
         }
         else if (this.alarmOn) {
             this.runAlarm();
@@ -119,13 +112,17 @@ export class Pomodoro {
         }
     }
 
+    calculateDuration() {
+        return this.seconds + (this.minutes * 60) + (this.hours * 3600);
+    }
+
     start() {
-        const startTime = performance.now();
+        const duration = this.calculateDuration();
 
         this.initAlarm();
         this.running = true;
         this.timeout = window.setTimeout(() => {
-            this.update(startTime, 0);
+            this.update(duration, performance.now());
         }, 1000);
     }
 
