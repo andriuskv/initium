@@ -50,30 +50,17 @@ export class Stopwatch {
     minutes: number = 0;
     seconds: number = 0;
     milliseconds: number = 0;
-    worker: Worker;
+    animationId: number;
 
-    constructor(private ref: ChangeDetectorRef) {
-        this.ref = ref;
-    }
+    constructor(private ref: ChangeDetectorRef) {}
 
     ngOnViewInit() {
         this.ref.detach();
     }
 
-    initWorker() {
-        if (this.worker) {
-            return;
-        }
-        this.worker = new Worker("ww.js");
-        this.worker.onmessage = ({ data }) => {
-            if (this.running) {
-                this.update(Date.now() - data);
-            }
-        };
-    }
-
     update(elapsed) {
-        this.milliseconds += elapsed;
+        const diff = performance.now() - elapsed;
+        this.milliseconds += diff;
 
         if (this.milliseconds >= 1000) {
             this.milliseconds -= 1000;
@@ -90,6 +77,9 @@ export class Stopwatch {
             }
         }
         this.ref.detectChanges();
+        this.animationId = requestAnimationFrame(() => {
+            this.update(elapsed + diff);
+        });
     }
 
     toggle() {
@@ -102,13 +92,14 @@ export class Stopwatch {
     }
 
     start() {
-        this.initWorker();
-        this.worker.postMessage("start");
+        this.animationId = requestAnimationFrame(() => {
+            this.update(performance.now());
+        });
         this.running = true;
     }
 
     stop() {
-        this.worker.postMessage("stop");
+        cancelAnimationFrame(this.animationId);
         this.running = false;
     }
 
