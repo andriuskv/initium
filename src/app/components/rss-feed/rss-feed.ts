@@ -13,6 +13,7 @@ export class RssFeed {
     @Output() toggleTab = new EventEmitter();
     @Input() isVisible: boolean = false;
     @ViewChild("feedTitleInput") feedTitleInput;
+    @ViewChild("feedEntryContainer") feedEntryContainer;
 
     initializing: boolean = true;
     fetching: boolean = false;
@@ -106,6 +107,7 @@ export class RssFeed {
     showFeed(index = 0) {
         this.activeFeedIndex = index;
         this.activeFeed = this.feeds[index];
+        this.resetScrollPosition();
     }
 
     previousVisibleFeeds() {
@@ -144,6 +146,14 @@ export class RssFeed {
 
     setShift(index = 0) {
         this.shift = index >= this.VISIBLE_FEED_COUNT ? index - (this.VISIBLE_FEED_COUNT - 1) : 0;
+    }
+
+    resetScrollPosition() {
+        const container = this.feedEntryContainer;
+
+        if (container) {
+            container.nativeElement.scrollTop = 0;
+        }
     }
 
     removeFeed(index, isRemoveChange = false) {
