@@ -164,7 +164,7 @@
                     </svg>
                 </button>
             </div>
-            <ul class="feed-entries">
+            <ul class="feed-entries" #feedEntryContainer>
                 <li class="feed-entry"
                     (click)="markEntryAsRead(entry)"
                     *ngFor="let entry of activeFeed.entries">
