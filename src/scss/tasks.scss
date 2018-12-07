@@ -21,8 +21,9 @@
     visibility: hidden;
     display: flex;
     flex-direction: column;
-    width: 300px;
-    height: 400px;
+    width: 320px;
+    height: 440px;
+    max-height: calc(100% - 8px);
     border-bottom-right-radius: 50%;
     transform-origin: top left;
     transform: scale(0);
@@ -74,7 +75,7 @@
 
 .task {
     overflow: hidden;
-    padding-left: 24px;
+    padding-left: 32px;
     padding-right: 4px;
 
     &:not(:last-of-type) {
@@ -99,8 +100,7 @@
 
 .task-checkbox {
     float: left;
-    margin-left: -20px;
-    margin-right: 4px;
+    margin-left: -24px;
 }
 
 .task-labels {
@@ -174,6 +174,7 @@
 
 .task-footer-btn {
     overflow: hidden;
+    padding: 0;
     margin-right: 8px;
     font-size: 13px;
 
@@ -233,18 +234,11 @@
     padding: 4px;
 
     &.flagged {
-        &::before {
-            content: "\2713";
-            z-index: 1;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
+        .task-form-label-btn-tick {
             display: block;
-            color: $color-success;
-            font-size: 20px;
-            font-weight: bold;
+            animation-name: scale-up;
+            animation-duration: 0.2s;
+            animation-fill-mode: forwards;
         }
 
         .task-label-color,
@@ -252,6 +246,12 @@
             opacity: 0.4;
         }
     }
+}
+
+.task-form-label-btn-tick {
+    position: absolute;
+    display: none;
+    color: $color-success;
 }
 
 .task-form-label-message {

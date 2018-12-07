@@ -46,7 +46,11 @@
                     [class.checked]="!isRangeVisible"
                     (click)="toggleRange()"
                     (keyup.enter)="toggleRange()"
-                    [attr.aria-checked]="!isRangeVisible"></div>
+                    [attr.aria-checked]="!isRangeVisible">
+                    <svg class="checkbox-tick" viewBox="0 0 24 24">
+                        <use href="#tick"></use>
+                    </svg>
+                </div>
                 <span class="checkbox-label">All day</span>
             </div>
             <div class="checkbox-container">
@@ -54,7 +58,11 @@
                     [class.checked]="isRepeatEnabled"
                     (click)="toggleRepeat()"
                     (keyup.enter)="toggleRepeat()"
-                    [attr.aria-checked]="isRepeatEnabled"></div>
+                    [attr.aria-checked]="isRepeatEnabled">
+                    <svg class="checkbox-tick" viewBox="0 0 24 24">
+                        <use href="#tick"></use>
+                    </svg>
+                </div>
                 <span class="checkbox-label">Repeat</span>
             </div>
         </div>

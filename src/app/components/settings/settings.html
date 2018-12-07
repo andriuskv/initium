@@ -31,7 +31,11 @@
             [class.checked]="settings.general.notificationsDisabled"
             (click)="toggleSettingCheckbox('notificationsDisabled')"
             (keyup.enter)="toggleSettingCheckbox('notificationsDisabled')"
-            [attr.aria-checked]="settings.general.notificationsDisabled"></div>
+            [attr.aria-checked]="settings.general.notificationsDisabled">
+            <svg class="checkbox-tick" viewBox="0 0 24 24">
+                <use href="#tick"></use>
+            </svg>
+        </div>
     </div>
     <div class="setting-item" [class.disabled]="settings.general.notificationsDisabled">
         <span>Don't focus tab on notification click</span>
@@ -39,7 +43,11 @@
             [class.checked]="settings.general.notificationFocusDisabled"
             (click)="toggleSettingCheckbox('notificationFocusDisabled')"
             (keyup.enter)="toggleSettingCheckbox('notificationFocusDisabled')"
-            [attr.aria-checked]="settings.general.notificationFocusDisabled"></div>
+            [attr.aria-checked]="settings.general.notificationFocusDisabled">
+            <svg class="checkbox-tick" viewBox="0 0 24 24">
+                <use href="#tick"></use>
+            </svg>
+        </div>
     </div>
 </div>
 <div class="setting" [class.active]="active === 'time'">
@@ -50,7 +58,11 @@
             (click)="toggleSettingCheckbox('disabled')"
             (keyup.enter)="toggleSettingCheckbox('disabled')"
             [attr.aria-checked]="settings.time.disabled"
-            aria-labelledby="time-setting-label-1"></div>
+            aria-labelledby="time-setting-label-1">
+            <svg class="checkbox-tick" viewBox="0 0 24 24">
+                <use href="#tick"></use>
+            </svg>
+        </div>
     </div>
     <div class="setting-item" [class.disabled]="settings.time.disabled">
         <span id="time-setting-label-2">Hide date</span>
@@ -59,7 +71,11 @@
             (click)="toggleSettingCheckbox('dateHidden')"
             (keyup.enter)="toggleSettingCheckbox('dateHidden')"
             [attr.aria-checked]="settings.time.dateHidden"
-            aria-labelledby="time-setting-label-2"></div>
+            aria-labelledby="time-setting-label-2">
+            <svg class="checkbox-tick" viewBox="0 0 24 24">
+                <use href="#tick"></use>
+            </svg>
+        </div>
     </div>
     <div class="setting-item">
         <span id="time-setting-label-3">Time display format</span>
@@ -95,7 +111,11 @@
             (click)="toggleSettingCheckbox('disabled')"
             (keyup.enter)="toggleSettingCheckbox('disabled')"
             [attr.aria-checked]="settings.weather.disabled"
-            aria-labelledby="weather-setting-label-1"></div>
+            aria-labelledby="weather-setting-label-1">
+            <svg class="checkbox-tick" viewBox="0 0 24 24">
+                <use href="#tick"></use>
+            </svg>
+        </div>
     </div>
     <div class="setting-item" [class.disabled]="settings.weather.disabled">
         <span id="weather-setting-label-2">Temperature units</span>
@@ -122,7 +142,11 @@
             [class.checked]="settings.mainBlock.isNavHidden"
             (click)="toggleSettingCheckbox('isNavHidden')"
             (keyup.enter)="toggleSettingCheckbox('isNavHidden')"
-            [attr.aria-checked]="settings.mainBlock.isNavHidden"></div>
+            [attr.aria-checked]="settings.mainBlock.isNavHidden">
+            <svg class="checkbox-tick" viewBox="0 0 24 24">
+                <use href="#tick"></use>
+            </svg>
+        </div>
     </div>
     <div class="setting-item">
         <span>Show one row of top sites</span>
@@ -130,7 +154,11 @@
             [class.checked]="settings.mainBlock.showingOneRow"
             (click)="toggleSettingCheckbox('showingOneRow')"
             (keyup.enter)="toggleSettingCheckbox('showingOneRow')"
-            [attr.aria-checked]="settings.mainBlock.showingOneRow"></div>
+            [attr.aria-checked]="settings.mainBlock.showingOneRow">
+            <svg class="checkbox-tick" viewBox="0 0 24 24">
+                <use href="#tick"></use>
+            </svg>
+        </div>
     </div>
     <div class="setting-item">
         <span>Restore default top sites</span>
