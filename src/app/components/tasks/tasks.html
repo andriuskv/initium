@@ -39,6 +39,9 @@
                         [class.flagged]="label.flagged" (click)="flagLabel(label)">
                         <div class="task-label-color" [style.backgroundColor]="label.color"></div>
                         <div class="task-label-title">{{ label.title }}</div>
+                        <svg class="task-form-label-btn-tick" viewBox="0 0 24 24">
+                            <use href="#tick"></use>
+                        </svg>
                     </button>
                 </li>
             </ul>
@@ -80,7 +83,11 @@
                     [class.checked]="task.completed"
                     (click)="completeTask(i)"
                     (keyup.enter)="completeTask(i)"
-                    [attr.aria-checked]="task.completed"></div>
+                    [attr.aria-checked]="task.completed">
+                    <svg class="checkbox-tick" viewBox="0 0 24 24">
+                        <use href="#tick"></use>
+                    </svg>
+                </div>
                 <div class="task-text" [class.completed]="task.completed">{{ task.text }}</div>
                 <ul class="subtasks" *ngIf="task.subtasks.length">
                     <li class="subtask" *ngFor="let subtask of task.subtasks; let i = index">

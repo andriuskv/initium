@@ -122,7 +122,7 @@
     }
 }
 
-.feed-new-entry-count {
+.feed-new-entry-count-container {
     position: relative;
     display: flex;
     justify-content: center;
@@ -139,7 +139,6 @@
     }
 
     &::before {
-        z-index: -1;
         position: absolute;
         content: "";
         display: block;
@@ -149,6 +148,10 @@
         background-color: $color-white;
         transition: transform 0.2s;
     }
+}
+
+.feed-new-entry-count {
+    position: relative;
 }
 
 .feed-entries {
@@ -328,9 +331,8 @@
     align-items: center;
     font-size: 16px;
 
-    .feed-new-entry-count:hover {
+    .feed-new-entry-count-container:hover {
         color: $color-grey-dark;
-        cursor: pointer;
     }
 }
 

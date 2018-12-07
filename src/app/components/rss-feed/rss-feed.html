@@ -74,10 +74,12 @@
                                 #feedTitleInput>
                             <ng-template #elseBlock>
                                 <h3 class="feed-list-item-title">
-                                    <button class="btn-secondary feed-new-entry-count"
+                                    <button class="btn-secondary feed-new-entry-count-container"
                                         (click)="markEntriesAsRead(feed)"
                                         *ngIf="feed.newEntryCount"
-                                        title="Mark new entries as read">{{ feed.newEntryCount }}</button>
+                                        title="Mark new entries as read">
+                                        <div class="feed-new-entry-count">{{ feed.newEntryCount }}</div>
+                                    </button>
                                     <button class="btn-secondary feed-list-item-title-btn"
                                         (click)="showFeedFromList(i)">{{ feed.title }}</button>
                                 </h3>
@@ -142,8 +144,10 @@
                         [class.hidden]="i < shift || i >= shift + VISIBLE_FEED_COUNT">
                         <button class="btn-secondary main-block-content-header-item-select-btn"
                             (click)="handleHeaderItemClick($event, feed, i)">
-                            <span class="feed-new-entry-count" *ngIf="feed.newEntryCount">{{ feed.newEntryCount }}</span>
-                            <span class="main-block-content-header-item-title">{{ feed.title }}</span>
+                            <div class="feed-new-entry-count-container" *ngIf="feed.newEntryCount">
+                                <div class="feed-new-entry-count">{{ feed.newEntryCount }}</div>
+                            </div>
+                            <div class="main-block-content-header-item-title">{{ feed.title }}</div>
                         </button>
                     </li>
                 </ul>
