@@ -144,7 +144,7 @@
                         [class.hidden]="i < shift || i >= shift + VISIBLE_FEED_COUNT">
                         <button class="btn-secondary main-block-content-header-item-select-btn"
                             (click)="handleHeaderItemClick($event, feed, i)">
-                            <div class="feed-new-entry-count-container" *ngIf="feed.newEntryCount">
+                            <div class="feed-new-entry-count-container" *ngIf="feed.newEntryCount" data-entry-count>
                                 <div class="feed-new-entry-count">{{ feed.newEntryCount }}</div>
                             </div>
                             <div class="main-block-content-header-item-title">{{ feed.title }}</div>
