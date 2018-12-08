@@ -379,7 +379,7 @@ export class RssFeed {
     }
 
     handleHeaderItemClick({ target }, feed, index) {
-        if (target.classList.contains("feed-new-entry-count")) {
+        if (target.closest("[data-entry-count]")) {
             this.markEntriesAsRead(feed);
         }
         else {
