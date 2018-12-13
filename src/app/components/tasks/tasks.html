@@ -95,7 +95,11 @@
                             [class.checked]="subtask.completed"
                             (click)="comepleteSubtask(subtask)"
                             (keyup.enter)="comepleteSubtask(subtask)"
-                            [attr.aria-checked]="subtask.completed"></div>
+                            [attr.aria-checked]="subtask.completed">
+                            <svg class="checkbox-tick" viewBox="0 0 24 24">
+                                <use href="#tick"></use>
+                            </svg>
+                        </div>
                         <span class="task-text" [class.completed]="subtask.completed">{{ subtask.text }}</span>
                     </li>
                 </ul>
