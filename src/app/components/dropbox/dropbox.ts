@@ -54,9 +54,9 @@ export class DropboxComp {
 
     ngOnInit() {
         window.addEventListener("dropbox-login", async () => {
-            const Dropbox: any = await import("dropbox");
+            const { Dropbox }: any = await import("dropbox");
             const token = localStorage.getItem("dropbox token");
-            this.dropbox = new Dropbox.Dropbox({ clientId: process.env.DROPBOX_API_KEY });
+            this.dropbox = new Dropbox({ clientId: process.env.DROPBOX_API_KEY, fetch });
 
             if (token) {
                 this.init(token);
