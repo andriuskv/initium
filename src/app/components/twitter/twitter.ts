@@ -244,6 +244,7 @@ export class Twitter {
     handleVideoClick(event, media) {
         const video = event.currentTarget.firstElementChild;
 
+        event.preventDefault();
         event.stopPropagation();
         media.active = true;
 
