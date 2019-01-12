@@ -5,6 +5,7 @@
 }
 
 .settings-nav {
+    flex-shrink: 0;
     width: 100px;
     border-right: 1px solid $primary-border-color;
 }
@@ -33,6 +34,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     min-height: 38px;
     padding: 4px 4px 4px 8px;
     border-bottom: 1px solid $primary-border-color;
@@ -56,6 +58,11 @@
 .setting-item-add-desc {
     font-size: 13px;
     color: $secondary-text-color;
+}
+
+.setting-item-message {
+    margin-top: 8px;
+    color: $color-danger;
 }
 
 .setting-input {

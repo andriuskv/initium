@@ -6,7 +6,9 @@ import { Subject } from "rxjs";
 })
 export class SettingService {
     settings: any = this.initSettings();
-    data: Subject<object> = new Subject();
+    messages: any = {};
+    settingSubject: Subject<object> = new Subject();
+    messageSubject: Subject<object> = new Subject();
 
     initSettings() {
         const settings = JSON.parse(localStorage.getItem("settings")) || {};
@@ -65,21 +67,31 @@ export class SettingService {
         return this.settings[setting];
     }
 
-    subscribeToChanges(nextHandler) {
-        this.data.subscribe(nextHandler);
+    announceSettingChange(setting) {
+        this.settingSubject.next(setting);
     }
 
-    updateSetting(setting, dontSave = false) {
+    subscribeToSettingChanges(handler) {
+        this.settingSubject.subscribe(handler);
+    }
+
+    subscribeToMessageChanges(handler) {
+        this.messageSubject.subscribe(handler);
+    }
+
+    updateSetting(setting) {
         const settings = this.settings;
         const [settingFor] = Object.keys(setting);
 
-        this.data.next(setting);
+        this.settingSubject.next(setting);
 
-        if (dontSave) {
-            return settings;
-        }
         settings[settingFor] = Object.assign(settings[settingFor], setting[settingFor]);
         localStorage.setItem("settings", JSON.stringify(settings));
         return settings;
+    }
+
+    updateMessage(message) {
+        this.messages = { ...this.messages, ...message };
+        this.messageSubject.next(message);
     }
 }

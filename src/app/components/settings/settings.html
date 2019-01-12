@@ -92,7 +92,7 @@
 <div class="setting" [class.active]="active === 'background'">
     <div class="setting-item">
         <span>Reset background</span>
-        <button class="btn" (click)="onSetting('url', '')">Reset</button>
+        <button class="btn" (click)="resetSetting('url', '')">Reset</button>
     </div>
     <div class="setting-item">
         <button class="btn-secondary settings-dropbox-btn" [disabled]="logginInToDropbox" (click)="loginToDropbox()">
@@ -129,10 +129,14 @@
         </div>
     </div>
     <div class="setting-item" [class.disabled]="settings.weather.disabled">
-        <span>City name (and country code)</span>
+        <div>
+            <div>City name (and country code)</div>
+            <div class="setting-item-add-desc">Uses geolocation when input is empty</div>
+        </div>
         <input type="text" class="input setting-input" placeholder="Paris,fr"
             [value]="settings.weather.cityName"
-            (keyup.enter)="getWeatherWithCityName($event.target.value)">
+            (keyup.enter)="onSetting('cityName', $event.target.value)">
+        <div class="setting-item-message" *ngIf="settingMessages.weather">{{ settingMessages.weather }}</div>
     </div>
 </div>
 <div class="setting" [class.active]="active === 'mainBlock'">
@@ -162,7 +166,7 @@
     </div>
     <div class="setting-item">
         <span>Restore default top sites</span>
-        <button class="btn" (click)="onSetting('resetTopSites', true, true)">Reset</button>
+        <button class="btn" (click)="resetSetting('resetTopSites', true)">Reset</button>
     </div>
 </div>
 <div class="setting" [class.active]="active === 'pomodoro'">

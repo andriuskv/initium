@@ -9,14 +9,18 @@ import { dispatchCustomEvent } from "../../utils/utils";
 export class Settings {
     logginInToDropbox: boolean = false;
     active: string = "general";
+    settingMessages: any = {};
     settings: any;
 
     constructor(private settingService: SettingService) {
-        this.settingService = settingService;
         this.settings = this.settingService.getSettings();
     }
 
     ngOnInit() {
+        this.settingService.subscribeToMessageChanges(message => {
+            this.settingMessages = { ...this.settingMessages, ...message };
+        });
+
         window.addEventListener("dropbox-window-closed", () => {
             this.logginInToDropbox = false;
         });
@@ -26,12 +30,20 @@ export class Settings {
         this.active = tab;
     }
 
-    onSetting(settingName, value, dontSave = false) {
+    onSetting(settingName, value) {
         this.settings = this.settingService.updateSetting({
             [this.active]: {
                 [settingName]: value
             }
-        }, dontSave);
+        });
+    }
+
+    resetSetting(settingName, value) {
+        this.settingService.announceSettingChange({
+            [this.active]: {
+                [settingName]: value
+            }
+        });
     }
 
     toggleSettingCheckbox(settingName) {
@@ -48,12 +60,6 @@ export class Settings {
         const { units } = this.settings[this.active];
 
         this.onSetting("units", units === "C" ? "F" : "C");
-    }
-
-    getWeatherWithCityName(value) {
-        if (value !== this.settings.weather.cityName) {
-            this.onSetting("cityName", value);
-        }
     }
 
     setPomodoroDuration({ target }, setting) {

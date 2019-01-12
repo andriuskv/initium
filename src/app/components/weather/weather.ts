@@ -39,7 +39,7 @@ export class Weather {
         if (!disabled) {
             this.scheduleWeatherUpdate();
         }
-        this.settingService.subscribeToChanges(this.changeHandler.bind(this));
+        this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
     }
 
     changeHandler({ weather }) {
@@ -83,10 +83,14 @@ export class Weather {
         try {
             const data = await this.weatherService.getWeather(this.cityName);
 
-            this.displayWeather(data);
+            if (data) {
+                this.displayWeather(data);
+                this.settingService.updateMessage({ weather: "" });
+            }
         }
         catch (e) {
             console.log(e);
+            this.settingService.updateMessage({ weather: e.message });
         }
         finally {
             this.scheduleWeatherUpdate(960000);
