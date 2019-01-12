@@ -45,7 +45,7 @@ export class Time {
         this.disabled = disabled;
         this.dateHidden = dateHidden;
         this.format = format;
-        this.settingService.subscribeToChanges(this.changeHandler.bind(this));
+        this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
     }
 
     changeHandler({ time }) {

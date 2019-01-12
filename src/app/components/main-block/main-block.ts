@@ -33,7 +33,7 @@ export class MainBlock {
         this.tab = typeof tab === "string" ? tab : "topSites";
         this.isNavHidden = isNavHidden;
         this.isTabExpandable = this.tab && this.tab !== "topSites";
-        this.settingService.subscribeToChanges(this.changeHandler.bind(this));
+        this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
     }
 
     changeHandler({ mainBlock }) {

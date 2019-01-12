@@ -24,7 +24,7 @@ export class TopSites {
         const topSites = JSON.parse(localStorage.getItem("top sites"));
         const { showingOneRow } = this.settingService.getSetting("mainBlock");
 
-        this.settingService.subscribeToChanges(this.changeHandler.bind(this));
+        this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
 
         if (!showingOneRow) {
             this.visibleSiteCount = 8;

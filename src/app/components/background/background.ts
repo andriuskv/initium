@@ -16,7 +16,7 @@ export class Background {
         const { url } = this.settingService.getSetting("background");
 
         this.setBackground(url);
-        this.settingService.subscribeToChanges(({ background }) => {
+        this.settingService.subscribeToSettingChanges(({ background }) => {
             if (background) {
                 this.setBackground(background.url);
             }
