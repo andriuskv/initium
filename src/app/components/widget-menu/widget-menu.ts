@@ -15,17 +15,6 @@ export class WidgetMenu {
 
     constructor(private zIndexService: ZIndexService) {}
 
-    ngOnInit() {
-        window.addEventListener("dropbox", (event: CustomEvent) => {
-            if (event.detail.loggedIn) {
-                this.showItem("dropbox");
-            }
-            else {
-                this.showItem("settings");
-            }
-        });
-    }
-
     toggleUpperBlock() {
         this.toggle.emit("upper");
     }
@@ -36,10 +25,6 @@ export class WidgetMenu {
     }
 
     hideItem() {
-        if (this.item.id === "dropbox") {
-            this.showItem("settings");
-            return;
-        }
         this.isClosing = true;
 
         setTimeout(() => {

@@ -1,43 +1,15 @@
-import { Component } from "@angular/core";
+import { Component, Output, EventEmitter } from "@angular/core";
 import { SettingService } from "../../services/settingService";
-import { dispatchCustomEvent } from "../../utils/utils";
 
 @Component({
     selector: "dropbox",
-    template: `
-        <div class="dropbox-header">
-            <button class="btn-secondary btn-secondary-alt"
-                *ngIf="activeDir.path && activeDir.path !== '/'"
-                (click)="goBack(activeDir)" title="Back">
-                <svg viewBox="0 0 24 24">
-                    <use href="#chevron-left"></use>
-                </svg>
-            </button>
-            <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
-            <button class="btn-secondary btn-secondary-alt" title="Log out" (click)="logout()">
-                <svg viewBox="0 0 24 24">
-                    <use href="#logout"></use>
-                </svg>
-            </button>
-        </div>
-        <ul class="dropbox-items">
-            <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
-                <img src="{{ item.thumbnail }}" *ngIf="item.thumbnail; else elseBlock">
-                <ng-template #elseBlock>
-                    <svg viewBox="0 0 24 24">
-                        <use attr.href="#{{ item.icon }}"></use>
-                    </svg>
-                </ng-template>
-                <span class="dropbox-item-name">{{ item.name }}</span>
-                <img src="./assets/images/ring.svg" class="dropbox-spinner" *ngIf="item.fetching" alt="">
-                <span class="dropbox-item-error" *ngIf="item.error">Not an image</span>
-            </li>
-        </ul>
-    `
+    templateUrl: "./dropbox.html"
 })
-export class DropboxComp {
+export class Dropbox {
+    @Output() sessionEnded = new EventEmitter();
+
     dropbox: any;
-    activeDir: any = {};
+    activeDir: any = null;
     rootDir: object = {
         name: "Root",
         isDir: true,
@@ -45,26 +17,21 @@ export class DropboxComp {
         pathForDisplay: "/",
         items: []
     };
-    dropboxContents: any;
+    dropboxContents: any = JSON.parse(localStorage.getItem("dropbox")) || this.rootDir;
 
-    constructor(private settingService: SettingService) {
-        this.settingService = settingService;
-        this.dropboxContents = JSON.parse(localStorage.getItem("dropbox")) || this.rootDir;
-    }
+    constructor(private settingService: SettingService) {}
 
-    ngOnInit() {
-        window.addEventListener("dropbox-login", async () => {
-            const { Dropbox }: any = await import("dropbox");
-            const token = localStorage.getItem("dropbox token");
-            this.dropbox = new Dropbox({ clientId: process.env.DROPBOX_API_KEY, fetch });
+    async ngOnInit() {
+        const { Dropbox }: any = await import("dropbox");
+        const token = localStorage.getItem("dropbox token");
+        this.dropbox = new Dropbox({ clientId: process.env.DROPBOX_API_KEY, fetch });
 
-            if (token) {
-                this.init(token);
-            }
-            else {
-                this.login();
-            }
-        });
+        if (token) {
+            this.init(token);
+        }
+        else {
+            this.login();
+        }
     }
 
     init(token) {
@@ -72,13 +39,9 @@ export class DropboxComp {
 
         if (this.dropboxContents.cached) {
             this.activeDir = this.dropboxContents;
-
-            dispatchCustomEvent("dropbox", {
-                loggedIn: true
-            });
         }
         else {
-            this.fetchRootDir();
+            this.fetchDir(this.dropboxContents);
         }
     }
 
@@ -94,7 +57,7 @@ export class DropboxComp {
                     localStorage.setItem("dropbox token", authWindow.token);
                 }
                 else {
-                    dispatchCustomEvent("dropbox-window-closed");
+                    this.sessionEnded.emit();
                 }
             }
         }, 800);
@@ -105,12 +68,8 @@ export class DropboxComp {
         this.dropbox.setAccessToken("");
         localStorage.removeItem("dropbox");
         localStorage.removeItem("dropbox token");
-        this.dropboxContents = this.rootDir;
-        this.activeDir = {};
 
-        dispatchCustomEvent("dropbox", {
-            loggedIn: false
-        });
+        this.sessionEnded.emit();
 
         this.deleteServiceWorkerCache();
     }
@@ -164,8 +123,8 @@ export class DropboxComp {
         return this.getDir(dir.items, dirNames);
     }
 
-    goBack(currentDir) {
-        const dirNames = currentDir.path.split("/").slice(1);
+    goBack() {
+        const dirNames = this.activeDir.path.split("/").slice(1);
 
         if (dirNames.length === 1) {
             this.activeDir = this.dropboxContents;
@@ -174,14 +133,6 @@ export class DropboxComp {
             dirNames.pop();
             this.activeDir = this.getDir(this.dropboxContents.items, dirNames);
         }
-    }
-
-    fetchRootDir() {
-        this.fetchDir(this.dropboxContents).then(() => {
-            dispatchCustomEvent("dropbox", {
-                loggedIn: true
-            });
-        });
     }
 
     fetchDir(dir) {
@@ -208,7 +159,7 @@ export class DropboxComp {
                     if (this.isImage(entry.name)) {
                         this.getThumbnail(newEntry.path).then(thumbnail => {
                             newEntry.thumbnail = thumbnail;
-                            localStorage.setItem("dropbox", JSON.stringify(this.dropboxContents));
+                            this.saveDropbox();
                         });
                     }
                 }
@@ -217,7 +168,7 @@ export class DropboxComp {
             this.activeDir = dir;
             dir.cached = true;
             dir.fetching = false;
-            localStorage.setItem("dropbox", JSON.stringify(this.dropboxContents));
+            this.saveDropbox();
         })
         .catch(error => {
             console.log(error);
@@ -225,17 +176,11 @@ export class DropboxComp {
     }
 
     isImage(name) {
-        name = name.toLowerCase();
-        return name.endsWith("jpg") || name.endsWith("jpeg") || name.endsWith("png")
-            || name.endsWith("gif") || name.endsWith("bmp");
+        return /(\.jpe?g|\.png|\.gif|\.bmp)$/i.test(name);
     }
 
-    parseImageUrl(image) {
-        const url = image.url.split("");
-
-        // replace dl value from 0 to 1 so that image could be displayed
-        url[url.length - 1] = "1";
-        return url.join("");
+    makeImageDisplayable(image) {
+        return image.url.replace(/0$/, "1");
     }
 
     setBackground(url) {
@@ -254,18 +199,18 @@ export class DropboxComp {
         this.dropbox.sharingGetSharedLinks({ path: item.path }).then(res => {
             const image = res.links.find(link => link.path.includes(item.name));
 
-            if (!image) {
-                return this.dropbox.sharingCreateSharedLinkWithSettings({ path: item.path })
-                .then(res => this.parseImageUrl(res));
+            if (image) {
+                return this.makeImageDisplayable(image);
             }
-            return this.parseImageUrl(image);
+            return this.dropbox.sharingCreateSharedLinkWithSettings({ path: item.path })
+                .then(this.makeImageDisplayable);
         })
         .then(url => {
             item.url = url;
             item.fetching = false;
 
             this.setBackground(url);
-            localStorage.setItem("dropbox", JSON.stringify(this.dropboxContents));
+            this.saveDropbox();
         })
         .catch(error => {
             console.log(error);
@@ -297,5 +242,9 @@ export class DropboxComp {
         if (!item.fetching) {
             this.fetchDir(item);
         }
+    }
+
+    saveDropbox() {
+        localStorage.setItem("dropbox", JSON.stringify(this.dropboxContents));
     }
 }

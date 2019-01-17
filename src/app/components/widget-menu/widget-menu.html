@@ -15,7 +15,6 @@
     <div class="menu-transition-target">
         <google-apps *ngIf="item.id === 'google-apps'"></google-apps>
         <settings class="settings-container" *ngIf="item.id === 'settings'"></settings>
-        <dropbox class="dropbox-container" [class.visible]="item.id === 'dropbox'"></dropbox>
         <calendar class="calendar-container" [class.visible]="item.id === 'calendar'"
             [isHidden]="!item.id"
             (reminderIndicatorVisible)="showReminderIndicator($event)">

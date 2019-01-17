@@ -21,7 +21,7 @@ import { Timer } from "./components/timer/timer";
 import { Stopwatch } from "./components/stopwatch/stopwatch";
 import { Pomodoro } from "./components/pomodoro/pomodoro";
 import { Settings } from "./components/settings/settings";
-import { DropboxComp } from "./components/dropbox/dropbox";
+import { Dropbox } from "./components/dropbox/dropbox";
 import { Calendar } from "./components/calendar/calendar";
 import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar-selected-day";
 import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-viewer";
@@ -32,7 +32,7 @@ import { GoogleApps } from "./components/google-apps/google-apps";
     declarations: [
         App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
-        CalendarSelectedDay, DropboxComp, TweetImageViewer, GoogleApps,
+        CalendarSelectedDay, Dropbox, TweetImageViewer, GoogleApps,
         SlicePipe, PadTimePipe, SafeStylePipe
     ],
     bootstrap: [App]

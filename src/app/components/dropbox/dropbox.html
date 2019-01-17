@@ -1,0 +1,36 @@
+<ng-container *ngIf="activeDir; else elseBlock">
+    <div class="dropbox-header">
+        <button class="btn-secondary btn-secondary-alt"
+            *ngIf="activeDir.path && activeDir.path !== '/'"
+            (click)="goBack()" title="Back">
+            <svg viewBox="0 0 24 24">
+                <use href="#chevron-left"></use>
+            </svg>
+        </button>
+        <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
+        <button class="btn-secondary btn-secondary-alt" title="Log out" (click)="logout()">
+            <svg viewBox="0 0 24 24">
+                <use href="#logout"></use>
+            </svg>
+        </button>
+    </div>
+    <ul class="dropbox-items" *ngIf="activeDir.items.length; else elseBlock">
+        <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
+            <img src="{{ item.thumbnail }}" *ngIf="item.thumbnail; else elseBlock">
+            <ng-template #elseBlock>
+                <svg viewBox="0 0 24 24">
+                    <use attr.href="#{{ item.icon }}"></use>
+                </svg>
+            </ng-template>
+            <span class="dropbox-item-name">{{ item.name }}</span>
+            <img src="./assets/images/ring.svg" class="dropbox-item-spinner" *ngIf="item.fetching" alt="">
+            <span class="dropbox-item-error" *ngIf="item.error">Not an image</span>
+        </li>
+    </ul>
+    <ng-template #elseBlock>
+        <div class="dropbox-directory-message">Folder is empty</div>
+    </ng-template>
+</ng-container>
+<ng-template #elseBlock>
+    <img src="./assets/images/ring.svg" class="dropbox-init-spinner" alt="">
+</ng-template>
