@@ -24,8 +24,8 @@
             (click)="setActiveTab('pomodoro')">Pomodoro</button>
     </li>
 </ul>
-<div class="setting" [class.active]="active === 'general'">
-    <div class="setting-item">
+<div class="setting-tab" *ngIf="active === 'general'">
+    <div class="setting">
         <span>Disable notifications</span>
         <div role="checkbox" class="checkbox" tabindex="0"
             [class.checked]="settings.general.notificationsDisabled"
@@ -37,7 +37,7 @@
             </svg>
         </div>
     </div>
-    <div class="setting-item" [class.disabled]="settings.general.notificationsDisabled">
+    <div class="setting" [class.disabled]="settings.general.notificationsDisabled">
         <span>Don't focus tab on notification click</span>
         <div role="checkbox" class="checkbox" tabindex="0"
             [class.checked]="settings.general.notificationFocusDisabled"
@@ -50,8 +50,8 @@
         </div>
     </div>
 </div>
-<div class="setting" [class.active]="active === 'time'">
-    <div class="setting-item">
+<div class="setting-tab" *ngIf="active === 'time'">
+    <div class="setting">
         <span id="time-setting-label-1">Disable time</span>
         <div role="checkbox" class="checkbox" tabindex="0"
             [class.checked]="settings.time.disabled"
@@ -64,7 +64,7 @@
             </svg>
         </div>
     </div>
-    <div class="setting-item" [class.disabled]="settings.time.disabled">
+    <div class="setting" [class.disabled]="settings.time.disabled">
         <span id="time-setting-label-2">Hide date</span>
         <div role="checkbox" class="checkbox" tabindex="0"
             [class.checked]="settings.time.dateHidden"
@@ -77,7 +77,7 @@
             </svg>
         </div>
     </div>
-    <div class="setting-item">
+    <div class="setting">
         <span id="time-setting-label-3">Time display format</span>
         <div class="toggle" tabindex="0"
             [class.checked]="settings.time.format === 24"
@@ -89,22 +89,31 @@
         </div>
     </div>
 </div>
-<div class="setting" [class.active]="active === 'background'">
-    <div class="setting-item">
+<div class="setting-tab" *ngIf="active === 'background'">
+    <div class="setting">
         <span>Reset background</span>
-        <button class="btn" (click)="resetSetting('url', '')">Reset</button>
+        <button class="btn" (click)="setSetting({ url: '' })">Reset</button>
     </div>
-    <div class="setting-item">
-        <button class="btn-secondary settings-dropbox-btn" [disabled]="logginInToDropbox" (click)="loginToDropbox()">
-            <svg viewBox="0 0 24 24">
-                <use href="#dropbox"></use>
-            </svg>
-            <span>Dropbox</span>
-        </button>
+    <div class="setting setting-background">
+        <div class="setting-background-title">Set background from...</div>
+        <div class="setting-background-items">
+            <div class="setting-background-item">
+                <button class="btn-secondary btn-secondary-alt setting-background-item-btn"
+                    (click)="setActiveTab('dropbox')">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#dropbox"></use>
+                    </svg>
+                    <span>Dropbox</span>
+                </button>
+            </div>
+            <div class="setting-background-item">
+                <button class="btn-secondary btn-secondary-alt setting-background-item-btn" (click)="showBackgroundForm()">URL</button>
+            </div>
+        </div>
     </div>
 </div>
-<div class="setting" [class.active]="active === 'weather'">
-    <div class="setting-item">
+<div class="setting-tab" *ngIf="active === 'weather'">
+    <div class="setting">
         <span id="weather-setting-label-1">Disable weather</span>
         <div role="checkbox" class="checkbox" tabindex="0"
             [class.checked]="settings.weather.disabled"
@@ -117,7 +126,7 @@
             </svg>
         </div>
     </div>
-    <div class="setting-item" [class.disabled]="settings.weather.disabled">
+    <div class="setting" [class.disabled]="settings.weather.disabled">
         <span id="weather-setting-label-2">Temperature units</span>
         <div class="toggle" tabindex="0"
             [class.checked]="settings.weather.units === 'F'"
@@ -128,19 +137,19 @@
             <div>°F</div>
         </div>
     </div>
-    <div class="setting-item" [class.disabled]="settings.weather.disabled">
+    <div class="setting" [class.disabled]="settings.weather.disabled">
         <div>
             <div>City name (and country code)</div>
-            <div class="setting-item-add-desc">Uses geolocation when input is empty</div>
+            <div class="setting-add-desc">Uses geolocation when input is empty</div>
         </div>
         <input type="text" class="input setting-input" placeholder="Paris,fr"
             [value]="settings.weather.cityName"
-            (keyup.enter)="onSetting('cityName', $event.target.value)">
-        <div class="setting-item-message" *ngIf="settingMessages.weather">{{ settingMessages.weather }}</div>
+            (keyup.enter)="setSetting({ cityName: $event.target.value })">
+        <div class="setting-message" *ngIf="settingMessages.weather">{{ settingMessages.weather }}</div>
     </div>
 </div>
-<div class="setting" [class.active]="active === 'mainBlock'">
-    <div class="setting-item">
+<div class="setting-tab" *ngIf="active === 'mainBlock'">
+    <div class="setting">
         <span>Hide item bar</span>
         <div role="checkbox" class="checkbox" tabindex="0"
             [class.checked]="settings.mainBlock.isNavHidden"
@@ -152,7 +161,7 @@
             </svg>
         </div>
     </div>
-    <div class="setting-item">
+    <div class="setting">
         <span>Show one row of top sites</span>
         <div role="checkbox" class="checkbox" tabindex="0"
             [class.checked]="settings.mainBlock.showingOneRow"
@@ -164,37 +173,48 @@
             </svg>
         </div>
     </div>
-    <div class="setting-item">
+    <div class="setting">
         <span>Restore default top sites</span>
-        <button class="btn" (click)="resetSetting('resetTopSites', true)">Reset</button>
+        <button class="btn" (click)="resetSetting({ resetTopSites: true })">Reset</button>
     </div>
 </div>
-<div class="setting" [class.active]="active === 'pomodoro'">
-    <div class="setting-item">
+<div class="setting-tab" *ngIf="active === 'pomodoro'">
+    <div class="setting">
         <div>
             <div>Pomodoro duration</div>
-            <div class="setting-item-add-desc">In minutes</div>
+            <div class="setting-add-desc">In minutes</div>
         </div>
         <input type="number" class="input setting-input" min="1"
             [value]="settings.pomodoro.duration"
             (change)="setPomodoroDuration($event, 'duration')">
     </div>
-    <div class="setting-item">
+    <div class="setting">
         <div>
             <div>Short break duration</div>
-            <div class="setting-item-add-desc">In minutes</div>
+            <div class="setting-add-desc">In minutes</div>
         </div>
         <input type="number" class="input setting-input" min="1"
             [value]="settings.pomodoro.short"
             (change)="setPomodoroDuration($event, 'short')">
     </div>
-    <div class="setting-item">
+    <div class="setting">
         <div>
             <div>Long break duration</div>
-            <div class="setting-item-add-desc">In minutes</div>
+            <div class="setting-add-desc">In minutes</div>
         </div>
         <input type="number" class="input setting-input" min="1"
             [value]="settings.pomodoro.long"
             (change)="setPomodoroDuration($event, 'long')">
     </div>
 </div>
+<div class="setting-tab setting-tab-form-container"
+    *ngIf="active === 'background-form'">
+    <form (submit)="handleBackgroundFormSubmit($event)">
+        <h3 class="setting-tab-form-title">Set Background</h3>
+        <input type="text" class="input" placeholder="URL">
+        <button class="btn setting-tab-form-submit-btn">Done</button>
+        <div class="setting-tab-form-message" *ngIf="backgroundUrlInvalid">URL does not contain valid image</div>
+    </form>
+</div>
+<dropbox class="setting-tab dropbox-container" *ngIf="active === 'dropbox'"
+    (sessionEnded)="setActiveTab('background')"></dropbox>

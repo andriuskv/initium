@@ -1,12 +1,5 @@
 .dropbox-container {
-    display: none;
-    width: 440px;
-    height: 200px;
-
-    &.visible {
-        display: flex;
-        flex-direction: column;
-    }
+    overflow: hidden;
 }
 
 .dropbox-header {
@@ -44,9 +37,11 @@
 
 .dropbox-item-name {
     margin-left: 4px;
+
+    @include text-truncate;
 }
 
-.dropbox-spinner {
+.dropbox-item-spinner {
     height: 20px;
     margin-left: 4px;
 }
@@ -55,4 +50,13 @@
     position: absolute;
     right: 4px;
     backdrop-filter: blur(1px);
+}
+
+.dropbox-directory-message {
+    margin: auto;
+    font-size: 16px;
+}
+
+.dropbox-init-spinner {
+    margin: auto;
 }

@@ -1,13 +1,12 @@
 import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
-import { dispatchCustomEvent } from "../../utils/utils";
 
 @Component({
     selector: "settings",
     templateUrl: "./settings.html"
 })
 export class Settings {
-    logginInToDropbox: boolean = false;
+    backgroundUrlInvalid: boolean = false;
     active: string = "general";
     settingMessages: any = {};
     settings: any;
@@ -20,60 +19,84 @@ export class Settings {
         this.settingService.subscribeToMessageChanges(message => {
             this.settingMessages = { ...this.settingMessages, ...message };
         });
-
-        window.addEventListener("dropbox-window-closed", () => {
-            this.logginInToDropbox = false;
-        });
     }
 
     setActiveTab(tab) {
         this.active = tab;
     }
 
-    onSetting(settingName, value) {
+    setSetting(setting) {
         this.settings = this.settingService.updateSetting({
-            [this.active]: {
-                [settingName]: value
-            }
+            [this.active]: setting
         });
     }
 
-    resetSetting(settingName, value) {
+    resetSetting(setting) {
         this.settingService.announceSettingChange({
-            [this.active]: {
-                [settingName]: value
-            }
+            [this.active]: setting
         });
     }
 
     toggleSettingCheckbox(settingName) {
-        this.onSetting(settingName, !this.settings[this.active][settingName]);
+        this.setSetting({
+            [settingName]: !this.settings[this.active][settingName]
+        });
     }
 
     toggleTimeFormat() {
         const { format } = this.settings[this.active];
 
-        this.onSetting("format", format === 24 ? 12 : 24);
+        this.setSetting({ format: format === 24 ? 12 : 24 });
     }
 
     toggleTemperatureUnits() {
         const { units } = this.settings[this.active];
 
-        this.onSetting("units", units === "C" ? "F" : "C");
+        this.setSetting({ units: units === "C" ? "F" : "C" });
     }
 
-    setPomodoroDuration({ target }, setting) {
+    setPomodoroDuration({ target }, settingName) {
         let value = parseInt(target.value, 10);
 
         if (!value || value <= 0) {
             value = 1;
             target.value = value;
         }
-        this.onSetting(setting, value);
+        this.setSetting({
+            [settingName]: value
+        });
     }
 
-    loginToDropbox() {
-        this.logginInToDropbox = true;
-        dispatchCustomEvent("dropbox-login");
+    showBackgroundForm() {
+        if (this.backgroundUrlInvalid) {
+            this.backgroundUrlInvalid = false;
+        }
+        this.setActiveTab("background-form");
+    }
+
+    handleBackgroundFormSubmit(event) {
+        const [input] = event.target.elements;
+        const image = new Image();
+
+        if (this.backgroundUrlInvalid) {
+            this.backgroundUrlInvalid = false;
+        }
+        event.preventDefault();
+
+        if (!input.value) {
+            this.setActiveTab("background");
+            this.setSetting({ url: "" });
+        }
+
+        image.onload = () => {
+            this.setActiveTab("background");
+            this.setSetting({ url: input.value });
+        };
+
+        image.onerror = () => {
+            this.backgroundUrlInvalid = true;
+        };
+
+        image.src = input.value;
     }
 }
