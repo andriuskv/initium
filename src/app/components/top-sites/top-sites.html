@@ -5,8 +5,8 @@
         <div class="top-site-form-content">
             <div class="site-thumbnail-container top-site-form-thumbnail">
                 <ng-container *ngIf="formThumbnail; else elseBlock">
-                    <img [src]="formThumbnail" alt="">
-                    <button class="btn-secondary btn-secondary-dim top-site-form-remove-btn"
+                    <img class="site-thumbnail" [src]="formThumbnail.url" [class.favicon]="formThumbnail.isFavicon" alt="">
+                    <button type="button" class="btn-secondary btn-secondary-dim top-site-form-remove-btn"
                         (click)="removeFormThumbnail()" title="Remove">
                         <svg viewBox="0 0 24 24">
                             <use href="#trash"></use>
@@ -44,7 +44,9 @@
                 <a [href]="site.url" [attr.aria-label]="site.title">
                     <div class="site-title">{{ site.title }}</div>
                     <div class="site-thumbnail-container">
-                        <img class="site-thumbnail" [src]="site.image" alt="">
+                        <img alt="" class="site-thumbnail"
+                            [class.favicon]="site.image.isFavicon"
+                            [src]="site.image.url">
                     </div>
                 </a>
                 <button class="btn-secondary remove-site-btn delay-reveal" (click)="removeSite(i)" title="Remove">
