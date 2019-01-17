@@ -56,7 +56,10 @@ export class TopSites {
     getTopSites() {
         chrome.topSites.get(data => {
             this.topSites = data.map((site: any) => {
-                site.image = this.getFavicon(site.url);
+                site.image = {
+                    isFavicon: true,
+                    url: this.getFavicon(site.url)
+                };
                 return site;
             });
             this.updateVisibleSites();
@@ -85,15 +88,15 @@ export class TopSites {
     }
 
     getFavicon(url) {
-        const { origin } = new URL(url);
+        const { href } = new URL(url);
 
-        return this.domSanitizer.bypassSecurityTrustUrl(`chrome://favicon/${origin}`);
+        return this.domSanitizer.bypassSecurityTrustUrl(`chrome://favicon/size/16@2x/${href}`);
     }
 
     resetImages(sites) {
         return sites.map(site => {
-            if (typeof site.image === "object") {
-                site.image = this.getFavicon(site.url);
+            if (site.image.isFavicon) {
+                site.image.url = this.getFavicon(site.url);
             }
             return site;
         });
@@ -132,7 +135,7 @@ export class TopSites {
                     canvas.height = height;
                     canvas.getContext("2d").drawImage(image, 0, 0, width, height);
 
-                    resolve(canvas.toDataURL("image/jpeg"));
+                    resolve(canvas.toDataURL("image/jpeg", 0.72));
                 };
                 image.src = event.target.result;
             };
@@ -151,9 +154,14 @@ export class TopSites {
             this.updateSite(title, url);
         }
         else {
+            const image = this.formThumbnail ? this.formThumbnail : {
+                isFavicon: true,
+                url: this.getFavicon(url)
+            };
+
             this.topSites.push({
                 url,
-                image: this.formThumbnail || this.getFavicon(url),
+                image,
                 title: title || url
             });
         }
@@ -166,8 +174,14 @@ export class TopSites {
         const { index, image: oldImage, title: oldTitle } = this.editedSite;
         let image = oldImage;
 
-        if (this.formThumbnail !== image) {
-            image = this.formThumbnail || this.getFavicon(url);
+        if (this.formThumbnail && !this.formThumbnail.isFavicon) {
+            image = this.formThumbnail;
+        }
+        else {
+            image = {
+                isFavicon: true,
+                url: this.getFavicon(url)
+            };
         }
         this.topSites[index] = {
             url,
@@ -187,7 +201,10 @@ export class TopSites {
     }
 
     async handleFileInputChange({ target }) {
-        this.formThumbnail = await this.processImage(target.files[0]);
+        this.formThumbnail = {
+            isFavicon: false,
+            url: await this.processImage(target.files[0])
+        };
         target.value = "";
     }
 
