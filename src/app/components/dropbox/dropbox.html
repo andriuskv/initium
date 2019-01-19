@@ -1,21 +1,20 @@
-<ng-container *ngIf="activeDir; else elseBlock">
+<ng-container *ngIf="activeFolder; else elseBlock">
     <div class="dropbox-header">
         <button class="btn-secondary btn-secondary-alt"
-            *ngIf="activeDir.path && activeDir.path !== '/'"
-            (click)="goBack()" title="Back">
+            *ngIf="activeFolder.path" (click)="goBack()" title="Back">
             <svg viewBox="0 0 24 24">
                 <use href="#chevron-left"></use>
             </svg>
         </button>
-        <span class="drobox-path">{{ activeDir.pathForDisplay }}</span>
+        <span class="drobox-path">{{ activeFolder.pathForDisplay }}</span>
         <button class="btn-secondary btn-secondary-alt" title="Log out" (click)="logout()">
             <svg viewBox="0 0 24 24">
                 <use href="#logout"></use>
             </svg>
         </button>
     </div>
-    <ul class="dropbox-items" *ngIf="activeDir.items.length; else elseBlock">
-        <li class="dropbox-item" *ngFor="let item of activeDir.items" (click)="selectItem(item)">
+    <ul class="dropbox-items" *ngIf="activeFolder.items.length; else elseBlock">
+        <li class="dropbox-item" *ngFor="let item of activeFolder.items" (click)="selectItem(item)">
             <img src="{{ item.thumbnail }}" *ngIf="item.thumbnail; else elseBlock">
             <ng-template #elseBlock>
                 <svg viewBox="0 0 24 24">
@@ -28,7 +27,7 @@
         </li>
     </ul>
     <ng-template #elseBlock>
-        <div class="dropbox-directory-message">Folder is empty</div>
+        <div class="dropbox-folder-message">Folder is empty</div>
     </ng-template>
 </ng-container>
 <ng-template #elseBlock>
