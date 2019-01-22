@@ -3,6 +3,7 @@
     top: 4px;
     left: 4px;
     padding: 4px 6px;
+    font-weight: bold;
     text-shadow: $text-shadow;
     transition: 0.2s transform;
     transition-delay: 0.2s;
@@ -10,6 +11,10 @@
     &.shifted {
         transform: translate(5px, 5px);
         transition-delay: 0s;
+    }
+
+    &:hover {
+        color: inherit;
     }
 }
 
