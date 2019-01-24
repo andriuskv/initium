@@ -7,7 +7,7 @@
     }
 }
 
-.current-day-reminder-container {
+.calendar-sidebar {
     --initial-width: 220px;
 
     overflow: hidden;
@@ -21,6 +21,7 @@
     &.collapsed {
         width: 33px;
 
+        .calendar-sidebar-date,
         .current-day-reminders {
             opacity: 0.1;
         }
@@ -30,6 +31,26 @@
         margin: 4px;
         flex-shrink: 0;
     }
+}
+
+.calendar-sidebar-date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--initial-width);
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid $primary-border-color;
+    transition: 0.2s opacity;
+}
+
+.calendar-sidebar-date-day {
+    margin-right: 8px;
+    font-size: 48px;
+}
+
+.calendar-sidebar-date-weekday {
+    font-size: 20px;
 }
 
 .current-day-reminders {

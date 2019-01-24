@@ -1,6 +1,12 @@
-<div class="current-day-reminder-container"
-    [class.collapsed]="remindersCollapsed"
+<div class="calendar-sidebar" [class.collapsed]="sidebarCollapsed"
     *ngIf="currentDay.reminders.length">
+    <div class="calendar-sidebar-date">
+        <div class="calendar-sidebar-date-day">{{ currentDay.day }}</div>
+        <div>
+            <div class="calendar-sidebar-date-weekday">{{ currentDay.weekdayName }}</div>
+            <div>{{ currentDay.monthName }} {{ currentDay.year }}</div>
+        </div>
+    </div>
     <ul class="current-day-reminders">
         <li class="current-day-reminder" *ngFor="let reminder of currentDay.reminders"
             [ngStyle]="{ 'border-left-color': reminder.color }">
@@ -8,10 +14,10 @@
             <div class="calendar-reminder-range">{{ reminder.rangeString }}</div>
         </li>
     </ul>
-    <button class="btn-secondary btn-secondary-alt" (click)="changeReminderSize()"
-        [title]="remindersCollapsed ? 'Expand' : 'Collapse'">
+    <button class="btn-secondary btn-secondary-alt" (click)="changeSidebarSize()"
+        [title]="sidebarCollapsed ? 'Expand' : 'Collapse'">
         <svg viewBox="0 0 24 24">
-            <use attr.href="#arrow-expand-{{ remindersCollapsed ? 'left': 'right' }}"></use>
+            <use attr.href="#arrow-expand-{{ sidebarCollapsed ? 'left': 'right' }}"></use>
         </svg>
     </button>
 </div>
