@@ -12,7 +12,7 @@ export class Calendar {
     @Output() reminderIndicatorVisible = new EventEmitter();
 
     initialized: boolean = false;
-    remindersCollapsed: boolean = false;
+    sidebarCollapsed: boolean = false;
     inYearView: boolean = false;
     transitioning: boolean = false;
     transitionOriginX: number = 0;
@@ -84,8 +84,8 @@ export class Calendar {
         this.reminderIndicatorVisible.emit(this.currentDay.reminders.length > 0);
     }
 
-    changeReminderSize() {
-        this.remindersCollapsed = !this.remindersCollapsed;
+    changeSidebarSize() {
+        this.sidebarCollapsed = !this.sidebarCollapsed;
     }
 
     getDay(calendar, { year, month, day }) {
@@ -94,7 +94,10 @@ export class Calendar {
 
     setCurrentDay(calendar, date) {
         const day = this.getDay(calendar, date);
+        const weekday = this.getWeekday(day.year, day.month, day.day);
         day.isCurrentDay = true;
+        day.monthName = this.timeDateService.getMonth(day.month);
+        day.weekdayName = this.timeDateService.getWeekday(weekday);
 
         return day;
     }
@@ -117,10 +120,14 @@ export class Calendar {
         return new Date(year, month + 1, 0).getDate();
     }
 
-    getFirstDayIndex(year, month) {
-        const day = new Date(`${year}-${month + 1}-1`).getDay() - 1;
+    getWeekday(year, month, day) {
+        return new Date(`${year}-${month + 1}-${day}`).getDay();
+    }
 
-        return day === -1 ? 6 : day;
+    getFirstDayIndex(year, month) {
+        const day = this.getWeekday(year, month, 1);
+
+        return day === 0 ? 6 : day - 1;
     }
 
     getYear(year) {
