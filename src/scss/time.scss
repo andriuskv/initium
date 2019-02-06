@@ -21,7 +21,7 @@
 }
 
 .clock {
-    font-size: 8em;
+    font-size: 7.6em;
     line-height: 0.8;
 }
 
@@ -30,13 +30,13 @@
     right: -4px;
     bottom: 0;
     transform: translateX(100%);
-    font-size: 2.2em;
+    font-size: 2em;
     line-height: 1;
 }
 
 .date {
-    margin-top: 4px;
+    margin-top: 8px;
     text-align: right;
-    font-size: 1.125em;
+    letter-spacing: 1px;
     font-weight: bold;
 }

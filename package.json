@@ -11,23 +11,23 @@
     "build": "npm run dist && npm run webpack -- --env.prod && node build.js"
   },
   "dependencies": {
-    "@angular/common": "^7.2.2",
-    "@angular/compiler": "^7.2.2",
-    "@angular/core": "^7.2.2",
-    "@angular/platform-browser": "^7.2.2",
-    "@angular/platform-browser-dynamic": "^7.2.2",
+    "@angular/common": "^7.2.4",
+    "@angular/compiler": "^7.2.4",
+    "@angular/core": "^7.2.4",
+    "@angular/platform-browser": "^7.2.4",
+    "@angular/platform-browser-dynamic": "^7.2.4",
     "core-js": "^2.6.3",
     "dropbox": "^4.0.15",
     "focus-visible": "^4.1.5",
-    "rxjs": "^6.3.3",
+    "rxjs": "^6.4.0",
     "zone.js": "^0.8.29"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "^7.2.2",
-    "@ngtools/webpack": "^7.2.3",
-    "@types/chrome": "^0.0.78",
-    "@types/node": "^10.12.18",
-    "autoprefixer": "^9.4.6",
+    "@angular/compiler-cli": "^7.2.4",
+    "@ngtools/webpack": "^7.3.0",
+    "@types/chrome": "^0.0.79",
+    "@types/node": "^10.12.21",
+    "autoprefixer": "^9.4.7",
     "css-loader": "^2.1.0",
     "cssnano": "^4.1.8",
     "html-webpack-plugin": "^3.2.0",
@@ -37,11 +37,11 @@
     "raw-loader": "^1.0.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
-    "terser-webpack-plugin": "^1.2.1",
+    "terser-webpack-plugin": "^1.2.2",
     "tslint": "^5.12.1",
     "typescript": "3.2.4",
-    "webpack": "^4.29.0",
-    "webpack-cli": "^3.2.1"
+    "webpack": "^4.29.1",
+    "webpack-cli": "^3.2.3"
   },
   "browserslist": [
     "Chrome >= 63"
