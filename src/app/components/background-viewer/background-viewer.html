@@ -1,0 +1,19 @@
+<div class="container background-viewer">
+    <img src="./assets/images/ring.svg" class="background-viewer-spinner" *ngIf="loading" alt="">
+    <div class="background-viewer-image-content" [class.hidden]="loading">
+        <div class="background-viewer-image-container" #containerElement>
+            <img [src]="data.url" class="background-viewer-image" (load)="handleLoad($event)">
+            <div class="background-viewer-area" (mousedown)="handleMouseDown($event)"
+                [ngStyle]="{
+                    'width.px': area.width,
+                    'height.px': area.height,
+                    transform: 'translate(' + area.x + 'px, ' + area.y + 'px)'
+                }"></div>
+        </div>
+        <div class="container background-viewer-bar">
+            <button class="btn" (click)="updateBackgroundPosition()">Save</button>
+            <button class="btn" (click)="resetAreaPosition()">Reset</button>
+            <button class="btn" (click)="closeViewer()">Cancel</button>
+        </div>
+    </div>
+</div>

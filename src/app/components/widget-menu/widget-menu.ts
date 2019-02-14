@@ -7,6 +7,7 @@ import { ZIndexService } from "../../services/zIndexService";
 })
 export class WidgetMenu {
     @Output() toggle = new EventEmitter();
+    @Output() showBackgroundViewer = new EventEmitter();
 
     isClosing: boolean = false;
     reminderInicatorVisible: boolean = false;
@@ -31,6 +32,10 @@ export class WidgetMenu {
             this.item = {};
             this.isClosing = false;
         }, 500);
+    }
+
+    onShowBackgroundViewer(data) {
+        this.showBackgroundViewer.emit(data);
     }
 
     increaseZIndex() {

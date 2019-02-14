@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, Output, EventEmitter } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 
 @Component({
@@ -6,6 +6,8 @@ import { SettingService } from "../../services/settingService";
     templateUrl: "./settings.html"
 })
 export class Settings {
+    @Output() showBackgroundViewer = new EventEmitter();
+
     backgroundUrlInvalid: boolean = false;
     active: string = "general";
     settingMessages: any = {};
@@ -67,6 +69,18 @@ export class Settings {
         });
     }
 
+    openBackgroundViewer() {
+        this.showBackgroundViewer.emit(this.settings.background);
+    }
+
+    updateBackground(url = "") {
+        this.setSetting({
+            url,
+            x: 50,
+            y: 50
+        });
+    }
+
     showBackgroundForm() {
         if (this.backgroundUrlInvalid) {
             this.backgroundUrlInvalid = false;
@@ -85,12 +99,12 @@ export class Settings {
 
         if (!input.value) {
             this.setActiveTab("background");
-            this.setSetting({ url: "" });
+            this.updateBackground();
         }
 
         image.onload = () => {
             this.setActiveTab("background");
-            this.setSetting({ url: input.value });
+            this.updateBackground(input.value);
         };
 
         image.onerror = () => {

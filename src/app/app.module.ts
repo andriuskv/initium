@@ -25,6 +25,7 @@ import { Dropbox } from "./components/dropbox/dropbox";
 import { Calendar } from "./components/calendar/calendar";
 import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar-selected-day";
 import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-viewer";
+import { BackgroundViewer } from "./components/background-viewer/background-viewer";
 import { GoogleApps } from "./components/google-apps/google-apps";
 
 @NgModule({
@@ -32,7 +33,7 @@ import { GoogleApps } from "./components/google-apps/google-apps";
     declarations: [
         App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
-        CalendarSelectedDay, Dropbox, TweetImageViewer, GoogleApps,
+        CalendarSelectedDay, Dropbox, TweetImageViewer, BackgroundViewer, GoogleApps,
         SlicePipe, PadTimePipe, SafeStylePipe
     ],
     bootstrap: [App]
