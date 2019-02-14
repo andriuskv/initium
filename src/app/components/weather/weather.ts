@@ -48,24 +48,24 @@ export class Weather {
         }
         const { disabled, cityName, units } = weather;
 
-        if (typeof disabled === "boolean") {
+        if (units !== this.units) {
+            this.units = units;
+            this.temperature = this.convertTemperature(this.temperature, units);
+        }
+        else if (cityName !== this.cityName) {
+            this.cityName = cityName;
+
+            if (!disabled) {
+                this.getWeather();
+            }
+        }
+        else if (disabled !== this.disabled) {
             this.disabled = disabled;
 
             if (disabled) {
                 clearTimeout(this.timeout);
             }
             else {
-                this.getWeather();
-            }
-        }
-        else if (units) {
-            this.units = units;
-            this.temperature = this.convertTemperature(this.temperature, units);
-        }
-        else if (typeof cityName === "string") {
-            this.cityName = cityName;
-
-            if (!this.disabled) {
                 this.getWeather();
             }
         }

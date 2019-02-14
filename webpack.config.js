@@ -72,6 +72,7 @@ module.exports = function(env = {}) {
                 {
                     test: /\.s?css$/,
                     loaders: [
+                        "to-string-loader",
                         MiniCssExtractPlugin.loader,
                         {
                             loader: "css-loader",

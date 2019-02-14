@@ -37,6 +37,7 @@ export class Calendar {
         this.initTimeSettings();
         this.initCalendar();
         this.initReminders();
+        this.settingService.subscribeToSettingChanges(this.settingChangeHandler.bind(this));
     }
 
     ngOnChanges() {
@@ -425,6 +426,12 @@ export class Calendar {
             if (this.selectedDay) {
                 this.showCalendar();
             }
+        }
+    }
+
+    settingChangeHandler({ time }) {
+        if (time) {
+            this.timeFormat = time.format;
         }
     }
 }

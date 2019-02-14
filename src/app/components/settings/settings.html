@@ -92,10 +92,18 @@
 <div class="setting-tab" *ngIf="active === 'background'">
     <div class="setting">
         <span>Reset background</span>
-        <button class="btn" (click)="setSetting({ url: '' })">Reset</button>
+        <button class="btn" (click)="updateBackground()">Reset</button>
     </div>
     <div class="setting setting-background">
         <div class="setting-background-title">Set background from...</div>
+        <button class="btn-secondary btn-secondary-alt setting-background-viewer-btn"
+            title="Adjust background position"
+            *ngIf="settings.background.url"
+            (click)="openBackgroundViewer()">
+            <svg viewBox="0 0 24 24">
+                <use href="#image"></use>
+            </svg>
+        </button>
         <div class="setting-background-items">
             <div class="setting-background-item">
                 <button class="btn-secondary btn-secondary-alt setting-background-item-btn"

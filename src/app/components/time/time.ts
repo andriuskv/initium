@@ -27,14 +27,14 @@ export class Time {
     constructor(
         private settingService: SettingService,
         private timeDateService: TimeDateService
-    ) {
-        this.timeDateService = timeDateService;
-        this.settingService = settingService;
-    }
+    ) {}
 
     ngOnInit() {
-        const { disabled, dateHidden, format } = this.settingService.getSetting("time");
+        this.init(this.settingService.getSetting("time"));
+        this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
+    }
 
+    init({ disabled, dateHidden, format}) {
         if (!disabled) {
             this.updateTime(format);
 
@@ -43,44 +43,16 @@ export class Time {
             }
         }
         this.disabled = disabled;
-        this.dateHidden = dateHidden;
         this.format = format;
-        this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
+        this.dateHidden = dateHidden;
     }
 
     changeHandler({ time }) {
         if (!time) {
             return;
         }
-        const { disabled, dateHidden, format } = time;
-
-        if (format) {
-            clearTimeout(this.timeout);
-
-            if (!this.disabled) {
-                this.updateTime(format);
-            }
-            this.format = format;
-        }
-        else if (typeof dateHidden === "boolean") {
-            if (!dateHidden && !this.date) {
-                this.setDate();
-            }
-            this.dateHidden = dateHidden;
-        }
-        else if (typeof disabled === "boolean") {
-            if (disabled) {
-                clearTimeout(this.timeout);
-            }
-            else {
-                this.updateTime(this.format);
-
-                if (!this.dateHidden && !this.date) {
-                    this.setDate();
-                }
-            }
-            this.disabled = disabled;
-        }
+        clearTimeout(this.timeout);
+        this.init(time);
     }
 
     setDate() {
