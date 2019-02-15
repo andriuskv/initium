@@ -1,73 +1,26 @@
-import { Component, Input } from "@angular/core";
-import { ZIndexService } from "../../services/zIndexService";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "tweet-image-viewer",
-    template: `
-        <div class="container tweet-image-viewer" *ngIf="images.length" (click)="handleClick($event)" [style.zIndex]="zIndex">
-            <img src="./assets/images/ring.svg" *ngIf="loading" alt="">
-            <div class="viewer-image-container" [class.hidden]="loading">
-                <button class="btn-secondary viewer-direction-btn left"
-                    *ngIf="images.length > 1"
-                    (click)="nextImage(-1)"
-                    aria-label="Previous image">
-                    <svg class="viewer-direction-icon" viewBox="0 0 24 24">
-                        <use href="#chevron-left"></use>
-                    </svg>
-                </button>
-                <img src="{{ images[index].url }}" class="viewer-image" (load)="handleLoad($event)" alt="">
-                <div class="viewer-bottom-bar">
-                    <span *ngIf="images.length > 1">{{ index + 1 }}/{{ images.length }}</span>
-                    <a href="{{ images[index].url }}" class="btn-secondary btn-secondary-alt viewer-open-btn"
-                        title="Open image in new tab" target="_blank">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,
-                            19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z" />
-                        </svg>
-                    </a>
-                </div>
-                <button class="btn-secondary viewer-direction-btn right"
-                    *ngIf="images.length > 1"
-                    (click)="nextImage(1)"
-                    aria-label="Next image">
-                    <svg class="viewer-direction-icon" viewBox="0 0 24 24">
-                        <use href="#chevron-right"></use>
-                    </svg>
-                </button>
-            </div>
-            <button class="btn-secondary btn-secondary-alt viewer-close-btn"
-                (click)="closeViewer()" title="Close">
-                <svg viewBox="0 0 24 24">
-                    <use href="#cross"></use>
-                </svg>
-            </button>
-        </div>
-    `
+    templateUrl: "./tweet-image-viewer.html",
+    styleUrls: ["./tweet-image-viewer.scss"]
 })
 export class TweetImageViewer {
+    @Output() close = new EventEmitter();
     @Input() data;
 
     images: Array<any> = [];
     loading: boolean = true;
-    zIndex: number = 0;
     index: number;
 
-    constructor(private zIndexService: ZIndexService) {
-        this.zIndexService = zIndexService;
-    }
-
-    ngOnChanges() {
-        if (this.data) {
-            this.loading = true;
-            this.zIndex = this.zIndexService.inc();
-            this.index = this.data.startIndex;
-            this.images = this.data.images;
-        }
+    ngOnInit() {
+        this.index = this.data.startIndex;
+        this.images = this.data.images;
     }
 
     handleLoad({ target }) {
         target.style.maxWidth = `${window.innerWidth - 96}px`;
-        target.style.maxHeight = `${window.innerHeight - 44}px`;
+        target.style.maxHeight = `${window.innerHeight - 54}px`;
         this.images[this.index].loaded = true;
 
         setTimeout(() => {
@@ -97,6 +50,6 @@ export class TweetImageViewer {
     }
 
     closeViewer() {
-        this.images.length = 0;
+        this.close.emit();
     }
 }

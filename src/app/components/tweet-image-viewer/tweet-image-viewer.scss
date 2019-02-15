@@ -1,4 +1,7 @@
+@import "../../../scss/variables.scss";
+
 .tweet-image-viewer {
+    z-index: 1000;
     position: absolute;
     top: 0;
     left: 0;
@@ -27,7 +30,7 @@
     position: absolute;
     top: 0;
     width: 50%;
-    height: calc(100% - 24px);
+    height: calc(100% - 38px);
 
     &.left {
         left: 0;
@@ -55,7 +58,8 @@
 .viewer-bottom-bar {
     display: flex;
     align-items: center;
-    padding: 4px 4px 0 4px;
+    margin-top: 4px;
+    padding: 4px 4px 4px 8px;
 }
 
 .viewer-open-btn {
@@ -64,7 +68,10 @@
 
 .viewer-image {
     display: block;
-    border-radius: 4px;
+    padding: 1px;
+    border: 1px solid transparent;
+    background-color: $color-grey-darker-60;
+    box-shadow: inset 0 0 0 1px $container-inset-box-shadow-color;
 }
 
 .viewer-close-btn {
