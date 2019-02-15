@@ -11,13 +11,15 @@ import { Component } from "@angular/core";
         <widget-menu (toggle)="onToggle($event)"
             (showBackgroundViewer)="onShowBackgroundViewer($event)"></widget-menu>
         <upper-block [visible]="toggle.upper" (hide)="onHide($event)"></upper-block>
-        <tweet-image-viewer [data]="imageData"></tweet-image-viewer>
-        <background-viewer *ngIf="backgroundData" [data]="backgroundData" (close)="hideBackgroundViewer($event)"></background-viewer>
+        <tweet-image-viewer *ngIf="tweetImageData" [data]="tweetImageData"
+            (close)="hideTweetImageViewer($event)"></tweet-image-viewer>
+        <background-viewer *ngIf="backgroundData" [data]="backgroundData"
+            (close)="hideBackgroundViewer($event)"></background-viewer>
     `
 })
 export class App {
     toggle: any = {};
-    imageData: any;
+    tweetImageData: any;
     backgroundData: any;
 
     onToggle(whatToToggle) {
@@ -29,7 +31,11 @@ export class App {
     }
 
     onShowViewer(data) {
-        this.imageData = data;
+        this.tweetImageData = data;
+    }
+
+    hideTweetImageViewer() {
+        this.tweetImageData = null;
     }
 
     onShowBackgroundViewer(data) {

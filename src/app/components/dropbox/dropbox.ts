@@ -43,7 +43,7 @@ export class Dropbox {
             return folder;
         }
         for (const item of folder.items) {
-            if (this.getFolder(item, name)) {
+            if (item.isFolder && this.getFolder(item, name)) {
                 return item;
             }
         }

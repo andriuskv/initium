@@ -34,10 +34,6 @@ export class BackgroundViewer {
 
     constructor(private settingService: SettingService) {}
 
-    ngOnInit() {
-        this.loading = true;
-    }
-
     handleLoad({ target }) {
         const { naturalWidth, naturalHeight } = target;
         const { innerWidth, innerHeight } = window;
