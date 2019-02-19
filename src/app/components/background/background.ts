@@ -1,20 +1,27 @@
-import { Component } from "@angular/core";
+import { Component, ElementRef } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "background",
-    template: `
-        <div class="background"
-            [style.background-image]="background"
-            [style.background-position]="x + '% ' + y + '%'"></div>
-    `
+    styles: [`
+        :host {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: 0.2s background-position;
+            transition-delay: 0.2s;
+            filter: brightness(90%);
+        }
+    `],
+    template: ""
 })
 export class Background {
-    background: string = "";
-    x: number = 50;
-    y: number = 50;
-
-    constructor(private settingService: SettingService) {}
+    constructor(private settingService: SettingService, private elRef: ElementRef) {}
 
     ngOnInit() {
         this.setBackground(this.settingService.getSetting("background"));
@@ -26,8 +33,8 @@ export class Background {
     }
 
     setBackground({ url, x, y }) {
-        this.x = x;
-        this.y = y;
-        this.background = `url(${url || "https://source.unsplash.com/collection/825407/daily"})`;
+        const element = this.elRef.nativeElement;
+        element.style.backgroundPosition = `${x}% ${y}%`;
+        element.style.backgroundImage = `url(${url || "https://source.unsplash.com/collection/825407/daily"})`;
     }
 }
