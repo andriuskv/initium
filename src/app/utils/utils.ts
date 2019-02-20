@@ -28,9 +28,22 @@ function getRandomHexColor() {
     return color;
 }
 
+function padTime(time: number, pad: number | boolean = true) {
+    return pad && time < 10 ? `0${time}` : time;
+}
+
+function formatTime(time: number) {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor(time / 60 % 60);
+    const seconds = time % 60;
+
+    return `${hours ? `${hours}:` : ""}${padTime(minutes, hours)}:${padTime(seconds)}`;
+}
+
 export {
     dispatchCustomEvent,
     delay,
     getRandomHslColor,
-    getRandomHexColor
+    getRandomHexColor,
+    formatTime
 };

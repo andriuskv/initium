@@ -25,9 +25,9 @@
   "devDependencies": {
     "@angular/compiler-cli": "^7.2.5",
     "@ngtools/webpack": "^7.3.2",
-    "@types/chrome": "^0.0.80",
+    "@types/chrome": "^0.0.81",
     "@types/node": "^11.9.4",
-    "autoprefixer": "^9.4.7",
+    "autoprefixer": "^9.4.8",
     "css-loader": "^2.1.0",
     "cssnano": "^4.1.10",
     "html-webpack-plugin": "^3.2.0",

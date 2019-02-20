@@ -258,6 +258,17 @@
     transform: translate(-50%, -50%);
 }
 
+.tweet-media-info {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    background-color: $color-grey-dark;
+    font-weight: bold;
+    font-size: 13px;
+}
+
 .tweet-stats-container {
     display: flex;
     align-items: center;

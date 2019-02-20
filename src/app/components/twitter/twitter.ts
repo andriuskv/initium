@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { TwitterService } from "../../services/twitterService";
 import { TimeDateService } from "../../services/timeDateService";
 import { NotificationService } from "../../services/notificationService";
+import { formatTime } from "app/utils/utils";
 
 @Component({
     selector: "twitter",
@@ -175,7 +176,12 @@ export class Twitter {
             }
 
             if (item.type === "video") {
+                const durationInSeconds = Math.round(item.video_info.duration_millis / 1000);
+                const duration = this.formatDuration(durationInSeconds);
+
                 return {
+                    duration,
+                    durationInSeconds,
                     type: item.type,
                     thumbUrl: item.media_url_https,
                     url: item.video_info.variants.find(variant => variant.content_type === "video/mp4").url
@@ -187,6 +193,13 @@ export class Twitter {
                 smallestDimension: this.getSmallestDimension(item.sizes.medium)
             };
         });
+    }
+
+    formatDuration(seconds) {
+        if (!seconds) {
+            return "";
+        }
+        return formatTime(seconds);
     }
 
     getSmallestDimension({ w, h }) {
