@@ -222,10 +222,30 @@ export class Twitter {
             text: this.replaceTweetEntities(tweet.text, entities),
             created: this.getTweetDate(tweet.created_at),
             media: this.getMedia(entities.media),
-            retweetCount: tweet.retweet_count,
-            likeCount: tweet.favorite_count,
+            retweetCount: this.formatCounter(tweet.retweet_count),
+            likeCount: this.formatCounter(tweet.favorite_count),
             retweetedBy: null
         };
+    }
+
+    roundTo(number, places) {
+        return Number(Math.round((number + "e" + places) as any) + "e-" + places);
+    }
+
+    formatCounter(value) {
+        if (value < 1000) {
+            return value;
+        }
+        let divisor = 1e3;
+        let symbol = "K";
+
+        if (value >= 1e6) {
+            divisor = 1e6;
+            symbol = "M";
+        }
+        const roundedValue = this.roundTo(value / divisor, 1).toFixed(1);
+
+        return roundedValue + symbol;
     }
 
     isInsideLinkElement(element) {
