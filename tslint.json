@@ -50,7 +50,7 @@
       "check-open-brace",
       "check-whitespace"
     ],
-    "prefer-const": true,
+    "prefer-const": [true, {"destructuring": "all"}],
     "quotemark": [
       true,
       "double"
