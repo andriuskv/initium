@@ -74,7 +74,7 @@ export class SettingService {
     }
 
     subscribeToSettingChanges(handler) {
-        this.settingSubject.subscribe(handler);
+        return this.settingSubject.subscribe(handler);
     }
 
     subscribeToMessageChanges(handler) {
