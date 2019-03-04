@@ -1,3 +1,6 @@
+@import "../../../scss/mixins.scss";
+@import "../../../scss/variables.scss";
+
 .tasks-component-toggle-btn {
     position: absolute;
     top: 4px;
@@ -20,13 +23,12 @@
 }
 
 .tasks-component {
+    overflow: hidden;
     position: absolute;
     top: 4px;
     left: 4px;
     opacity: 0;
     visibility: hidden;
-    display: flex;
-    flex-direction: column;
     width: 320px;
     height: 440px;
     max-height: calc(100% - 8px);
@@ -72,48 +74,50 @@
     padding-right: 6px;
 }
 
+.task-drag-placeholder {
+    box-shadow: 0 0 0 1px $color-blue;
+}
+
+.cdk-drag-preview {
+    display: none;
+}
+
 .tasks {
     @include scrollbar;
 
     overflow-y: auto;
-    flex-grow: 1;
+    transition: 0.2s opacity, 0.1s height;
+    height: calc(100% - 33px);
+
+    &.dialog-visible {
+        height: calc(100% - 69px);
+    }
 }
 
 .task {
     overflow: hidden;
-    padding-left: 32px;
-    padding-right: 4px;
-
-    &:not(:last-of-type) {
-        border-bottom: 1px solid $primary-border-color;
-    }
+    position: relative;
+    box-shadow: 0 1px 0 0 $primary-border-color;
 
     &.removing {
         animation-duration: 0.2s, 0.4s;
         animation-name: opacity-down, collapse;
         animation-fill-mode: both;
     }
-}
 
-@keyframes collapse {
-    from {
-        max-height: 1000px;
-    }
-    to {
-        max-height: 0;
+    &:hover .task-edit-btn {
+        display: flex;
     }
 }
 
-.task-checkbox {
-    float: left;
-    margin-left: -24px;
-    margin-right: 8px;
+.task-body {
+    padding: 12px 8px;
 }
 
 .task-labels {
     display: flex;
     flex-wrap: wrap;
-    margin-top: 8px;
+    margin: 0 20px 4px 4px;
 }
 
 .task-label {
@@ -127,8 +131,8 @@
 }
 
 .task-label-color {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     margin-right: 4px;
     border-radius: 50%;
 }
@@ -137,16 +141,55 @@
     font-size: 13px;
 }
 
+.task-text-container {
+    display: flex;
+    margin-right: 20px;
+
+    &.has-labels {
+        margin-right: 0;
+    }
+}
+
+.task-checkbox-btn {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    margin-right: 8px;
+    border-radius: 2px;
+    background-color: $input-background-color;
+    cursor: pointer;
+
+    &:hover .task-checkbox-tick {
+        display: block;
+    }
+}
+
+.task-checkbox-tick {
+    display: none;
+    width: 100%;
+    height: 100%;
+    color: $color-blue;
+}
+
 .task-text {
+    flex-grow: 1;
     word-wrap: break-word;
     white-space: pre-wrap;
     word-break: break-word;
-    transition: 0.2s opacity;
+}
 
-    &.completed {
-        opacity: 0.4;
-        text-decoration: line-through;
-    }
+.task-edit-btn {
+    position: absolute;
+    top: 12px;
+    right: 8px;
+    display: none;
+    padding: 0;
+}
+
+.task-edit-btn-icon {
+    width: 16px;
+    height: 16px;
 }
 
 .subtasks {
@@ -155,45 +198,38 @@
 }
 
 .subtask {
+    overflow: hidden;
+
+    &.removing {
+        animation-duration: 0.2s, 0.4s;
+        animation-name: opacity-down, collapse;
+        animation-fill-mode: both;
+    }
+}
+
+.subtask-body {
     display: flex;
     align-items: flex-start;
-    padding-top: 4px;
-
-    &:not(:last-of-type) {
-        padding-bottom: 4px;
-    }
+    padding-top: 8px;
 }
 
-.task-footer {
+.tasks-dialog {
     display: flex;
-    margin-top: 8px;
-    margin-bottom: 4px;
+    align-items: center;
+    padding: 8px;
+    border-top: 1px solid $primary-border-color;
 }
 
-.task-pin-icon {
-    transform: rotate3d(0, 0, 1, -45deg);
-    transition: 0.2s transform;
-
-    &.pinned {
-        transform: none;
-    }
-}
-
-.task-footer-btn {
-    overflow: hidden;
-    padding: 0;
-    margin-right: 8px;
+.tasks-dialog-btn {
+    margin-left: auto;
     font-size: 13px;
-
-    svg {
-        margin-right: 2px;
-    }
+    font-weight: bold;
 }
 
 .task-form-container {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
+    height: calc(100% - 33px);
     padding-top: 8px;
 }
 
@@ -324,4 +360,13 @@
 .task-notice {
     margin: auto;
     font-size: 20px;
+}
+
+@keyframes collapse {
+    from {
+        max-height: 1000px;
+    }
+    to {
+        max-height: 0;
+    }
 }

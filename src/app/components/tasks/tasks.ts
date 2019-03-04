@@ -1,12 +1,11 @@
 import { Component } from "@angular/core";
+import { moveItemInArray } from "@angular/cdk/drag-drop";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { ZIndexService } from "../../services/zIndexService";
 import { getRandomHexColor } from "../../utils/utils";
 
 interface Task {
     text: string;
-    completed?: boolean;
-    pinned?: boolean;
     removing?: boolean;
     subtasks: Subtask[];
     labels?: Label[];
@@ -14,7 +13,7 @@ interface Task {
 
 interface Subtask {
     text: string;
-    completed?: boolean;
+    removing?: boolean;
 }
 
 interface Label {
@@ -25,16 +24,22 @@ interface Label {
 
 @Component({
     selector: "tasks",
-    templateUrl: "./tasks.html"
+    templateUrl: "./tasks.html",
+    styleUrls: ["./tasks.scss"]
 })
 export class Tasks {
     visible: boolean = false;
     makingEdit: boolean = false;
+    dialogVisible: boolean = false;
+    timeout: number = 0;
     zIndex: number = 0;
-    tasks: Task[] = [];
-    temporaryTask: any = null;
     formColor: string = "";
     labelMessage: string = "";
+    tasks: Task[] = [];
+    tasksToRemove: any[] = [];
+    temporaryTask: any = null;
+    oldLabels: Label[] = JSON.parse(localStorage.getItem("old-task-labels")) || [];
+    formLabels: Label[] = [];
 
     constructor(private chromeStorageService: ChromeStorageService, private zIndexService: ZIndexService) {}
 
@@ -59,8 +64,8 @@ export class Tasks {
 
     showForm() {
         this.formColor = getRandomHexColor();
+        this.formLabels = this.getFormLabels();
         this.temporaryTask = {
-            labels: this.getUniqueLabels(),
             text: "",
             subtasks: []
         };
@@ -69,6 +74,7 @@ export class Tasks {
     hideForm() {
         this.temporaryTask = null;
         this.makingEdit = false;
+        this.formLabels.length = 0;
     }
 
     addSubtask() {
@@ -112,46 +118,11 @@ export class Tasks {
             this.tasks[index] = { ...this.tasks[index], ...task };
         }
         else {
-            const { length } = this.tasks.filter(task => task.pinned);
-
-            this.tasks.splice(length, 0, task);
+            this.tasks.unshift(task);
         }
         this.saveTasks();
         this.hideForm();
         event.preventDefault();
-    }
-
-    completeTask(index) {
-        const task = this.tasks[index];
-        task.completed = !task.completed;
-        task.subtasks = this.completeSubtasks(task.subtasks, task.completed);
-
-        if (task.completed && task.pinned) {
-            const newIndex = this.tasks.filter(task => task.pinned).length - 1;
-            task.pinned = false;
-
-            if (index !== newIndex) {
-                this.tasks.splice(index, 1);
-                this.tasks.splice(newIndex, 0, task);
-            }
-        }
-        this.saveTasks();
-    }
-
-    pinTask(index) {
-        const task = this.tasks[index];
-        let { length } = this.tasks.filter(task => task.pinned);
-        task.pinned = !task.pinned;
-
-        if (!task.pinned) {
-            length -= 1;
-        }
-
-        if (index !== length) {
-            this.tasks.splice(index, 1);
-            this.tasks.splice(length, 0, task);
-        }
-        this.saveTasks();
     }
 
     editTask(index) {
@@ -159,9 +130,9 @@ export class Tasks {
 
         this.makingEdit = true;
         this.formColor = getRandomHexColor();
+        this.formLabels = this.getFormLabels(index);
         this.temporaryTask = {
             index,
-            labels: this.getUniqueLabels(index),
             text,
             subtasks: [...subtasks]
         };
@@ -171,21 +142,69 @@ export class Tasks {
         this.tasks[index].removing = true;
 
         window.setTimeout(() => {
-            this.tasks.splice(index, 1);
-            this.saveTasks();
+            this.scheduleTaskRemoval(index);
         }, 400);
     }
 
-    completeSubtasks(tasks, completed) {
-        return tasks.map(task => {
-            task.completed = completed;
-            return task;
-        });
+    removeSubtask(taskIndex, subtaskIndex) {
+        this.tasks[taskIndex].subtasks[subtaskIndex].removing = true;
+
+        window.setTimeout(() => {
+            this.scheduleTaskRemoval(taskIndex, subtaskIndex);
+        }, 400);
     }
 
-    comepleteSubtask(task) {
-        task.completed = !task.completed;
+    scheduleTaskRemoval(taskIndex, subtaskIndex = -1) {
+        this.dialogVisible = true;
+        this.tasksToRemove.push({ taskIndex, subtaskIndex });
+        clearTimeout(this.timeout);
+
+        this.timeout = window.setTimeout(() => {
+            this.removeCompletedTasks();
+        }, 8000);
+    }
+
+    removeCompletedTasks() {
+        this.tasksToRemove.length = 0;
+        this.tasks = this.tasks.filter(task => {
+            task.subtasks = task.subtasks.filter(subtask => !subtask.removing);
+            return !task.removing;
+        });
         this.saveTasks();
+        window.setTimeout(() => {
+            this.dialogVisible = false;
+        }, 200);
+    }
+
+    undoTaskRemoval() {
+        clearTimeout(this.timeout);
+
+        for (const { taskIndex, subtaskIndex } of this.tasksToRemove) {
+            const task = this.tasks[taskIndex];
+
+            if (subtaskIndex >= 0) {
+                delete task.subtasks[subtaskIndex].removing;
+            }
+            else {
+                delete task.removing;
+            }
+        }
+        this.tasksToRemove.length = 0;
+        window.setTimeout(() => {
+            this.dialogVisible = false;
+        }, 200);
+    }
+
+    getFormLabels(index = -1) {
+        const taskLabels = this.getUniqueTaskLabels(index);
+        const labels = this.oldLabels.reduce((labels, label) => {
+            if (!this.findLabel(taskLabels, label)) {
+                labels.push(label);
+            }
+            return labels;
+        }, []);
+
+        return [...taskLabels, ...labels];
     }
 
     findLabel(labels, { title, color }) {
@@ -193,7 +212,7 @@ export class Tasks {
     }
 
     getFlaggedLabels() {
-        return this.temporaryTask.labels.reduce((labels, label) => {
+        return this.formLabels.reduce((labels, label) => {
             if (label.flagged) {
                 delete label.flagged;
                 labels.push(label);
@@ -202,7 +221,7 @@ export class Tasks {
         }, []);
     }
 
-    getUniqueLabels(taskIndex = -1) {
+    getUniqueTaskLabels(taskIndex = -1) {
         return this.tasks.reduce((labels, task, index) => {
             if (task.labels) {
                 task.labels.forEach(label => {
@@ -224,7 +243,7 @@ export class Tasks {
         const { elements } = event.target;
         const title = elements.title.value;
         const color = elements.color.value;
-        const label = this.findLabel(this.temporaryTask.labels, { title, color });
+        const label = this.findLabel(this.formLabels, { title, color });
 
         if (label) {
             this.labelMessage = "Label with current title and color combination already exists";
@@ -234,9 +253,14 @@ export class Tasks {
             }, 4000);
         }
         else if (title && color) {
-            this.temporaryTask.labels.push({ title, color, flagged: true });
+            if (this.oldLabels.length > 4) {
+                this.oldLabels.shift();
+            }
+            this.oldLabels.push({ title, color });
+            this.formLabels.push({ title, color, flagged: true });
             this.formColor = getRandomHexColor();
             elements.title.value = "";
+            localStorage.setItem("old-task-labels", JSON.stringify(this.oldLabels));
         }
         event.preventDefault();
     }
@@ -255,5 +279,9 @@ export class Tasks {
 
     saveTasks() {
         this.chromeStorageService.set({ tasks: this.tasks });
+    }
+
+    drop({ currentIndex, previousIndex }) {
+        moveItemInArray(this.tasks, previousIndex, currentIndex);
     }
 }

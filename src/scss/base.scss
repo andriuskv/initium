@@ -182,9 +182,6 @@ textarea {
 
     &.checked .checkbox-tick {
         display: block;
-        animation-name: scale-up;
-        animation-duration: 0.2s;
-        animation-fill-mode: forwards;
     }
 }
 
@@ -194,6 +191,9 @@ textarea {
     height: 100%;
     color: $color-blue;
     transform: scale(0);
+    animation-name: scale-up;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
 }
 
 .radio {

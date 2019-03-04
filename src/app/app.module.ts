@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 import { SlicePipe } from "./pipes/slicePipe";
 import { PadTimePipe } from "./pipes/padTimePipe";
@@ -29,7 +30,7 @@ import { BackgroundViewer } from "./components/background-viewer/background-view
 import { GoogleApps } from "./components/google-apps/google-apps";
 
 @NgModule({
-    imports: [BrowserModule],
+    imports: [BrowserModule, DragDropModule],
     declarations: [
         App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
