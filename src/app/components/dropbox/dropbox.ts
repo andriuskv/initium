@@ -11,6 +11,7 @@ export class Dropbox {
 
     activeFolder: any = null;
     dropboxFolder: any = null;
+    subscriber: any = null;
 
     constructor(
         private dropboxService: DropboxService,
@@ -18,6 +19,7 @@ export class Dropbox {
 
     async ngOnInit() {
         this.dropboxFolder = this.dropboxService.getDropbox();
+        this.subscriber = this.settingService.subscribeToSettingChanges(this.settingChangeHandler.bind(this));
 
         try {
             await this.dropboxService.init();
@@ -96,5 +98,12 @@ export class Dropbox {
 
     saveDropbox() {
         this.dropboxService.saveDropbox(this.dropboxFolder);
+    }
+
+    settingChangeHandler({ background }) {
+        if (background && !background.url.includes("dropbox.com")) {
+            this.dropboxService.deleteServiceWorkerCache();
+            this.subscriber.unsubscribe();
+        }
     }
 }
