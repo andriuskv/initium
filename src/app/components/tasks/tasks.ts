@@ -30,9 +30,9 @@ interface Label {
 export class Tasks {
     visible: boolean = false;
     makingEdit: boolean = false;
-    dialogVisible: boolean = false;
     timeout: number = 0;
     zIndex: number = 0;
+    removedTaskCount: number = 0;
     formColor: string = "";
     labelMessage: string = "";
     tasks: Task[] = [];
@@ -155,7 +155,7 @@ export class Tasks {
     }
 
     scheduleTaskRemoval(taskIndex, subtaskIndex = -1) {
-        this.dialogVisible = true;
+        this.removedTaskCount += 1;
         this.tasksToRemove.push({ taskIndex, subtaskIndex });
         clearTimeout(this.timeout);
 
@@ -172,7 +172,7 @@ export class Tasks {
         });
         this.saveTasks();
         window.setTimeout(() => {
-            this.dialogVisible = false;
+            this.removedTaskCount = 0;
         }, 200);
     }
 
@@ -191,7 +191,7 @@ export class Tasks {
         }
         this.tasksToRemove.length = 0;
         window.setTimeout(() => {
-            this.dialogVisible = false;
+            this.removedTaskCount = 0;
         }, 200);
     }
 

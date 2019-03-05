@@ -115,8 +115,8 @@
                 </div>
             </li>
         </ul>
-        <div class="tasks-dialog" *ngIf="dialogVisible">
-            <span>{{ tasksToRemove.length }} removed</span>
+        <div class="tasks-dialog" *ngIf="removedTaskCount">
+            <span>Removing <span class="tasks-dialog-task-count">{{ removedTaskCount }}</span> task{{ removedTaskCount > 1 ? "s" : "" }}</span>
             <button class="btn-secondary tasks-dialog-btn" (click)="undoTaskRemoval()">UNDO</button>
         </div>
     </ng-template>
