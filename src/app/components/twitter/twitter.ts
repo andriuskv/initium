@@ -331,16 +331,17 @@ export class Twitter {
         const response = await this.twitterService.getTimeline();
 
         if (response && response.tweets) {
-            this.tweets = this.parseTweets(response.tweets);
+            const { tweets } = response;
+            this.tweets = this.parseTweets(tweets);
 
-            this.scheduleTimelineUpdate(response.tweets[0].id);
+            this.scheduleTimelineUpdate(tweets[tweets.length - 1].id);
             this.updateTweetTime();
         }
     }
 
-    scheduleTimelineUpdate(latestTweetId) {
+    scheduleTimelineUpdate(tweetId) {
         this.tweetUpdateTimeout = window.setTimeout(() => {
-            this.fetchNewTimeline(latestTweetId);
+            this.fetchNewTimeline(tweetId);
         }, 960000);
     }
 
@@ -353,21 +354,36 @@ export class Twitter {
         }, 60000);
     }
 
-    async fetchNewTimeline(latestTweetId) {
-        const response = await this.twitterService.getTimeline({
-            since_id: latestTweetId
-        });
+    updateTweetCounters(tweet, newTweet) {
+        let { retweeted_status, retweet_count, favorite_count } = newTweet;
 
-        if (!response || !response.tweets) {
-            this.scheduleTimelineUpdate(latestTweetId);
-            return;
+        if (retweeted_status) {
+            ({ retweet_count, favorite_count } = retweeted_status);
         }
-        const tweets = response.tweets.filter(tweet => tweet.id !== latestTweetId);
+        tweet.retweetCount = this.formatCounter(retweet_count);
+        tweet.likeCount = this.formatCounter(favorite_count);
+    }
 
-        if (tweets.length) {
-            latestTweetId = tweets[0].id;
+    async fetchNewTimeline(tweetId) {
+        const response = await this.twitterService.getTimeline({ since_id: tweetId });
 
-            this.tweetsToLoad.unshift(...tweets);
+        if (response && response.tweets.length) {
+            const { tweets } = response;
+            const currentTweets = this.tweetsToLoad.concat(this.tweets);
+            const newTweets = [];
+            tweetId = tweets[tweets.length - 1].id;
+
+            for (const tweet of tweets) {
+                const foundTweet = currentTweets.find(({ id }) => tweet.id === id);
+
+                if (foundTweet) {
+                    this.updateTweetCounters(foundTweet, tweet);
+                }
+                else {
+                    newTweets.push(tweet);
+                }
+            }
+            this.tweetsToLoad.unshift(...newTweets);
 
             if (!this.isVisible) {
                 this.newTweets.emit();
@@ -381,7 +397,7 @@ export class Twitter {
                 );
             }
         }
-        this.scheduleTimelineUpdate(latestTweetId);
+        this.scheduleTimelineUpdate(tweetId);
     }
 
     async fetchMoreTweets() {
