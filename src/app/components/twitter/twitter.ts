@@ -385,7 +385,7 @@ export class Twitter {
             }
             this.tweetsToLoad.unshift(...newTweets);
 
-            if (!this.isVisible) {
+            if (newTweets.length && !this.isVisible) {
                 this.newTweets.emit();
             }
 

@@ -361,12 +361,10 @@
 }
 
 .task-notice {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    transform: translateY(-50%);
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100% - 69px);
     font-size: 20px;
 }
 
