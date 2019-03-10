@@ -30,6 +30,7 @@ interface Label {
 export class Tasks {
     visible: boolean = false;
     makingEdit: boolean = false;
+    willBeEmpty: boolean = false;
     timeout: number = 0;
     zIndex: number = 0;
     removedTaskCount: number = 0;
@@ -143,6 +144,7 @@ export class Tasks {
 
         window.setTimeout(() => {
             this.scheduleTaskRemoval(index);
+            this.willBeEmpty = this.tasks.filter(task => !task.removing).length < 1;
         }, 400);
     }
 
@@ -165,6 +167,7 @@ export class Tasks {
     }
 
     removeCompletedTasks() {
+        this.willBeEmpty = false;
         this.tasksToRemove.length = 0;
         this.tasks = this.tasks.filter(task => {
             task.subtasks = task.subtasks.filter(subtask => !subtask.removing);
@@ -189,6 +192,7 @@ export class Tasks {
                 delete task.removing;
             }
         }
+        this.willBeEmpty = false;
         this.tasksToRemove.length = 0;
         window.setTimeout(() => {
             this.removedTaskCount = 0;
