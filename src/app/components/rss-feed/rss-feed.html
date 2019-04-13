@@ -1,49 +1,30 @@
 <div class="container main-block-content" [class.visible]="isVisible">
-    <ng-container *ngIf="initializing; else elseIf1">
+    <div class="feed-initialization-container" *ngIf="initializing; else elseIf1">
         <svg viewBox="0 0 24 24" class="rss-feed-icon">
             <use href="#rss"></use>
         </svg>
-        <ul class="feed-initiation-status" *ngIf="feedsToLoad.length; else elseIf">
-            <li class="feed-initiation-item" [class.hidding]="feed.status === 'finished'"
-                *ngFor="let feed of feedsToLoad">
-                <span class="feed-initiation-item-title">{{ feed.title }}</span>
-                <div class="feed-initiation-item-status">
-                    <img src="./assets/images/ring.svg" *ngIf="feed.status === 'loading'" alt="">
-                    <svg viewBox="0 0 24 24" class="feed-initiation-success" *ngIf="feed.status === 'success'">
-                        <use href="#circle-tick"></use>
-                    </svg>
-                    <svg viewBox="0 0 24 24" class="feed-initiation-error" *ngIf="feed.status === 'error'">
-                        <use href="#circle-cross"></use>
-                    </svg>
-                </div>
-            </li>
-        </ul>
-        <ng-template #elseIf>
-            <img src="./assets/images/ring.svg" class="feed-init-spinner" alt="">
-        </ng-template>
-    </ng-container>
+        <img src="./assets/images/ring.svg" class="feed-init-spinner" alt="">
+    </div>
     <ng-template #elseIf1>
-        <ng-container *ngIf="showingForm; else elseIf2">
+        <form class="feed-form" (submit)="handleFormSubmit($event)" *ngIf="showingForm; else elseIf2">
             <svg viewBox="0 0 24 24" class="rss-feed-icon">
                 <use href="#rss"></use>
             </svg>
-            <form class="feed-form" (submit)="handleFormSubmit($event)" *ngIf="showingForm; else elseIf1">
-                <h3 class="main-block-modal-title">Add new feed</h3>
-                <input type="text" class="input feed-input" name="title" placeholder="Title" autocomplete="off">
-                <input type="text" class="input feed-input" name="url" placeholder="URL" required>
-                <div class="feed-add-btn-container">
-                    <div class="feed-message" *ngIf="message">{{ message }}</div>
-                    <button class="btn" [disabled]="fetching">Add</button>
-                </div>
-                <button type="button" class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
-                    *ngIf="showingFormCloseButton"
-                    (click)="backToFeedList()" title="Back to feeds">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#cross"></use>
-                    </svg>
-                </button>
-            </form>
-        </ng-container>
+            <h3 class="main-block-modal-title">Add new feed</h3>
+            <input type="text" class="input feed-input" name="title" placeholder="Title" autocomplete="off">
+            <input type="text" class="input feed-input" name="url" placeholder="URL" required>
+            <div class="feed-add-btn-container">
+                <div class="feed-message" *ngIf="message">{{ message }}</div>
+                <button class="btn" [disabled]="fetching">Add</button>
+            </div>
+            <button type="button" class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
+                *ngIf="showingFormCloseButton"
+                (click)="backToFeedList()" title="Back to feeds">
+                <svg viewBox="0 0 24 24">
+                    <use href="#cross"></use>
+                </svg>
+            </button>
+        </form>
     </ng-template>
     <ng-template #elseIf2>
         <ng-container *ngIf="showingFeedList; else elseIf3">
@@ -66,7 +47,9 @@
             <ul class="feed-list-items">
                 <li class="feed-list-item" *ngFor="let feed of feeds; let i = index">
                     <div class="feed-list-item-header">
-                        <img [src]="feed.image" *ngIf="feed.image" alt="">
+                        <img [src]="feed.image" class="feed-list-item-logo"
+                            *ngIf="!feed.logoError && feed.image"
+                            (error)="feed.logoError = true" alt="">
                         <div class="feed-list-item-title-container">
                             <input type="text" class="input feed-list-item-title-input"
                                 *ngIf="feed.makingTitleEdit; else elseBlock" [value]="feed.title"
@@ -105,21 +88,23 @@
                 </li>
                 <li class="feed-list-item" [class.disabled]="feed.refeching"
                     *ngFor="let feed of feedsToLoad; let i = index">
-                    <div class="feed-list-item-header">
-                        <div>
-                            <h3 class="feed-list-item-title">{{ feed.title }}</h3>
-                            <div class="feed-list-item-url">{{ feed.url }}</div>
+                    <div class="feed-list-item-content">
+                        <div class="feed-list-item-header">
+                            <div>
+                                <h3 class="feed-list-item-title">{{ feed.title }}</h3>
+                                <div class="feed-list-item-url">{{ feed.url }}</div>
+                            </div>
+                            <button class="btn-secondary btn-secondary-dim feed-list-item-btn"
+                                (click)="removeFailedToFetchFeed(i)" title="Remove">
+                                <svg viewBox="0 0 24 24">
+                                    <use href="#trash"></use>
+                                </svg>
+                            </button>
                         </div>
-                        <button class="btn-secondary btn-secondary-dim feed-list-item-btn"
-                            (click)="removeFailedToFetchFeed(i)" title="Remove">
-                            <svg viewBox="0 0 24 24">
-                                <use href="#trash"></use>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="feed-list-item-error">
-                        <span>Unable to fetch.</span>
-                        <button class="btn-secondary" (click)="refetchFeed(feed, i)">Try again</button>
+                        <div class="feed-list-item-error">
+                            <span>Failed to fetch.</span>
+                            <button class="btn-secondary" (click)="refetchFeed(feed, i)">Try again</button>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -161,7 +146,8 @@
                     </svg>
                 </button>
                 <div class="main-block-content-header-separator"></div>
-                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn feed-menu-btn"
+                    [class.indicator-visible]="feedsToLoad.length"
                     (click)="showFeedList()" title="Your feeds">
                     <svg viewBox="0 0 24 24">
                         <use href="#menu"></use>

@@ -1,12 +1,12 @@
 import { Component, Output, EventEmitter, Input, ViewChild } from "@angular/core";
-import { delay } from "../../utils/utils";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { FeedService } from "../../services/feedService";
 import { NotificationService } from "../../services/notificationService";
 
 @Component({
     selector: "rss-feed",
-    templateUrl: "./rss-feed.html"
+    templateUrl: "./rss-feed.html",
+    styleUrls: ["./rss-feed.scss"]
 })
 export class RssFeed {
     @Output() newEntries = new EventEmitter();
@@ -63,15 +63,8 @@ export class RssFeed {
                 this.syncFeeds(feeds.newValue);
             }
         });
-        this.chromeStorageService.get(["feeds", "rss"], ({ feeds, rss }) => {
-            if (rss) {
-                this.feedsToLoad = rss;
-                this.chromeStorageService.remove("rss");
-                this.saveFeeds();
-            }
-            else {
-                this.feedsToLoad = feeds || [];
-            }
+        this.chromeStorageService.get("feeds", ({ feeds }) => {
+            this.feedsToLoad = feeds || [];
             this.loadFeeds(this.feedsToLoad);
         });
     }
@@ -199,29 +192,32 @@ export class RssFeed {
         this.showingFeedList = false;
     }
 
+    reflect(promise) {
+        return promise.then(
+            (v) => ({ status: "fulfilled", value: v }),
+            (error) => ({ status: "rejected", reason: error })
+        );
+    }
+
     async getInitialFeeds(feedsToLoad) {
+        const promises = feedsToLoad.map(feed => this.reflect(this.feedService.getFeed(feed.url, feed.title)));
         const feeds = [];
         const failedToFetchFeeds = [];
 
-        for (const feed of feedsToLoad) {
-            feed.status = "loading";
+        try {
+            const results: any = await Promise.all(promises);
 
-            try {
-                const result = await this.feedService.getFeed(feed.url, feed.title);
-
-                feed.status = "success";
-                feeds.push(result);
-            } catch (e) {
-                feed.status = "error";
-                failedToFetchFeeds.push(feed);
-            } finally {
-                setTimeout(() => {
-                    feed.status = "finished";
-                }, 1000);
+            for (const [index, { status, value }] of results.entries()) {
+                if (status === "fulfilled") {
+                    feeds.push(value);
+                }
+                else {
+                    failedToFetchFeeds.push(feedsToLoad[index]);
+                }
             }
+        } catch (e) {
+            console.log(e);
         }
-        await delay(2000);
-
         return { feeds, failedToFetchFeeds };
     }
 
