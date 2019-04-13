@@ -104,12 +104,12 @@ module.exports = function(env = {}) {
                     ]
                 },
                 {
-                    "test": /\.html$/,
-                    "loader": "raw-loader"
+                    test: /\.html$/,
+                    loader: "raw-loader"
                 },
                 {
-                    "test": /\.ts$/,
-                    "loader": "@ngtools/webpack"
+                    test: /\.ts$/,
+                    loader: "@ngtools/webpack"
                 }
             ]
         },

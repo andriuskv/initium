@@ -1,73 +1,29 @@
+@import "../../../scss/mixins.scss";
+@import "../../../scss/variables.scss";
+
+.feed-initialization-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
 .rss-feed-icon {
-    flex-shrink: 0;
     width: 64px;
     height: 64px;
-    margin: 56px auto 0 auto;
+    margin: 0 auto;
     color: #fa9b39;
 }
 
 .feed-init-spinner {
-    display: block;
     height: 28px;
-    margin: 8px auto 0 auto;
-}
-
-.feed-initiation-status {
-    width: 240px;
-    margin: 0 auto;
-}
-
-.feed-initiation-item {
-    display: flex;
-    align-items: center;
-    padding: 0 4px;
-    border-bottom: 1px solid $primary-border-color;
-    animation-name: opacity-up;
-    animation-duration: 0.2s;
-    animation-fill-mode: both;
-
-    &.hidding {
-        overflow: hidden;
-        animation-name: opacity-down, down;
-        animation-duration: 0.2s, 0.4s;
-    }
-}
-
-@keyframes down {
-    from {
-        height: 25px;
-    }
-    to {
-        height: 0;
-    }
-}
-
-.feed-initiation-item-title {
-    @include text-truncate;
-
-    margin-right: 4px;
-}
-
-.feed-initiation-item-status {
-    height: 20px;
-    margin: 2px 0 2px auto;
-
-    img {
-        height: 100%;
-    }
-}
-
-.feed-initiation-success {
-    color: $color-success;
-}
-
-.feed-initiation-error {
-    color: $color-danger;
+    margin-top: 8px;
 }
 
 .feed-form {
     width: 240px;
-    margin: 0 auto;
+    margin: auto;
 }
 
 .feed-input {
@@ -154,6 +110,16 @@
     position: relative;
 }
 
+.feed-menu-btn {
+    position: relative;
+
+    &::after {
+        right: 2px;
+        bottom: 4px;
+        background-color: $color-danger;
+    }
+}
+
 .feed-entries {
     @include scrollbar;
 
@@ -163,10 +129,7 @@
 
 .feed-entry {
     padding: 8px;
-
-    &:not(:last-of-type) {
-        border-bottom: 1px solid $primary-border-color;
-    }
+    box-shadow: 0 1px 0 0 $primary-border-color;
 }
 
 .feed-entry-title {
@@ -183,12 +146,15 @@
 }
 
 .is-new-entry {
+    position: relative;
+    top: -1px;
     padding: 1px 6px;
     margin-right: 6px;
     border-radius: 4px;
     background-color: $color-blue-light;
-    color: $color-grey-dark;
-    font-size: 13px;
+    color: $color-black-60;
+    font-size: 12px;
+    font-weight: bold;
     cursor: default;
 }
 
@@ -196,7 +162,6 @@
     overflow: hidden;
     line-height: 1.4;
     word-break: break-word;
-    white-space: pre-line;
 
     &.truncated {
          max-height: 160px;
@@ -207,6 +172,7 @@
     }
 
     img {
+        float: left;
         max-height: 64px;
         margin-right: 8px;
     }
@@ -216,7 +182,6 @@
         color: $color-blue-light;
 
         &:hover {
-            color: $color-blue-light;
             text-decoration: underline;
             cursor: pointer;
         }
@@ -283,12 +248,16 @@
 
 .feed-list-item {
     padding: 8px;
-    border-bottom: 1px solid $primary-border-color;
+    box-shadow: 0 1px 0 0 $primary-border-color;
 
     &.disabled {
         position: relative;
 
-        &::before {
+        .feed-list-item-content {
+            opacity: 0.4;
+        }
+
+        &::after {
             content: "";
             position: absolute;
             top: 0;
@@ -299,7 +268,6 @@
             background-image: url("./assets/images/ring.svg");
             background-repeat: no-repeat;
             background-position: center;
-            backdrop-filter: blur(2px);
         }
     }
 }
@@ -308,11 +276,11 @@
     display: flex;
     align-items: flex-start;
     margin-bottom: 4px;
+}
 
-    img {
-        height: 36px;
-        margin-right: 8px;
-    }
+.feed-list-item-logo {
+    height: 36px;
+    margin-right: 8px;
 }
 
 .feed-list-item-btn:first-of-type {
@@ -329,7 +297,9 @@
 .feed-list-item-title {
     display: flex;
     align-items: center;
+    margin-bottom: 4px;
     font-size: 16px;
+
 
     .feed-new-entry-count-container:hover {
         color: $color-grey-dark;
@@ -337,7 +307,7 @@
 }
 
 .feed-list-item-title-btn {
-    padding: 2px 0;
+    padding: 0;
     font-size: inherit;
 
     &:hover {
@@ -361,6 +331,7 @@
 .feed-list-item-error {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     margin-top: 8px;
     color: $color-danger;
 

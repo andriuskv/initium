@@ -94,16 +94,20 @@
     }
 }
 
-.task {
+.task, .subtask {
     overflow: hidden;
-    position: relative;
-    box-shadow: 0 1px 0 0 $primary-border-color;
+    max-height: 1000px;
 
     &.removing {
-        animation-duration: 0.2s, 0.4s;
-        animation-name: opacity-down, collapse;
-        animation-fill-mode: both;
+        transition: 0.2s opacity, 0.4s max-height;
+        opacity: 0;
+        max-height: 0;
     }
+}
+
+.task {
+    position: relative;
+    box-shadow: 0 1px 0 0 $primary-border-color;
 
     &:hover .task-edit-btn {
         display: flex;
@@ -194,16 +198,6 @@
 
 .subtasks {
     margin-left: 24px;
-}
-
-.subtask {
-    overflow: hidden;
-
-    &.removing {
-        animation-duration: 0.2s, 0.4s;
-        animation-name: opacity-down, collapse;
-        animation-fill-mode: both;
-    }
 }
 
 .subtask-body {
@@ -366,13 +360,4 @@
     align-items: center;
     height: calc(100% - 69px);
     font-size: 20px;
-}
-
-@keyframes collapse {
-    from {
-        max-height: 1000px;
-    }
-    to {
-        max-height: 0;
-    }
 }
