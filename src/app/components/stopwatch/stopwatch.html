@@ -1,0 +1,35 @@
+<div class="upper-block-item" [class.visible]="visible">
+    <div class="upper-block-item-content">
+        <div>
+            <ng-container *ngIf="hours > 0">
+                <span class="upper-block-digit">{{ hours }}</span>
+                <span class="upper-block-sep">h</span>
+            </ng-container>
+            <ng-container *ngIf="minutes > 0">
+                <span class="upper-block-digit">{{ minutesDisplay }}</span>
+                <span class="upper-block-sep">m</span>
+            </ng-container>
+            <span class="upper-block-digit">{{ secondsDisplay }}</span>
+            <span class="upper-block-sep">s</span>
+            <span class="stopwatch-milliseconds">{{ millisecondsDisplay }}</span>
+        </div>
+    </div>
+    <div class="upper-block-group upper-block-item-controls">
+        <button class="btn-secondary btn-secondary-alt btn-secondary-large"
+            (click)="toggle()">{{ running ? "Stop" : "Start" }}</button>
+        <button class="btn-secondary  btn-secondary-alt btn-secondary-large upper-block-reset-btn"
+            (click)="reset()">Reset</button>
+        <ng-container *ngIf="running">
+            <button class="btn-secondary btn-secondary-alt" (click)="expandSize()" title="Expand">
+                <svg viewBox="0 0 24 24">
+                    <use href="#expand"></use>
+                </svg>
+            </button>
+            <button class="btn-secondary btn-secondary-alt" (click)="enterFullscreen()" title="Enter fullscreen">
+                <svg viewBox="0 0 24 24">
+                    <use href="#fullscreen"></use>
+                </svg>
+            </button>
+        </ng-container>
+    </div>
+</div>

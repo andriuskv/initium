@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, Inject, ViewChild } from "@angular/core";
-import { DOCUMENT } from "@angular/platform-browser";
+import { DOCUMENT } from "@angular/common";
 import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
@@ -16,10 +16,7 @@ export class UpperBlock {
     active: string = "timer";
     zIndex: number = 0;
 
-    constructor(@Inject(DOCUMENT) private document, private zIndexService: ZIndexService) {
-        this.document = document;
-        this.zIndexService = zIndexService;
-    }
+    constructor(@Inject(DOCUMENT) private document, private zIndexService: ZIndexService) {}
 
     ngOnInit() {
         this.document.addEventListener("webkitfullscreenchange", () => {

@@ -107,6 +107,7 @@
 
 .upper-block-digit {
     height: 2ch;
+    border-right: 1px solid transparent;
     font-size: 4em;
     font-kerning: none;
     font-family: $large-number-font-family;
@@ -135,47 +136,39 @@
     margin-right: auto;
 }
 
+.timer-input-container {
+    height: 100%;
+}
+
 .timer-input {
     width: calc(2ch + 1px);
-    padding: 0;
+    height: 100%;
+    border: none;
 
     &:focus {
         outline: none;
+        box-shadow: 0 1px 0 0 #359ee9;
     }
-
-    &:read-only {
-        cursor: default;
-    }
-
-    &.one-digit {
-        width: 1ch;
-    }
-}
-
-.stopwatch {
-    display: flex;
-    align-items: baseline;
 }
 
 .stopwatch-milliseconds {
     width: 2ch;
     font-size: 2em;
+    font-kerning: none;
 }
 
 .pomodoro {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    flex-grow: 1;
+    width: 100%;
+    text-align: center;
 }
 
 .pomodoro-selection {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-self: stretch;
+    flex-shrink: 0;
     width: 100px;
-    margin-left: auto;
+    height: 100%;
     border-left: 1px solid $primary-border-color;
 }
 

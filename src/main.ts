@@ -1,7 +1,7 @@
 import "scss/weather-icons.min.css";
 import "scss/index.scss";
 
-import "core-js/es7/reflect";
+import "reflect-metadata";
 import "zone.js/dist/zone";
 
 import "focus-visible";

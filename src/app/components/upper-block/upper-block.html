@@ -1,5 +1,7 @@
-<div class="container upper-block-container" #fullscreenTarget
+<div class="upper-block-container" #fullscreenTarget
+    [class.container]="!expanded"
     [class.expanded]="expanded"
+    [class.container-fullscreen]="expanded"
     [class.visible]="visible"
     [style.zIndex]="zIndex"
     (click)="handleClickOnContainer()">

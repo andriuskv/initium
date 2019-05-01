@@ -1,59 +1,9 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
-import { PadTimePipe } from "app/pipes/padTimePipe";
+import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "timer",
-    template: `
-        <div class="upper-block-item" [class.visible]="visible">
-            <div class="upper-block-item-content">
-                <div (input)="onInput($event)">
-                    <ng-container *ngIf="!running || hours">
-                        <input type="text" class="upper-block-digit timer-input" data-input="hours"
-                            [class.one-digit]="running && hours < 10"
-                            [value]="hours | padTime : !running"
-                            [readonly]="running" #hoursInput>
-                        <span class="upper-block-sep">h</span>
-                    </ng-container>
-                    <ng-container *ngIf="!running || hours || minutes">
-                        <input type="text" class="upper-block-digit timer-input" data-input="minutes"
-                            [class.one-digit]="running && !hours && minutes < 10"
-                            [value]="minutes | padTime : !running || hours"
-                            [readonly]="running" #minutesInput>
-                        <span class="upper-block-sep">m</span>
-                    </ng-container>
-                    <input type="text" class="upper-block-digit timer-input" data-input="seconds"
-                        [class.one-digit]="running && !hours && !minutes && seconds < 10"
-                        [value]="seconds | padTime : !running || hours || minutes"
-                        [readonly]="running">
-                    <span class="upper-block-sep">s</span>
-                </div>
-            </div>
-            <div class="upper-block-group upper-block-item-controls">
-                <button class="btn-secondary btn-secondary-alt btn-secondary-large"
-                    (click)="toggle()">{{ running ? "Stop" : "Start" }}</button>
-                <button class="btn-secondary btn-secondary-alt btn-secondary-large upper-block-reset-btn"
-                    (click)="reset()">Reset</button>
-                <ng-container *ngIf="running">
-                    <button class="btn-secondary btn-secondary-alt" (click)="expandSize()" title="Expand">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#expand"></use>
-                        </svg>
-                    </button>
-                    <button class="btn-secondary btn-secondary-alt" (click)="enterFullscreen()" title="Enter fullscreen">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#fullscreen"></use>
-                        </svg>
-                    </button>
-                </ng-container>
-                <button class="btn-secondary btn-secondary-alt" title="Toggle alarm"
-                    (click)="toggleAlarm()">
-                    <svg viewBox="0 0 24 24">
-                        <use attr.href="#bell{{alarmOn ? '': '-off'}}"></use>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    `
+    templateUrl: "./timer.html"
 })
 export class Timer {
     @ViewChild("hoursInput") hoursInput;
@@ -68,7 +18,9 @@ export class Timer {
     hours: number = 0;
     minutes: number = 0;
     seconds: number = 0;
-    padTime: PadTimePipe = new PadTimePipe();
+    hoursDisplay: string = "00";
+    minutesDisplay: string = "00";
+    secondsDisplay: string = "00";
     alarm: HTMLAudioElement;
 
     onInput({ target }) {
@@ -77,56 +29,63 @@ export class Timer {
         const value = target.value;
 
         if (/\D/.test(value)) {
-            target.value = this.padTime.transform(this[input]);
+            target.value = this[input];
             target.selectionEnd = pos;
             return;
         }
         else if (!value) {
-            this[input] = 0;
+            this[input] = "00";
+            target.value = "00";
             return;
         }
 
         if (value.length > 2) {
             const hours = this.hoursInput.nativeElement.value;
             const minutes = this.minutesInput.nativeElement.value;
+            const paddedValue = padTime(value.slice(1));
 
-            if (input === "seconds") {
-                this.hours = parseInt(hours[1] + minutes[0], 10);
-                this.minutes = parseInt(minutes[1] + value[0], 10);
+            if (input === "secondsDisplay") {
+                this.hoursDisplay = hours[1] + minutes[0];
+                this.minutesDisplay = minutes[1] + value[0];
             }
-            else if (input === "minutes") {
-                this.hours = parseInt(hours[1] + value[0], 10);
+            else if (input === "minutesDisplay") {
+                this.hoursDisplay = hours[1] + value[0];
             }
-            this[input] = parseInt(value.slice(1), 10);
-            target.value = this.padTime.transform(this[input]);
+            this[input] = paddedValue;
+            target.value = paddedValue;
             target.selectionEnd = pos;
         }
         else {
-            this[input] = parseInt(value, 10);
-            target.value = this.padTime.transform(this[input]);
+            const paddedValue = padTime(value);
+            this[input] = paddedValue;
+            target.value = paddedValue;
         }
     }
 
     normalizeValues() {
-        if (this.seconds >= 60) {
-            this.seconds -= 60;
-            this.minutes += 1;
+        let hours = parseInt(this.hoursDisplay, 10);
+        let minutes = parseInt(this.minutesDisplay, 10);
+        let seconds = parseInt(this.secondsDisplay, 10);
+
+        if (seconds >= 60) {
+            seconds -= 60;
+            minutes += 1;
         }
 
-        if (this.minutes >= 60) {
-            this.minutes -= 60;
-            this.hours += 1;
+        if (minutes >= 60) {
+            minutes -= 60;
+            hours += 1;
         }
 
-        if (this.hours > 99) {
-            this.hours = 99;
+        if (hours > 99) {
+            hours = 99;
         }
+        this.hours = hours;
+        this.minutes = minutes;
+        this.seconds = seconds;
     }
 
     update(duration, elapsed) {
-        if (!this.running) {
-            return;
-        }
         const interval = 1000;
         const diff = performance.now() - elapsed;
         elapsed += interval;
@@ -135,6 +94,9 @@ export class Timer {
         this.hours = Math.floor(duration / 3600);
         this.minutes = Math.floor(duration / 60 % 60);
         this.seconds = duration % 60;
+        this.hoursDisplay = this.hours.toString();
+        this.minutesDisplay = padTime(this.minutes, this.hours);
+        this.secondsDisplay = padTime(this.seconds, this.hours || this.minutes);
 
         if (duration) {
             this.timeout = window.setTimeout(() => {
@@ -163,11 +125,12 @@ export class Timer {
     }
 
     start() {
+        this.normalizeValues();
+
         if (this.seconds || this.minutes || this.hours) {
             const duration = this.calculateDuration();
 
             this.initAlarm();
-            this.normalizeValues();
             this.running = true;
             this.timeout = window.setTimeout(() => {
                 this.update(duration, performance.now());
@@ -176,17 +139,21 @@ export class Timer {
     }
 
     stop() {
+        this.hoursDisplay = padTime(this.hours);
+        this.minutesDisplay = padTime(this.minutes);
+        this.secondsDisplay = padTime(this.seconds);
         this.running = false;
         clearTimeout(this.timeout);
     }
 
     reset() {
-        this.hours = 0;
-        this.minutes = 0;
-        this.seconds = 0;
+        this.hoursDisplay = "00";
+        this.minutesDisplay = "00";
+        this.secondsDisplay = "00";
 
         if (this.running) {
-            this.stop();
+            this.running = false;
+            clearTimeout(this.timeout);
         }
         this.size.emit(false);
         this.fullscreen.emit(false);

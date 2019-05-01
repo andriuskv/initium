@@ -1,4 +1,4 @@
-<div class="container tweet-image-viewer" (click)="handleClick($event)">
+<div class="container-fullscreen tweet-image-viewer" (click)="handleClick($event)">
     <img src="./assets/images/ring.svg" *ngIf="loading" alt="">
     <div class="viewer-image-container" [class.hidden]="loading">
         <button class="btn-secondary viewer-direction-btn left"
