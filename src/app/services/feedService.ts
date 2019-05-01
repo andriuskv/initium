@@ -28,7 +28,7 @@ export class FeedService {
     getNewEntries(newEntries, entries) {
         return newEntries.reduce((newEntries, entry) => {
             const notDuplicate = !entries.some(({ link, title }) => {
-                return link === entry.link || title === entry.title;
+                return link === entry.link.trim() || title === entry.title.trim();
             });
 
             if (notDuplicate) {
@@ -74,12 +74,14 @@ export class FeedService {
     }
 
     parseEntry(entry, newEntry = false) {
+        const content = entry.content.trim();
+
         return {
-            title: entry.title,
-            link: entry.link,
-            description: this.domSanitizer.bypassSecurityTrustHtml(entry.content),
+            title: entry.title.trim(),
+            link: entry.link.trim(),
+            description: this.domSanitizer.bypassSecurityTrustHtml(content),
             date: this.parseDate(entry.pubDate),
-            truncated: this.needTruncation(entry.content),
+            truncated: this.needTruncation(content),
             newEntry
         };
     }

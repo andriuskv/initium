@@ -1,13 +1,14 @@
 import { Component } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 import { TimeDateService } from "../../services/timeDateService";
+import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "time",
     template: `
         <div class="time" *ngIf="!disabled">
             <div class="clock-container">
-                <span class="clock">{{ hours }}:{{ minutes | padTime }}</span>
+                <span class="clock">{{ hours }}:{{ minutes }}</span>
                 <span class="period" *ngIf="period">{{ period }}</span>
             </div>
             <div class="date" *ngIf="!dateHidden">{{ date }}</div>
@@ -21,7 +22,7 @@ export class Time {
     period: string;
     format: number = 24;
     hours: number;
-    minutes: number;
+    minutes: string;
     timeout: any;
 
     constructor(
@@ -73,7 +74,7 @@ export class Time {
         const { hours, minutes, period } = this.timeDateService.getTime(currentTime, format);
 
         this.hours = hours;
-        this.minutes = minutes;
+        this.minutes = padTime(minutes);
         this.period = period;
 
         this.timeout = setTimeout(() => {

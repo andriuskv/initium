@@ -1,59 +1,10 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { SettingService } from "../../services/settingService";
+import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "pomodoro",
-    template: `
-        <div class="upper-block-item" [class.visible]="visible">
-            <div class="upper-block-item-content">
-                <div class="pomodoro">
-                    <ng-container *ngIf="hours">
-                        <span class="upper-block-digit">{{ hours }}</span>
-                        <span class="upper-block-sep">h</span>
-                    </ng-container>
-                    <span class="upper-block-digit">{{ hours ? (minutes | padTime) : minutes }}</span>
-                    <span class="upper-block-sep">m</span>
-                    <span class="upper-block-digit">{{ seconds | padTime }}</span>
-                    <span class="upper-block-sep">s</span>
-                </div>
-                <div class="upper-block-group pomodoro-selection">
-                    <button class="btn-secondary btn-secondary-alt pomodoro-btn"
-                        [class.active]="mode === 'pomodoro'"
-                        (click)="setMode('pomodoro')">Pomodoro</button>
-                    <button class="btn-secondary btn-secondary-alt pomodoro-btn"
-                        [class.active]="mode === 'short'"
-                        (click)="setMode('short')">Short Break</button>
-                    <button class="btn-secondary btn-secondary-alt pomodoro-btn"
-                        [class.active]="mode === 'long'"
-                        (click)="setMode('long')">Long Break</button>
-                </div>
-            </div>
-            <div class="upper-block-group upper-block-item-controls">
-                <button class="btn-secondary btn-secondary-alt btn-secondary-large"
-                    (click)="toggle()">{{ running ? "Stop" : "Start" }}</button>
-                <button class="btn-secondary  btn-secondary-alt btn-secondary-large upper-block-reset-btn"
-                    (click)="reset()">Reset</button>
-                <ng-container *ngIf="running">
-                    <button class="btn-secondary btn-secondary-alt" (click)="expandSize()" title="Expand">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#expand"></use>
-                        </svg>
-                    </button>
-                    <button class="btn-secondary btn-secondary-alt" (click)="enterFullscreen()" title="Enter fullscreen">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#fullscreen"></use>
-                        </svg>
-                    </button>
-                </ng-container>
-                <button class="btn-secondary btn-secondary-alt" title="Toggle alarm"
-                    (click)="toggleAlarm()">
-                    <svg viewBox="0 0 24 24">
-                        <use attr.href="#bell{{alarmOn ? '': '-off'}}"></use>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    `
+    templateUrl: "./pomodoro.html"
 })
 export class Pomodoro {
     @Output() size = new EventEmitter();
@@ -66,29 +17,24 @@ export class Pomodoro {
     hours: number = 0;
     minutes: number = 0;
     seconds: number = 0;
+    minutesDisplay: string = "0";
+    secondsDisplay: string = "0";
     mode: string = "pomodoro";
     alarm: HTMLAudioElement;
 
-    constructor(private settingService: SettingService) {
-        this.settingService = settingService;
-    }
+    constructor(private settingService: SettingService) {}
 
     ngOnInit() {
         this.resetTimer();
     }
 
     update(duration, elapsed) {
-        if (!this.running) {
-            return;
-        }
         const interval = 1000;
         const diff = performance.now() - elapsed;
         elapsed += interval;
         duration -= 1;
 
-        this.hours = Math.floor(duration / 3600);
-        this.minutes = Math.floor(duration / 60 % 60);
-        this.seconds = duration % 60;
+        this.updateTimer(duration);
 
         if (duration) {
             this.timeout = window.setTimeout(() => {
@@ -124,6 +70,14 @@ export class Pomodoro {
         this.timeout = window.setTimeout(() => {
             this.update(duration, performance.now());
         }, 1000);
+    }
+
+    updateTimer(duration) {
+        this.hours = Math.floor(duration / 3600);
+        this.minutes = Math.floor(duration / 60 % 60);
+        this.seconds = duration % 60;
+        this.minutesDisplay = padTime(this.minutes, this.hours);
+        this.secondsDisplay = padTime(this.seconds, this.hours || this.minutes);
     }
 
     stop() {
@@ -164,9 +118,7 @@ export class Pomodoro {
         const settings = this.settingService.getSetting("pomodoro");
         const minutes = this.getMinutes(this.mode, settings);
 
-        this.hours = Math.floor(minutes / 60);
-        this.minutes = minutes % 60;
-        this.seconds = 0;
+        this.updateTimer(minutes * 60);
 
         if (this.hours > 99) {
             this.hours = 99;

@@ -81,6 +81,16 @@ textarea {
     }
 }
 
+.container-fullscreen {
+    background-color: $color-grey-darker-60;
+    background-image: url("./assets/images/img-noise-64x64.png");
+    backdrop-filter: blur(16px);
+
+    @supports not (backdrop-filter: blur(0)) {
+        background-color: $secondary-container-background-color;
+    }
+}
+
 %btn-styles {
     transition: 0.2s color,
                 0.2s background-color,

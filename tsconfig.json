@@ -4,14 +4,13 @@
     "outDir": "./dist/out-tsc",
     "baseUrl": "src",
     "module": "esnext",
+    "target": "esnext",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2018",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -20,12 +19,12 @@
       "node"
     ],
     "lib": [
-      "es2018",
+      "esnext",
       "dom"
     ]
   },
+  "files": ["./src/main.ts"],
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "preserveWhiteSpace": false,
+    "preserveWhiteSpace": false
   }
 }

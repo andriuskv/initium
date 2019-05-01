@@ -28,8 +28,8 @@ function getRandomHexColor() {
     return color;
 }
 
-function padTime(time: number, pad: number | boolean = true) {
-    return pad && time < 10 ? `0${time}` : time;
+function padTime(time, pad: any = true) {
+    return pad ? `00${time}`.slice(-2) : time.toString();
 }
 
 function formatTime(time: number) {
@@ -45,5 +45,6 @@ export {
     delay,
     getRandomHslColor,
     getRandomHexColor,
+    padTime,
     formatTime
 };

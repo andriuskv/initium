@@ -1,44 +1,9 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from "@angular/core";
+import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "stopwatch",
-    template: `
-        <div class="upper-block-item" [class.visible]="visible">
-            <div class="upper-block-item-content">
-                <div class="stopwatch">
-                    <ng-container *ngIf="hours">
-                        <span class="upper-block-digit">{{ hours }}</span>
-                        <span class="upper-block-sep">h</span>
-                    </ng-container>
-                    <ng-container *ngIf="minutes">
-                        <span class="upper-block-digit">{{ hours ? (minutes | padTime) : minutes }}</span>
-                        <span class="upper-block-sep">m</span>
-                    </ng-container>
-                    <span class="upper-block-digit">{{ minutes ? (seconds | padTime) : seconds }}</span>
-                    <span class="upper-block-sep">s</span>
-                    <span class="stopwatch-milliseconds">{{ milliseconds | slice: 2 | padTime }}</span>
-                </div>
-            </div>
-            <div class="upper-block-group upper-block-item-controls">
-                <button class="btn-secondary btn-secondary-alt btn-secondary-large"
-                    (click)="toggle()">{{ running ? "Stop" : "Start" }}</button>
-                <button class="btn-secondary  btn-secondary-alt btn-secondary-large upper-block-reset-btn"
-                    (click)="reset()">Reset</button>
-                <ng-container *ngIf="running">
-                    <button class="btn-secondary btn-secondary-alt" (click)="expandSize()" title="Expand">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#expand"></use>
-                        </svg>
-                    </button>
-                    <button class="btn-secondary btn-secondary-alt" (click)="enterFullscreen()" title="Enter fullscreen">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#fullscreen"></use>
-                        </svg>
-                    </button>
-                </ng-container>
-            </div>
-        </div>
-    `
+    templateUrl: "./stopwatch.html"
 })
 export class Stopwatch {
     @Output() size = new EventEmitter();
@@ -51,6 +16,9 @@ export class Stopwatch {
     seconds: number = 0;
     milliseconds: number = 0;
     animationId: number;
+    minutesDisplay: string = "0";
+    secondsDisplay: string = "0";
+    millisecondsDisplay: string = "00";
 
     constructor(private ref: ChangeDetectorRef) {}
 
@@ -75,7 +43,10 @@ export class Stopwatch {
                 this.minutes -= 60;
                 this.hours += 1;
             }
+            this.minutesDisplay = padTime(this.minutes, this.hours);
+            this.secondsDisplay = padTime(this.seconds, this.minutes);
         }
+        this.millisecondsDisplay = padTime(Math.floor(this.milliseconds).toString().slice(0, 2));
         this.ref.detectChanges();
         this.animationId = requestAnimationFrame(() => {
             this.update(elapsed + diff);
@@ -108,6 +79,8 @@ export class Stopwatch {
         this.minutes = 0;
         this.seconds = 0;
         this.milliseconds = 0;
+        this.secondsDisplay = "0";
+        this.millisecondsDisplay = "00";
 
         if (this.running) {
             this.stop();

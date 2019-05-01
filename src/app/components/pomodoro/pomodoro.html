@@ -1,0 +1,51 @@
+<div class="upper-block-item" [class.visible]="visible">
+    <div class="upper-block-item-content">
+        <div class="pomodoro">
+            <ng-container *ngIf="hours > 0">
+                <span class="upper-block-digit">{{ hours }}</span>
+                <span class="upper-block-sep">h</span>
+            </ng-container>
+            <ng-container *ngIf="hours > 0 || minutes > 0">
+                <span class="upper-block-digit">{{ minutesDisplay }}</span>
+                <span class="upper-block-sep">m</span>
+            </ng-container>
+            <span class="upper-block-digit">{{ secondsDisplay }}</span>
+            <span class="upper-block-sep">s</span>
+        </div>
+        <div class="upper-block-group pomodoro-selection" *ngIf="!running">
+            <button class="btn-secondary btn-secondary-alt pomodoro-btn"
+                [class.active]="mode === 'pomodoro'"
+                (click)="setMode('pomodoro')">Pomodoro</button>
+            <button class="btn-secondary btn-secondary-alt pomodoro-btn"
+                [class.active]="mode === 'short'"
+                (click)="setMode('short')">Short Break</button>
+            <button class="btn-secondary btn-secondary-alt pomodoro-btn"
+                [class.active]="mode === 'long'"
+                (click)="setMode('long')">Long Break</button>
+        </div>
+    </div>
+    <div class="upper-block-group upper-block-item-controls">
+        <button class="btn-secondary btn-secondary-alt btn-secondary-large"
+            (click)="toggle()">{{ running ? "Stop" : "Start" }}</button>
+        <button class="btn-secondary  btn-secondary-alt btn-secondary-large upper-block-reset-btn"
+            (click)="reset()">Reset</button>
+        <ng-container *ngIf="running">
+            <button class="btn-secondary btn-secondary-alt" (click)="expandSize()" title="Expand">
+                <svg viewBox="0 0 24 24">
+                    <use href="#expand"></use>
+                </svg>
+            </button>
+            <button class="btn-secondary btn-secondary-alt" (click)="enterFullscreen()" title="Enter fullscreen">
+                <svg viewBox="0 0 24 24">
+                    <use href="#fullscreen"></use>
+                </svg>
+            </button>
+        </ng-container>
+        <button class="btn-secondary btn-secondary-alt" title="Toggle alarm"
+            (click)="toggleAlarm()">
+            <svg viewBox="0 0 24 24">
+                <use attr.href="#bell{{alarmOn ? '': '-off'}}"></use>
+            </svg>
+        </button>
+    </div>
+</div>
