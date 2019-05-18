@@ -4,13 +4,13 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "top-sites",
-    templateUrl: "./top-sites.html"
+    templateUrl: "./top-sites.html",
+    styleUrls: ["./top-sites.scss"]
 })
 export class TopSites {
     @Input() isVisible: boolean = false;
 
     isFormVisible: boolean = false;
-    isFetching: boolean = false;
     addSiteButtonVisible: boolean = false;
     visibleSiteCount: number = 4;
     topSites: Array<any> = [];
@@ -63,7 +63,6 @@ export class TopSites {
                 return site;
             });
             this.updateVisibleSites();
-            this.isFetching = false;
         });
     }
 
@@ -71,14 +70,14 @@ export class TopSites {
         if (this.isFormVisible) {
             this.hideForm();
         }
-        this.isFetching = true;
         localStorage.removeItem("top sites");
         this.getTopSites();
     }
 
-    removeSite(index) {
-        this.topSites.splice(index, 1);
+    removeSite() {
+        this.topSites.splice(this.editedSite.index, 1);
         this.updateVisibleSites();
+        this.hideForm();
         this.saveSites();
     }
 
@@ -119,7 +118,7 @@ export class TopSites {
         return `https://${url}`;
     }
 
-    processImage(image) {
+    processImage(imageFile) {
         return new Promise(resolve => {
             const reader = new FileReader();
 
@@ -128,18 +127,25 @@ export class TopSites {
 
                 image.onload = function() {
                     const canvas = document.createElement("canvas");
-                    const width = 144;
-                    const height = 98;
+                    let { width, height } = image;
+                    const minSize = Math.min(width, height, 96);
 
+                    if (width < height) {
+                        height = minSize / image.width * height;
+                        width = minSize;
+                    }
+                    else {
+                        width = minSize / image.height * width;
+                        height = minSize;
+                    }
                     canvas.width = width;
                     canvas.height = height;
                     canvas.getContext("2d").drawImage(image, 0, 0, width, height);
-
-                    resolve(canvas.toDataURL("image/jpeg", 0.72));
+                    resolve(canvas.toDataURL(imageFile.type, 0.72));
                 };
                 image.src = event.target.result;
             };
-            reader.readAsDataURL(image);
+            reader.readAsDataURL(imageFile);
         });
     }
 

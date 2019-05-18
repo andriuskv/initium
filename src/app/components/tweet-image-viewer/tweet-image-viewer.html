@@ -1,7 +1,7 @@
 <div class="container-fullscreen tweet-image-viewer" (click)="handleClick($event)">
     <img src="./assets/images/ring.svg" *ngIf="loading" alt="">
     <div class="viewer-image-container" [class.hidden]="loading">
-        <button class="btn-secondary viewer-direction-btn left"
+        <button class="btn btn-icon viewer-direction-btn left"
             *ngIf="images.length > 1"
             (click)="nextImage(-1)"
             aria-label="Previous image">
@@ -12,14 +12,14 @@
         <img [src]="images[index].url" class="viewer-image" (load)="handleLoad($event)" alt="">
         <div class="container viewer-bottom-bar">
             <span *ngIf="images.length > 1">{{ index + 1 }}/{{ images.length }}</span>
-            <a [href]="images[index].url" class="btn-secondary btn-secondary-alt viewer-open-btn"
+            <a [href]="images[index].url" class="btn btn-icon viewer-open-btn"
                 title="Open image in new tab" target="_blank">
                 <svg viewBox="0 0 24 24">
                      <use href="#open-in-new"></use>
                 </svg>
             </a>
         </div>
-        <button class="btn-secondary viewer-direction-btn right"
+        <button class="btn btn-icon viewer-direction-btn right"
             *ngIf="images.length > 1"
             (click)="nextImage(1)"
             aria-label="Next image">
@@ -28,7 +28,7 @@
             </svg>
         </button>
     </div>
-    <button class="btn-secondary btn-secondary-alt viewer-close-btn"
+    <button class="btn btn-icon viewer-close-btn"
         (click)="closeViewer()" title="Close">
         <svg viewBox="0 0 24 24">
             <use href="#cross"></use>

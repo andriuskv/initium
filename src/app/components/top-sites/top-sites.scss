@@ -1,0 +1,169 @@
+@import "../../../scss/mixins.scss";
+@import "../../../scss/variables.scss";
+
+.top-sites-container {
+    height: auto;
+    pointer-events: none;
+}
+
+.top-sites {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.top-site {
+    position: relative;
+    width: 136px;
+    pointer-events: auto;
+
+    &:not(:nth-of-type(4n)):not(:last-of-type) {
+        margin-right: 4px;
+    }
+
+    &:nth-of-type(n + 5) {
+        margin-top: 4px;
+    }
+
+    &:hover, &:focus-within {
+        .top-site-link {
+            background-color: $color-white-10;
+        }
+
+        .top-site-edit-btn {
+            display: flex;
+        }
+    }
+}
+
+.top-site-link {
+    display: block;
+    padding: 4px;
+    border-radius: 8px;
+    transition: 0.2s background-color;
+}
+
+.top-site-title {
+    @include text-truncate;
+
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    background-color: $color-grey-darker-60;
+    backdrop-filter: blur(8px);
+    font-size: 12px;
+    text-align: center;
+    line-height: 1;
+}
+
+.top-site-edit-btn {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    display: none;
+
+    &:hover {
+        background-color: transparent;
+    }
+}
+
+.top-site-add-btn {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.top-site-add-btn-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.top-site-thumbnail-container {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 96px;
+    height: 96px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background-color: $color-grey-darker-60;
+    backdrop-filter: blur(8px);
+}
+
+.top-site-thumbnail.favicon {
+    max-width: 32px;
+}
+
+.top-site-form {
+    align-self: center;
+    padding: 8px;
+    pointer-events: auto;
+}
+
+.top-site-form-content {
+    display: flex;
+    align-items: center;
+}
+
+.top-site-form-thumbnail {
+    position: relative;
+    margin-left: 8px;
+    margin-right: 16px;
+    background-color: $color-white-4;
+    backdrop-filter: none;
+    box-shadow: inset 0 0 0 1px $color-white-4;
+}
+
+.top-site-file-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: 13px;
+}
+
+.file-input {
+    display: none;
+}
+
+.top-site-form-remove-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 13px;
+
+    &:hover, &:focus {
+        opacity: 1;
+        background-color: $color-white-10;
+    }
+}
+
+.top-site-form-label {
+    display: block;
+    margin-bottom: 16px;
+}
+
+.top-site-form-input-title {
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.top-site-form-input {
+    width: 280px;
+}
+
+.top-site-form-buttons {
+    display: flex;
+}
+
+.top-site-form-cancel-btn {
+    margin-left: auto;
+    margin-right: 8px;
+}
