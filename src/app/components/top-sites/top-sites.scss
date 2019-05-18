@@ -22,7 +22,7 @@
     }
 
     &:nth-of-type(n + 5) {
-        margin-top: 4px;
+        margin-top: 8px;
     }
 
     &:hover, &:focus-within {
@@ -43,14 +43,22 @@
     transition: 0.2s background-color;
 }
 
+.top-site-container {
+    background-color: $color-grey-darker-60;
+    backdrop-filter: blur(8px);
+    box-shadow: inset 0 1px 1px 0 $color-white-10;
+
+    @supports not (backdrop-filter: blur(0)) {
+        background-color: $color-grey-dark;
+    }
+}
+
 .top-site-title {
     @include text-truncate;
 
     margin-bottom: 8px;
     padding: 4px 8px;
     border-radius: 10px;
-    background-color: $color-grey-darker-60;
-    backdrop-filter: blur(8px);
     font-size: 12px;
     text-align: center;
     line-height: 1;
@@ -87,8 +95,6 @@
     height: 96px;
     margin: 0 auto;
     border-radius: 50%;
-    background-color: $color-grey-darker-60;
-    backdrop-filter: blur(8px);
 }
 
 .top-site-thumbnail.favicon {

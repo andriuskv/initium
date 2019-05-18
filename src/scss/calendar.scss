@@ -236,7 +236,8 @@
     overflow-y: auto;
 
     & + .new-reminder-btn {
-        border-top: 1px solid $color-white-10;
+        margin-top: 4px;
+        margin-bottom: 4px;
     }
 }
 
@@ -244,10 +245,7 @@
     display: flex;
     align-items: flex-start;
     padding: 4px;
-
-    &:not(:last-of-type) {
-        border-bottom: 1px solid $color-white-10;
-    }
+    border-bottom: 1px solid $color-white-10;
 
     .btn-icon {
         margin-left: auto;
@@ -363,6 +361,10 @@
     background-color: $color-grey-darker-60;
     backdrop-filter: blur(8px);
     text-align: center;
+
+    @supports not (backdrop-filter: blur(0)) {
+        background-color: $color-grey-dark;
+    }
 }
 
 .reminder-timetable-item {
@@ -383,6 +385,7 @@
 }
 
 .reminder-form-btns {
+    display: flex;
     margin-top: auto;
 
     .btn:first-of-type {

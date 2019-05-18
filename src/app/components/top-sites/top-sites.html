@@ -42,8 +42,8 @@
         <ul class="top-sites">
             <li class="top-site" *ngFor="let site of visibleSites; let i = index">
                 <a [href]="site.url" class="top-site-link" [attr.aria-label]="site.title">
-                    <div class="top-site-title">{{ site.title }}</div>
-                    <div class="top-site-thumbnail-container">
+                    <div class="top-site-container top-site-title">{{ site.title }}</div>
+                    <div class="top-site-container top-site-thumbnail-container">
                         <img alt="" class="top-site-thumbnail"
                             [class.favicon]="site.image.isFavicon"
                             [src]="site.image.url">
@@ -57,8 +57,8 @@
             </li>
             <li class="top-site" *ngIf="addSiteButtonVisible">
                 <button class="top-site-link top-site-add-btn" (click)="showForm()">
-                    <div class="top-site-title">Add site</div>
-                    <div class="top-site-thumbnail-container">
+                    <div class="top-site-container top-site-title">Add site</div>
+                    <div class="top-site-container top-site-thumbnail-container">
                         <svg viewBox="0 0 24 24" class="top-site-add-btn-icon">
                             <use href="#plus"></use>
                         </svg>

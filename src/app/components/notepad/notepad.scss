@@ -16,6 +16,19 @@
 .notepad-form {
     margin: auto;
     text-align: center;
+}
+
+.notepad-form-input-container {
+    display: flex;
+
+    .input {
+        margin-right: 8px;
+    }
+}
+
+.notepad-form-btns {
+    display: flex;
+    justify-content: center;
 
     .btn:last-of-type {
         margin-left: 8px;

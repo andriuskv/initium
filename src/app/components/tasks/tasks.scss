@@ -6,8 +6,6 @@
     top: 4px;
     left: 4px;
     padding: 4px 6px;
-    font-weight: bold;
-    letter-spacing: 1px;
     text-shadow: 0 1px 0 $color-black-10, 0 0 4px $color-black-10;
     transition: 0.2s transform;
     transition-delay: 0.2s;
@@ -18,7 +16,6 @@
     }
 
     &:hover {
-        color: inherit;
         background-color: transparent;
     }
 }
@@ -272,7 +269,7 @@
 
 .task-form-label-btn {
     position: relative;
-    padding: 4px;
+    padding: 2px 6px;
 
     &.flagged {
         .task-form-label-btn-tick {
