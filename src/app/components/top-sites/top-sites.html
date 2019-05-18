@@ -1,70 +1,68 @@
 <div class="main-block-content top-sites-container" [class.visible]="isVisible">
     <form class="container top-site-form"
         *ngIf="isFormVisible; else elseBlock" (submit)="addSite($event)">
-        <h3 class="main-block-modal-title">{{ editedSite ? "Edit" : "Add new" }} site</h3>
+        <h3 class="main-block-modal-title">{{ editedSite ? "Edit" : "Add" }} site</h3>
         <div class="top-site-form-content">
-            <div class="site-thumbnail-container top-site-form-thumbnail">
+            <div class="top-site-thumbnail-container top-site-form-thumbnail">
                 <ng-container *ngIf="formThumbnail; else elseBlock">
-                    <img class="site-thumbnail" [src]="formThumbnail.url" [class.favicon]="formThumbnail.isFavicon" alt="">
-                    <button type="button" class="btn btn-icon top-site-form-remove-btn"
-                        (click)="removeFormThumbnail()" title="Remove">
-                        <svg viewBox="0 0 24 24">
-                            <use href="#trash"></use>
-                        </svg>
-                    </button>
+                    <img class="top-site-thumbnail" [src]="formThumbnail.url" [class.favicon]="formThumbnail.isFavicon" alt="">
+                    <button type="button" class="btn top-site-form-remove-btn"
+                        (click)="removeFormThumbnail()" title="Remove icon">Remove</button>
                 </ng-container>
                 <ng-template #elseBlock>
-                    <label class="btn top-site-file-input">
-                        <span>Select thumbnail</span>
+                    <label class="btn btn-text top-site-file-input" tabindex="0">
+                        <div>Add icon</div>
                         <input type="file" class="file-input" accept="image/*"
                             (change)="handleFileInputChange($event)">
                     </label>
                 </ng-template>
             </div>
             <div>
-                <input type="text" class="input top-site-form-input"
-                    [value]="editedSite?.title"
-                    placeholder="Title" name="title" autocomplete="off">
-                <input type="text" class="input top-site-form-input"
-                    [value]="editedSite?.url"
-                    placeholder="URL" name="url" autocomplete="off" required>
-                <button class="btn">{{ editedSite ? "Edit" : "Add" }}</button>
+                <label class="top-site-form-label">
+                    <div class="top-site-form-input-title">Title</div>
+                    <input type="text" class="input top-site-form-input"
+                        [value]="editedSite?.title"
+                        name="title" autocomplete="off">
+                </label>
+                <label class="top-site-form-label">
+                    <div class="top-site-form-input-title">URL</div>
+                    <input type="text" class="input top-site-form-input"
+                        [value]="editedSite?.url"
+                        name="url" autocomplete="off" required>
+                </label>
             </div>
         </div>
-        <button type="button" class="btn btn-icon main-block-modal-close-btn"
-            (click)="hideForm()" title="Close">
-            <svg viewBox="0 0 24 24">
-                <use href="#cross"></use>
-            </svg>
-        </button>
+        <div class="top-site-form-buttons">
+            <button type="button" class="btn" *ngIf="editedSite" (click)="removeSite(i)">Remove</button>
+            <button type="button" class="btn top-site-form-cancel-btn" (click)="hideForm()">Cancel</button>
+            <button class="btn">{{ editedSite ? "Edit" : "Add" }}</button>
+        </div>
     </form>
     <ng-template #elseBlock>
-        <ul class="top-sites" [class.mask]="isFetching">
-            <li class="container top-site" *ngFor="let site of visibleSites; let i = index">
-                <a [href]="site.url" [attr.aria-label]="site.title">
-                    <div class="site-title">{{ site.title }}</div>
-                    <div class="site-thumbnail-container">
-                        <img alt="" class="site-thumbnail"
+        <ul class="top-sites">
+            <li class="top-site" *ngFor="let site of visibleSites; let i = index">
+                <a [href]="site.url" class="top-site-link" [attr.aria-label]="site.title">
+                    <div class="top-site-title">{{ site.title }}</div>
+                    <div class="top-site-thumbnail-container">
+                        <img alt="" class="top-site-thumbnail"
                             [class.favicon]="site.image.isFavicon"
                             [src]="site.image.url">
                     </div>
                 </a>
-                <button class="btn btn-icon remove-site-btn delay-reveal" (click)="removeSite(i)" title="Remove">
+                <button class="btn btn-icon top-site-edit-btn delay-reveal" (click)="editSite(i)" title="Edit site">
                     <svg viewBox="0 0 24 24">
-                        <use href="#cross"></use>
-                    </svg>
-                </button>
-                <button class="btn btn-icon btn-icon-alt edit-site-btn delay-reveal" (click)="editSite(i)" title="Edit">
-                    <svg viewBox="0 0 24 24">
-                        <use href="#edit"></use>
+                        <use href="#vertical-dots"></use>
                     </svg>
                 </button>
             </li>
-            <li class="container top-site" *ngIf="addSiteButtonVisible">
-                <button class="btn add-site-btn" (click)="showForm()" title="Add new site">
-                    <svg viewBox="0 0 24 24" class="add-site-btn-icon">
-                        <use href="#plus"></use>
-                    </svg>
+            <li class="top-site" *ngIf="addSiteButtonVisible">
+                <button class="top-site-link top-site-add-btn" (click)="showForm()">
+                    <div class="top-site-title">Add site</div>
+                    <div class="top-site-thumbnail-container">
+                        <svg viewBox="0 0 24 24" class="top-site-add-btn-icon">
+                            <use href="#plus"></use>
+                        </svg>
+                    </div>
                 </button>
             </li>
         </ul>

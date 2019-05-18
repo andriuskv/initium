@@ -47,6 +47,11 @@
             left: 100%;
         }
     }
+
+    &:hover {
+        background-color: transparent;
+        color: $color-blue-light;
+    }
 }
 
 .viewer-direction-icon {
@@ -60,6 +65,7 @@
     align-items: center;
     margin-top: 4px;
     padding: 4px 4px 4px 8px;
+    font-weight: bold;
 }
 
 .viewer-open-btn {
