@@ -12,7 +12,8 @@ import { apps } from "../../data/google-apps.json";
                 </a>
             </li>
         </ul>
-    `
+    `,
+    styleUrls: ["./google-apps.scss"]
 })
 export class GoogleApps {
     apps: any[] = apps;

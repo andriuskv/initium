@@ -30,23 +30,23 @@
         </ng-template>
     </div>
     <div class="upper-block-group upper-block-item-controls">
-        <button class="btn-secondary btn-secondary-alt btn-secondary-large"
+        <button class="btn btn-text upper-block-item-control-btn"
             (click)="toggle()">{{ running ? "Stop" : "Start" }}</button>
-        <button class="btn-secondary btn-secondary-alt btn-secondary-large upper-block-reset-btn"
+        <button class="btn btn-text upper-block-item-control-btn upper-block-reset-btn"
             (click)="reset()">Reset</button>
         <ng-container *ngIf="running">
-            <button class="btn-secondary btn-secondary-alt" (click)="expandSize()" title="Expand">
+            <button class="btn btn-icon" (click)="expandSize()" title="Expand">
                 <svg viewBox="0 0 24 24">
                     <use href="#expand"></use>
                 </svg>
             </button>
-            <button class="btn-secondary btn-secondary-alt" (click)="enterFullscreen()" title="Enter fullscreen">
+            <button class="btn btn-icon" (click)="enterFullscreen()" title="Enter fullscreen">
                 <svg viewBox="0 0 24 24">
                     <use href="#fullscreen"></use>
                 </svg>
             </button>
         </ng-container>
-        <button class="btn-secondary btn-secondary-alt" title="Toggle alarm"
+        <button class="btn btn-icon" title="Toggle alarm"
             (click)="toggleAlarm()">
             <svg viewBox="0 0 24 24">
                 <use attr.href="#bell{{alarmOn ? '': '-off'}}"></use>

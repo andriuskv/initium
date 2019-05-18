@@ -129,6 +129,8 @@ export class Timer {
 
         if (this.seconds || this.minutes || this.hours) {
             const duration = this.calculateDuration();
+            this.minutesDisplay = padTime(this.minutes, this.hours);
+            this.secondsDisplay = padTime(this.seconds, this.hours || this.minutes);
 
             this.initAlarm();
             this.running = true;

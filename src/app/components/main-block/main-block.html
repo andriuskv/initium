@@ -5,21 +5,21 @@
     (click)="handleClickOnContainer()">
     <ul class="main-block-nav" [class.hidden]="isNavHidden">
         <li class="main-block-nav-item">
-            <button class="btn-outside main-block-nav-item-btn" (click)="selectTab('topSites')" title="Top sites">
+            <button class="btn btn-outside main-block-nav-item-btn" (click)="selectTab('topSites')" title="Top sites">
                 <svg viewBox="0 0 24 24">
                     <path d="M16,5V11H21V5M10,11H15V5H10M16,18H21V12H16M10,18H15V12H10M4,18H9V12H4M4,11H9V5H4V11Z" />
                 </svg>
             </button>
         </li>
         <li class="main-block-nav-item">
-            <button class="btn-outside main-block-nav-item-btn" (click)="selectTab('notepad')" title="Notepad">
+            <button class="btn btn-outside main-block-nav-item-btn" (click)="selectTab('notepad')" title="Notepad">
                 <svg viewBox="0 0 24 24">
                     <use href="#notepad"></use>
                 </svg>
             </button>
         </li>
         <li class="main-block-nav-item">
-            <button class="btn-outside main-block-nav-item-btn"
+            <button class="btn btn-outside main-block-nav-item-btn"
                 [class.indicator-visible]="tabs.twitter.new"
                 (click)="selectTab('twitter')" title="Twitter">
                 <svg viewBox="0 0 24 24">
@@ -28,7 +28,7 @@
             </button>
         </li>
         <li class="main-block-nav-item">
-            <button class="btn-outside main-block-nav-item-btn"
+            <button class="btn btn-outside main-block-nav-item-btn"
                 [class.indicator-visible]="tabs.rssFeed.new"
                 (click)="selectTab('rssFeed')" title="RSS feed">
                 <svg viewBox="0 0 24 24">
@@ -42,13 +42,13 @@
         <button class="main-block-sidebar-show-btn" *ngIf="!isSidebarExpanded"
             (click)="showSidebar()" title="Show sidebar"></button>
         <div class="main-block-sidebar-btns" *ngIf="isSidebarExpanded">
-            <button class="btn-secondary btn-secondary-alt main-block-sidebar-btn"
+            <button class="btn btn-icon main-block-sidebar-btn"
                 (click)="hideSidebar()" title="Hide">
                 <svg viewBox="0 0 24 24">
                     <use href="#chevron-left"></use>
                 </svg>
             </button>
-            <button class="btn-secondary btn-secondary-alt main-block-sidebar-btn"
+            <button class="btn btn-icon main-block-sidebar-btn"
                 (click)="toggleSize()" title="Toggle size">
                 <svg viewBox="0 0 24 24">
                     <use attr.href="#vertical-{{ isExpanded ? 'shrink' : 'expand' }}"></use>

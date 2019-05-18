@@ -1,13 +1,16 @@
+@import "../../../scss/mixins.scss";
+@import "../../../scss/variables.scss";
+
 .settings-container {
     display: flex;
-    width: 440px;
+    width: 450px;
     height: 200px;
 }
 
 .settings-nav {
     flex-shrink: 0;
     width: 100px;
-    border-right: 1px solid $primary-border-color;
+    border-right: 1px solid $color-white-10;
 }
 
 .settings-nav-item.active {
@@ -18,6 +21,7 @@
     width: 100%;
     padding: 6px;
     border-radius: 0;
+    font-weight: normal;
 }
 
 .setting-tab {
@@ -34,7 +38,7 @@
     flex-wrap: wrap;
     min-height: 38px;
     padding: 4px 4px 4px 8px;
-    border-bottom: 1px solid $primary-border-color;
+    border-bottom: 1px solid $color-white-10;
     transition: 0.2s opacity;
 
     &.disabled {
@@ -54,7 +58,7 @@
 
 .setting-add-desc {
     font-size: 13px;
-    color: $secondary-text-color;
+    color: $color-white-60;
 }
 
 .setting-message {
@@ -90,7 +94,7 @@
     flex: 1;
 
     &:first-of-type {
-        border-right: 1px solid $primary-border-color;
+        border-right: 1px solid $color-white-10;
     }
 }
 

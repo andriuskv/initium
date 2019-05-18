@@ -1,26 +1,26 @@
 <ul class="settings-nav">
     <li class="settings-nav-item" [class.active]="active === 'general'">
-        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+        <button class="btn btn-text settings-nav-item-btn"
             (click)="setActiveTab('general')">General</button>
     </li>
     <li class="settings-nav-item" [class.active]="active === 'mainBlock'">
-        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+        <button class="btn btn-text settings-nav-item-btn"
             (click)="setActiveTab('mainBlock')">Main Block</button>
     </li>
     <li class="settings-nav-item" [class.active]="active === 'time'">
-        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+        <button class="btn btn-text settings-nav-item-btn"
             (click)="setActiveTab('time')">Time & Date</button>
     </li>
     <li class="settings-nav-item" [class.active]="active === 'background'">
-        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+        <button class="btn btn-text settings-nav-item-btn"
             (click)="setActiveTab('background')">Background</button>
     </li>
     <li class="settings-nav-item" [class.active]="active === 'weather'">
-        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+        <button class="btn btn-text settings-nav-item-btn"
             (click)="setActiveTab('weather')">Weather</button>
     </li>
     <li class="settings-nav-item" [class.active]="active === 'pomodoro'">
-        <button class="btn-secondary btn-secondary-alt settings-nav-item-btn"
+        <button class="btn btn-text settings-nav-item-btn"
             (click)="setActiveTab('pomodoro')">Pomodoro</button>
     </li>
 </ul>
@@ -96,7 +96,7 @@
     </div>
     <div class="setting setting-background">
         <div class="setting-background-title">Set background from...</div>
-        <button class="btn-secondary btn-secondary-alt setting-background-viewer-btn"
+        <button class="btn btn-icon setting-background-viewer-btn"
             title="Adjust background position"
             *ngIf="settings.background.url"
             (click)="openBackgroundViewer()">
@@ -106,7 +106,7 @@
         </button>
         <div class="setting-background-items">
             <div class="setting-background-item">
-                <button class="btn-secondary btn-secondary-alt setting-background-item-btn"
+                <button class="btn btn-icon setting-background-item-btn"
                     (click)="setActiveTab('dropbox')">
                     <svg viewBox="0 0 24 24">
                         <use href="#dropbox"></use>
@@ -115,7 +115,7 @@
                 </button>
             </div>
             <div class="setting-background-item">
-                <button class="btn-secondary btn-secondary-alt setting-background-item-btn" (click)="showBackgroundForm()">URL</button>
+                <button class="btn btn-text setting-background-item-btn" (click)="showBackgroundForm()">URL</button>
             </div>
         </div>
     </div>

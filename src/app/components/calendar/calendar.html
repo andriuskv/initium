@@ -14,7 +14,7 @@
             <div class="calendar-reminder-range">{{ reminder.rangeString }}</div>
         </li>
     </ul>
-    <button class="btn-secondary btn-secondary-alt calendar-sidebar-toggle-btn"
+    <button class="btn btn-icon calendar-sidebar-toggle-btn"
         (click)="changeSidebarSize()"
         [title]="sidebarCollapsed ? 'Expand' : 'Collapse'">
         <svg viewBox="0 0 24 24">
@@ -37,13 +37,13 @@
     <ng-template #elseBlock1>
         <div class="calendar" [class.transitioning]="transitioning" *ngIf="inYearView; else elseBlock2">
             <div class="calendar-header">
-                <button class="btn-secondary btn-secondary-alt" (click)="setVisibleYear(-1)" title="Previous year">
+                <button class="btn btn-icon" (click)="setVisibleYear(-1)" title="Previous year">
                     <svg viewBox="0 0 24 24">
                         <use href="#chevron-left"></use>
                     </svg>
                 </button>
                 <span class="calendar-title">{{ currentYear }}</span>
-                <button class="btn-secondary btn-secondary-alt" (click)="setVisibleYear(1)" title="Next year">
+                <button class="btn btn-icon" (click)="setVisibleYear(1)" title="Next year">
                     <svg viewBox="0 0 24 24">
                         <use href="#chevron-right"></use>
                     </svg>
@@ -59,14 +59,14 @@
     <ng-template #elseBlock2>
         <div class="calendar" [class.transitioning]="transitioning">
             <div class="calendar-header">
-                <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(-1)" title="Previous month">
+                <button class="btn btn-icon" (click)="setVisibleMonth(-1)" title="Previous month">
                     <svg viewBox="0 0 24 24">
                         <use href="#chevron-left"></use>
                     </svg>
                 </button>
-                <button class="btn-secondary btn-secondary-alt calendar-title"
+                <button class="btn btn-text calendar-title"
                     (click)="viewYear()">{{ visibleMonth.current.name }} {{ currentYear }}</button>
-                <button class="btn-secondary btn-secondary-alt" (click)="setVisibleMonth(1)" title="Next month">
+                <button class="btn btn-icon" (click)="setVisibleMonth(1)" title="Next month">
                     <svg viewBox="0 0 24 24">
                         <use href="#chevron-right"></use>
                     </svg>

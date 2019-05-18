@@ -17,7 +17,7 @@
                 <div class="feed-message" *ngIf="message">{{ message }}</div>
                 <button class="btn" [disabled]="fetching">Add</button>
             </div>
-            <button type="button" class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
+            <button type="button" class="btn btn-icon main-block-modal-close-btn"
                 *ngIf="showingFormCloseButton"
                 (click)="backToFeedList()" title="Back to feeds">
                 <svg viewBox="0 0 24 24">
@@ -30,13 +30,13 @@
         <ng-container *ngIf="showingFeedList; else elseIf3">
             <div class="feed-list-header">
                 <h2 class="feed-list-title">Your feeds</h2>
-                <button class="btn-secondary btn-secondary-alt"
+                <button class="btn btn-icon"
                     (click)="showForm(true)" title="Add new feed">
                     <svg viewBox="0 0 24 24">
                         <use href="#plus"></use>
                     </svg>
                 </button>
-                <button class="btn-secondary btn-secondary-alt"
+                <button class="btn btn-icon"
                     *ngIf="feeds.length"
                     (click)="hideFeedList()" title="Hide your feeds">
                     <svg viewBox="0 0 24 24">
@@ -57,26 +57,26 @@
                                 #feedTitleInput>
                             <ng-template #elseBlock>
                                 <h3 class="feed-list-item-title">
-                                    <button class="btn-secondary feed-new-entry-count-container"
+                                    <button class="btn btn-icon feed-new-entry-count-container"
                                         (click)="markEntriesAsRead(feed)"
                                         *ngIf="feed.newEntryCount"
                                         title="Mark new entries as read">
                                         <div class="feed-new-entry-count">{{ feed.newEntryCount }}</div>
                                     </button>
-                                    <button class="btn-secondary feed-list-item-title-btn"
+                                    <button class="btn btn-text feed-list-item-title-btn"
                                         (click)="showFeedFromList(i)">{{ feed.title }}</button>
                                 </h3>
                             </ng-template>
                             <div class="feed-list-item-url">{{ feed.url }}</div>
                         </div>
-                        <button class="btn-secondary btn-secondary-dim feed-list-item-btn"
+                        <button class="btn btn-icon btn-icon-alt feed-list-item-btn"
                             *ngIf="!feed.makingTitleEdit"
                             (click)="enableTitleEdit(feed)" title="Edit title">
                             <svg viewBox="0 0 24 24">
                                 <use href="#edit"></use>
                             </svg>
                         </button>
-                        <button class="btn-secondary btn-secondary-dim feed-list-item-btn"
+                        <button class="btn btn-icon btn-icon-alt feed-list-item-btn"
                             (click)="removeFeed(i)" title="Remove">
                             <svg viewBox="0 0 24 24">
                                 <use href="#trash"></use>
@@ -90,11 +90,11 @@
                     *ngFor="let feed of feedsToLoad; let i = index">
                     <div class="feed-list-item-content">
                         <div class="feed-list-item-header">
-                            <div>
+                            <div class="feed-list-item-title-container">
                                 <h3 class="feed-list-item-title">{{ feed.title }}</h3>
                                 <div class="feed-list-item-url">{{ feed.url }}</div>
                             </div>
-                            <button class="btn-secondary btn-secondary-dim feed-list-item-btn"
+                            <button class="btn btn-icon btn-icon-alt feed-list-item-btn"
                                 (click)="removeFailedToFetchFeed(i)" title="Remove">
                                 <svg viewBox="0 0 24 24">
                                     <use href="#trash"></use>
@@ -103,7 +103,7 @@
                         </div>
                         <div class="feed-list-item-error">
                             <span>Failed to fetch.</span>
-                            <button class="btn-secondary" (click)="refetchFeed(feed, i)">Try again</button>
+                            <button class="btn btn-text-alt" (click)="refetchFeed(feed, i)">Try again</button>
                         </div>
                     </div>
                 </li>
@@ -113,7 +113,7 @@
     <ng-template #elseIf3>
         <ng-container *ngIf="activeFeed">
             <div class="main-block-content-header">
-                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn feed-shift-btn"
+                <button class="btn btn-icon main-block-content-header-btn feed-shift-btn"
                     [class.active]="animatingLeft"
                     *ngIf="feeds.length > VISIBLE_FEED_COUNT"
                     (click)="previousVisibleFeeds()"
@@ -127,7 +127,7 @@
                         *ngFor="let feed of feeds; let i = index"
                         [class.active]="feed.url === activeFeed.url"
                         [class.hidden]="i < shift || i >= shift + VISIBLE_FEED_COUNT">
-                        <button class="btn-secondary main-block-content-header-item-select-btn"
+                        <button class="btn btn-text-alt main-block-content-header-item-select-btn"
                             (click)="handleHeaderItemClick($event, feed, i)">
                             <div class="feed-new-entry-count-container" *ngIf="feed.newEntryCount" data-entry-count>
                                 <div class="feed-new-entry-count">{{ feed.newEntryCount }}</div>
@@ -136,7 +136,7 @@
                         </button>
                     </li>
                 </ul>
-                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn feed-shift-btn"
+                <button class="btn btn-icon main-block-content-header-btn feed-shift-btn"
                     [class.active]="animatingRight"
                     *ngIf="feeds.length > VISIBLE_FEED_COUNT"
                     (click)="nextVisibleFeeds()"
@@ -146,7 +146,7 @@
                     </svg>
                 </button>
                 <div class="main-block-content-header-separator"></div>
-                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn feed-menu-btn"
+                <button class="btn btn-icon main-block-content-header-btn feed-menu-btn"
                     [class.indicator-visible]="feedsToLoad.length"
                     (click)="showFeedList()" title="Your feeds">
                     <svg viewBox="0 0 24 24">
@@ -165,7 +165,7 @@
                     <p class="feed-description"
                         [class.truncated]="entry.truncated"
                         [innerHTML]="entry.description"></p>
-                    <button class="btn-secondary feed-entry-expand-btn" (click)="expandEntry(entry)">Show More</button>
+                    <button class="btn btn-text feed-entry-expand-btn" (click)="expandEntry(entry)">Show More</button>
                     <div class="feed-date" *ngIf="entry.date">Posted on: {{ entry.date }}</div>
                 </li>
             </ul>

@@ -9,8 +9,8 @@ html, body {
 body {
     margin: 0;
     background-color: $color-grey-light;
-    color: $primary-text-color;
-    font-family: sans-serif;
+    color: $color-white;
+    font-family: $font-family;
     font-size: 14px;
     line-height: 1.15;
     text-rendering: optimizeLegibility;
@@ -54,14 +54,14 @@ textarea {
     background-color: transparent;
     color: inherit;
     font-family: inherit;
-    font-size: 14px;
+    font-size: inherit;
 }
 
 textarea {
     @include scrollbar;
 
     resize: none;
-    padding: 4px;
+    padding: 4px 6px;
 }
 
 .js-focus-visible :focus:not(.focus-visible) {
@@ -73,11 +73,11 @@ textarea {
     border: 1px solid transparent;
     background-color: $color-grey-darker-60;
     background-image: url("./assets/images/img-noise-64x64.png");
-    box-shadow: inset 0 0 0 1px $container-inset-box-shadow-color;
+    box-shadow: inset 0 0 0 1px $color-white-10;
     backdrop-filter: blur(16px);
 
     @supports not (backdrop-filter: blur(0)) {
-        background-color: $secondary-container-background-color;
+        background-color: $color-grey-dark;
     }
 }
 
@@ -87,104 +87,102 @@ textarea {
     backdrop-filter: blur(16px);
 
     @supports not (backdrop-filter: blur(0)) {
-        background-color: $secondary-container-background-color;
+        background-color: $color-grey-dark;
     }
 }
 
-%btn-styles {
+.input {
+    padding: 4px 6px;
+    border-radius: 2px;
+    background-color: $color-white-10;
+
+    &::placeholder {
+        color: $color-white-40;
+    }
+}
+
+.btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 2px;
+    background-color: $color-white-10;
+    font-weight: bold;
     transition: 0.2s color,
                 0.2s background-color,
                 0.2s opacity;
     cursor: pointer;
 
+    &:hover {
+        background-color: $color-white-20;
+    }
+
     &:disabled {
-        color: $button-disabled-color;
+        color: $color-white-20;
         cursor: default;
 
         &:hover {
-            color: $button-disabled-color;
+            color: $color-white-20;
+            background-color: $color-white-10;
         }
     }
 }
 
-.btn,
-.input,
-.checkbox,
-.radio,
-.toggle {
-    border-radius: 2px;
-    background-color: $input-background-color;
-}
-
-.input {
-    padding: 4px 6px;
-
-    &::placeholder {
-        color: $input-placeholder-color;
-    }
-}
-
-.btn {
-    @extend %btn-styles;
-
-    padding: 4px 12px;
-
-    &:hover {
-        background-color: $button-hover-background-color;
-    }
-
-    &:disabled:hover {
-        background-color: $button-background-color;
-    }
-}
-
-.btn-secondary {
-    @extend %btn-styles;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.btn-icon {
     padding: 2px;
+    background-color: transparent;
 
     &:hover {
-        color: $button-hover-color;
-    }
+        background-color: $color-white-10;
 
-    &:disabled:hover {
+        &:disabled {
+            background-color: transparent;
+        }
+    }
+}
+
+.btn-icon-alt {
+    color: $color-white-40;
+
+    &:hover {
         background-color: transparent;
+        color: $color-white;
     }
 }
 
-.btn-secondary-alt {
-    border-radius: 2px;
+.btn-text {
+    background-color: transparent;
 
     &:hover {
-        color: $primary-text-color;
-        background-color: $secondary-button-hover-background-color;
+        background-color: $color-white-10;
     }
 }
 
-.btn-secondary-dim {
-    color: $secondary-text-color;
+.btn-text-alt {
+    background-color: transparent;
 
     &:hover {
-        color: $primary-text-color;
+        background-color: transparent;
+        color: $color-blue-light;
     }
-}
-
-.btn-secondary-large {
-    padding: 4px 8px;
 }
 
 .btn-outside {
     padding: 0;
-    filter: drop-shadow($icon-shadow);
-    cursor: pointer;
+    background-color: transparent;
+    filter: drop-shadow(0 1px 1px $color-black-20);
+
+    &:hover {
+        background-color: transparent;
+    }
 }
 
 .checkbox {
     width: 16px;
     height: 16px;
+    border-radius: 2px;
+    background-color: $color-white-10;
 
     &.checked .checkbox-tick {
         display: block;
@@ -207,6 +205,7 @@ textarea {
     height: 16px;
     padding: 5px;
     border-radius: 50%;
+    background-color: $color-white-10;
 
     &::after {
         content: "";
@@ -232,6 +231,8 @@ textarea {
     position: relative;
     display: flex;
     padding: 2px;
+    border-radius: 2px;
+    background-color: $color-white-10;
     cursor: pointer;
     user-select: none;
 

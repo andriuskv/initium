@@ -13,7 +13,8 @@ import { padTime } from "../../utils/utils.js";
             </div>
             <div class="date" *ngIf="!dateHidden">{{ date }}</div>
         </div>
-    `
+    `,
+    styleUrls: ["./time.scss"]
 })
 export class Time {
     disabled: boolean = false;

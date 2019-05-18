@@ -3,7 +3,8 @@ import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "widget-menu",
-    templateUrl: "./widget-menu.html"
+    templateUrl: "./widget-menu.html",
+    styleUrls: ["./widget-menu.scss"]
 })
 export class WidgetMenu {
     @Output() toggle = new EventEmitter();

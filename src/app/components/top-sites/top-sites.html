@@ -6,7 +6,7 @@
             <div class="site-thumbnail-container top-site-form-thumbnail">
                 <ng-container *ngIf="formThumbnail; else elseBlock">
                     <img class="site-thumbnail" [src]="formThumbnail.url" [class.favicon]="formThumbnail.isFavicon" alt="">
-                    <button type="button" class="btn-secondary btn-secondary-dim top-site-form-remove-btn"
+                    <button type="button" class="btn btn-icon top-site-form-remove-btn"
                         (click)="removeFormThumbnail()" title="Remove">
                         <svg viewBox="0 0 24 24">
                             <use href="#trash"></use>
@@ -31,7 +31,7 @@
                 <button class="btn">{{ editedSite ? "Edit" : "Add" }}</button>
             </div>
         </div>
-        <button type="button" class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
+        <button type="button" class="btn btn-icon main-block-modal-close-btn"
             (click)="hideForm()" title="Close">
             <svg viewBox="0 0 24 24">
                 <use href="#cross"></use>
@@ -49,19 +49,19 @@
                             [src]="site.image.url">
                     </div>
                 </a>
-                <button class="btn-secondary remove-site-btn delay-reveal" (click)="removeSite(i)" title="Remove">
+                <button class="btn btn-icon remove-site-btn delay-reveal" (click)="removeSite(i)" title="Remove">
                     <svg viewBox="0 0 24 24">
                         <use href="#cross"></use>
                     </svg>
                 </button>
-                <button class="btn-secondary btn-secondary-dim edit-site-btn delay-reveal" (click)="editSite(i)" title="Edit">
+                <button class="btn btn-icon btn-icon-alt edit-site-btn delay-reveal" (click)="editSite(i)" title="Edit">
                     <svg viewBox="0 0 24 24">
                         <use href="#edit"></use>
                     </svg>
                 </button>
             </li>
             <li class="container top-site" *ngIf="addSiteButtonVisible">
-                <button class="btn-secondary add-site-btn" (click)="showForm()" title="Add new site">
+                <button class="btn add-site-btn" (click)="showForm()" title="Add new site">
                     <svg viewBox="0 0 24 24" class="add-site-btn-icon">
                         <use href="#plus"></use>
                     </svg>

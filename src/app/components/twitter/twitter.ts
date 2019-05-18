@@ -6,7 +6,8 @@ import { formatTime } from "app/utils/utils";
 
 @Component({
     selector: "twitter",
-    templateUrl: "./twitter.html"
+    templateUrl: "./twitter.html",
+    styleUrls: ["./twitter.scss"]
 })
 export class Twitter {
     @Output() newTweets = new EventEmitter();

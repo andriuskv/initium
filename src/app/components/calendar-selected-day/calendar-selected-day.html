@@ -1,5 +1,5 @@
 <div class="calendar-header">
-    <button class="btn-secondary btn-secondary-alt selected-day-header-btn"
+    <button class="btn btn-icon selected-day-header-btn"
         (click)="showCalendar()" title="Back to calendar">
         <svg viewBox="0 0 24 24">
             <use href="#chevron-left"></use>
@@ -19,7 +19,7 @@
                 <div>{{ reminder.text }}</div>
                 <div class="calendar-reminder-range">{{ reminder.rangeString }}</div>
             </div>
-            <button class="btn-secondary btn-secondary-dim"
+            <button class="btn btn-icon btn-icon-alt"
                 (click)="removeReminder(reminder.id, i)" title="Remove">
                 <svg viewBox="0 0 24 24">
                     <use href="#trash"></use>
@@ -30,7 +30,7 @@
     <ng-template #elseBlock>
         <div class="empty-reminder-list-message">You have no reminders</div>
     </ng-template>
-    <button class="btn-secondary new-reminder-btn" (click)="showReminderForm()">
+    <button class="btn btn-icon new-reminder-btn" (click)="showReminderForm()">
         <svg viewBox="0 0 24 24">
             <use href="#plus"></use>
         </svg>
@@ -75,7 +75,7 @@
                         (keyup)="validateRangeInput($event, 'from')"
                         [pattern]="timePattern"
                         [value]="range.from.string" required>
-                    <ul class="container reminder-timetable">
+                    <ul class="reminder-timetable">
                         <li class="reminder-timetable-item" *ngFor="let item of timeTable.items"
                             (mousedown)="updateTimeRange(item, 'from')">{{ item.string }}</li>
                     </ul>
@@ -87,7 +87,7 @@
                         (keyup)="validateRangeInput($event, 'to')"
                         [pattern]="timePattern"
                         [value]="range.to.string">
-                    <ul class="container reminder-timetable">
+                    <ul class="reminder-timetable">
                         <li class="reminder-timetable-item" *ngFor="let item of timeTable.items"
                             (mousedown)="updateTimeRange(item, 'to')">{{ item.string }}</li>
                     </ul>

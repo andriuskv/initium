@@ -8,7 +8,7 @@
                 <span class="twitter-user-handle">{{ user.handle }}</span>
             </a>
             <div class="main-block-content-header-separator"></div>
-            <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+            <button class="btn btn-icon main-block-content-header-btn"
                 title="Log out" (click)="logout()">
                 <svg viewBox="0 0 24 24">
                     <use href="#logout"></use>
@@ -17,7 +17,7 @@
         </div>
         <ul class="tweets">
             <li *ngIf="tweetsToLoad.length">
-                <button class="btn-secondary new-tweet-btn" (click)="loadNewTweets()">View {{ tweetsToLoad.length }} new tweet{{ tweetsToLoad.length > 1 ? "s": "" }}</button>
+                <button class="btn btn-text new-tweet-btn" (click)="loadNewTweets()">View {{ tweetsToLoad.length }} new tweet{{ tweetsToLoad.length > 1 ? "s": "" }}</button>
             </li>
             <li class="tweet" *ngFor="let tweet of tweets" (click)="handleClickOnTweet($event, tweet.tweetUrl)">
                 <div class="retweet" *ngIf="tweet.retweetedBy">
@@ -80,7 +80,7 @@
                 </div>
             </li>
             <li>
-                <button class="btn-secondary more-tweets-btn" (click)="fetchMoreTweets()"
+                <button class="btn btn-text more-tweets-btn" (click)="fetchMoreTweets()"
                     [disabled]="fetchingMoreTweets">Show More</button>
             </li>
         </ul>
