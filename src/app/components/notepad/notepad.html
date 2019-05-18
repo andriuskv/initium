@@ -2,7 +2,7 @@
     <ng-container *ngIf="showingForm; else elseBlock1">
         <div class="notepad-form" *ngIf="removingTab; else elseBlock">
             <h3 class="main-block-modal-title">Are you really want to remove {{ tabs[tabToRemove].title }} tab?</h3>
-            <div>
+            <div class="notepad-form-btns">
                 <button class="btn" (click)="removeTab(tabToRemove)">Yes</button>
                 <button class="btn" (click)="hideForm()">No</button>
             </div>
@@ -10,8 +10,10 @@
         <ng-template #elseBlock>
             <form (submit)="createTab($event)" class="notepad-form">
                 <h3 class="main-block-modal-title">Create new tab</h3>
-                <input type="text" class="input" name="title" placeholder="Title" #tabTitleInput>
-                <button class="btn">Create</button>
+                <div class="notepad-form-input-container">
+                    <input type="text" class="input" name="title" placeholder="Title" #tabTitleInput>
+                    <button class="btn">Create</button>
+                </div>
             </form>
         </ng-template>
         <button class="btn btn-icon main-block-modal-close-btn"
