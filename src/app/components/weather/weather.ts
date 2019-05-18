@@ -15,7 +15,8 @@ import { WeatherService } from "../../services/weatherService";
             </div>
             <div class="weather-city">{{ city }}</div>
         </div>
-    `
+    `,
+    styleUrls: ["./weather-icons.min.css", "./weather.scss"]
 })
 export class Weather {
     disabled: boolean = false;

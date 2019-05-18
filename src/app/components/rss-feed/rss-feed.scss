@@ -58,7 +58,7 @@
         content: "";
         display: block;
         border-radius: 50%;
-        background-color: $button-background-color;
+        background-color: $color-white-10;
         animation-name: ping;
         animation-duration: 1.6s;
         animation-fill-mode: both;
@@ -88,10 +88,14 @@
     height: 18px;
     margin-right: 8px;
     color: $color-grey-dark;
-    font-size: 11px;
+    font-size: 10px;
 
-    &:hover::before {
-        transform: scale(1.2);
+    &:hover {
+        background-color: transparent;
+
+        &::before {
+            transform: scale(1.2);
+        }
     }
 
     &::before {
@@ -129,16 +133,16 @@
 
 .feed-entry {
     padding: 8px;
-    box-shadow: 0 1px 0 0 $primary-border-color;
+    box-shadow: 0 1px 0 0 $color-white-10;
 }
 
 .feed-entry-title {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .feed-entry-link {
     font-size: 16px;
-    line-height: 1.25;
+    // line-height: 1.25;
 
     &:hover {
         text-decoration: underline;
@@ -214,7 +218,7 @@
 
 .feed-date {
     margin-top: 4px;
-    color: $secondary-text-color;
+    color: $color-white-60;
     font-size: 13px;
 }
 
@@ -225,9 +229,9 @@
     justify-content: flex-end;
     align-items: center;
     padding: 4px;
-    border-bottom: 1px solid $primary-border-color;
+    border-bottom: 1px solid $color-white-10;
 
-    .btn-secondary {
+    .btn-icon {
         margin-left: 4px;
     }
 }
@@ -248,7 +252,7 @@
 
 .feed-list-item {
     padding: 8px;
-    box-shadow: 0 1px 0 0 $primary-border-color;
+    box-shadow: 0 1px 0 0 $color-white-10;
 
     &.disabled {
         position: relative;
@@ -300,10 +304,9 @@
     margin-bottom: 4px;
     font-size: 16px;
 
-
-    .feed-new-entry-count-container:hover {
-        color: $color-grey-dark;
-    }
+    // .feed-new-entry-count-container:hover {
+    //     color: $color-grey-dark;
+    // }
 }
 
 .feed-list-item-title-btn {
@@ -311,21 +314,22 @@
     font-size: inherit;
 
     &:hover {
-        color: $primary-text-color;
+        background-color: transparent;
+        color: $color-white;
         text-decoration: underline;
     }
 }
 
 .feed-list-item-title-input {
     padding: 2px 4px;
-    border-radius: 0;
-    background-color: transparent;
     font-size: 16px;
+    // border-radius: 0;
+    // background-color: transparent;
 }
 
 .feed-list-item-url {
     font-size: 13px;
-    color: $secondary-text-color;
+    color: $color-white-60;
 }
 
 .feed-list-item-error {
@@ -335,9 +339,9 @@
     margin-top: 8px;
     color: $color-danger;
 
-    .btn-secondary {
+    .btn {
         margin-left: 8px;
-        font-weight: bold;
+        // font-weight: bold;
 
          &:hover {
             color: $color-danger;

@@ -6,7 +6,7 @@
             <use [attr.href]="'#' + item.iconId"></use>
         </svg>
         <h3 class="menu-title">{{ item.title }}</h3>
-        <button class="btn-secondary btn-secondary-alt" (click)="hideItem()" title="Close">
+        <button class="btn btn-icon" (click)="hideItem()" title="Close">
             <svg viewBox="0 0 24 24">
                 <use href="#cross"></use>
             </svg>
@@ -26,7 +26,7 @@
     [style.zIndex]="zIndex"
     (click)="increaseZIndex()">
     <li class="menu-item">
-        <button class="btn-outside menu-item-btn"
+        <button class="btn btn-outside menu-item-btn"
             (click)="showItem('google-apps', 'Google Apps', 'grid')" title="Google Apps">
             <svg viewBox="0 0 24 24">
                 <use href="#grid"></use>
@@ -34,14 +34,14 @@
         </button>
     </li>
     <li class="menu-item">
-        <button class="btn-outside menu-item-btn" (click)="toggleUpperBlock()" title="Timers">
+        <button class="btn btn-outside menu-item-btn" (click)="toggleUpperBlock()" title="Timers">
             <svg viewBox="0 0 24 24">
                 <use href="#clock"></use>
             </svg>
         </button>
     </li>
     <li class="menu-item">
-        <button class="btn-outside menu-item-btn"
+        <button class="btn btn-outside menu-item-btn"
             [class.indicator-visible]="reminderInicatorVisible"
             (click)="showItem('calendar')" title="Calendar">
             <svg viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
         </button>
     </li>
     <li class="menu-item">
-        <button class="btn-outside menu-item-btn" (click)="showItem('settings')" title="Settings">
+        <button class="btn btn-outside menu-item-btn" (click)="showItem('settings')" title="Settings">
             <svg viewBox="0 0 24 24">
                 <use href="#settings"></use>
             </svg>

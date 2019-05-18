@@ -1,11 +1,12 @@
+@import "../../../scss/variables.scss";
+
 .weather {
 	position: absolute;
   top: 4px;
 	right: 8px;
 	text-align: right;
+	text-shadow: 0 1px 0 $color-black-10, 0 0 4px $color-black-10;
 	cursor: default;
-	text-shadow: $text-shadow;
-	font-family: $large-number-font-family;
 }
 
 .weather-temp-icon-container {

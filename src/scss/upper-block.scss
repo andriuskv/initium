@@ -58,7 +58,7 @@
 .upper-block-header {
     display: flex;
     padding: 4px;
-    border-bottom: 1px solid $primary-border-color;
+    border-bottom: 1px solid $color-white-10;
 }
 
 .upper-block-header-item {
@@ -78,6 +78,13 @@
 
 .upper-block-header-item-btn {
     padding: 2px 6px;
+    font-size: 14px;
+    font-weight: normal;
+
+    &:hover {
+        background-color: transparent;
+        color: $color-blue-light;
+    }
 
     span {
         margin-left: 4px;
@@ -110,7 +117,6 @@
     border-right: 1px solid transparent;
     font-size: 4em;
     font-kerning: none;
-    font-family: $large-number-font-family;
 }
 
 .upper-block-sep {
@@ -125,11 +131,17 @@
 .upper-block-item-controls {
     display: flex;
     padding: 4px;
-    border-top: 1px solid $primary-border-color;
+    border-top: 1px solid $color-white-10;
 
-    .btn-secondary:not(:first-of-type) {
+    .btn-icon {
+        padding: 2px 4px;
         margin-left: 4px;
     }
+}
+
+.upper-block-item-control-btn {
+    margin-right: 8px;
+    font-size: 14px;
 }
 
 .upper-block-reset-btn {
@@ -169,13 +181,15 @@
     flex-shrink: 0;
     width: 100px;
     height: 100%;
-    border-left: 1px solid $primary-border-color;
+    border-left: 1px solid $color-white-10;
+    font-size: 14px;
 }
 
 .pomodoro-btn {
     width: 100%;
     padding: 6px;
     border-radius: 0;
+    font-weight: normal;
 
     &.active {
         box-shadow: inset 2px 0 0 0 $color-blue;

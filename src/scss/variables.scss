@@ -1,3 +1,5 @@
+$font-family: "Open Sans", sans-serif;
+
 $color-blue: #359ee9;
 $color-blue-light: #75bdf0;
 
@@ -13,33 +15,10 @@ $color-black-20: rgba(0, 0, 0, 0.2);
 $color-black-40: rgba(0, 0, 0, 0.4);
 $color-black-60: rgba(0, 0, 0, 0.6);
 
-$color-grey-dark: #333;
 $color-grey-light: #444;
+$color-grey-dark: #333;
+$color-grey-darker-40: rgba(34, 34, 34, 0.4);
 $color-grey-darker-60: rgba(34, 34, 34, 0.6);
 
 $color-success: #00e05a;
 $color-danger: #f77864;
-
-$primary-text-color: $color-white;
-$secondary-text-color: $color-white-60;
-
-$box-shadow: 0 1px 2px 0 $color-black-20;
-$text-shadow: 0 1px 0 $color-black-10, 0 0 4px $color-black-10;
-$icon-shadow: 0 1px 1px $color-black-20;
-
-$input-background-color: $color-white-10;
-$input-box-shadow-color: $color-white-4;
-$input-placeholder-color: $color-white-40;
-
-$button-disabled-color: $color-white-40;
-$button-hover-color: $color-blue-light;
-$button-background-color: $color-white-10;
-$button-hover-background-color: $color-white-20;
-$secondary-button-hover-background-color: $color-white-10;
-
-$secondary-container-background-color: $color-grey-dark;
-$container-inset-box-shadow-color: $color-white-10;
-
-$primary-border-color: $color-white-10;
-
-$large-number-font-family: "Open Sans", sans-serif;

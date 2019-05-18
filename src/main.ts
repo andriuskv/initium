@@ -1,4 +1,3 @@
-import "scss/weather-icons.min.css";
 import "scss/index.scss";
 
 import "reflect-metadata";

@@ -3,7 +3,8 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "settings",
-    templateUrl: "./settings.html"
+    templateUrl: "./settings.html",
+    styleUrls: ["./settings.scss"]
 })
 export class Settings {
     @Output() showBackgroundViewer = new EventEmitter();

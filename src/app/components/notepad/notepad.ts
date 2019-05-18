@@ -3,7 +3,8 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
 
 @Component({
     selector: "notepad",
-    templateUrl: "./notepad.html"
+    templateUrl: "./notepad.html",
+    styleUrls: ["./notepad.scss"]
 })
 export class Notepad {
     @Input() isVisible: boolean = false;

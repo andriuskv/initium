@@ -1,3 +1,5 @@
+@import "../../../scss/variables.scss";
+
 .time {
     position: absolute;
     top: 0;
@@ -7,8 +9,7 @@
     justify-content: center;
     height: 44%;
     transform: translateX(-50%);
-    text-shadow: $text-shadow;
-    font-family: $large-number-font-family;
+    text-shadow: 0 1px 0 $color-black-10, 0 0 4px $color-black-10;
     cursor: default;
 
     @media (max-height: 638px) {

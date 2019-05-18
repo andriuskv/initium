@@ -4,7 +4,8 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "dropbox",
-    templateUrl: "./dropbox.html"
+    templateUrl: "./dropbox.html",
+    styleUrls: ["./dropbox.scss"]
 })
 export class Dropbox {
     @Output() sessionEnded = new EventEmitter();

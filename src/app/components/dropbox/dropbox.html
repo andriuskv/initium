@@ -1,13 +1,13 @@
 <ng-container *ngIf="activeFolder; else elseBlock">
     <div class="dropbox-header">
-        <button class="btn-secondary btn-secondary-alt"
+        <button class="btn btn-icon"
             *ngIf="activeFolder.path" (click)="goBack()" title="Back">
             <svg viewBox="0 0 24 24">
                 <use href="#chevron-left"></use>
             </svg>
         </button>
         <span class="drobox-path">{{ activeFolder.pathForDisplay }}</span>
-        <button class="btn-secondary btn-secondary-alt" title="Log out" (click)="logout()">
+        <button class="btn btn-icon" title="Log out" (click)="logout()">
             <svg viewBox="0 0 24 24">
                 <use href="#logout"></use>
             </svg>

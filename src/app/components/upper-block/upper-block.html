@@ -1,14 +1,14 @@
 <div class="upper-block-container" #fullscreenTarget
-    [class.container]="!expanded"
+    [class.container]="!expanded && !inFullscreen"
     [class.expanded]="expanded"
-    [class.container-fullscreen]="expanded"
+    [class.container-fullscreen]="expanded || inFullscreen"
     [class.visible]="visible"
     [style.zIndex]="zIndex"
     (click)="handleClickOnContainer()">
     <div class="upper-block">
         <ul class="upper-block-group upper-block-header">
             <li class="upper-block-header-item" [class.active]="active === 'timer'">
-                <button class="btn-secondary upper-block-header-item-btn" (click)="toggleTab('timer')">
+                <button class="btn btn-icon upper-block-header-item-btn" (click)="toggleTab('timer')">
                     <svg viewBox="0 0 24 24">
                         <path d="M6,2H18V8H18V8L14,12L18,16V16H18V22H6V16H6V16L10,12L6,
                             8V8H6V2M16,16.5L12,12.5L8,16.5V20H16V16.5M12,11.5L16,
@@ -18,7 +18,7 @@
                 </button>
             </li>
             <li class="upper-block-header-item" [class.active]="active === 'stopwatch'">
-                <button class="btn-secondary upper-block-header-item-btn" (click)="toggleTab('stopwatch')">
+                <button class="btn btn-icon upper-block-header-item-btn" (click)="toggleTab('stopwatch')">
                     <svg viewBox="0 0 24 24">
                         <path d="M12,20A7,7 0 0,1 5,13A7,7 0 0,1 12,6A7,7 0 0,1 19,13A7,
                             7 0 0,1 12,20M19.03,7.39L20.45,5.97C20,5.46 19.55,5 19.04,
@@ -30,7 +30,7 @@
                 </button>
             </li>
             <li class="upper-block-header-item" [class.active]="active === 'pomodoro'">
-                <button class="btn-secondary upper-block-header-item-btn" (click)="toggleTab('pomodoro')">
+                <button class="btn btn-icon upper-block-header-item-btn" (click)="toggleTab('pomodoro')">
                     <svg viewBox="0 0 24 24">
                         <path d="M11,17A1,1 0 0,0 12,18A1,1 0 0,0 13,17A1,1 0 0,0 12,
                             16A1,1 0 0,0 11,17M11,3V7H13V5.08C16.39,5.57 19,8.47 19,12A7,
@@ -53,7 +53,7 @@
         <pomodoro [visible]="active === 'pomodoro'"
             (size)="toggleSize($event)"
             (fullscreen)="toggleFullscreen($event)"></pomodoro>
-        <button class="btn-secondary btn-secondary-alt upper-block-hide-btn"
+        <button class="btn btn-icon upper-block-hide-btn"
             (click)="hideComp()" title="Close">
             <svg viewBox="0 0 24 24">
                 <use href="#cross"></use>

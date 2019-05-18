@@ -14,7 +14,7 @@
                 <button class="btn">Create</button>
             </form>
         </ng-template>
-        <button class="btn-secondary btn-secondary-alt main-block-modal-close-btn"
+        <button class="btn btn-icon main-block-modal-close-btn"
             (click)="hideForm()" title="Close">
             <svg viewBox="0 0 24 24">
                 <use href="#cross"></use>
@@ -24,7 +24,7 @@
     <ng-template #elseBlock1>
         <ng-container *ngIf="initialized; else elseBlock3">
             <div class="main-block-content-header">
-                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+                <button class="btn btn-icon main-block-content-header-btn"
                     *ngIf="tabs.length > 4"
                     (click)="previousVisibleTabs()"
                     [disabled]="shift <= 0">
@@ -37,11 +37,11 @@
                         *ngFor="let tab of tabs; let i = index"
                         [class.active]="activeTabIndex === i"
                         [class.hidden]="i < shift || i >= shift + 4">
-                        <button class="btn-secondary main-block-content-header-item-select-btn"
+                        <button class="btn btn-text-alt main-block-content-header-item-select-btn"
                             (click)="selectTab(i)">
                             <span class="main-block-content-header-item-title">{{ tab.title }}</span>
                         </button>
-                        <button class="btn-secondary main-block-content-header-item-btn delay-reveal"
+                        <button class="btn btn-icon main-block-content-header-item-btn delay-reveal"
                             *ngIf="tabs.length > 1"
                             (click)="setTabForRemoval(i)" title="Remove">
                             <svg viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
                         </button>
                     </li>
                 </ul>
-                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+                <button class="btn btn-icon main-block-content-header-btn"
                     *ngIf="tabs.length > 4"
                     (click)="nextVisibleTabs()"
                     [disabled]="shift + 4 >= tabs.length">
@@ -59,7 +59,7 @@
                     </svg>
                 </button>
                 <div class="main-block-content-header-separator"></div>
-                <button class="btn-secondary btn-secondary-alt main-block-content-header-btn"
+                <button class="btn btn-icon main-block-content-header-btn"
                     (click)="showForm()" title="Create tab">
                     <svg viewBox="0 0 24 24">
                         <use href="#plus"></use>

@@ -1,3 +1,6 @@
+@import "../../../scss/mixins.scss";
+@import "../../../scss/variables.scss";
+
 .twitter-hero {
     display: flex;
     flex-direction: column;
@@ -50,7 +53,7 @@
     margin-right: auto;
 
     &:hover .twitter-user-name {
-        color: var(--profile-color, $secondary-text-color);
+        color: var(--profile-color, $color-white-60);
         text-decoration: underline;
     }
 }
@@ -67,13 +70,14 @@
 }
 
 .twitter-user-handle {
-    color: $secondary-text-color;
+    color: $color-white-60;
 }
 
 .new-tweet-btn,
 .more-tweets-btn {
     width: 100%;
     padding: 6px;
+    border-radius: 0;
 
     &:hover {
         background-color: $color-white-4;
@@ -81,7 +85,7 @@
 }
 
 .new-tweet-btn {
-    border-bottom: 1px solid $primary-border-color;
+    border-bottom: 1px solid $color-white-10;
 }
 
 .tweets {
@@ -93,7 +97,7 @@
 
 .tweet {
     padding: 8px 4px 4px 64px;
-    border-bottom: 1px solid $primary-border-color;
+    border-bottom: 1px solid $color-white-10;
     transition: 0.2s background-color;
     cursor: pointer;
 
@@ -107,7 +111,7 @@
     align-items: center;
     margin-bottom: 4px;
     font-size: 13px;
-    color: $secondary-text-color;
+    color: $color-white-60;
 }
 
 .retweet-icon {
@@ -127,7 +131,7 @@
 }
 
 .tweeted-on {
-    color: $secondary-text-color;
+    color: $color-white-60;
 
     &:hover {
         color: var(--profile-color);
@@ -136,7 +140,7 @@
 }
 
 .tweet-header-profile:hover .tweeted-by-name {
-    color: var(--profile-color, $secondary-text-color);
+    color: var(--profile-color, $color-white-60);
     text-decoration: underline;
 }
 
@@ -147,7 +151,7 @@
 .tweeted-by-handle {
     margin-left: 4px;
     margin-right: 4px;
-    color: $secondary-text-color;
+    color: $color-white-60;
 }
 
 .twitter-profile-image {
@@ -275,7 +279,7 @@
     margin-top: 8px;
     font-size: 12px;
     font-weight: bold;
-    color: $secondary-text-color;
+    color: $color-white-60;
 
     svg {
         width: 18px;
