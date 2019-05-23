@@ -36,6 +36,7 @@
             <ul class="task-form-labels" *ngIf="formLabels.length">
                 <li class="task-form-label" *ngFor="let label of formLabels">
                     <button type="button" class="btn btn-icon task-form-label-btn"
+                        [title]="label.flagged ? 'Unselect label' : 'Select label'"
                         [class.flagged]="label.flagged" (click)="flagLabel(label)">
                         <div class="task-label-color" [style.backgroundColor]="label.color"></div>
                         <div class="task-label-title">{{ label.title }}</div>
@@ -86,7 +87,7 @@
                             </li>
                         </ul>
                         <div class="task-text-container" [class.has-labels]="task.labels.length">
-                            <button class="task-checkbox-btn" title="Mark Completed"
+                            <button class="task-checkbox-btn" title="Remove task"
                                 (click)="removeTask(i)" [disabled]="task.removing">
                                 <svg class="task-checkbox-tick" viewBox="0 0 24 24">
                                     <use href="#tick"></use>
@@ -108,7 +109,7 @@
                                 </div>
                             </li>
                         </ul>
-                        <button class="btn btn-icon btn-icon-alt task-edit-btn" title="Edit"
+                        <button class="btn btn-icon btn-icon-alt task-edit-btn" title="Edit task"
                             (click)="editTask(i)" [disabled]="task.removing">
                             <svg class="task-edit-btn-icon" viewBox="0 0 24 24">
                                 <use href="#edit"></use>

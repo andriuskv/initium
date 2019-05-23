@@ -9,24 +9,22 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
 export class Notepad {
     @Input() isVisible: boolean = false;
     @ViewChild("textarea") textarea;
-    @ViewChild("tabTitleInput") tabTitleInput;
+    @ViewChild("editTitleInput") editTitleInput;
 
     initialized: boolean = false;
-    showingForm: boolean = false;
-    removingTab: boolean = false;
+    menuVisible: boolean = false;
     shift: number = 0;
     activeTabIndex: number = 0;
-    tabToRemove: number = 0;
     inputTimeoutId: number = 0;
-    tabs: Array<any> = [];
+    undoTimeoutId = 0;
+    tabs = [{
+        title: "Tab",
+        content: ""
+    }];
+    pendingTabs = [];
+    editedTitle;
 
-    constructor(private chromeStorageService: ChromeStorageService) {
-        this.chromeStorageService = chromeStorageService;
-        this.tabs = [{
-            title: "Tab",
-            content: ""
-        }];
-    }
+    constructor(private chromeStorageService: ChromeStorageService) {}
 
     ngOnInit() {
         this.chromeStorageService.subscribeToChanges(({ notepad }) => {
@@ -35,11 +33,10 @@ export class Notepad {
                 this.selectTab();
             }
         });
-        this.chromeStorageService.get("notepad", storage => {
-            this.tabs = storage.notepad || this.tabs;
-            this.selectTab();
-
+        this.chromeStorageService.get("notepad", ({ notepad }) => {
             this.initialized = true;
+            this.tabs = notepad || this.tabs;
+            this.selectTab();
         });
     }
 
@@ -63,17 +60,12 @@ export class Notepad {
         this.activeTabIndex = index;
     }
 
-    showForm() {
-        this.showingForm = true;
-
-        setTimeout(() => {
-            this.tabTitleInput.nativeElement.focus();
-        });
+    showMenu() {
+        this.menuVisible = true;
     }
 
-    hideForm() {
-        this.showingForm = false;
-        this.removingTab = false;
+    hideMenu() {
+        this.menuVisible = false;
     }
 
     createTab(event) {
@@ -90,49 +82,97 @@ export class Notepad {
         }
         this.selectTab(this.tabs.length - 1);
         this.saveTabs();
-        this.hideForm();
+        event.target.reset();
+    }
 
-        setTimeout(() => {
+    selectTabFromList(index) {
+        // If selected tab is not visible, shift tabs to the leftmost side.
+        if (index < this.shift || index >= this.shift + 4) {
+            this.shift = index > this.tabs.length - 4 ? this.tabs.length - 4 : index;
+        }
+        this.selectTab(index);
+        this.hideMenu();
+        requestAnimationFrame(() => {
             this.textarea.nativeElement.focus();
         });
     }
 
-    setTabForRemoval(index) {
-        if (this.tabs[index].content) {
-            this.removingTab = true;
-            this.showingForm = true;
-            this.tabToRemove = index;
+    removeTab(index) {
+        const tab = this.tabs[index];
+
+        if (this.editedTitle && this.editedTitle.tabIndex === index) {
+            this.editedTitle = null;
+        }
+        this.tabs.splice(index, 1);
+
+        if (tab.content) {
+            this.pendingTabs.push(tab);
+            window.clearTimeout(this.undoTimeoutId);
+            this.undoTimeoutId = window.setTimeout(() => {
+                this.pendingTabs.length = 0;
+                this.saveTabs();
+            }, 6000);
         }
         else {
-            this.removeTab(index);
+            this.saveTabs();
         }
-    }
 
-    removeTab(index) {
-        if (index === 0 && index === this.activeTabIndex) {
-            this.activeTabIndex = 0;
-        }
-        else if (index <= this.activeTabIndex) {
+        if (this.activeTabIndex > 0 && index <= this.activeTabIndex) {
             this.activeTabIndex -= 1;
         }
 
-        if (this.shift && index >= this.tabs.length - 4) {
+        if (this.shift > 0 && this.activeTabIndex >= this.tabs.length - 3) {
             this.shift -= 1;
         }
-        this.tabs.splice(index, 1);
-        this.selectTab(this.activeTabIndex);
-        this.saveTabs();
-        this.hideForm();
+    }
+
+    undoTabRemoval() {
+        window.clearTimeout(this.undoTimeoutId);
+        this.tabs = this.tabs.concat(this.pendingTabs);
+        this.pendingTabs.length = 0;
     }
 
     saveTabContent(content) {
         this.tabs[this.activeTabIndex].content = content;
-
-        clearTimeout(this.inputTimeoutId);
-
+        window.clearTimeout(this.inputTimeoutId);
         this.inputTimeoutId = window.setTimeout(() => {
             this.saveTabs();
         }, 400);
+    }
+
+    downloadTab(target, index) {
+        const { content } = this.tabs[index];
+        const data = new Blob([content], { type: "text/plain" });
+        const url = URL.createObjectURL(data);
+        target.href = url;
+
+        setTimeout(() => {
+            target.href = "";
+            URL.revokeObjectURL(url);
+        }, 100);
+    }
+
+    enableTitleEdit(index) {
+        this.editedTitle = {
+            tabIndex: index,
+            value: this.tabs[index].title
+        };
+        requestAnimationFrame(() => {
+            this.editTitleInput.nativeElement.focus();
+        });
+    }
+
+    disableTitleEdit() {
+        this.editedTitle = null;
+    }
+
+    editTabTitle(event) {
+        const { tabIndex, value } = this.editedTitle;
+        event.preventDefault();
+
+        this.tabs[tabIndex].title = event.target.elements.title.value || value;
+        this.editedTitle = null;
+        this.saveTabs();
     }
 
     saveTabs() {

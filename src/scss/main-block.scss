@@ -169,17 +169,6 @@ $main-block-nav-height: 32px;
     @include text-truncate;
 }
 
-.main-block-content-header-item-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: none;
-
-    &:hover {
-        background-color: transparent;
-    }
-}
-
 .main-block-modal-title {
     margin-top: 8px;
     margin-bottom: 16px;

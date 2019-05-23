@@ -26,7 +26,7 @@
   "devDependencies": {
     "@angular/compiler-cli": "^8.0.0-rc.4",
     "@ngtools/webpack": "^8.0.0-rc.4",
-    "@types/chrome": "^0.0.85",
+    "@types/chrome": "^0.0.86",
     "@types/node": "^12.0.2",
     "autoprefixer": "^9.5.1",
     "css-loader": "^2.1.1",
@@ -42,7 +42,7 @@
     "to-string-loader": "^1.1.5",
     "tslint": "^5.16.0",
     "typescript": "3.4.5",
-    "webpack": "^4.31.0",
+    "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2"
   },
   "browserslist": [
