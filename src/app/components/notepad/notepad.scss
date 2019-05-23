@@ -1,3 +1,4 @@
+@import "../../../scss/mixins.scss";
 @import "../../../scss/variables.scss";
 
 .notepad-spinner {
@@ -14,7 +15,18 @@
 }
 
 .notepad-form {
+    width: 100%;
+    padding: 8px 16px;
     margin: auto;
+
+    .input {
+        width: 100%;
+    }
+}
+
+.notepad-form-title {
+    margin-bottom: 16px;
+    font-size: 16px;
     text-align: center;
 }
 
@@ -28,9 +40,59 @@
 
 .notepad-form-btns {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
+    margin-top: 8px;
 
     .btn:last-of-type {
         margin-left: 8px;
+    }
+}
+
+.notepad-menu {
+    display: flex;
+    height: 100%;
+}
+
+.notepad-menu-tab-list {
+    @include scrollbar;
+
+    overflow-y: auto;
+    flex-shrink: 0;
+    width: 40%;
+    height: 100%;
+    border-right: 1px solid $color-white-10;
+}
+
+.notepad-menu-tab-list-item {
+    padding: 8px 4px 4px 8px;
+    box-shadow: 0 1px 0 0 $color-white-10;
+}
+
+.notepad-menu-tab-list-item-title {
+    padding: 0;
+
+    &:hover {
+        background-color: transparent;
+        text-decoration: underline;
+    }
+}
+
+.notepad-menu-tab-list-item-btns {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.notepad-dialog {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    border: 1px solid $color-white-10;
+
+    .btn {
+        margin-left: 4px;
     }
 }

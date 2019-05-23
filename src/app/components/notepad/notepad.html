@@ -1,28 +1,67 @@
 <div class="container main-block-content" [class.visible]="isVisible">
-    <ng-container *ngIf="showingForm; else elseBlock1">
-        <div class="notepad-form" *ngIf="removingTab; else elseBlock">
-            <h3 class="main-block-modal-title">Are you really want to remove {{ tabs[tabToRemove].title }} tab?</h3>
+    <div class="notepad-menu" *ngIf="menuVisible; else elseBlock1">
+        <ul class="notepad-menu-tab-list">
+            <li class="notepad-menu-tab-list-item" *ngFor="let tab of tabs; let i = index">
+                <button class="btn btn-text notepad-menu-tab-list-item-title"
+                    (click)="selectTabFromList(i)">{{ tab.title }}</button>
+                <div class="notepad-menu-tab-list-item-btns">
+                    <button class="btn btn-icon btn-icon-alt"
+                        (click)="enableTitleEdit(i)" title="Edit tab title">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#edit"></use>
+                        </svg>
+                    </button>
+                    <a [download]="tab.title + '.txt'" class="btn btn-icon btn-icon-alt"
+                        *ngIf="tab.content.length"
+                        (click)="downloadTab($event.currentTarget, i)"
+                        title="Download tab" tabindex="0">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#download"></use>
+                        </svg>
+                    </a>
+                    <button class="btn btn-icon btn-icon-alt"
+                        *ngIf="tabs.length > 1"
+                        (click)="removeTab(i)" title="Remove tab">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#trash"></use>
+                        </svg>
+                    </button>
+                </div>
+            </li>
+        </ul>
+        <form (submit)="editTabTitle($event)" *ngIf="editedTitle; else elseBlock" class="notepad-form">
+            <h3 class="notepad-form-title">Edit tab title</h3>
+            <input type="text" class="input" name="title" #editTitleInput
+                [value]="editedTitle.value"
+                autocomplete="off"
+                placeholder="Tab title">
             <div class="notepad-form-btns">
-                <button class="btn" (click)="removeTab(tabToRemove)">Yes</button>
-                <button class="btn" (click)="hideForm()">No</button>
+                <button type="button" class="btn" (click)="disableTitleEdit()">Cancel</button>
+                <button class="btn">Edit</button>
             </div>
-        </div>
+        </form>
         <ng-template #elseBlock>
             <form (submit)="createTab($event)" class="notepad-form">
-                <h3 class="main-block-modal-title">Create new tab</h3>
+                <h3 class="notepad-form-title">Create new tab</h3>
                 <div class="notepad-form-input-container">
-                    <input type="text" class="input" name="title" placeholder="Title" #tabTitleInput>
+                    <input type="text" class="input" name="title"
+                        autocomplete="off"
+                        placeholder="Tab title">
                     <button class="btn">Create</button>
                 </div>
             </form>
         </ng-template>
         <button class="btn btn-icon main-block-modal-close-btn"
-            (click)="hideForm()" title="Close">
+            (click)="hideMenu()" title="Close">
             <svg viewBox="0 0 24 24">
                 <use href="#cross"></use>
             </svg>
         </button>
-    </ng-container>
+        <div class="notepad-dialog" *ngIf="pendingTabs.length">
+            <span>Removed {{ pendingTabs.length }} tab{{ pendingTabs.length > 1 ? "s" : "" }}</span>
+            <button class="btn btn-text-alt" (click)="undoTabRemoval()">UNDO</button>
+        </div>
+    </div>
     <ng-template #elseBlock1>
         <ng-container *ngIf="initialized; else elseBlock3">
             <div class="main-block-content-header">
@@ -43,13 +82,6 @@
                             (click)="selectTab(i)">
                             <span class="main-block-content-header-item-title">{{ tab.title }}</span>
                         </button>
-                        <button class="btn btn-icon main-block-content-header-item-btn delay-reveal"
-                            *ngIf="tabs.length > 1"
-                            (click)="setTabForRemoval(i)" title="Remove">
-                            <svg viewBox="0 0 24 24">
-                                <use href="#cross"></use>
-                            </svg>
-                        </button>
                     </li>
                 </ul>
                 <button class="btn btn-icon main-block-content-header-btn"
@@ -62,9 +94,9 @@
                 </button>
                 <div class="main-block-content-header-separator"></div>
                 <button class="btn btn-icon main-block-content-header-btn"
-                    (click)="showForm()" title="Create tab">
+                    (click)="showMenu()" title="Show menu">
                     <svg viewBox="0 0 24 24">
-                        <use href="#plus"></use>
+                        <use href="#menu"></use>
                     </svg>
                 </button>
             </div>

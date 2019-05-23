@@ -311,7 +311,7 @@
 
 .feed-list-item-title-btn {
     padding: 0;
-    font-size: inherit;
+    font-weight: normal;
 
     &:hover {
         background-color: transparent;
@@ -323,8 +323,6 @@
 .feed-list-item-title-input {
     padding: 2px 4px;
     font-size: 16px;
-    // border-radius: 0;
-    // background-color: transparent;
 }
 
 .feed-list-item-url {

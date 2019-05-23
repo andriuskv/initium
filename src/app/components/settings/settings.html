@@ -218,9 +218,11 @@
 <div class="setting-tab setting-tab-form-container"
     *ngIf="active === 'background-form'">
     <form (submit)="handleBackgroundFormSubmit($event)">
-        <h3 class="setting-tab-form-title">Set Background</h3>
-        <input type="text" class="input" placeholder="URL">
-        <button class="btn setting-tab-form-submit-btn">Done</button>
+        <h3 class="setting-tab-form-title">Set background</h3>
+        <div class="setting-tab-form-input-container">
+            <input type="text" class="input" placeholder="URL">
+            <button class="btn setting-tab-form-submit-btn">Done</button>
+        </div>
         <div class="setting-tab-form-message" *ngIf="backgroundUrlInvalid">URL does not contain valid image</div>
     </form>
 </div>
