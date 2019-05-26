@@ -81,6 +81,11 @@ export class Dropbox {
             if (!item.cached) {
                 await this.dropboxService.fetchFolderItems(item);
             }
+            item.items.forEach(file => {
+                if (file.isImage && !file.thumbnail) {
+                    this.dropboxService.fetchThumbnail(file, this.dropboxFolder);
+                }
+            });
             this.activeFolder = item;
         }
         else if (item.isImage) {

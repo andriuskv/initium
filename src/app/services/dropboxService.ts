@@ -5,6 +5,7 @@ import { Dropbox } from "dropbox";
   providedIn: "root"
 })
 export class DropboxService {
+    timeoutId = 0;
     dbx = null;
 
     init() {
@@ -50,24 +51,24 @@ export class DropboxService {
         const response = await this.dbx.filesListFolder({ path: folder.path });
 
         response.entries.forEach(entry => {
-            const isFolder = entry[".tag"] === "folder";
             const item: any = {
                 name: entry.name,
-                isFolder,
-                path: entry.path_lower,
-                pathForDisplay: entry.path_display,
+                path: entry.path_lower
             };
 
-            if (isFolder) {
-                item.items = [];
-                item.icon = "folder";
+            if (entry[".tag"] === "folder") {
+                Object.assign(item, {
+                    isFolder: true,
+                    items: [],
+                    icon: "folder",
+                    pathForDisplay: entry.path_display
+                });
             }
             else {
                 item.icon = "file";
 
                 if (this.isImage(entry.name)) {
                     item.isImage = true;
-                    this.fetchThumbnail(item);
                 }
             }
             folder.items.push(item);
@@ -75,7 +76,7 @@ export class DropboxService {
         folder.cached = true;
     }
 
-    async fetchThumbnail(entry) {
+    async fetchThumbnail(entry, folder) {
         const response = await this.dbx.filesGetThumbnail({
             path: entry.path,
             size: "w32h32"
@@ -92,6 +93,12 @@ export class DropboxService {
                 canvas.height = 20;
                 ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
                 entry.thumbnail = canvas.toDataURL("image/jpeg", 0.4);
+                delete entry.icon;
+
+                window.clearTimeout(this.timeoutId);
+                this.timeoutId = window.setTimeout(() => {
+                    this.saveDropbox(folder);
+                }, 400);
             };
             image.src = window.URL.createObjectURL(response.fileBlob);
         }
