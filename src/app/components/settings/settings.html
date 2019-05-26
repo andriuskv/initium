@@ -23,6 +23,10 @@
         <button class="btn btn-text settings-nav-item-btn"
             (click)="setActiveTab('pomodoro')">Pomodoro</button>
     </li>
+    <li class="settings-nav-item" [class.active]="active === 'storage'">
+        <button class="btn btn-text settings-nav-item-btn"
+            (click)="setActiveTab('storage')">Storage</button>
+    </li>
 </ul>
 <div class="setting-tab" *ngIf="active === 'general'">
     <div class="setting">
@@ -215,6 +219,7 @@
             (change)="setPomodoroDuration($event, 'long')">
     </div>
 </div>
+<storage class="setting-tab" *ngIf="active === 'storage'"></storage>
 <div class="setting-tab setting-tab-form-container"
     *ngIf="active === 'background-form'">
     <form (submit)="handleBackgroundFormSubmit($event)">

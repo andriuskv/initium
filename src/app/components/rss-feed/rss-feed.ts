@@ -12,8 +12,8 @@ export class RssFeed {
     @Output() newEntries = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
     @Input() isVisible: boolean = false;
-    @ViewChild("feedTitleInput") feedTitleInput;
-    @ViewChild("feedEntryContainer") feedEntryContainer;
+    @ViewChild("feedTitleInput", { static: false }) feedTitleInput;
+    @ViewChild("feedEntryContainer", { static: false }) feedEntryContainer;
 
     initializing: boolean = true;
     fetching: boolean = false;

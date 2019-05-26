@@ -7,7 +7,7 @@ import { SettingService } from "../../services/settingService";
     styleUrls: ["./background-viewer.scss"]
 })
 export class BackgroundViewer {
-    @ViewChild("containerElement") containerElement;
+    @ViewChild("containerElement", { static: true }) containerElement;
     @Output() close = new EventEmitter();
     @Input() data;
 

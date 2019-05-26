@@ -16,4 +16,5 @@ if ("serviceWorker" in navigator) {
 if (process.env.NODE_ENV === "production") {
     enableProdMode();
 }
-platformBrowserDynamic().bootstrapModule(AppModule);
+platformBrowserDynamic().bootstrapModule(AppModule)
+    .catch(error => console.log(error));

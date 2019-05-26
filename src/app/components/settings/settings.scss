@@ -3,8 +3,8 @@
 
 .settings-container {
     display: flex;
-    width: 450px;
-    height: 200px;
+    width: 500px;
+    height: 272px;
 }
 
 .settings-nav {
@@ -109,11 +109,11 @@
 }
 
 .setting-tab-form-container {
+    justify-content: center;
     align-items: center;
 }
 
 .setting-tab-form-title {
-    margin-top: 32px;
     margin-bottom: 16px;
     text-align: center;
 }
