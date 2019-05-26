@@ -26,13 +26,15 @@ import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar
 import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-viewer";
 import { BackgroundViewer } from "./components/background-viewer/background-viewer";
 import { GoogleApps } from "./components/google-apps/google-apps";
+import { Storage } from "./components/storage/storage";
 
 @NgModule({
     imports: [BrowserModule, DragDropModule],
     declarations: [
         App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
-        CalendarSelectedDay, Dropbox, TweetImageViewer, BackgroundViewer, GoogleApps, SafeStylePipe
+        CalendarSelectedDay, Dropbox, TweetImageViewer, BackgroundViewer, GoogleApps,
+        Storage, SafeStylePipe
     ],
     bootstrap: [App]
 })

@@ -7,7 +7,7 @@ import { ZIndexService } from "../../services/zIndexService";
     templateUrl: "./upper-block.html"
 })
 export class UpperBlock {
-    @ViewChild("fullscreenTarget") fullscreenTarget;
+    @ViewChild("fullscreenTarget", { static: true }) fullscreenTarget;
     @Output() hide = new EventEmitter();
     @Input() visible;
 
