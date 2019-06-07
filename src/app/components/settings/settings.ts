@@ -3,7 +3,7 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "settings",
-    templateUrl: "./settings.html",
+    template: require("raw-loader!./settings.html").default,
     styleUrls: ["./settings.scss"]
 })
 export class Settings {

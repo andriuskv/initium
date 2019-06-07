@@ -3,7 +3,7 @@ import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "timer",
-    templateUrl: "./timer.html"
+    templateUrl: require("raw-loader!./timer.html").default
 })
 export class Timer {
     @ViewChild("hoursInput", { static : false }) hoursInput;

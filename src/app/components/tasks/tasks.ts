@@ -24,7 +24,7 @@ interface Label {
 
 @Component({
     selector: "tasks",
-    templateUrl: "./tasks.html",
+    templateUrl: require("raw-loader!./tasks.html").default,
     styleUrls: ["./tasks.scss"]
 })
 export class Tasks {
@@ -96,12 +96,12 @@ export class Tasks {
             }];
         }
         else if (elements.length) {
-            return Array.from(elements).reduce((tasks, { value }) => {
+            return Array.from(elements).reduce((tasks: Subtask[], { value }) => {
                 if (value) {
-                    tasks.push({ text: value } as Subtask);
+                    tasks.push({ text: value });
                 }
                 return tasks;
-            }, [] as any);
+            }, []);
         }
     }
 
@@ -109,7 +109,7 @@ export class Tasks {
         const { elements } = event.target;
         const task: Task = {
             text: elements.text.value,
-            subtasks: this.getSubtasks(elements.subtask),
+            subtasks: this.getSubtasks(elements.subtask) as Subtask[],
             labels: this.getFlaggedLabels()
         };
 

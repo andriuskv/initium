@@ -3,7 +3,7 @@ import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "widget-menu",
-    templateUrl: "./widget-menu.html",
+    templateUrl: require("raw-loader!./widget-menu.html").default,
     styleUrls: ["./widget-menu.scss"]
 })
 export class WidgetMenu {

@@ -3,7 +3,7 @@ import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "stopwatch",
-    templateUrl: "./stopwatch.html"
+    templateUrl: require("raw-loader!./stopwatch.html").default
 })
 export class Stopwatch {
     @Output() size = new EventEmitter();

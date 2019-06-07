@@ -4,7 +4,7 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "dropbox",
-    templateUrl: "./dropbox.html",
+    templateUrl: require("raw-loader!./dropbox.html").default,
     styleUrls: ["./dropbox.scss"]
 })
 export class Dropbox {

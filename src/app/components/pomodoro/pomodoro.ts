@@ -4,7 +4,7 @@ import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "pomodoro",
-    templateUrl: "./pomodoro.html"
+    templateUrl: require("raw-loader!./pomodoro.html").default
 })
 export class Pomodoro {
     @Output() size = new EventEmitter();

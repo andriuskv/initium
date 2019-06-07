@@ -3,7 +3,7 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
 
 @Component({
     selector: "notepad",
-    templateUrl: "./notepad.html",
+    templateUrl: require("raw-loader!./notepad.html").default,
     styleUrls: ["./notepad.scss"]
 })
 export class Notepad {

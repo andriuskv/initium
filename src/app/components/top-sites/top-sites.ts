@@ -4,7 +4,7 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "top-sites",
-    templateUrl: "./top-sites.html",
+    templateUrl: require("raw-loader!./top-sites.html").default,
     styleUrls: ["./top-sites.scss"]
 })
 export class TopSites {
