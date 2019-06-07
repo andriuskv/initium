@@ -6,7 +6,7 @@ import { formatTime } from "app/utils/utils";
 
 @Component({
     selector: "twitter",
-    templateUrl: "./twitter.html",
+    templateUrl: require("raw-loader!./twitter.html").default,
     styleUrls: ["./twitter.scss"]
 })
 export class Twitter {
@@ -260,7 +260,7 @@ export class Twitter {
     }
 
     handleClickOnTweet({ target }, url) {
-        if (this.isInsideLinkElement(target)) {
+        if (!window.getSelection().isCollapsed || this.isInsideLinkElement(target)) {
             return;
         }
         window.open(url, "_blank");

@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 
 @Component({
     selector: "storage",
-    templateUrl: "./storage.html",
+    templateUrl: require("raw-loader!./storage.html").default,
     styleUrls: ["./storage.scss"]
 })
 export class Storage {
@@ -33,6 +33,7 @@ export class Storage {
     boundStorageChangeHandler = this.handleStorageChange.bind(this);
 
     ngOnInit() {
+        // @ts-ignore
         chrome.storage.sync.onChanged.addListener(this.boundStorageChangeHandler);
         this.items.forEach((item, index) => {
             chrome.storage.sync.getBytesInUse(item.name, bytes => {
@@ -48,6 +49,7 @@ export class Storage {
     }
 
     ngOnDestroy() {
+        // @ts-ignore
         chrome.storage.sync.onChanged.removeListener(this.boundStorageChangeHandler);
     }
 

@@ -5,7 +5,7 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "calendar",
-    templateUrl: "./calendar.html"
+    templateUrl: require("raw-loader!./calendar.html").default
 })
 export class Calendar {
     @Input() isHidden = true;

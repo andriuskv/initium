@@ -5,7 +5,7 @@ import { getRandomHslColor } from "../../utils/utils";
 
 @Component({
     selector: "calendar-selected-day",
-    templateUrl: "./calendar-selected-day.html"
+    templateUrl: require("raw-loader!./calendar-selected-day.html").default
 })
 export class CalendarSelectedDay {
     @Output() event = new EventEmitter();

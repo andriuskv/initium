@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "tweet-image-viewer",
-    templateUrl: "./tweet-image-viewer.html",
+    templateUrl: require("raw-loader!./tweet-image-viewer.html").default,
     styleUrls: ["./tweet-image-viewer.scss"]
 })
 export class TweetImageViewer {

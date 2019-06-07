@@ -5,7 +5,7 @@ import { NotificationService } from "../../services/notificationService";
 
 @Component({
     selector: "rss-feed",
-    templateUrl: "./rss-feed.html",
+    templateUrl: require("raw-loader!./rss-feed.html").default,
     styleUrls: ["./rss-feed.scss"]
 })
 export class RssFeed {

@@ -4,7 +4,7 @@ import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "upper-block",
-    templateUrl: "./upper-block.html"
+    templateUrl: require("raw-loader!./upper-block.html").default
 })
 export class UpperBlock {
     @ViewChild("fullscreenTarget", { static: true }) fullscreenTarget;

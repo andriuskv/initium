@@ -3,7 +3,7 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "background-viewer",
-    templateUrl: "./background-viewer.html",
+    templateUrl: require("raw-loader!./background-viewer.html").default,
     styleUrls: ["./background-viewer.scss"]
 })
 export class BackgroundViewer {

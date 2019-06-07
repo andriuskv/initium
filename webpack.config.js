@@ -104,10 +104,6 @@ module.exports = function(env = {}) {
                     ]
                 },
                 {
-                    test: /\.html$/,
-                    loader: "raw-loader"
-                },
-                {
                     test: /\.ts$/,
                     loader: "@ngtools/webpack"
                 }
