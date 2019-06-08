@@ -35,6 +35,11 @@ export class Background {
     setBackground({ url, x, y }) {
         const element = this.elRef.nativeElement;
         element.style.backgroundPosition = `${x}% ${y}%`;
-        element.style.backgroundImage = `url(${url || "https://source.unsplash.com/collection/825407/daily"})`;
+        element.style.backgroundImage = `url(${url || this.getImageUrl()})`;
+    }
+
+    getImageUrl() {
+        const { outerWidth, outerHeight } = window;
+        return `https://source.unsplash.com/collection/825407/${outerWidth}x${outerHeight}/daily`;
     }
 }
