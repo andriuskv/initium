@@ -39,7 +39,7 @@ export class Background {
     }
 
     getImageUrl() {
-        const { availWidth, availHeight } = screen;
-        return `https://source.unsplash.com/collection/825407/${availWidth}x${availHeight}/daily`;
+        const { width, height } = screen;
+        return `https://source.unsplash.com/collection/825407/${width}x${height}/daily`;
     }
 }

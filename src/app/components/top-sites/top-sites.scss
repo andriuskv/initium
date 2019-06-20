@@ -26,10 +26,6 @@
     }
 
     &:hover, &:focus-within {
-        .top-site-link {
-            background-color: $color-white-10;
-        }
-
         .top-site-edit-btn {
             display: flex;
         }
@@ -41,6 +37,10 @@
     padding: 4px;
     border-radius: 8px;
     transition: 0.2s background-color;
+
+    &:hover, &.focus-visible {
+        background-color: $color-white-10;
+    }
 }
 
 .top-site-container {
