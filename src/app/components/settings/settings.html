@@ -96,7 +96,7 @@
 <div class="setting-tab" *ngIf="active === 'background'">
     <div class="setting">
         <span>Reset background</span>
-        <button class="btn" (click)="updateBackground()">Reset</button>
+        <button class="btn" (click)="resetBackground()">Reset</button>
     </div>
     <div class="setting setting-background">
         <div class="setting-background-title">Set background from...</div>
@@ -123,6 +123,7 @@
             </div>
         </div>
     </div>
+    <p class="setting-background-info" *ngIf="backgroundInfo">Background image by <a [href]='"https://unsplash.com/@" + backgroundInfo.username  + "?utm_source=initium&utm_medium=referral"' class="setting-background-info-link">{{ backgroundInfo.name }}</a> on <a href="https://unsplash.com/?utm_source=initium&utm_medium=referral" class="setting-background-info-link">Unsplash</a></p>
 </div>
 <div class="setting-tab" *ngIf="active === 'weather'">
     <div class="setting">

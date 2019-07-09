@@ -14,8 +14,26 @@ self.addEventListener("fetch", event => {
                     if (response) {
                         return response;
                     }
-                    return fetch(event.request.clone()).then(response => {
+                    return fetch(event.request).then(response => {
                         cache.put(event.request, response.clone());
+                        return response;
+                    });
+                })
+                .catch(error => {
+                    console.error("Error in fetch handler:", error);
+                    throw error;
+                });
+            })
+        );
+    }
+    else if (event.request.url.startsWith("https://images.unsplash.com/")) {
+        event.respondWith(
+            caches.open("background-image-cache").then(cache => {
+                return cache.match(event.request).then(response => {
+                    if (response) {
+                        return response;
+                    }
+                    return fetch(event.request).then(response => {
                         return response;
                     });
                 })
