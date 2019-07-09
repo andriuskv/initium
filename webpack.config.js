@@ -12,6 +12,7 @@ module.exports = function(env = {}) {
             "process.env": {
                 NODE_ENV: JSON.stringify(mode),
                 DROPBOX_API_KEY: JSON.stringify(process.env.DROPBOX_API_KEY),
+                UNSPLASH_KEY: JSON.stringify(process.env.UNSPLASH_KEY),
                 SERVER_URL: JSON.stringify(process.env.SERVER_URL)
             }
         }),

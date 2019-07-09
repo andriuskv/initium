@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter } from "@angular/core";
 import { SettingService } from "../../services/settingService";
+import { BackgroundService } from "../../services/backgroundService";
 
 @Component({
     selector: "settings",
@@ -12,15 +13,21 @@ export class Settings {
     backgroundUrlInvalid: boolean = false;
     active: string = "general";
     settingMessages: any = {};
-    settings: any;
+    settings = this.settingService.getSettings();
+    backgroundInfo = this.backgroundService.getBackgroundInfo();
 
-    constructor(private settingService: SettingService) {
-        this.settings = this.settingService.getSettings();
-    }
+    constructor(
+        private settingService: SettingService,
+        private backgroundService: BackgroundService
+    ) {}
 
     ngOnInit() {
         this.settingService.subscribeToMessageChanges(message => {
             this.settingMessages = { ...this.settingMessages, ...message };
+        });
+
+        this.backgroundService.subscribeToChanges(info => {
+            this.backgroundInfo = info;
         });
     }
 
@@ -74,12 +81,8 @@ export class Settings {
         this.showBackgroundViewer.emit(this.settings.background);
     }
 
-    updateBackground(url = "") {
-        this.setSetting({
-            url,
-            x: 50,
-            y: 50
-        });
+    resetBackground() {
+        this.setSetting({ url: "" });
     }
 
     showBackgroundForm() {
@@ -87,6 +90,11 @@ export class Settings {
             this.backgroundUrlInvalid = false;
         }
         this.setActiveTab("background-form");
+    }
+
+    setBackground(url = "") {
+        this.setActiveTab("background");
+        this.setSetting({ url });
     }
 
     handleBackgroundFormSubmit(event) {
@@ -99,13 +107,11 @@ export class Settings {
         event.preventDefault();
 
         if (!input.value) {
-            this.setActiveTab("background");
-            this.updateBackground();
+            this.setBackground();
         }
 
         image.onload = () => {
-            this.setActiveTab("background");
-            this.updateBackground(input.value);
+            this.setBackground(input.value);
         };
 
         image.onerror = () => {

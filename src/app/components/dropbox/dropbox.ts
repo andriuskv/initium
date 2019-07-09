@@ -58,7 +58,7 @@ export class Dropbox {
 
     setBackground(url) {
         this.settingService.updateSetting({
-            background: { url, x: 50, y: 50 }
+            background: { url }
         });
     }
 

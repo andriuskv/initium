@@ -24,12 +24,6 @@
     &:nth-of-type(n + 5) {
         margin-top: 8px;
     }
-
-    &:hover, &:focus-within {
-        .top-site-edit-btn {
-            display: flex;
-        }
-    }
 }
 
 .top-site-link {
@@ -40,6 +34,10 @@
 
     &:hover, &.focus-visible {
         background-color: $color-white-10;
+
+        & + .top-site-edit-btn {
+            opacity: 1;
+        }
     }
 }
 
@@ -66,12 +64,16 @@
 
 .top-site-edit-btn {
     position: absolute;
-    right: 4px;
-    bottom: 4px;
-    display: none;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
 
-    &:hover {
-        background-color: transparent;
+    &:hover, &.focus-visible {
+        opacity: 1;
+    }
+
+    &.focus-visible {
+        background-color: $color-white-10;
     }
 }
 
