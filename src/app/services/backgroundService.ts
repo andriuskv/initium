@@ -37,7 +37,7 @@ export class BackgroundService {
 
   async fetchBackgroundInfo() {
     if (this.backgroundInfo) {
-      if (Date.now() - this.backgroundInfo.cacheDate > 1000 * 60 * 60 * 24) {
+      if (Date.now() - this.backgroundInfo.cacheDate > 1000 * 60 * 60 * 20) {
         this.cacheUnsplashInfo();
       }
       return this.backgroundInfo;

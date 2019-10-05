@@ -66,10 +66,6 @@
 
 .storage-item {
     padding: 8px;
-
-    &:not(:last-of-type) {
-        border-bottom: 1px solid $color-white-10;
-    }
 }
 
 .storage-item-info {

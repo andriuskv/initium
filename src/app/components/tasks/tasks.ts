@@ -92,23 +92,26 @@ export class Tasks {
         }
         else if (elements.value) {
             return [{
-                text: elements.value
+                text: elements.value.trim()
             }];
         }
         else if (elements.length) {
             return Array.from(elements).reduce((tasks: Subtask[], { value }) => {
-                if (value) {
-                    tasks.push({ text: value });
+                const text = value.trim();
+
+                if (text) {
+                    tasks.push({ text });
                 }
                 return tasks;
             }, []);
         }
+        return [];
     }
 
     handleFormSubmit(event) {
         const { elements } = event.target;
         const task: Task = {
-            text: elements.text.value,
+            text: elements.text.value.trim(),
             subtasks: this.getSubtasks(elements.subtask) as Subtask[],
             labels: this.getFlaggedLabels()
         };
@@ -287,5 +290,6 @@ export class Tasks {
 
     drop({ currentIndex, previousIndex }) {
         moveItemInArray(this.tasks, previousIndex, currentIndex);
+        this.saveTasks();
     }
 }

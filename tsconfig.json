@@ -8,7 +8,7 @@
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
+    "emitDecoratorMetadata": false,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "preserveSymlinks": true,
@@ -23,9 +23,5 @@
       "esnext",
       "dom"
     ]
-  },
-  "include": ["src/main.ts"],
-  "angularCompilerOptions": {
-    "preserveWhiteSpace": false
   }
 }

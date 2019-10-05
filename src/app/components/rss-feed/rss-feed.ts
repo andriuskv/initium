@@ -278,6 +278,10 @@ export class RssFeed {
     async updateFeed(feed, index) {
         try {
             const newFeed = await this.feedService.updateFeed(feed);
+
+            if (!newFeed) {
+                return;
+            }
             const { length } = newFeed.entries;
 
             if (length) {
