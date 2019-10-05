@@ -23,9 +23,13 @@ module.exports = function(env = {}) {
             "template": "./src/index.html"
         }),
         new AngularCompilerPlugin({
-            mainPath: "./src/main.ts",
+            basePath: "./src/main.ts",
             tsConfigPath: "./tsconfig.json",
-            skipCodeGeneration: true
+            skipCodeGeneration: true,
+            compilerOptions: {
+                preserveWhiteSpace: false,
+                allowEmptyCodegenFiles: false
+            }
         })
     ];
 
@@ -59,7 +63,6 @@ module.exports = function(env = {}) {
                 }
             },
             minimizer: [new TerserPlugin({
-                parallel: true,
                 terserOptions: {
                     ecma: 8,
                     output: {

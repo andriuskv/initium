@@ -4,7 +4,7 @@ import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "main-block",
-    templateUrl: require("raw-loader!./main-block.html").default,
+    templateUrl: require("raw-loader!./main-block.html").default
 })
 export class MainBlock {
     @Output() showViewer = new EventEmitter();
