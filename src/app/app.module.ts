@@ -19,6 +19,7 @@ import { UpperBlock } from "./components/upper-block/upper-block";
 import { Timer } from "./components/timer/timer";
 import { Stopwatch } from "./components/stopwatch/stopwatch";
 import { Pomodoro } from "./components/pomodoro/pomodoro";
+import { Countdown } from "./components/countdown/countdown";
 import { Settings } from "./components/settings/settings";
 import { Dropbox } from "./components/dropbox/dropbox";
 import { Calendar } from "./components/calendar/calendar";
@@ -32,7 +33,7 @@ import { Storage } from "./components/storage/storage";
     imports: [BrowserModule, DragDropModule],
     declarations: [
         App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
-        Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Calendar,
+        Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Countdown, Calendar,
         CalendarSelectedDay, Dropbox, TweetImageViewer, BackgroundViewer, GoogleApps,
         Storage, SafeStylePipe
     ],
