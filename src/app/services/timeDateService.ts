@@ -63,8 +63,11 @@ export class TimeDateService {
         return useShortName ? months[month].slice(0, 3) : months[month];
     }
 
-    getDayWithSuffix(day) {
-        if (day % 10 === 1 && day !== 11) {
+    getDay(day, withSuffix = true) {
+        if (!withSuffix) {
+            return day;
+        }
+        else if (day % 10 === 1 && day !== 11) {
             return `${day}st`;
         }
         else if (day % 10 === 2 && day !== 12) {
@@ -91,7 +94,7 @@ export class TimeDateService {
         const map = {
             year: date.year,
             month: this.getMonth(date.month),
-            day: this.getDayWithSuffix(date.day),
+            day: this.getDay(date.day, date.dayWithSuffix),
             weekday: this.getWeekday(date.weekday),
             ...this.getTime(date, date.hourFormat)
         };
