@@ -271,8 +271,36 @@ textarea {
         background-color: $color-blue;
     }
 
+    &.pulse::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        display: block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: $color-blue;
+        animation-name: ping-slow;
+        animation-duration: 10s;
+        animation-fill-mode: both;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-out;
+    }
+
     svg {
         -webkit-mask-box-image: url(./assets/images/svg-mask.svg);
+    }
+}
+
+@keyframes ping-slow {
+    0% {
+        opacity: 1;
+        transform: scale(0.1);
+    }
+    16%, 100% {
+        opacity: 0;
+        transform: scale(3.2);
     }
 }
 

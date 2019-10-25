@@ -65,7 +65,8 @@
         <pomodoro [visible]="active === 'pomodoro'"
             (size)="toggleSize($event)"
             (fullscreen)="toggleFullscreen($event)"></pomodoro>
-        <countdown [visible]="active === 'countdown'"></countdown>
+        <countdown [visible]="active === 'countdown'"
+            (status)="emitIndicatorStatus($event)"></countdown>
         <button class="btn btn-icon upper-block-hide-btn"
             (click)="hideComp()" title="Close">
             <svg viewBox="0 0 24 24">
