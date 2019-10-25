@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from "@angular/core";
+import { Component, Input, ViewChild, Output, EventEmitter } from "@angular/core";
 import { padTime } from "../../utils/utils.js";
 import { TimeDateService } from "../../services/timeDateService";
 import { SettingService } from "../../services/settingService";
@@ -11,6 +11,7 @@ import { SettingService } from "../../services/settingService";
 export class Countdown {
     @Input() visible = false;
     @ViewChild("formElement", { static : false }) formElement;
+    @Output() status = new EventEmitter();
 
     timeout = 0;
     countdowns = [];
@@ -256,6 +257,11 @@ export class Countdown {
             if (diff < 1) {
                 countdown.ended = true;
                 countdown.seconds = 0;
+
+                if (!countdown.statusEmited) {
+                    this.emitStatus();
+                    countdown.statusEmited = true;
+                }
             }
             else {
                 const years = Math.floor(diff / 31540000);
@@ -284,9 +290,12 @@ export class Countdown {
 
     start() {
         this.updateCountdowns();
-
+        clearTimeout(this.timeout);
         this.timeout = window.setTimeout(() => {
             this.update(performance.now());
+        }, 1000);
+        setTimeout(() => {
+            this.emitStatus();
         }, 1000);
     }
 
@@ -296,7 +305,15 @@ export class Countdown {
         if (!this.countdowns.length) {
             clearTimeout(this.timeout);
         }
+        this.emitStatus();
         this.saveCountdowns();
+    }
+
+    emitStatus() {
+        this.status.emit({
+            running: this.countdowns.length > 0,
+            hasEnded: this.countdowns.some(countdown => countdown.ended)
+        });
     }
 
     saveCountdowns() {

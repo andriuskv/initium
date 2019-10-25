@@ -8,9 +8,11 @@ import { Component } from "@angular/core";
         <main-block (showViewer)="onShowViewer($event)"></main-block>
         <weather></weather>
         <tasks></tasks>
-        <widget-menu (toggle)="onToggle($event)"
+        <widget-menu [countdownIndicatorStatus]="countdownIndicatorStatus"
+            (toggle)="onToggle($event)"
             (showBackgroundViewer)="onShowBackgroundViewer($event)"></widget-menu>
-        <upper-block [visible]="toggle.upper" (hide)="onHide($event)"></upper-block>
+        <upper-block [visible]="toggle.upper" (hide)="onHide($event)"
+            (indicatorStatus)="setIndicatorStatus($event)"></upper-block>
         <tweet-image-viewer *ngIf="tweetImageData" [data]="tweetImageData"
             (close)="hideTweetImageViewer($event)"></tweet-image-viewer>
         <background-viewer *ngIf="backgroundData" [data]="backgroundData"
@@ -21,6 +23,7 @@ export class App {
     toggle: any = {};
     tweetImageData: any;
     backgroundData: any;
+    countdownIndicatorStatus: any = {};
 
     onToggle(whatToToggle) {
         this.toggle[whatToToggle] = !this.toggle[whatToToggle] || false;
@@ -44,5 +47,9 @@ export class App {
 
     hideBackgroundViewer() {
         this.backgroundData = null;
+    }
+
+    setIndicatorStatus(status) {
+        this.countdownIndicatorStatus = status;
     }
 }

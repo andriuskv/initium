@@ -34,7 +34,10 @@
         </button>
     </li>
     <li class="menu-item">
-        <button class="btn btn-outside menu-item-btn" (click)="toggleUpperBlock()" title="Timers">
+        <button class="btn btn-outside menu-item-btn"
+            [class.indicator-visible]="countdownIndicatorStatus.running"
+            [class.pulse]="countdownIndicatorStatus.hasEnded"
+            (click)="toggleUpperBlock()" title="Timers">
             <svg viewBox="0 0 24 24">
                 <use href="#clock"></use>
             </svg>

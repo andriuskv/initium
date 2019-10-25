@@ -8,6 +8,7 @@ import { ZIndexService } from "../../services/zIndexService";
 })
 export class UpperBlock {
     @ViewChild("fullscreenTarget", { static: true }) fullscreenTarget;
+    @Output() indicatorStatus = new EventEmitter();
     @Output() hide = new EventEmitter();
     @Input() visible;
 
@@ -61,5 +62,9 @@ export class UpperBlock {
 
     handleClickOnContainer() {
         this.zIndex = this.zIndexService.incIfLess(this.zIndex);
+    }
+
+    emitIndicatorStatus(status) {
+        this.indicatorStatus.emit(status);
     }
 }

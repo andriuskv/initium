@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from "@angular/core";
+import { Component, Output, EventEmitter, Input } from "@angular/core";
 import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
@@ -9,6 +9,7 @@ import { ZIndexService } from "../../services/zIndexService";
 export class WidgetMenu {
     @Output() toggle = new EventEmitter();
     @Output() showBackgroundViewer = new EventEmitter();
+    @Input() countdownIndicatorStatus;
 
     isClosing: boolean = false;
     reminderInicatorVisible: boolean = false;
