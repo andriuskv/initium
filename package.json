@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "@angular/cdk": "^8.2.3",
-    "@angular/common": "^8.2.12",
-    "@angular/compiler": "^8.2.12",
-    "@angular/core": "^8.2.12",
-    "@angular/platform-browser": "^8.2.12",
-    "@angular/platform-browser-dynamic": "^8.2.12",
+    "@angular/common": "^8.2.13",
+    "@angular/compiler": "^8.2.13",
+    "@angular/core": "^8.2.13",
+    "@angular/platform-browser": "^8.2.13",
+    "@angular/platform-browser-dynamic": "^8.2.13",
     "dropbox": "^4.0.30",
     "focus-visible": "^5.0.2",
     "reflect-metadata": "^0.1.13",
@@ -24,13 +24,17 @@
     "zone.js": "^0.10.2"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "^8.2.12",
-    "@ngtools/webpack": "^8.3.14",
+    "@angular/compiler-cli": "^8.2.13",
+    "@ngtools/webpack": "^8.3.18",
     "@types/chrome": "^0.0.91",
-    "@types/node": "^12.11.7",
-    "autoprefixer": "^9.7.0",
+    "@types/node": "^12.12.7",
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
+    "@typescript-eslint/typescript-estree": "^2.6.1",
+    "autoprefixer": "^9.7.1",
     "css-loader": "^3.2.0",
     "cssnano": "^4.1.10",
+    "eslint": "^6.6.0",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.8.0",
     "node-sass": "^4.13.0",
@@ -40,10 +44,9 @@
     "style-loader": "^1.0.0",
     "terser-webpack-plugin": "^2.2.1",
     "to-string-loader": "^1.1.5",
-    "tslint": "^5.20.0",
-    "typescript": "3.6.4",
+    "typescript": "3.7.2",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9"
+    "webpack-cli": "^3.3.10"
   },
   "browserslist": [
     "Chrome >= 67"

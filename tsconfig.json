@@ -1,4 +1,8 @@
 {
+  "include": [
+    "src/**/*.js",
+    "src/**/*.ts"
+  ],
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
