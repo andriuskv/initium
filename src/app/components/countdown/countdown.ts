@@ -2,6 +2,7 @@ import { Component, Input, ViewChild, Output, EventEmitter } from "@angular/core
 import { padTime } from "../../utils/utils.js";
 import { TimeDateService } from "../../services/timeDateService";
 import { SettingService } from "../../services/settingService";
+import { ChromeStorageService } from "../../services/chromeStorageService";
 
 @Component({
     selector: "countdown",
@@ -22,22 +23,33 @@ export class Countdown {
     boundFocusHandler = this.handleFormFocus.bind(this);
     boundClickHandler = this.selectValue.bind(this);
 
-    constructor(private timeDateService: TimeDateService, private settingService: SettingService) {}
+    constructor(
+        private timeDateService: TimeDateService,
+        private settingService: SettingService,
+        private chromeStorageService: ChromeStorageService
+    ) {}
 
     ngOnInit() {
-        const countdowns = JSON.parse(localStorage.getItem("countdowns"));
+        this.chromeStorageService.subscribeToChanges(({ countdowns }) => {
+            this.startCountdowns(countdowns.newValue);
+        });
+        this.chromeStorageService.get("countdowns", ({ countdowns }) => {
+            if (countdowns && countdowns.length) {
+                this.startCountdowns(countdowns);
+            }
+        });
+    }
 
-        if (countdowns && countdowns.length) {
-            this.countdowns = countdowns.map(countdown => {
-                const date = new Date(countdown.dateString);
-                return {
-                    title: countdown.title,
-                    date: this.getCountdownDateString(date),
-                    dateString: countdown.dateString
-                };
-            });
-            this.start();
-        }
+    startCountdowns(countdowns) {
+        this.countdowns = countdowns.map(countdown => {
+            const date = new Date(countdown.dateString);
+            return {
+                title: countdown.title,
+                date: this.getCountdownDateString(date),
+                dateString: countdown.dateString
+            };
+        });
+        this.start();
     }
 
     showForm() {
@@ -51,7 +63,7 @@ export class Countdown {
 
     hideForm() {
         this.formVisible = false;
-        this.formValues = {}
+        this.formValues = {};
         this.formElement.nativeElement.removeEventListener("focus", this.boundFocusHandler, true);
         window.removeEventListener("click", this.boundClickHandler);
     }
@@ -76,7 +88,7 @@ export class Countdown {
         });
         const timeString = this.getTimeString(date);
 
-        return `${dateString} ${timeString}`
+        return `${dateString} ${timeString}`;
     }
 
     getHours(value) {
@@ -148,7 +160,7 @@ export class Countdown {
             dataList: [],
             dataListPositionX: target.offsetLeft + target.offsetWidth / 2,
             dataListPositionY: target.offsetTop + target.offsetHeight
-        }
+        };
 
         if (this.formMessage) {
             this.formMessage = "";
@@ -317,9 +329,10 @@ export class Countdown {
     }
 
     saveCountdowns() {
-        localStorage.setItem("countdowns", JSON.stringify(this.countdowns.map(countdown => ({
+        const countdowns = this.countdowns.map(countdown => ({
             title: countdown.title,
             dateString: countdown.dateString
-        }))));
+        }));
+        this.chromeStorageService.set({ countdowns });
     }
 }

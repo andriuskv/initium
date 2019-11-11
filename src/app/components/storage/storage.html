@@ -1,4 +1,4 @@
-<div *ngIf="initialized; else elseBlock">
+<div class="storage" *ngIf="initialized; else elseBlock">
     <div class="storage-usage">
         <div class="storage-usage-numerical">
             <div class="storage-usage-current-numerical">
@@ -19,7 +19,7 @@
             <div>Used</div>
         </div>
     </div>
-    <ul>
+    <ul class="storage-items">
         <li class="storage-item" *ngFor="let item of items; let i = index">
             <div class="storage-item-info">
                 <div>{{ item.fullName }}</div>

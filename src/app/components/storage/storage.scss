@@ -1,4 +1,11 @@
 @import "../../../scss/variables.scss";
+@import "../../../scss/mixins.scss";
+
+.storage {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
 
 .storage-usage {
     display: flex;
@@ -62,6 +69,12 @@
 
 .storage-usage-current-percental {
     font-size: 24px;
+}
+
+.storage-items {
+    @include scrollbar;
+
+    overflow-y: auto;
 }
 
 .storage-item {
