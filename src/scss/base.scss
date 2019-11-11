@@ -282,7 +282,7 @@ textarea {
         border-radius: 50%;
         background-color: $color-blue;
         animation-name: ping-slow;
-        animation-duration: 10s;
+        animation-duration: 8s;
         animation-fill-mode: both;
         animation-iteration-count: infinite;
         animation-timing-function: ease-out;
@@ -298,7 +298,7 @@ textarea {
         opacity: 1;
         transform: scale(0.1);
     }
-    16%, 100% {
+    20%, 100% {
         opacity: 0;
         transform: scale(3.2);
     }

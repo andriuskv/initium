@@ -22,6 +22,10 @@ export class Storage {
     {
         name: "reminders",
         fullName: "Calendar reminders"
+    },
+    {
+        name: "countdowns",
+        fullName: "Countdowns"
     }];
     maxStoragePerItem = chrome.storage.sync.QUOTA_BYTES_PER_ITEM;
     maxStorage = this.items.length * this.maxStoragePerItem;
