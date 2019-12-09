@@ -10,8 +10,8 @@ import { BackgroundService } from "../../services/backgroundService";
 export class Settings {
     @Output() showBackgroundViewer = new EventEmitter();
 
-    backgroundUrlInvalid: boolean = false;
-    active: string = "general";
+    backgroundUrlInvalid = false;
+    active = "general";
     settingMessages: any = {};
     settings = this.settingService.getSettings();
     backgroundInfo = this.backgroundService.getBackgroundInfo();

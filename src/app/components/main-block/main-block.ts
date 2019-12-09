@@ -9,12 +9,12 @@ import { ZIndexService } from "../../services/zIndexService";
 export class MainBlock {
     @Output() showViewer = new EventEmitter();
 
-    isNavHidden: boolean = false;
-    isExpanded: boolean = false;
-    isTabExpandable: boolean = false;
-    isSidebarExpanded: boolean = false;
-    tab: string = "";
-    zIndex: number = 0;
+    isNavHidden = false;
+    isExpanded = false;
+    isTabExpandable = false;
+    isSidebarExpanded = false;
+    tab = "";
+    zIndex = 0;
     tabs: any = {
         twitter: {
             new: false
@@ -47,7 +47,7 @@ export class MainBlock {
     }
 
     toggleSize() {
-         this.isExpanded = !this.isExpanded;
+        this.isExpanded = !this.isExpanded;
     }
 
     showSidebar() {
