@@ -8,11 +8,11 @@ import { SettingService } from "../../services/settingService";
     styleUrls: ["./top-sites.scss"]
 })
 export class TopSites {
-    @Input() isVisible: boolean = false;
+    @Input() isVisible = false;
 
-    isFormVisible: boolean = false;
-    addSiteButtonVisible: boolean = false;
-    visibleSiteCount: number = 4;
+    isFormVisible = false;
+    addSiteButtonVisible = false;
+    visibleSiteCount = 4;
     topSites: Array<any> = [];
     visibleSites: Array<any> = [];
     editedSite: any = null;

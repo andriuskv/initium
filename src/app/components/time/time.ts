@@ -17,11 +17,11 @@ import { padTime } from "../../utils/utils.js";
     styleUrls: ["./time.scss"]
 })
 export class Time {
-    disabled: boolean = false;
-    dateHidden: boolean = false;
+    disabled = false;
+    dateHidden = false;
+    format = 24;
     date: string;
     period: string;
-    format: number = 24;
     hours: number;
     minutes: string;
     timeout: any;
@@ -32,29 +32,49 @@ export class Time {
     ) {}
 
     ngOnInit() {
-        this.init(this.settingService.getSetting("time"));
-        this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
-    }
+        const { disabled, dateHidden, format } = this.settingService.getSetting("time");
+        this.disabled = disabled;
+        this.format = format;
+        this.dateHidden = dateHidden;
 
-    init({ disabled, dateHidden, format}) {
         if (!disabled) {
-            this.updateTime(format);
+            this.updateTime();
 
             if (!dateHidden) {
                 this.setDate();
             }
         }
-        this.disabled = disabled;
-        this.format = format;
-        this.dateHidden = dateHidden;
+        this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
     }
 
     changeHandler({ time }) {
         if (!time) {
             return;
         }
-        clearTimeout(this.timeout);
-        this.init(time);
+        const { disabled, dateHidden, format } = time;
+
+        if (typeof disabled === "boolean") {
+            this.disabled = disabled;
+
+            if (disabled) {
+                clearTimeout(this.timeout);
+            }
+            else {
+                this.updateTime();
+            }
+        }
+        else if (typeof dateHidden === "boolean") {
+            this.dateHidden = dateHidden;
+
+            if (!dateHidden) {
+                this.setDate();
+            }
+        }
+        else if (typeof format === "number") {
+            this.format = format;
+            clearTimeout(this.timeout);
+            this.updateTime();
+        }
     }
 
     setDate() {
@@ -70,16 +90,16 @@ export class Time {
         };
     }
 
-    updateTime(format) {
+    updateTime() {
         const currentTime = this.getCurrentTime();
-        const { hours, minutes, period } = this.timeDateService.getTime(currentTime, format);
+        const { hours, minutes, period } = this.timeDateService.getTime(currentTime, this.format);
 
         this.hours = hours;
         this.minutes = padTime(minutes);
         this.period = period;
 
         this.timeout = setTimeout(() => {
-            this.updateTime(format);
+            this.updateTime();
         }, 1000);
     }
 }

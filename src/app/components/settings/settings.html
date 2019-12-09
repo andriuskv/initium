@@ -150,15 +150,28 @@
             <div>°F</div>
         </div>
     </div>
-    <div class="setting" [class.disabled]="settings.weather.disabled">
-        <div>
-            <div>City name (and country code)</div>
-            <div class="setting-add-desc">Uses geolocation when input is empty</div>
-        </div>
+    <div class="setting" [class.disabled]="settings.weather.disabled || settings.weather.useGeo">
+        <span>City name (and country code)</span>
         <input type="text" class="input setting-input" placeholder="Paris,fr"
+            [disabled]="settings.weather.disabled || settings.weather.useGeo"
             [value]="settings.weather.cityName"
             (keyup.enter)="setSetting({ cityName: $event.target.value })">
-        <div class="setting-message" *ngIf="settingMessages.weather">{{ settingMessages.weather }}</div>
+        <div class="setting-message" *ngIf="settingMessages.weather?.type === 'loc'">{{ settingMessages.weather.message }}</div>
+    </div>
+    <div class="setting setting-weather" [class.disabled]="settings.weather.disabled">
+        <div class="setting-weather-item">
+            <span>Use geolocation</span>
+            <div role="checkbox" class="checkbox" [tabindex]="settings.weather.disabled ? '-1' : '0'"
+                [class.checked]="settings.weather.useGeo"
+                (click)="toggleSettingCheckbox('useGeo')"
+                (keyup.enter)="toggleSettingCheckbox('useGeo')"
+                [attr.aria-checked]="settings.weather.useGeo">
+                <svg class="checkbox-tick" viewBox="0 0 24 24">
+                    <use href="#tick"></use>
+                </svg>
+            </div>
+        </div>
+        <div class="setting-message" *ngIf="settingMessages.weather?.type === 'geo'">{{ settingMessages.weather.message }}</div>
     </div>
 </div>
 <div class="setting-tab" *ngIf="active === 'mainBlock'">

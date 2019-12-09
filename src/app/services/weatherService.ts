@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
 @Injectable({
-  providedIn: "root"
+    providedIn: "root"
 })
 export class WeatherService {
     fetchWeather(params) {
@@ -13,14 +13,18 @@ export class WeatherService {
     }
 
     getCoords() {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             navigator.geolocation.getCurrentPosition(
                 ({ coords }) => resolve({ lat: coords.latitude, lon: coords.longitude }),
                 error => {
                     console.log(error);
 
                     if (error.code === 1) {
-                        reject(new Error("Access to geolocation is not permited"));
+                        resolve({
+                            name: "weather",
+                            type: "geo",
+                            message: "Access to geolocation is not permited."
+                        });
                     }
                 },
                 { enableHighAccuracy: true });
@@ -43,22 +47,30 @@ export class WeatherService {
         };
     }
 
-    async getWeather(cityName) {
-        let data = null;
+    async getWeather(cityName, useGeo) {
+        if (useGeo) {
+            const coords: any = await this.getCoords();
 
-        if (cityName) {
-            data = await this.getWeatherWithCityName(cityName);
+            if (coords.message) {
+                return coords;
+            }
+            const data = await this.getWeatherWithCoords(coords);
+            return this.parseWeather(data);
+        }
+        else if (cityName) {
+            const data = await this.getWeatherWithCityName(cityName);
 
             if (data.cod === "404") {
-                throw new Error("Location not found");
+                return {
+                    name: "weather",
+                    type: "loc",
+                    message: "Location not found."
+                };
             }
             else if (data.cod === "500") {
                 return;
             }
+            return this.parseWeather(data);
         }
-        else {
-            data = await this.getCoords().then(coords => this.getWeatherWithCoords(coords));
-        }
-        return this.parseWeather(data);
     }
 }

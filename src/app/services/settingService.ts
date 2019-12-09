@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
 
 @Injectable({
-  providedIn: "root"
+    providedIn: "root"
 })
 export class SettingService {
     settings: any = this.initSettings();
@@ -50,6 +50,7 @@ export class SettingService {
             },
             weather: {
                 disabled: false,
+                useGeo: false,
                 cityName: "",
                 units: "C"
             },
@@ -86,7 +87,7 @@ export class SettingService {
         const [settingFor] = Object.keys(setting);
 
         settings[settingFor] = { ...settings[settingFor], ...setting[settingFor] };
-        this.settingSubject.next({[settingFor]: settings[settingFor] });
+        this.settingSubject.next(setting);
         localStorage.setItem("settings", JSON.stringify(settings));
         return settings;
     }

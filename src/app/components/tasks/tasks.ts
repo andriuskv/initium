@@ -28,14 +28,14 @@ interface Label {
     styleUrls: ["./tasks.scss"]
 })
 export class Tasks {
-    visible: boolean = false;
-    makingEdit: boolean = false;
-    willBeEmpty: boolean = false;
-    timeout: number = 0;
-    zIndex: number = 0;
-    removedTaskCount: number = 0;
-    formColor: string = "";
-    labelMessage: string = "";
+    visible = false;
+    makingEdit = false;
+    willBeEmpty = false;
+    timeout = 0;
+    zIndex = 0;
+    removedTaskCount = 0;
+    formColor = "";
+    labelMessage = "";
     tasks: Task[] = [];
     tasksToRemove: any[] = [];
     temporaryTask: any = null;
@@ -260,7 +260,7 @@ export class Tasks {
             }, 4000);
         }
         else if (title && color) {
-            if (this.oldLabels.length > 4) {
+            if (this.oldLabels.length > 9) {
                 this.oldLabels.shift();
             }
             this.oldLabels.push({ title, color });

@@ -19,25 +19,27 @@ import { WeatherService } from "../../services/weatherService";
     styleUrls: ["./weather-icons.min.css", "./weather.scss"]
 })
 export class Weather {
-    disabled: boolean = false;
-    temperature: number = 0;
-    timeout: number = 0;
-    city: string = "";
-    description: string = "";
-    units: string = "C";
+    disabled = false;
+    useGeo = false;
+    temperature = 0;
+    timeout = 0;
+    city = "";
+    description = "";
+    units = "C";
+    cityName = "";
     icon: number | string;
-    cityName: string = "";
 
     constructor(private settingService: SettingService, private weatherService: WeatherService) {}
 
     ngOnInit() {
-        const { disabled, cityName, units } = this.settingService.getSetting("weather");
+        const { disabled, cityName, units, useGeo } = this.settingService.getSetting("weather");
 
         this.disabled = disabled;
         this.cityName = cityName;
         this.units = units;
+        this.useGeo = useGeo;
 
-        if (!disabled) {
+        if (!disabled && (cityName || useGeo)) {
             this.scheduleWeatherUpdate();
         }
         this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
@@ -47,28 +49,48 @@ export class Weather {
         if (!weather) {
             return;
         }
-        const { disabled, cityName, units } = weather;
+        const { disabled, cityName, units, useGeo } = weather;
 
-        if (units !== this.units) {
-            this.units = units;
-            this.temperature = this.convertTemperature(this.temperature, units);
-        }
-        else if (cityName !== this.cityName) {
-            this.cityName = cityName;
-
-            if (!disabled) {
-                this.getWeather();
-            }
-        }
-        else if (disabled !== this.disabled) {
+        if (typeof disabled === "boolean") {
             this.disabled = disabled;
 
             if (disabled) {
                 clearTimeout(this.timeout);
             }
-            else {
+            else if (this.cityName || this.useGeo) {
                 this.getWeather();
             }
+            else {
+                this.disabled = true;
+            }
+        }
+        else if (typeof cityName === "string") {
+            this.cityName = cityName;
+
+            if (cityName) {
+                this.disabled = false;
+                this.getWeather();
+            }
+            else if (!this.useGeo) {
+                this.disabled = true;
+                clearTimeout(this.timeout);
+            }
+        }
+        else if (typeof useGeo === "boolean") {
+            this.useGeo = useGeo;
+
+            if (useGeo) {
+                this.disabled = false;
+                this.getWeather();
+            }
+            else if (!this.cityName) {
+                this.disabled = true;
+                clearTimeout(this.timeout);
+            }
+        }
+        else if (typeof units === "string") {
+            this.units = units;
+            this.temperature = this.convertTemperature(this.temperature, units);
         }
     }
 
@@ -82,16 +104,22 @@ export class Weather {
         clearTimeout(this.timeout);
 
         try {
-            const data = await this.weatherService.getWeather(this.cityName);
+            const data = await this.weatherService.getWeather(this.cityName, this.useGeo);
 
-            if (data) {
+            if (!data) {
+                return;
+            }
+
+            if (data.message) {
+                this.settingService.updateMessage({ weather: data });
+            }
+            else {
                 this.displayWeather(data);
-                this.settingService.updateMessage({ weather: "" });
+                this.settingService.updateMessage({ weather: {} });
             }
         }
         catch (e) {
             console.log(e);
-            this.settingService.updateMessage({ weather: e.message });
         }
         finally {
             this.scheduleWeatherUpdate(960000);

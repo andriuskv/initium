@@ -117,6 +117,23 @@
     text-decoration: underline;
 }
 
+.setting-weather {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    .setting-message {
+        margin-top: 0;
+    }
+}
+
+.setting-weather-item {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 0;
+}
+
 .setting-tab-form-container {
     justify-content: center;
     align-items: center;
