@@ -43,10 +43,8 @@ module.exports = function(env = {}) {
             filename: "[name].js"
         },
         resolve: {
-            extensions: [
-                ".ts",
-                ".js"
-            ],
+            extensions: [".ts", ".js", ".json"],
+            mainFields: ["es2015", "browser", "module", "main"],
             modules: [
                 path.resolve(__dirname, "node_modules"),
                 path.resolve(__dirname, "src")
