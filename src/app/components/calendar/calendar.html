@@ -23,7 +23,8 @@
     </button>
 </div>
 <div class="calendar-wrapper"
-    [style]="'--x:' + transitionOriginX + 'px; --y:' + transitionOriginY + 'px' | safeStyle">
+    [style.--x]="transitionOriginX + 'px'"
+    [style.--y]="transitionOriginY + 'px'">
     <div class="calendar" *ngIf="selectedDay; else elseBlock1">
         <calendar-selected-day
             [day]="selectedDay"

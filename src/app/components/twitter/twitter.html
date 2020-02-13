@@ -1,6 +1,6 @@
 <div class="container main-block-content" [class.visible]="isVisible">
     <div class="twitter-content" *ngIf="tweets.length; else elseBlock"
-        [style]="'--profile-color:' + user.profileColor | safeStyle">
+        [style.--profile-color]="user.profileColor">
         <div class="main-block-content-header">
             <a href="{{ user.homepage }}" class="twitter-user" target="_blank">
                 <img src="{{ user.profileImage }}" class="twitter-user-image" alt="">
