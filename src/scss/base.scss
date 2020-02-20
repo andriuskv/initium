@@ -18,6 +18,7 @@ body {
 }
 
 a {
+    outline: none;
     text-decoration: none;
     color: inherit;
 }
@@ -97,6 +98,11 @@ textarea {
     &::placeholder {
         color: $color-white-40;
     }
+
+    &.focus-visible {
+        outline: none;
+        box-shadow: 0 0 1px 1px $color-blue;
+    }
 }
 
 .btn {
@@ -124,6 +130,11 @@ textarea {
             color: $color-white-20;
             background-color: $color-white-10;
         }
+    }
+
+    &.focus-visible {
+        outline: none;
+        box-shadow: 0 0 1px 1px $color-blue;
     }
 }
 
@@ -176,31 +187,61 @@ textarea {
     }
 }
 
-.checkbox {
-    width: 16px;
-    height: 16px;
-    border-radius: 2px;
-    background-color: $color-white-10;
+.sr-only {
+    position: absolute;
+    overflow: hidden;
+    height: 1px;
+    width: 1px;
+    padding: 0;
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+}
 
-    &.checked .checkbox-tick {
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-input {
+    &:checked + .checkbox .checkbox-tick {
         display: block;
     }
+
+    &.focus-visible + .checkbox {
+        outline: none;
+        box-shadow: 0 0 1px 1px $color-blue;
+    }
+}
+
+.checkbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 2px;
+    background-color: $color-white-10;
 }
 
 .checkbox-tick {
     display: none;
-    width: 100%;
-    height: 100%;
-    color: $color-blue;
-    transform: scale(0);
-    animation-name: scale-up;
+    width: 32%;
+    height: 64%;
+    border-right: 2px solid $color-blue;
+    border-bottom: 2px solid $color-blue;
+    transform: translate(10%, -14%) rotateZ(45deg) scale(0);
+    animation-name: scale-tick-up;
     animation-duration: 0.2s;
     animation-fill-mode: forwards;
 }
 
+.checkbox-label-right, .radio-label-right {
+  margin-left: 8px;
+}
+
 .radio {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     padding: 5px;
     border-radius: 50%;
     background-color: $color-white-10;
@@ -218,10 +259,13 @@ textarea {
 }
 
 .radio-input {
-    display: none;
-
     &:checked + .radio::after {
         transform: scale(1);
+    }
+
+    &.focus-visible + .radio {
+        outline: none;
+        box-shadow: 0 0 1px 1px $color-blue;
     }
 }
 
@@ -250,6 +294,11 @@ textarea {
 
     &.checked::before {
         transform: translateX(100%);
+    }
+
+    &.focus-visible {
+        outline: none;
+        box-shadow: 0 0 1px 1px $color-blue;
     }
 
     div {
@@ -304,12 +353,12 @@ textarea {
     }
 }
 
-@keyframes scale-up {
+@keyframes scale-tick-up {
     from {
-        transform: scale(0);
+        transform: translate(10%, -14%) rotateZ(45deg) scale(0);
     }
     to {
-        transform: scale(1);
+        transform: translate(10%, -14%) rotateZ(45deg) scale(1);
     }
 }
 

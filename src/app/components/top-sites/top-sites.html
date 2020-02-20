@@ -10,9 +10,9 @@
                         (click)="removeFormThumbnail()" title="Remove icon">Remove</button>
                 </ng-container>
                 <ng-template #elseBlock>
-                    <label class="btn btn-text top-site-file-input" tabindex="0">
+                    <label class="btn btn-text top-site-file-input">
                         <div>Add icon</div>
-                        <input type="file" class="file-input" accept="image/*"
+                        <input type="file" class="sr-only" accept="image/*"
                             (change)="handleFileInputChange($event)">
                     </label>
                 </ng-template>

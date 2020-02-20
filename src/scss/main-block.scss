@@ -88,6 +88,11 @@ $main-block-nav-height: 32px;
         background-color: $color-white-10;
         cursor: pointer;
     }
+
+    &.focus-visible {
+        outline: none;
+        box-shadow: 0 0 1px 1px $color-blue;
+    }
 }
 
 .main-block-sidebar-btn {

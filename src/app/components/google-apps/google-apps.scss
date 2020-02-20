@@ -24,6 +24,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    &.focus-visible {
+        box-shadow: 0 0 1px 1px $color-blue;
+    }
 }
 
 .apps-item-icon {

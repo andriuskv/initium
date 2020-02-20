@@ -115,6 +115,11 @@
 
 .setting-background-info-link {
     text-decoration: underline;
+
+    &.focus-visible {
+        outline: none;
+        box-shadow: 0 0 1px 1px $color-blue;
+    }
 }
 
 .setting-weather {

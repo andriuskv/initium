@@ -130,6 +130,11 @@
 
     overflow-y: auto;
     flex-grow: 1;
+
+    &.focus-visible {
+        outline: none;
+        box-shadow: 0 1px 0 0 $color-blue;
+    }
 }
 
 .feed-entry {
@@ -145,7 +150,7 @@
     font-size: 16px;
     word-break: break-word;
 
-    &:hover {
+    &:hover, &.focus-visible {
         text-decoration: underline;
     }
 }
