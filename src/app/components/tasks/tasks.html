@@ -40,9 +40,7 @@
                         [class.flagged]="label.flagged" (click)="flagLabel(label)">
                         <div class="task-label-color" [style.backgroundColor]="label.color"></div>
                         <div class="task-label-title">{{ label.title }}</div>
-                        <svg class="task-form-label-btn-tick" viewBox="0 0 24 24">
-                            <use href="#tick"></use>
-                        </svg>
+                        <div class="checkbox-tick task-form-label-btn-tick"></div>
                     </button>
                 </li>
             </ul>
@@ -87,11 +85,9 @@
                             </li>
                         </ul>
                         <div class="task-text-container" [class.has-labels]="task.labels.length">
-                            <button class="task-checkbox-btn" title="Remove task"
+                            <button class="checkbox task-checkbox-btn" title="Remove task"
                                 (click)="removeTask(i)" [disabled]="task.removing">
-                                <svg class="task-checkbox-tick" viewBox="0 0 24 24">
-                                    <use href="#tick"></use>
-                                </svg>
+                                <div class="checkbox-tick"></div>
                             </button>
                             <div class="task-text">{{ task.text }}</div>
                         </div>
@@ -99,11 +95,9 @@
                             <li class="subtask" [class.removing]="subtask.removing"
                                 *ngFor="let subtask of task.subtasks; let subtaskIndex = index">
                                 <div class="subtask-body">
-                                    <button class="task-checkbox-btn" title="Mark Completed"
+                                    <button class="checkbox task-checkbox-btn" title="Mark Completed"
                                         (click)="removeSubtask(i, subtaskIndex)" [disabled]="subtask.removing">
-                                        <svg class="task-checkbox-tick" viewBox="0 0 24 24">
-                                            <use href="#tick"></use>
-                                        </svg>
+                                        <div class="checkbox-tick"></div>
                                     </button>
                                     <span class="task-text">{{ subtask.text }}</span>
                                 </div>

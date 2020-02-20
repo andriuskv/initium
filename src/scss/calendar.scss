@@ -306,14 +306,8 @@
     }
 }
 
-.checkbox-container {
-    display: flex;
-    align-items: center;
-    margin-right: 12px;
-}
-
-.checkbox-label {
-    margin-left: 8px;
+.calendar-checkbox-container {
+    margin-right: 16px;
 }
 
 .repeat-input {
@@ -342,7 +336,7 @@
     }
 
     &:invalid {
-        outline: 1px auto transparentize($color-danger, 0.2);
+        box-shadow: 0 0 1px 1px $color-danger;
     }
 }
 

@@ -29,58 +29,75 @@
     </li>
 </ul>
 <div class="setting-tab" *ngIf="active === 'general'">
-    <div class="setting">
+    <label class="checkbox-container setting">
         <span>Disable notifications</span>
-        <div role="checkbox" class="checkbox" tabindex="0"
-            [class.checked]="settings.general.notificationsDisabled"
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.general.notificationsDisabled"
             (click)="toggleSettingCheckbox('notificationsDisabled')"
-            (keyup.enter)="toggleSettingCheckbox('notificationsDisabled')"
-            [attr.aria-checked]="settings.general.notificationsDisabled">
-            <svg class="checkbox-tick" viewBox="0 0 24 24">
-                <use href="#tick"></use>
-            </svg>
+            (keyup.enter)="toggleSettingCheckbox('notificationsDisabled')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
         </div>
-    </div>
-    <div class="setting" [class.disabled]="settings.general.notificationsDisabled">
+    </label>
+    <label class="checkbox-container setting" [class.disabled]="settings.general.notificationsDisabled">
         <span>Don't focus tab on notification click</span>
-        <div role="checkbox" class="checkbox" tabindex="0"
-            [class.checked]="settings.general.notificationFocusDisabled"
+        <input type="checkbox" class="sr-only checkbox-input"
+            [disabled]="settings.general.notificationsDisabled"
+            [checked]="settings.general.notificationFocusDisabled"
             (click)="toggleSettingCheckbox('notificationFocusDisabled')"
-            (keyup.enter)="toggleSettingCheckbox('notificationFocusDisabled')"
-            [attr.aria-checked]="settings.general.notificationFocusDisabled">
-            <svg class="checkbox-tick" viewBox="0 0 24 24">
-                <use href="#tick"></use>
-            </svg>
+            (keyup.enter)="toggleSettingCheckbox('notificationFocusDisabled')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
         </div>
+    </label>
+</div>
+<div class="setting-tab" *ngIf="active === 'mainBlock'">
+    <label class="checkbox-container setting">
+        <span>Hide item bar</span>
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.mainBlock.isNavHidden"
+            (click)="toggleSettingCheckbox('isNavHidden')"
+            (keyup.enter)="toggleSettingCheckbox('isNavHidden')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
+        </div>
+    </label>
+    <label class="checkbox-container setting">
+        <span>Show one row of top sites</span>
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.mainBlock.showingOneRow"
+            (click)="toggleSettingCheckbox('showingOneRow')"
+            (keyup.enter)="toggleSettingCheckbox('showingOneRow')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
+        </div>
+    </label>
+    <div class="setting">
+        <span>Restore default top sites</span>
+        <button class="btn" (click)="resetSetting({ resetTopSites: true })">Reset</button>
     </div>
 </div>
 <div class="setting-tab" *ngIf="active === 'time'">
-    <div class="setting">
-        <span id="time-setting-label-1">Disable time</span>
-        <div role="checkbox" class="checkbox" tabindex="0"
-            [class.checked]="settings.time.disabled"
+    <label class="checkbox-container setting">
+        <span>Disable time</span>
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.time.disabled"
             (click)="toggleSettingCheckbox('disabled')"
-            (keyup.enter)="toggleSettingCheckbox('disabled')"
-            [attr.aria-checked]="settings.time.disabled"
-            aria-labelledby="time-setting-label-1">
-            <svg class="checkbox-tick" viewBox="0 0 24 24">
-                <use href="#tick"></use>
-            </svg>
+            (keyup.enter)="toggleSettingCheckbox('disabled')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
         </div>
-    </div>
-    <div class="setting" [class.disabled]="settings.time.disabled">
-        <span id="time-setting-label-2">Hide date</span>
-        <div role="checkbox" class="checkbox" tabindex="0"
-            [class.checked]="settings.time.dateHidden"
+    </label>
+        <label class="checkbox-container setting">
+        <span>Hide date</span>
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.time.dateHidden"
             (click)="toggleSettingCheckbox('dateHidden')"
-            (keyup.enter)="toggleSettingCheckbox('dateHidden')"
-            [attr.aria-checked]="settings.time.dateHidden"
-            aria-labelledby="time-setting-label-2">
-            <svg class="checkbox-tick" viewBox="0 0 24 24">
-                <use href="#tick"></use>
-            </svg>
+            (keyup.enter)="toggleSettingCheckbox('dateHidden')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
         </div>
-    </div>
+    </label>
     <div class="setting">
         <span id="time-setting-label-3">Time display format</span>
         <div class="toggle" tabindex="0"
@@ -126,19 +143,16 @@
     <p class="setting-background-info" *ngIf="backgroundInfo">Background image by <a [href]='"https://unsplash.com/@" + backgroundInfo.username  + "?utm_source=initium&utm_medium=referral"' class="setting-background-info-link">{{ backgroundInfo.name }}</a> on <a href="https://unsplash.com/?utm_source=initium&utm_medium=referral" class="setting-background-info-link">Unsplash</a></p>
 </div>
 <div class="setting-tab" *ngIf="active === 'weather'">
-    <div class="setting">
-        <span id="weather-setting-label-1">Disable weather</span>
-        <div role="checkbox" class="checkbox" tabindex="0"
-            [class.checked]="settings.weather.disabled"
+    <label class="checkbox-container setting">
+        <span>Disable weather</span>
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.weather.disabled"
             (click)="toggleSettingCheckbox('disabled')"
-            (keyup.enter)="toggleSettingCheckbox('disabled')"
-            [attr.aria-checked]="settings.weather.disabled"
-            aria-labelledby="weather-setting-label-1">
-            <svg class="checkbox-tick" viewBox="0 0 24 24">
-                <use href="#tick"></use>
-            </svg>
+            (keyup.enter)="toggleSettingCheckbox('disabled')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
         </div>
-    </div>
+    </label>
     <div class="setting" [class.disabled]="settings.weather.disabled">
         <span id="weather-setting-label-2">Temperature units</span>
         <div class="toggle" tabindex="0"
@@ -159,49 +173,18 @@
         <div class="setting-message" *ngIf="settingMessages.weather?.type === 'loc'">{{ settingMessages.weather.message }}</div>
     </div>
     <div class="setting setting-weather" [class.disabled]="settings.weather.disabled">
-        <div class="setting-weather-item">
+        <label class="checkbox-container setting-weather-item">
             <span>Use geolocation</span>
-            <div role="checkbox" class="checkbox" [tabindex]="settings.weather.disabled ? '-1' : '0'"
-                [class.checked]="settings.weather.useGeo"
+            <input type="checkbox" class="sr-only checkbox-input"
+                [disabled]="settings.weather.disabled"
+                [checked]="settings.weather.useGeo"
                 (click)="toggleSettingCheckbox('useGeo')"
-                (keyup.enter)="toggleSettingCheckbox('useGeo')"
-                [attr.aria-checked]="settings.weather.useGeo">
-                <svg class="checkbox-tick" viewBox="0 0 24 24">
-                    <use href="#tick"></use>
-                </svg>
+                (keyup.enter)="toggleSettingCheckbox('useGeo')">
+            <div class="checkbox">
+                <div class="checkbox-tick"></div>
             </div>
-        </div>
+        </label>
         <div class="setting-message" *ngIf="settingMessages.weather?.type === 'geo'">{{ settingMessages.weather.message }}</div>
-    </div>
-</div>
-<div class="setting-tab" *ngIf="active === 'mainBlock'">
-    <div class="setting">
-        <span>Hide item bar</span>
-        <div role="checkbox" class="checkbox" tabindex="0"
-            [class.checked]="settings.mainBlock.isNavHidden"
-            (click)="toggleSettingCheckbox('isNavHidden')"
-            (keyup.enter)="toggleSettingCheckbox('isNavHidden')"
-            [attr.aria-checked]="settings.mainBlock.isNavHidden">
-            <svg class="checkbox-tick" viewBox="0 0 24 24">
-                <use href="#tick"></use>
-            </svg>
-        </div>
-    </div>
-    <div class="setting">
-        <span>Show one row of top sites</span>
-        <div role="checkbox" class="checkbox" tabindex="0"
-            [class.checked]="settings.mainBlock.showingOneRow"
-            (click)="toggleSettingCheckbox('showingOneRow')"
-            (keyup.enter)="toggleSettingCheckbox('showingOneRow')"
-            [attr.aria-checked]="settings.mainBlock.showingOneRow">
-            <svg class="checkbox-tick" viewBox="0 0 24 24">
-                <use href="#tick"></use>
-            </svg>
-        </div>
-    </div>
-    <div class="setting">
-        <span>Restore default top sites</span>
-        <button class="btn" (click)="resetSetting({ resetTopSites: true })">Reset</button>
     </div>
 </div>
 <div class="setting-tab" *ngIf="active === 'pomodoro'">

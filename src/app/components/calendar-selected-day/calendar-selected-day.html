@@ -41,30 +41,26 @@
     <form class="selected-day selected-day-form" (submit)="createReminder($event)">
         <input type="text" class="input reminder-input" name="reminder" autocomplete="off" placeholder="Remind me to..." required>
         <div class="reminder-form-row reminder-setting">
-            <div class="checkbox-container">
-                <div role="checkbox" class="checkbox" tabindex="0"
-                    [class.checked]="!isRangeVisible"
+            <label class="checkbox-container calendar-checkbox-container">
+                <input type="checkbox" class="sr-only checkbox-input"
+                    [checked]="!isRangeVisible"
                     (click)="toggleRange()"
-                    (keyup.enter)="toggleRange()"
-                    [attr.aria-checked]="!isRangeVisible">
-                    <svg class="checkbox-tick" viewBox="0 0 24 24">
-                        <use href="#tick"></use>
-                    </svg>
+                    (keyup.enter)="toggleRange()">
+                <div class="checkbox">
+                    <div class="checkbox-tick"></div>
                 </div>
-                <span class="checkbox-label">All day</span>
-            </div>
-            <div class="checkbox-container">
-                <div role="checkbox" class="checkbox" tabindex="0"
-                    [class.checked]="isRepeatEnabled"
+                <span class="checkbox-label-right">All day</span>
+            </label>
+            <label class="checkbox-container calendar-checkbox-container">
+                <input type="checkbox" class="sr-only checkbox-input"
+                    [checked]="isRepeatEnabled"
                     (click)="toggleRepeat()"
-                    (keyup.enter)="toggleRepeat()"
-                    [attr.aria-checked]="isRepeatEnabled">
-                    <svg class="checkbox-tick" viewBox="0 0 24 24">
-                        <use href="#tick"></use>
-                    </svg>
+                    (keyup.enter)="toggleRepeat()">
+                <div class="checkbox">
+                    <div class="checkbox-tick"></div>
                 </div>
-                <span class="checkbox-label">Repeat</span>
-            </div>
+                <span class="checkbox-label-right">Repeat</span>
+            </label>
         </div>
         <div class="reminder-setting" *ngIf="isRangeVisible">
             <div>
@@ -110,17 +106,17 @@
             <div class="reminder-setting">
                 <div>Ends</div>
                 <label class="reminder-form-row">
-                    <input type="radio" class="radio-input" name="ends"
+                    <input type="radio" class="sr-only radio-input" name="ends"
                         (click)="resetOccurencesInput()"
                         [checked]="!repeatCount">
                     <div class="radio"></div>
-                    <span class="checkbox-label">Never</span>
+                    <span class="radio-label-right">Never</span>
                 </label>
                 <label class="reminder-form-row">
-                    <input type="radio" class="radio-input" name="ends"
+                    <input type="radio" class="sr-only radio-input" name="ends"
                         (click)="enableRepeatCountInput()">
                     <div class="radio"></div>
-                    <span class="checkbox-label">After</span>
+                    <span class="radio-label-right">After</span>
                     <input type="text" class="input repeat-input" autocomplete="off"
                         pattern="^0*[1-9][0-9]*$"
                         (keyup)="validateRepeatCountInput($event)"
