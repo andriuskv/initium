@@ -11,7 +11,7 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
 })
 export class Countdown {
     @Input() visible = false;
-    @ViewChild("formElement", { static : false }) formElement;
+    @ViewChild("formElement") formElement;
     @Output() status = new EventEmitter();
 
     timeout = 0;

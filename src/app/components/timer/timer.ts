@@ -6,8 +6,8 @@ import { padTime } from "../../utils/utils.js";
     templateUrl: require("raw-loader!./timer.html").default
 })
 export class Timer {
-    @ViewChild("hoursInput", { static : false }) hoursInput;
-    @ViewChild("minutesInput", { static : false }) minutesInput;
+    @ViewChild("hoursInput") hoursInput;
+    @ViewChild("minutesInput") minutesInput;
     @Output() size = new EventEmitter();
     @Output() fullscreen = new EventEmitter();
     @Input() visible: boolean = false;

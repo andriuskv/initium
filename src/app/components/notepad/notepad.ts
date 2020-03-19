@@ -8,8 +8,8 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
 })
 export class Notepad {
     @Input() isVisible: boolean = false;
-    @ViewChild("textarea", { static: false }) textarea;
-    @ViewChild("editTitleInput", { static: false }) editTitleInput;
+    @ViewChild("textarea") textarea;
+    @ViewChild("editTitleInput") editTitleInput;
 
     initialized: boolean = false;
     menuVisible: boolean = false;
