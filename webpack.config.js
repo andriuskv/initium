@@ -27,6 +27,9 @@ module.exports = function(env = {}) {
             tsConfigPath: "./tsconfig.json",
             skipCodeGeneration: true,
             compilerOptions: {
+                fullTemplateTypeCheck: true,
+                strictInjectionParameters: true,
+                strictTemplates: true,
                 preserveWhiteSpace: false,
                 allowEmptyCodegenFiles: false
             }

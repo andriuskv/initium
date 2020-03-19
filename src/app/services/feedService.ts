@@ -3,9 +3,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { TimeDateService } from "./timeDateService";
 import { SettingService } from "./settingService";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable({ providedIn: "root" })
 export class FeedService {
     constructor(
         private domSanitizer: DomSanitizer,
@@ -78,12 +76,22 @@ export class FeedService {
 
         return {
             title: entry.title.trim(),
-            link: entry.link.trim(),
+            link: this.getEntryLink(entry),
             description: this.domSanitizer.bypassSecurityTrustHtml(content),
             date: this.parseDate(entry.pubDate),
             truncated: this.needTruncation(content),
             newEntry
         };
+    }
+
+    getEntryLink(entry) {
+        if (entry.link) {
+            return entry.link.trim();
+        }
+        else if (entry.guid) {
+            return entry.guid.trim();
+        }
+        return this.domSanitizer.bypassSecurityTrustUrl("javascript: void 0;");
     }
 
     parseDate(dateStr) {
