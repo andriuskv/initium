@@ -11,7 +11,7 @@ export class BackgroundViewer {
     @Output() close = new EventEmitter();
     @Input() data;
 
-    loading: boolean = true;
+    loading = true;
     boundMouseMoveHandler: any;
     viewport: any = {
         width: 0,
@@ -82,7 +82,7 @@ export class BackgroundViewer {
         this.settingService.updateSetting({
             background: {
                 x: this.getBackgroundPosition(this.area.x, "width"),
-                y: this.getBackgroundPosition(this.area.y, "height"),
+                y: this.getBackgroundPosition(this.area.y, "height")
             }
         });
         this.closeViewer();

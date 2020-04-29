@@ -42,7 +42,10 @@ export class Tasks {
     oldLabels: Label[] = JSON.parse(localStorage.getItem("old-task-labels")) || [];
     formLabels: Label[] = [];
 
-    constructor(private chromeStorageService: ChromeStorageService, private zIndexService: ZIndexService) {}
+    constructor(
+        private chromeStorageService: ChromeStorageService,
+        private zIndexService: ZIndexService
+    ) {}
 
     ngOnInit() {
         this.chromeStorageService.subscribeToChanges(({ tasks }) => {
@@ -206,6 +209,7 @@ export class Tasks {
         const taskLabels = this.getUniqueTaskLabels(index);
         const labels = this.oldLabels.reduce((labels, label) => {
             if (!this.findLabel(taskLabels, label)) {
+                delete label.flagged;
                 labels.push(label);
             }
             return labels;
@@ -214,7 +218,7 @@ export class Tasks {
         return [...taskLabels, ...labels];
     }
 
-    findLabel(labels, { title, color }) {
+    findLabel(labels: Label[], { title, color }): Label {
         return labels.find(label => label.title === title && label.color === color);
     }
 
@@ -228,7 +232,7 @@ export class Tasks {
         }, []);
     }
 
-    getUniqueTaskLabels(taskIndex = -1) {
+    getUniqueTaskLabels(taskIndex = -1): Label[] {
         return this.tasks.reduce((labels, task, index) => {
             if (task.labels) {
                 task.labels.forEach(label => {
@@ -243,7 +247,7 @@ export class Tasks {
                 });
             }
             return labels;
-        }, []);
+        }, [] as Label[]);
     }
 
     createLabel(event) {
