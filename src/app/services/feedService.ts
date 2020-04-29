@@ -26,7 +26,7 @@ export class FeedService {
     getNewEntries(newEntries, entries) {
         return newEntries.reduce((newEntries, entry) => {
             const notDuplicate = !entries.some(({ link, title }) => {
-                return link === entry.link.trim() || title === entry.title.trim();
+                return link === this.getEntryLink(entry) || title === entry.title.trim();
             });
 
             if (notDuplicate) {

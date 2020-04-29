@@ -10,6 +10,14 @@
             </svg>
         </button>
         <img [src]="images[index].url" class="viewer-image" (load)="handleLoad($event)" alt="">
+        <button class="btn btn-icon viewer-direction-btn right"
+            *ngIf="images.length > 1"
+            (click)="nextImage(1)"
+            aria-label="Next image">
+            <svg class="viewer-direction-icon" viewBox="0 0 24 24">
+                <use href="#chevron-right"></use>
+            </svg>
+        </button>
         <div class="container viewer-bottom-bar">
             <span *ngIf="images.length > 1">{{ index + 1 }}/{{ images.length }}</span>
             <a [href]="images[index].url" class="btn btn-icon viewer-open-btn"
@@ -19,14 +27,6 @@
                 </svg>
             </a>
         </div>
-        <button class="btn btn-icon viewer-direction-btn right"
-            *ngIf="images.length > 1"
-            (click)="nextImage(1)"
-            aria-label="Next image">
-            <svg class="viewer-direction-icon" viewBox="0 0 24 24">
-                <use href="#chevron-right"></use>
-            </svg>
-        </button>
     </div>
     <button class="btn btn-icon viewer-close-btn"
         (click)="closeViewer()" title="Close">
