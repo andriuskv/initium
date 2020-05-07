@@ -5,19 +5,17 @@ import { BackgroundService } from "../../services/backgroundService";
 @Component({
   selector: "background",
   styles: [`
-  :host {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transition: 0.2s background-position;
-    transition-delay: 0.2s;
-    filter: brightness(90%);
-  }
+    :host {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: brightness(90%);
+    }
   `],
   template: ""
 })
@@ -38,9 +36,19 @@ export class Background {
     }
 
     async setBackground(background) {
-      if (background.url) {
+      if (background.type === "blob") {
+        const image = await this.backgroundService.getIDBBackground(background.id);
+
+        this.setBackgroundStyle({ ...background, url: URL.createObjectURL(image) });
+        this.backgroundService.resetBackgroundInfo();
+      }
+      else if (background.url) {
         this.setBackgroundStyle(background);
         this.backgroundService.resetBackgroundInfo();
+      }
+      else if (typeof background.x === "number" && typeof background.y === "number") {
+        const element = this.elRef.nativeElement;
+        element.style.backgroundPosition = `${background.x}% ${background.y}%`;
       }
       else {
         const info = await this.backgroundService.fetchBackgroundInfo();
@@ -56,4 +64,4 @@ export class Background {
       element.style.backgroundPosition = `${x}% ${y}%`;
       element.style.backgroundImage = `url(${url})`;
     }
-  }
+}

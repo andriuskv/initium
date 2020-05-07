@@ -93,7 +93,7 @@
 .setting-background-item {
     flex: 1;
 
-    &:first-of-type {
+    &:not(:last-of-type) {
         border-right: 1px solid $color-white-10;
     }
 }

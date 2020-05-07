@@ -94,6 +94,21 @@ export class BackgroundService {
     });
   }
 
+  async getIDBBackground(id) {
+    const { Store, get } = await import("idb-keyval");
+    const store = new Store("initium", "background");
+
+    return get(id, store);
+  }
+
+  async setIDBBackground(image) {
+    const { Store, set, clear } = await import("idb-keyval");
+    const store = new Store("initium", "background");
+
+    clear(store);
+    set(image.name, image, store);
+  }
+
   subscribeToChanges(handler) {
     return this.subject.subscribe(handler);
   }

@@ -155,6 +155,7 @@
 .timer-input {
     width: calc(2ch + 1px);
     height: 100%;
+    padding: 0;
     border: none;
 
     &:focus {
