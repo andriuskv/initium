@@ -100,7 +100,7 @@ export class Settings {
 
     setBackground(url = "") {
         this.setActiveTab("background");
-        this.setSetting({ url });
+        this.setSetting({ type: "url", url });
     }
 
     handleBackgroundFormSubmit(event) {
@@ -113,7 +113,8 @@ export class Settings {
         event.preventDefault();
 
         if (!input.value) {
-            this.setBackground();
+            this.setActiveTab("background");
+            this.resetBackground();
         }
 
         image.onload = () => {

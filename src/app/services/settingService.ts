@@ -80,11 +80,14 @@ export class SettingService {
         this.messageSubject.subscribe(handler);
     }
 
-    updateSetting(setting) {
+    updateSetting(setting, payload = null) {
         const settings = this.settings;
         const [settingFor] = Object.keys(setting);
-
         settings[settingFor] = { ...settings[settingFor], ...setting[settingFor] };
+
+        if (payload) {
+            setting[settingFor] = { ...setting[settingFor], ...payload };
+        }
         this.settingSubject.next(setting);
         localStorage.setItem("settings", JSON.stringify(settings));
         return settings;
@@ -98,6 +101,12 @@ export class SettingService {
         this.settingSubject.next(setting);
         localStorage.setItem("settings", JSON.stringify(settings));
         return settings;
+    }
+
+    resetSetting(settingName) {
+        const defaultSettings = this.getDefault();
+        this.settings[settingName] = defaultSettings[settingName];
+        localStorage.setItem("settings", JSON.stringify(this.settings));
     }
 
     updateMessage(message) {
