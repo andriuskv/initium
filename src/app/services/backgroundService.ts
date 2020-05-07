@@ -109,6 +109,13 @@ export class BackgroundService {
     set(image.name, image, store);
   }
 
+  async resetIDBStore() {
+    const { Store, clear } = await import("idb-keyval");
+    const store = new Store("initium", "background");
+
+    clear(store);
+  }
+
   subscribeToChanges(handler) {
     return this.subject.subscribe(handler);
   }

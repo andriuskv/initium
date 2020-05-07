@@ -103,7 +103,7 @@ export class BackgroundViewer {
                 x: this.getBackgroundPosition(this.area.x, "width"),
                 y: this.getBackgroundPosition(this.area.y, "height")
             }
-        });
+        }, { type: "position" });
         this.closeViewer();
     }
 

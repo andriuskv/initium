@@ -42,19 +42,21 @@ export class Background {
         this.setBackgroundStyle({ ...background, url: URL.createObjectURL(image) });
         this.backgroundService.resetBackgroundInfo();
       }
-      else if (background.url) {
+      else if (background.type === "url" || background.url) {
         this.setBackgroundStyle(background);
         this.backgroundService.resetBackgroundInfo();
+        this.backgroundService.resetIDBStore();
       }
-      else if (typeof background.x === "number" && typeof background.y === "number") {
-        const element = this.elRef.nativeElement;
-        element.style.backgroundPosition = `${background.x}% ${background.y}%`;
+      else if (background.type === "position") {
+        this.elRef.nativeElement.style.backgroundPosition = `${background.x}% ${background.y}%`;
       }
       else {
         const info = await this.backgroundService.fetchBackgroundInfo();
 
         if (info) {
           this.setBackgroundStyle({ url: info.url });
+          this.backgroundService.resetIDBStore();
+          this.settingService.resetSetting("background");
         }
       }
     }
