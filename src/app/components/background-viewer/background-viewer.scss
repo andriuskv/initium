@@ -62,6 +62,7 @@
     width: 100%;
     padding: 4px;
     margin-top: 4px;
+    backdrop-filter: none;
 
     .btn:not(:last-of-type) {
         margin-right: 4px;

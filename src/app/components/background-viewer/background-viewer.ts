@@ -1,5 +1,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
 import { SettingService } from "../../services/settingService";
+import { BackgroundService } from "../../services/backgroundService";
 
 @Component({
     selector: "background-viewer",
@@ -32,7 +34,24 @@ export class BackgroundViewer {
         y: 0
     };
 
-    constructor(private settingService: SettingService) {}
+    constructor(
+        private settingService: SettingService,
+        private backgroundService: BackgroundService,
+        private sanitizer: DomSanitizer
+    ) {}
+
+    async ngOnInit() {
+        if (this.data.id) {
+            const image = await this.backgroundService.getIDBBackground(this.data.id);
+            const blobUrl = URL.createObjectURL(image);
+
+            this.data = {
+                ...this.data,
+                url: this.sanitizer.bypassSecurityTrustUrl(blobUrl),
+                blobUrl
+            };
+        }
+    }
 
     handleLoad({ target }) {
         const { naturalWidth, naturalHeight } = target;
@@ -182,6 +201,7 @@ export class BackgroundViewer {
     }
 
     closeViewer() {
+        URL.revokeObjectURL(this.data.blobUrl);
         this.close.emit();
     }
 }

@@ -35,8 +35,14 @@ export class Settings {
         this.active = tab;
     }
 
-    setSetting(setting) {
+    updateSetting(setting) {
         this.settings = this.settingService.updateSetting({
+            [this.active]: setting
+        });
+    }
+
+    setSetting(setting) {
+        this.settings = this.settingService.setSetting({
             [this.active]: setting
         });
     }
@@ -48,7 +54,7 @@ export class Settings {
     }
 
     toggleSettingCheckbox(settingName) {
-        this.setSetting({
+        this.updateSetting({
             [settingName]: !this.settings[this.active][settingName]
         });
     }
@@ -56,13 +62,13 @@ export class Settings {
     toggleTimeFormat() {
         const { format } = this.settings[this.active];
 
-        this.setSetting({ format: format === 24 ? 12 : 24 });
+        this.updateSetting({ format: format === 24 ? 12 : 24 });
     }
 
     toggleTemperatureUnits() {
         const { units } = this.settings[this.active];
 
-        this.setSetting({ units: units === "C" ? "F" : "C" });
+        this.updateSetting({ units: units === "C" ? "F" : "C" });
     }
 
     setPomodoroDuration({ target }, settingName) {
@@ -72,7 +78,7 @@ export class Settings {
             value = 1;
             target.value = value;
         }
-        this.setSetting({
+        this.updateSetting({
             [settingName]: value
         });
     }
@@ -119,5 +125,30 @@ export class Settings {
         };
 
         image.src = input.value;
+    }
+
+    async selectFile() {
+        const image = await this.getImageFile() as File;
+
+        this.backgroundService.setIDBBackground(image);
+        this.setSetting({
+            type: "blob",
+            id: image.name
+        });
+    }
+
+    getImageFile() {
+        return new Promise(resolve => {
+            const input = document.createElement("input");
+
+            input.setAttribute("type", "file");
+            input.setAttribute("accept", "image/*");
+            input.onchange = ({ target }: any) => {
+                resolve(target.files[0]);
+                target = "";
+                input.onchange = null;
+            };
+            input.click();
+        });
     }
 }

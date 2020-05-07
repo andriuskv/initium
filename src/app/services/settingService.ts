@@ -31,9 +31,7 @@ export class SettingService {
     getDefault() {
         return {
             background: {
-                url: "",
-                x: 50,
-                y: 50
+                url: ""
             },
             general: {
                 notificationsDisabled: true,
@@ -87,6 +85,16 @@ export class SettingService {
         const [settingFor] = Object.keys(setting);
 
         settings[settingFor] = { ...settings[settingFor], ...setting[settingFor] };
+        this.settingSubject.next(setting);
+        localStorage.setItem("settings", JSON.stringify(settings));
+        return settings;
+    }
+
+    setSetting(setting) {
+        const settings = this.settings;
+        const [settingFor] = Object.keys(setting);
+
+        settings[settingFor] = setting[settingFor];
         this.settingSubject.next(setting);
         localStorage.setItem("settings", JSON.stringify(settings));
         return settings;

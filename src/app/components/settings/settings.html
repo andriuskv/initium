@@ -119,7 +119,7 @@
         <div class="setting-background-title">Set background from...</div>
         <button class="btn btn-icon setting-background-viewer-btn"
             title="Adjust background position"
-            *ngIf="settings.background.url"
+            *ngIf="settings.background.url || settings.background.id"
             (click)="openBackgroundViewer()">
             <svg viewBox="0 0 24 24">
                 <use href="#image"></use>
@@ -137,6 +137,9 @@
             </div>
             <div class="setting-background-item">
                 <button class="btn btn-text setting-background-item-btn" (click)="showBackgroundForm()">URL</button>
+            </div>
+            <div class="setting-background-item">
+                <button class="btn btn-text setting-background-item-btn" (click)="selectFile()">Device</button>
             </div>
         </div>
     </div>
@@ -217,10 +220,12 @@
     </div>
 </div>
 <storage class="setting-tab" *ngIf="active === 'storage'"></storage>
+<dropbox class="setting-tab dropbox-container" *ngIf="active === 'dropbox'"
+    (sessionEnded)="setActiveTab('background')"></dropbox>
 <div class="setting-tab setting-tab-form-container"
     *ngIf="active === 'background-form'">
     <form (submit)="handleBackgroundFormSubmit($event)">
-        <h3 class="setting-tab-form-title">Set background</h3>
+        <h3 class="setting-tab-form-title">Set background from URL</h3>
         <div class="setting-tab-form-input-container">
             <input type="text" class="input" placeholder="URL">
             <button class="btn setting-tab-form-submit-btn">Done</button>
@@ -228,5 +233,3 @@
         <div class="setting-tab-form-message" *ngIf="backgroundUrlInvalid">URL does not contain valid image</div>
     </form>
 </div>
-<dropbox class="setting-tab dropbox-container" *ngIf="active === 'dropbox'"
-    (sessionEnded)="setActiveTab('background')"></dropbox>
