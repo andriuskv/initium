@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from "@angular/core";
+import { Component, Output, EventEmitter, ViewChild } from "@angular/core";
 import { SettingService } from "../../services/settingService";
 import { ZIndexService } from "../../services/zIndexService";
 
@@ -8,11 +8,13 @@ import { ZIndexService } from "../../services/zIndexService";
 })
 export class MainBlock {
     @Output() showViewer = new EventEmitter();
+    @ViewChild("container") container;
 
     isNavHidden = false;
     isExpanded = false;
     isTabExpandable = false;
     isSidebarExpanded = false;
+    isResizingEnabled = false;
     tab = "";
     zIndex = 0;
     tabs: any = {
@@ -36,6 +38,14 @@ export class MainBlock {
         this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
     }
 
+    ngAfterViewInit() {
+        const { height } = this.settingService.getSetting("mainBlock");
+
+        if (typeof height === "number") {
+            this.container.nativeElement.style.setProperty("--height", `${height}px`);
+        }
+    }
+
     changeHandler({ mainBlock }) {
         if (mainBlock && typeof mainBlock.isNavHidden === "boolean") {
             this.isNavHidden = mainBlock.isNavHidden;
@@ -48,6 +58,14 @@ export class MainBlock {
 
     toggleSize() {
         this.isExpanded = !this.isExpanded;
+
+        if (this.isExpanded) {
+            this.isResizingEnabled = false;
+        }
+    }
+
+    toggleResizing() {
+        this.isResizingEnabled = !this.isResizingEnabled;
     }
 
     showSidebar() {
@@ -68,6 +86,11 @@ export class MainBlock {
 
         if (this.tabs[this.tab]) {
             this.tabs[this.tab].new = false;
+        }
+
+        if (!this.isTabExpandable) {
+            this.isSidebarExpanded = false;
+            this.isResizingEnabled = false;
         }
         localStorage.setItem("active tab", this.tab);
     }

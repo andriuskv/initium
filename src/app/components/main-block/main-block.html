@@ -1,5 +1,7 @@
-<div class="main-block"
+<div class="main-block" #container
     [class.expanded]="isExpanded"
+    [class.is-expandable]="isTabExpandable"
+    [class.resizing-enabled]="isResizingEnabled"
     [class.hidden]="isNavHidden && !tab"
     [style.zIndex]="zIndex"
     (click)="handleClickOnContainer()">
@@ -54,6 +56,13 @@
                     <use attr.href="#vertical-{{ isExpanded ? 'shrink' : 'expand' }}"></use>
                 </svg>
             </button>
+            <button class="btn btn-icon main-block-sidebar-btn"
+                (click)="toggleResizing()" [disabled]="isExpanded"
+                title="{{ isResizingEnabled ? 'Disable' : 'Enable' }} resizing">
+                <svg viewBox="0 0 24 24">
+                    <use attr.href="#lock{{ isResizingEnabled ? '-open' : '' }}"></use>
+                </svg>
+            </button>
         </div>
     </div>
     <top-sites [isVisible]="tab === 'topSites'"></top-sites>
@@ -65,4 +74,5 @@
     <rss-feed [isVisible]="tab === 'rssFeed'"
         (newEntries)="onTabUpdate('rssFeed')"
         (toggleTab)="selectTab($event, true)"></rss-feed>
+    <resize-bar class="main-block-resize-bar" *ngIf="isResizingEnabled"></resize-bar>
 </div>
