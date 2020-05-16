@@ -1,20 +1,45 @@
 $main-block-nav-height: 32px;
 
 .main-block {
+    --offset-y: calc(44% + #{$main-block-nav-height});
+    --max-height:  calc(100% - var(--offset-y));
+    --initial-height: calc(var(--max-height) - 8%);
+
+
     position: absolute;
-    top: calc(44% + #{$main-block-nav-height});
+    top: var(--offset-y);
     left: 50%;
     transform: translateX(-50%);
-    transition: 0.2s top;
-    will-change: top, height;
+    transition: 0.2s top, 0.2s max-height;
+    will-change: top, max-height, height;
     pointer-events: none;
 
     &.hidden {
         display: none;
     }
 
+    &.is-expandable {
+        height: var(--height, var(--initial-height));
+        max-height: calc(var(--max-height) - 8px);
+
+        .main-block-content {
+            height: 100%;
+        }
+
+        &.resizing-enabled {
+            transition: none;
+
+            .main-block-content {
+                height: calc(100% - 8px);
+                transition: none;
+            }
+        }
+    }
+
     &.expanded {
         top: 4px;
+        height: 100%;
+        max-height: calc(100% - 8px);
 
         .main-block-nav {
             opacity: 0;
@@ -24,12 +49,13 @@ $main-block-nav-height: 32px;
         }
 
         .main-block-content {
-            height: calc(100vh - 8px);
+            height: 100%;
         }
     }
 
-    @media (max-height: 638px) {
-        top: calc(36% + #{$main-block-nav-height});
+    @media (max-height: 720px) {
+        --offset-y: calc(36% + #{$main-block-nav-height});
+        --initial-height: var(--max-height);
     }
 }
 
@@ -106,6 +132,7 @@ $main-block-nav-height: 32px;
     flex-direction: column;
     width: 588px;
     height: 320px;
+    max-height: 100%;
     transition: height 0.2s;
     pointer-events: auto;
 
@@ -185,4 +212,22 @@ $main-block-nav-height: 32px;
     position: absolute;
     top: 5px;
     right: 5px;
+}
+
+.main-block-resize-bar {
+    display: block;
+    height: 8px;
+    padding-top: 6px;
+    pointer-events: auto;
+    cursor: row-resize;
+
+    &::before {
+        content: "";
+        position: relative;
+        display: block;
+        width: calc(100% - 16px);
+        height: 2px;
+        margin: 0 8px;
+        background-color: $color-blue;
+    }
 }

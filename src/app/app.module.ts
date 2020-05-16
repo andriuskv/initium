@@ -26,6 +26,7 @@ import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-vi
 import { BackgroundViewer } from "./components/background-viewer/background-viewer";
 import { GoogleApps } from "./components/google-apps/google-apps";
 import { Storage } from "./components/storage/storage";
+import { ResizeDirective } from "./directives/resize";
 
 @NgModule({
     imports: [BrowserModule, DragDropModule],
@@ -33,7 +34,7 @@ import { Storage } from "./components/storage/storage";
         App, Settings, Background, Time, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Countdown, Calendar,
         CalendarSelectedDay, Dropbox, TweetImageViewer, BackgroundViewer, GoogleApps,
-        Storage
+        Storage, ResizeDirective
     ],
     bootstrap: [App]
 })

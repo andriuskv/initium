@@ -7,15 +7,15 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
     styleUrls: ["./notepad.scss"]
 })
 export class Notepad {
-    @Input() isVisible: boolean = false;
+    @Input() isVisible = false;
     @ViewChild("textarea") textarea;
     @ViewChild("editTitleInput") editTitleInput;
 
-    initialized: boolean = false;
-    menuVisible: boolean = false;
-    shift: number = 0;
-    activeTabIndex: number = 0;
-    inputTimeoutId: number = 0;
+    initialized = false;
+    menuVisible = false;
+    shift = 0;
+    activeTabIndex = 0;
+    inputTimeoutId = 0;
     undoTimeoutId = 0;
     tabs = [{
         title: "Tab",
