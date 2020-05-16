@@ -2,7 +2,7 @@ const fs = require("fs");
 const { exec } = require('child_process');
 
 function incVersion() {
-    const srcPath = "./src/manifest.json";
+    const srcPath = "./public/manifest.json";
     const file = fs.readFileSync(srcPath, "utf8");
     const data = JSON.parse(file);
     const label = process.argv[2];
