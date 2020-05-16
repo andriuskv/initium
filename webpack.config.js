@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const { AngularCompilerPlugin } = require("@ngtools/webpack");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = function(env = {}) {
     const mode = env.prod ? "production" : "development";
@@ -20,8 +21,12 @@ module.exports = function(env = {}) {
             filename: "main.css"
         }),
         new HtmlWebpackPlugin({
-            "template": "./src/index.html"
+            "template": "./public/index.html"
         }),
+        new CopyPlugin([
+            { from: "./src/assets", to: "./assets"},
+            { from: "./public" }
+        ]),
         new AngularCompilerPlugin({
             basePath: "./src/main.ts",
             tsConfigPath: "./tsconfig.json",
@@ -65,7 +70,7 @@ module.exports = function(env = {}) {
             },
             minimizer: [new TerserPlugin({
                 terserOptions: {
-                    ecma: 8,
+                    ecma: 2018,
                     output: {
                         comments: false
                     }
