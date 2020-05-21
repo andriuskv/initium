@@ -2,25 +2,26 @@
     [class.expanded]="isExpanded"
     [class.is-expandable]="isTabExpandable"
     [class.resizing-enabled]="isResizingEnabled"
-    [class.hidden]="isNavHidden && !tab"
+    [class.hidden]="isNavHidden && !tabName"
+    [class.nav-hidden]="isNavHidden || navDisabled"
     [style.zIndex]="zIndex"
     (click)="handleClickOnContainer()">
-    <ul class="main-block-nav" [class.hidden]="isNavHidden">
-        <li class="main-block-nav-item">
+    <ul class="main-block-nav" *ngIf="!isNavHidden && !navDisabled">
+        <li class="main-block-nav-item" *ngIf="!tabs.topSites.disabled">
             <button class="btn btn-outside main-block-nav-item-btn" (click)="selectTab('topSites')" title="Top sites">
                 <svg viewBox="0 0 24 24">
                     <path d="M16,5V11H21V5M10,11H15V5H10M16,18H21V12H16M10,18H15V12H10M4,18H9V12H4M4,11H9V5H4V11Z"/>
                 </svg>
             </button>
         </li>
-        <li class="main-block-nav-item">
+        <li class="main-block-nav-item" *ngIf="!tabs.notepad.disabled">
             <button class="btn btn-outside main-block-nav-item-btn" (click)="selectTab('notepad')" title="Notepad">
                 <svg viewBox="0 0 24 24">
                     <use href="#notepad"></use>
                 </svg>
             </button>
         </li>
-        <li class="main-block-nav-item">
+        <li class="main-block-nav-item" *ngIf="!tabs.twitter.disabled">
             <button class="btn btn-outside main-block-nav-item-btn"
                 [class.indicator-visible]="tabs.twitter.new"
                 (click)="selectTab('twitter')" title="Twitter">
@@ -29,7 +30,7 @@
                 </svg>
             </button>
         </li>
-        <li class="main-block-nav-item">
+        <li class="main-block-nav-item" *ngIf="!tabs.rssFeed.disabled">
             <button class="btn btn-outside main-block-nav-item-btn"
                 [class.indicator-visible]="tabs.rssFeed.new"
                 (click)="selectTab('rssFeed')" title="RSS feed">
@@ -65,13 +66,13 @@
             </button>
         </div>
     </div>
-    <top-sites [isVisible]="tab === 'topSites'"></top-sites>
-    <notepad [isVisible]="tab === 'notepad'"></notepad>
-    <twitter [isVisible]="tab === 'twitter'"
+    <top-sites [isVisible]="tabName === 'topSites'" *ngIf="!tabs.topSites.disabled"></top-sites>
+    <notepad [isVisible]="tabName === 'notepad'" *ngIf="!tabs.notepad.disabled"></notepad>
+    <twitter [isVisible]="tabName === 'twitter'" *ngIf="!tabs.twitter.disabled"
         (newTweets)="onTabUpdate('twitter')"
         (toggleTab)="selectTab($event, true)"
         (showViewer)="onShowViewer($event)"></twitter>
-    <rss-feed [isVisible]="tab === 'rssFeed'"
+    <rss-feed [isVisible]="tabName === 'rssFeed'" *ngIf="!tabs.rssFeed.disabled"
         (newEntries)="onTabUpdate('rssFeed')"
         (toggleTab)="selectTab($event, true)"></rss-feed>
     <resize-bar class="main-block-resize-bar" *ngIf="isResizingEnabled"></resize-bar>

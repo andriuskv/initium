@@ -59,6 +59,21 @@ export class Settings {
         });
     }
 
+    toggleMainBlockItem(settingName) {
+        let count = 0;
+        this.settings.mainBlock[settingName] = !this.settings.mainBlock[settingName];
+
+        for (const key of Object.keys(this.settings.mainBlock)) {
+            if (key.includes("Disabled") && this.settings.mainBlock[key]) {
+                count += 1;
+            }
+        }
+        this.updateSetting({
+            disableNavBarSetting: count > 2,
+            [settingName]: this.settings.mainBlock[settingName]
+        });
+    }
+
     toggleTimeFormat() {
         const { format } = this.settings[this.active];
 

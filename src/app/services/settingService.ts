@@ -39,7 +39,11 @@ export class SettingService {
             },
             mainBlock: {
                 isNavHidden: false,
-                showingOneRow: true
+                showingOneRow: true,
+                topSitesDisabled: false,
+                notepadDisabled: false,
+                twitterDisabled: false,
+                rssFeedDisabled: false
             },
             time: {
                 disabled: false,

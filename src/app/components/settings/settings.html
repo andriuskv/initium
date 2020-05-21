@@ -52,30 +52,75 @@
     </label>
 </div>
 <div class="setting-tab" *ngIf="active === 'mainBlock'">
-    <label class="checkbox-container setting">
+    <label class="checkbox-container setting"
+        [class.disabled]="settings.mainBlock.disableNavBarSetting">
         <span>Hide item bar</span>
         <input type="checkbox" class="sr-only checkbox-input"
             [checked]="settings.mainBlock.isNavHidden"
+            [disabled]="settings.mainBlock.disableNavBarSetting"
             (click)="toggleSettingCheckbox('isNavHidden')"
             (keyup.enter)="toggleSettingCheckbox('isNavHidden')">
         <div class="checkbox">
             <div class="checkbox-tick"></div>
         </div>
     </label>
-    <label class="checkbox-container setting">
+    <label class="checkbox-container setting" [class.disabled]="settings.mainBlock.topSitesDisabled">
         <span>Show one row of top sites</span>
         <input type="checkbox" class="sr-only checkbox-input"
             [checked]="settings.mainBlock.showingOneRow"
+            [disabled]="settings.mainBlock.topSitesDisabled"
             (click)="toggleSettingCheckbox('showingOneRow')"
             (keyup.enter)="toggleSettingCheckbox('showingOneRow')">
         <div class="checkbox">
             <div class="checkbox-tick"></div>
         </div>
     </label>
-    <div class="setting">
+    <div class="setting" [class.disabled]="settings.mainBlock.topSitesDisabled">
         <span>Restore default top sites</span>
-        <button class="btn" (click)="resetSetting({ resetTopSites: true })">Reset</button>
+        <button class="btn"
+            [disabled]="settings.mainBlock.topSitesDisabled"
+            (click)="resetSetting({ resetTopSites: true })">Reset</button>
     </div>
+    <label class="checkbox-container setting">
+        <span>Disable top sites</span>
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.mainBlock.topSitesDisabled"
+            (click)="toggleMainBlockItem('topSitesDisabled')"
+            (keyup.enter)="toggleMainBlockItem('topSitesDisabled')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
+        </div>
+    </label>
+    <label class="checkbox-container setting">
+        <span>Disable notepad</span>
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.mainBlock.notepadDisabled"
+            (click)="toggleMainBlockItem('notepadDisabled')"
+            (keyup.enter)="toggleMainBlockItem('notepadDisabled')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
+        </div>
+    </label>
+    <label class="checkbox-container setting">
+        <span>Disable twitter</span>
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.mainBlock.twitterDisabled"
+            (click)="toggleMainBlockItem('twitterDisabled')"
+            (keyup.enter)="toggleMainBlockItem('twitterDisabled')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
+        </div>
+    </label>
+    <label class="checkbox-container setting">
+        <span>Disable RSS feed</span>
+        <input type="checkbox" class="sr-only checkbox-input"
+            [checked]="settings.mainBlock.rssFeedDisabled"
+            (click)="toggleMainBlockItem('rssFeedDisabled')"
+            (keyup.enter)="toggleMainBlockItem('rssFeedDisabled')">
+        <div class="checkbox">
+            <div class="checkbox-tick"></div>
+        </div>
+    </label>
 </div>
 <div class="setting-tab" *ngIf="active === 'time'">
     <label class="checkbox-container setting">
