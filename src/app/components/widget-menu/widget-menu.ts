@@ -3,7 +3,7 @@ import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "widget-menu",
-    templateUrl: require("raw-loader!./widget-menu.html").default,
+    templateUrl: "./widget-menu.html",
     styleUrls: ["./widget-menu.scss"]
 })
 export class WidgetMenu {
@@ -11,9 +11,9 @@ export class WidgetMenu {
     @Output() showBackgroundViewer = new EventEmitter();
     @Input() countdownIndicatorStatus;
 
-    isClosing: boolean = false;
-    reminderInicatorVisible: boolean = false;
-    zIndex: number = 0;
+    isClosing = false;
+    reminderInicatorVisible = false;
+    zIndex = 0;
     item: any = {};
 
     constructor(private zIndexService: ZIndexService) {}

@@ -24,7 +24,7 @@ interface Label {
 
 @Component({
     selector: "tasks",
-    templateUrl: require("raw-loader!./tasks.html").default,
+    templateUrl: "./tasks.html",
     styleUrls: ["./tasks.scss"]
 })
 export class Tasks {
@@ -37,8 +37,8 @@ export class Tasks {
     formColor = "";
     labelMessage = "";
     tasks: Task[] = [];
-    tasksToRemove: any[] = [];
-    temporaryTask: any = null;
+    tasksToRemove = [];
+    temporaryTask = null;
     oldLabels: Label[] = JSON.parse(localStorage.getItem("old-task-labels")) || [];
     formLabels: Label[] = [];
 

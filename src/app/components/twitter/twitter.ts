@@ -6,26 +6,26 @@ import { formatTime } from "app/utils/utils";
 
 @Component({
     selector: "twitter",
-    templateUrl: require("raw-loader!./twitter.html").default,
+    templateUrl: "./twitter.html",
     styleUrls: ["./twitter.scss"]
 })
 export class Twitter {
     @Output() newTweets = new EventEmitter();
     @Output() toggleTab = new EventEmitter();
     @Output() showViewer = new EventEmitter();
-    @Input() isVisible: boolean = false;
+    @Input() isVisible = false;
 
-    initializing: boolean = true;
-    isLoggedIn: boolean = false;
-    showPinInput: boolean = false;
-    fetchingMoreTweets: boolean = false;
-    message: string = "";
-    tweets: Array<any> = [];
-    tweetsToLoad: Array<any> = [];
+    initializing = true;
+    isLoggedIn = false;
+    showPinInput = false;
+    fetchingMoreTweets = false;
+    message = "";
+    tweets = [];
+    tweetsToLoad = [];
     user: any = {};
-    initTimeout: number = 0;
-    tweetTimeTimeout: number = 0;
-    tweetUpdateTimeout: number = 0;
+    initTimeout = 0;
+    tweetTimeTimeout = 0;
+    tweetUpdateTimeout = 0;
 
     constructor(
         private twitterService: TwitterService,
@@ -97,7 +97,7 @@ export class Twitter {
     }
 
     getTweetEnitity(entity) {
-        return entity && entity.length ? entity : [];
+        return entity?.length ? entity : [];
     }
 
     getTweetEntities(entities) {
@@ -136,8 +136,7 @@ export class Twitter {
     replaceUrls(text, urls) {
         urls.filter(({ url }, index) => {
             return index === urls.findIndex(obj => obj.url === url);
-        })
-        .forEach(({ url, display_url }) => {
+        }).forEach(({ url, display_url }) => {
             const regex = new RegExp(url, "g");
             const a = `<a href="${url}" class="tweet-link" target="_blank">${display_url}</a>`;
 
@@ -318,7 +317,7 @@ export class Twitter {
     async getUser() {
         const response = await this.twitterService.getUser();
 
-        if (response && response.user) {
+        if (response?.user) {
             const { user } = response;
             this.user.name = user.name;
             this.user.homepage = `https://twitter.com/${user.screen_name}`;
@@ -331,7 +330,7 @@ export class Twitter {
     async fetchInitialTimeline() {
         const response = await this.twitterService.getTimeline();
 
-        if (response && response.tweets) {
+        if (response?.tweets) {
             const { tweets } = response;
             this.tweets = this.parseTweets(tweets);
 
@@ -368,7 +367,7 @@ export class Twitter {
     async fetchNewTimeline(tweetId) {
         const response = await this.twitterService.getTimeline({ since_id: tweetId });
 
-        if (response && response.tweets.length) {
+        if (response?.tweets.length) {
             const { tweets } = response;
             const currentTweets = this.tweetsToLoad.concat(this.tweets);
             const newTweets = [];

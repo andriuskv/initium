@@ -5,21 +5,21 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "calendar",
-    templateUrl: require("raw-loader!./calendar.html").default
+    templateUrl: "./calendar.html"
 })
 export class Calendar {
     @Input() isHidden = true;
     @Output() reminderIndicatorVisible = new EventEmitter();
 
-    initialized: boolean = false;
-    sidebarCollapsed: boolean = false;
-    inYearView: boolean = false;
-    transitioning: boolean = false;
-    transitionOriginX: number = 0;
-    transitionOriginY: number = 0;
-    timeFormat: number = 24;
+    initialized = false;
+    sidebarCollapsed = false;
+    inYearView = false;
+    transitioning = false;
+    transitionOriginX = 0;
+    transitionOriginY = 0;
+    timeFormat = 24;
     currentYear: number;
-    futureReminders: Array<any> = [];
+    futureReminders = [];
     currentDate: any = this.getCurrentDate();
     visibleMonth: any;
     currentDay: any;

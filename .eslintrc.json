@@ -19,6 +19,8 @@
         "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
+        "@typescript-eslint/no-var-requires": 0,
+        "@typescript-eslint/camelcase": 0,
         "@typescript-eslint/explicit-function-return-type": 0,
         "@typescript-eslint/no-explicit-any": 0,
         "@typescript-eslint/ban-ts-ignore": 0,
@@ -71,7 +73,6 @@
         "no-iterator": 2,
         "no-new-wrappers": 2,
         "object-shorthand": 2,
-        "object-curly-spacing": [2, "always"],
         "prefer-const": [2, {"destructuring": "all"}],
         "prefer-spread": 2,
         "prefer-rest-params": 2,

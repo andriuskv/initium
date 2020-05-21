@@ -3,22 +3,22 @@ import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "stopwatch",
-    templateUrl: require("raw-loader!./stopwatch.html").default
+    templateUrl: "./stopwatch.html"
 })
 export class Stopwatch {
     @Output() size = new EventEmitter();
     @Output() fullscreen = new EventEmitter();
-    @Input() visible: boolean = false;
+    @Input() visible = false;
 
-    running: boolean = false;
-    hours: number = 0;
-    minutes: number = 0;
-    seconds: number = 0;
-    milliseconds: number = 0;
+    running = false;
+    hours = 0;
+    minutes = 0;
+    seconds = 0;
+    milliseconds = 0;
     animationId: number;
-    minutesDisplay: string = "0";
-    secondsDisplay: string = "0";
-    millisecondsDisplay: string = "00";
+    minutesDisplay = "0";
+    secondsDisplay = "0";
+    millisecondsDisplay = "00";
 
     constructor(private ref: ChangeDetectorRef) {}
 

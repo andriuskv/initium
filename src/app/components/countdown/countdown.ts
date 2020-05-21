@@ -6,7 +6,7 @@ import { ChromeStorageService } from "../../services/chromeStorageService";
 
 @Component({
     selector: "countdown",
-    templateUrl: require("raw-loader!./countdown.html").default,
+    templateUrl: "./countdown.html",
     styleUrls: ["./countdown.scss"]
 })
 export class Countdown {
@@ -34,7 +34,7 @@ export class Countdown {
             this.startCountdowns(countdowns.newValue);
         });
         this.chromeStorageService.get("countdowns", ({ countdowns }) => {
-            if (countdowns && countdowns.length) {
+            if (countdowns?.length) {
                 this.startCountdowns(countdowns);
             }
         });

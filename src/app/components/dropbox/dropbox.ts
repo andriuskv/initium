@@ -4,15 +4,15 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "dropbox",
-    templateUrl: require("raw-loader!./dropbox.html").default,
+    templateUrl: "./dropbox.html",
     styleUrls: ["./dropbox.scss"]
 })
 export class Dropbox {
     @Output() sessionEnded = new EventEmitter();
 
-    activeFolder: any = null;
-    dropboxFolder: any = null;
-    subscriber: any = null;
+    activeFolder = null;
+    dropboxFolder = null;
+    subscriber = null;
 
     constructor(
         private dropboxService: DropboxService,

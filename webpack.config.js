@@ -21,12 +21,13 @@ module.exports = function(env = {}) {
             filename: "main.css"
         }),
         new HtmlWebpackPlugin({
-            "template": "./public/index.html"
+            template: "./public/index.html",
+            cache: false
         }),
-        new CopyPlugin([
-            { from: "./src/assets", to: "./assets"},
+        new CopyPlugin({ patterns: [
+            { from: "./src/assets", to: "./assets" },
             { from: "./public" }
-        ]),
+        ]}),
         new AngularCompilerPlugin({
             basePath: "./src/main.ts",
             tsConfigPath: "./tsconfig.json",
@@ -79,6 +80,10 @@ module.exports = function(env = {}) {
         },
         module: {
             rules: [
+                {
+                    test: /\.html$/,
+                    loader: "raw-loader"
+                },
                 {
                     test: /\.s?css$/,
                     loaders: [

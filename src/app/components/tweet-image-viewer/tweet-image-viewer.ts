@@ -2,15 +2,15 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 @Component({
     selector: "tweet-image-viewer",
-    templateUrl: require("raw-loader!./tweet-image-viewer.html").default,
+    templateUrl: "./tweet-image-viewer.html",
     styleUrls: ["./tweet-image-viewer.scss"]
 })
 export class TweetImageViewer {
     @Output() close = new EventEmitter();
     @Input() data;
 
-    images: Array<any> = [];
-    loading: boolean = true;
+    images = [];
+    loading = true;
     index: number;
 
     ngOnInit() {

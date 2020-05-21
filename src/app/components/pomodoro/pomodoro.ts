@@ -4,22 +4,22 @@ import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "pomodoro",
-    templateUrl: require("raw-loader!./pomodoro.html").default
+    templateUrl: "./pomodoro.html"
 })
 export class Pomodoro {
     @Output() size = new EventEmitter();
     @Output() fullscreen = new EventEmitter();
-    @Input() visible: boolean = false;
+    @Input() visible = false;
 
-    running: boolean = false;
-    alarmOn: boolean = true;
-    timeout: number = 0;
-    hours: number = 0;
-    minutes: number = 0;
-    seconds: number = 0;
-    minutesDisplay: string = "0";
-    secondsDisplay: string = "0";
-    mode: string = "pomodoro";
+    running = false;
+    alarmOn = true;
+    timeout = 0;
+    hours = 0;
+    minutes = 0;
+    seconds = 0;
+    minutesDisplay = "0";
+    secondsDisplay = "0";
+    mode = "pomodoro";
     alarm: HTMLAudioElement;
 
     constructor(private settingService: SettingService) {}

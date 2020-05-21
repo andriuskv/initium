@@ -5,7 +5,7 @@ import { NotificationService } from "../../services/notificationService";
 
 @Component({
     selector: "rss-feed",
-    templateUrl: require("raw-loader!./rss-feed.html").default,
+    templateUrl: "./rss-feed.html",
     styleUrls: ["./rss-feed.scss"]
 })
 export class RssFeed {
@@ -29,9 +29,9 @@ export class RssFeed {
     shift = 0;
     activeFeedIndex = 0;
     message = "";
-    feedsToLoad: Array<any> = [];
-    feeds: Array<any> = [];
-    activeFeed: any = null;
+    feedsToLoad = [];
+    feeds = [];
+    activeFeed = null;
 
     constructor(
         private chromeStorageService: ChromeStorageService,
