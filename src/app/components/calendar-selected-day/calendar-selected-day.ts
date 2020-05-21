@@ -5,7 +5,7 @@ import { getRandomHslColor } from "../../utils/utils";
 
 @Component({
     selector: "calendar-selected-day",
-    templateUrl: require("raw-loader!./calendar-selected-day.html").default
+    templateUrl: "./calendar-selected-day.html"
 })
 export class CalendarSelectedDay {
     @Output() event = new EventEmitter();
@@ -15,21 +15,21 @@ export class CalendarSelectedDay {
     @Input() reminders = [];
     @Input() day: any = {};
 
-    RANGE_ERROR: string = "Please provide valid range";
-    FORMAT_ERROR: string = "Please provide valid time format";
-    isFormVisible: boolean = false;
-    isRepeatEnabled: boolean = false;
-    isGapInputValid: boolean = true;
-    isRangeVisible: boolean = false;
-    isRepeatCountInputEnabled: boolean = false;
-    isRepeatCountInputValid: boolean = false;
-    timeFormat: number = 24;
-    repeatGap: number = 1;
-    repeatCount: number = 0;
-    dateString: string = "";
-    rangeMessage: string = this.FORMAT_ERROR;
-    timePattern: string = "";
-    occurences: string = "";
+    RANGE_ERROR = "Please provide valid range";
+    FORMAT_ERROR = "Please provide valid time format";
+    isFormVisible = false;
+    isRepeatEnabled = false;
+    isGapInputValid = true;
+    isRangeVisible = false;
+    isRepeatCountInputEnabled = false;
+    isRepeatCountInputValid = false;
+    timeFormat = 24;
+    repeatGap = 1;
+    repeatCount = 0;
+    dateString = "";
+    rangeMessage = this.FORMAT_ERROR;
+    timePattern = "";
+    occurences = "";
     range: any = {
         from: {
             string: ""

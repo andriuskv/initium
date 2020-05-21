@@ -3,24 +3,24 @@ import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "timer",
-    templateUrl: require("raw-loader!./timer.html").default
+    templateUrl: "./timer.html"
 })
 export class Timer {
     @ViewChild("hoursInput") hoursInput;
     @ViewChild("minutesInput") minutesInput;
     @Output() size = new EventEmitter();
     @Output() fullscreen = new EventEmitter();
-    @Input() visible: boolean = false;
+    @Input() visible = false;
 
-    running: boolean = false;
-    alarmOn: boolean = true;
-    timeout: number = 0;
-    hours: number = 0;
-    minutes: number = 0;
-    seconds: number = 0;
-    hoursDisplay: string = "00";
-    minutesDisplay: string = "00";
-    secondsDisplay: string = "00";
+    running = false;
+    alarmOn = true;
+    timeout = 0;
+    hours = 0;
+    minutes = 0;
+    seconds = 0;
+    hoursDisplay = "00";
+    minutesDisplay = "00";
+    secondsDisplay = "00";
     alarm: HTMLAudioElement;
 
     onInput({ target }) {

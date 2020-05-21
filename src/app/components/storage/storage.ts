@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 
 @Component({
     selector: "storage",
-    templateUrl: require("raw-loader!./storage.html").default,
+    templateUrl: "./storage.html",
     styleUrls: ["./storage.scss"]
 })
 export class Storage {

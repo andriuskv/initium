@@ -4,7 +4,7 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "top-sites",
-    templateUrl: require("raw-loader!./top-sites.html").default,
+    templateUrl: "./top-sites.html",
     styleUrls: ["./top-sites.scss"]
 })
 export class TopSites {
@@ -13,10 +13,10 @@ export class TopSites {
     isFormVisible = false;
     addSiteButtonVisible = false;
     visibleSiteCount = 4;
-    topSites: Array<any> = [];
-    visibleSites: Array<any> = [];
-    editedSite: any = null;
-    formThumbnail: any = null;
+    topSites = [];
+    visibleSites = [];
+    editedSite = null;
+    formThumbnail = null;
 
     constructor(private settingService: SettingService, private domSanitizer: DomSanitizer) {}
 

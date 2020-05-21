@@ -4,7 +4,7 @@ import { BackgroundService } from "../../services/backgroundService";
 
 @Component({
     selector: "settings",
-    template: require("raw-loader!./settings.html").default,
+    templateUrl: "./settings.html",
     styleUrls: ["./settings.scss"]
 })
 export class Settings {

@@ -1,14 +1,17 @@
 {
   "include": [
     "src/**/*.js",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/*.js",
+    "src/*.ts",
+    "./*.js"
   ],
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
     "baseUrl": "src",
-    "module": "esnext",
-    "target": "esnext",
+    "module": "ESNext",
+    "target": "ES2019",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",

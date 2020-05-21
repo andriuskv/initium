@@ -5,7 +5,7 @@ import { BackgroundService } from "../../services/backgroundService";
 
 @Component({
     selector: "background-viewer",
-    templateUrl: require("raw-loader!./background-viewer.html").default,
+    templateUrl: "./background-viewer.html",
     styleUrls: ["./background-viewer.scss"]
 })
 export class BackgroundViewer {

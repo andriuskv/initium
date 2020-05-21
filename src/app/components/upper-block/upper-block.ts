@@ -4,7 +4,7 @@ import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
     selector: "upper-block",
-    templateUrl: require("raw-loader!./upper-block.html").default
+    templateUrl: "./upper-block.html"
 })
 export class UpperBlock {
     @ViewChild("fullscreenTarget", { static: true }) fullscreenTarget;
@@ -12,10 +12,10 @@ export class UpperBlock {
     @Output() hide = new EventEmitter();
     @Input() visible;
 
-    inFullscreen: boolean = false;
-    expanded: boolean = false;
-    active: string = "timer";
-    zIndex: number = 0;
+    inFullscreen = false;
+    expanded = false;
+    active = "timer";
+    zIndex = 0;
 
     constructor(@Inject(DOCUMENT) private document, private zIndexService: ZIndexService) {}
 
