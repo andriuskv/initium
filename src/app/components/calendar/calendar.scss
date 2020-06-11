@@ -1,3 +1,6 @@
+@import "../../../scss/mixins.scss";
+@import "../../../scss/variables.scss";
+
 .calendar-container {
     display: none;
     height: 324px;
@@ -83,31 +86,6 @@
     overflow: hidden;
 }
 
-.calendar {
-    position: relative;
-    width: 378px;
-    height: 100%;
-    transform-origin: var(--x) var(--y);
-
-    animation-duration: 0.2s;
-    animation-fill-mode: both;
-    animation-name: opacity-up;
-
-    &.transitioning {
-        animation-duration: 0.16s, 0.6s;
-        animation-name: opacity-down, calendar-scale-up;
-    }
-}
-
-@keyframes calendar-scale-up {
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(4);
-    }
-}
-
 .calendar-header {
     position: relative;
     display: flex;
@@ -124,6 +102,22 @@
     font-size: 16px;
     font-weight: normal;
     text-align: center;
+}
+
+.calendar {
+    position: relative;
+    width: 378px;
+    height: 100%;
+    transform-origin: var(--x) var(--y);
+
+    animation-duration: 0.2s;
+    animation-fill-mode: both;
+    animation-name: opacity-up;
+
+    &.transitioning {
+        animation-duration: 0.16s, 0.6s;
+        animation-name: opacity-down, calendar-scale-up;
+    }
 }
 
 .calendar-week-days {
@@ -217,172 +211,11 @@
     }
 }
 
-.selected-day-header-btn {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-}
-
-.selected-day {
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - 32px);
-    padding-top: 4px;
-}
-
-.selected-day-remainders {
-    @include scrollbar;
-
-    overflow-y: auto;
-
-    & + .new-reminder-btn {
-        margin-top: 4px;
-        margin-bottom: 4px;
+@keyframes calendar-scale-up {
+    from {
+        transform: scale(1);
     }
-}
-
-.selected-day-remainder {
-    display: flex;
-    align-items: flex-start;
-    padding: 4px;
-    border-bottom: 1px solid $color-white-10;
-
-    .btn-icon {
-        margin-left: auto;
-    }
-}
-
-.selected-day-reminder-color {
-    flex-shrink: 0;
-    width: 4px;
-    height: 24px;
-    margin-right: 6px;
-    margin-left: 2px;
-    transition: 0.2s transform, 0.2s background-color;
-
-    &:hover {
-        transform: scaleX(2);
-    }
-}
-
-.reminder-repeat-icon {
-    flex-shrink: 0;
-    margin-right: 6px;
-    color: $color-white-60;
-}
-
-.empty-reminder-list-message {
-    margin-top: auto;
-    margin-bottom: 4px;
-    font-size: 18px;
-    text-align: center;
-}
-
-.new-reminder-btn {
-    flex-shrink: 0;
-    padding-left: 6px;
-    padding-right: 6px;
-    margin: 0 auto auto auto;
-}
-
-.selected-day-form {
-    padding: 4px;
-}
-
-.reminder-input {
-    width: 100%;
-}
-
-.reminder-form-row {
-    display: flex;
-    align-items: center;
-}
-
-.reminder-setting {
-    margin-top: 8px;
-
-    .reminder-form-row {
-        margin-top: 4px;
-    }
-}
-
-.calendar-checkbox-container {
-    margin-right: 16px;
-}
-
-.repeat-input {
-    width: 40px;
-    margin-left: 8px;
-    margin-right: 8px;
-    text-align: center;
-
-    &:invalid {
-        outline: 1px auto transparentize($color-danger, 0.2);
-    }
-}
-
-.range-input-container {
-    position: relative;
-    margin-left: 8px;
-    margin-right: 12px;
-}
-
-.range-input {
-    width: 84px;
-    text-align: center;
-
-    &:focus + .reminder-timetable {
-        display: block;
-    }
-
-    &:invalid {
-        box-shadow: 0 0 1px 1px $color-danger;
-    }
-}
-
-.reminder-timetable {
-    @include scrollbar;
-
-    overflow-y: auto;
-    z-index: 1;
-    position: absolute;
-    top: 24px;
-    right: 0;
-    display: none;
-    width: 100%;
-    max-height: 120px;
-    border-radius: 2px;
-    background-color: $color-grey-darker-60;
-    backdrop-filter: blur(8px);
-    text-align: center;
-
-    @supports not (backdrop-filter: blur(0)) {
-        background-color: $color-grey-dark;
-    }
-}
-
-.reminder-timetable-item {
-    height: 24px;
-    padding: 4px;
-    font-size: 13px;
-
-    &:hover {
-        background-color: $color-white-10;
-        cursor: pointer;
-    }
-}
-
-.reminder-error-message {
-    margin-top: 4px;
-    font-size: 13px;
-    color: $color-danger;
-}
-
-.reminder-form-btns {
-    display: flex;
-    margin-top: auto;
-
-    .btn:first-of-type {
-        margin-right: 8px;
+    to {
+        transform: scale(4);
     }
 }

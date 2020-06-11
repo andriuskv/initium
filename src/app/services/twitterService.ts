@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
 
 @Injectable({
-  providedIn: "root"
+    providedIn: "root"
 })
 export class TwitterService {
-    requestToken: string = "";
-    requestTokenSecret: string = "";
-    serverUrl: string = `${process.env.SERVER_URL}/twitter`;
+    requestToken = "";
+    requestTokenSecret = "";
+    serverUrl = `${process.env.SERVER_URL}/twitter`;
     oauth: any = JSON.parse(localStorage.getItem("oauth")) || {};
 
     isLoggedIn() {
@@ -61,7 +61,6 @@ export class TwitterService {
                 return this.getAccessToken(pinCode, false);
             }
         });
-
     }
 
     getUser(retry = true) {
@@ -84,6 +83,7 @@ export class TwitterService {
         const url = this.buildURL(`${this.serverUrl}/timeline`, {
             count: 30,
             exclude_replies: true,
+            tweet_mode: "extended",
             ...params
         });
 

@@ -219,7 +219,7 @@ export class Twitter {
             handle: `@${screenName}`,
             tweetUrl: `${userUrl}/status/${tweet.id_str}`,
             profileImg: tweet.user.profile_image_url_https,
-            text: this.replaceTweetEntities(tweet.text, entities),
+            text: this.replaceTweetEntities(tweet.full_text, entities),
             created: this.getTweetDate(tweet.created_at),
             media: this.getMedia(entities.media),
             retweetCount: this.formatCounter(tweet.retweet_count),

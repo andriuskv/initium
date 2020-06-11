@@ -1,11 +1,11 @@
-<div class="calendar-header">
+<div class="selected-day-header">
     <button class="btn btn-icon selected-day-header-btn"
         (click)="showCalendar()" title="Back to calendar">
         <svg viewBox="0 0 24 24">
             <use href="#chevron-left"></use>
         </svg>
     </button>
-    <span class="calendar-title">{{ dateString }}</span>
+    <span class="selected-day-title">{{ dateString }}</span>
 </div>
 <div class="selected-day" *ngIf="!isFormVisible; else elseBlock">
     <ul class="selected-day-remainders" *ngIf="day.reminders.length; else elseBlock">
