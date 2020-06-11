@@ -1,6 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
 import { moveItemInArray } from "@angular/cdk/drag-drop";
 import { ChromeStorageService } from "../../services/chromeStorageService";
+import { SettingService } from "../../services/settingService";
 import { ZIndexService } from "../../services/zIndexService";
 import { getRandomHexColor } from "../../utils/utils";
 
@@ -28,9 +29,14 @@ interface Label {
     styleUrls: ["./tasks.scss"]
 })
 export class Tasks {
+    @ViewChild("container") container;
+
     visible = false;
     makingEdit = false;
     willBeEmpty = false;
+    dropdownVisible = false;
+    settingsVisible = false;
+    resizingEnabled = false;
     timeout = 0;
     zIndex = 0;
     removedTaskCount = 0;
@@ -41,9 +47,11 @@ export class Tasks {
     temporaryTask = null;
     oldLabels: Label[] = JSON.parse(localStorage.getItem("old-task-labels")) || [];
     formLabels: Label[] = [];
+    boundWindowClickHandler = this.handleWindowClick.bind(this);
 
     constructor(
         private chromeStorageService: ChromeStorageService,
+        private settingService: SettingService,
         private zIndexService: ZIndexService
     ) {}
 
@@ -58,11 +66,25 @@ export class Tasks {
         });
     }
 
+    ngAfterViewInit() {
+        const { height } = this.settingService.getSetting("tasks") || {};
+
+        if (typeof height === "number") {
+            this.container.nativeElement.style.setProperty("--height", `${height}px`);
+        }
+    }
+
     toggle() {
         this.visible = !this.visible;
 
         if (this.visible) {
             this.zIndex = this.zIndexService.inc();
+        }
+        else if (this.temporaryTask) {
+            this.hideForm();
+        }
+        else {
+            this.settingsVisible = false;
         }
     }
 
@@ -79,6 +101,32 @@ export class Tasks {
         this.temporaryTask = null;
         this.makingEdit = false;
         this.formLabels.length = 0;
+    }
+
+    toggleDropdown() {
+        this.dropdownVisible = !this.dropdownVisible;
+        window.addEventListener("click", this.boundWindowClickHandler);
+    }
+
+    handleWindowClick(event) {
+        if (event.target.closest(".abs")) {
+            event.preventDefault();
+            return;
+        }
+        this.dropdownVisible = false;
+        window.removeEventListener("click", this.boundWindowClickHandler);
+    }
+
+    showSettings() {
+        this.settingsVisible = true;
+    }
+
+    hideSettings() {
+        this.settingsVisible = false;
+    }
+
+    toggleResizing() {
+        this.resizingEnabled = !this.resizingEnabled;
     }
 
     addSubtask() {
@@ -290,6 +338,12 @@ export class Tasks {
 
     saveTasks() {
         this.chromeStorageService.set({ tasks: this.tasks });
+    }
+
+    saveHeight(height) {
+        this.settingService.updateSetting({
+            tasks: { height }
+        });
     }
 
     drop({ currentIndex, previousIndex }) {

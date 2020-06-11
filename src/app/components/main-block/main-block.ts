@@ -168,4 +168,10 @@ export class MainBlock {
     handleClickOnContainer() {
         this.zIndex = this.zIndexService.incIfLess(this.zIndex);
     }
+
+    saveHeight(height) {
+        this.settingService.updateSetting({
+            mainBlock: { height }
+        });
+    }
 }
