@@ -101,7 +101,7 @@ textarea {
 
     &.focus-visible {
         outline: none;
-        box-shadow: 0 0 1px 1px $color-blue;
+        box-shadow: 0 0 0 1px $color-blue;
     }
 }
 
@@ -113,9 +113,9 @@ textarea {
     border-radius: 2px;
     background-color: $color-white-10;
     font-weight: bold;
-    transition: 0.2s color,
-                0.2s background-color,
-                0.2s opacity;
+    transition: 0.1s color,
+                0.1s background-color,
+                0.1s opacity;
     cursor: pointer;
 
     &:hover {
@@ -134,7 +134,7 @@ textarea {
 
     &.focus-visible {
         outline: none;
-        box-shadow: 0 0 1px 1px $color-blue;
+        box-shadow: 0 0 0 1px $color-blue;
     }
 }
 
@@ -148,6 +148,10 @@ textarea {
         &:disabled {
             background-color: transparent;
         }
+    }
+
+    span {
+        margin-left: 4px;
     }
 }
 
@@ -209,7 +213,7 @@ textarea {
 
     &.focus-visible + .checkbox {
         outline: none;
-        box-shadow: 0 0 1px 1px $color-blue;
+        box-shadow: 0 0 0 1px $color-blue;
     }
 }
 
@@ -231,7 +235,7 @@ textarea {
     border-bottom: 2px solid $color-blue;
     transform: translate(10%, -14%) rotateZ(45deg) scale(0);
     animation-name: scale-tick-up;
-    animation-duration: 0.2s;
+    animation-duration: 0.1s;
     animation-fill-mode: forwards;
 }
 
@@ -254,7 +258,7 @@ textarea {
         border-radius: 50%;
         background-color: $color-blue;
         transform: scale(0);
-        transition: 0.2s transform;
+        transition: 0.1s transform;
     }
 }
 
@@ -265,7 +269,7 @@ textarea {
 
     &.focus-visible + .radio {
         outline: none;
-        box-shadow: 0 0 1px 1px $color-blue;
+        box-shadow: 0 0 0 1px $color-blue;
     }
 }
 
@@ -289,7 +293,7 @@ textarea {
         width: calc(50% - 2px);
         border-radius: 2px;
         background-color: $color-blue;
-        transition: 0.2s transform;
+        transition: 0.1s transform;
     }
 
     &.checked::before {
@@ -298,7 +302,7 @@ textarea {
 
     &.focus-visible {
         outline: none;
-        box-shadow: 0 0 1px 1px $color-blue;
+        box-shadow: 0 0 0 1px $color-blue;
     }
 
     div {

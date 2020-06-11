@@ -5,7 +5,8 @@ import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "calendar",
-    templateUrl: "./calendar.html"
+    templateUrl: "./calendar.html",
+    styleUrls: ["./calendar.scss"]
 })
 export class Calendar {
     @Input() isHidden = true;
