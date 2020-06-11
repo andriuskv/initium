@@ -1,10 +1,11 @@
-import { Directive, ElementRef } from "@angular/core";
-import { SettingService } from "../services/settingService";
+import { Directive, ElementRef, Output, EventEmitter } from "@angular/core";
 
 @Directive({
     selector: "resize-bar"
 })
 export class ResizeDirective {
+    @Output() pointerUp = new EventEmitter();
+
     startY = 0;
     initialHeight = 0;
     height = 0;
@@ -13,7 +14,7 @@ export class ResizeDirective {
     boundHandlePointerMove = this.handlePointerMove.bind(this);
     boundHandlePointerUp = this.handlePointerUp.bind(this);
 
-    constructor(ref: ElementRef, private settingService: SettingService) {
+    constructor(ref: ElementRef) {
         this.ref = ref;
         ref.nativeElement.addEventListener("pointerdown", this.boundHandlePointerDown);
     }
@@ -39,11 +40,7 @@ export class ResizeDirective {
     }
 
     handlePointerUp() {
-        this.settingService.updateSetting({
-            mainBlock: {
-                height: this.height
-            }
-        });
+        this.pointerUp.emit(this.height);
         document.body.style.userSelect = "";
         window.removeEventListener("pointermove", this.boundHandlePointerMove);
         window.removeEventListener("pointerup", this.boundHandlePointerUp);

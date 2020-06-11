@@ -1,25 +1,10 @@
 <button class="btn btn-text tasks-component-toggle-btn"
     [class.shifted]="visible" [style.zIndex]="zIndex + 1"
     (click)="toggle()">Tasks</button>
-<div class="container tasks-component" [class.visible]="visible" [style.zIndex]="zIndex"
+<div class="container tasks-component" [style.zIndex]="zIndex" #container
+    [class.visible]="visible"
+    [class.resizing-enabled]="resizingEnabled"
     (click)="handleClickOnContainer()">
-    <header class=" tasks-component-header task-transition-target">
-        <button class="btn btn-icon"
-            *ngIf="temporaryTask; else elseHeaderBlock"
-            (click)="hideForm()" title="Back">
-            <svg viewBox="0 0 24 24">
-                <use href="#chevron-right"></use>
-            </svg>
-        </button>
-        <ng-template #elseHeaderBlock>
-            <button class="btn btn-icon task-add-btn" (click)="showForm()">
-                <svg viewBox="0 0 24 24">
-                    <use href="#plus"></use>
-                </svg>
-                <span>Add task</span>
-            </button>
-        </ng-template>
-    </header>
     <div class="task-form-container task-transition-target" *ngIf="temporaryTask; else elseBlock1">
         <form (submit)="createLabel($event)">
             <div class="task-form-label-input-container">
@@ -65,57 +50,101 @@
                 </li>
             </ul>
             <div class="task-form-footer">
+                <button type="button" class="btn btn-text" (click)="hideForm()">Cancel</button>
                 <button type="submit" class="btn">Done</button>
             </div>
         </form>
     </div>
     <ng-template #elseBlock1>
-        <p class="task-transition-target task-notice"
-            *ngIf="!tasks.length || willBeEmpty; else elseBlock2">You have no tasks</p>
-        <ng-template #elseBlock2>
-            <ul class="tasks task-transition-target" [class.dialog-visible]="tasksToRemove.length"
-                cdkDropList (cdkDropListDropped)="drop($event)">
-                <li class="task" [class.removing]="task.removing" *ngFor="let task of tasks; let i = index" cdkDrag>
-                    <div class="task-drag-placeholder" *cdkDragPlaceholder></div>
-                    <div class="task-body">
-                        <ul class="task-labels" *ngIf="task.labels.length">
-                            <li class="task-label" *ngFor="let label of task.labels">
-                                <div class="task-label-color" [style.backgroundColor]="label.color"></div>
-                                <div class="task-label-title">{{ label.title }}</div>
-                            </li>
-                        </ul>
-                        <div class="task-text-container" [class.has-labels]="task.labels.length">
-                            <button class="checkbox task-checkbox-btn" title="Remove task"
-                                (click)="removeTask(i)" [disabled]="task.removing">
-                                <div class="checkbox-tick"></div>
-                            </button>
-                            <div class="task-text">{{ task.text }}</div>
-                        </div>
-                        <ul class="subtasks" *ngIf="task.subtasks.length">
-                            <li class="subtask" [class.removing]="subtask.removing"
-                                *ngFor="let subtask of task.subtasks; let subtaskIndex = index">
-                                <div class="subtask-body">
-                                    <button class="checkbox task-checkbox-btn" title="Mark Completed"
-                                        (click)="removeSubtask(i, subtaskIndex)" [disabled]="subtask.removing">
-                                        <div class="checkbox-tick"></div>
-                                    </button>
-                                    <span class="task-text">{{ subtask.text }}</span>
-                                </div>
-                            </li>
-                        </ul>
-                        <button class="btn btn-icon btn-icon-alt task-edit-btn" title="Edit task"
-                            (click)="editTask(i)" [disabled]="task.removing">
-                            <svg class="task-edit-btn-icon" viewBox="0 0 24 24">
-                                <use href="#edit"></use>
-                            </svg>
-                        </button>
-                    </div>
-                </li>
-            </ul>
-        </ng-template>
-        <div class="tasks-dialog" *ngIf="removedTaskCount">
-            <span>Removed <span class="tasks-dialog-task-count">{{ removedTaskCount }}</span> task{{ removedTaskCount > 1 ? "s" : "" }}</span>
-            <button class="btn btn-text-alt tasks-dialog-btn" (click)="undoTaskRemoval()">UNDO</button>
+        <div class="tasks-settings task-transition-target" *ngIf="settingsVisible else elseBlock2">
+            <label class="checkbox-container tasks-settings-item">
+                <input type="checkbox" class="sr-only checkbox-input"
+                    [checked]="resizingEnabled"
+                    (click)="toggleResizing()"
+                    (keyup.enter)="toggleResizing()">
+                <div class="checkbox">
+                    <div class="checkbox-tick"></div>
+                </div>
+                <span>Enable resizing</span>
+            </label>
+            <div class="tasks-settings-footer">
+                <button class="btn btn-text" (click)="hideSettings()">Done</button>
+            </div>
         </div>
     </ng-template>
+    <ng-template #elseBlock2>
+        <div class="tasks-component-header task-transition-target">
+            <button class="btn btn-icon task-add-btn" (click)="showForm()">
+                <svg viewBox="0 0 24 24">
+                    <use href="#plus"></use>
+                </svg>
+                <span>Add a task</span>
+            </button>
+            <div class="tasks-dropdown-container">
+                <button class="btn btn-icon abs" (click)="toggleDropdown()" title="More">
+                    <svg viewBox="0 0 24 24">
+                        <use href="#vertical-dots"></use>
+                    </svg>
+                </button>
+                <div class="container tasks-dropdown" *ngIf="dropdownVisible">
+                    <button class="btn btn-icon tasks-dropdown-item" (click)="showSettings()">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#settings"></use>
+                        </svg>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="tasks-main task-transition-target">
+            <p class="task-notice" [class.dialog-visible]="tasksToRemove.length"
+                *ngIf="!tasks.length || willBeEmpty; else elseBlock3">You have no tasks</p>
+            <ng-template #elseBlock3>
+                <ul class="tasks" [class.dialog-visible]="tasksToRemove.length"
+                    cdkDropList (cdkDropListDropped)="drop($event)">
+                    <li class="task" [class.removing]="task.removing" *ngFor="let task of tasks; let i = index" cdkDrag>
+                        <div class="task-drag-placeholder" *cdkDragPlaceholder></div>
+                        <div class="task-body">
+                            <ul class="task-labels" *ngIf="task.labels.length">
+                                <li class="task-label" *ngFor="let label of task.labels">
+                                    <div class="task-label-color" [style.backgroundColor]="label.color"></div>
+                                    <div class="task-label-title">{{ label.title }}</div>
+                                </li>
+                            </ul>
+                            <div class="task-text-container" [class.has-labels]="task.labels.length">
+                                <button class="checkbox task-checkbox-btn" title="Remove task"
+                                    (click)="removeTask(i)" [disabled]="task.removing">
+                                    <div class="checkbox-tick"></div>
+                                </button>
+                                <div class="task-text">{{ task.text }}</div>
+                            </div>
+                            <ul class="subtasks" *ngIf="task.subtasks.length">
+                                <li class="subtask" [class.removing]="subtask.removing"
+                                    *ngFor="let subtask of task.subtasks; let subtaskIndex = index">
+                                    <div class="subtask-body">
+                                        <button class="checkbox task-checkbox-btn" title="Mark Completed"
+                                            (click)="removeSubtask(i, subtaskIndex)" [disabled]="subtask.removing">
+                                            <div class="checkbox-tick"></div>
+                                        </button>
+                                        <span class="task-text">{{ subtask.text }}</span>
+                                    </div>
+                                </li>
+                            </ul>
+                            <button class="btn btn-icon btn-icon-alt task-edit-btn" title="Edit task"
+                                (click)="editTask(i)" [disabled]="task.removing">
+                                <svg class="task-edit-btn-icon" viewBox="0 0 24 24">
+                                    <use href="#edit"></use>
+                                </svg>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </ng-template>
+            <div class="tasks-dialog" *ngIf="removedTaskCount">
+                <span>Removed <span class="tasks-dialog-task-count">{{ removedTaskCount }}</span> task{{ removedTaskCount > 1 ? "s" : "" }}</span>
+                <button class="btn btn-text-alt tasks-dialog-btn" (click)="undoTaskRemoval()">UNDO</button>
+            </div>
+        </div>
+    </ng-template>
+    <resize-bar class="main-block-resize-bar" (pointerUp)="saveHeight($event)" *ngIf="resizingEnabled"></resize-bar>
 </div>
