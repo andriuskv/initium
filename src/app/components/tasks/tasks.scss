@@ -234,6 +234,14 @@
     word-break: break-word;
 }
 
+.task-link {
+    color: $color-blue;
+
+    &:hover, &.focus-visible {
+        text-decoration: underline;
+    }
+}
+
 .task-edit-btn {
     position: absolute;
     top: 12px;

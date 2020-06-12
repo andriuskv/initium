@@ -116,7 +116,7 @@
                                     (click)="removeTask(i)" [disabled]="task.removing">
                                     <div class="checkbox-tick"></div>
                                 </button>
-                                <div class="task-text">{{ task.text }}</div>
+                                <div class="task-text" [innerHTML]="task.displayText || task.text"></div>
                             </div>
                             <ul class="subtasks" *ngIf="task.subtasks.length">
                                 <li class="subtask" [class.removing]="subtask.removing"
@@ -126,7 +126,7 @@
                                             (click)="removeSubtask(i, subtaskIndex)" [disabled]="subtask.removing">
                                             <div class="checkbox-tick"></div>
                                         </button>
-                                        <span class="task-text">{{ subtask.text }}</span>
+                                        <span class="task-text" [innerHTML]="subtask.displayText || subtask.text"></span>
                                     </div>
                                 </li>
                             </ul>
