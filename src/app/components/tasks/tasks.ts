@@ -7,6 +7,7 @@ import { getRandomHexColor } from "../../utils/utils";
 
 interface Task {
     text: string;
+    displayText: string;
     removing?: boolean;
     subtasks: Subtask[];
     labels?: Label[];
@@ -14,6 +15,7 @@ interface Task {
 
 interface Subtask {
     text: string;
+    displayText: string;
     removing?: boolean;
 }
 
@@ -142,27 +144,40 @@ export class Tasks {
             return [];
         }
         else if (elements.value) {
+            const text = elements.value.trim();
+
             return [{
-                text: elements.value.trim()
-            }];
+                text,
+                displayText: this.replaceLink(text),
+            } as Subtask];
         }
         else if (elements.length) {
             return Array.from(elements).reduce((tasks: Subtask[], { value }) => {
                 const text = value.trim();
 
                 if (text) {
-                    tasks.push({ text });
+                    tasks.push({
+                        text,
+                        displayText: this.replaceLink(text),
+                    });
                 }
                 return tasks;
-            }, []);
+            }, []) as Subtask[];
         }
         return [];
     }
 
+    replaceLink(text) {
+        const regex = /(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?/g;
+        return text.replace(regex, href => `<a href="${href}" class="task-link" target="_blank">${href}</a>`);
+    }
+
     handleFormSubmit(event) {
         const { elements } = event.target;
+        const text = elements.text.value.trim();
         const task: Task = {
-            text: elements.text.value.trim(),
+            text,
+            displayText: this.replaceLink(text),
             subtasks: this.getSubtasks(elements.subtask) as Subtask[],
             labels: this.getFlaggedLabels()
         };
