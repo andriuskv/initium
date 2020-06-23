@@ -1,0 +1,55 @@
+@import "../../../scss/mixins.scss";
+@import "../../../scss/variables.scss";
+
+.select-item-container {
+    position: relative;
+}
+
+.select-item-list-toggle-btn {
+    position: relative;
+    justify-content: flex-start;
+    width: 120px;
+    min-height: 28px;
+    padding: 4px 4px 4px 8px;
+}
+
+.select-item-list-toggle-btn-text {
+    overflow: hidden;
+    width: calc(100% - 20px);
+    font-size: 12px;
+    text-align: left;
+    white-space: no-wrap;
+}
+
+.select-item-list-toggle-btn-icon {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+
+.select-item-list {
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    display: none;
+    min-width: 120px;
+    padding: 4px;
+    transform: translateY(4px);
+
+    &.visible {
+        display: block;
+    }
+}
+
+.select-item-list-item {
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 28px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    font-size: 12px;
+
+    &:not(:last-of-type) {
+        margin-bottom: 4px;
+    }
+}

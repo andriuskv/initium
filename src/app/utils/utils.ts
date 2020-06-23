@@ -10,6 +10,10 @@ function delay(milliseconds) {
     });
 }
 
+function getRandomString() {
+    return Math.random().toString(32).slice(2, 10);
+}
+
 function getRandomHslColor() {
     return {
         hue: Math.floor(Math.random() * 360) + 1,
@@ -43,6 +47,7 @@ function formatTime(time: number) {
 export {
     dispatchCustomEvent,
     delay,
+    getRandomString,
     getRandomHslColor,
     getRandomHexColor,
     padTime,

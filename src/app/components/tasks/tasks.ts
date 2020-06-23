@@ -3,7 +3,15 @@ import { moveItemInArray } from "@angular/cdk/drag-drop";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { SettingService } from "../../services/settingService";
 import { ZIndexService } from "../../services/zIndexService";
-import { getRandomHexColor } from "../../utils/utils";
+import { getRandomString, getRandomHexColor } from "../../utils/utils";
+
+interface Group {
+    id: string;
+    name: string;
+    expanded: boolean;
+    removing?: boolean;
+    tasks: Task[];
+}
 
 interface Task {
     text: string;
@@ -32,24 +40,28 @@ interface Label {
 })
 export class Tasks {
     @ViewChild("container") container;
+    @ViewChild("groupNameInput") groupNameInput;
 
     visible = false;
-    makingEdit = false;
     willBeEmpty = false;
-    dropdownVisible = false;
-    settingsVisible = false;
     resizingEnabled = false;
-    timeout = 0;
+    defaultGroupVisible = false;
+    visibleItem = "list";
+    taskSaveTimeout = 0;
+    itemRemoveTimeout = 0;
     zIndex = 0;
-    removedTaskCount = 0;
+    removingItems = this.resetRemovingItems();
     formColor = "";
     labelMessage = "";
-    tasks: Task[] = [];
-    tasksToRemove = [];
-    temporaryTask = null;
+    groups: Group[] = [{
+        id: "unorganized",
+        name: "Unorganized",
+        expanded: true,
+        tasks: []
+    }];
+    formTask = null;
     oldLabels: Label[] = JSON.parse(localStorage.getItem("old-task-labels")) || [];
     formLabels: Label[] = [];
-    boundWindowClickHandler = this.handleWindowClick.bind(this);
 
     constructor(
         private chromeStorageService: ChromeStorageService,
@@ -60,19 +72,38 @@ export class Tasks {
     ngOnInit() {
         this.chromeStorageService.subscribeToChanges(({ tasks }) => {
             if (tasks) {
-                this.tasks = [...tasks.newValue];
+                this.groups = [...this.addDisplayText(tasks.newValue)];
             }
         });
         this.chromeStorageService.get("tasks", storage => {
-            this.tasks = storage.tasks || [];
+            const tasks = storage.tasks || [];
+
+            // Migration to new format
+            if (tasks[0]?.text) {
+                this.groups[0] = {
+                    id: "unorganized",
+                    name: "Unorganized",
+                    expanded: true,
+                    tasks
+                };
+                this.groups = this.addDisplayText(this.groups);
+                this.saveTasks();
+            }
+            else {
+                this.groups = this.addDisplayText(tasks);
+            }
         });
     }
 
     ngAfterViewInit() {
-        const { height } = this.settingService.getSetting("tasks") || {};
+        const { height, defaultGroupVisible } = this.settingService.getSetting("tasks") || {};
 
         if (typeof height === "number") {
             this.container.nativeElement.style.setProperty("--height", `${height}px`);
+        }
+
+        if (typeof defaultGroupVisible === "boolean") {
+            this.defaultGroupVisible = defaultGroupVisible;
         }
     }
 
@@ -82,61 +113,84 @@ export class Tasks {
         if (this.visible) {
             this.zIndex = this.zIndexService.inc();
         }
-        else if (this.temporaryTask) {
-            this.hideForm();
-        }
         else {
-            this.settingsVisible = false;
+            this.hideItem();
         }
     }
 
     showForm() {
         this.formColor = getRandomHexColor();
         this.formLabels = this.getFormLabels();
-        this.temporaryTask = {
+        this.formTask = {
             text: "",
             subtasks: []
         };
+
+        this.showItem("form");
     }
 
     hideForm() {
-        this.temporaryTask = null;
-        this.makingEdit = false;
+        this.formTask = null;
         this.formLabels.length = 0;
+
+        this.hideItem();
     }
 
-    toggleDropdown() {
-        this.dropdownVisible = !this.dropdownVisible;
-        window.addEventListener("click", this.boundWindowClickHandler);
+    addDisplayText(groups) {
+        return groups.map(group => {
+            group.tasks.map(task => {
+                task.displayText = this.replaceLink(task.text);
+                task.subtasks = task.subtasks.map(subtask => {
+                    subtask.displayText = this.replaceLink(subtask.text);
+                    return subtask;
+                });
+                return task;
+            });
+            return group;
+        });
     }
 
-    handleWindowClick(event) {
-        if (event.target.closest(".abs")) {
-            event.preventDefault();
-            return;
-        }
-        this.dropdownVisible = false;
-        window.removeEventListener("click", this.boundWindowClickHandler);
+    showItem(item) {
+        this.visibleItem = item;
     }
 
-    showSettings() {
-        this.settingsVisible = true;
+    hideItem() {
+        this.visibleItem = "list";
     }
 
-    hideSettings() {
-        this.settingsVisible = false;
+    toggleGroupVisibility(group) {
+        group.expanded = !group.expanded;
+
+        clearTimeout(this.taskSaveTimeout);
+        this.taskSaveTimeout = window.setTimeout(() => {
+            this.saveTasks();
+        }, 1000);
     }
 
     toggleResizing() {
         this.resizingEnabled = !this.resizingEnabled;
     }
 
+    toggleDefaultGroupVisibility() {
+        this.defaultGroupVisible = !this.defaultGroupVisible;
+
+        if (!this.groups[0].expanded) {
+            this.groups[0].expanded = true;
+            this.saveTasks();
+        }
+        this.settingService.updateSetting({
+            tasks: {
+                defaultGroupVisible: this.defaultGroupVisible
+            }
+        });
+    }
+
     addSubtask() {
-        this.temporaryTask.subtasks.push({ text: "" } as Subtask);
+        this.formTask.subtasks.push({ text: "" } as Subtask);
     }
 
     removeTemporarySubtask(index) {
-        this.temporaryTask.subtasks.splice(index, 1);
+        this.formTask.subtasks.splice(index, 1);
     }
 
     getSubtasks(elements) {
@@ -172,9 +226,15 @@ export class Tasks {
         return text.replace(regex, href => `<a href="${href}" class="task-link" target="_blank">${href}</a>`);
     }
 
+    selectFormGroup(groupId) {
+        this.formTask.selectedGroupId = groupId;
+    }
+
     handleFormSubmit(event) {
         const { elements } = event.target;
         const text = elements.text.value.trim();
+        const groupId = this.formTask.selectedGroupId || "unorganized";
+        const { tasks } = this.groups.find(({ id }) => id === groupId);
         const task: Task = {
             text,
             displayText: this.replaceLink(text),
@@ -182,77 +242,117 @@ export class Tasks {
             labels: this.getFlaggedLabels()
         };
 
-        if (this.makingEdit) {
-            const { index } = this.temporaryTask;
+        if (this.formTask.makingEdit) {
+            const { index } = this.formTask;
 
-            this.tasks[index] = { ...this.tasks[index], ...task };
+            if (groupId !== this.formTask.groupId) {
+                const group = this.groups.find(({ id }) => id === this.formTask.groupId);
+
+                group.tasks.splice(index, 1);
+                tasks.unshift(task);
+            }
+            else {
+                tasks[index] = { ...tasks[index], ...task };
+            }
         }
         else {
-            this.tasks.unshift(task);
+            tasks.unshift(task);
         }
         this.saveTasks();
         this.hideForm();
         event.preventDefault();
     }
 
-    editTask(index) {
-        const { text, subtasks } = this.tasks[index];
+    editTask(group, index) {
+        const { text, subtasks } = group.tasks[index];
 
-        this.makingEdit = true;
         this.formColor = getRandomHexColor();
         this.formLabels = this.getFormLabels(index);
-        this.temporaryTask = {
+        this.formTask = {
             index,
             text,
+            groupId: group.id,
+            makingEdit: true,
             subtasks: [...subtasks]
+        };
+
+        this.showItem("form");
+    }
+
+    resetRemovingItems() {
+        return {
+            groups: {
+                items: [],
+                willBeEmpty: false
+            },
+            tasks: {
+                items: [],
+                willBeEmpty: false
+            }
         };
     }
 
-    removeTask(index) {
-        this.tasks[index].removing = true;
-
-        window.setTimeout(() => {
-            this.scheduleTaskRemoval(index);
-            this.willBeEmpty = this.tasks.filter(task => !task.removing).length < 1;
-        }, 400);
+    getItemsNotBeingRemoved(items) {
+        return items.filter(item => !item.removing);
     }
 
-    removeSubtask(taskIndex, subtaskIndex) {
-        this.tasks[taskIndex].subtasks[subtaskIndex].removing = true;
-
-        window.setTimeout(() => {
-            this.scheduleTaskRemoval(taskIndex, subtaskIndex);
-        }, 400);
+    removeGroup(index) {
+        this.groups[index].removing = true;
+        this.removingItems.groups.willBeEmpty = this.getItemsNotBeingRemoved(this.groups).length === 1;
+        this.removingItems.groups.items.push(index);
+        this.scheduleTaskRemoval();
     }
 
-    scheduleTaskRemoval(taskIndex, subtaskIndex = -1) {
-        this.removedTaskCount += 1;
-        this.tasksToRemove.push({ taskIndex, subtaskIndex });
-        clearTimeout(this.timeout);
+    removeTask(groupIndex, taskIndex) {
+        this.groups[groupIndex].tasks[taskIndex].removing = true;
+        this.removingItems.tasks.items.push({ groupIndex, taskIndex });
 
-        this.timeout = window.setTimeout(() => {
+        for (const group of this.groups) {
+            this.removingItems.tasks.willBeEmpty = !this.getItemsNotBeingRemoved(group.tasks).length;
+
+            if (!this.removingItems.tasks.willBeEmpty) {
+                break;
+            }
+        }
+        this.scheduleTaskRemoval();
+    }
+
+    removeSubtask(groupIndex, taskIndex, subtaskIndex) {
+        this.groups[groupIndex].tasks[taskIndex].subtasks[subtaskIndex].removing = true;
+        this.removingItems.tasks.items.push({ groupIndex, taskIndex, subtaskIndex });
+
+        this.scheduleTaskRemoval();
+    }
+
+    scheduleTaskRemoval() {
+        clearTimeout(this.itemRemoveTimeout);
+        this.itemRemoveTimeout = window.setTimeout(() => {
             this.removeCompletedTasks();
         }, 8000);
     }
 
     removeCompletedTasks() {
-        this.willBeEmpty = false;
-        this.tasksToRemove.length = 0;
-        this.tasks = this.tasks.filter(task => {
-            task.subtasks = task.subtasks.filter(subtask => !subtask.removing);
-            return !task.removing;
-        });
+        this.removingItems = this.resetRemovingItems();
+        this.groups = this.getItemsNotBeingRemoved(this.groups);
+
+        for (const group of this.groups) {
+            group.tasks = group.tasks.filter(task => {
+                task.subtasks = this.getItemsNotBeingRemoved(task.subtasks);
+                return !task.removing;
+            });
+        }
         this.saveTasks();
-        window.setTimeout(() => {
-            this.removedTaskCount = 0;
-        }, 200);
     }
 
     undoTaskRemoval() {
-        clearTimeout(this.timeout);
+        clearTimeout(this.itemRemoveTimeout);
 
-        for (const { taskIndex, subtaskIndex } of this.tasksToRemove) {
-            const task = this.tasks[taskIndex];
+        for (const index of this.removingItems.groups.items) {
+            delete this.groups[index].removing;
+        }
+
+        for (const { groupIndex, taskIndex, subtaskIndex } of this.removingItems.tasks.items) {
+            const task = this.groups[groupIndex].tasks[taskIndex];
 
             if (subtaskIndex >= 0) {
                 delete task.subtasks[subtaskIndex].removing;
@@ -261,11 +361,7 @@ export class Tasks {
                 delete task.removing;
             }
         }
-        this.willBeEmpty = false;
-        this.tasksToRemove.length = 0;
-        window.setTimeout(() => {
-            this.removedTaskCount = 0;
-        }, 200);
+        this.removingItems = this.resetRemovingItems();
     }
 
     getFormLabels(index = -1) {
@@ -295,22 +391,29 @@ export class Tasks {
         }, []);
     }
 
-    getUniqueTaskLabels(taskIndex = -1): Label[] {
-        return this.tasks.reduce((labels, task, index) => {
-            if (task.labels) {
-                task.labels.forEach(label => {
-                    const foundLabel = this.findLabel(labels, label);
+    getUniqueTaskLabels(taskIndex = -1) {
+        let labels: Label[] = [];
 
-                    if (!foundLabel) {
-                        labels.push({ ...label, flagged: taskIndex === index });
-                    }
-                    else if (taskIndex === index) {
-                        foundLabel.flagged = true;
-                    }
-                });
-            }
-            return labels;
-        }, [] as Label[]);
+        for (const group of this.groups) {
+            const groupLabels = group.tasks.reduce((labels, task, index) => {
+                if (task.labels) {
+                    task.labels.forEach(label => {
+                        const foundLabel = this.findLabel(labels, label);
+
+                        if (!foundLabel) {
+                            labels.push({ ...label, flagged: taskIndex === index });
+                        }
+                        else if (taskIndex === index) {
+                            foundLabel.flagged = true;
+                        }
+                    });
+                }
+                return labels;
+            }, [] as Label[]);
+
+            labels = labels.concat(groupLabels);
+        }
+        return labels;
     }
 
     createLabel(event) {
@@ -347,12 +450,66 @@ export class Tasks {
         this.formColor = target.value;
     }
 
+    createGroup(event) {
+        const name = event.target.elements.name.value;
+        const id = getRandomString();
+
+        this.groups.push({
+            id,
+            name,
+            expanded: true,
+            tasks: []
+        });
+        event.preventDefault();
+        event.target.reset();
+        this.saveTasks();
+    }
+
+    enableGroupRename(group) {
+        group.renameEnabled = true;
+
+        requestAnimationFrame(() => {
+            this.groupNameInput.nativeElement.focus();
+        });
+    }
+
+    renameGroup(group) {
+        const oldName = group.name;
+        group.name = this.groupNameInput.nativeElement.value || oldName;
+        group.renameEnabled = false;
+
+        if (group.name !== oldName) {
+            this.saveTasks();
+        }
+    }
+
+    renameGroupOnEnter(event) {
+        event.target.blur();
+    }
+
     handleClickOnContainer() {
         this.zIndex = this.zIndexService.incIfLess(this.zIndex);
     }
 
-    saveTasks() {
-        this.chromeStorageService.set({ tasks: this.tasks });
+    cleanUpTask(task) {
+        delete task.removing;
+        delete task.displayText;
+        return task;
+    }
+
+    async saveTasks() {
+        const { default: cloneDeep } = await import("lodash.clonedeep");
+        const groups = cloneDeep(this.groups);
+
+        this.chromeStorageService.set({ tasks: groups.map(group => {
+            delete group.removing;
+            group.tasks = group.tasks.map(task => {
+                task = this.cleanUpTask(task);
+                task.subtasks = task.subtasks.map(this.cleanUpTask);
+                return task;
+            });
+            return group;
+        }) });
     }
 
     saveHeight(height) {
@@ -361,8 +518,14 @@ export class Tasks {
         });
     }
 
-    drop({ currentIndex, previousIndex }) {
-        moveItemInArray(this.tasks, previousIndex, currentIndex);
+    handleTaskDrop({ currentIndex, previousIndex }, { tasks }) {
+        moveItemInArray(tasks, previousIndex, currentIndex);
+        this.saveTasks();
+    }
+
+    handleGroupDrop({ currentIndex, previousIndex }) {
+        // Add 1 to the index because first group is hidden and cannot be reordered.
+        moveItemInArray(this.groups, previousIndex + 1, currentIndex + 1);
         this.saveTasks();
     }
 }

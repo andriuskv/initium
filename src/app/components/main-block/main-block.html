@@ -75,5 +75,5 @@
     <rss-feed [isVisible]="tabName === 'rssFeed'" *ngIf="!tabs.rssFeed.disabled"
         (newEntries)="onTabUpdate('rssFeed')"
         (toggleTab)="selectTab($event, true)"></rss-feed>
-    <resize-bar class="main-block-resize-bar" (pointerUp)="saveHeight($event)" *ngIf="isResizingEnabled"></resize-bar>
+    <resize-bar (pointerUp)="saveHeight($event)" *ngIf="isResizingEnabled"></resize-bar>
 </div>

@@ -211,21 +211,3 @@
     top: 5px;
     right: 5px;
 }
-
-.main-block-resize-bar {
-    display: block;
-    height: 8px;
-    padding-top: 6px;
-    pointer-events: auto;
-    cursor: row-resize;
-
-    &::before {
-        content: "";
-        position: relative;
-        display: block;
-        width: calc(100% - 16px);
-        height: 2px;
-        margin: 0 8px;
-        background-color: $color-blue;
-    }
-}
