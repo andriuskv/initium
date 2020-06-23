@@ -1,9 +1,28 @@
-import { Directive, ElementRef, Output, EventEmitter } from "@angular/core";
+import { Component, ElementRef, Output, EventEmitter } from "@angular/core";
 
-@Directive({
-    selector: "resize-bar"
+@Component({
+    selector: "resize-bar",
+    styles: [`
+        :host {
+            display: block;
+            height: 8px;
+            padding-top: 6px;
+            pointer-events: auto;
+            cursor: row-resize;
+        }
+
+        :host::before {
+            content: "";
+            position: relative;
+            display: block;
+            width: calc(100% - 16px);
+            height: 2px;
+            margin: 0 8px;
+            background-color: #359ee9;
+        }
+    `],
 })
-export class ResizeDirective {
+export class ResizeBar {
     @Output() pointerUp = new EventEmitter();
 
     startY = 0;

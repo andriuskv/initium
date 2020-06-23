@@ -81,6 +81,13 @@ textarea {
     }
 }
 
+.container-solid {
+    padding: 1px;
+    border: 1px solid transparent;
+    background-color: $color-grey-dark;
+    box-shadow: inset 0 0 0 1px $color-white-10;
+}
+
 .container-fullscreen {
     background-color: $color-grey-darker-60;
     backdrop-filter: blur(16px);

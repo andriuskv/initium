@@ -1,0 +1,10 @@
+<div [id]="id" class="dropdown-container" [ngClass]="[className.container || '']">
+    <button class="btn btn-icon" (click)="toggleDropdown($event)" title="More" [ngClass]="[className.toggle || '']">
+        <svg viewBox="0 0 24 24">
+            <use href="#vertical-dots"></use>
+        </svg>
+    </button>
+    <div class="container dropdown" *ngIf="visible" [ngClass]="[className.main || '']">
+        <ng-content></ng-content>
+    </div>
+</div>
