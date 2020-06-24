@@ -330,6 +330,10 @@
 .feed-list-item-url {
     font-size: 13px;
     color: $color-white-60;
+
+    &:hover, &.focus-visible {
+        text-decoration: underline;
+    }
 }
 
 .feed-list-item-error {
