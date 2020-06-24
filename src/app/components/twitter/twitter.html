@@ -84,6 +84,7 @@
                     [disabled]="fetchingMoreTweets">Show More</button>
             </li>
         </ul>
+        <to-top-button *ngIf="isVisible"></to-top-button>
     </div>
     <ng-template #elseBlock>
         <div class="twitter-hero">
