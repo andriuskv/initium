@@ -29,6 +29,7 @@ import { BackgroundViewer } from "./components/background-viewer/background-view
 import { GoogleApps } from "./components/google-apps/google-apps";
 import { Storage } from "./components/storage/storage";
 import { ResizeBar } from "./components/resize-bar/resize-bar";
+import { ToTopButton } from "./components/to-top-button/to-top-button";
 
 @NgModule({
     imports: [BrowserModule, DragDropModule],
@@ -36,7 +37,7 @@ import { ResizeBar } from "./components/resize-bar/resize-bar";
         App, Settings, Background, Time, Dropdown, SelectItem, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Countdown, Calendar,
         CalendarSelectedDay, Dropbox, TweetImageViewer, BackgroundViewer, GoogleApps,
-        Storage, ResizeBar
+        Storage, ResizeBar,ToTopButton
     ],
     bootstrap: [App]
 })

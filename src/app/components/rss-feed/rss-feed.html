@@ -169,6 +169,7 @@
                     <div class="feed-date" *ngIf="entry.date">Posted on: {{ entry.date }}</div>
                 </li>
             </ul>
+            <to-top-button *ngIf="isVisible"></to-top-button>
         </ng-container>
     </ng-template>
 </div>
