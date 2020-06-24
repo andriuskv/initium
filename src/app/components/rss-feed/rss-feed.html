@@ -67,7 +67,7 @@
                                         (click)="showFeedFromList(i)">{{ feed.title }}</button>
                                 </h3>
                             </ng-template>
-                            <div class="feed-list-item-url">{{ feed.url }}</div>
+                            <a href="{{ feed.url }}" class="feed-list-item-url" target="_blank">{{ feed.url }}</a>
                         </div>
                         <button class="btn btn-icon btn-icon-alt feed-list-item-btn"
                             *ngIf="!feed.makingTitleEdit"

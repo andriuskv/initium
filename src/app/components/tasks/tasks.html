@@ -153,7 +153,7 @@
             <input type="text" class="input tasks-groups-form-input" name="name" placeholder="Group name" autocomplete="off" required/>
             <button class="btn">Create</button>
         </form>
-        <p class="tasks-notice" *ngIf="removingItems.groups.willBeEmpty; else elseBlock">You have no groups</p>
+        <p class="tasks-notice" *ngIf="groups.length === 1 || removingItems.groups.willBeEmpty; else elseBlock">You have no groups</p>
         <ng-template #elseBlock>
             <ul class="tasks-groups-items" cdkDropList (cdkDropListDropped)="handleGroupDrop($event)">
                 <ng-container *ngFor="let group of groups; let i = index">
