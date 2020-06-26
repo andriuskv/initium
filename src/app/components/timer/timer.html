@@ -1,18 +1,8 @@
 <div class="upper-block-item" [class.visible]="visible">
-    <div class="upper-block-item-content">
-        <div *ngIf="running; else elseBlock">
-            <ng-container *ngIf="hours > 0">
-                <span class="upper-block-digit">{{ hours }}</span>
-                <span class="upper-block-sep">h</span>
-            </ng-container>
-            <ng-container *ngIf="hours > 0 || minutes > 0">
-                <span class="upper-block-digit">{{ minutesDisplay }}</span>
-                <span class="upper-block-sep">m</span>
-            </ng-container>
-            <span class="upper-block-digit">{{ secondsDisplay }}</span>
-            <span class="upper-block-sep">s</span>
-        </div>
-        <ng-template #elseBlock>
+    <form (submit)="createPreset($event)" *ngIf="formPreset; else presetBlock">
+        <div class="timer-form-body">
+            <input type="text" class="input timer-form-name-input" name="name" placeholder="Preset name"
+                [value]="formPreset.name" autocomplete="off" required>
             <div class="timer-input-container" (input)="onInput($event)">
                 <input type="text" class="upper-block-digit timer-input"
                     data-input="hoursDisplay"
@@ -27,30 +17,120 @@
                     [value]="secondsDisplay">
                 <span class="upper-block-sep">s</span>
             </div>
-        </ng-template>
-    </div>
-    <div class="upper-block-group upper-block-item-controls">
-        <button class="btn btn-text upper-block-item-control-btn"
-            (click)="toggle()">{{ running ? "Stop" : "Start" }}</button>
-        <button class="btn btn-text upper-block-item-control-btn upper-block-reset-btn"
-            (click)="reset()">Reset</button>
-        <ng-container *ngIf="running">
-            <button class="btn btn-icon" (click)="expandSize()" title="Expand">
-                <svg viewBox="0 0 24 24">
-                    <use href="#expand"></use>
-                </svg>
-            </button>
-            <button class="btn btn-icon" (click)="enterFullscreen()" title="Enter fullscreen">
-                <svg viewBox="0 0 24 24">
-                    <use href="#fullscreen"></use>
-                </svg>
-            </button>
+        </div>
+        <div class="timer-footer">
+            <p class="timer-form-message" *ngIf="formMessageVisible">Please enter valid time.</p>
+            <button type="button" class="btn btn-text" (click)="hidePresetForm()">Cancel</button>
+            <button class="btn">{{ makingPresetEdit ? "Update" : "Create" }}</button>
+        </div>
+    </form>
+    <ng-template #presetBlock>
+        <ng-container *ngIf="presetsVisible; else elseBlock">
+            <ul class="timer-presets" *ngIf="presets.length; else noPresetsBlock">
+                <li *ngFor="let preset of presets; let i = index" class="timer-preset">
+                    <div>
+                        <div class="timer-preset-name">{{ preset.name }}</div>
+                        <div class="timer-preset-time">{{ preset.hours }}:{{ preset.minutes }}:{{ preset.seconds }}</div>
+                    </div>
+                    <dropdown [id]="preset.id" class="timer-preset-dropdown" [className]="{
+                        toggle: 'btn-icon-alt'
+                    }" [needWorkaround]="true">
+                        <button class="btn btn-icon dropdown-item" (click)="editPreset(i)">
+                            <svg viewBox="0 0 24 24">
+                                <use href="#edit"></use>
+                            </svg>
+                            <span>Edit</span>
+                        </button>
+                        <button class="btn btn-icon dropdown-item" (click)="removePreset(i)">
+                            <svg viewBox="0 0 24 24">
+                                <use href="#trash"></use>
+                            </svg>
+                            <span>Remove</span>
+                        </button>
+                    </dropdown>
+                </li>
+            </ul>
+            <ng-template #noPresetsBlock>
+                <p class="timer-presets-message">You have no presets</p>
+            </ng-template>
+            <div class="timer-footer timer-presets-footer">
+                <button type="button" class="btn btn-text" (click)="showPresetForm()">Create Preset</button>
+                <button class="btn btn-text" (click)="hidePresets()">Done</button>
+            </div>
         </ng-container>
-        <button class="btn btn-icon" title="Toggle alarm"
-            (click)="toggleAlarm()">
-            <svg viewBox="0 0 24 24">
-                <use attr.href="#bell{{alarmOn ? '': '-off'}}"></use>
-            </svg>
-        </button>
-    </div>
+    </ng-template>
+    <ng-template #elseBlock>
+        <div class="upper-block-item-content timer-content"
+            [class.has-presets]="presets.length"
+            [class.preset-not-selected]="running && !selectedPreset">
+            <ng-container *ngIf="running; else elseBlock">
+                <h4 class="timer-selected-preset-name" *ngIf="selectedPreset">{{ selectedPreset.name }}</h4>
+                <div [class.timer-time]="selectedPreset">
+                    <ng-container *ngIf="hours > 0">
+                        <span class="upper-block-digit">{{ hours }}</span>
+                        <span class="upper-block-sep">h</span>
+                    </ng-container>
+                    <ng-container *ngIf="hours > 0 || minutes > 0">
+                        <span class="upper-block-digit">{{ minutesDisplay }}</span>
+                        <span class="upper-block-sep">m</span>
+                    </ng-container>
+                    <span class="upper-block-digit">{{ secondsDisplay }}</span>
+                    <span class="upper-block-sep">s</span>
+                </div>
+            </ng-container>
+            <ng-template #elseBlock>
+                <div class="timer-preset-select" *ngIf="presets.length">
+                    <div class="timer-preset-select-input-name">Presets</div>
+                    <select-item (onSelectedItem)="selectPreset($event)" [selected]="selectedPreset?.id">
+                        <button type="button" class="btn btn-text select-item-list-item"
+                            (click)="resetSelectedPreset()"></button>
+                        <button type="button" class="btn btn-text select-item-list-item" [attr.data-id]="preset.id"
+                            *ngFor="let preset of presets">{{ preset.name }}</button>
+                    </select-item>
+                </div>
+                <div class="timer-input-container" (input)="onInput($event)">
+                    <input type="text" class="upper-block-digit timer-input"
+                        data-input="hoursDisplay"
+                        [value]="hoursDisplay" #hoursInput>
+                    <span class="upper-block-sep">h</span>
+                    <input type="text" class="upper-block-digit timer-input"
+                        data-input="minutesDisplay"
+                        [value]="minutesDisplay" #minutesInput>
+                    <span class="upper-block-sep">m</span>
+                    <input type="text" class="upper-block-digit timer-input"
+                        data-input="secondsDisplay"
+                        [value]="secondsDisplay">
+                    <span class="upper-block-sep">s</span>
+                </div>
+            </ng-template>
+        </div>
+        <div class="upper-block-group timer-footer">
+            <button class="btn btn-text upper-block-item-control-btn"
+                (click)="toggle()">{{ running ? "Stop" : "Start" }}</button>
+            <button class="btn btn-text upper-block-item-control-btn"
+                (click)="reset()">Reset</button>
+            <button class="btn btn-text upper-block-item-control-btn"
+                (click)="showPresets()" *ngIf="!running">Presets</button>
+            <div class="timer-footer-right-btns">
+                <ng-container *ngIf="running">
+                    <button class="btn btn-icon" (click)="expandSize()" title="Expand">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#expand"></use>
+                        </svg>
+                    </button>
+                    <button class="btn btn-icon" (click)="enterFullscreen()" title="Enter fullscreen">
+                        <svg viewBox="0 0 24 24">
+                            <use href="#fullscreen"></use>
+                        </svg>
+                    </button>
+                </ng-container>
+                <button class="btn btn-icon" title="Toggle alarm"
+                    (click)="toggleAlarm()">
+                    <svg viewBox="0 0 24 24">
+                        <use attr.href="#bell{{alarmOn ? '': '-off'}}"></use>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </ng-template>
 </div>

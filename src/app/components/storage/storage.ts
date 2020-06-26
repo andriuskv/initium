@@ -26,11 +26,15 @@ export class Storage {
     {
         name: "countdowns",
         fullName: "Countdowns"
+    },
+    {
+        name: "timer",
+        fullName: "Timer presets"
     }];
     maxStoragePerItem = chrome.storage.sync.QUOTA_BYTES_PER_ITEM;
     maxStorage = this.items.length * this.maxStoragePerItem;
-    maxStorageFormated = this.formatBytes(this.maxStorage);
-    usedStorageFormated;
+    maxStorageFormatted = this.formatBytes(this.maxStorage);
+    usedStorageFormatted;
     usedStorage = 0;
     usedStorageInPercent = 0;
     dashoffset = 1000;
@@ -68,7 +72,7 @@ export class Storage {
     updateUsage() {
         const usageRatio = this.usedStorage / this.maxStorage;
         this.usedStorageInPercent = Math.ceil(usageRatio * 100);
-        this.usedStorageFormated = this.formatBytes(this.usedStorage);
+        this.usedStorageFormatted = this.formatBytes(this.usedStorage);
 
         // 1000 = empty circle, 717 = full circle
         this.dashoffset = 1000 - 283 * usageRatio;

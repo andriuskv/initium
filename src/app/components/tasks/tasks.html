@@ -108,7 +108,7 @@
             <ul class="task-form-labels" *ngIf="formLabels.length">
                 <li class="task-form-label" *ngFor="let label of formLabels">
                     <button type="button" class="btn btn-icon task-form-label-btn"
-                        [title]="label.flagged ? 'Unselect label' : 'Select label'"
+                        [title]="label.flagged ? 'Deselect label' : 'Select label'"
                         [class.flagged]="label.flagged" (click)="flagLabel(label)">
                         <div class="task-label-color" [style.backgroundColor]="label.color"></div>
                         <div class="task-label-title">{{ label.title }}</div>
@@ -119,6 +119,7 @@
         </form>
         <form class="task-form" (submit)="handleFormSubmit($event)">
             <div class="task-form-group-select-container" *ngIf="groups.length > 1">
+                <div class="task-form-group-select-input-name">Groups</div>
                 <select-item (onSelectedItem)="selectFormGroup($event)" [selected]="formTask.groupId">
                     <button type="button" class="btn btn-text select-item-list-item" [attr.data-id]="group.id"
                         *ngFor="let group of groups">{{ group.id === "unorganized" ? "" : group.name }}</button>
@@ -166,9 +167,7 @@
                             <div class="tasks-groups-count">{{ group.tasks.length }}</div>
                             <div class="tasks-groups-title">{{ group.name }}</div>
                             <dropdown [id]="group.id" class="tasks-groups-dropdown" [className]="{
-                                toggle: 'btn-icon-alt',
-                                container: 'tasks-groups-dropdown-container',
-                                main: 'tasks-groups-dropdown-main'
+                                toggle: 'btn-icon-alt'
                             }" [needWorkaround]="true">
                                 <button class="btn btn-icon dropdown-item" (click)="enableGroupRename(group)">
                                     <svg viewBox="0 0 24 24">

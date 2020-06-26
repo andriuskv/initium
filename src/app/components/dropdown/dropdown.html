@@ -1,4 +1,4 @@
-<div [id]="id" class="dropdown-container" [ngClass]="[className.container || '']">
+<div [id]="id" class="dropdown-container" [class.workaround]="needWorkaround" [ngClass]="[className.container || '']">
     <button class="btn btn-icon" (click)="toggleDropdown($event)" title="More" [ngClass]="[className.toggle || '']">
         <svg viewBox="0 0 24 24">
             <use href="#vertical-dots"></use>

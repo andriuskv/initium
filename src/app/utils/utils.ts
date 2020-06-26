@@ -10,8 +10,8 @@ function delay(milliseconds) {
     });
 }
 
-function getRandomString() {
-    return Math.random().toString(32).slice(2, 10);
+function getRandomString(length = 8) {
+    return Math.random().toString(32).slice(2, 2 + length);
 }
 
 function getRandomHslColor() {
