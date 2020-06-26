@@ -408,10 +408,17 @@
 
 .task-form-group-select-container {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     width: 100%;
     padding-top: 8px;
     padding-right: 4px;
+}
+
+.task-form-group-select-input-name {
+    font-weight: bold;
+    font-size: 14px;
+    margin-right: 8px;
 }
 
 .task-input {
@@ -528,11 +535,3 @@
     margin-left: auto;
 }
 
-.tasks-groups-dropdown-container {
-    position: static;
-}
-
-.tasks-groups-dropdown-main {
-    left: 100%;
-    transform: translate(calc(-50% - 12px), 4px);
-}

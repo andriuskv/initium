@@ -1,9 +1,11 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
-import { padTime } from "../../utils/utils.js";
+import { getRandomString, padTime } from "../../utils/utils.js";
+import { ChromeStorageService } from "../../services/chromeStorageService";
 
 @Component({
     selector: "timer",
-    templateUrl: "./timer.html"
+    templateUrl: "./timer.html",
+    styleUrls: ["./timer.scss"]
 })
 export class Timer {
     @ViewChild("hoursInput") hoursInput;
@@ -14,6 +16,8 @@ export class Timer {
 
     running = false;
     alarmOn = true;
+    presetsVisible = false;
+    formMessageVisible = false;
     timeout = 0;
     hours = 0;
     minutes = 0;
@@ -21,7 +25,114 @@ export class Timer {
     hoursDisplay = "00";
     minutesDisplay = "00";
     secondsDisplay = "00";
+    presets = [];
+    selectedPreset = null;
+    formPreset = null;
     alarm: HTMLAudioElement;
+
+    constructor(private chromeStorageService: ChromeStorageService) {}
+
+    ngOnInit() {
+        this.chromeStorageService.subscribeToChanges(({ timer }) => {
+            if (timer) {
+                this.presets = timer.newValue;
+            }
+        });
+        this.chromeStorageService.get("timer", ({ timer = [] }) => {
+            this.presets = timer;
+        });
+    }
+
+    selectPreset(id) {
+        const preset = this.presets.find(preset => preset.id === id);
+        this.selectedPreset = preset;
+        this.hoursDisplay = preset.hours;
+        this.minutesDisplay = preset.minutes;
+        this.secondsDisplay = preset.seconds;
+    }
+
+    showPresets() {
+        this.presetsVisible = true;
+    }
+
+    hidePresets() {
+        this.presetsVisible = false;
+    }
+
+    showPresetForm() {
+        this.formPreset = { name: "" };
+        this.resetTimerValues();
+    }
+
+    hidePresetForm() {
+        this.formPreset = null;
+
+        if (this.selectedPreset) {
+            this.hoursDisplay = this.selectedPreset.hours;
+            this.minutesDisplay = this.selectedPreset.minutes;
+            this.secondsDisplay = this.selectedPreset.seconds;
+        }
+        else {
+            this.resetTimerValues();
+        }
+    }
+
+    resetSelectedPreset() {
+        this.selectedPreset = null;
+        this.resetTimerValues();
+    }
+
+    createPreset(event) {
+        const value = event.target.elements.name.value.trim();
+
+        event.preventDefault();
+
+        if (this.hoursDisplay === "00" && this.minutesDisplay === "00" && this.secondsDisplay === "00") {
+            this.formMessageVisible = true;
+
+            window.setTimeout(() => {
+                this.formMessageVisible = false;
+            }, 6000);
+            return;
+        }
+
+        if (this.formPreset.makingEdit) {
+            const preset = this.presets[this.formPreset.index];
+            preset.name = value;
+            preset.hours = this.hoursDisplay;
+            preset.minutes = this.minutesDisplay;
+            preset.seconds = this.secondsDisplay;
+        }
+        else {
+            this.presets.unshift({
+                name: value,
+                id: getRandomString(4),
+                hours: this.hoursDisplay,
+                minutes: this.minutesDisplay,
+                seconds: this.secondsDisplay
+            });
+        }
+        this.hidePresetForm();
+        this.savePresets();
+    }
+
+    editPreset(index) {
+        const preset = this.presets[index];
+
+        this.formPreset = {
+            ...preset,
+            index,
+            makingEdit: true
+        };
+        this.hoursDisplay = padTime(preset.hours);
+        this.minutesDisplay = padTime(preset.minutes);
+        this.secondsDisplay = padTime(preset.seconds);
+    }
+
+    removePreset(index) {
+        this.presets.splice(index, 1);
+        this.savePresets();
+    }
 
     onInput({ target }) {
         const input = target.getAttribute("data-input");
@@ -148,10 +259,21 @@ export class Timer {
         clearTimeout(this.timeout);
     }
 
-    reset() {
+    resetTimerValues() {
         this.hoursDisplay = "00";
         this.minutesDisplay = "00";
         this.secondsDisplay = "00";
+    }
+
+    reset() {
+        if (this.selectedPreset) {
+            this.hoursDisplay = this.selectedPreset.hours;
+            this.minutesDisplay = this.selectedPreset.minutes;
+            this.secondsDisplay = this.selectedPreset.seconds;
+        }
+        else {
+            this.resetTimerValues();
+        }
 
         if (this.running) {
             this.running = false;
@@ -187,5 +309,9 @@ export class Timer {
 
     enterFullscreen() {
         this.fullscreen.emit(true);
+    }
+
+    savePresets() {
+        this.chromeStorageService.set({ timer: this.presets });
     }
 }

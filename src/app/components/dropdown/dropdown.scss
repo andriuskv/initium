@@ -3,6 +3,15 @@
 
 .dropdown-container {
     position: relative;
+
+    &.workaround {
+        position: static;
+
+        .dropdown {
+            left: 100%;
+            transform: translate(calc(-50% - 12px), 4px);
+        }
+    }
 }
 
 .dropdown {

@@ -1,0 +1,145 @@
+@import "../../../scss/mixins.scss";
+@import "../../../scss/variables.scss";
+
+.timer-form-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 8px 0 8px;
+}
+
+.timer-form-name-input {
+    width: 100%;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.timer-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 4px;
+    border-top: 1px solid $color-white-10;
+    font-size: 14px;
+
+    &.timer-presets-footer {
+        justify-content: space-between;
+
+        .btn {
+            margin-right: 0;
+        }
+    }
+
+    .btn:not(:last-of-type) {
+        margin-right: 8px;
+    }
+}
+
+.timer-footer-right-btns {
+    display: flex;
+    align-self: stretch;
+    margin-left: auto;
+
+    .btn-icon {
+        padding: 2px 4px;
+    }
+}
+
+.timer-form-message {
+    margin-left: 4px;
+    margin-right: auto;
+    font-size: 13px;
+    font-weight: bold;
+    color: $color-danger;
+}
+
+.timer-presets {
+    @include scrollbar;
+
+    overflow-y: auto;
+    min-height: 162px;
+    max-height: 320px;
+}
+
+.timer-preset {
+    display: flex;
+    padding: 8px 4px 8px 8px;
+    box-shadow: 0 1px 0 0 $color-white-10;
+}
+
+.timer-preset-name {
+    margin-bottom: 4px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.timer-preset-time {
+    font-weight: bold;
+    font-size: 14px;
+    color: $color-white-40;
+}
+
+.timer-preset-dropdown {
+    margin-left: auto;
+    font-size: 14px;
+}
+
+.timer-presets-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 162px;
+    font-size: 18px;
+}
+
+.timer-content.has-presets {
+    &:not(.preset-not-selected) {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .timer-input-container {
+        height: auto;
+        margin-top: auto;
+    }
+
+    .timer-time {
+        padding-top: 7px;
+        min-height: 87px;
+    }
+}
+
+.timer-preset-select {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+}
+
+.timer-preset-select-input-name {
+    font-weight: bold;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.timer-selected-preset-name {
+    display: flex;
+    align-items: center;
+    min-height: 43px;
+    font-weight: bold;
+}
+
+.timer-input-container {
+    height: 100%;
+}
+
+.timer-input {
+    width: calc(2ch + 1px);
+    height: 100%;
+    padding: 0;
+    border: none;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 1px 0 0 #359ee9;
+    }
+}
