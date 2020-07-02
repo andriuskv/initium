@@ -96,16 +96,16 @@ export class Twitter {
         };
     }
 
-    getTweetEnitity(entity) {
+    getTweetEntity(entity) {
         return entity?.length ? entity : [];
     }
 
     getTweetEntities(entities) {
         return {
-            hashtags: this.getTweetEnitity(entities.hashtags),
-            userMentions: this.getTweetEnitity(entities.user_mentions),
-            urls: this.getTweetEnitity(entities.urls),
-            media: this.getTweetEnitity(entities.media)
+            hashtags: this.getTweetEntity(entities.hashtags),
+            userMentions: this.getTweetEntity(entities.user_mentions),
+            urls: this.getTweetEntity(entities.urls),
+            media: this.getTweetEntity(entities.media)
         };
     }
 
@@ -209,7 +209,7 @@ export class Twitter {
     getTweetContent(tweet) {
         const screenName = tweet.user.screen_name;
         const userUrl = `https://twitter.com/${screenName}`;
-        const media = tweet.extended_entities && tweet.extended_entities.media;
+        const media = tweet.extended_entities?.media;
         const entities = this.getTweetEntities(Object.assign(tweet.entities, { media }));
 
         return {

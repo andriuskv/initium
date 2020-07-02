@@ -1,0 +1,69 @@
+<ng-container *ngIf="!disabled && current">
+    <div class="weather" [class.hidden]="moreWeatherVisible" [title]="current.description">
+        <button class="btn btn-text weather-more-btn" (click)="showMoreWeather()" title="More">
+            <svg viewBox="0 0 24 24">
+                <use href="#expand"></use>
+            </svg>
+        </button>
+        <div class="weather-main">
+            <div class="weather-temperature-icon-container">
+                <div class="weather-temperature">
+                    <span class="weather-temperature-value">{{ current.temperature }}</span>
+                    <span class="weather-temperature-units">°{{ units }}</span>
+                </div>
+                <img src="{{ current.icon }}" alt="" width="80px" height="80px">
+            </div>
+            <div class="weather-city">{{ current.city }}</div>
+        </div>
+    </div>
+    <div class="container weather-more" [class.visible]="moreWeatherVisible" [style.zIndex]="zIndex + 1"
+        (click)="handleClickOnContainer()">
+        <div class="weather-transition-target">
+            <div class="weather-more-current">
+                <img src="{{ current.icon }}" class="weather-more-current-icon" alt="" width="100px" height="100px">
+                <div class="weather-more-current-main">
+                    <div class="weather-more-current-city">{{ current.city }}</div>
+                    <div class="weather-more-current-main-info">
+                        <div class="weather-more-current-temperature">
+                            <div class="weather-more-current-temperature-value">{{ current.temperature }}</div>
+                            <div class="weather-more-current-temperature-units">°{{ units }}</div>
+                        </div>
+                        <div class="weather-more-current-secondary">
+                            <div class="weather-more-current-secondary-item">
+                                <span class="weather-more-current-secondary-name">Humidity:</span>
+                                <span>{{ current.humidity }}%</span>
+                            </div>
+                            <div class="weather-more-current-secondary-item">
+                                <span class="weather-more-current-secondary-name">Wind:</span>
+                                <span class="weather-more-current-wind">
+                                    <span>{{ current.wind.speed }} m/s</span>
+                                    <svg viewBox="0 0 24 24" class="weather-more-current-wind-icon"
+                                        [style.--degrees]="current.wind.direction.degrees">
+                                        <title>{{ current.wind.direction.name }}</title>
+                                        <use href="#arrow-up"></use>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weather-more-current-description">{{ current.description }}</div>
+                </div>
+            </div>
+            <div class="weather-more-hourly">
+                <div class="weather-more-hourly-item" *ngFor="let item of hourly">
+                    <div class="weather-more-hourly-time">{{ item.time }}</div>
+                    <img src="{{ item.icon }}" alt="" width="64px" height="64px">
+                    <div class="weather-more-hourly-temperature">
+                        <div>{{ item.temperature }}</div>
+                        <div class="weather-more-hourly-temperature-units">°{{ units }}</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-icon weather-more-hide-btn" (click)="hideMoreWeather()" title="Hide">
+                <svg viewBox="0 0 24 24">
+                    <use href="#cross"></use>
+                </svg>
+            </button>
+        </div>
+    </div>
+</ng-container>
