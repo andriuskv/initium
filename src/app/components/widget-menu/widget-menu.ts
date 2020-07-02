@@ -12,7 +12,7 @@ export class WidgetMenu {
     @Input() countdownIndicatorStatus;
 
     isClosing = false;
-    reminderInicatorVisible = false;
+    reminderIndicatorVisible = false;
     zIndex = 0;
     item: any = {};
 
@@ -45,6 +45,6 @@ export class WidgetMenu {
     }
 
     showReminderIndicator(visible) {
-        this.reminderInicatorVisible = visible;
+        this.reminderIndicatorVisible = visible;
     }
 }

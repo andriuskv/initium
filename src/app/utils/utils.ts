@@ -14,6 +14,20 @@ function getRandomString(length = 8) {
     return Math.random().toString(32).slice(2, 2 + length);
 }
 
+function capitalizeString(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
+
+function convertTemperature(temp, units) {
+    if (units === "F") {
+        temp = temp * 1.8 + 32;
+    }
+    else {
+        temp = (temp - 32) / 1.8;
+    }
+    return Math.round(temp);
+}
+
 function getRandomHslColor() {
     return {
         hue: Math.floor(Math.random() * 360) + 1,
@@ -48,6 +62,8 @@ export {
     dispatchCustomEvent,
     delay,
     getRandomString,
+    capitalizeString,
+    convertTemperature,
     getRandomHslColor,
     getRandomHexColor,
     padTime,

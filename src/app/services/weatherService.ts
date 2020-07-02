@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { capitalizeString, convertTemperature } from "../utils/utils";
 
 @Injectable({
     providedIn: "root"
@@ -6,6 +7,10 @@ import { Injectable } from "@angular/core";
 export class WeatherService {
     fetchWeather(params) {
         return fetch(`${process.env.SERVER_URL}/owm?${params}`).then(res => res.json());
+    }
+
+    fetchHourlyWeather({ lat, lon }) {
+        return this.fetchWeather(`type=hourly&lat=${lat}&lon=${lon}`);
     }
 
     getWeatherWithCityName(name) {
@@ -23,7 +28,7 @@ export class WeatherService {
                         resolve({
                             name: "weather",
                             type: "geo",
-                            message: "Access to geolocation is not permited."
+                            message: "Access to geolocation is not permitted."
                         });
                     }
                 },
@@ -31,23 +36,76 @@ export class WeatherService {
         });
     }
 
-    getWeatherWithCoords({ lat, lon }: any) {
+    getWeatherWithCoords({ lat, lon }) {
         return this.fetchWeather(`lat=${lat}&lon=${lon}`);
     }
 
-    parseWeather(data) {
+    getWindDirection(degrees) {
+        let name = "";
+
+        if (degrees > 337.5 && degrees <= 22.5) {
+            name = "N";
+        }
+        else if (degrees > 22.5 && degrees <= 67.5) {
+            name = "NE";
+        }
+        else if (degrees > 67.5 && degrees <= 112.5) {
+            name = "E";
+        }
+        else if (degrees > 112.5 && degrees <= 157.5) {
+            name = "SE";
+        }
+        else if (degrees > 157.5 && degrees <= 202.5) {
+            name = "S";
+        }
+        else if (degrees > 202.5 && degrees <= 247.5) {
+            name = "SW";
+        }
+        else if (degrees > 247.5 && degrees <= 292.5) {
+            name = "W";
+        }
+        else {
+            name = "NW";
+        }
+        return { name, degrees };
+    }
+
+    parseWeather(data, units) {
+        const [weather] = data.weather;
+
         return {
             city: data.name,
-            temp: data.main.temp,
-            description: data.weather[0].description,
-            icon: {
-                id: data.weather[0].id,
-                code: data.weather[0].icon
-            }
+            temperature: units === "C" ?
+                Math.round(data.main.temp) :
+                convertTemperature(data.main.temp, units),
+            humidity: data.main.humidity,
+            description: capitalizeString(weather.description),
+            coords: data.coord,
+            wind: {
+                speed: data.wind.speed,
+                direction: this.getWindDirection(data.wind.deg),
+            },
+            icon: `http://openweathermap.org/img/wn/${weather.icon}@2x.png`
         };
     }
 
-    async getWeather(cityName, useGeo) {
+    async getHourlyWeather({ coords, units }) {
+        try {
+            const data = await this.fetchHourlyWeather(coords);
+
+            return data.hourly.map(item => ({
+                time: `${new Date(item.dt * 1000).getHours()}:00`,
+                temperature: units === "C" ?
+                    Math.round(item.temp) :
+                    convertTemperature(item.temp, units),
+                icon: `http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`
+            }));
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async getWeather({ cityName, useGeo, units }) {
         if (useGeo) {
             const coords: any = await this.getCoords();
 
@@ -55,7 +113,7 @@ export class WeatherService {
                 return coords;
             }
             const data = await this.getWeatherWithCoords(coords);
-            return this.parseWeather(data);
+            return this.parseWeather(data, units);
         }
         else if (cityName) {
             const data = await this.getWeatherWithCityName(cityName);
@@ -70,7 +128,7 @@ export class WeatherService {
             else if (data.cod === "500") {
                 return;
             }
-            return this.parseWeather(data);
+            return this.parseWeather(data, units);
         }
     }
 }
