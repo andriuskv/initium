@@ -31,20 +31,19 @@
         </div>
         <div class="tasks-main task-transition-target" [class.dialog-visible]="removingItems.tasks.items.length">
             <div class="tasks-groups-container">
-                <p class="tasks-notice" *ngIf="!groups[0]?.tasks.length || removingItems.tasks.willBeEmpty; else elseBlock3">You have no tasks</p>
+                <p class="tasks-notice" *ngIf="!hasTasks || removingItems.tasks.willBeEmpty; else elseBlock3">You have no tasks</p>
                 <ng-template #elseBlock3>
                     <div *ngFor="let group of groups; let i = index">
-                        <div class="tasks-groups-item" *ngIf="i !== 0 || defaultGroupVisible">
+                        <button class="btn btn-icon tasks-groups-item tasks-groups-item-toggle-btn"
+                            *ngIf="i !== 0 || defaultGroupVisible"
+                            (click)="toggleGroupVisibility(group)"
+                            title="{{ group.expanded ? 'Collapse group' : 'Expand group' }}">
                             <div class="tasks-groups-count">{{ group.tasks.length }}</div>
                             <div class="tasks-groups-title">{{ group.name }}</div>
-                            <button class="btn btn-icon tasks-groups-dropdown" *ngIf="group.tasks.length > 0"
-                                (click)="toggleGroupVisibility(group)"
-                                title="{{ group.expanded ? 'Collapse group' : 'Expand group' }}">
-                                <svg viewBox="0 0 24 24">
-                                    <use attr.href="#chevron-{{ group.expanded ? 'down' : 'up'}}"></use>
-                                </svg>
-                            </button>
-                        </div>
+                            <svg viewBox="0 0 24 24" class="tasks-groups-icon" *ngIf="group.tasks.length > 0">
+                                <use attr.href="#chevron-{{ group.expanded ? 'down' : 'up'}}"></use>
+                            </svg>
+                        </button>
                         <ul cdkDropList (cdkDropListDropped)="handleTaskDrop($event, group)" *ngIf="group.expanded">
                             <li class="task" [class.removing]="task.removing" *ngFor="let task of group.tasks; let j = index" cdkDrag>
                                 <div class="tasks-drag-placeholder" *cdkDragPlaceholder></div>
@@ -75,7 +74,7 @@
                                         </li>
                                     </ul>
                                     <button class="btn btn-icon btn-icon-alt task-edit-btn" title="Edit task"
-                                        (click)="editTask(group, j)" [disabled]="task.removing">
+                                        (click)="editTask(i, j)" [disabled]="task.removing">
                                         <svg class="task-edit-btn-icon" viewBox="0 0 24 24">
                                             <use href="#edit"></use>
                                         </svg>
@@ -166,7 +165,7 @@
                         <ng-template #elseBlock>
                             <div class="tasks-groups-count">{{ group.tasks.length }}</div>
                             <div class="tasks-groups-title">{{ group.name }}</div>
-                            <dropdown [id]="group.id" class="tasks-groups-dropdown" [className]="{
+                            <dropdown [id]="group.id" [className]="{
                                 toggle: 'btn-icon-alt'
                             }" [needWorkaround]="true">
                                 <button class="btn btn-icon dropdown-item" (click)="enableGroupRename(group)">
