@@ -42,7 +42,7 @@
     "node-sass": "^4.14.1",
     "postcss-loader": "^3.0.0",
     "raw-loader": "^4.0.1",
-    "sass-loader": "^8.0.2",
+    "sass-loader": "^9.0.0",
     "style-loader": "^1.2.1",
     "terser-webpack-plugin": "^3.0.6",
     "to-string-loader": "^1.1.6",

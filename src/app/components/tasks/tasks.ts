@@ -18,7 +18,7 @@ interface Task {
     displayText: string;
     removing?: boolean;
     subtasks: Subtask[];
-    labels?: Label[];
+    labels: Label[];
 }
 
 interface Subtask {
@@ -46,6 +46,7 @@ export class Tasks {
     willBeEmpty = false;
     resizingEnabled = false;
     defaultGroupVisible = false;
+    hasTasks = false;
     visibleItem = "list";
     taskSaveTimeout = 0;
     itemRemoveTimeout = 0;
@@ -92,6 +93,7 @@ export class Tasks {
             else {
                 this.groups = this.addDisplayText(tasks);
             }
+            this.checkTaskCount();
         });
     }
 
@@ -227,13 +229,13 @@ export class Tasks {
     }
 
     selectFormGroup(groupId) {
-        this.formTask.selectedGroupId = groupId;
+        this.formTask.groupId = groupId;
     }
 
     handleFormSubmit(event) {
         const { elements } = event.target;
         const text = elements.text.value.trim();
-        const groupId = this.formTask.selectedGroupId || "unorganized";
+        const groupId = this.formTask.groupId || "unorganized";
         const { tasks } = this.groups.find(({ id }) => id === groupId);
         const task: Task = {
             text,
@@ -258,19 +260,21 @@ export class Tasks {
         else {
             tasks.unshift(task);
         }
+        this.checkTaskCount();
         this.saveTasks();
         this.hideForm();
         event.preventDefault();
     }
 
-    editTask(group, index) {
-        const { text, subtasks } = group.tasks[index];
+    editTask(groupIndex, taskIndex) {
+        const group = this.groups[groupIndex];
+        const { text, subtasks } = group.tasks[taskIndex];
 
         this.formColor = getRandomHexColor();
-        this.formLabels = this.getFormLabels(index);
+        this.formLabels = this.getFormLabels(groupIndex, taskIndex);
         this.formTask = {
-            index,
             text,
+            index: taskIndex,
             groupId: group.id,
             makingEdit: true,
             subtasks: [...subtasks]
@@ -300,7 +304,7 @@ export class Tasks {
         this.groups[index].removing = true;
         this.removingItems.groups.willBeEmpty = this.getItemsNotBeingRemoved(this.groups).length === 1;
         this.removingItems.groups.items.push(index);
-        this.scheduleTaskRemoval();
+        this.scheduleItemRemoval();
     }
 
     removeTask(groupIndex, taskIndex) {
@@ -314,24 +318,35 @@ export class Tasks {
                 break;
             }
         }
-        this.scheduleTaskRemoval();
+        this.scheduleItemRemoval();
     }
 
     removeSubtask(groupIndex, taskIndex, subtaskIndex) {
         this.groups[groupIndex].tasks[taskIndex].subtasks[subtaskIndex].removing = true;
         this.removingItems.tasks.items.push({ groupIndex, taskIndex, subtaskIndex });
 
-        this.scheduleTaskRemoval();
+        this.scheduleItemRemoval();
     }
 
-    scheduleTaskRemoval() {
+    scheduleItemRemoval() {
         clearTimeout(this.itemRemoveTimeout);
         this.itemRemoveTimeout = window.setTimeout(() => {
-            this.removeCompletedTasks();
+            this.removeCompletedItems();
         }, 8000);
     }
 
-    removeCompletedTasks() {
+    checkTaskCount() {
+        this.hasTasks = false;
+
+        for (const group of this.groups) {
+            if (group.tasks.length) {
+                this.hasTasks = true;
+                break;
+            }
+        }
+    }
+
+    removeCompletedItems() {
         this.removingItems = this.resetRemovingItems();
         this.groups = this.getItemsNotBeingRemoved(this.groups);
 
@@ -341,6 +356,7 @@ export class Tasks {
                 return !task.removing;
             });
         }
+        this.checkTaskCount();
         this.saveTasks();
     }
 
@@ -364,8 +380,8 @@ export class Tasks {
         this.removingItems = this.resetRemovingItems();
     }
 
-    getFormLabels(index = -1) {
-        const taskLabels = this.getUniqueTaskLabels(index);
+    getFormLabels(groupIndex = -1, taskIndex = -1) {
+        const taskLabels = this.getUniqueTaskLabels(groupIndex, taskIndex);
         const labels = this.oldLabels.reduce((labels, label) => {
             if (!this.findLabel(taskLabels, label)) {
                 delete label.flagged;
@@ -391,27 +407,28 @@ export class Tasks {
         }, []);
     }
 
-    getUniqueTaskLabels(taskIndex = -1) {
+    getUniqueTaskLabels(groupIndex, taskIndex) {
         let labels: Label[] = [];
 
         for (const group of this.groups) {
-            const groupLabels = group.tasks.reduce((labels, task, index) => {
-                if (task.labels) {
-                    task.labels.forEach(label => {
-                        const foundLabel = this.findLabel(labels, label);
-
-                        if (!foundLabel) {
-                            labels.push({ ...label, flagged: taskIndex === index });
-                        }
-                        else if (taskIndex === index) {
-                            foundLabel.flagged = true;
-                        }
-                    });
+            for (const task of group.tasks) {
+                for (const label of task.labels) {
+                    if (!this.findLabel(labels, label)) {
+                        labels.push({ ...label });
+                    }
                 }
-                return labels;
-            }, [] as Label[]);
+            }
+        }
 
-            labels = labels.concat(groupLabels);
+        if (groupIndex > -1) {
+            const groupLabels = this.groups[groupIndex].tasks[taskIndex].labels;
+
+            labels = labels.map(label => {
+                if (this.findLabel(groupLabels, label)) {
+                    label.flagged = true;
+                }
+                return label;
+            });
         }
         return labels;
     }
@@ -454,7 +471,8 @@ export class Tasks {
         const name = event.target.elements.name.value;
         const id = getRandomString();
 
-        this.groups.push({
+        // Insert new group after group that is hidden
+        this.groups.splice(1, 0, {
             id,
             name,
             expanded: true,
