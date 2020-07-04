@@ -1,10 +1,13 @@
 import { Injectable } from "@angular/core";
 import { capitalizeString, convertTemperature } from "../utils/utils";
+import { TimeDateService } from "./timeDateService";
 
 @Injectable({
     providedIn: "root"
 })
 export class WeatherService {
+    constructor(private timeDateService: TimeDateService) {}
+
     fetchWeather(params) {
         return fetch(`${process.env.SERVER_URL}/owm?${params}`).then(res => res.json());
     }
@@ -89,17 +92,23 @@ export class WeatherService {
         };
     }
 
-    async getHourlyWeather({ coords, units }) {
+    async getHourlyWeather({ coords, units, timeFormat }) {
         try {
             const data = await this.fetchHourlyWeather(coords);
 
-            return data.hourly.map(item => ({
-                time: `${new Date(item.dt * 1000).getHours()}:00`,
-                temperature: units === "C" ?
-                    Math.round(item.temp) :
-                    convertTemperature(item.temp, units),
-                icon: `http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`
-            }));
+            return data.hourly.map(item => {
+                const forecastHours = new Date(item.dt * 1000).getHours();
+                const { hours, period } = this.timeDateService.getTime({ hours: forecastHours }, timeFormat);
+
+                return {
+                    forecastHours,
+                    time: `${hours}:00${period ? ` ${period}` : ""}`,
+                    temperature: units === "C" ?
+                        Math.round(item.temp) :
+                        convertTemperature(item.temp, units),
+                    icon: `http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`
+                };
+            });
         } catch (e) {
             console.log(e);
         }

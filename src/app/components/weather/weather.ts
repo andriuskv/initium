@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { convertTemperature } from "../../utils/utils";
 import { SettingService } from "../../services/settingService";
 import { WeatherService } from "../../services/weatherService";
+import { TimeDateService } from "../../services/timeDateService";
 import { ZIndexService } from "../../services/zIndexService";
 
 @Component({
@@ -17,6 +18,7 @@ export class Weather {
     timeout = 0;
     hourlyTimeout = 0;
     lastHourlyWeatherUpdate = 0;
+    timeFormat = 24;
     units = "C";
     cityName = "";
     current = null;
@@ -25,16 +27,19 @@ export class Weather {
     constructor(
         private settingService: SettingService,
         private weatherService: WeatherService,
+        private timeDateService: TimeDateService,
         private zIndexService: ZIndexService
     ) {}
 
     ngOnInit() {
         const { disabled, cityName, units, useGeo } = this.settingService.getSetting("weather");
+        const { format } = this.settingService.getSetting("time");
 
         this.disabled = disabled;
         this.cityName = cityName;
         this.units = units;
         this.useGeo = useGeo;
+        this.timeFormat = format;
 
         if (!disabled && (cityName || useGeo)) {
             this.scheduleWeatherUpdate();
@@ -42,8 +47,19 @@ export class Weather {
         this.settingService.subscribeToSettingChanges(this.changeHandler.bind(this));
     }
 
-    changeHandler({ weather }) {
-        if (!weather) {
+    changeHandler({ weather, time }) {
+        if (time) {
+            if (typeof time.format === "number") {
+                this.timeFormat = time.format;
+                this.hourly = this.hourly.map(item => {
+                    const { hours, period } = this.timeDateService.getTime({ hours: item.forecastHours }, time.format);
+                    item.time = `${hours}:00${period ? ` ${period}` : ""}`
+                    return item;
+                });
+            }
+            return;
+        }
+        else if (!weather) {
             return;
         }
         const { disabled, cityName, units, useGeo } = weather;
@@ -116,7 +132,8 @@ export class Weather {
     async getHourlyWeather() {
         const data = await this.weatherService.getHourlyWeather({
             coords: this.current.coords,
-            units: this.units
+            units: this.units,
+            timeFormat: this.timeFormat
         });
         this.hourly = data || this.hourly;
         this.lastHourlyWeatherUpdate = Date.now();
