@@ -4,7 +4,7 @@ import { Injectable } from "@angular/core";
   providedIn: "root"
 })
 export class TimeDateService {
-    getTime({ hours, minutes }, format) {
+    getTime({ hours, minutes = 0 as number | string }, format) {
         let period = "";
 
         if (format === 12) {
