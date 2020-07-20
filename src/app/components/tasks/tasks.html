@@ -14,7 +14,7 @@
                 </svg>
                 <span>Add a task</span>
             </button>
-            <dropdown [id]="'tasks-header-dropdown'">
+            <dropdown>
                 <button class="btn btn-icon dropdown-item" (click)="showItem('groups')">
                     <svg viewBox="0 0 24 24">
                         <use href="#menu"></use>
@@ -37,6 +37,7 @@
                         <button class="btn btn-icon tasks-groups-item tasks-groups-item-toggle-btn"
                             *ngIf="i !== 0 || defaultGroupVisible"
                             (click)="toggleGroupVisibility(group)"
+                            [disabled]="group.tasks.length > 0"
                             title="{{ group.expanded ? 'Collapse group' : 'Expand group' }}">
                             <div class="tasks-groups-count">{{ group.tasks.length }}</div>
                             <div class="tasks-groups-title">{{ group.name }}</div>
@@ -165,8 +166,8 @@
                         <ng-template #elseBlock>
                             <div class="tasks-groups-count">{{ group.tasks.length }}</div>
                             <div class="tasks-groups-title">{{ group.name }}</div>
-                            <dropdown [id]="group.id" [className]="{
-                                toggle: 'btn-icon-alt'
+                            <dropdown [id]="group.id" [props]="{
+                                toggle: { className: 'btn-icon-alt' }
                             }" [needWorkaround]="true">
                                 <button class="btn btn-icon dropdown-item" (click)="enableGroupRename(group)">
                                     <svg viewBox="0 0 24 24">

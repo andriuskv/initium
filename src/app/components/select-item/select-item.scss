@@ -9,8 +9,9 @@
     position: relative;
     justify-content: flex-start;
     width: 120px;
-    min-height: 27px;
+    min-height: 24px;
     padding: 4px 4px 4px 8px;
+    line-height: 1;
 }
 
 .select-item-list-toggle-btn-text {
@@ -23,7 +24,7 @@
 
 .select-item-list-toggle-btn-icon {
     position: absolute;
-    top: 4px;
+    top: 2px;
     right: 4px;
 }
 
@@ -44,7 +45,7 @@
 .select-item-list-item {
     justify-content: flex-start;
     width: 100%;
-    min-height: 27px;
+    min-height: 24px;
     padding: 4px 8px;
     white-space: nowrap;
     font-size: 12px;

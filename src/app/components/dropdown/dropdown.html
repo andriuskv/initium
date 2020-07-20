@@ -1,10 +1,12 @@
-<div [id]="id" class="dropdown-container" [class.workaround]="needWorkaround" [ngClass]="[className.container || '']">
-    <button class="btn btn-icon" (click)="toggleDropdown($event)" title="More" [ngClass]="[className.toggle || '']">
+<div [id]="id" class="dropdown-container" [class.workaround]="needWorkaround">
+    <button class="btn btn-icon" (click)="toggleDropdown($event)"
+        [title]="[props?.toggle?.title || 'More']"
+        [ngClass]="[props?.toggle?.className || '']">
         <svg viewBox="0 0 24 24">
-            <use href="#vertical-dots"></use>
+            <use attr.href="#{{ props?.toggle?.iconId ? props.toggle.iconId : 'vertical-dots' }}"></use>
         </svg>
     </button>
-    <div class="container dropdown" *ngIf="visible" [ngClass]="[className.main || '']">
+    <div class="container dropdown" *ngIf="visible" [ngClass]="[props?.main?.className || '']">
         <ng-content></ng-content>
     </div>
 </div>

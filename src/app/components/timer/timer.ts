@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
 import { getRandomString, padTime } from "../../utils/utils.js";
 import { ChromeStorageService } from "../../services/chromeStorageService";
+import { SettingService } from "../../services/settingService";
 
 @Component({
     selector: "timer",
@@ -18,6 +19,7 @@ export class Timer {
     alarmOn = true;
     presetsVisible = false;
     formMessageVisible = false;
+    presetNameHidden = false;
     timeout = 0;
     hours = 0;
     minutes = 0;
@@ -30,7 +32,7 @@ export class Timer {
     formPreset = null;
     alarm: HTMLAudioElement;
 
-    constructor(private chromeStorageService: ChromeStorageService) {}
+    constructor(private chromeStorageService: ChromeStorageService, private settingService: SettingService) {}
 
     ngOnInit() {
         this.chromeStorageService.subscribeToChanges(({ timer }) => {
@@ -41,6 +43,14 @@ export class Timer {
         this.chromeStorageService.get("timer", ({ timer = [] }) => {
             this.presets = timer;
         });
+    }
+
+    ngAfterViewInit() {
+        const { presetNameHidden } = this.settingService.getSetting("timer") || {};
+
+        if (typeof presetNameHidden === "boolean") {
+            this.presetNameHidden = presetNameHidden;
+        }
     }
 
     selectPreset(id) {
@@ -57,6 +67,16 @@ export class Timer {
 
     hidePresets() {
         this.presetsVisible = false;
+    }
+
+    togglePresetNameVisibility() {
+        this.presetNameHidden = !this.presetNameHidden;
+
+        this.settingService.updateSetting({
+            timer: {
+                presetNameHidden: this.presetNameHidden
+            }
+        });
     }
 
     showPresetForm() {
