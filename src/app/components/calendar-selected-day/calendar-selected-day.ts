@@ -30,7 +30,7 @@ export class CalendarSelectedDay {
     dateString = "";
     rangeMessage = this.FORMAT_ERROR;
     timePattern = "";
-    occurences = "";
+    occurrences = "";
     range: any = {
         from: {
             string: ""
@@ -72,7 +72,7 @@ export class CalendarSelectedDay {
         this.isGapInputValid = true;
 
         this.resetRange();
-        this.resetOccurencesInput();
+        this.resetOccurrencesInput();
     }
 
     toggleRange() {
@@ -87,7 +87,7 @@ export class CalendarSelectedDay {
         this.isRepeatEnabled = !this.isRepeatEnabled;
 
         if (!this.isRepeatEnabled) {
-            this.resetOccurencesInput();
+            this.resetOccurrencesInput();
         }
     }
 
@@ -205,11 +205,11 @@ export class CalendarSelectedDay {
         }
     }
 
-    resetOccurencesInput() {
+    resetOccurrencesInput() {
         this.repeatCount = 0;
         this.isRepeatCountInputEnabled = false;
         this.isRepeatCountInputValid = false;
-        this.occurences = "";
+        this.occurrences = "";
     }
 
     enableRepeatCountInput() {
@@ -220,7 +220,7 @@ export class CalendarSelectedDay {
         this.isRepeatCountInputValid = target.validity.valid;
 
         if (this.isRepeatCountInputValid) {
-            this.occurences = target.value;
+            this.occurrences = target.value;
             this.repeatCount = parseInt(target.value, 10);
         }
     }

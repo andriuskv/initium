@@ -107,7 +107,7 @@
                 <div>Ends</div>
                 <label class="reminder-form-row">
                     <input type="radio" class="sr-only radio-input" name="ends"
-                        (click)="resetOccurencesInput()"
+                        (click)="resetOccurrencesInput()"
                         [checked]="!repeatCount">
                     <div class="radio"></div>
                     <span class="radio-label-right">Never</span>
@@ -120,10 +120,10 @@
                     <input type="text" class="input repeat-input" autocomplete="off"
                         pattern="^0*[1-9][0-9]*$"
                         (keyup)="validateRepeatCountInput($event)"
-                        [value]="occurences"
+                        [value]="occurrences"
                         [disabled]="!isRepeatCountInputEnabled"
                         [required]="isRepeatCountInputEnabled">
-                    <span>occurences</span>
+                    <span>occurrences</span>
                 </label>
                 <div class="reminder-error-message" *ngIf="isRepeatCountInputEnabled && !isRepeatCountInputValid">Please insert a whole number</div>
             </div>

@@ -32,8 +32,8 @@
                         <div class="timer-preset-name">{{ preset.name }}</div>
                         <div class="timer-preset-time">{{ preset.hours }}:{{ preset.minutes }}:{{ preset.seconds }}</div>
                     </div>
-                    <dropdown [id]="preset.id" class="timer-preset-dropdown" [className]="{
-                        toggle: 'btn-icon-alt'
+                    <dropdown [id]="preset.id" class="timer-preset-dropdown" [props]="{
+                        toggle: { className: 'btn-icon-alt' }
                     }" [needWorkaround]="true">
                         <button class="btn btn-icon dropdown-item" (click)="editPreset(i)">
                             <svg viewBox="0 0 24 24">
@@ -64,7 +64,7 @@
             [class.has-presets]="presets.length"
             [class.preset-not-selected]="running && !selectedPreset">
             <ng-container *ngIf="running; else elseBlock">
-                <h4 class="timer-selected-preset-name" *ngIf="selectedPreset">{{ selectedPreset.name }}</h4>
+                <h4 class="timer-selected-preset-name" *ngIf="selectedPreset && !presetNameHidden">{{ selectedPreset.name }}</h4>
                 <div [class.timer-time]="selectedPreset">
                     <ng-container *ngIf="hours > 0">
                         <span class="upper-block-digit">{{ hours }}</span>
@@ -87,6 +87,22 @@
                         <button type="button" class="btn btn-text select-item-list-item" [attr.data-id]="preset.id"
                             *ngFor="let preset of presets">{{ preset.name }}</button>
                     </select-item>
+                    <dropdown class="timer-settings-dropdown" [props]="{
+                        toggle: { iconId: 'settings', title: 'Settings' },
+                        main: { className: 'timer-settings-dropdown-content' }
+                    }">
+                        <h4 class="timer-settings-dropdown-title">Settings</h4>
+                        <label class="checkbox-container timer-settings-dropdown-item">
+                            <input type="checkbox" class="sr-only checkbox-input"
+                                [checked]="presetNameHidden"
+                                (click)="togglePresetNameVisibility()"
+                                (keyup.enter)="togglePresetNameVisibility()">
+                            <div class="checkbox">
+                                <div class="checkbox-tick"></div>
+                            </div>
+                            <span class="checkbox-label-right">Hide preset name</span>
+                        </label>
+                    </dropdown>
                 </div>
                 <div class="timer-input-container" (input)="onInput($event)">
                     <input type="text" class="upper-block-digit timer-input"

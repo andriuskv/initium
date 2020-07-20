@@ -238,9 +238,10 @@ textarea {
     display: none;
     width: 32%;
     height: 64%;
+    margin-bottom: 2px;
     border-right: 2px solid $color-blue;
     border-bottom: 2px solid $color-blue;
-    transform: translate(10%, -14%) rotateZ(45deg) scale(0);
+    transform: rotateZ(45deg) scale(0);
     animation-name: scale-tick-up;
     animation-duration: 0.1s;
     animation-fill-mode: forwards;
@@ -366,10 +367,10 @@ textarea {
 
 @keyframes scale-tick-up {
     from {
-        transform: translate(10%, -14%) rotateZ(45deg) scale(0);
+        transform: rotateZ(45deg) scale(0);
     }
     to {
-        transform: translate(10%, -14%) rotateZ(45deg) scale(1);
+        transform: rotateZ(45deg) scale(1);
     }
 }
 

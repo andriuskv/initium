@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input } from "@angular/core";
+import { getRandomString } from "../../utils/utils";
 
 @Component({
     selector: "dropdown",
@@ -6,8 +7,8 @@ import { Component, ElementRef, Input } from "@angular/core";
     styleUrls: ["./dropdown.scss"]
 })
 export class Dropdown {
-    @Input() id;
-    @Input() className = {};
+    @Input() id = getRandomString();
+    @Input() props = {};
     @Input() needWorkaround = false;
 
     visible = false;

@@ -124,8 +124,25 @@
 .timer-selected-preset-name {
     display: flex;
     align-items: center;
-    min-height: 43px;
+    min-height: 40px;
     font-weight: bold;
+}
+
+.timer-settings-dropdown {
+    margin-left: 8px;
+}
+
+.timer-settings-dropdown-content {
+    min-width: 240px;
+}
+
+.timer-settings-dropdown-title {
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.timer-settings-dropdown-item {
+    font-size: 14px;
 }
 
 .timer-input-container {
