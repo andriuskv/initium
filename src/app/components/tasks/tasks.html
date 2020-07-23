@@ -37,7 +37,7 @@
                         <button class="btn btn-icon tasks-groups-item tasks-groups-item-toggle-btn"
                             *ngIf="i !== 0 || defaultGroupVisible"
                             (click)="toggleGroupVisibility(group)"
-                            [disabled]="group.tasks.length > 0"
+                            [disabled]="!group.tasks.length"
                             title="{{ group.expanded ? 'Collapse group' : 'Expand group' }}">
                             <div class="tasks-groups-count">{{ group.tasks.length }}</div>
                             <div class="tasks-groups-title">{{ group.name }}</div>

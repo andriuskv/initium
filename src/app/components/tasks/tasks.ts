@@ -229,14 +229,14 @@ export class Tasks {
     }
 
     selectFormGroup(groupId) {
-        this.formTask.groupId = groupId;
+        this.formTask.selectedGroupId = groupId;
     }
 
     handleFormSubmit(event) {
         const { elements } = event.target;
         const text = elements.text.value.trim();
-        const groupId = this.formTask.groupId || "unorganized";
-        const { tasks } = this.groups.find(({ id }) => id === groupId);
+        const { groupId, selectedGroupId = "unorganized" } = this.formTask;
+        const { tasks } = this.groups.find(({ id }) => id === selectedGroupId);
         const task: Task = {
             text,
             displayText: this.replaceLink(text),
@@ -247,8 +247,8 @@ export class Tasks {
         if (this.formTask.makingEdit) {
             const { index } = this.formTask;
 
-            if (groupId !== this.formTask.groupId) {
-                const group = this.groups.find(({ id }) => id === this.formTask.groupId);
+            if (groupId !== selectedGroupId) {
+                const group = this.groups.find(({ id }) => id === groupId);
 
                 group.tasks.splice(index, 1);
                 tasks.unshift(task);

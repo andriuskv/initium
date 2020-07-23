@@ -17,9 +17,8 @@
 .select-item-list-toggle-btn-text {
     overflow: hidden;
     width: calc(100% - 20px);
-    font-size: 12px;
     text-align: left;
-    white-space: no-wrap;
+    white-space: nowrap;
 }
 
 .select-item-list-toggle-btn-icon {
@@ -48,7 +47,6 @@
     min-height: 24px;
     padding: 4px 8px;
     white-space: nowrap;
-    font-size: 12px;
 
     &:not(:last-of-type) {
         margin-bottom: 4px;
