@@ -273,10 +273,9 @@
 
 .task-edit-btn {
     position: absolute;
-    top: 12px;
-    right: 8px;
+    top: 11px;
+    right: 4px;
     opacity: 0;
-    padding: 0;
 
     &.focus-visible {
         opacity: 1;
@@ -417,7 +416,6 @@
 
 .task-form-group-select-input-name {
     font-weight: bold;
-    font-size: 14px;
     margin-right: 8px;
 }
 
@@ -517,9 +515,17 @@
     &:hover, &.focus-visible {
         background-color: transparent;
 
+        &:disabled {
+            color: $color-white;
+        }
+
         .tasks-groups-icon {
             background-color: $color-white-10;
         }
+    }
+
+    &:disabled {
+        color: $color-white;
     }
 }
 
