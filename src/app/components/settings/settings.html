@@ -52,6 +52,12 @@
     </label>
 </div>
 <div class="setting-tab" *ngIf="active === 'mainBlock'">
+    <div class="setting" [class.disabled]="settings.mainBlock.topSitesDisabled">
+        <span>Restore default top sites</span>
+        <button class="btn"
+            [disabled]="settings.mainBlock.topSitesDisabled"
+            (click)="resetSetting({ resetTopSites: true })">Reset</button>
+    </div>
     <label class="checkbox-container setting"
         [class.disabled]="settings.mainBlock.disableNavBarSetting">
         <span>Hide item bar</span>
@@ -75,12 +81,6 @@
             <div class="checkbox-tick"></div>
         </div>
     </label>
-    <div class="setting" [class.disabled]="settings.mainBlock.topSitesDisabled">
-        <span>Restore default top sites</span>
-        <button class="btn"
-            [disabled]="settings.mainBlock.topSitesDisabled"
-            (click)="resetSetting({ resetTopSites: true })">Reset</button>
-    </div>
     <label class="checkbox-container setting">
         <span>Disable top sites</span>
         <input type="checkbox" class="sr-only checkbox-input"

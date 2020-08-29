@@ -46,7 +46,7 @@ export class WeatherService {
     getWindDirection(degrees) {
         let name = "";
 
-        if (degrees > 337.5 && degrees <= 22.5) {
+        if (degrees > 337.5 || degrees <= 22.5) {
             name = "N";
         }
         else if (degrees > 22.5 && degrees <= 67.5) {
@@ -67,7 +67,7 @@ export class WeatherService {
         else if (degrees > 247.5 && degrees <= 292.5) {
             name = "W";
         }
-        else {
+        else if (degrees > 292.5 && degrees <= 337.5) {
             name = "NW";
         }
         return { name, degrees };

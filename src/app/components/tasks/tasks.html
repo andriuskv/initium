@@ -38,7 +38,7 @@
                             *ngIf="i !== 0 || defaultGroupVisible"
                             (click)="toggleGroupVisibility(group)"
                             [disabled]="!group.tasks.length"
-                            title="{{ group.expanded ? 'Collapse group' : 'Expand group' }}">
+                            title="{{ group.tasks.length > 0 ? group.expanded ? 'Collapse group' : 'Expand group' : '' }}">
                             <div class="tasks-groups-count">{{ group.tasks.length }}</div>
                             <div class="tasks-groups-title">{{ group.name }}</div>
                             <svg viewBox="0 0 24 24" class="tasks-groups-icon" *ngIf="group.tasks.length > 0">

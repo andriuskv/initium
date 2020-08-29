@@ -48,6 +48,7 @@
                 <li class="feed-list-item" *ngFor="let feed of feeds; let i = index">
                     <div class="feed-list-item-header">
                         <img [src]="feed.image" class="feed-list-item-logo"
+                            width="40px" height="40px"
                             *ngIf="!feed.logoError && feed.image"
                             (error)="feed.logoError = true" alt="">
                         <div class="feed-list-item-title-container">

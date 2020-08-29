@@ -43,7 +43,6 @@ export class Tasks {
     @ViewChild("groupNameInput") groupNameInput;
 
     visible = false;
-    willBeEmpty = false;
     resizingEnabled = false;
     defaultGroupVisible = false;
     hasTasks = false;
@@ -54,12 +53,7 @@ export class Tasks {
     removingItems = this.resetRemovingItems();
     formColor = "";
     labelMessage = "";
-    groups: Group[] = [{
-        id: "unorganized",
-        name: "Unorganized",
-        expanded: true,
-        tasks: []
-    }];
+    groups: Group[] = [this.getInitialGroup()];
     formTask = null;
     oldLabels: Label[] = JSON.parse(localStorage.getItem("old-task-labels")) || [];
     formLabels: Label[] = [];
@@ -77,16 +71,11 @@ export class Tasks {
             }
         });
         this.chromeStorageService.get("tasks", storage => {
-            const tasks = storage.tasks || [];
+            const tasks = storage.tasks && storage.tasks.length > 0 ? storage.tasks : [this.getInitialGroup()];
 
             // Migration to new format
             if (tasks[0]?.text) {
-                this.groups[0] = {
-                    id: "unorganized",
-                    name: "Unorganized",
-                    expanded: true,
-                    tasks
-                };
+                this.groups[0] = this.getInitialGroup();
                 this.groups = this.addDisplayText(this.groups);
                 this.saveTasks();
             }
@@ -107,6 +96,15 @@ export class Tasks {
         if (typeof defaultGroupVisible === "boolean") {
             this.defaultGroupVisible = defaultGroupVisible;
         }
+    }
+
+    getInitialGroup() {
+        return {
+            id: "unorganized",
+            name: "Unorganized",
+            expanded: true,
+            tasks: []
+        };
     }
 
     toggle() {
