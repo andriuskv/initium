@@ -9,9 +9,10 @@
     position: relative;
     justify-content: flex-start;
     width: 120px;
-    min-height: 24px;
+    min-height: 27px;
     padding: 4px 4px 4px 8px;
-    line-height: 1;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 .select-item-list-toggle-btn-text {
@@ -23,8 +24,9 @@
 
 .select-item-list-toggle-btn-icon {
     position: absolute;
-    top: 2px;
+    top: 50%;
     right: 4px;
+    transform: translateY(-50%);
 }
 
 .select-item-list {
@@ -47,6 +49,8 @@
     min-height: 24px;
     padding: 4px 8px;
     white-space: nowrap;
+    font-size: 14px;
+    font-weight: normal;
 
     &:not(:last-of-type) {
         margin-bottom: 4px;

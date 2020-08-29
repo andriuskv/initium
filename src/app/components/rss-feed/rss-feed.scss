@@ -147,7 +147,8 @@
 }
 
 .feed-entry-link {
-    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.4;
     word-break: break-word;
 
     &:hover, &.focus-visible {
@@ -156,13 +157,11 @@
 }
 
 .is-new-entry {
-    position: relative;
-    top: -1px;
     padding: 0 6px;
     margin-right: 6px;
-    border-radius: 4px;
+    border-radius: 99px;
     background-color: $color-blue-light;
-    color: $color-black-60;
+    color: $color-black-70;
     font-size: 12px;
     font-weight: bold;
     cursor: default;
@@ -289,8 +288,8 @@
 }
 
 .feed-list-item-logo {
-    height: 38px;
     margin-right: 8px;
+    object-fit: scale-down;
 }
 
 .feed-list-item-btn {
