@@ -93,7 +93,7 @@
                         <div class="feed-list-item-header">
                             <div class="feed-list-item-title-container">
                                 <h3 class="feed-list-item-title">{{ feed.title }}</h3>
-                                <div class="feed-list-item-url">{{ feed.url }}</div>
+                                <a href="{{ feed.url }}" class="feed-list-item-url" target="_blank">{{ feed.url }}</a>
                             </div>
                             <button class="btn btn-icon btn-icon-alt feed-list-item-btn"
                                 (click)="removeFailedToFetchFeed(i)" title="Remove">

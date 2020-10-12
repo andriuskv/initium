@@ -52,6 +52,7 @@ module.exports = function(env = {}) {
             path: path.resolve(__dirname, "dist"),
             filename: "[name].js"
         },
+        target: "web",
         resolve: {
             extensions: [".ts", ".js", ".json"],
             mainFields: ["es2015", "browser", "module", "main"],
@@ -83,13 +84,13 @@ module.exports = function(env = {}) {
             rules: [
                 {
                     test: /\.html$/,
-                    loader: "raw-loader"
+                    use: "raw-loader"
                 },
                 {
                     test: /\.s?css$/,
-                    loaders: [
-                        "to-string-loader",
-                        MiniCssExtractPlugin.loader,
+                    use: [
+                        { loader: "to-string-loader" },
+                        { loader: MiniCssExtractPlugin.loader },
                         {
                             loader: "css-loader",
                             options: {
@@ -101,13 +102,11 @@ module.exports = function(env = {}) {
                             loader: "postcss-loader",
                             options: {
                                 sourceMap: !env.prod,
-                                plugins() {
-                                    const plugins = [require("autoprefixer")()];
-
-                                    if (env.prod) {
-                                        plugins.push(require("cssnano")());
-                                    }
-                                    return plugins;
+                                postcssOptions: {
+                                    plugins: [
+                                        require("autoprefixer")(),
+                                        env.prod ? require("cssnano")() : undefined
+                                    ]
                                 }
                             }
                         },
@@ -121,7 +120,7 @@ module.exports = function(env = {}) {
                 },
                 {
                     test: /\.ts$/,
-                    loader: "@ngtools/webpack"
+                    use: "@ngtools/webpack"
                 }
             ]
         },
