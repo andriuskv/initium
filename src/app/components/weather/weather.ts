@@ -53,7 +53,7 @@ export class Weather {
                 this.timeFormat = time.format;
                 this.hourly = this.hourly.map(item => {
                     const { hours, period } = this.timeDateService.getTime({ hours: item.forecastHours }, time.format);
-                    item.time = `${hours}:00${period ? ` ${period}` : ""}`
+                    item.time = `${hours}:00${period ? ` ${period}` : ""}`;
                     return item;
                 });
             }

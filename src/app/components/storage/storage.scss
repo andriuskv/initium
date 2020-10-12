@@ -55,7 +55,7 @@
 }
 
 .storage-usage-current-visual {
-    stroke: transparentize($color-blue-light, 0.6);
+    stroke: $color-blue-light;
     stroke-dashoffset: 1000;
     animation-name: stroke;
     animation-delay: 0.4s;
@@ -96,7 +96,7 @@
 
 .storage-item-bar-inner {
     height: 100%;
-    background-color: transparentize($color-blue-light, 0.6);
+    background-color: $color-blue-light;
     transform-origin: left;
     transform: scaleX(0);
     animation-name: scale-h;
@@ -105,7 +105,7 @@
     animation-fill-mode: forwards;
 
     &.full {
-        background-color: transparentize($color-danger, 0.4);
+        background-color: $color-danger;
     }
 }
 
