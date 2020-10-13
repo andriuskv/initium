@@ -274,6 +274,7 @@ export class Tasks {
             text,
             index: taskIndex,
             groupId: group.id,
+            selectedGroupId: group.id,
             makingEdit: true,
             subtasks: [...subtasks]
         };
