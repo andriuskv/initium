@@ -18,7 +18,7 @@
     </div>
     <div class="container weather-more" [class.visible]="moreWeatherVisible" [style.zIndex]="zIndex + 1"
         (click)="handleClickOnContainer()">
-        <div class="weather-transition-target">
+        <div class="weather-transition-target weather-more-info">
             <div class="weather-more-current">
                 <img src="{{ current.icon }}" class="weather-more-current-icon" alt="" width="100px" height="100px">
                 <div class="weather-more-current-main">
@@ -50,14 +50,17 @@
                 </div>
             </div>
             <div class="weather-more-hourly">
-                <div class="weather-more-hourly-item" *ngFor="let item of hourly">
-                    <div class="weather-more-hourly-time">{{ item.time }}</div>
-                    <img src="{{ item.icon }}" alt="" width="64px" height="64px">
-                    <div class="weather-more-hourly-temperature">
-                        <div>{{ item.temperature }}</div>
-                        <div class="weather-more-hourly-temperature-units">°{{ units }}</div>
+                <img src="./assets/images/ring.svg" class="weather-more-spinner" *ngIf="firstTimeShowingMoreWeather; else elseBlock" alt="">
+                <ng-template #elseBlock>
+                    <div class="weather-more-hourly-item" *ngFor="let item of hourly">
+                        <div class="weather-more-hourly-time">{{ item.time }}</div>
+                        <img src="{{ item.icon }}" alt="" width="64px" height="64px">
+                        <div class="weather-more-hourly-temperature">
+                            <div>{{ item.temperature }}</div>
+                            <div class="weather-more-hourly-temperature-units">°{{ units }}</div>
+                        </div>
                     </div>
-                </div>
+                </ng-template>
             </div>
             <button class="btn btn-icon weather-more-hide-btn" (click)="hideMoreWeather()" title="Hide">
                 <svg viewBox="0 0 24 24">

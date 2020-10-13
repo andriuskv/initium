@@ -14,6 +14,7 @@ export class Weather {
     disabled = false;
     useGeo = false;
     moreWeatherVisible = false;
+    firstTimeShowingMoreWeather = true;
     zIndex = 0;
     timeout = 0;
     hourlyTimeout = 0;
@@ -137,6 +138,7 @@ export class Weather {
         });
         this.hourly = data || this.hourly;
         this.lastHourlyWeatherUpdate = Date.now();
+        this.firstTimeShowingMoreWeather = false;
     }
 
     scheduleHourlyWeatherUpdate() {

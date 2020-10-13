@@ -108,6 +108,12 @@
     transition: 0.2s opacity;
 }
 
+.weather-more-info {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
 .weather-more-current {
     display: flex;
     padding: 16px;
@@ -193,6 +199,11 @@
 
     overflow-x: auto;
     display: flex;
+    flex-grow: 1;
+}
+
+.weather-more-spinner {
+    margin: auto;
 }
 
 .weather-more-hourly-item {
