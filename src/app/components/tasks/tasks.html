@@ -120,7 +120,7 @@
         <form class="task-form" (submit)="handleFormSubmit($event)">
             <div class="task-form-group-select-container" *ngIf="groups.length > 1">
                 <div class="task-form-group-select-input-name">Groups</div>
-                <select-item (onSelectedItem)="selectFormGroup($event)" [selected]="formTask.groupId">
+                <select-item (onSelectedItem)="selectFormGroup($event)" [selected]="formTask.selectedGroupId">
                     <button type="button" class="btn btn-text select-item-list-item" [attr.data-id]="group.id"
                         *ngFor="let group of groups">{{ group.id === "unorganized" ? "" : group.name }}</button>
                 </select-item>
