@@ -163,10 +163,12 @@
                         <span class="is-new-entry" *ngIf="entry.newEntry">New</span>
                         <a [href]="entry.link" class="feed-entry-link" target="_blank">{{ entry.title }}</a>
                     </div>
-                    <p class="feed-description"
-                        [class.truncated]="entry.truncated"
-                        [innerHTML]="entry.description"></p>
-                    <button class="btn btn-text feed-entry-expand-btn" (click)="expandEntry(entry)">Show More</button>
+                    <ng-container *ngIf="entry.description">
+                        <p class="feed-description"
+                            [class.truncated]="entry.truncated"
+                            [innerHTML]="entry.description"></p>
+                        <button class="btn btn-text feed-entry-expand-btn" (click)="expandEntry(entry)">Show More</button>
+                    </ng-container>
                     <div class="feed-date" *ngIf="entry.date">Posted on: {{ entry.date }}</div>
                 </li>
             </ul>
