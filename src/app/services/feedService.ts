@@ -72,7 +72,7 @@ export class FeedService {
     }
 
     parseEntry(entry, newEntry = false) {
-        const content = entry.content.trim();
+        const content = entry.content ? entry.content.trim() : "";
 
         return {
             title: entry.title.trim(),
@@ -86,7 +86,7 @@ export class FeedService {
 
     getEntryLink(entry) {
         if (entry.link) {
-            return entry.link.trim();
+            return this.domSanitizer.bypassSecurityTrustUrl(entry.link.trim());
         }
         else if (entry.guid) {
             return entry.guid.trim();
