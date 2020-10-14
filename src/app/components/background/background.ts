@@ -38,8 +38,9 @@ export class Background {
     async setBackground(background) {
       if (background.type === "blob") {
         const image = await this.backgroundService.getIDBBackground(background.id);
+        background.url = URL.createObjectURL(image);
 
-        this.setBackgroundStyle({ ...background, url: URL.createObjectURL(image) });
+        this.setBackgroundStyle(background);
         this.backgroundService.resetBackgroundInfo();
       }
       else if (background.type === "url" || background.url) {
@@ -49,6 +50,7 @@ export class Background {
       }
       else if (background.type === "position") {
         this.elRef.nativeElement.style.backgroundPosition = `${background.x}% ${background.y}%`;
+        this.backgroundService.updateDownscaledBackgroundPosition(background.x, background.y);
       }
       else {
         const info = await this.backgroundService.fetchBackgroundInfo();
@@ -61,9 +63,32 @@ export class Background {
       }
     }
 
-    async setBackgroundStyle({ url, x = 50, y = 50 }) {
-      const element = this.elRef.nativeElement;
-      element.style.backgroundPosition = `${x}% ${y}%`;
-      element.style.backgroundImage = `url(${url})`;
+    async setBackgroundStyle({ url, x = 50, y = 50, id = url }) {
+      const image = new Image();
+      image.crossOrigin = "anonymous";
+
+      image.onload = () => {
+        const element = this.elRef.nativeElement;
+        element.style.backgroundPosition = `${x}% ${y}%`;
+        element.style.backgroundImage = `url(${url})`;
+
+        this.createDownscaledBackground({ id, image, x, y });
+
+        setTimeout(() => {
+          document.getElementById("downscaled-background")?.remove();
+        }, 1000);
+      };
+      image.src = url;
+    }
+
+    createDownscaledBackground({ id, image, x, y }) {
+      const background = JSON.parse(localStorage.getItem("downscaled-background")) || {};
+
+      if (background.id === id) {
+        return;
+      }
+      const dataURL = this.backgroundService.getDownscaledBackground(image);
+
+      localStorage.setItem("downscaled-background", JSON.stringify({ id, x, y, dataURL }));
     }
 }

@@ -119,4 +119,24 @@ export class BackgroundService {
   subscribeToChanges(handler) {
     return this.subject.subscribe(handler);
   }
+
+  getDownscaledBackground(image) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = Math.ceil(image.width / 10);
+    canvas.height = Math.ceil(image.height / 10);
+
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/png", 0.8);
+  }
+
+  updateDownscaledBackgroundPosition(x, y) {
+    const background = JSON.parse(localStorage.getItem("downscaled-background"));
+
+    background.x = x;
+    background.y = y;
+
+    localStorage.setItem("downscaled-background", JSON.stringify(background));
+  }
 }

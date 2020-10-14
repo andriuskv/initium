@@ -11,6 +11,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap" rel="stylesheet">
+    <style>
+        #downscaled-background {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            bottom: -12px;
+            left: -12px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(6px);
+        }
+    </style>
 </head>
 <body>
     <svg style="display: none;">
@@ -137,6 +150,8 @@
             <path d="M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z" />
         </symbol>
     </svg>
+    <div id="downscaled-background"></div>
     <app></app>
+    <script src="downscaled-background.js"></script>
 </body>
 </html>
