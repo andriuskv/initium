@@ -43,8 +43,9 @@ export class Tasks {
     @ViewChild("groupNameInput") groupNameInput;
 
     visible = false;
-    resizingEnabled = false;
+    emptyGroupsHidden = false;
     defaultGroupVisible = false;
+    resizingEnabled = false;
     hasTasks = false;
     visibleItem = "list";
     taskSaveTimeout = 0;
@@ -87,10 +88,14 @@ export class Tasks {
     }
 
     ngAfterViewInit() {
-        const { height, defaultGroupVisible } = this.settingService.getSetting("tasks") || {};
+        const { height, emptyGroupsHidden, defaultGroupVisible } = this.settingService.getSetting("tasks") || {};
 
         if (typeof height === "number") {
             this.container.nativeElement.style.setProperty("--height", `${height}px`);
+        }
+
+        if (typeof emptyGroupsHidden === "boolean") {
+            this.emptyGroupsHidden = emptyGroupsHidden;
         }
 
         if (typeof defaultGroupVisible === "boolean") {
@@ -167,8 +172,14 @@ export class Tasks {
         }, 1000);
     }
 
-    toggleResizing() {
-        this.resizingEnabled = !this.resizingEnabled;
+    toggleEmptyGroupVisibility() {
+        this.emptyGroupsHidden = !this.emptyGroupsHidden;
+
+        this.settingService.updateSetting({
+            tasks: {
+                emptyGroupsHidden: this.emptyGroupsHidden
+            }
+        });
     }
 
     toggleDefaultGroupVisibility() {
@@ -183,6 +194,10 @@ export class Tasks {
                 defaultGroupVisible: this.defaultGroupVisible
             }
         });
+    }
+
+    toggleResizing() {
+        this.resizingEnabled = !this.resizingEnabled;
     }
 
     addSubtask() {
