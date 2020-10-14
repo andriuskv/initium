@@ -34,55 +34,57 @@
                 <p class="tasks-notice" *ngIf="!hasTasks || removingItems.tasks.willBeEmpty; else elseBlock3">You have no tasks</p>
                 <ng-template #elseBlock3>
                     <div *ngFor="let group of groups; let i = index">
-                        <button class="btn btn-icon tasks-groups-item tasks-groups-item-toggle-btn"
-                            *ngIf="i !== 0 || defaultGroupVisible"
-                            (click)="toggleGroupVisibility(group)"
-                            [disabled]="!group.tasks.length"
-                            title="{{ group.tasks.length > 0 ? group.expanded ? 'Collapse group' : 'Expand group' : '' }}">
-                            <div class="tasks-groups-count">{{ group.tasks.length }}</div>
-                            <div class="tasks-groups-title">{{ group.name }}</div>
-                            <svg viewBox="0 0 24 24" class="tasks-groups-icon" *ngIf="group.tasks.length > 0">
-                                <use attr.href="#chevron-{{ group.expanded ? 'down' : 'up'}}"></use>
-                            </svg>
-                        </button>
-                        <ul cdkDropList (cdkDropListDropped)="handleTaskDrop($event, group)" *ngIf="group.expanded">
-                            <li class="task" [class.removing]="task.removing" *ngFor="let task of group.tasks; let j = index" cdkDrag>
-                                <div class="tasks-drag-placeholder" *cdkDragPlaceholder></div>
-                                <div class="task-body">
-                                    <ul class="task-labels" *ngIf="task.labels.length">
-                                        <li class="task-label" *ngFor="let label of task.labels">
-                                            <div class="task-label-color" [style.backgroundColor]="label.color"></div>
-                                            <div class="task-label-title">{{ label.title }}</div>
-                                        </li>
-                                    </ul>
-                                    <div class="task-text-container" [class.has-labels]="task.labels.length">
-                                        <button class="checkbox task-checkbox-btn" title="Remove task"
-                                            (click)="removeTask(i, j)" [disabled]="task.removing">
-                                            <div class="checkbox-tick"></div>
+                        <ng-container *ngIf="group.tasks.length || !emptyGroupsHidden">
+                            <button class="btn btn-icon tasks-groups-item tasks-groups-item-toggle-btn"
+                                *ngIf="i !== 0 || defaultGroupVisible"
+                                (click)="toggleGroupVisibility(group)"
+                                [disabled]="!group.tasks.length"
+                                title="{{ group.tasks.length > 0 ? group.expanded ? 'Collapse group' : 'Expand group' : '' }}">
+                                <div class="tasks-groups-count">{{ group.tasks.length }}</div>
+                                <div class="tasks-groups-title">{{ group.name }}</div>
+                                <svg viewBox="0 0 24 24" class="tasks-groups-icon" *ngIf="group.tasks.length > 0">
+                                    <use attr.href="#chevron-{{ group.expanded ? 'down' : 'up'}}"></use>
+                                </svg>
+                            </button>
+                            <ul cdkDropList (cdkDropListDropped)="handleTaskDrop($event, group)" *ngIf="group.expanded">
+                                <li class="task" [class.removing]="task.removing" *ngFor="let task of group.tasks; let j = index" cdkDrag>
+                                    <div class="tasks-drag-placeholder" *cdkDragPlaceholder></div>
+                                    <div class="task-body">
+                                        <ul class="task-labels" *ngIf="task.labels.length">
+                                            <li class="task-label" *ngFor="let label of task.labels">
+                                                <div class="task-label-color" [style.backgroundColor]="label.color"></div>
+                                                <div class="task-label-title">{{ label.title }}</div>
+                                            </li>
+                                        </ul>
+                                        <div class="task-text-container" [class.has-labels]="task.labels.length">
+                                            <button class="checkbox task-checkbox-btn" title="Remove task"
+                                                (click)="removeTask(i, j)" [disabled]="task.removing">
+                                                <div class="checkbox-tick"></div>
+                                            </button>
+                                            <div class="task-text" [innerHTML]="task.displayText || task.text"></div>
+                                        </div>
+                                        <ul class="subtasks" *ngIf="task.subtasks.length">
+                                            <li class="subtask" [class.removing]="subtask.removing"
+                                                *ngFor="let subtask of task.subtasks; let k = index">
+                                                <div class="subtask-body">
+                                                    <button class="checkbox task-checkbox-btn" title="Mark Completed"
+                                                        (click)="removeSubtask(i, j, k)" [disabled]="subtask.removing">
+                                                        <div class="checkbox-tick"></div>
+                                                    </button>
+                                                    <span class="task-text" [innerHTML]="subtask.displayText || subtask.text"></span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <button class="btn btn-icon btn-icon-alt task-edit-btn" title="Edit task"
+                                            (click)="editTask(i, j)" [disabled]="task.removing">
+                                            <svg class="task-edit-btn-icon" viewBox="0 0 24 24">
+                                                <use href="#edit"></use>
+                                            </svg>
                                         </button>
-                                        <div class="task-text" [innerHTML]="task.displayText || task.text"></div>
                                     </div>
-                                    <ul class="subtasks" *ngIf="task.subtasks.length">
-                                        <li class="subtask" [class.removing]="subtask.removing"
-                                            *ngFor="let subtask of task.subtasks; let k = index">
-                                            <div class="subtask-body">
-                                                <button class="checkbox task-checkbox-btn" title="Mark Completed"
-                                                    (click)="removeSubtask(i, j, k)" [disabled]="subtask.removing">
-                                                    <div class="checkbox-tick"></div>
-                                                </button>
-                                                <span class="task-text" [innerHTML]="subtask.displayText || subtask.text"></span>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <button class="btn btn-icon btn-icon-alt task-edit-btn" title="Edit task"
-                                        (click)="editTask(i, j)" [disabled]="task.removing">
-                                        <svg class="task-edit-btn-icon" viewBox="0 0 24 24">
-                                            <use href="#edit"></use>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </li>
-                        </ul>
+                                </li>
+                            </ul>
+                        </ng-container>
                     </div>
                 </ng-template>
             </div>
@@ -198,13 +200,13 @@
     <div class="tasks-item-container task-transition-target" *ngSwitchCase="'settings'">
         <label class="checkbox-container tasks-settings-item">
             <input type="checkbox" class="sr-only checkbox-input"
-                [checked]="resizingEnabled"
-                (click)="toggleResizing()"
-                (keyup.enter)="toggleResizing()">
+                [checked]="emptyGroupsHidden"
+                (click)="toggleEmptyGroupVisibility()"
+                (keyup.enter)="toggleEmptyGroupVisibility()">
             <div class="checkbox">
                 <div class="checkbox-tick"></div>
             </div>
-            <span>Enable resizing</span>
+            <span>Hide empty groups</span>
         </label>
         <label class="checkbox-container tasks-settings-item">
             <input type="checkbox" class="sr-only checkbox-input"
@@ -215,6 +217,16 @@
                 <div class="checkbox-tick"></div>
             </div>
             <span>Show unorganized group</span>
+        </label>
+        <label class="checkbox-container tasks-settings-item">
+            <input type="checkbox" class="sr-only checkbox-input"
+                [checked]="resizingEnabled"
+                (click)="toggleResizing()"
+                (keyup.enter)="toggleResizing()">
+            <div class="checkbox">
+                <div class="checkbox-tick"></div>
+            </div>
+            <span>Enable resizing</span>
         </label>
         <div class="tasks-item-container-footer">
             <button class="btn btn-text" (click)="hideItem()">Done</button>
