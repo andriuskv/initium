@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Dropbox } from "dropbox";
 
 @Injectable({
-  providedIn: "root"
+    providedIn: "root"
 })
 export class DropboxService {
     timeoutId = 0;
@@ -12,23 +12,23 @@ export class DropboxService {
         const token = localStorage.getItem("dropbox token");
 
         if (token) {
-            this.dbx = new Dropbox({ accessToken: token, fetch } as any);
+            this.dbx = new Dropbox({ accessToken: token, fetch: window.fetch.bind(window) } as any);
             return;
         }
-        this.dbx = new Dropbox({ clientId: process.env.DROPBOX_API_KEY, fetch } as any);
+        this.dbx = new Dropbox({ clientId: process.env.DROPBOX_API_KEY, fetch: window.fetch.bind(window) } as any);
         return this.getAccessToken();
     }
 
     getAccessToken() {
         return new Promise((resolve, reject) => {
-            const url = this.dbx.getAuthenticationUrl(`${window.location.origin}/receiver.html`);
+            const url = this.dbx.auth.getAuthenticationUrl(`${window.location.origin}/receiver.html`);
             const authWindow: any = window.open(url, "_blank", "width=640,height=480");
             const intervalId = setInterval(() => {
                 if (authWindow.closed) {
                     clearInterval(intervalId);
 
                     if (authWindow.token) {
-                        this.dbx.setAccessToken(authWindow.token);
+                        this.dbx.auth.setAccessToken(authWindow.token);
                         localStorage.setItem("dropbox token", authWindow.token);
                         resolve();
                     }
@@ -50,7 +50,7 @@ export class DropboxService {
     async fetchFolderItems(folder) {
         const response = await this.dbx.filesListFolder({ path: folder.path });
 
-        response.entries.forEach(entry => {
+        response.result.entries.forEach(entry => {
             const item: any = {
                 name: entry.name,
                 path: entry.path_lower
@@ -100,26 +100,26 @@ export class DropboxService {
                     this.saveDropbox(folder);
                 }, 400);
             };
-            image.src = window.URL.createObjectURL(response.fileBlob);
+            image.src = URL.createObjectURL(response.result.fileBlob);
         }
     }
 
-    async fetchImageUrl({ path, name }) {
+    async fetchImage({ path, name }) {
         const response = await this.dbx.sharingGetSharedLinks({ path });
-        let image = response.links.find(link => link.path.endsWith(name));
+        let image = response.result.links.find(link => link.path.endsWith(name));
 
         if (!image) {
             image = await this.dbx.sharingCreateSharedLinkWithSettings({ path });
         }
-        return this.makeImageDisplayable(image.url);
+        const linkFileResponse = await this.dbx.sharingGetSharedLinkFile({ url: image.url });
+        const blob = linkFileResponse.result.fileBlob;
+        blob.name = name;
+
+        return blob;
     }
 
     isImage(name) {
         return /(\.jpe?g|\.png|\.gif|\.bmp)$/i.test(name);
-    }
-
-    makeImageDisplayable(url) {
-        return url.replace(/0$/, "1");
     }
 
     getDropbox() {
