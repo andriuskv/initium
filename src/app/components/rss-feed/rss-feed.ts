@@ -258,6 +258,10 @@ export class RssFeed {
             await this.updateFeed(feed, index);
         }
 
+        for (const feed of this.feedsToLoad) {
+            await this.fetchFeed(feed);
+        }
+
         if (!this.newEntryCount) {
             return;
         }
@@ -334,11 +338,9 @@ export class RssFeed {
         this.fetching = true;
 
         try {
-            const feed = await this.feedService.getFeed(url, title);
             const index = this.feeds.length;
 
-            this.feedsToLoad = this.feedsToLoad.filter(feed => feed.url !== url);
-            this.feeds.push(feed);
+            await this.fetchFeed({ url, title });
             this.setShift(index);
             this.showFeed(index);
             this.hideForm();
@@ -355,15 +357,19 @@ export class RssFeed {
         }
     }
 
-    async refetchFeed(feed, index) {
+    async fetchFeed({ url, title }) {
+        const feed = await this.feedService.getFeed(url, title);
+        this.feedsToLoad = this.feedsToLoad.filter(feed => feed.url !== url);
+        this.feeds.push(feed);
+    }
+
+    async refetchFeed(feed) {
         feed.refeching = true;
 
         try {
-            const newFeed = await this.feedService.getFeed(feed.url, feed.title);
             const newFeedIndex = this.feeds.length;
 
-            this.feeds.push(newFeed);
-            this.feedsToLoad.splice(index, 1);
+            await this.fetchFeed(feed);
             this.setShift(newFeedIndex);
             this.showFeed(newFeedIndex);
             this.hideFeedList();
