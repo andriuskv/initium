@@ -36,7 +36,10 @@
         "dot-location": [2, "property"],
         "dot-notation": 2,
         "eqeqeq": 2,
-        "indent": [2, 4, { "SwitchCase": 1 }],
+        "indent": [2, 4, {
+            "SwitchCase": 1,
+            "ignoreComments": true
+        }],
         "no-const-assign": 2,
         "no-var": 2,
         "no-console": 0,

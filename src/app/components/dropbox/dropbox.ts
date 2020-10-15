@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter } from "@angular/core";
 import { DropboxService } from "../../services/dropboxService";
 import { SettingService } from "../../services/settingService";
+import { BackgroundService } from "../../services/backgroundService";
 
 @Component({
     selector: "dropbox",
@@ -12,15 +13,14 @@ export class Dropbox {
 
     activeFolder = null;
     dropboxFolder = null;
-    subscriber = null;
 
     constructor(
         private dropboxService: DropboxService,
+        private backgroundService: BackgroundService,
         private settingService: SettingService) {}
 
     async ngOnInit() {
         this.dropboxFolder = this.dropboxService.getDropbox();
-        this.subscriber = this.settingService.subscribeToSettingChanges(this.settingChangeHandler.bind(this));
 
         try {
             await this.dropboxService.init();
@@ -56,19 +56,16 @@ export class Dropbox {
         this.activeFolder = this.getFolder(this.dropboxFolder, this.activeFolder.name);
     }
 
-    setBackground(url) {
-        this.settingService.updateSetting({
-            background: { url }
-        });
-    }
-
     async setImageAsBackground(item) {
-        if (item.url) {
-            this.setBackground(item.url);
-            return;
-        }
-        item.url = await this.dropboxService.fetchImageUrl(item);
-        this.setBackground(item.url);
+        const blob = await this.dropboxService.fetchImage(item);
+
+        this.backgroundService.setIDBBackground(blob);
+        this.settingService.updateSetting({
+            background: {
+                type: "blob",
+                id: blob.name
+            }
+        });
     }
 
     async selectItem(item) {
@@ -104,12 +101,5 @@ export class Dropbox {
 
     saveDropbox() {
         this.dropboxService.saveDropbox(this.dropboxFolder);
-    }
-
-    settingChangeHandler({ background }) {
-        if (background && !background.url.includes("dropbox.com")) {
-            this.dropboxService.deleteServiceWorkerCache();
-            this.subscriber.unsubscribe();
-        }
     }
 }
