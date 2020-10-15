@@ -39,8 +39,14 @@ export class FeedService {
     updateFeed({ url, entries }) {
         return this.fetchFeed(url).then(feed => {
             if (feed) {
+                const data: any = {};
+                const updated = this.parseDate(feed.lastBuildDate);
+
+                if (updated) {
+                    data.updated = updated;
+                }
                 return {
-                    updated: this.parseDate(feed.lastBuildDate),
+                    ...data,
                     entries: this.getNewEntries(feed.items, entries)
                 };
             }
@@ -57,13 +63,23 @@ export class FeedService {
     }
 
     parseFeed(feed, title) {
+        const data: any = {};
+        const image = feed.image?.url;
+        const updated = this.parseDate(feed.lastBuildDate);
+
+        if (image) {
+            data.image = image;
+        }
+
+        if (updated) {
+            data.updated = updated;
+        }
         return {
+            ...data,
             title: title || feed.title,
             description: feed.description,
-            image: feed.image ? feed.image.url : "",
             newEntryCount: 0,
             entries: this.parseEntries(feed.items),
-            updated: this.parseDate(feed.lastBuildDate)
         };
     }
 

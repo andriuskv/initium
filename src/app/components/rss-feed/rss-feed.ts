@@ -290,7 +290,10 @@ export class RssFeed {
                 feed.entries = newFeed.entries.concat(feed.entries);
                 this.animateShiftButton(index);
             }
-            feed.updated = newFeed.updated;
+
+            if (newFeed.updated) {
+                feed.updated = newFeed.updated;
+            }
         } catch (e) {
             console.log(e);
         }
