@@ -159,6 +159,10 @@ export class Timer {
         const pos = target.selectionStart - 1;
         const value = target.value;
 
+        if (this.selectedPreset) {
+            this.selectedPreset = null;
+        }
+
         if (/\D/.test(value)) {
             target.value = this[input];
             target.selectionEnd = pos;
