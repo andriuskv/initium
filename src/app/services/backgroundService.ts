@@ -30,6 +30,7 @@ export class BackgroundService {
 
     if (info) {
       this.cacheImage(info.url);
+      this.cacheDownscaledBackground(info.url);
       localStorage.setItem("background-info", JSON.stringify(info));
       return info;
     }
@@ -120,6 +121,12 @@ export class BackgroundService {
     return this.subject.subscribe(handler);
   }
 
+  async cacheDownscaledBackground(url) {
+    const image = await this.preloadBackground(url);
+
+    this.createDownscaledBackground({ id: url, image });
+  }
+
   getDownscaledBackground(image) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -131,6 +138,17 @@ export class BackgroundService {
     return canvas.toDataURL("image/png", 0.8);
   }
 
+  createDownscaledBackground({ id, image, x = 50, y = 50 }) {
+    const background = JSON.parse(localStorage.getItem("downscaled-background")) || {};
+
+    if (background.id === id) {
+      return;
+    }
+    const dataURL = this.getDownscaledBackground(image);
+
+    localStorage.setItem("downscaled-background", JSON.stringify({ id, x, y, dataURL }));
+  }
+
   updateDownscaledBackgroundPosition(x, y) {
     const background = JSON.parse(localStorage.getItem("downscaled-background"));
 
@@ -138,5 +156,17 @@ export class BackgroundService {
     background.y = y;
 
     localStorage.setItem("downscaled-background", JSON.stringify(background));
+  }
+
+  preloadBackground(url) {
+    return new Promise(resolve => {
+      const image = new Image();
+      image.crossOrigin = "anonymous";
+
+      image.onload = () => {
+        resolve(image);
+      };
+      image.src = url;
+    });
   }
 }

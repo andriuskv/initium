@@ -56,39 +56,25 @@ export class Background {
         const info = await this.backgroundService.fetchBackgroundInfo();
 
         if (info) {
-          this.setBackgroundStyle({ url: info.url });
+          this.setBackgroundStyle({ url: info.url, downscale: false });
           this.backgroundService.resetIDBStore();
           this.settingService.resetSetting("background");
         }
       }
     }
 
-    async setBackgroundStyle({ url, x = 50, y = 50, id = url }) {
-      const image = new Image();
-      image.crossOrigin = "anonymous";
+    async setBackgroundStyle({ url, x = 50, y = 50, id = url, downscale = true }) {
+      const image = await this.backgroundService.preloadBackground(url);
+      const element = this.elRef.nativeElement;
 
-      image.onload = () => {
-        const element = this.elRef.nativeElement;
-        element.style.backgroundPosition = `${x}% ${y}%`;
-        element.style.backgroundImage = `url(${url})`;
+      element.style.backgroundPosition = `${x}% ${y}%`;
+      element.style.backgroundImage = `url(${url})`;
 
-        this.createDownscaledBackground({ id, image, x, y });
-
-        setTimeout(() => {
-          document.getElementById("downscaled-background")?.remove();
-        }, 1000);
-      };
-      image.src = url;
-    }
-
-    createDownscaledBackground({ id, image, x, y }) {
-      const background = JSON.parse(localStorage.getItem("downscaled-background")) || {};
-
-      if (background.id === id) {
-        return;
+      if (downscale) {
+        this.backgroundService.createDownscaledBackground({ id, image, x, y });
       }
-      const dataURL = this.backgroundService.getDownscaledBackground(image);
-
-      localStorage.setItem("downscaled-background", JSON.stringify({ id, x, y, dataURL }));
+      setTimeout(() => {
+        document.getElementById("downscaled-background")?.remove();
+      }, 1000);
     }
 }
