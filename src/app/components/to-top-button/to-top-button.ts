@@ -19,10 +19,12 @@ import { Component, ElementRef } from "@angular/core";
         .to-top-button {
             padding: 4px;
             border-radius: 50%;
-            background-color: #333;
+            color: #444;
+            background-color: #f4f4f4;
+            box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
         }
         .to-top-button:hover {
-            background-color: #444;
+            background-color: #e0e0e0;
         }
     `]
 })
