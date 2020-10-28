@@ -44,8 +44,9 @@
                     </svg>
                 </button>
             </div>
-            <ul class="feed-list-items">
-                <li class="feed-list-item" *ngFor="let feed of feeds; let i = index">
+            <ul cdkDropList (cdkDropListDropped)="handleFeedDrop($event)" class="feed-list-items">
+                <li cdkDrag class="feed-list-item" *ngFor="let feed of feeds; let i = index">
+                    <div class="feed-drag-placeholder" *cdkDragPlaceholder></div>
                     <div class="feed-list-item-header">
                         <img [src]="feed.image" class="feed-list-item-logo"
                             width="40px" height="40px"
@@ -69,6 +70,11 @@
                                 </h3>
                             </ng-template>
                             <a href="{{ feed.url }}" class="feed-list-item-url" target="_blank">{{ feed.url }}</a>
+                        </div>
+                        <div class="btn btn-icon btn-icon-alt feed-drag-handle" cdkDragHandle>
+                            <svg viewBox="0 0 24 24">
+                                <use href="#drag"></use>
+                            </svg>
                         </div>
                         <button class="btn btn-icon btn-icon-alt feed-list-item-btn"
                             *ngIf="!feed.makingTitleEdit"

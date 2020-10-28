@@ -248,6 +248,15 @@
     font-size: 16px;
 }
 
+.feed-drag-handle {
+    visibility: hidden;
+    cursor: move;
+}
+
+.feed-drag-placeholder {
+    box-shadow: 0 0 0 1px $color-blue;
+}
+
 .feed-list-items {
     @include scrollbar;
 
@@ -277,6 +286,12 @@
             background-image: url("./assets/images/ring.svg");
             background-repeat: no-repeat;
             background-position: center;
+        }
+    }
+
+    &:hover {
+        .feed-drag-handle {
+            animation: 0s linear 0.4s forwards delayed-show;
         }
     }
 }
@@ -350,4 +365,10 @@
             color: $color-danger;
          }
     }
+}
+
+@keyframes delayed-show {
+  to {
+    visibility: visible;
+  }
 }
