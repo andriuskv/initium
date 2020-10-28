@@ -2,6 +2,7 @@ const path = require("path");
 const { DefinePlugin } = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const { AngularCompilerPlugin } = require("@ngtools/webpack");
 const CopyPlugin = require("copy-webpack-plugin");
@@ -23,7 +24,12 @@ module.exports = function(env = {}) {
         }),
         new HtmlWebpackPlugin({
             template: "./public/index.html",
-            cache: false
+            cache: false,
+            minify: env.prod ? {
+                keepClosingSlash: true,
+                collapseWhitespace: true,
+                collapseInlineTagWhitespace: true
+            } : undefined
         }),
         new CopyPlugin({ patterns: [
             { from: "./src/assets", to: "./assets" },
@@ -34,6 +40,7 @@ module.exports = function(env = {}) {
             tsConfigPath: "./tsconfig.json",
             skipCodeGeneration: true,
             compilerOptions: {
+                enableIvy: true,
                 fullTemplateTypeCheck: true,
                 strictInjectionParameters: true,
                 strictTemplates: true,
@@ -45,6 +52,8 @@ module.exports = function(env = {}) {
 
     return {
         mode,
+        cache: true,
+        target: "web",
         entry: {
             main: "./src/main.ts"
         },
@@ -52,7 +61,6 @@ module.exports = function(env = {}) {
             path: path.resolve(__dirname, "dist"),
             filename: "[name].js"
         },
-        target: "web",
         resolve: {
             extensions: [".ts", ".js", ".json"],
             mainFields: ["es2015", "browser", "module", "main"],
@@ -78,6 +86,14 @@ module.exports = function(env = {}) {
                         comments: false
                     }
                 }
+            }),
+            new CssMinimizerPlugin({
+                minimizerOptions: {
+                    preset: [
+                        "default",
+                        { discardComments: { removeAll: true } }
+                    ],
+                },
             })]
         },
         module: {
@@ -96,18 +112,6 @@ module.exports = function(env = {}) {
                             options: {
                                 sourceMap: !env.prod,
                                 url: false
-                            }
-                        },
-                        {
-                            loader: "postcss-loader",
-                            options: {
-                                sourceMap: !env.prod,
-                                postcssOptions: {
-                                    plugins: [
-                                        require("autoprefixer")(),
-                                        env.prod ? require("cssnano")() : undefined
-                                    ]
-                                }
                             }
                         },
                         {
