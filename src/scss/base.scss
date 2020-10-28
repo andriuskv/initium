@@ -355,6 +355,10 @@ textarea {
     }
 }
 
+.cdk-drag-preview {
+    display: none !important;
+}
+
 @keyframes ping-slow {
     0% {
         opacity: 1;

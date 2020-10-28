@@ -132,10 +132,6 @@
     box-shadow: 0 0 0 1px $color-blue;
 }
 
-.cdk-drag-preview {
-    display: none !important;
-}
-
 .tasks-main {
     overflow: hidden;
     height: calc(100% - var(--header-height));
