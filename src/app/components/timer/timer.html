@@ -61,7 +61,7 @@
     </ng-template>
     <ng-template #elseBlock>
         <div class="upper-block-item-content timer-content"
-            [class.has-presets]="presets.length"
+            [class.has-presets]="(!running || !presetNameHidden) && presets.length > 0"
             [class.preset-not-selected]="running && !selectedPreset">
             <ng-container *ngIf="running; else elseBlock">
                 <h4 class="timer-selected-preset-name" *ngIf="selectedPreset && !presetNameHidden">{{ selectedPreset.name }}</h4>

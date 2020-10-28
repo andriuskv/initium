@@ -30,11 +30,15 @@
 }
 
 .select-item-list {
+    @include scrollbar;
+
     z-index: 1;
+    overflow-y: auto;
     position: absolute;
     left: 0;
     display: none;
     min-width: 120px;
+    max-height: 204px;
     padding: 4px;
     transform: translateY(4px);
 
