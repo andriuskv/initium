@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter, Input, ViewChild } from "@angular/core";
+import { moveItemInArray } from "@angular/cdk/drag-drop";
 import { ChromeStorageService } from "../../services/chromeStorageService";
 import { FeedService } from "../../services/feedService";
 import { NotificationService } from "../../services/notificationService";
@@ -149,7 +150,7 @@ export class RssFeed {
         }
     }
 
-    removeFeed(index, isRemoveChange = false) {
+    removeFeed(index, noSave = false) {
         this.feeds.splice(index, 1);
 
         if (this.feeds.length) {
@@ -162,7 +163,7 @@ export class RssFeed {
             clearTimeout(this.timeout);
         }
 
-        if (!isRemoveChange) {
+        if (!noSave) {
             this.saveFeeds();
         }
     }
@@ -192,27 +193,23 @@ export class RssFeed {
         this.showingFeedList = false;
     }
 
-    reflect(promise) {
-        return promise.then(
-            (v) => ({ status: "fulfilled", value: v }),
-            (error) => ({ status: "rejected", reason: error })
-        );
-    }
-
     async getInitialFeeds(feedsToLoad) {
-        const promises = feedsToLoad.map(feed => this.reflect(this.feedService.getFeed(feed.url, feed.title)));
+        const promises = feedsToLoad.map(feed => this.feedService.getFeed(feed.url, feed.title));
         const feeds = [];
         const failedToFetchFeeds = [];
 
         try {
-            const results: any = await Promise.all(promises);
+            const results: any = await Promise.allSettled(promises);
 
             for (const [index, { status, value }] of results.entries()) {
                 if (status === "fulfilled") {
                     feeds.push(value);
                 }
                 else {
-                    failedToFetchFeeds.push(feedsToLoad[index]);
+                    failedToFetchFeeds.push({
+                        ...feedsToLoad[index],
+                        index
+                    });
                 }
             }
         } catch (e) {
@@ -357,21 +354,22 @@ export class RssFeed {
         }
     }
 
-    async fetchFeed({ url, title }) {
+    async fetchFeed({ url, title, index = this.feeds.length }) {
         const feed = await this.feedService.getFeed(url, title);
         this.feedsToLoad = this.feedsToLoad.filter(feed => feed.url !== url);
-        this.feeds.push(feed);
+
+        this.feeds.splice(index, 0, feed);
     }
 
     async refetchFeed(feed) {
         feed.refeching = true;
 
         try {
-            const newFeedIndex = this.feeds.length;
+            const index = Math.min(feed.index, this.feeds.length);
 
             await this.fetchFeed(feed);
-            this.setShift(newFeedIndex);
-            this.showFeed(newFeedIndex);
+            this.setShift(index);
+            this.showFeed(index);
             this.hideFeedList();
             this.saveFeeds();
             this.scheduleFeedUpdate();
@@ -430,12 +428,11 @@ export class RssFeed {
     }
 
     editTitle(feed) {
-        const oldTitle = feed.title;
+        const title = this.feedTitleInput.nativeElement.value || feed.title;
+        delete feed.makingTitleEdit;
 
-        feed.makingTitleEdit = false;
-        feed.title = this.feedTitleInput.nativeElement.value || oldTitle;
-
-        if (feed.title !== oldTitle) {
+        if (title !== feed.title) {
+            feed.title = title;
             this.saveFeeds();
         }
     }
@@ -445,5 +442,12 @@ export class RssFeed {
             .map(({ url, title }) => ({ url, title }));
 
         this.chromeStorageService.set({ feeds });
+    }
+
+    handleFeedDrop({ currentIndex, previousIndex }) {
+        moveItemInArray(this.feeds, previousIndex, currentIndex);
+        this.setShift();
+        this.showFeed();
+        this.saveFeeds();
     }
 }
