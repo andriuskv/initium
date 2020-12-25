@@ -86,18 +86,6 @@ export class Settings {
         this.updateSetting({ units: units === "C" ? "F" : "C" });
     }
 
-    setPomodoroDuration({ target }, settingName) {
-        let value = parseInt(target.value, 10);
-
-        if (!value || value <= 0) {
-            value = 1;
-            target.value = value;
-        }
-        this.updateSetting({
-            [settingName]: value
-        });
-    }
-
     openBackgroundViewer() {
         this.showBackgroundViewer.emit(this.settings.background);
     }

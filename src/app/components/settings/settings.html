@@ -19,10 +19,6 @@
         <button class="btn btn-text settings-nav-item-btn"
             (click)="setActiveTab('weather')">Weather</button>
     </li>
-    <li class="settings-nav-item" [class.active]="active === 'pomodoro'">
-        <button class="btn btn-text settings-nav-item-btn"
-            (click)="setActiveTab('pomodoro')">Pomodoro</button>
-    </li>
     <li class="settings-nav-item" [class.active]="active === 'storage'">
         <button class="btn btn-text settings-nav-item-btn"
             (click)="setActiveTab('storage')">Storage</button>
@@ -233,35 +229,6 @@
             </div>
         </label>
         <div class="setting-message" *ngIf="settingMessages.weather?.type === 'geo'">{{ settingMessages.weather.message }}</div>
-    </div>
-</div>
-<div class="setting-tab" *ngIf="active === 'pomodoro'">
-    <div class="setting">
-        <div>
-            <div>Pomodoro duration</div>
-            <div class="setting-add-desc">In minutes</div>
-        </div>
-        <input type="number" class="input setting-input" min="1"
-            [value]="settings.pomodoro.duration"
-            (change)="setPomodoroDuration($event, 'duration')">
-    </div>
-    <div class="setting">
-        <div>
-            <div>Short break duration</div>
-            <div class="setting-add-desc">In minutes</div>
-        </div>
-        <input type="number" class="input setting-input" min="1"
-            [value]="settings.pomodoro.short"
-            (change)="setPomodoroDuration($event, 'short')">
-    </div>
-    <div class="setting">
-        <div>
-            <div>Long break duration</div>
-            <div class="setting-add-desc">In minutes</div>
-        </div>
-        <input type="number" class="input setting-input" min="1"
-            [value]="settings.pomodoro.long"
-            (change)="setPomodoroDuration($event, 'long')">
     </div>
 </div>
 <storage class="setting-tab" *ngIf="active === 'storage'"></storage>

@@ -4,15 +4,19 @@ import { padTime } from "../../utils/utils.js";
 
 @Component({
     selector: "pomodoro",
-    templateUrl: "./pomodoro.html"
+    templateUrl: "./pomodoro.html",
+    styleUrls: ["./pomodoro.scss"]
 })
 export class Pomodoro {
     @Output() size = new EventEmitter();
     @Output() fullscreen = new EventEmitter();
     @Input() visible = false;
 
+    settings = this.settingService.getSetting("pomodoro");
     running = false;
+    paused = false;
     alarmOn = true;
+    settingsVisible = false;
     timeout = 0;
     hours = 0;
     minutes = 0;
@@ -51,7 +55,7 @@ export class Pomodoro {
 
     toggle() {
         if (this.running) {
-            this.stop();
+            this.stop(true);
         }
         else {
             this.start();
@@ -67,6 +71,7 @@ export class Pomodoro {
 
         this.initAlarm();
         this.running = true;
+        this.paused = false;
         this.timeout = window.setTimeout(() => {
             this.update(duration, performance.now());
         }, 1000);
@@ -80,14 +85,15 @@ export class Pomodoro {
         this.secondsDisplay = padTime(this.seconds, this.hours || this.minutes);
     }
 
-    stop() {
+    stop(paused) {
         this.running = false;
+        this.paused = paused;
         clearTimeout(this.timeout);
     }
 
     reset() {
         this.resetTimer();
-        this.stop();
+        this.stop(false);
         this.size.emit(false);
         this.fullscreen.emit(false);
     }
@@ -98,13 +104,15 @@ export class Pomodoro {
         }
 
         if (this.running) {
-            this.stop();
+            this.stop(false);
         }
         this.mode = mode;
         this.resetTimer();
     }
 
-    getMinutes(mode, { short, long, duration }) {
+    getMinutes(mode) {
+        const { short, long, duration } = this.settings;
+
         if (mode === "short") {
             return short;
         }
@@ -115,14 +123,17 @@ export class Pomodoro {
     }
 
     resetTimer() {
-        const settings = this.settingService.getSetting("pomodoro");
-        const minutes = this.getMinutes(this.mode, settings);
+        const minutes = this.getMinutes(this.mode);
 
         this.updateTimer(minutes * 60);
 
         if (this.hours > 99) {
             this.hours = 99;
         }
+    }
+
+    toggleSettings() {
+        this.settingsVisible = !this.settingsVisible;
     }
 
     toggleAlarm() {
@@ -151,5 +162,20 @@ export class Pomodoro {
 
     enterFullscreen() {
         this.fullscreen.emit(true);
+    }
+
+    setPomodoroDuration({ target }, settingName) {
+        let value = parseInt(target.value, 10);
+
+        if (!value || value <= 0) {
+            value = 1;
+            target.value = value;
+        }
+        this.settings[settingName] = value;
+        this.settingService.updateSetting({ pomodoro: this.settings });
+
+        if (!this.running && !this.paused) {
+            this.resetTimer();
+        }
     }
 }
