@@ -95,7 +95,7 @@
     top: 0;
     left: 100%;
     pointer-events: auto;
-    transform: translate(-8px, 4px);
+    transform: translate(-2px, 4px);
     transition: 0.2s transform;
 
     &.expanded {
@@ -105,8 +105,9 @@
 
 .main-block-sidebar-show-btn {
     display: block;
-    width: 12px;
+    width: 8px;
     height: 22px;
+    padding: 0;
 
     &:hover {
         background-color: $color-white-10;

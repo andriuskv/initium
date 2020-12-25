@@ -31,7 +31,9 @@ export class Countdown {
 
     ngOnInit() {
         this.chromeStorageService.subscribeToChanges(({ countdowns }) => {
-            this.startCountdowns(countdowns.newValue);
+            if (countdowns) {
+                this.startCountdowns(countdowns.newValue);
+            }
         });
         this.chromeStorageService.get("countdowns", ({ countdowns }) => {
             if (countdowns?.length) {

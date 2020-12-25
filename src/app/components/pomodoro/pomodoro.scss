@@ -1,0 +1,25 @@
+@import "../../../scss/variables.scss";
+
+.pomodoro-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 4px 4px 8px;
+
+    &:not(:last-of-type) {
+      border-bottom: 1px solid $color-white-10;
+    }
+}
+
+.pomodoro-setting-title {
+    font-size: 14px;
+}
+
+.pomodoro-setting-notice {
+    font-size: 13px;
+    color: $color-white-60;
+}
+
+.pomodoro-setting-input {
+    width: 80px;
+}
