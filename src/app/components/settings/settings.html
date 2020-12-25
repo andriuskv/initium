@@ -171,7 +171,7 @@
             </svg>
         </button>
         <div class="setting-background-items">
-            <div class="setting-background-item">
+            <!-- <div class="setting-background-item">
                 <button class="btn btn-icon setting-background-item-btn"
                     (click)="setActiveTab('dropbox')">
                     <svg viewBox="0 0 24 24">
@@ -179,7 +179,7 @@
                     </svg>
                     <span>Dropbox</span>
                 </button>
-            </div>
+            </div> -->
             <div class="setting-background-item">
                 <button class="btn btn-text setting-background-item-btn" (click)="showBackgroundForm()">URL</button>
             </div>
@@ -265,8 +265,8 @@
     </div>
 </div>
 <storage class="setting-tab" *ngIf="active === 'storage'"></storage>
-<dropbox class="setting-tab dropbox-container" *ngIf="active === 'dropbox'"
-    (sessionEnded)="setActiveTab('background')"></dropbox>
+<!-- <dropbox class="setting-tab dropbox-container" *ngIf="active === 'dropbox'"
+    (sessionEnded)="setActiveTab('background')"></dropbox> -->
 <div class="setting-tab setting-tab-form-container"
     *ngIf="active === 'background-form'">
     <form (submit)="handleBackgroundFormSubmit($event)">

@@ -20,7 +20,7 @@ export class DropboxService {
     }
 
     getAccessToken() {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             const url = this.dbx.auth.getAuthenticationUrl(`${window.location.origin}/receiver.html`);
             const authWindow: any = window.open(url, "_blank", "width=640,height=480");
             const intervalId = setInterval(() => {
