@@ -6,6 +6,7 @@ import { BackgroundService } from "../../services/backgroundService";
   selector: "background",
   styles: [`
     :host {
+      z-indeX: -1;
       position: absolute;
       top: 0;
       right: 0;

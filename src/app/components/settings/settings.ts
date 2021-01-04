@@ -8,6 +8,7 @@ import { BackgroundService } from "../../services/backgroundService";
     styleUrls: ["./settings.scss"]
 })
 export class Settings {
+    // @ViewChild("dropbox", { read: ViewContainerRef }) private dropboxRef: ViewContainerRef;
     @Output() showBackgroundViewer = new EventEmitter();
 
     backgroundUrlInvalid = false;
@@ -31,8 +32,20 @@ export class Settings {
         });
     }
 
-    setActiveTab(tab) {
+    async setActiveTab(tab) {
         this.active = tab;
+
+        // if (tab === "dropbox") {
+        //     this.vcref.clear();
+
+        //     const { Dropbox } = await import("../dropbox/dropbox");
+        //     const dropbox = this.dropboxRef.createComponent(this.cfr.resolveComponentFactory(Dropbox));
+
+        //     dropbox.location.nativeElement.classList.add("setting-tab", "dropbox-container");
+        //     dropbox.instance.sessionEnded.subscribe(() => {
+        //         this.setActiveTab("background");
+        //     });
+        // }
     }
 
     updateSetting(setting) {

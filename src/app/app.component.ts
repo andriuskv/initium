@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ViewChild, ViewContainerRef, ComponentFactoryResolver } from "@angular/core";
 
 @Component({
     selector: "app",
@@ -13,17 +13,20 @@ import { Component } from "@angular/core";
             (showBackgroundViewer)="onShowBackgroundViewer($event)"></widget-menu>
         <upper-block [visible]="toggle.upper" (hide)="onHide($event)"
             (indicatorStatus)="setIndicatorStatus($event)"></upper-block>
-        <tweet-image-viewer *ngIf="tweetImageData" [data]="tweetImageData"
-            (close)="hideTweetImageViewer($event)"></tweet-image-viewer>
-        <background-viewer *ngIf="backgroundData" [data]="backgroundData"
-            (close)="hideBackgroundViewer($event)"></background-viewer>
+        <ng-template *ngIf="tweetImageViewerVisible" #tweetImageViewer></ng-template>
+        <ng-template *ngIf="backgroundViewerVisible" #backgroundViewer></ng-template>
     `
 })
 export class App {
+    @ViewChild("backgroundViewer", { read: ViewContainerRef }) private backgroundViewerRef: ViewContainerRef;
+    @ViewChild("tweetImageViewer", { read: ViewContainerRef }) private tweetImageViewerRef: ViewContainerRef;
+
+    backgroundViewerVisible = false;
+    tweetImageViewerVisible = false;
     toggle: any = {};
-    tweetImageData: any;
-    backgroundData: any;
     countdownIndicatorStatus: any = {};
+
+    constructor(private vcref: ViewContainerRef, private cfr: ComponentFactoryResolver) {}
 
     onToggle(whatToToggle) {
         this.toggle[whatToToggle] = !this.toggle[whatToToggle] || false;
@@ -33,20 +36,30 @@ export class App {
         this.toggle[component] = false;
     }
 
-    onShowViewer(data) {
-        this.tweetImageData = data;
+    async onShowViewer(data) {
+        this.tweetImageViewerVisible = true;
+        this.vcref.clear();
+
+        const { TweetImageViewer } = await import("./components/tweet-image-viewer/tweet-image-viewer");
+        const viewer = this.tweetImageViewerRef.createComponent(this.cfr.resolveComponentFactory(TweetImageViewer));
+
+        viewer.instance.data = data;
+        viewer.instance.close.subscribe(() => {
+            this.tweetImageViewerVisible = false;
+        });
     }
 
-    hideTweetImageViewer() {
-        this.tweetImageData = null;
-    }
+    async onShowBackgroundViewer(data) {
+        this.backgroundViewerVisible = true;
+        this.vcref.clear();
 
-    onShowBackgroundViewer(data) {
-        this.backgroundData = data;
-    }
+        const { BackgroundViewer } = await import("./components/background-viewer/background-viewer");
+        const viewer = this.backgroundViewerRef.createComponent(this.cfr.resolveComponentFactory(BackgroundViewer));
 
-    hideBackgroundViewer() {
-        this.backgroundData = null;
+        viewer.instance.data = data;
+        viewer.instance.close.subscribe(() => {
+            this.backgroundViewerVisible = false;
+        });
     }
 
     setIndicatorStatus(status) {

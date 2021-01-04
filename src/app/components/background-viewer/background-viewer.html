@@ -2,7 +2,7 @@
     <img src="./assets/images/ring.svg" class="background-viewer-spinner" *ngIf="loading" alt="">
     <div class="background-viewer-image-content" [class.hidden]="loading">
         <div class="background-viewer-image-container" #containerElement>
-            <img [src]="data.url" class="background-viewer-image" (load)="handleLoad($event)">
+            <img [src]="url" class="background-viewer-image" *ngIf="url" (load)="handleLoad($event)">
             <div class="background-viewer-area" (mousedown)="handleMouseDown($event)"
                 [ngStyle]="{
                     'width.px': area.width,

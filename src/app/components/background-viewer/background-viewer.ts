@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
-import { DomSanitizer } from "@angular/platform-browser";
+import { NgModule, Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
+import { BrowserModule, DomSanitizer } from "@angular/platform-browser";
 import { SettingService } from "../../services/settingService";
 import { BackgroundService } from "../../services/backgroundService";
 
@@ -13,6 +13,7 @@ export class BackgroundViewer {
     @Output() close = new EventEmitter();
     @Input() data;
 
+    url = "";
     loading = true;
     boundMouseMoveHandler: any;
     viewport: any = {
@@ -45,19 +46,24 @@ export class BackgroundViewer {
             const image = await this.backgroundService.getIDBBackground(this.data.id);
             const blobUrl = URL.createObjectURL(image);
 
+            this.url = this.sanitizer.bypassSecurityTrustUrl(blobUrl) as string;
             this.data = {
                 ...this.data,
-                url: this.sanitizer.bypassSecurityTrustUrl(blobUrl),
                 blobUrl
             };
+        }
+        else {
+            this.url = this.data.url;
         }
     }
 
     handleLoad({ target }) {
         const { naturalWidth, naturalHeight } = target;
         const { innerWidth, innerHeight } = window;
+
         target.style.maxWidth = `${innerWidth - 96}px`;
         target.style.maxHeight = `${innerHeight - 64}px`;
+
         this.viewport = {
             width: innerWidth,
             height: innerHeight
@@ -205,3 +211,9 @@ export class BackgroundViewer {
         this.close.emit();
     }
 }
+
+@NgModule({
+    declarations: [BackgroundViewer],
+    imports: [BrowserModule]
+})
+class BackgroundViewerModule {}

@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { NgModule, Component, Input, Output, EventEmitter } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
 
 @Component({
     selector: "tweet-image-viewer",
@@ -53,3 +54,9 @@ export class TweetImageViewer {
         this.close.emit();
     }
 }
+
+@NgModule({
+    declarations: [TweetImageViewer],
+    imports: [BrowserModule]
+})
+class TweetImageViewerModule {}
