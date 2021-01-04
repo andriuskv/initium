@@ -1,4 +1,5 @@
-import { Component, Output, EventEmitter } from "@angular/core";
+import { NgModule, Component, Output, EventEmitter } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
 import { DropboxService } from "../../services/dropboxService";
 import { SettingService } from "../../services/settingService";
 import { BackgroundService } from "../../services/backgroundService";
@@ -103,3 +104,9 @@ export class Dropbox {
         this.dropboxService.saveDropbox(this.dropboxFolder);
     }
 }
+
+@NgModule({
+    declarations: [Dropbox],
+    imports: [BrowserModule]
+})
+class DropboxModule {}

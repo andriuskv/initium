@@ -115,11 +115,11 @@ export class MainBlock {
             this.isExpanded = false;
             this.isSidebarExpanded = false;
             this.isResizingEnabled = false;
-            localStorage.setItem("active tab", this.tabName);
         }
         else if (!this.tabName && disabledTabCount === 3) {
             this.tabName = firstNotDisabledTab;
         }
+        localStorage.setItem("active tab", this.tabName);
     }
 
     onTabUpdate(name) {

@@ -232,8 +232,7 @@
     </div>
 </div>
 <storage class="setting-tab" *ngIf="active === 'storage'"></storage>
-<!-- <dropbox class="setting-tab dropbox-container" *ngIf="active === 'dropbox'"
-    (sessionEnded)="setActiveTab('background')"></dropbox> -->
+<!-- <ng-template *ngIf="active === 'dropbox'" #dropbox></ng-template> -->
 <div class="setting-tab setting-tab-form-container"
     *ngIf="active === 'background-form'">
     <form (submit)="handleBackgroundFormSubmit($event)">

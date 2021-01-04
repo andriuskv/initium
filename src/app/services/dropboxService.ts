@@ -12,10 +12,10 @@ export class DropboxService {
         const token = localStorage.getItem("dropbox token");
 
         if (token) {
-            this.dbx = new Dropbox({ accessToken: token, fetch: window.fetch.bind(window) } as any);
+            this.dbx = new Dropbox({ accessToken: token });
             return;
         }
-        this.dbx = new Dropbox({ clientId: process.env.DROPBOX_API_KEY, fetch: window.fetch.bind(window) } as any);
+        this.dbx = new Dropbox({ clientId: process.env.DROPBOX_API_KEY });
         return this.getAccessToken();
     }
 

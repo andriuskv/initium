@@ -21,11 +21,8 @@ import { Timer } from "./components/timer/timer";
 import { Stopwatch } from "./components/stopwatch/stopwatch";
 import { Pomodoro } from "./components/pomodoro/pomodoro";
 import { Countdown } from "./components/countdown/countdown";
-// import { Dropbox } from "./components/dropbox/dropbox";
 import { Calendar } from "./components/calendar/calendar";
 import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar-selected-day";
-import { TweetImageViewer } from "./components/tweet-image-viewer/tweet-image-viewer";
-import { BackgroundViewer } from "./components/background-viewer/background-viewer";
 import { GoogleApps } from "./components/google-apps/google-apps";
 import { Storage } from "./components/storage/storage";
 import { ResizeBar } from "./components/resize-bar/resize-bar";
@@ -36,8 +33,7 @@ import { ToTopButton } from "./components/to-top-button/to-top-button";
     declarations: [
         App, Settings, Background, Time, Dropdown, SelectItem, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Countdown, Calendar,
-        CalendarSelectedDay, TweetImageViewer, BackgroundViewer, GoogleApps,
-        Storage, ResizeBar,ToTopButton
+        CalendarSelectedDay, GoogleApps, Storage, ResizeBar, ToTopButton
     ],
     bootstrap: [App]
 })
