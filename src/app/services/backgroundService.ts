@@ -28,12 +28,16 @@ export class BackgroundService {
   async cacheUnsplashInfo() {
     const info = await this.fetchUnsplashInfo();
 
+    console.log(info);
+
     if (info) {
       this.cacheImage(info.url);
       this.cacheDownscaledBackground(info.url);
       localStorage.setItem("background-info", JSON.stringify(info));
       return info;
     }
+    localStorage.removeItem("background-info");
+    localStorage.removeItem("downscaled-background");
   }
 
   async fetchBackgroundInfo() {

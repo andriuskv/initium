@@ -15,14 +15,15 @@
 .viewer-image-container {
     position: relative;
     opacity: 0;
+    display: none;
     max-width: calc(100% - 80px);
     max-height: 100%;
     animation-name: opacity-up;
     animation-duration: 0.2s;
     animation-fill-mode: forwards;
 
-    &.hidden {
-        display: none;
+    &.visible {
+        display: block;
     }
 }
 

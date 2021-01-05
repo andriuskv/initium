@@ -14,15 +14,14 @@ import { Component, ViewChild, ViewContainerRef, ComponentFactoryResolver } from
         <upper-block [visible]="toggle.upper" (hide)="onHide($event)"
             (indicatorStatus)="setIndicatorStatus($event)"></upper-block>
         <ng-template *ngIf="tweetImageViewerVisible" #tweetImageViewer></ng-template>
-        <ng-template *ngIf="backgroundViewerVisible" #backgroundViewer></ng-template>
+        <background-viewer [data]="backgroundViewerData" (close)="hideBackgroundViewer()" *ngIf="backgroundViewerData"></background-viewer>
     `
 })
 export class App {
-    @ViewChild("backgroundViewer", { read: ViewContainerRef }) private backgroundViewerRef: ViewContainerRef;
     @ViewChild("tweetImageViewer", { read: ViewContainerRef }) private tweetImageViewerRef: ViewContainerRef;
 
-    backgroundViewerVisible = false;
     tweetImageViewerVisible = false;
+    backgroundViewerData = null;
     toggle: any = {};
     countdownIndicatorStatus: any = {};
 
@@ -36,6 +35,10 @@ export class App {
         this.toggle[component] = false;
     }
 
+    hideBackgroundViewer() {
+        this.backgroundViewerData = null;
+    }
+
     async onShowViewer(data) {
         this.tweetImageViewerVisible = true;
         this.vcref.clear();
@@ -46,20 +49,12 @@ export class App {
         viewer.instance.data = data;
         viewer.instance.close.subscribe(() => {
             this.tweetImageViewerVisible = false;
+            viewer.destroy();
         });
     }
 
     async onShowBackgroundViewer(data) {
-        this.backgroundViewerVisible = true;
-        this.vcref.clear();
-
-        const { BackgroundViewer } = await import("./components/background-viewer/background-viewer");
-        const viewer = this.backgroundViewerRef.createComponent(this.cfr.resolveComponentFactory(BackgroundViewer));
-
-        viewer.instance.data = data;
-        viewer.instance.close.subscribe(() => {
-            this.backgroundViewerVisible = false;
-        });
+        this.backgroundViewerData = data;
     }
 
     setIndicatorStatus(status) {

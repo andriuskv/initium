@@ -1,5 +1,5 @@
-import { NgModule, Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
-import { BrowserModule, DomSanitizer } from "@angular/platform-browser";
+import { Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
 import { SettingService } from "../../services/settingService";
 import { BackgroundService } from "../../services/backgroundService";
 
@@ -211,9 +211,3 @@ export class BackgroundViewer {
         this.close.emit();
     }
 }
-
-@NgModule({
-    declarations: [BackgroundViewer],
-    imports: [BrowserModule]
-})
-class BackgroundViewerModule {}

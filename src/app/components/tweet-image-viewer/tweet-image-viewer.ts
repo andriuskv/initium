@@ -10,9 +10,9 @@ export class TweetImageViewer {
     @Output() close = new EventEmitter();
     @Input() data;
 
-    images = [];
-    loading = true;
+    loaded = false;
     index: number;
+    images = [];
 
     ngOnInit() {
         this.index = this.data.startIndex;
@@ -25,7 +25,7 @@ export class TweetImageViewer {
         this.images[this.index].loaded = true;
 
         setTimeout(() => {
-            this.loading = false;
+            this.loaded = true;
         }, 200);
     }
 
@@ -44,10 +44,7 @@ export class TweetImageViewer {
         else if (this.index === this.images.length) {
             this.index = 0;
         }
-
-        if (!this.images[this.index].loaded) {
-            this.loading = true;
-        }
+        this.loaded = this.images[this.index].loaded;
     }
 
     closeViewer() {
