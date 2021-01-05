@@ -21,6 +21,7 @@ import { Timer } from "./components/timer/timer";
 import { Stopwatch } from "./components/stopwatch/stopwatch";
 import { Pomodoro } from "./components/pomodoro/pomodoro";
 import { Countdown } from "./components/countdown/countdown";
+import { BackgroundViewer } from "./components/background-viewer/background-viewer";
 import { Calendar } from "./components/calendar/calendar";
 import { CalendarSelectedDay } from "./components/calendar-selected-day/calendar-selected-day";
 import { GoogleApps } from "./components/google-apps/google-apps";
@@ -33,7 +34,7 @@ import { ToTopButton } from "./components/to-top-button/to-top-button";
     declarations: [
         App, Settings, Background, Time, Dropdown, SelectItem, MainBlock, TopSites, Notepad, Twitter, RssFeed,
         Weather, WidgetMenu, Tasks, UpperBlock, Timer, Stopwatch, Pomodoro, Countdown, Calendar,
-        CalendarSelectedDay, GoogleApps, Storage, ResizeBar, ToTopButton
+        CalendarSelectedDay, GoogleApps, Storage, ResizeBar, ToTopButton, BackgroundViewer
     ],
     bootstrap: [App]
 })
