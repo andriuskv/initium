@@ -7,6 +7,7 @@ import { Subject } from "rxjs";
 export class BackgroundService {
   subject: Subject<object> = new Subject();
   backgroundInfo = JSON.parse(localStorage.getItem("background-info"));
+  downscaledBackground = localStorage.getItem("downscaled-background");
 
   async fetchUnsplashInfo() {
     try {
@@ -28,22 +29,22 @@ export class BackgroundService {
   async cacheUnsplashInfo() {
     const info = await this.fetchUnsplashInfo();
 
-    console.log(info);
-
     if (info) {
       this.cacheImage(info.url);
       this.cacheDownscaledBackground(info.url);
       localStorage.setItem("background-info", JSON.stringify(info));
       return info;
     }
-    localStorage.removeItem("background-info");
-    localStorage.removeItem("downscaled-background");
   }
 
   async fetchBackgroundInfo() {
     if (this.backgroundInfo) {
       if (Date.now() - this.backgroundInfo.cacheDate > 1000 * 60 * 60 * 20) {
         this.cacheUnsplashInfo();
+      }
+      else if (!this.downscaledBackground) {
+        this.cacheImage(this.backgroundInfo.url);
+        this.cacheDownscaledBackground(this.backgroundInfo.url);
       }
       return this.backgroundInfo;
     }
