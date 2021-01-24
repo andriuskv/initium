@@ -7,7 +7,7 @@ import { Subject } from "rxjs";
 export class BackgroundService {
   subject: Subject<object> = new Subject();
   backgroundInfo = JSON.parse(localStorage.getItem("background-info"));
-  downscaledBackground = localStorage.getItem("downscaled-background");
+  downscaledBackground = JSON.parse(localStorage.getItem("downscaled-background"));
 
   async fetchUnsplashInfo() {
     try {
@@ -42,7 +42,7 @@ export class BackgroundService {
       if (Date.now() - this.backgroundInfo.cacheDate > 1000 * 60 * 60 * 20) {
         this.cacheUnsplashInfo();
       }
-      else if (!this.downscaledBackground) {
+      else if (!this.downscaledBackground || this.downscaledBackground.id !== this.backgroundInfo.url) {
         this.cacheImage(this.backgroundInfo.url);
         this.cacheDownscaledBackground(this.backgroundInfo.url);
       }
@@ -101,23 +101,23 @@ export class BackgroundService {
   }
 
   async getIDBBackground(id) {
-    const { Store, get } = await import("idb-keyval");
-    const store = new Store("initium", "background");
+    const { createStore, get } = await import("idb-keyval");
+    const store = createStore("initium", "background");
 
     return get(id, store);
   }
 
   async setIDBBackground(image) {
-    const { Store, set, clear } = await import("idb-keyval");
-    const store = new Store("initium", "background");
+    const { createStore, set, clear } = await import("idb-keyval");
+    const store = createStore("initium", "background");
 
     clear(store);
     set(image.name, image, store);
   }
 
   async resetIDBStore() {
-    const { Store, clear } = await import("idb-keyval");
-    const store = new Store("initium", "background");
+    const { createStore, clear } = await import("idb-keyval");
+    const store = createStore("initium", "background");
 
     clear(store);
   }
