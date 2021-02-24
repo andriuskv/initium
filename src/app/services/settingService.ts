@@ -34,8 +34,8 @@ export class SettingService {
                 url: ""
             },
             general: {
-                notificationsDisabled: true,
-                notificationFocusDisabled: true
+                notificationsEnabled: false,
+                pageFocusEnabled: false
             },
             mainBlock: {
                 isNavHidden: false,
