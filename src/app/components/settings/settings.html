@@ -26,22 +26,22 @@
 </ul>
 <div class="setting-tab" *ngIf="active === 'general'">
     <label class="checkbox-container setting">
-        <span>Disable notifications</span>
+        <span>Enable notifications</span>
         <input type="checkbox" class="sr-only checkbox-input"
-            [checked]="settings.general.notificationsDisabled"
-            (click)="toggleSettingCheckbox('notificationsDisabled')"
-            (keyup.enter)="toggleSettingCheckbox('notificationsDisabled')">
+            [checked]="settings.general.notificationsEnabled"
+            (click)="toggleSettingCheckbox('notificationsEnabled')"
+            (keyup.enter)="toggleSettingCheckbox('notificationsEnabled')">
         <div class="checkbox">
             <div class="checkbox-tick"></div>
         </div>
     </label>
-    <label class="checkbox-container setting" [class.disabled]="settings.general.notificationsDisabled">
-        <span>Don't focus tab on notification click</span>
+    <label class="checkbox-container setting" [class.disabled]="!settings.general.notificationsEnabled">
+        <span>Focus page on notification click</span>
         <input type="checkbox" class="sr-only checkbox-input"
-            [disabled]="settings.general.notificationsDisabled"
-            [checked]="settings.general.notificationFocusDisabled"
-            (click)="toggleSettingCheckbox('notificationFocusDisabled')"
-            (keyup.enter)="toggleSettingCheckbox('notificationFocusDisabled')">
+            [disabled]="!settings.general.notificationsEnabled"
+            [checked]="settings.general.pageFocusEnabled"
+            (click)="toggleSettingCheckbox('pageFocusEnabled')"
+            (keyup.enter)="toggleSettingCheckbox('pageFocusEnabled')">
         <div class="checkbox">
             <div class="checkbox-tick"></div>
         </div>

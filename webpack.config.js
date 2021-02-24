@@ -20,11 +20,10 @@ module.exports = function(env = {}) {
             }
         }),
         new MiniCssExtractPlugin({
-            filename: "main.css"
+            filename: "[name].css"
         }),
         new HtmlWebpackPlugin({
             template: "./public/index.html",
-            cache: false,
             minify: env.prod ? {
                 keepClosingSlash: true,
                 collapseWhitespace: true,
@@ -33,7 +32,9 @@ module.exports = function(env = {}) {
         }),
         new CopyPlugin({ patterns: [
             { from: "./src/assets", to: "./assets" },
-            { from: "./public" }
+            { from: "./public", globOptions: {
+                ignore: ["**/index.html"]
+            }}
         ]}),
         new AngularCompilerPlugin({
             basePath: "./src/main.ts",
@@ -52,8 +53,7 @@ module.exports = function(env = {}) {
 
     return {
         mode,
-        cache: true,
-        target: "web",
+        target: "browserslist",
         entry: {
             main: "./src/main.ts"
         },
@@ -81,7 +81,7 @@ module.exports = function(env = {}) {
             },
             minimizer: [new TerserPlugin({
                 terserOptions: {
-                    ecma: 2018,
+                    ecma: 2020,
                     output: {
                         comments: false
                     }
