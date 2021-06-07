@@ -1,0 +1,64 @@
+{
+  "apps": [
+    {
+      "title": "YouTube",
+      "iconPath": "assets/google-product-logos/youtube.png",
+      "url": "https://youtube.com"
+    },
+    {
+      "title": "Gmail",
+      "iconPath": "assets/google-product-logos/gmail.png",
+      "url": "https://mail.google.com/mail"
+    },
+    {
+      "title": "Drive",
+      "iconPath": "assets/google-product-logos/drive.png",
+      "url": "https://drive.google.com"
+    },
+    {
+      "title": "Calendar",
+      "iconPath": "assets/google-product-logos/calendar.png",
+      "url": "https://www.google.com/calendar"
+    },
+    {
+      "title": "Docs",
+      "iconPath": "assets/google-product-logos/docs.png",
+      "url": "https://docs.google.com/document"
+    },
+    {
+      "title": "Maps",
+      "iconPath": "assets/google-product-logos/maps.png",
+      "url": "https://maps.google.com/maps"
+    },
+    {
+      "title": "Translate",
+      "iconPath": "assets/google-product-logos/translate.png",
+      "url": "https://translate.google.com"
+    },
+    {
+      "title": "News",
+      "iconPath": "assets/google-product-logos/news.png",
+      "url": "https://news.google.com"
+    },
+    {
+      "title": "Photos",
+      "iconPath": "assets/google-product-logos/photos.png",
+      "url": "https://photos.google.com"
+    },
+    {
+      "title": "Meet",
+      "iconPath": "assets/google-product-logos/meet.png",
+      "url": "https://meet.google.com"
+    },
+    {
+      "title": "Hangouts",
+      "iconPath": "assets/google-product-logos/hangouts.png",
+      "url": "https://hangouts.google.com"
+    },
+    {
+      "title": "Keep",
+      "iconPath": "assets/google-product-logos/keep.png",
+      "url": "https://keep.google.com"
+    }
+  ]
+}

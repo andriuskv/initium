@@ -1,0 +1,28 @@
+.twitter-splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+
+  & .main-panel-item-splash-icon {
+    margin-bottom: var(--space-md);
+  }
+}
+
+.twitter-pin-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+}
+
+.twitter-pin-input {
+  display: none;
+  width: 100px;
+  margin-right: var(--space-md);
+  text-align: center;
+
+  &.visible {
+    display: inline-block;
+  }
+}

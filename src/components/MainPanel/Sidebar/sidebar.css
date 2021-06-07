@@ -1,0 +1,30 @@
+.main-panel-sidebar {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  border-radius: 4px;
+  transform: translate(-2px, 5px);
+  transition: 0.2s transform;
+  pointer-events: auto;
+
+  &.expanded {
+    border-radius: 8px;
+    transform: translateX(var(--space-md));
+  }
+}
+
+.main-panel-sidebar-btn {
+  margin: var(--space-sm);
+}
+
+.main-panel-sidebar-show-btn {
+  display: block;
+  width: 8px;
+  height: 24px;
+  padding: 0;
+
+  &:hover {
+    background-color: var(--color-white-10);
+    cursor: pointer;
+  }
+}

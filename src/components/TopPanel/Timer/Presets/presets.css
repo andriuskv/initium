@@ -1,0 +1,71 @@
+.timer-form-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 132px;
+  padding: var(--space-md) var(--space-md) 0 var(--space-md);
+
+  & .timer-input-container {
+    align-self: auto;
+    height: 100%;
+  }
+}
+
+.timer-form-name-input {
+  width: 100%;
+  margin-bottom: var(--space-md);
+}
+
+.timer-form-message {
+  display: flex;
+  align-items: center;
+  margin-left: var(--space-sm);
+  margin-right: auto;
+  font-size: var(--text-sm);
+  font-weight: bold;
+  color: var(--color-negative);
+}
+
+.timer-presets {
+  overflow-y: auto;
+  height: 160px;
+}
+
+.timer-preset {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-white-10);
+}
+
+.timer-preset-name {
+  margin-bottom: var(--space-sm);
+  font-weight: bold;
+  font-size: var(--text-lg);
+}
+
+.timer-preset-time {
+  font-weight: bold;
+  color: var(--color-white-60);
+}
+
+.timer-preset-dropdown {
+  margin-left: auto;
+}
+
+.timer-preset-list-footer {
+  justify-content: space-between;
+}
+
+.timer-create-preset-footer {
+  justify-content: flex-end;
+
+  & .btn {
+    margin-left: var(--space-md);
+  }
+}
+
+.timer-presets-message {
+  font-size: var(--text-lg);
+}

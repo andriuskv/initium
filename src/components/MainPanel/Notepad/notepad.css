@@ -1,0 +1,17 @@
+.notepad {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.notepad-input {
+  flex-grow: 1;
+
+  &:focus {
+    outline: none;
+    box-shadow: inset 0 -1px 0 0 var(--color-primary);
+  }
+}

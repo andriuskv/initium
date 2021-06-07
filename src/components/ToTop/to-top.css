@@ -1,0 +1,25 @@
+.to-top-button {
+  z-index: 1;
+  position: absolute;
+  right: 14px;
+  bottom: var(--space-md);
+  display: none;
+  padding: var(--space-md);
+  box-shadow: 0 1px 2px var(--color-black-16),
+              0 2px 4px var(--color-black-8);
+  background-color: var(--color-white-10);
+
+  &:hover {
+    background-color: var(--color-white-20);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-primary),
+                0 1px 2px var(--color-black-16),
+                0 2px 4px var(--color-black-8);
+  }
+
+  &.visible {
+    display: block;
+  }
+}
