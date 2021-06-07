@@ -1,0 +1,101 @@
+@import "../../../styles/mixins.css";
+
+.top-sites-container {
+  overflow: initial;
+  position: relative;
+  height: auto;
+  pointer-events: none;
+}
+
+.top-sites {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm);
+
+  @media (max-height: 720px) {
+    gap: var(--space-xs);
+
+    & .top-site-thumbnail-container {
+      width: 72px;
+      height: 72px;
+    }
+  }
+}
+
+.top-site {
+  position: relative;
+  width: 136px;
+  pointer-events: auto;
+
+  &:hover {
+    & .top-site-dropdown:not(.visible) {
+      animation: 0s linear 0.4s forwards delayed-reveal;
+    }
+  }
+}
+
+.top-site-link {
+  display: block;
+  padding: var(--space-sm);
+  border-radius: 12px;
+
+  &:hover {
+    background-color: var(--color-white-10);
+  }
+}
+
+.top-site-container {
+  background-color: var(--color-grey-90-50);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px 0 var(--color-white-10);
+}
+
+.top-site-title {
+  @mixin text-truncate;
+
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 99px;
+  font-size: var(--text-xs);
+  text-align: center;
+  line-height: 1;
+}
+
+.top-site-dropdown {
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+
+  &.visible, &:focus-within {
+    opacity: 1;
+  }
+}
+
+.top-site-add-btn {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.top-site-add-btn-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.top-site-thumbnail-container {
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto;
+  border-radius: 50%;
+}
+
+.top-site-thumbnail {
+  max-width: 32px;
+}

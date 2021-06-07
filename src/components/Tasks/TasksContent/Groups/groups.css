@@ -1,0 +1,34 @@
+.tasks-groups-form {
+  display: flex;
+  padding: var(--space-md) var(--space-sm);
+  border-bottom: 1px solid var(--color-white-10);
+
+  & .input {
+    width: 100%;
+    margin-right: var(--space-md);
+  }
+}
+
+.tasks-groups-form-input {
+  width: 100%;
+  margin-right: var(--space-md);
+}
+
+.tasks-groups-items {
+  overflow-y: auto;
+  height: 100%;
+}
+
+.tasks-group-input {
+  width: 100%;
+  height: 100%;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.tasks-groups-message {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+}

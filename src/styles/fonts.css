@@ -1,0 +1,15 @@
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/open-sans-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/open-sans-600.woff2") format("woff2");
+}

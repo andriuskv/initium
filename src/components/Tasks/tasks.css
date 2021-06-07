@@ -1,0 +1,77 @@
+.tasks {
+  --height: 448px;
+  --header-height: 36px;
+
+  z-index: var(--z-index, 1);
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  max-height: calc(100% - var(--space-xl));
+  height: 0;
+
+  &.revealed {
+    height: var(--height);
+  }
+
+  &.resizing {
+    max-height: calc(100% - 24px);
+  }
+}
+
+.tasks-toggle-btn {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: var(--space-xs) var(--space-sm);
+  background-color: transparent;
+  text-shadow: 0 1px 2px var(--color-black-8),
+                0 2px 4px var(--color-black-4);
+  letter-spacing: 1px;
+  transition: 0.2s transform;
+  transition-delay: 0.1s;
+
+  &:hover {
+    background-color: transparent;
+  }
+
+  &.shifted {
+    transition-delay: 0s;
+    transform: translate(var(--space-md), var(--space-md));
+  }
+}
+
+.tasks-content {
+  opacity: 0;
+  visibility: hidden;
+  max-height: 100%;
+  width: 320px;
+  height: 100%;
+  border-bottom-right-radius: 999px;
+  transform-origin: top left;
+  transform: scale(0);
+  transition: 0.2s transform,
+              0.2s opacity,
+              0.2s visibility,
+              0.2s border-bottom-right-radius;
+  transition-delay: 0.1s;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+    border-bottom-right-radius: 8px;
+    transform: scale(1);
+    transition-delay: 0s;
+
+    & .tasks-transition-target {
+      opacity: 1;
+      transition-delay: 0.1s;
+    }
+  }
+}
+
+.tasks-transition-target {
+  opacity: 0;
+  height: 100%;
+  transition: 0.2s opacity;
+}

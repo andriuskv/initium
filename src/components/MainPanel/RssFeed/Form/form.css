@@ -1,0 +1,35 @@
+.feed-form-title {
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xl);
+  font-size: var(--text-lg);
+  text-align: center;
+}
+
+.feed-form {
+  width: 240px;
+  margin: auto;
+}
+
+.feed-form-input {
+  width: 100%;
+  margin-bottom: var(--space-md);
+}
+
+.feed-add-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.feed-message {
+  margin-right: var(--space-md);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  color: var(--color-negative);
+}
+
+.feed-form-hide-btn {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+}

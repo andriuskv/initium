@@ -1,0 +1,49 @@
+.clock {
+  position: absolute;
+  top: 22%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 1px 2px var(--color-black-8),
+                0 2px 4px var(--color-black-4),
+                0 4px 8px var(--color-black-2);
+  user-select: none;
+
+  @media (max-height: 720px) {
+    & .clock-time {
+      font-size: 6rem;
+    }
+
+    & .clock-time-period {
+     font-size: var(--text-xxl);
+    }
+
+    & .clock-date {
+      margin-top: var(--space-sm);
+    }
+  }
+}
+
+.clock-time-container {
+  position: relative;
+  display: flex;
+  line-height: 0.8;
+}
+
+.clock-time {
+  font-size: 7.2rem;
+}
+
+.clock-time-period {
+  position: absolute;
+  right: -4px;
+  bottom: 0;
+  transform: translateX(100%);
+  font-size: var(--text-xxxl);
+}
+
+.clock-date {
+  margin-top: var(--space-md);
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-align: right;
+}

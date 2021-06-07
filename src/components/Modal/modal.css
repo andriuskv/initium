@@ -1,0 +1,38 @@
+.modal-mask {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  left: 1px;
+  display: flex;
+  border-radius: 8px;
+  background-color: var(--color-grey-90-50);
+}
+
+.modal {
+  min-width: 280px;
+  padding: var(--space-xl) var(--space-md) var(--space-md) var(--space-md);
+  margin: auto;
+  background-color: var(--color-grey-90);
+  backdrop-filter: none;
+
+  & p {
+     margin-left: var(--space-md);
+  }
+}
+
+.modal-title {
+  margin-left: var(--space-md);
+  margin-bottom: var(--space-xl);
+  font-size: var(--text-lg);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-xl);
+
+  & .btn:last-of-type {
+    margin-left: var(--space-md);
+  }
+}

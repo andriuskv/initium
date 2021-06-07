@@ -1,9 +1,11 @@
 const background = JSON.parse(localStorage.getItem("downscaled-background"));
 
 if (background) {
-  const backgroundElement = document.getElementById("downscaled-background");
-  const { dataURL, x, y } = background;
+  const { dataURL, x = 50, y = 50 } = background;
 
-  backgroundElement.style.backgroundImage = `url(${dataURL})`;
-  backgroundElement.style.backgroundPosition = `${x}% ${y}%`;
+  document.body.insertAdjacentHTML("beforeend", `
+    <div id="downscaled-background">
+      <div class="downscaled-background-image" style="background-position: ${x}% ${y}%; background-image: url(${dataURL})"></div>
+    </div>
+  `);
 }

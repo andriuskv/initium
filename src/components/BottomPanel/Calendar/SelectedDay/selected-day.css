@@ -1,0 +1,147 @@
+.selected-day-header {
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-white-10);
+}
+
+.selected-day-form-header {
+  & .selected-day-header-btn {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.selected-day-title {
+  font-size: var(--text-lg);
+  font-weight: normal;
+}
+
+.selected-day-remainders {
+  overflow-y: auto;
+}
+
+.selected-day-remainder {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--color-white-10);
+}
+
+.selected-day-reminder-color {
+  flex-shrink: 0;
+  width: 4px;
+  height: 24px;
+  margin-right: var(--space-md);
+  margin-left: var(--space-xs);
+  transition: 0.2s transform, 0.2s background-color;
+
+  &:hover {
+    transform: scaleX(2);
+  }
+}
+
+.reminder-repeat-icon {
+  flex-shrink: 0;
+  margin-right: var(--space-sm);
+  color: var(--color-white-60);
+}
+
+.selected-day-remainder-btn {
+  margin-left: auto;
+}
+
+.empty-reminder-list-message {
+  margin: auto;
+  font-size: var(--text-lg);
+}
+
+.selected-day-form {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: var(--space-md);
+}
+
+.reminder-input {
+  width: 100%;
+}
+
+.reminder-form-row {
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-sm);
+}
+
+.reminder-setting {
+  margin-top: var(--space-md);
+}
+
+.calendar-checkbox-container {
+  margin-right: var(--space-xl);
+}
+
+.range-data-list-panel {
+  position: absolute;
+  background-color: var(--color-grey-90);
+  transform: translate(-50%, var(--space-sm));
+}
+
+.range-data-list {
+  overflow: hidden;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.range-data-list-items {
+  overflow-y: auto;
+  width: 100px;
+  height: 152px;
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.range-data-list-item {
+  height: 27px;
+  padding: var(--space-sm) var(--space-md);
+  white-space: nowrap;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-white-10);
+  }
+}
+
+.repeat-input {
+  width: calc(3ch + 24px);
+  margin-left: var(--space-md);
+  margin-right: var(--space-md);
+  text-align: center;
+}
+
+.range-input-container {
+  margin-left: var(--space-md);
+  margin-right: var(--space-lg);
+}
+
+.range-input {
+  width: 84px;
+  text-align: center;
+}
+
+.reminder-error-message {
+  margin-top: var(--space-sm);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  color: var(--color-negative);
+}
+
+.reminder-form-btns {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+
+  & .btn:first-of-type {
+    margin-right: var(--space-md);
+  }
+}

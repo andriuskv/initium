@@ -1,0 +1,41 @@
+.timer-content {
+  &.has-presets {
+    flex-direction: column;
+
+    & .timer-input-container {
+      justify-content: space-between;
+      align-self: auto;
+    }
+  }
+}
+
+.timer-preset-select {
+  margin: var(--space-md) 0;
+}
+
+.timer-selected-preset-name {
+  display: flex;
+  align-items: center;
+  min-height: 45px;
+  font-size: calc(var(--text-lg) * var(--size-multiplier));
+}
+
+.timer-dropdown-setting {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.timer-input-container {
+  align-self: stretch;
+  height: auto;
+}
+
+.timer-input {
+  width: 2ch;
+  height: 100%;
+  padding: 0;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 1px 0 0 var(--color-primary);
+  }
+}

@@ -1,0 +1,37 @@
+.top-sites-form {
+  align-self: center;
+  width: 400px;
+  padding: var(--space-md);
+  pointer-events: auto;
+}
+
+.top-sites-form-title {
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xl);
+  font-size: var(--text-lg);
+  text-align: center;
+}
+
+.top-sites-form-label {
+  display: block;
+  margin-bottom: var(--space-xl);
+}
+
+.top-sites-form-input-title {
+  margin-left: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  font-weight: bold;
+}
+
+.top-sites-form-input {
+  width: 100%;
+}
+
+.top-sites-form-buttons {
+  display: flex;
+}
+
+.top-sites-form-cancel-btn {
+  margin-left: auto;
+  margin-right: var(--space-md);
+}

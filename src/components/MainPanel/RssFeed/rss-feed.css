@@ -1,0 +1,68 @@
+.rss-feed {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.feed-entry-description-container.truncated {
+  overflow: hidden;
+  max-height: 120px;
+
+  & + .feed-entry-expand-btn {
+    display: block;
+  }
+}
+
+.feed-entry-thumbnail {
+  float: left;
+  margin-top: var(--space-sm);
+  margin-right: var(--space-md);
+  border-radius: 8px;
+}
+
+.feed-entry-description {
+  line-height: 1.4;
+  word-break: break-word;
+  white-space: pre-wrap;
+
+  & img {
+    float: left;
+    max-height: 64px;
+    margin-top: var(--space-sm);
+    margin-right: var(--space-md);
+    border-radius: 8px;
+  }
+
+  & a {
+    all: unset;
+    color: var(--color-primary-10);
+
+    &:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  & tr {
+    display: flex;
+  }
+
+  & td {
+    padding: 0;
+    white-space: normal;
+  }
+
+  & code {
+    white-space: pre-line;
+  }
+}
+
+.feed-date {
+  margin-top: var(--space-sm);
+  color: var(--color-white-60);
+  font-size: var(--text-sm);
+  font-weight: bold;
+}

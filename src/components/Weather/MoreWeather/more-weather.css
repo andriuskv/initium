@@ -1,0 +1,126 @@
+.weather-more-info {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.weather-more-current {
+  display: flex;
+  padding: var(--space-xl);
+  border-bottom: 1px solid var(--color-white-10);
+}
+
+.weather-more-current-icon {
+  background-color: var(--color-white-10);
+  border-radius: 50%;
+  margin-right: var(--space-xl);
+}
+
+.weather-more-current-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.weather-more-current-city {
+  font-size: var(--text-xl);
+}
+
+.weather-more-current-main-info {
+  display: flex;
+  align-items: center;
+  margin: var(--space-sm) 0;
+}
+
+.weather-more-current-temperature {
+  display: flex;
+  margin-right: auto;
+}
+
+.weather-more-current-temperature-value {
+  font-size: var(--text-xxxxl);
+  line-height: 1;
+}
+
+.weather-more-current-temperature-units {
+  margin-left: var(--space-sm);
+  font-size: var(--text-xxl);
+}
+
+.weather-more-current-secondary {
+  font-size: var(--text-sm);
+  font-weight: bold;
+}
+
+.weather-more-current-secondary-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  &:not(:last-of-type) {
+    margin-bottom: var(--space-sm);
+  }
+}
+
+.weather-more-current-secondary-name {
+  min-width: 64px;
+  margin-right: var(--space-sm);
+  text-align: right;
+}
+
+.weather-more-current-wind {
+  display: flex;
+  align-items: center;
+}
+
+.weather-more-current-wind-icon {
+  margin-left: var(--space-sm);
+  transform: rotateZ(calc(var(--degrees) * 1deg));
+  transition: transform 0.2s;
+}
+
+.weather-more-current-description {
+  font-size: var(--text-lg);
+}
+
+.weather-more-hourly {
+  overflow-x: auto;
+  display: flex;
+  flex-grow: 1;
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-primary);
+  }
+}
+
+.weather-more-hourly-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md) var(--space-sm);
+}
+
+.weather-more-hourly-time {
+  font-weight: bold;
+  font-size: var(--text-xs);
+}
+
+.weather-more-hourly-temperature {
+  display: flex;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.weather-more-hourly-temperature-units {
+  margin-left: var(--space-xs);
+}
+
+.weather-more-hide-btn {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+}

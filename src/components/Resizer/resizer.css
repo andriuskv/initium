@@ -1,0 +1,19 @@
+.resizer {
+  display: block;
+  height: 16px;
+  transform: translateY(2px);
+  pointer-events: auto;
+  cursor: row-resize;
+
+  &::before {
+    content: "";
+    position: relative;
+    top: 50%;
+    display: block;
+    width: calc(100% - var(--space-xl));
+    height: 2px;
+    margin: 0 var(--space-md);
+    transform: translateY(-50%);
+    background-color: var(--color-primary);
+  }
+}
