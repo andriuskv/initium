@@ -1,12 +1,72 @@
 import { getMonth } from "./timeDate";
 
 const serverUrl = `${process.env.SERVER_URL}/twitter`;
-let oauth = JSON.parse(localStorage.getItem("oauth")) || {};
+let users = JSON.parse(localStorage.getItem("twitter_users")) || [];
+let activeUserIndex = users.findIndex(user => user.active);
+let oauth = null;
 let requestToken = "";
 let requestTokenSecret = "";
 
-function isLoggedIn() {
-  return oauth.token && oauth.tokenSecret;
+function hasUsers() {
+  return users.length > 0;
+}
+
+function addUser(newUser) {
+  users = users.map(user => {
+    delete user.active;
+    return user;
+  });
+  newUser.active = true;
+
+  if (oauth) {
+    newUser.token = oauth.token;
+    newUser.tokenSecret = oauth.tokenSecret;
+    oauth = null;
+  }
+  const index = users.findIndex(user => user.handle === newUser.handle);
+
+  if (index >= 0) {
+    activeUserIndex = index;
+    users[index] = { ...users[index], ...newUser };
+  }
+  else {
+    activeUserIndex = users.length;
+    users.push(newUser);
+  }
+  saveUsers(users);
+  return users;
+}
+
+function updateActiveUser(index) {
+  users = users.map(user => {
+    delete user.active;
+    return user;
+  });
+
+  activeUserIndex = index;
+  users[index].active = true;
+
+  saveUsers(users);
+  return users[index];
+}
+
+function getActiveUser() {
+  return users[activeUserIndex];
+}
+
+function removeActiveUser() {
+  users.splice(activeUserIndex, 1);
+
+  saveUsers(users);
+
+  if (users.length) {
+    activeUserIndex = 0;
+    users[activeUserIndex].active = true;
+    return users[activeUserIndex];
+  }
+  else {
+    activeUserIndex = -1;
+  }
 }
 
 async function fetchLoginUrl() {
@@ -30,11 +90,10 @@ async function fetchAccessToken(pinCode) {
       token: requestToken,
       tokenSecret: requestTokenSecret
     })
-  }).then(response => response.json());
+  }).then(res => res.json());
 
   if (json.token) {
     oauth = json;
-    localStorage.setItem("oauth", JSON.stringify(json));
     return true;
   }
 }
@@ -61,8 +120,17 @@ async function fetchTimeline(params = {}) {
 }
 
 function getAuthorizationHeaders() {
+  let token = "";
+  let tokenSecret = "";
+
+  if (oauth) {
+    ({ token, tokenSecret } = oauth);
+  }
+  else {
+    ({ token, tokenSecret } = users.find(user => user.active));
+  }
   return {
-    "x-authorization": `OAuth oauth_token=${oauth.token} oauth_token_secret=${oauth.tokenSecret}`
+    "x-authorization": `OAuth oauth_token=${token} oauth_token_secret=${tokenSecret}`
   };
 }
 
@@ -100,8 +168,16 @@ function getTweetDate(createdAt) {
   };
 }
 
+function saveUsers(users) {
+  localStorage.setItem("twitter_users", JSON.stringify(users));
+}
+
 export {
-  isLoggedIn,
+  hasUsers,
+  addUser,
+  updateActiveUser,
+  getActiveUser,
+  removeActiveUser,
   fetchLoginUrl,
   fetchAccessToken,
   fetchUser,

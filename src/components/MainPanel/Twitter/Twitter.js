@@ -1,22 +1,26 @@
 import { useState, useEffect, useRef } from "react";
 import { dispatchCustomEvent } from "utils";
-import { isLoggedIn, fetchUser, fetchTimeline, getTweetDate } from "services/twitter";
+import { hasUsers, addUser, updateActiveUser, getActiveUser, removeActiveUser, fetchUser, fetchTimeline, getTweetDate } from "services/twitter";
 import ToTop from "components/ToTop";
 import Icon from "components/Icon";
+import Dropdown from "components/Dropdown";
 import "./twitter.css";
 import Form from "./Form";
 
 export default function Twitter({ showIndicator }) {
   const [loading, setLoading] = useState(true);
+  const [addingAnotherUser, setAddingAnotherUser] = useState(false);
   const [user, setUser] = useState(null);
   const [tweets, setTweets] = useState([]);
   const [tweetsToLoad, setTweetsToLoad] = useState([]);
+  const [users, setUsers] = useState(null);
+  const [activeUser, setActiveUser] = useState(() => getActiveUser());
   const [fetchingMoreTweets, setFetchingMoreTweets] = useState(false);
   const lastUpdate = useRef(0);
   const timelineTimeoutId = useRef(0);
 
   useEffect(() => {
-    if (isLoggedIn()) {
+    if (hasUsers()) {
       loadContent();
     }
     else {
@@ -46,6 +50,11 @@ export default function Twitter({ showIndicator }) {
 
         setUser(user);
         setTweets(timeline.tweets);
+        setUsers([...addUser(user)]);
+
+        if (addingAnotherUser) {
+          setAddingAnotherUser(false);
+        }
       }
     } catch (e) {
       console.log(e);
@@ -127,16 +136,41 @@ export default function Twitter({ showIndicator }) {
     setFetchingMoreTweets(false);
   }
 
-  function logout() {
-    setUser(null);
-    setTweets([]);
-    setTweetsToLoad([]);
-    localStorage.removeItem("oauth");
-  }
-
   function viewNewTweets() {
     setTweets(tweetsToLoad.concat(tweets));
     setTweetsToLoad([]);
+  }
+
+  function logout() {
+    const newActiveUser = removeActiveUser();
+
+    if (newActiveUser) {
+      setActiveUser({ ...newActiveUser });
+      loadContent();
+    }
+    else {
+      setUser(null);
+      setTweets([]);
+      setTweetsToLoad([]);
+    }
+  }
+
+  function selectUser(user, index) {
+    if (user.active) {
+      return;
+    }
+    const newActiveUser = updateActiveUser(index);
+
+    setActiveUser({ ...newActiveUser });
+    loadContent();
+  }
+
+  function addAnotherUser() {
+    setAddingAnotherUser(true);
+  }
+
+  function hideAnotherUserForm() {
+    setAddingAnotherUser(false);
   }
 
   function handleTweetClick({ target }, { tweetUrl, quotedTweet }) {
@@ -236,8 +270,8 @@ export default function Twitter({ showIndicator }) {
     );
   }
 
-  if (loading || !user) {
-    return <Form initialLoading={loading} loadContent={loadContent}/>;
+  if (loading || !user || addingAnotherUser) {
+    return <Form initialLoading={loading} loadContent={loadContent} addingAnotherUser={addingAnotherUser} hide={hideAnotherUserForm}/>;
   }
   return (
     <div className="twitter-content" style={{ "--profile-color": user.profileColor }}>
@@ -247,10 +281,35 @@ export default function Twitter({ showIndicator }) {
           <span className="twitter-user-name">{user.name}</span>
           <span className="twitter-user-handle">{user.handle}</span>
         </a>
-        <button className="btn icon-btn main-panel-item-header-btn"
-          title="Log out" onClick={logout}>
-          <Icon id="logout"/>
-        </button>
+        {users && (
+          <Dropdown
+            toggle={{ className: "main-panel-item-header-btn" }}
+            body={{ className: "twitter-header-dropdown" }}>
+            <div className="dropdown-group">
+              {users.map((user, i) => (
+                <button className="btn icon-text-btn dropdown-btn twitter-header-dropdown-user"
+                  onClick={() => selectUser(user, i)} disabled={user.active} key={i}>
+                  <img src={user.profileImage} className="twitter-header-dropdown-user-image" width="48px" height="48px" alt=""/>
+                  <div>
+                    <div>{user.name}</div>
+                    <div className="twitter-header-dropdown-user-handle">{user.handle}</div>
+                  </div>
+                  {user.active && (
+                    <div className="twitter-header-dropdown-user-indicator"></div>
+                  )}
+                </button>
+              ))}
+            </div>
+            <button className="btn icon-text-btn dropdown-btn" onClick={addAnotherUser}>
+              <Icon id="plus"/>
+              <span>Add another account</span>
+            </button>
+            <button className="btn icon-text-btn dropdown-btn" onClick={logout}>
+              <Icon id="logout"/>
+              <span>Log out {activeUser.handle}</span>
+            </button>
+          </Dropdown>
+        )}
       </div>
       <ul className="tweets">
         {tweetsToLoad.length > 0 && (
