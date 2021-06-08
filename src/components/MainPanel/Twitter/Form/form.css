@@ -26,3 +26,9 @@
     display: inline-block;
   }
 }
+
+.twitter-hide-form-btn {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+}
