@@ -9,6 +9,15 @@
   border-bottom-right-radius: 6px;
 }
 
+.twitter-content-mask {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-grey-90-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .twitter-user {
   display: flex;
   align-items: center;
