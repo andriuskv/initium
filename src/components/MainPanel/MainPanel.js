@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { getSetting, updateSetting } from "services/settings";
 import { handleZIndex } from "services/zIndex";
-import { isLoggedIn } from "services/twitter";
+import { hasUsers } from "services/twitter";
 import { hasStoredFeeds } from "services/feeds";
 import Icon from "../Icon";
 import "./main-panel.css";
@@ -69,7 +69,7 @@ export default function MainPanel({ settings }) {
     }
 
     if (tabs.twitter.renderPending) {
-      initComponent("twitter", isLoggedIn);
+      initComponent("twitter", hasUsers);
     }
 
     if (tabs.rssFeed.renderPending) {

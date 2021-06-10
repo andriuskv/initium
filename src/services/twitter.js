@@ -47,7 +47,6 @@ function updateActiveUser(index) {
   users[index].active = true;
 
   saveUsers(users);
-  return users[index];
 }
 
 function getActiveUser() {
@@ -57,16 +56,15 @@ function getActiveUser() {
 function removeActiveUser() {
   users.splice(activeUserIndex, 1);
 
-  saveUsers(users);
-
   if (users.length) {
     activeUserIndex = 0;
     users[activeUserIndex].active = true;
-    return users[activeUserIndex];
   }
   else {
     activeUserIndex = -1;
   }
+  saveUsers(users);
+  return users.length > 0;
 }
 
 async function fetchLoginUrl() {

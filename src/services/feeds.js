@@ -2,7 +2,7 @@ import { getRandomString } from "../utils";
 import { getDate } from "./timeDate";
 import * as chromeStorage from "./chromeStorage";
 
-async function getStoredFeeds() {
+function getStoredFeeds() {
   return chromeStorage.get("feeds");
 }
 

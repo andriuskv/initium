@@ -4,6 +4,7 @@ import { hasUsers, addUser, updateActiveUser, getActiveUser, removeActiveUser, f
 import ToTop from "components/ToTop";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
+import Spinner from "components/Spinner";
 import "./twitter.css";
 import Form from "./Form";
 
@@ -14,8 +15,9 @@ export default function Twitter({ showIndicator }) {
   const [tweets, setTweets] = useState([]);
   const [tweetsToLoad, setTweetsToLoad] = useState([]);
   const [users, setUsers] = useState(null);
-  const [activeUser, setActiveUser] = useState(() => getActiveUser());
+  const [activeUser, setActiveUser] = useState({});
   const [fetchingMoreTweets, setFetchingMoreTweets] = useState(false);
+  const [changingUser, setChangingUser] = useState(false);
   const lastUpdate = useRef(0);
   const timelineTimeoutId = useRef(0);
 
@@ -51,6 +53,7 @@ export default function Twitter({ showIndicator }) {
         setUser(user);
         setTweets(timeline.tweets);
         setUsers([...addUser(user)]);
+        setActiveUser({ ...getActiveUser() });
 
         if (addingAnotherUser) {
           setAddingAnotherUser(false);
@@ -59,7 +62,9 @@ export default function Twitter({ showIndicator }) {
     } catch (e) {
       console.log(e);
     } finally {
-      setLoading(false);
+      if (loading) {
+        setLoading(false);
+      }
     }
   }
 
@@ -141,12 +146,13 @@ export default function Twitter({ showIndicator }) {
     setTweetsToLoad([]);
   }
 
-  function logout() {
-    const newActiveUser = removeActiveUser();
+  async function logout() {
+    const hasMoreUsers = removeActiveUser();
 
-    if (newActiveUser) {
-      setActiveUser({ ...newActiveUser });
-      loadContent();
+    if (hasMoreUsers) {
+      setChangingUser(true);
+      await loadContent();
+      setChangingUser(false);
     }
     else {
       setUser(null);
@@ -155,14 +161,14 @@ export default function Twitter({ showIndicator }) {
     }
   }
 
-  function selectUser(user, index) {
+  async function selectUser(user, index) {
     if (user.active) {
       return;
     }
-    const newActiveUser = updateActiveUser(index);
-
-    setActiveUser({ ...newActiveUser });
-    loadContent();
+    setChangingUser(true);
+    updateActiveUser(index);
+    await loadContent();
+    setChangingUser(false);
   }
 
   function addAnotherUser() {
@@ -380,6 +386,11 @@ export default function Twitter({ showIndicator }) {
         </li>
       </ul>
       <ToTop/>
+      {changingUser && (
+        <div className="twitter-content-mask">
+          <Spinner/>
+        </div>
+      )}
     </div>
   );
 }
