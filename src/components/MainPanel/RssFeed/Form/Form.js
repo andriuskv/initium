@@ -3,9 +3,9 @@ import * as feedService from "services/feeds";
 import Icon from "components/Icon";
 import "./form.css";
 
-export default function Form({ feeds, feedsToLoad, addFeed, hide }) {
+export default function Form({ feeds, addFeed, hide }) {
   const [form, setForm] = useState({
-    backButtonVisible: feeds.length > 0 || feedsToLoad.length > 0
+    backButtonVisible: feeds.active.length > 0 || feeds.inactive.length > 0 || feeds.failed.length > 0
   });
 
   async function handleFormSubmit(event) {
@@ -15,7 +15,7 @@ export default function Form({ feeds, feedsToLoad, addFeed, hide }) {
 
     event.preventDefault();
 
-    if (feeds.some(feed => feed.url === url)) {
+    if (feeds.active.some(feed => feed.url === url)) {
       setForm({ ...form, message: "Feed already exists." });
       return;
     }

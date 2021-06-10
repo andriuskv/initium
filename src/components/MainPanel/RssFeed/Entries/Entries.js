@@ -3,7 +3,7 @@ import ToTop from "components/ToTop";
 import Icon from "components/Icon";
 import "./entries.css";
 
-export default function Entries({ navigation, feeds, feedsToLoad, selectFeed, previousShift, nextShift, showFeedList, markEntryAsRead, expandEntry }) {
+export default function Entries({ navigation, feeds, selectFeed, previousShift, nextShift, showFeedList, markEntryAsRead, expandEntry }) {
   const containerRef = useRef(0);
   const { activeIndex, shift, animateLeft, animateRight, VISIBLE_ITEM_COUNT } = navigation;
 
@@ -14,14 +14,14 @@ export default function Entries({ navigation, feeds, feedsToLoad, selectFeed, pr
   return (
     <div className="rss-feed">
       <div className="main-panel-item-header">
-        {feeds.length > VISIBLE_ITEM_COUNT && (
+        {feeds.active.length > VISIBLE_ITEM_COUNT && (
           <button className={`btn icon-btn main-panel-item-header-btn feed-shift-btn${animateLeft ? " active": ""}`}
             onClick={previousShift} disabled={shift <= 0}>
             <Icon id="chevron-left"/>
           </button>
         )}
         <ul className="main-panel-item-header-items">
-          {feeds.map((feed, i) => (
+          {feeds.active.map((feed, i) => (
             <li className={`main-panel-item-header-item${activeIndex === i ? " active" : ""}${i < shift || i >= shift + VISIBLE_ITEM_COUNT ? " hidden" : ""}`} key={feed.url}>
               <button className="btn icon-text-btn main-panel-item-header-item-select-btn feed-select-btn"
                 onClick={event => handleFeedSelection(event, i)}>
@@ -35,19 +35,19 @@ export default function Entries({ navigation, feeds, feedsToLoad, selectFeed, pr
             </li>
           ))}
         </ul>
-        {feeds.length > VISIBLE_ITEM_COUNT && (
+        {feeds.active.length > VISIBLE_ITEM_COUNT && (
           <button className={`btn icon-btn main-panel-item-header-btn feed-shift-btn${animateRight ? " active": ""}`}
-            onClick={nextShift} disabled={shift + VISIBLE_ITEM_COUNT >= feeds.length}>
+            onClick={nextShift} disabled={shift + VISIBLE_ITEM_COUNT >= feeds.active.length}>
             <Icon id="chevron-right"/>
           </button>
         )}
         <div className="main-panel-item-header-separator"></div>
-        <button className={`btn icon-btn main-panel-item-header-btn feed-list-btn${feedsToLoad.length ? " indicator" : ""}`} onClick={showFeedList} title="Show feeds">
+        <button className={`btn icon-btn main-panel-item-header-btn feed-list-btn${feeds.failed.length ? " indicator" : ""}`} onClick={showFeedList} title="Show feeds">
           <Icon id="menu"/>
         </button>
       </div>
       <ul className="feed-entries" ref={containerRef}>
-        {feeds[activeIndex].entries.map(entry => (
+        {feeds.active[activeIndex].entries.map(entry => (
           <li className="feed-entry" onClick={() => markEntryAsRead(entry)} key={entry.id}>
             <div className="feed-entry-title">
               {entry.newEntry && <span className="new-entry-indicator">New</span>}

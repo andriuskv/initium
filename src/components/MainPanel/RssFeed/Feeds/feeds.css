@@ -63,6 +63,12 @@
       background-position: center;
     }
   }
+
+  &.inactive {
+    & .feed-list-item-title span:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 .feed-list-item-header {
@@ -83,6 +89,12 @@
   margin-right: var(--space-sm);
 }
 
+.inactive-feed-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: var(--space-sm);
+}
+
 .feed-list-item-title {
   display: flex;
   align-items: center;
@@ -90,6 +102,8 @@
   margin-right: auto;
   border-radius: 0;
   text-align: left;
+  font-size: var(--text-md);
+  font-weight: bold;
 
   & span:hover {
     text-decoration: underline;

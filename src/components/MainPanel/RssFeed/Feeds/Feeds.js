@@ -4,10 +4,10 @@ import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import { SortableItem, SortableList, SortHandle } from "services/sortable";
 
-export default function Feeds({ feeds, feedsToLoad, selectFeedFromList, removeFeed, updateFeeds, showForm, hide }) {
+export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivateFeed, updateFeeds, showForm, hide }) {
   function enableTitleEdit(feed) {
     feed.updatingTitle = true;
-    updateFeeds(feeds, feedsToLoad, false);
+    updateFeeds(feeds, false);
   }
 
   function renameFeed(event, feed) {
@@ -20,17 +20,12 @@ export default function Feeds({ feeds, feedsToLoad, selectFeedFromList, removeFe
       feed.title = newTitle;
       shouldSave = true;
     }
-    updateFeeds(feeds, feedsToLoad, shouldSave);
+    updateFeeds(feeds, shouldSave);
   }
 
-  function removeFailedToFetchFeed(index) {
-    feedsToLoad.splice(index, 1);
-    updateFeeds(feeds, feedsToLoad);
-  }
-
-  async function refetchFeed(feed) {
+  async function refetchFeed(feed, type) {
     feed.fetching = true;
-    updateFeeds(feeds, feedsToLoad, false);
+    updateFeeds(feeds, false);
 
     try {
       const data = await feedService.fetchFeed(feed);
@@ -38,15 +33,29 @@ export default function Feeds({ feeds, feedsToLoad, selectFeedFromList, removeFe
       if (data.message) {
         return;
       }
-      const failedFeeds = feedsToLoad.filter(({ url }) => url !== feed.url);
 
-      feeds.splice(feed.index, 0, data);
-      updateFeeds(feeds, failedFeeds);
+      if (type === "failed") {
+        insertFailedFeed(data, feed.index);
+      }
+      else if (type === "inactive") {
+        activateFeed(data);
+      }
+      updateFeeds(feeds);
     } catch (e) {
       console.log(e);
       feed.fetching = false;
-      updateFeeds(feeds, feedsToLoad, false);
+      updateFeeds(feeds, false);
     }
+  }
+
+  function insertFailedFeed(feed, index) {
+    feeds.failed = feeds.failed.filter(({ url }) => url !== feed.url);
+    feeds.active.splice(index, 0, feed);
+  }
+
+  function activateFeed(feed) {
+    feeds.inactive = feeds.inactive.filter(({ url }) => url !== feed.url);
+    feeds.active.push(feed);
   }
 
   function blurFeedTitleInput(event) {
@@ -55,8 +64,9 @@ export default function Feeds({ feeds, feedsToLoad, selectFeedFromList, removeFe
     }
   }
 
-  function handleSort(feeds) {
-    updateFeeds(feeds, feedsToLoad);
+  function handleSort(activeFeeds) {
+    feeds.active = activeFeeds;
+    updateFeeds(feeds);
   }
 
   return (
@@ -66,15 +76,15 @@ export default function Feeds({ feeds, feedsToLoad, selectFeedFromList, removeFe
         <button className="btn icon-btn" onClick={() => showForm(true)} title="Add feed">
           <Icon id="plus"/>
         </button>
-        {feeds.length > 0 && (
+        {feeds.active.length > 0 && (
           <button className="btn icon-btn" onClick={hide} title="Hide feeds">
             <Icon id="cross"/>
           </button>
         )}
       </div>
-      <SortableList items={feeds} useDragHandle={true} handleSort={handleSort}>
+      <SortableList items={feeds.active} useDragHandle={true} handleSort={handleSort}>
         <ul className="feed-list-items" data-dropdown-parent>
-          {feeds.map((feed, index) => (
+          {feeds.active.map((feed, index) => (
             <SortableItem key={feed.url} index={index}>
               <li className="feed-list-item" key={feed.url}>
                 <div className="feed-list-item-header">
@@ -107,7 +117,11 @@ export default function Feeds({ feeds, feedsToLoad, selectFeedFromList, removeFe
                         <Icon id="edit"/>
                         <span>Rename</span>
                       </button>
-                      <button className="btn icon-text-btn dropdown-btn" onClick={() => removeFeed(index)}>
+                      <button className="btn icon-text-btn dropdown-btn" onClick={() => deactivateFeed(index)}>
+                        <Icon id="sleep"/>
+                        <span>Deactivate</span>
+                      </button>
+                      <button className="btn icon-text-btn dropdown-btn" onClick={() => removeFeed(index, "active")}>
                         <Icon id="trash"/>
                         <span>Remove</span>
                       </button>
@@ -119,7 +133,7 @@ export default function Feeds({ feeds, feedsToLoad, selectFeedFromList, removeFe
               </li>
             </SortableItem>
           ))}
-          {feedsToLoad.map((feed, i) => (
+          {feeds.failed.map((feed, index) => (
             <li className={`feed-list-item${feed.fetching ? " fetching" : ""}`} key={feed.url}>
               <div className="feed-list-item-content">
                 <div className="feed-list-item-header">
@@ -127,14 +141,41 @@ export default function Feeds({ feeds, feedsToLoad, selectFeedFromList, removeFe
                     <h3 className="feed-list-item-title">{feed.title}</h3>
                     <a href={feed.url} className="feed-list-item-url" target="_blank" rel="noreferrer">{feed.url}</a>
                   </div>
-                  <button className="btn icon-btn" onClick={() => removeFailedToFetchFeed(i)} title="Remove">
+                  <button className="btn icon-btn" onClick={() => removeFeed(index, "failed")} title="Remove">
                     <Icon id="trash"/>
                   </button>
                 </div>
                 <div className="feed-list-item-error">
                   <span>Failed to fetch.</span>
-                  <button className="btn" onClick={() => refetchFeed(feed)} disabled={feed.fetching}>Try again</button>
+                  <button className="btn" onClick={() => refetchFeed(feed, "failed")} disabled={feed.fetching}>Try again</button>
                 </div>
+              </div>
+            </li>
+          ))}
+          {feeds.inactive.map((feed, index) => (
+            <li className={`feed-list-item${feed.fetching ? " fetching" : ""} inactive`} key={feed.url}>
+              <div className="feed-list-item-content">
+                <div className="feed-list-item-header">
+                  {feed.image ? <img src={feed.image} className="feed-list-item-logo" width="40px" height="40px" alt=""/> : null}
+                  <div className="feed-list-item-title-container">
+                    <h3 className="feed-list-item-title">
+                      <Icon id="sleep" className="inactive-feed-icon" title="Inactive"/>
+                      <span>{feed.title}</span>
+                    </h3>
+                    <a href={feed.url} className="feed-list-item-url" target="_blank" rel="noreferrer">{feed.url}</a>
+                  </div>
+                  <Dropdown>
+                    <button className="btn icon-text-btn dropdown-btn" onClick={() => refetchFeed(feed, "inactive")}>
+                      <Icon id="sleep-off"/>
+                      <span>Activate</span>
+                    </button>
+                    <button className="btn icon-text-btn dropdown-btn" onClick={() => removeFeed(index, "inactive")}>
+                      <Icon id="trash"/>
+                      <span>Remove</span>
+                    </button>
+                  </Dropdown>
+                </div>
+                <p>{feed.description}</p>
               </div>
             </li>
           ))}
