@@ -3,9 +3,7 @@ import { getDate } from "./timeDate";
 import * as chromeStorage from "./chromeStorage";
 
 async function getStoredFeeds() {
-  const feeds = await chromeStorage.get("feeds");
-
-  return feeds || [];
+  return chromeStorage.get("feeds");
 }
 
 async function hasStoredFeeds() {

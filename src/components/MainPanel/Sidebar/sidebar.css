@@ -2,14 +2,16 @@
   position: absolute;
   top: 0;
   left: 100%;
-  border-radius: 4px;
+  border-radius: 0;
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
   transform: translate(-2px, 5px);
-  transition: 0.2s transform;
   pointer-events: auto;
 
   &.expanded {
     border-radius: 8px;
     transform: translateX(var(--space-md));
+    transition: 0.2s transform;
   }
 }
 
@@ -22,6 +24,7 @@
   width: 8px;
   height: 24px;
   padding: 0;
+  border-radius: inherit;
 
   &:hover {
     background-color: var(--color-white-10);

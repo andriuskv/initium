@@ -18,7 +18,7 @@
 
 .feed-entry-thumbnail {
   float: left;
-  margin-top: var(--space-sm);
+  margin-top: var(--space-xs);
   margin-right: var(--space-md);
   border-radius: 8px;
 }

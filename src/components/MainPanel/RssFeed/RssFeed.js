@@ -11,8 +11,7 @@ const Entries = lazy(() => import("./Entries"));
 export default function RssFeed({ showIndicator }) {
   const [loading, setLoading] = useState(true);
   const [activeComponent, setActiveComponent] = useState(null);
-  const [feeds, setFeeds] = useState([]);
-  const [feedsToLoad, setFeedsToLoad] = useState([]);
+  const [feeds, setFeeds] = useState(null);
   const [navigation, setNavigation] = useState(() => ({
     VISIBLE_ITEM_COUNT : 3,
     activeIndex: 0,
@@ -33,13 +32,13 @@ export default function RssFeed({ showIndicator }) {
       return;
     }
 
-    if (feeds.length || feedsToLoad.length) {
+    if (feeds.active.length || feeds.failed.length) {
       scheduleFeedUpdate();
     }
     return () => {
       clearTimeout(timeoutId.current);
     };
-  }, [loading, feeds, feedsToLoad]);
+  }, [loading, feeds]);
 
   useEffect(() => {
     if (updatedFeeds.current.length) {
@@ -62,25 +61,25 @@ export default function RssFeed({ showIndicator }) {
   }
 
   async function syncFeeds(newFeeds) {
-    const length = Math.max(newFeeds.length, feeds.length);
+    const length = Math.max(newFeeds.length, feeds.active.length);
 
     for (let i = 0; i < length; i++) {
-      const oldFeed = feeds[i];
+      const oldFeed = feeds.active[i];
       const newFeed = newFeeds[i];
 
       if (newFeed) {
-        const match = feeds.find(({ url }) => newFeed.url === url);
+        const match = feeds.active.find(({ url }) => newFeed.url === url);
 
         if (!match) {
           try {
             const data = await feedService.fetchFeed(newFeed);
 
             if (data.url) {
-              feeds.push(data);
+              feeds.active.push(data);
             }
           } catch (e) {
             console.log(e);
-            feedsToLoad.push(newFeed);
+            feeds.failed.push(newFeed);
           }
         }
         else if (match.title !== newFeed.title) {
@@ -92,26 +91,41 @@ export default function RssFeed({ showIndicator }) {
         removeFeed(i, false);
       }
     }
-    setFeeds([...feeds]);
-    setFeedsToLoad([...feedsToLoad]);
+    setFeeds({ ...feeds });
   }
 
   async function initFeeds() {
     const feedsToLoad = await feedService.getStoredFeeds();
 
-    if (feedsToLoad.length) {
-      const { feeds, failedFeeds } = await fetchInitialFeeds(feedsToLoad);
+    if (feedsToLoad) {
+      const feeds = {};
+      let feedsArray = [];
 
-      if (feeds.length) {
-        setFeeds(feeds);
+      if (Array.isArray(feedsToLoad)) {
+        feedsArray = feedsToLoad;
+        feeds.inactive = [];
       }
-      else if (failedFeeds.length) {
-        setActiveComponent("feeds");
+      else {
+        feedsArray = feedsToLoad.active;
+        feeds.inactive = feedsToLoad.inactive;
       }
-      setFeedsToLoad(failedFeeds);
+      const { active, failed } = await fetchInitialFeeds(feedsArray);
+
+      feeds.active = active;
+      feeds.failed = failed;
+
+      if (!feeds.active.length) {
+        if (feeds.inactive.length || feeds.failed.length) {
+          showFeedList();
+        }
+        else {
+          showForm();
+        }
+      }
+      setFeeds(feeds);
     }
     else {
-      setActiveComponent("form");
+      showForm();
     }
     lastUpdate.current = Date.now();
     setLoading(false);
@@ -140,7 +154,7 @@ export default function RssFeed({ showIndicator }) {
     } catch (e) {
       console.log(e);
     }
-    return { feeds, failedFeeds };
+    return { active: feeds, failed: failedFeeds };
   }
 
   function scheduleFeedUpdate() {
@@ -158,27 +172,23 @@ export default function RssFeed({ showIndicator }) {
   }
 
   async function refetchFeeds() {
-    for (const [index, feed] of feeds.entries()) {
+    for (const [index, feed] of feeds.active.entries()) {
       await updateFeed(feed, index);
     }
 
-    if (feedsToLoad.length) {
-      let failedFeeds = feedsToLoad;
+    if (feeds.failed.length) {
+      let failedFeeds = feeds.failed;
 
-      for (const feed of feedsToLoad) {
+      for (const feed of feeds.failed) {
         const data = await feedService.fetchFeed(feed);
 
         if (!data.message) {
           failedFeeds = failedFeeds.filter(({ url }) => url !== feed.url);
-          feeds.splice(feed.index, 0, data);
+          feeds.active.splice(feed.index, 0, data);
         }
       }
-
-      if (failedFeeds.length !== feedsToLoad.length) {
-        setFeedsToLoad([...failedFeeds]);
-      }
     }
-    setFeeds([...feeds]);
+    setFeeds({ ...feeds });
   }
 
   async function updateFeed(feed, index) {
@@ -210,7 +220,7 @@ export default function RssFeed({ showIndicator }) {
     let animateLeft = navigation.animateLeft;
 
     if (animateLeft) {
-      animateLeft = feeds.slice(0, shift).some(({ newEntryCount }) => newEntryCount > 0);
+      animateLeft = feeds.active.slice(0, shift).some(({ newEntryCount }) => newEntryCount > 0);
     }
     setNavigation({
       ...navigation,
@@ -226,7 +236,7 @@ export default function RssFeed({ showIndicator }) {
     let animateRight = navigation.animateRight;
 
     if (animateRight) {
-      animateRight = feeds.slice(shift + navigation.VISIBLE_ITEM_COUNT).some(({ newEntryCount }) => newEntryCount > 0);
+      animateRight = feeds.active.slice(shift + navigation.VISIBLE_ITEM_COUNT).some(({ newEntryCount }) => newEntryCount > 0);
     }
     setNavigation({
       ...navigation,
@@ -238,7 +248,7 @@ export default function RssFeed({ showIndicator }) {
 
   function selectFeed(element, index, container) {
     if (element.closest("[data-entry-count]")) {
-      markEntriesAsRead(feeds[index]);
+      markEntriesAsRead(feeds.active[index]);
     }
     else {
       container.scrollTop = 0;
@@ -252,13 +262,13 @@ export default function RssFeed({ showIndicator }) {
 
   function selectFeedFromList({ target }, index) {
     if (target.closest("[data-entry-count]")) {
-      markEntriesAsRead(feeds[index]);
+      markEntriesAsRead(feeds.active[index]);
       return;
     }
     let { shift } = navigation;
 
     if (index < shift || index >= shift + navigation.VISIBLE_ITEM_COUNT) {
-      shift = index > feeds.length - navigation.VISIBLE_ITEM_COUNT ? feeds.length - navigation.VISIBLE_ITEM_COUNT : index;
+      shift = index > feeds.active.length - navigation.VISIBLE_ITEM_COUNT ? feeds.active.length - navigation.VISIBLE_ITEM_COUNT : index;
     }
     setNavigation({
       ...navigation,
@@ -298,57 +308,78 @@ export default function RssFeed({ showIndicator }) {
       return entry;
     });
 
-    setFeeds([...feeds]);
+    setFeeds({ ...feeds });
   }
 
   function markEntryAsRead(entry) {
     if (entry.newEntry) {
-      feeds[navigation.activeIndex].newEntryCount -= 1;
+      feeds.active[navigation.activeIndex].newEntryCount -= 1;
       entry.newEntry = false;
-      setFeeds([...feeds]);
+      setFeeds({ ...feeds });
     }
   }
 
   function expandEntry(entry) {
     entry.truncated = false;
-    setFeeds([...feeds]);
+    setFeeds({ ...feeds });
   }
-
-  function updateFeeds(feeds, feedsToLoad, save = true) {
-    setFeeds([...feeds]);
-    setFeedsToLoad([...feedsToLoad]);
+  function updateFeeds(feeds, save = true) {
+    setFeeds({ ...feeds });
 
     if (save) {
-      saveFeeds(feeds, feedsToLoad);
+      saveFeeds(feeds);
     }
   }
 
-  function removeFeed(index, save = true) {
-    feeds.splice(index, 1);
+  function removeFeed(index, type, save = true) {
+    feeds[type].splice(index, 1);
 
-    if (feeds.length) {
+    if (type === "active") {
+      if (feeds.active.length) {
+        setNavigation({
+          ...navigation,
+          activeIndex: 0,
+          shift: 0
+        });
+      }
+    }
+
+    if (!feeds.active.length) {
+      if (feeds.inactive.length || feeds.failed.length) {
+        showFeedList();
+      }
+      else {
+        showForm();
+      }
+    }
+    updateFeeds(feeds, save);
+  }
+
+
+  function addFeed(feed) {
+    feeds.active.push(feed);
+    setNavigation({
+      ...navigation,
+      activeIndex: feeds.active.length - 1,
+      shift: feeds.active.length - navigation.VISIBLE_ITEM_COUNT < 0 ? 0 : feeds.active.length - navigation.VISIBLE_ITEM_COUNT
+    });
+    setActiveComponent(null);
+    updateFeeds(feeds);
+  }
+
+  function deactivateFeed(index) {
+    const [feed] = feeds.active.splice(index, 1);
+
+    feeds.inactive.push(feed);
+
+    if (feeds.active.length) {
       setNavigation({
         ...navigation,
         activeIndex: 0,
         shift: 0
       });
     }
-    else {
-      showForm();
-    }
-    updateFeeds(feeds, feedsToLoad, save);
-  }
-
-  function addFeed(feed) {
-    feeds.push(feed);
-    setFeeds([...feeds]);
-    setNavigation({
-      ...navigation,
-      activeIndex: feeds.length - 1,
-      shift: feeds.length - navigation.VISIBLE_ITEM_COUNT < 0 ? 0 : feeds.length - navigation.VISIBLE_ITEM_COUNT
-    });
-    setActiveComponent(null);
-    saveFeeds(feeds, feedsToLoad);
+    updateFeeds(feeds);
   }
 
   function showForm() {
@@ -373,29 +404,37 @@ export default function RssFeed({ showIndicator }) {
     setActiveComponent(null);
   }
 
-  function saveFeeds(feeds, feedsToLoad) {
+  function saveFeeds(feeds) {
     chromeStorage.set({
-      feeds: feeds.concat(feedsToLoad).map(({ url, title }) => ({ url, title }))
+      feeds: {
+        active: feeds.active.concat(feeds.failed).map(({ url, title }) => ({ url, title })),
+        inactive: feeds.inactive.map(feed => {
+          delete feed.fetching;
+          delete feed.entries;
+          return feed;
+        })
+      }
     });
   }
 
-  if (loading) {
+  if (loading || !feeds) {
     return <Icon id="rss" className="main-panel-item-splash-icon"/>;
   }
   else if (activeComponent) {
     return (
       <Suspense fallback={null}>
         {activeComponent === "feeds" && (
-          <Feeds feeds={feeds} feedsToLoad={feedsToLoad} selectFeedFromList={selectFeedFromList}
-            removeFeed={removeFeed} updateFeeds={updateFeeds} showForm={showForm} hide={hideFeedList}/>
+          <Feeds feeds={feeds} selectFeedFromList={selectFeedFromList}
+            removeFeed={removeFeed} deactivateFeed={deactivateFeed}
+            updateFeeds={updateFeeds} showForm={showForm} hide={hideFeedList}/>
         )}
-        {activeComponent === "form" && <Form feeds={feeds} feedsToLoad={feedsToLoad} addFeed={addFeed} hide={hideForm}/>}
+        {activeComponent === "form" && <Form feeds={feeds} addFeed={addFeed} hide={hideForm}/>}
       </Suspense>
     );
   }
   return (
     <Suspense fallback={null}>
-      <Entries navigation={navigation} feeds={feeds} feedsToLoad={feedsToLoad}
+      <Entries navigation={navigation} feeds={feeds}
         selectFeed={selectFeed} previousShift={previousShift} nextShift={nextShift}
         showFeedList={showFeedList} markEntryAsRead={markEntryAsRead} expandEntry={expandEntry}/>
     </Suspense>

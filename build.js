@@ -23,7 +23,7 @@ function incVersion() {
   data.version = `${major}.${minor}.${patch}`;
 
   if (label) {
-    fs.writeFileSync(srcPath, JSON.stringify(data, null, 4) + "\n");
+    fs.writeFileSync(srcPath, JSON.stringify(data, null, 2) + "\n");
     fs.writeFileSync("./dist/manifest.json", fs.readFileSync(srcPath));
   }
   return data.version;
