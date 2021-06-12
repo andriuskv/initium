@@ -23,7 +23,7 @@ export default function Background({ settings }) {
 
           setTimeout(() => {
             element.remove();
-          }, 800);
+          }, 600);
         }
       };
       image.src = background.url;

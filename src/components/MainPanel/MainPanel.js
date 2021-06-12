@@ -77,7 +77,7 @@ export default function MainPanel({ settings }) {
     }
   }, [activeTab.id]);
 
-  async function initComponent(id, a) {
+  async function initComponent(id, callback) {
     const tab = tabs[id];
     let delay = -1;
 
@@ -85,7 +85,7 @@ export default function MainPanel({ settings }) {
       delay = activeTab.manualySelected ? 1 : 2000;
       clearTimeout(tabTimeouts.current[id]);
     }
-    else if (tab.firstRender && await a()) {
+    else if (tab.firstRender && await callback()) {
       delay = tab.delay;
       tab.firstRender = false;
     }

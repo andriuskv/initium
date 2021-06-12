@@ -1,5 +1,5 @@
 .bottom-panel {
-  z-index: var(--z-index, 0);
+  z-index: var(--z-index, 1);
   position: absolute;
   bottom: var(--space-md);
   right: var(--space-md);
