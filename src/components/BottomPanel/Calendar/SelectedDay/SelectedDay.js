@@ -3,9 +3,10 @@ import { getRandomHslColor } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import Icon from "components/Icon";
+import Dropdown from "components/Dropdown";
 import "./selected-day.css";
 
-export default function SelectedDay({ selectedDay, calendar, reminders, updateCalendar, createReminder, hide }) {
+export default function SelectedDay({ selectedDay, calendar, reminders, updateCalendar, createReminder, resetSelectedDay, hide }) {
   const [day, setDay] = useState(null);
   const [form, setForm] = useState(null);
   const timeoutId = useRef(0);
@@ -69,6 +70,56 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
         });
       });
     });
+  }
+
+  function editReminder(id, i) {
+    const index = reminders.findIndex(reminder => reminder.id === id);
+    const reminder = reminders[index];
+
+    const form = {
+      ...reminder,
+      updating: true,
+      reminderIndex: index,
+      reminderDayIndex: i,
+      range: {
+        enabled: false,
+        dataList: generateTimeTable(),
+        from: { text: "" },
+        to: { text: "" }
+      },
+      repeat: {
+        enabled: false,
+        ends: "never",
+        gap: "",
+        count: ""
+      }
+    };
+
+    if (reminder.range) {
+      form.range.enabled = reminder.range.text !== "All day";
+
+      if (reminder.range.from) {
+        form.range.from = { text: `${reminder.range.from.hours}:${timeDateService.padTime(reminder.range.from.minutes)}`};
+      }
+
+      if (reminder.range.to) {
+        form.range.to = { text: `${reminder.range.to.hours}:${timeDateService.padTime(reminder.range.to.minutes)}`};
+      }
+    }
+
+    if (reminder.repeat) {
+      form.repeat = {
+        wasEnabled: true,
+        enabled: true,
+        ends: reminder.repeat.count > 0 ? "occurences" : "never",
+        gap: reminder.repeat.gap,
+        count: reminder.repeat.count || "",
+        year: reminder.year,
+        month: reminder.month,
+        day: reminder.day
+      };
+    }
+    setForm(form);
   }
 
   function removeReminder(id, i) {
@@ -138,8 +189,10 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
     event.preventDefault();
 
     const reminder = {
+      oldId: form.id,
+      index: form.reminderDayIndex,
       text: event.target.elements.reminder.value,
-      color: getRandomHslColor(),
+      color: form.color || getRandomHslColor(),
       year: day.year,
       month: day.month,
       day: day.day
@@ -189,9 +242,20 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
         return;
       }
     }
-    reminders.push(reminder);
 
-    createReminder(reminder, calendar);
+    createReminder(reminder, calendar, true);
+
+    if (form.updating) {
+      reminders.splice(form.reminderIndex, 1, reminder);
+
+      if (form.repeat.wasEnabled) {
+        removeRepeatedReminder(form.id);
+      }
+      resetSelectedDay();
+    }
+    else {
+      reminders.push(reminder);
+    }
     setForm(null);
     saveReminders(reminders);
   }
@@ -342,7 +406,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
       </div>
       {form ? (
         <form className="selected-day-form" onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
-          <input type="text" className="input reminder-input" name="reminder" autoComplete="off" placeholder="Remind me to..." required/>
+          <input type="text" className="input reminder-input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
           <div className="reminder-form-row reminder-setting">
             <label className="checkbox-container calendar-checkbox-container">
               <input type="checkbox" className="sr-only checkbox-input" name="range"
@@ -401,12 +465,14 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
               <div className="reminder-setting" onChange={handleRadioInputChange}>
                 <div>Ends</div>
                 <label className="reminder-form-row">
-                  <input type="radio" className="sr-only radio-input" name="ends" value="never" defaultChecked/>
+                  <input type="radio" className="sr-only radio-input" name="ends"
+                    value="never" defaultChecked={form.repeat.ends === "never"}/>
                   <div className="radio"></div>
                   <span className="label-right">Never</span>
                 </label>
                 <label className="reminder-form-row">
-                  <input type="radio" className="sr-only radio-input" name="ends" value="occurences"/>
+                  <input type="radio" className="sr-only radio-input" name="ends"
+                    value="occurences" defaultChecked={form.repeat.ends === "occurences"}/>
                   <div className="radio"></div>
                   <span className="label-right">After</span>
                   <input type="text" className="input repeat-input" name="count" autoComplete="off"
@@ -422,12 +488,12 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
           )}
           <div className="reminder-form-btns">
             <button type="button" className="btn text-btn" onClick={backToCalendar}>Cancel</button>
-            <button className="btn">Add</button>
+            <button className="btn">{form.updating ? "Update" : "Create"}</button>
           </div>
         </form>
       ) : day.reminders.length > 0 ? (
-        <ul className="selected-day-remainders">
-          {day.reminders.map((reminder, i) => (
+        <ul className="selected-day-remainders" data-dropdown-parent>
+          {day.reminders.map((reminder, index) => (
             <li className="selected-day-remainder" key={reminder.id}>
               <div className="selected-day-reminder-color" style={{ "backgroundColor": reminder.color }}
                 onClick={() => changeReminderColor(reminder)}></div>
@@ -436,10 +502,18 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
                 <div>{reminder.text}</div>
                 <div className="calendar-reminder-range">{reminder.range.text}</div>
               </div>
-              <button className="btn icon-btn alt-icon-btn selected-day-remainder-btn"
-                onClick={() => removeReminder(reminder.id, i)} title="Remove">
-                <Icon id="trash"/>
-              </button>
+              <Dropdown container={{ className: "selected-day-remainder-dropdown" }}>
+                <button className="btn icon-text-btn dropdown-btn"
+                  onClick={() => editReminder(reminder.id, index)}>
+                  <Icon id="edit"/>
+                  <span>Edit</span>
+                </button>
+                <button className="btn icon-text-btn dropdown-btn"
+                  onClick={() => removeReminder(reminder.id, index)}>
+                  <Icon id="trash"/>
+                  <span>Remove</span>
+                </button>
+              </Dropdown>
             </li>
           ))}
         </ul>

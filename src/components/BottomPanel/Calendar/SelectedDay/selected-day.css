@@ -17,6 +17,7 @@
 
 .selected-day-remainders {
   overflow-y: auto;
+  flex-grow: 1;
 }
 
 .selected-day-remainder {
@@ -45,7 +46,7 @@
   color: var(--color-white-60);
 }
 
-.selected-day-remainder-btn {
+.selected-day-remainder-dropdown {
   margin-left: auto;
 }
 

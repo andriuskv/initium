@@ -14,7 +14,6 @@ export default function Calendar({ showIndicator }) {
   const [visibleMonth, setVisibleMonth] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [reminders, setReminders] = useState([]);
-  const [futureReminders, setFutureReminders] = useState([]);
   const [viewingYear, setViewingYear] = useState(false);
   const [transition, setTransition] = useState({ x: 0, y: 0 });
 
@@ -259,13 +258,17 @@ export default function Calendar({ showIndicator }) {
     };
   }
 
-  function repeatReminder(calendar, reminder) {
+  function repeatReminder(calendar, reminder, shouldReplace) {
     reminder.nextRepeat ??= {
       repeats: reminder.repeat.count,
       year: reminder.year,
       month: reminder.month,
       day:  reminder.day - 1
     };
+
+    if (reminder.nextRepeat.done) {
+      return;
+    }
     const months = calendar[reminder.nextRepeat.year];
     let month = months[reminder.nextRepeat.month];
     let day = month.days[reminder.nextRepeat.day];
@@ -280,9 +283,6 @@ export default function Calendar({ showIndicator }) {
           if (calendar[date.year]) {
             repeatReminder(calendar, reminder);
           }
-          else {
-            futureReminders.push(reminder);
-          }
           return;
         }
         reminder.nextRepeat.day = date.day;
@@ -290,7 +290,20 @@ export default function Calendar({ showIndicator }) {
         month = months[reminder.nextRepeat.month];
         day = month.days[reminder.nextRepeat.day];
       }
-      day.reminders.push(reminder);
+
+      if (shouldReplace) {
+        const index = day.reminders.findIndex(({ id }) => id === reminder.oldId);
+
+        if (index < 0) {
+          day.reminders.push(reminder);
+        }
+        else {
+          day.reminders.splice(index, 1, reminder);
+        }
+      }
+      else {
+        day.reminders.push(reminder);
+      }
 
       if (day.isCurrentDay) {
         setCurrentDay({ ...day });
@@ -300,6 +313,7 @@ export default function Calendar({ showIndicator }) {
         reminder.nextRepeat.repeats -= 1;
 
         if (!reminder.nextRepeat.repeats) {
+          reminder.nextRepeat.done = true;
           return;
         }
       }
@@ -309,22 +323,17 @@ export default function Calendar({ showIndicator }) {
   }
 
   function repeatFutureReminders(calendar) {
-    const [reminders, leftOverReminders] = futureReminders.reduce(([reminders, futureReminders], reminder) => {
-      if (calendar[reminder.nextRepeat.year]) {
+    const repeatableReminders = reminders.reduce((reminders, reminder) => {
+      if (calendar[reminder.nextRepeat.year] && !reminder.nextRepeat.done) {
         reminders.push(reminder);
       }
-      else {
-        futureReminders.push(reminder);
-      }
-      return [reminders, futureReminders];
-    }, [[], []]);
+      return reminders;
+    }, []);
 
-    futureReminders.length = 0;
-
-    for (const reminder of reminders) {
+    for (const reminder of repeatableReminders) {
       repeatReminder(calendar, reminder);
     }
-    setFutureReminders([...leftOverReminders, ...futureReminders]);
+    setCalendar({ ...calendar });
   }
 
   function updateCalendar() {
@@ -337,13 +346,13 @@ export default function Calendar({ showIndicator }) {
     reminders.forEach(reminder => createReminder(reminder, calendar));
   }
 
-  function createReminder(reminder, calendar) {
+  function createReminder(reminder, calendar, shouldReplace) {
     const { year } = reminder;
 
     if (!calendar[year]) {
       calendar[year] = generateYear(year);
     }
-    reminder.id = getRandomString(4);
+    reminder.id ??= getRandomString();
 
     if (reminder.range === -1) {
       delete reminder.range;
@@ -359,12 +368,17 @@ export default function Calendar({ showIndicator }) {
         };
       }
       reminder.repeat.tooltip = getReminderRepeatTooltip(reminder.repeat);
-      repeatReminder(calendar, reminder);
+      repeatReminder(calendar, reminder, shouldReplace);
     }
     else {
       const day = getCalendarDay(calendar, reminder);
 
-      day.reminders.push(reminder);
+      if (shouldReplace) {
+        day.reminders.splice(reminder.index, 1, reminder);
+      }
+      else {
+        day.reminders.push(reminder);
+      }
 
       if (day.isCurrentDay) {
         setCurrentDay({ ...day });
@@ -400,6 +414,10 @@ export default function Calendar({ showIndicator }) {
     });
   }
 
+  function resetSelectedDay() {
+    setSelectedDay({ ...selectedDay });
+  }
+
   if (!calendar) {
     return null;
   }
@@ -409,7 +427,7 @@ export default function Calendar({ showIndicator }) {
       <div className="calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px` }}>
         {selectedDay ? (
           <SelectedDay calendar={calendar} selectedDay={selectedDay} reminders={reminders}
-            updateCalendar={updateCalendar} createReminder={createReminder} hide={hide}/>
+            updateCalendar={updateCalendar} createReminder={createReminder} resetSelectedDay={resetSelectedDay} hide={hide}/>
         ) : viewingYear ? (
           <div className={`calendar${transition.active ? " transition" : ""}`}>
             <div className="calendar-header">
