@@ -1,4 +1,4 @@
-import { getMonth } from "./timeDate";
+import { getMonthName } from "./timeDate";
 
 const serverUrl = `${process.env.SERVER_URL}/twitter`;
 let users = JSON.parse(localStorage.getItem("twitter_users")) || [];
@@ -157,7 +157,7 @@ function getTweetDate(createdAt) {
     at = "1d";
   }
   else {
-    const month = getMonth(creationDate.getMonth(), true);
+    const month = getMonthName(creationDate.getMonth(), true);
     at = `${month} ${creationDate.getDate()}`;
   }
   return {

@@ -73,10 +73,6 @@ select {
   height: 28px;
   border-right: var(--space-md) solid transparent;
 
-  &:focus-visible {
-    box-shadow: none;
-  }
-
   & option {
     background-color: var(--color-grey-90);
   }

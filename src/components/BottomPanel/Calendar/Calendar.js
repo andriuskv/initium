@@ -64,10 +64,10 @@ export default function Calendar({ showIndicator }) {
     const months = [];
 
     for (let i = 0; i < 12; i++) {
-      const daysInMonth = getDaysInMonth(year, i);
+      const daysInMonth = timeDateService.getDaysInMonth(year, i);
       const month = {
-        firstDayIndex: getFirstDayIndex(year, i),
-        name: timeDateService.getMonth(i),
+        firstDayIndex: timeDateService.getFirstDayIndex(year, i),
+        name: timeDateService.getMonthName(i),
         days: []
       };
 
@@ -137,11 +137,11 @@ export default function Calendar({ showIndicator }) {
 
   function getCurrentDay(calendar, date) {
     const day = getCalendarDay(calendar, date);
-    const weekday = getWeekday(day.year, day.month, day.day);
+    const weekday = timeDateService.getWeekday(day.year, day.month, day.day);
 
     day.isCurrentDay = true;
-    day.monthName = timeDateService.getMonth(day.month);
-    day.weekdayName = timeDateService.getWeekday(weekday);
+    day.monthName = timeDateService.getMonthName(day.month);
+    day.weekdayName = timeDateService.getWeekdayName(weekday);
 
     return day;
   }
@@ -157,20 +157,6 @@ export default function Calendar({ showIndicator }) {
 
   function getCalendarDay(calendar, { year, month, day }) {
     return calendar[year][month].days[day - 1];
-  }
-
-  function getDaysInMonth(year, month) {
-    return new Date(year, month + 1, 0).getDate();
-  }
-
-  function getWeekday(year, month, day) {
-    return new Date(`${year}-${month + 1}-${day}`).getDay();
-  }
-
-  function getFirstDayIndex(year, month) {
-    const day = getWeekday(year, month, 1);
-
-    return day === 0 ? 6 : day - 1;
   }
 
   function transitionElement(element) {
@@ -232,6 +218,33 @@ export default function Calendar({ showIndicator }) {
     setSelectedDay(null);
   }
 
+  function getWeekdayRepeatGaps(reminder) {
+    const { weekdays } = reminder.repeat;
+    const gaps = [];
+    let weekday = timeDateService.getWeekday(reminder.year, reminder.month, reminder.day);
+    let gap = 1;
+    let i = 0;
+
+    while (i < 7) {
+      if (weekday === 6) {
+        weekday = 0;
+      }
+      else {
+        weekday += 1;
+      }
+
+      if (weekdays[weekday]) {
+        gaps.push(gap);
+        gap = 1;
+      }
+      else {
+        gap += 1;
+      }
+      i += 1;
+    }
+    return gaps;
+  }
+
   function getNextReminderDate(calendar, { year, month: monthIndex, day: dayIndex }) {
     let months = calendar[year];
     let month = months[monthIndex];
@@ -261,6 +274,8 @@ export default function Calendar({ showIndicator }) {
   function repeatReminder(calendar, reminder, shouldReplace) {
     reminder.nextRepeat ??= {
       repeats: reminder.repeat.count,
+      gapIndex: 0,
+      gaps: reminder.repeat.type === "weekday" ? getWeekdayRepeatGaps(reminder) : null,
       year: reminder.year,
       month: reminder.month,
       day:  reminder.day - 1
@@ -317,7 +332,25 @@ export default function Calendar({ showIndicator }) {
           return;
         }
       }
-      reminder.nextRepeat.day += reminder.repeat.gap;
+
+      if (reminder.repeat.type === "custom") {
+        reminder.nextRepeat.day += reminder.repeat.gap;
+      }
+      else if (reminder.repeat.type === "weekday") {
+        reminder.nextRepeat.day += reminder.nextRepeat.gaps[reminder.nextRepeat.gapIndex];
+        reminder.nextRepeat.gapIndex += 1;
+
+        if (reminder.nextRepeat.gapIndex === reminder.nextRepeat.gaps.length) {
+          reminder.nextRepeat.gapIndex = 0;
+        }
+      }
+      else if (reminder.repeat.type === "week") {
+        reminder.nextRepeat.day += 7;
+      }
+      else if (reminder.repeat.type === "month") {
+        const days = timeDateService.getDaysInMonth(reminder.nextRepeat.year, reminder.nextRepeat.month);
+        reminder.nextRepeat.day += days;
+      }
       day = month.days[reminder.nextRepeat.day];
     }
   }
@@ -367,6 +400,7 @@ export default function Calendar({ showIndicator }) {
           count: reminder.repeatCount || reminder.count
         };
       }
+      reminder.repeat.type ??= "custom";
       reminder.repeat.tooltip = getReminderRepeatTooltip(reminder.repeat);
       repeatReminder(calendar, reminder, shouldReplace);
     }
@@ -401,8 +435,49 @@ export default function Calendar({ showIndicator }) {
     return timeDateService.getTimeString(from);
   }
 
-  function getReminderRepeatTooltip({ gap, count }) {
-    return `Repeating ${count > 1 ? `${count} times ` : ""}every ${gap === 1 ? "day" : `${gap} days`}`;
+  function getReminderRepeatTooltip({ type, gap, count, weekdays }) {
+    if (type === "custom") {
+      return `Repeating ${count > 1 ? `${count} times ` : ""}every ${gap === 1 ? "day" : `${gap} days`}`;
+    }
+    else if (type === "week") {
+      return "Repeating every week";
+    }
+    else if (type === "month") {
+      return "Repeating every month";
+    }
+    else if (type === "weekday") {
+      const fullySelected = weekdays.every(weekday => weekday);
+      let str = "";
+
+      if (fullySelected) {
+        str = "weekday";
+      }
+      else {
+        const arr = weekdays.reduce((arr, weekday, index) => {
+          if (weekday) {
+            const name = timeDateService.getWeekdayName(index);
+
+            arr.push(name);
+          }
+          return arr;
+        }, []);
+
+        if (arr.length === 1) {
+          str = arr[0];
+        }
+        else {
+          const ending = arr.slice(-2).join(" and ");
+
+          if (arr.length > 2) {
+            str = `${arr.slice(0, -2).join(", ")}, ${ending}`;
+          }
+          else {
+            str = ending;
+          }
+        }
+      }
+      return `Repeating every ${str}`;
+    }
   }
 
   function selectCurrentDay() {

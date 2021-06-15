@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getRandomString } from "utils";
-import { padTime, getMonth, getTimeString } from "services/timeDate";
+import { padTime, getMonthName, getTimeString } from "services/timeDate";
 import "./form.css";
 import { getSetting } from "services/settings";
 
@@ -123,7 +123,7 @@ export default function Presets({ createCountdown, hide }) {
       while (month < 12) {
         dataList.items.push({
           value: month + 1,
-          displayValue: `${padTime(month + 1)} - ${getMonth(month, true)}`
+          displayValue: `${padTime(month + 1)} - ${getMonthName(month, true)}`
         });
         month += 1;
       }
