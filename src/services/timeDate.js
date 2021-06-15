@@ -42,21 +42,21 @@ function formatTime(time) {
   return `${hours ? `${hours}:` : ""}${padTime(minutes, hours)}:${padTime(seconds)}`;
 }
 
-function getWeekday(day) {
+function getWeekdayName(day, useShortName = false) {
   const weekdays = {
-    0: "Sunday",
-    1: "Monday",
-    2: "Tuesday",
-    3: "Wednesday",
-    4: "Thursday",
-    5: "Friday",
-    6: "Saturday"
+    0: "Monday",
+    1: "Tuesday",
+    2: "Wednesday",
+    3: "Thursday",
+    4: "Friday",
+    5: "Saturday",
+    6: "Sunday"
   };
 
-  return weekdays[day];
+  return useShortName ? weekdays[day].slice(0, 3) : weekdays[day];
 }
 
-function getMonth(month, useShortName = false) {
+function getMonthName(month, useShortName = false) {
   const months = {
     0: "January",
     1: "February",
@@ -91,14 +91,28 @@ function getDay(day, withSuffix = true) {
   return `${day}th`;
 }
 
+function getDaysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getWeekday(year, month, day) {
+  const weekday = new Date(`${year}-${month + 1}-${day}`).getDay();
+  return weekday=== 0 ? 6 : weekday - 1;
+}
+
+function getFirstDayIndex(year, month) {
+  return getWeekday(year, month, 1);
+}
+
 function getCurrentDate() {
   const date = new Date();
+  const weekday = date.getDay();
 
   return {
     year: date.getFullYear(),
     month: date.getMonth(),
     day: date.getDate(),
-    weekday: date.getDay()
+    weekday: weekday === 0 ? 6 : weekday - 1
   };
 }
 
@@ -120,9 +134,9 @@ function getDisplayTime() {
 function getDate(string, date = getCurrentDate()) {
   const map = {
     year: date.year,
-    month: getMonth(date.month),
+    month: getMonthName(date.month),
     day: getDay(date.day, date.dayWithSuffix),
-    weekday: getWeekday(date.weekday),
+    weekday: getWeekdayName(date.weekday),
     ...getTime(date)
   };
   const regex = new RegExp(Object.keys(map).join("|"), "g");
@@ -137,9 +151,12 @@ export {
   getTime,
   getTimeString,
   getDisplayTime,
-  getCurrentDate,
+  getDaysInMonth,
   getWeekday,
-  getMonth,
+  getFirstDayIndex,
+  getCurrentDate,
+  getWeekdayName,
+  getMonthName,
   getDay,
   getDate,
   padTime,

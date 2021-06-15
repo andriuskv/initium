@@ -78,21 +78,10 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
 
     const form = {
       ...reminder,
+      ...getDefaultForm(),
       updating: true,
       reminderIndex: index,
-      reminderDayIndex: i,
-      range: {
-        enabled: false,
-        dataList: generateTimeTable(),
-        from: { text: "" },
-        to: { text: "" }
-      },
-      repeat: {
-        enabled: false,
-        ends: "never",
-        gap: "",
-        count: ""
-      }
+      reminderDayIndex: i
     };
 
     if (reminder.range) {
@@ -109,15 +98,22 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
 
     if (reminder.repeat) {
       form.repeat = {
+        ...form.repeat,
         wasEnabled: true,
         enabled: true,
+        type: reminder.repeat.type || "custom",
+        weekdays: reminder.repeat.type === "weekday" ? [...reminder.repeat.weekdays] : form.repeat.weekdays,
         ends: reminder.repeat.count > 0 ? "occurences" : "never",
         gap: reminder.repeat.gap,
-        count: reminder.repeat.count || "",
+        count: reminder.repeat.count,
         year: reminder.year,
         month: reminder.month,
         day: reminder.day
       };
+
+      if (reminder.repeat.type === "weekday") {
+        form.repeat.weekdays[form.repeat.currentWeekday] = true;
+      }
     }
     setForm(form);
   }
@@ -143,8 +139,13 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
     }
   }
 
-  function showForm() {
-    setForm({
+  function getDefaultForm() {
+    const weekday = timeDateService.getWeekday(day.year, day.month, day.day);
+    const weekdays = [false, false, false, false, false, false, false];
+
+    weekdays[weekday] = true;
+
+    return {
       range: {
         enabled: false,
         dataList: generateTimeTable(),
@@ -153,11 +154,18 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
       },
       repeat: {
         enabled: false,
+        type: "custom",
+        currentWeekday: weekday,
+        weekdays,
         ends: "never",
         gap: "",
         count: ""
       }
-    });
+    };
+  }
+
+  function showForm() {
+    setForm(getDefaultForm());
   }
 
   function toggleFormCheckbox(event) {
@@ -220,12 +228,20 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
 
     if (form.repeat.enabled) {
       reminder.repeat = {};
+      reminder.repeat.type = form.repeat.type;
 
-      if (form.repeat.gap) {
-        reminder.repeat.gap = Number(form.repeat.gap);
+      delete form.repeat.gapError;
+
+      if (form.repeat.type === "custom") {
+        if (form.repeat.gap) {
+          reminder.repeat.gap = Number(form.repeat.gap);
+        }
+        else {
+          form.repeat.gapError = true;
+        }
       }
-      else {
-        form.repeat.gapError = true;
+      else if (form.repeat.type === "weekday") {
+        reminder.repeat.weekdays = form.repeat.weekdays;
       }
 
       if (form.repeat.ends === "occurences") {
@@ -243,7 +259,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
       }
     }
 
-    createReminder(reminder, calendar, true);
+    createReminder(reminder, calendar, form.updating);
 
     if (form.updating) {
       reminders.splice(form.reminderIndex, 1, reminder);
@@ -264,6 +280,21 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
     if (event.key === "Enter" && event.target.nodeName !== "BUTTON") {
       event.preventDefault();
     }
+  }
+
+  function handleRepeatTypeChange({ target }) {
+    form.repeat.type = target.value;
+    setForm({ ...form });
+  }
+
+  function handleWeekdaySelection({ target }) {
+    const weekday = Number(target.name);
+
+    if (weekday === form.repeat.currentWeekday) {
+      return;
+    }
+    form.repeat.weekdays[weekday] = target.checked;
+    setForm({ ...form });
   }
 
   function validateHourFormat(value) {
@@ -424,6 +455,15 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
               </div>
               <span className="label-right">Repeat</span>
             </label>
+            {form.repeat.enabled && (
+              <select className="input reminder-form-repeat-type-selection"
+                onChange={handleRepeatTypeChange} value={form.repeat.type}>
+                <option value="custom">Custom</option>
+                <option value="weekday">Every weekday</option>
+                <option value="week">Every week</option>
+                <option value="month">Every month</option>
+              </select>
+            )}
           </div>
           {form.range.enabled && (
             <div className="reminder-setting" onFocus={handleFormFocus} onBlur={handleRangeInputBlur}>
@@ -453,15 +493,31 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
           )}
           {form.repeat.enabled && (
             <>
-              <div className="reminder-setting">
-                <div>
-                  <span>Repeat every</span>
-                  <input type="text" className="input repeat-input" name="gap" autoComplete="off"
-                    value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
-                  <span>days</span>
+              {form.repeat.type === "custom" ? (
+                <div className="reminder-setting">
+                  <div>
+                    <span>Repeat every</span>
+                    <input type="text" className="input repeat-input" name="gap" autoComplete="off"
+                      value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
+                    <span>days</span>
+                  </div>
+                  {form.repeat.gapError && <div className="reminder-error-message">Please insert a whole number</div>}
                 </div>
-                {form.repeat.gapError && <div className="reminder-error-message">Please insert a whole number</div>}
-              </div>
+              ) : form.repeat.type === "weekday" ? (
+                <div className="reminder-setting reminder-form-weeekdays">
+                  {form.repeat.weekdays.map((selected, index) => (
+                    <label className="checkbox-container reminder-form-weekday" key={index}>
+                      <input type="checkbox" className="sr-only checkbox-input" name={index}
+                        onChange={handleWeekdaySelection} checked={selected || index === form.repeat.currentWeekday}
+                        disabled={index === form.repeat.currentWeekday}/>
+                      {/* <div className="checkbox">
+                        <div className="checkbox-tick"></div>
+                      </div> */}
+                      <div className="reminder-form-weekday-content">{timeDateService.getWeekdayName(index, true)}</div>
+                    </label>
+                  ))}
+                </div>
+              ) : null}
               <div className="reminder-setting" onChange={handleRadioInputChange}>
                 <div>Ends</div>
                 <label className="reminder-form-row">
