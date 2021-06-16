@@ -16,7 +16,7 @@ export default function App() {
   const [backgroundViewerVisible, setBackgroundViewerVisible] = useState(false);
   const [tweetImageData, setTweetImageData] = useState(null);
   const [topPanel, setTopPanel] = useState({ rendered: false, forceVisibility: false });
-  const [weather, setWeather] = useState({ rendered: false, shouldDelay: !settings.weather.disabled });
+  const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const topPanelTimeoutId = useRef(0);
   const weatherTimeoutId = useRef(0);
 
@@ -34,7 +34,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const shouldRender = !settings.weather.disabled;
+    const shouldRender = isWeatherEnabled();
 
     clearTimeout(weatherTimeoutId.current);
 
@@ -51,7 +51,11 @@ export default function App() {
     else if (weather.rendered) {
       setWeather({ rendered: false });
     }
-  }, [settings.weather.disabled]);
+  }, [settings.weather]);
+
+  function isWeatherEnabled() {
+    return !settings.weather.disabled && (settings.weather.cityName || settings.weather.useGeo);
+  }
 
   async function initTopPanel() {
     const chromeStorage = await import("../services/chromeStorage");
