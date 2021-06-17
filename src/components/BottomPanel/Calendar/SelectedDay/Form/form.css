@@ -1,0 +1,151 @@
+.reminder-form {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: var(--space-md);
+}
+
+.reminder-form-input {
+  width: 100%;
+}
+
+.reminder-form-row {
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-sm);
+}
+
+.reminder-form-setting {
+  min-height: 28px;
+  margin-top: var(--space-md);
+}
+
+.reminder-form-checkbox-container {
+  margin-right: var(--space-xl);
+}
+
+.reminder-form-repeat-type-selection {
+  max-width: 150px;
+  margin-left: auto;
+}
+
+.reminder-form-weeekdays {
+  overflow: hidden;
+  display: flex;
+  border-radius: 999px;
+  background-color: var(--color-white-10);
+}
+
+.reminder-form-weekday {
+  flex: 1;
+
+  &:not(:last-of-type) {
+    border-right: 1px solid var(--color-black-30);
+  }
+
+  &:first-of-type .reminder-form-weekday-content {
+    border-top-left-radius: 999px;
+    border-bottom-left-radius: 999px;
+  }
+
+  &:last-of-type .reminder-form-weekday-content {
+    border-top-right-radius: 999px;
+    border-bottom-right-radius: 999px;
+  }
+
+  & .checkbox-input:checked + .reminder-form-weekday-content {
+    background-color: var(--color-white-10);
+    color: var(--color-white);
+  }
+
+  & .checkbox-input:focus-visible + .reminder-form-weekday-content {
+    box-shadow: inset 0 0 0 2px var(--color-primary);
+  }
+
+  & .checkbox-input:disabled + .reminder-form-weekday-content {
+    cursor: default;
+  }
+}
+
+.reminder-form-weekday-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-weight: bold;
+  font-size: var(--text-sm);
+  color: var(--color-white-60);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-white-10);
+  }
+}
+
+.range-data-list-panel {
+  position: absolute;
+  background-color: var(--color-grey-90);
+  transform: translate(-50%, var(--space-sm));
+}
+
+.range-data-list {
+  overflow: hidden;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.range-data-list-items {
+  overflow-y: auto;
+  width: 100px;
+  height: 152px;
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+.range-data-list-item {
+  height: 27px;
+  padding: var(--space-sm) var(--space-md);
+  white-space: nowrap;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-white-10);
+  }
+}
+
+.repeat-input {
+  width: calc(3ch + 24px);
+  margin-left: var(--space-md);
+  margin-right: var(--space-md);
+  text-align: center;
+}
+
+.range-input-container {
+  margin-left: var(--space-md);
+  margin-right: var(--space-lg);
+}
+
+.range-input {
+  width: 84px;
+  text-align: center;
+}
+
+.reminder-form-message {
+  margin-top: var(--space-sm);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  color: var(--color-negative);
+}
+
+.reminder-form-btns {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+
+  & .btn:first-of-type {
+    margin-right: var(--space-md);
+  }
+}
