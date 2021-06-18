@@ -11,6 +11,9 @@ html, body {
 }
 
 body {
+  --background-opacity: 50%;
+  --background-blur: 12px;
+
   overflow: hidden;
   margin: 0;
   background-color: var(--color-grey-90);
@@ -109,13 +112,13 @@ select {
               0 2px 4px 0 var(--color-black-8),
               0 4px 8px 0 var(--color-black-4),
               0 8px 16px 0 var(--color-black-2);
-  background-color: var(--color-grey-90-50);
-  backdrop-filter: blur(12px);
+  background-color: hsl(224deg 7% 12% / var(--background-opacity));
+  backdrop-filter: blur(var(--background-blur));
 }
 
 .fullscreen-mask {
-  background-color: var(--color-grey-90-50);
-  backdrop-filter: blur(12px);
+  background-color: hsl(224deg 7% 12% / var(--background-opacity));
+  backdrop-filter: blur(var(--background-blur));
 }
 
 .input, .btn {
@@ -329,6 +332,25 @@ select {
 
   &:focus-within {
     box-shadow: 0 0 0 2px var(--color-primary);
+  }
+}
+
+.range-input {
+  appearance: none;
+
+  &::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--color-white-10);
+  }
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    transform: translateY(calc(-50% + 3px));
   }
 }
 

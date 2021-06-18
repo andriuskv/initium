@@ -46,9 +46,13 @@
 }
 
 .top-site-container {
-  background-color: var(--color-grey-90-50);
-  backdrop-filter: blur(8px);
-  box-shadow: inset 0 1px 1px 0 var(--color-white-10);
+  padding: 0;
+  border: none;
+  box-shadow: inset 0 1px 1px 0 var(--color-white-10),
+              0 1px 2px 0 var(--color-black-16),
+              0 2px 4px 0 var(--color-black-8),
+              0 4px 8px 0 var(--color-black-4),
+              0 8px 16px 0 var(--color-black-2);
 }
 
 .top-site-title {

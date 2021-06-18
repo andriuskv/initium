@@ -8,6 +8,10 @@ function initSettings() {
 
 function getDefault() {
   return {
+    general: {
+      backgroundOpacity: 50,
+      backgroundBlurRadius: 12
+    },
     mainPanel: {
       navHidden: false,
       components: {

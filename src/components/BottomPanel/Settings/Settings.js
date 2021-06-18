@@ -1,18 +1,23 @@
 import { useState, lazy, Suspense } from "react";
 import Spinner from "components/Spinner";
 import "./settings.css";
-import TimeDateTab from "./TimeDateTab";
+import GeneralTab from "./GeneralTab";
 
+const TimeDateTab = lazy(() => import("./TimeDateTab"));
 const MainPanelTab = lazy(() => import("./MainPanelTab"));
 const BackgroundTab = lazy(() => import("./BackgroundTab"));
 const WeatherTab = lazy(() => import("./WeatherTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 
 export default function Settings() {
-  const [activeTab, setActiveTab] = useState("timeDate");
+  const [activeTab, setActiveTab] = useState("general");
 
   function renderNavigation() {
     const tabs = [
+      {
+        id: "general",
+        name: "General"
+      },
       {
         id: "timeDate",
         name: "Time & Date"
@@ -47,12 +52,15 @@ export default function Settings() {
   }
 
   function renderTab() {
-    if (activeTab === "timeDate") {
-      return <TimeDateTab/>;
+    if (activeTab === "general") {
+      return <GeneralTab/>;
     }
     let Component = null;
 
-    if (activeTab === "mainPanel") {
+    if (activeTab === "timeDate") {
+      Component = TimeDateTab;
+    }
+    else if (activeTab === "mainPanel") {
       Component = MainPanelTab;
     }
     else if (activeTab === "background") {
