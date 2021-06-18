@@ -123,12 +123,12 @@
   text-align: center;
 }
 
-.range-input-container {
+.reminder-range-input-container {
   margin-left: var(--space-md);
   margin-right: var(--space-lg);
 }
 
-.range-input {
+.reminder-range-input {
   width: 84px;
   text-align: center;
 }

@@ -246,7 +246,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
       ignoreFirstClick.current = false;
       return;
     }
-    let hide = !target.closest(".range-input");
+    let hide = !target.closest(".reminder-range-input");
 
     if (target.closest(".range-data-list")) {
       hide = false;
@@ -298,13 +298,13 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
         <div className="reminder-form-setting" onFocus={handleFormFocus} onBlur={handleRangeInputBlur}>
           <div>
             <span>From</span>
-            <span className="range-input-container">
-              <input type="text" className="input range-input" autoComplete="off" name="from"
+            <span className="reminder-range-input-container">
+              <input type="text" className="input reminder-range-input" autoComplete="off" name="from"
                 onChange={handleRangeInputChange} value={form.range.from.text} required/>
             </span>
             <span>To</span>
-            <span className="range-input-container">
-              <input type="text" className="input range-input" autoComplete="off" name="to"
+            <span className="reminder-range-input-container">
+              <input type="text" className="input reminder-range-input" autoComplete="off" name="to"
                 onChange={handleRangeInputChange} value={form.range.to.text}/>
             </span>
           </div>

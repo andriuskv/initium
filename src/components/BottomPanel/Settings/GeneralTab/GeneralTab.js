@@ -1,0 +1,38 @@
+import { useRef } from "react";
+import { useSettings } from "contexts/settings-context";
+import { updateSetting } from "services/settings";
+
+export default function GeneralTab() {
+  const { settings: { general: settings } } = useSettings();
+  const timeoutId = useRef(0);
+
+  function handleRangeInputChange({ target }) {
+    const { name, value } = target;
+
+    if (name === "backgroundOpacity") {
+      document.body.style.setProperty("--background-opacity", `${value}%`);
+    }
+    else if (name === "backgroundBlurRadius") {
+      document.body.style.setProperty("--background-blur", `${value}px`);
+    }
+    clearTimeout(timeoutId.current);
+    timeoutId.current = setTimeout(() => {
+      updateSetting({ general: { [name]: Number(value) } });
+    }, 1000);
+  }
+
+  return (
+    <div className="setting-tab" onChange={handleRangeInputChange}>
+      <label className="setting">
+        <span>Background opacity</span>
+        <input type="range" className="range-input" min="0" max="100" step="5"
+          defaultValue={settings.backgroundOpacity} name="backgroundOpacity"/>
+      </label>
+      <label className="setting">
+        <span>Background blur radius</span>
+        <input type="range" className="range-input" min="0" max="24" step="1"
+          defaultValue={settings.backgroundBlurRadius} name="backgroundBlurRadius"/>
+      </label>
+    </div>
+  );
+}

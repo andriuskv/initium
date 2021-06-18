@@ -99,8 +99,8 @@ export default function TopSites({ settings }) {
       {visibleSites.map((site, i) => (
         <li className="top-site" key={site.id}>
           <a href={site.url} className="top-site-link" aria-label={site.title}>
-            <div className="top-site-container top-site-title">{site.title}</div>
-            <div className="top-site-container top-site-thumbnail-container">
+            <div className="container top-site-container top-site-title">{site.title}</div>
+            <div className="container top-site-container top-site-thumbnail-container">
               <img src={site.iconUrl} className="top-site-thumbnail" alt=""/>
             </div>
           </a>

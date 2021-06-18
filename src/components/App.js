@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { useSettings } from "../contexts/settings-context";
 import Background from "./Background";
 import Clock from "./Clock";
@@ -19,6 +19,11 @@ export default function App() {
   const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const topPanelTimeoutId = useRef(0);
   const weatherTimeoutId = useRef(0);
+
+  useLayoutEffect(() => {
+    document.body.style.setProperty("--background-opacity", `${settings.general.backgroundOpacity}%`);
+    document.body.style.setProperty("--background-blur", `${settings.general.backgroundBlurRadius}px`);
+  }, []);
 
   useEffect(() => {
     initTopPanel();
