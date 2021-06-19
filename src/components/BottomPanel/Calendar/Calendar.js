@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getRandomString } from "utils";
+import { getRandomString, findFocusableElement } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import Icon from "components/Icon";
@@ -103,12 +103,17 @@ export default function Calendar({ showIndicator }) {
       calendar[year] = generateYear(year);
       setCalendar({ ...calendar });
     }
+    const { days: previousMonthDays, name: previousMonthName } = calendar[year][previousMonth];
+    const { days: nextMonthDays, name: nextMonthName } = calendar[year][nextMonth];
+
     setVisibleMonth({
       previous: {
-        days: firstDayIndex > 0 ? calendar[year][previousMonth].days.slice(-firstDayIndex) : []
+        name: previousMonthName,
+        days: firstDayIndex > 0 ? previousMonthDays.slice(-firstDayIndex) : []
       },
       next: {
-        days: calendar[year][nextMonth].days.slice(0, 42 - days.length - firstDayIndex)
+        name: nextMonthName,
+        days: nextMonthDays.slice(0, 42 - days.length - firstDayIndex)
       },
       current: { name, month, days }
     });
@@ -493,6 +498,88 @@ export default function Calendar({ showIndicator }) {
     setSelectedDay({ ...selectedDay });
   }
 
+  function findNextFocusableElement(element, shiftKey) {
+    if (shiftKey) {
+      return findFocusableElement(element.parentElement.firstElementChild, -1);
+    }
+    else {
+      return findFocusableElement(element.parentElement.lastElementChild, 1);
+    }
+  }
+
+  function focusGridElement(key, gridElement, columnCount) {
+    const elements = [...gridElement.parentElement.children];
+    const index = elements.indexOf(gridElement);
+    let element = null;
+
+    if (key === "ArrowRight") {
+      element = elements[index + 1];
+    }
+    else if (key === "ArrowLeft") {
+      element = elements[index - 1];
+    }
+    else if (key === "ArrowDown") {
+      element = elements[index + columnCount];
+    }
+    else if (key === "ArrowUp") {
+      element = elements[index - columnCount];
+    }
+
+    if (element) {
+      element.focus();
+    }
+  }
+
+  function handleDaysKeyDown(event) {
+    const { key, target } = event;
+
+    if (key === "Tab") {
+      const element = findNextFocusableElement(target, event.shiftKey);
+
+      if (element) {
+        event.preventDefault();
+        element.focus();
+      }
+    }
+    else if (key.startsWith("Arrow")) {
+      focusGridElement(key, target, 7);
+    }
+    else if (key === "Enter") {
+      const index = target.getAttribute("data-index");
+      const month = target.getAttribute("data-month");
+      let direction = 0;
+
+      if (month === "previous") {
+        direction = -1;
+      }
+      else if (month === "next") {
+        direction = 1;
+      }
+      showDay(target, visibleMonth[month].days[index], direction);
+    }
+  }
+
+  function handleMonthsKeyDown(event) {
+    const { key, target } = event;
+
+    if (key === "Tab") {
+      const element = findNextFocusableElement(target, event.shiftKey);
+
+      if (element) {
+        event.preventDefault();
+        element.focus();
+      }
+    }
+    else if (key.startsWith("Arrow")) {
+      focusGridElement(key, target, 4);
+    }
+    else if (key === "Enter") {
+      const index = target.getAttribute("data-index");
+
+      showMonth(target, index);
+    }
+  }
+
   if (!calendar) {
     return null;
   }
@@ -514,9 +601,11 @@ export default function Calendar({ showIndicator }) {
                 <Icon id="chevron-right"/>
               </button>
             </div>
-            <ul className="calendar-months">
-              {calendar[currentYear].map((month, i) => (
-                <li className={`calendar-month${month.isCurrentMonth ? " current" : ""}`} onClick={({ target }) => showMonth(target, i)} key={month.name}>{month.name}</li>
+            <ul className="calendar-months" onKeyDown={handleMonthsKeyDown}>
+              {calendar[currentYear].map((month, index) => (
+                <li className={`calendar-month${month.isCurrentMonth ? " current" : ""}`}
+                  onClick={({ target }) => showMonth(target, index)} key={month.name}
+                  tabIndex="0" data-index={index}>{month.name}</li>
               ))}
             </ul>
           </div>
@@ -540,15 +629,17 @@ export default function Calendar({ showIndicator }) {
               <li className="calendar-cell">Sat</li>
               <li className="calendar-cell">Sun</li>
             </ul>
-            <ul className="calendar-days">
-              {visibleMonth.previous.days.map(day => (
-                <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}>
+            <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
+              {visibleMonth.previous.days.map((day, index) => (
+                <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
+                  tabIndex="0" aria-label={`${visibleMonth.previous.name} ${day.day}`} data-month="previous" data-index={index}>
                   <div>{day.day}</div>
                 </li>
               ))}
-              {visibleMonth.current.days.map(day => (
+              {visibleMonth.current.days.map((day, index) => (
                 <li className={`calendar-cell calendar-day current-month-day${day.isCurrentDay ? " current" : ""}`}
-                  onClick={({ target }) => showDay(target, day)} key={day.id}>
+                  onClick={({ target }) => showDay(target, day)} key={day.id}
+                  tabIndex="0" aria-label={`${visibleMonth.current.name} ${day.day}`} data-month="current" data-index={index}>
                   <div>{day.day}</div>
                   {day.reminders.length > 0 && (
                     <div className="day-reminders">
@@ -559,8 +650,9 @@ export default function Calendar({ showIndicator }) {
                   )}
                 </li>
               ))}
-              {visibleMonth.next.days.map(day => (
-                <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, 1)} key={day.id}>
+              {visibleMonth.next.days.map((day, index) => (
+                <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, 1)} key={day.id}
+                  tabIndex="0" aria-label={`${visibleMonth.next.name} ${day.day}`} data-month="next" data-index={index}>
                   <div>{day.day}</div>
                 </li>
               ))}
