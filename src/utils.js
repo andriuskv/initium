@@ -28,10 +28,17 @@ function getRandomHexColor() {
   return color;
 }
 
+function findFocusableElement(element, direction) {
+  const elements = [...document.querySelectorAll("button, [tabindex]")];
+  const index = elements.indexOf(element);
+  return elements[index + direction];
+}
+
 export {
   dispatchCustomEvent,
   delay,
   getRandomString,
   getRandomHslColor,
-  getRandomHexColor
+  getRandomHexColor,
+  findFocusableElement
 };
