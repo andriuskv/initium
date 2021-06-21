@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings-context";
 import { updateSetting } from "services/settings";
 
@@ -21,6 +22,10 @@ export default function GeneralTab() {
     }, 1000);
   }
 
+  function showGreetingEditor() {
+    dispatchCustomEvent("greeting-editor-visible");
+  }
+
   return (
     <div className="setting-tab" onChange={handleRangeInputChange}>
       <label className="setting">
@@ -33,6 +38,9 @@ export default function GeneralTab() {
         <input type="range" className="range-input" min="0" max="24" step="1"
           defaultValue={settings.backgroundBlurRadius} name="backgroundBlurRadius"/>
       </label>
+      <div className="setting">
+        <button className="btn" onClick={showGreetingEditor}>Set a greeting</button>
+      </div>
     </div>
   );
 }

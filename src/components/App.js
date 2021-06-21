@@ -1,11 +1,12 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { useSettings } from "../contexts/settings-context";
 import Background from "./Background";
-import Clock from "./Clock";
-import MainPanel from "./MainPanel";
 import Tasks from "./Tasks";
 import BottomPanel from "./BottomPanel";
 
+const Clock = lazy(() => import("./Clock"));
+const Greeting = lazy(() => import("./Greeting"));
+const MainPanel = lazy(() => import("./MainPanel"));
 const TopPanel = lazy(() => import("./TopPanel"));
 const Weather = lazy(() => import("./Weather"));
 const BackgroundViewer = lazy(() => import("./BackgroundViewer"));
@@ -16,6 +17,7 @@ export default function App() {
   const [backgroundViewerVisible, setBackgroundViewerVisible] = useState(false);
   const [tweetImageData, setTweetImageData] = useState(null);
   const [topPanel, setTopPanel] = useState({ rendered: false, forceVisibility: false });
+  const [greeting, setGreeting] = useState(null);
   const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const topPanelTimeoutId = useRef(0);
   const weatherTimeoutId = useRef(0);
@@ -26,15 +28,18 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    initGreeting();
     initTopPanel();
 
     window.addEventListener("background-viewer-visible", showBackgroundViewer);
     window.addEventListener("tweet-image-viewer-visible", showTweetImageViewer);
+    window.addEventListener("greeting-editor-visible", showGreetingEditor);
     window.addEventListener("top-panel-visible", renderTopPanel, { once: true });
 
     return () => {
       window.removeEventListener("background-viewer-visible", showBackgroundViewer);
       window.removeEventListener("tweet-image-viewer-visible", showTweetImageViewer);
+      window.removeEventListener("greeting-editor-visible", showGreetingEditor);
     };
   }, []);
 
@@ -60,6 +65,15 @@ export default function App() {
 
   function isWeatherEnabled() {
     return !settings.weather.disabled && (settings.weather.cityName || settings.weather.useGeo);
+  }
+
+  async function initGreeting() {
+    const chromeStorage = await import("../services/chromeStorage");
+    const greetings = await chromeStorage.get("greetings");
+
+    if (greetings?.length) {
+      setGreeting({ visible: true });
+    }
   }
 
   async function initTopPanel() {
@@ -89,6 +103,14 @@ export default function App() {
     setTweetImageData(null);
   }
 
+  function showGreetingEditor() {
+    setGreeting({ ...greeting, editorVisible: true });
+  }
+
+  function hideGreetingEditor() {
+    setGreeting({ ...greeting, editorVisible: false });
+  }
+
   function renderTopPanel() {
     clearTimeout(topPanelTimeoutId.current);
     setTopPanel({ rendered: true, forceVisibility: true });
@@ -97,16 +119,20 @@ export default function App() {
   return (
     <>
       <Background settings={settings.background}/>
-      {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
-      {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
-      <BottomPanel/>
-      <Tasks/>
       <Suspense fallback={null}>
+        {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
+        {greeting && (
+          <Greeting settings={settings.greeting} editorVisible={greeting.editorVisible}
+            hideEditor={hideGreetingEditor}/>
+        )}
+        {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
         {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
         {weather.rendered && <Weather settings={settings.weather} timeFormat={settings.timeDate.format}/>}
         {backgroundViewerVisible && <BackgroundViewer settings={settings.background} hide={hideBackgroundViewer}/>}
         {tweetImageData && <TweetImageViewer data={tweetImageData} hide={hideTweetImageViewer}/>}
       </Suspense>
+      <Tasks/>
+      <BottomPanel/>
     </>
   );
 }

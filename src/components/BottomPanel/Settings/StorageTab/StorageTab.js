@@ -50,6 +50,10 @@ export default function StorageTab() {
       {
         name: "countdowns",
         fullName: "Countdowns"
+      },
+      {
+        name: "greetings",
+        fullName: "Greetings"
       }
     ];
 
