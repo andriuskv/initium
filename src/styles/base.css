@@ -354,6 +354,10 @@ select {
   }
 }
 
+.label-left {
+  margin-right: var(--space-md);
+}
+
 .label-right {
   margin-left: var(--space-md);
 }

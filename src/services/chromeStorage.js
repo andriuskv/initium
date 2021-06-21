@@ -25,9 +25,9 @@ function get(id) {
   });
 }
 
-function set(value) {
+function set(value, cb) {
   isLocalChange = true;
-  chrome.storage.sync.set(value);
+  chrome.storage.sync.set(value, cb);
 }
 
 export {
