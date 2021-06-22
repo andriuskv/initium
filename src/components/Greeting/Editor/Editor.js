@@ -96,7 +96,10 @@ export default function Editor({ hide }) {
     <div className="greeting-editor-mask fullscreen-mask">
       <div className="container greeting-editor">
         <div className="greeting-editor-header">
-          <Dropdown container={{ className: "" }} toggle={{ iconId: "info" }} body={{ className: "greeting-editor-dropdown" }}>
+          <Dropdown
+            container={{ className: "" }}
+            toggle={{ title: "Info", iconId: "info" }}
+            body={{ className: "greeting-editor-dropdown" }}>
             <ul className="greeting-editor-info-items">
               <li>You can get multiple greetings by separating text with a new line.</li>
               <li>To move greeting text to the new line you can use &lt;br/&gt;.</li>

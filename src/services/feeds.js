@@ -7,7 +7,7 @@ function getStoredFeeds() {
 }
 
 async function hasStoredFeeds() {
-  const feeds = await getStoredFeeds();
+  const feeds = await getStoredFeeds() || [];
 
   return feeds.length > 0;
 }

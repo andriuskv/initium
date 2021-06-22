@@ -11,7 +11,7 @@ const Entries = lazy(() => import("./Entries"));
 export default function RssFeed({ showIndicator }) {
   const [loading, setLoading] = useState(true);
   const [activeComponent, setActiveComponent] = useState(null);
-  const [feeds, setFeeds] = useState(null);
+  const [feeds, setFeeds] = useState(() => getDefaultFeeds());
   const [navigation, setNavigation] = useState(() => ({
     VISIBLE_ITEM_COUNT : 3,
     activeIndex: 0,
@@ -54,10 +54,25 @@ export default function RssFeed({ showIndicator }) {
     initFeeds();
 
     chromeStorage.subscribeToChanges(({ feeds }) => {
-      if (feeds) {
+      if (feeds?.newValue) {
         syncFeeds(feeds.newValue);
       }
+      else {
+        updatedFeeds.current.length = 0;
+
+        showForm();
+        setNavigation({ VISIBLE_ITEM_COUNT : 3, activeIndex: 0, shift: 0 });
+        setFeeds(getDefaultFeeds());
+      }
     });
+  }
+
+  function getDefaultFeeds() {
+    return {
+      active: [],
+      inactive: [],
+      failed: []
+    };
   }
 
   async function syncFeeds(newFeeds) {
@@ -417,7 +432,7 @@ export default function RssFeed({ showIndicator }) {
     });
   }
 
-  if (loading || !feeds) {
+  if (loading) {
     return <Icon id="rss" className="main-panel-item-splash-icon"/>;
   }
   else if (activeComponent) {

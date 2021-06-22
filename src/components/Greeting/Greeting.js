@@ -20,6 +20,15 @@ export default function Greeting({ settings = {}, editorVisible, hideEditor }) {
     else if (greeting) {
       setGreeting("");
     }
+
+    chromeStorage.subscribeToChanges(({ greetings }) => {
+      if (greetings?.newValue) {
+        setRandomGreeting(greetings);
+      }
+      else {
+        setGreeting("");
+      }
+    });
   }
 
   function setRandomGreeting(greetings) {

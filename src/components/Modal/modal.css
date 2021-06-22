@@ -18,6 +18,7 @@
 
   & p {
      margin-left: var(--space-md);
+     margin-right: var(--space-md);
   }
 }
 

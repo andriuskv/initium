@@ -39,18 +39,17 @@ export default function Tasks() {
 
   async function init() {
     const tasks = await chromeStorage.get("tasks");
-    const groups = tasks?.length > 0 ? tasks : [{
-      id: "unorganized",
-      name: "Unorganized",
-      expanded: true,
-      tasks: []
-    }];
+    const groups = tasks?.length > 0 ? tasks : [getDefaultGroup()];
 
     initGroups(groups);
 
     chromeStorage.subscribeToChanges(({ tasks }) => {
-      if (tasks) {
+      if (tasks?.newValue) {
         initGroups(tasks.newValue);
+      }
+      else {
+        setGroups([getDefaultGroup()]);
+        setTaskCount(null);
       }
     });
   }
@@ -73,6 +72,15 @@ export default function Tasks() {
       return group;
     }));
     countTasks(groups);
+  }
+
+  function getDefaultGroup() {
+    return {
+      id: "unorganized",
+      name: "Unorganized",
+      expanded: true,
+      tasks: []
+    };
   }
 
   function parseTask(task) {

@@ -101,7 +101,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
   return (
     <div id={state.id} className={`dropdown-container${container ? ` ${container.className}` : ""}${state.visible ? " visible" : ""}`}>
       <button className={`btn icon-btn${toggle.className ? ` ${toggle.className}` : ""}${state.visible ? " active" : ""}`}
-        onClick={toggleDropdown} title="More">
+        onClick={toggleDropdown} title={toggle.title || "More"}>
         <Icon id={toggle.iconId || "vertical-dots"}/>
       </button>
       <div ref={drop} className={`container dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}`}>{children}</div>
