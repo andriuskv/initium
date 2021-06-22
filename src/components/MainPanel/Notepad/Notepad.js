@@ -37,19 +37,27 @@ export default function Notepad() {
       });
     }
     else {
-      notepad = [{
-        id: getRandomString(),
-        title: "Tab",
-        content: ""
-      }];
+      notepad = [getDefaultTab()];
     }
     setTabs(notepad);
 
     chromeStorage.subscribeToChanges(({ notepad }) => {
-      if (notepad) {
+      if (notepad?.newValue) {
         setTabs(notepad.newValue);
       }
+      else {
+        setNavigation({ activeIndex: 0, shift: 0 });
+        setTabs([getDefaultTab()]);
+      }
     });
+  }
+
+  function getDefaultTab() {
+    return {
+      id: getRandomString(),
+      title: "Tab",
+      content: ""
+    };
   }
 
   function previousShift() {

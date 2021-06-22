@@ -33,8 +33,13 @@ export default function Calendar({ showIndicator }) {
     initCalendar(reminders);
 
     chromeStorage.subscribeToChanges(({ reminders }) => {
-      if (reminders) {
+      if (reminders?.newValue) {
         initCalendar(reminders.newValue);
+      }
+      else {
+        setSelectedDay(null);
+        setViewingYear(false);
+        initCalendar();
       }
     });
   }

@@ -60,7 +60,7 @@
   animation-fill-mode: forwards;
 
   &.full {
-    stroke: red;
+    stroke: var(--color-negative);
   }
 }
 
@@ -68,9 +68,15 @@
   font-size: var(--text-xxl);
 }
 
-
 .storage-item {
+  display: flex;
+  align-items: center;
   padding: var(--space-md);
+}
+
+.storage-item-main {
+  flex: 1;
+  margin-right: var(--space-md);
 }
 
 .storage-item-info {
@@ -99,7 +105,7 @@
   animation-fill-mode: forwards;
 
   &.full {
-    background-color: red;
+    background-color: var(--color-negative);
   }
 }
 

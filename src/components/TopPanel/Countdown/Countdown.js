@@ -38,8 +38,11 @@ export default function Countdown({ visible }) {
     }
 
     chromeStorage.subscribeToChanges(({ countdowns }) => {
-      if (countdowns) {
-        startCountdowns(countdowns);
+      if (countdowns?.newValue) {
+        startCountdowns(countdowns.newValue);
+      }
+      else {
+        setCountdowns([]);
       }
     });
   }

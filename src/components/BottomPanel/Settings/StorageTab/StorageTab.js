@@ -1,6 +1,8 @@
 /* global chrome */
 
 import { useState, useEffect, useCallback } from "react";
+import Modal from "components/Modal";
+import Icon from "components/Icon";
 import "./storage-tab.css";
 
 export default function StorageTab() {
@@ -11,6 +13,7 @@ export default function StorageTab() {
     usedStorageInPercent: 0,
     dashoffset: 1000
   }));
+  const [modal, setModal] = useState(null);
   const memoizedChangeHandler = useCallback(handleStorageChange, [items, stats]);
 
   useEffect(() => {
@@ -84,28 +87,26 @@ export default function StorageTab() {
     setItems(items);
   }
 
-  function handleStorageChange(storage) {
+  async function handleStorageChange(storage) {
     const [name] = Object.keys(storage);
+    const bytes = await getBytesInUse(name);
+    const item = items.find(item => item.name === name);
+    const byteDiff = bytes - item.bytes;
+    const usedStorage = stats.usedStorage + byteDiff;
+    const usageRatio = usedStorage / stats.maxStorage;
 
-    chrome.storage.sync.getBytesInUse(name, bytes => {
-      const item = items.find(item => item.name === name);
-      const byteDiff = bytes - item.bytes;
-      const usedStorage = stats.usedStorage + byteDiff;
-      const usageRatio = usedStorage / stats.maxStorage;
+    item.bytes = bytes;
+    item.usageRatio = bytes / stats.maxStoragePerItem;
+    item.usedStorage = formatBytes(bytes);
 
-      item.bytes = bytes;
-      item.usageRatio = bytes / stats.maxStoragePerItem;
-      item.usedStorage = formatBytes(bytes);
-
-      setItems([...items]);
-      setStats({
-        ...stats,
-        usedStorage,
-        usedStorageInPercent: Math.ceil(usageRatio * 100),
-        usedStorageFormatted: formatBytes(usedStorage),
-        // 1000 = empty circle, 717 = full circle
-        dashoffset: 1000 - 283 * usageRatio
-      });
+    setItems([...items]);
+    setStats({
+      ...stats,
+      usedStorage,
+      usedStorageInPercent: Math.ceil(usageRatio * 100),
+      usedStorageFormatted: formatBytes(usedStorage),
+      // 1000 = empty circle, 717 = full circle
+      dashoffset: 1000 - 283 * usageRatio
     });
   }
 
@@ -119,6 +120,15 @@ export default function StorageTab() {
     const kb = bytes / 1024;
 
     return kb % 1 === 0 ? kb : kb.toFixed(2);
+  }
+
+  function confirmModalAction() {
+    setModal(null);
+    chrome.storage.sync.remove(modal.name);
+  }
+
+  function hideModal() {
+    setModal(null);
   }
 
   if (!items) {
@@ -148,18 +158,34 @@ export default function StorageTab() {
       <ul>
         {items.map((item, i) => (
           <li className="storage-item" key={i}>
-            <div className="storage-item-info">
-              <div>{item.fullName}</div>
-              <div>{item.usedStorage} kB</div>
-            </div>
-            <div className="storage-item-bar">
-              <div className={`storage-item-bar-inner${item.usageRatio > 0.9 ? " full" : ""}`}
-                style={{ "--scale": item.usageRatio, "--index": i }}>
+            <div className="storage-item-main">
+              <div className="storage-item-info">
+                <div>{item.fullName}</div>
+                <div>{item.usedStorage} kB</div>
+              </div>
+              <div className="storage-item-bar">
+                <div className={`storage-item-bar-inner${item.usageRatio > 0.9 ? " full" : ""}`}
+                  style={{ "--scale": item.usageRatio, "--index": i }}>
+                </div>
               </div>
             </div>
+            <button className="btn icon-btn alt-icon-btn" onClick={() => setModal(item)}>
+              <Icon id="trash"/>
+            </button>
           </li>
         ))}
       </ul>
+      {modal && (
+        <Modal className="notepad-modal">
+          <h4 className="modal-title">Delete {modal.fullName} data?</h4>
+          <p>Do you really want to delete {modal.fullName} data?</p>
+          <p>All associated data will be removed.</p>
+          <div className="modal-actions">
+            <button className="btn text-btn" onClick={hideModal}>Cancel</button>
+            <button className="btn" onClick={confirmModalAction}>Delete</button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

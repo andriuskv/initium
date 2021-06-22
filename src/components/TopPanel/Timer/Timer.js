@@ -48,8 +48,13 @@ export default function Timer({ visible, expand }) {
       setPresets(timer);
     }
     chromeStorage.subscribeToChanges(({ timer }) => {
-      if (timer) {
+      if (timer?.newValue) {
         setPresets(timer.newValue);
+      }
+      else {
+        setActivePreset(null);
+        setPresets([]);
+        resetState();
       }
     });
   }
