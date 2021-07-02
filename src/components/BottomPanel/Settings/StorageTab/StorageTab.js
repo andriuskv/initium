@@ -169,7 +169,7 @@ export default function StorageTab() {
                 </div>
               </div>
             </div>
-            <button className="btn icon-btn alt-icon-btn" onClick={() => setModal(item)}>
+            <button className="btn icon-btn alt-icon-btn" onClick={() => setModal(item)} title="Delete">
               <Icon id="trash"/>
             </button>
           </li>

@@ -148,6 +148,8 @@ select {
     --background-color: var(--color-white-20);
 
     &:disabled {
+      --background-color: var(--color-white-10);
+
       cursor: default;
     }
   }

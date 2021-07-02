@@ -7,9 +7,9 @@ function getStoredFeeds() {
 }
 
 async function hasStoredFeeds() {
-  const feeds = await getStoredFeeds() || [];
+  const feeds = await getStoredFeeds() || {};
 
-  return feeds.length > 0;
+  return feeds.active?.length > 0;
 }
 
 function fetchFeedData(url) {
