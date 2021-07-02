@@ -78,7 +78,7 @@
 }
 
 .feed-list-item-logo {
-  margin-right:  var(--space-sm);
+  margin-right: var(--space-md);
   object-fit: scale-down;
 }
 

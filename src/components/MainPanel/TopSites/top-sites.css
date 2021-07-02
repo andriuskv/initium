@@ -16,6 +16,10 @@
   @media (max-height: 720px) {
     gap: var(--space-xs);
 
+    & .top-site-title {
+      font-size: var(--text-xxs);
+    }
+
     & .top-site-thumbnail-container {
       width: 72px;
       height: 72px;

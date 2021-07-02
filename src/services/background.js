@@ -149,6 +149,8 @@ function getDownscaledBackground(image) {
   canvas.height = Math.ceil(image.height / 10);
 
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+  ctx.filter = "blur(2px) brightness(90%)";
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   return canvas.toDataURL("image/png", 0.8);
 }
 
