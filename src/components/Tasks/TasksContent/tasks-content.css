@@ -209,14 +209,11 @@
   margin-left: 22px;
 }
 
-.subtask {
-  margin-top: var(--space-md);
-  padding-left: var(--space-xs);
-}
-
 .subtask-body {
   display: flex;
   align-items: flex-start;
+  padding-top: var(--space-md);
+  padding-left: var(--space-xs);
 }
 
 .tasks-dialog {

@@ -131,8 +131,8 @@ export default function App() {
         {backgroundViewerVisible && <BackgroundViewer settings={settings.background} hide={hideBackgroundViewer}/>}
         {tweetImageData && <TweetImageViewer data={tweetImageData} hide={hideTweetImageViewer}/>}
       </Suspense>
-      <Tasks/>
       <BottomPanel/>
+      <Tasks/>
     </>
   );
 }
