@@ -24,7 +24,7 @@ export default function Clock({ settings }) {
   }
 
   return (
-    <div className="clock">
+    <div className="clock" style={{ "--scale": settings.clockScale }}>
       <div className="clock-time-container">
         <span className="clock-time">{clock.hours}:{clock.minutes}</span>
         {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
