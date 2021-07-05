@@ -1,8 +1,10 @@
 .clock {
+  --scale: 1;
+
   position: absolute;
-  top: 25%;
+  top: 22%;
   left: 50%;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -50%);
   text-shadow: 0 1px 2px var(--color-black-8),
                 0 2px 4px var(--color-black-4),
                 0 4px 8px var(--color-black-2);
@@ -10,11 +12,11 @@
 
   @media (max-height: 720px) {
     & .clock-time {
-      font-size: 6rem;
+      --size: 6rem;
     }
 
     & .clock-time-period {
-     font-size: var(--text-xxl);
+      --size:  var(--text-xxl);
     }
 
     & .clock-date {
@@ -30,20 +32,27 @@
 }
 
 .clock-time {
-  font-size: 7.2rem;
+  --size: 7.2rem;
+
+  font-size: calc(var(--size) * var(--scale));
 }
 
 .clock-time-period {
+  --size: var(--text-xxxl);
+
   position: absolute;
   right: -4px;
   bottom: 0;
   transform: translateX(100%);
-  font-size: var(--text-xxxl);
+  font-size: calc(var(--size) * var(--scale));
 }
 
 .clock-date {
+  --size: var(--text-md);
+
   margin-top: var(--space-md);
   font-weight: bold;
+  font-size: calc(var(--size) * var(--scale));
   letter-spacing: 1px;
   text-align: right;
 }
