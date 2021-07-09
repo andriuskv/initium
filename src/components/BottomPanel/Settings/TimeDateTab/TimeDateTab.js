@@ -37,7 +37,8 @@ export default function TimeDateTab() {
         <span>Hide date</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.dateHidden}
-          onChange={() => toggleSetting("timeDate", "dateHidden")}/>
+          onChange={() => toggleSetting("timeDate", "dateHidden")}
+          disabled={settings.clockDisabled}/>
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
@@ -45,7 +46,8 @@ export default function TimeDateTab() {
       <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
         <span>Clock scale</span>
         <input type="range" className="range-input" min="0.5" max="3" step="0.1"
-          defaultValue={settings.clockScale} name="clockScale" onChange={handleRangeInputChange}/>
+          defaultValue={settings.clockScale} name="clockScale"
+          onChange={handleRangeInputChange} disabled={settings.clockDisabled}/>
       </label>
       <label className="setting">
         <span>Time display format</span>
