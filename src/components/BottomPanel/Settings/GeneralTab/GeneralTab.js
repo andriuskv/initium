@@ -4,7 +4,7 @@ import { useSettings } from "contexts/settings-context";
 import { updateSetting } from "services/settings";
 
 export default function GeneralTab() {
-  const { settings: { general: settings } } = useSettings();
+  const { settings: { general: settings }, toggleSetting } = useSettings();
   const timeoutId = useRef(0);
 
   function handleRangeInputChange({ target }) {
@@ -38,8 +38,17 @@ export default function GeneralTab() {
         <input type="range" className="range-input" min="0" max="24" step="1"
           defaultValue={settings.backgroundBlurRadius} name="backgroundBlurRadius"/>
       </label>
+      <label className="setting">
+        <span>Disable greeting</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.greetingDisabled}
+          onChange={() => toggleSetting("general", "greetingDisabled")}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
       <div className="setting">
-        <button className="btn" onClick={showGreetingEditor}>Set a greeting</button>
+        <button className="btn" onClick={showGreetingEditor} disabled={settings.greetingDisabled}>Set a greeting</button>
       </div>
     </div>
   );

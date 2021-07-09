@@ -10,7 +10,8 @@ function getDefault() {
   return {
     general: {
       backgroundOpacity: 50,
-      backgroundBlurRadius: 12
+      backgroundBlurRadius: 12,
+      greetingDisabled: false
     },
     mainPanel: {
       navHidden: false,

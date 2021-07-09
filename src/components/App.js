@@ -121,11 +121,15 @@ export default function App() {
       <Background settings={settings.background}/>
       <Suspense fallback={null}>
         {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
-        {greeting && (
+      </Suspense>
+      <Suspense fallback={null}>
+        {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
+      </Suspense>
+      <Suspense fallback={null}>
+        {greeting && !settings.general.greetingDisabled && (
           <Greeting settings={settings.greeting} editorVisible={greeting.editorVisible}
             hideEditor={hideGreetingEditor}/>
         )}
-        {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
         {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
         {weather.rendered && <Weather settings={settings.weather} timeFormat={settings.timeDate.format}/>}
         {backgroundViewerVisible && <BackgroundViewer settings={settings.background} hide={hideBackgroundViewer}/>}
