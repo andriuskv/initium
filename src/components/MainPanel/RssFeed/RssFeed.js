@@ -155,7 +155,7 @@ export default function RssFeed({ showIndicator }) {
       const results = await Promise.allSettled(promises);
 
       for (const [index, { status, value }] of results.entries()) {
-        if (status === "fulfilled") {
+        if (status === "fulfilled" && value?.entries) {
           feeds.push(value);
         }
         else {
