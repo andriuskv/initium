@@ -31,6 +31,8 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
       const data = await feedService.fetchFeed(feed);
 
       if (data.message) {
+        feed.fetching = false;
+        updateFeeds(feeds, false);
         return;
       }
 
