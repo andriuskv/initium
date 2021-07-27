@@ -126,10 +126,11 @@ export default function App() {
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {greeting && !settings.general.greetingDisabled && (
-          <Greeting settings={settings.greeting} editorVisible={greeting.editorVisible}
-            hideEditor={hideGreetingEditor}/>
+        {settings.general.greetingDisabled || !greeting ? null : (
+          <Greeting settings={settings.greeting} editorVisible={greeting.editorVisible} hideEditor={hideGreetingEditor}/>
         )}
+      </Suspense>
+      <Suspense fallback={null}>
         {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
         {weather.rendered && <Weather settings={settings.weather} timeFormat={settings.timeDate.format}/>}
         {backgroundViewerVisible && <BackgroundViewer settings={settings.background} hide={hideBackgroundViewer}/>}

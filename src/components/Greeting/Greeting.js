@@ -23,7 +23,7 @@ export default function Greeting({ settings = {}, editorVisible, hideEditor }) {
 
     chromeStorage.subscribeToChanges(({ greetings }) => {
       if (greetings?.newValue) {
-        setRandomGreeting(greetings);
+        setRandomGreeting(greetings.newValue);
       }
       else {
         setGreeting("");
