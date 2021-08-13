@@ -206,6 +206,7 @@
   line-height: 1.4;
   white-space: pre-wrap;
   word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .tweet-link {
