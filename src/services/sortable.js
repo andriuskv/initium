@@ -1,5 +1,5 @@
 import { SortableContainer, SortableElement, SortableHandle } from "react-sortable-hoc";
-import arrayMove from "array-move";
+import { arrayMoveImmutable } from "array-move";
 
 const component = ({ children }) => children;
 
@@ -9,7 +9,7 @@ const SortHandle = SortableHandle(component);
 
 function SortableList({ items, indexOffset = 0, useDragHandle, handleSort, children }) {
   function onSortEnd({ oldIndex, newIndex }) {
-    handleSort(arrayMove(items, oldIndex + indexOffset, newIndex + indexOffset));
+    handleSort(arrayMoveImmutable(items, oldIndex + indexOffset, newIndex + indexOffset));
   }
 
   return (

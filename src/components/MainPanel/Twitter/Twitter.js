@@ -165,7 +165,10 @@ export default function Twitter({ showIndicator }) {
     if (user.active) {
       return;
     }
+    tweetsToLoad.length = 0;
+
     setChangingUser(true);
+    setTweetsToLoad([]);
     updateActiveUser(index);
     await loadContent();
     setChangingUser(false);
