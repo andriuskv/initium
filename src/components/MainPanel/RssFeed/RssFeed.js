@@ -202,6 +202,7 @@ export default function RssFeed({ showIndicator }) {
           feeds.active.splice(feed.index, 0, data);
         }
       }
+      feeds.failed = failedFeeds;
     }
     setFeeds({ ...feeds });
   }
