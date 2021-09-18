@@ -53,9 +53,9 @@
   padding: 0;
   border: none;
   box-shadow: inset 0 1px 1px 0 var(--color-white-10),
-              0 1px 2px 0 var(--color-black-8),
-              0 2px 4px 0 var(--color-black-4),
-              0 4px 8px 0 var(--color-black-2);
+              1px 2px 2px 0 var(--color-black-8),
+              2px 4px 4px 0 var(--color-black-4),
+              4px 8px 8px 0 var(--color-black-2);
 }
 
 .top-site-title {
@@ -67,6 +67,7 @@
   font-size: var(--text-xs);
   text-align: center;
   line-height: 1;
+  text-shadow: 0 1px 1px var(--color-black-8);
 }
 
 .top-site-dropdown {

@@ -119,8 +119,8 @@ export default function TopSites({ settings }) {
       {visibleSites.length < settings.visibleItemCount && !settings.addSiteButtonHidden && (
         <li className="top-site">
           <button className="top-site-link top-site-add-btn" onClick={showForm}>
-            <div className="top-site-container top-site-title">Add site</div>
-            <div className="top-site-container top-site-thumbnail-container">
+            <div className="container top-site-container top-site-title">Add site</div>
+            <div className="container top-site-container top-site-thumbnail-container">
               <Icon id="plus" className="top-site-add-btn-icon"/>
             </div>
           </button>
