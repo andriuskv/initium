@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings-context";
 import { updateSetting } from "services/settings";
+import "./general-tab.css";
 
 export default function GeneralTab() {
   const { settings: { general: settings }, toggleSetting } = useSettings();
@@ -38,17 +39,19 @@ export default function GeneralTab() {
         <input type="range" className="range-input" min="0" max="24" step="1"
           defaultValue={settings.backgroundBlurRadius} name="backgroundBlurRadius"/>
       </label>
-      <label className="setting">
-        <span>Disable greeting</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.greetingDisabled}
-          onChange={() => toggleSetting("general", "greetingDisabled")}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
+      <div className="setting setting-greeting">
+        <div className="setting-greeting-item">
+          <button className="btn" onClick={showGreetingEditor} disabled={settings.greetingDisabled}>Set greeting</button>
         </div>
-      </label>
-      <div className="setting">
-        <button className="btn" onClick={showGreetingEditor} disabled={settings.greetingDisabled}>Set a greeting</button>
+        <label className="setting-greeting-item">
+          <input type="checkbox" className="sr-only checkbox-input"
+            checked={settings.greetingDisabled}
+            onChange={() => toggleSetting("general", "greetingDisabled")}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+          <span className="checkbox-label-right">Disable greeting</span>
+        </label>
       </div>
     </div>
   );

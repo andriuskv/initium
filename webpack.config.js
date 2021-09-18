@@ -140,8 +140,8 @@ module.exports = function(env = {}) {
         }
       ]
     },
-    devtool: env.prod ? false : "inline-source-map",
     plugins,
+    devtool: env.prod ? false : "inline-source-map",
     stats: {
       entrypoints: false,
       children: false
