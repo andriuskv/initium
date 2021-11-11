@@ -41,7 +41,7 @@ export default function GeneralTab() {
       </label>
       <div className="setting setting-greeting">
         <div className="setting-greeting-item">
-          <button className="btn" onClick={showGreetingEditor} disabled={settings.greetingDisabled}>Set greeting</button>
+          <button className="btn" onClick={showGreetingEditor} disabled={settings.greetingDisabled}>Set a greeting</button>
         </div>
         <label className="setting-greeting-item">
           <input type="checkbox" className="sr-only checkbox-input"

@@ -138,7 +138,7 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
               <li className="notepad-tabs-item" key={tab.id}>
                 {tab.renameEnabled ? (
                   <input type="text" className="input" autoFocus defaultValue={tab.title}
-                    onBlur={event => renameTab(event, tab)} onKeyUp={blurTabTitleInput}/>
+                    onBlur={event => renameTab(event, tab)} onKeyPress={blurTabTitleInput}/>
                 ) : (
                   <>
                     <button className="btn text-btn notepad-tabs-item-title" onClick={() => selectListTab(index)}>{tab.title}</button>
