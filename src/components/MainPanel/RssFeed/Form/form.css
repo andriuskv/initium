@@ -30,6 +30,6 @@
 
 .feed-form-hide-btn {
   position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
+  top: 5px;
+  right: 5px;
 }

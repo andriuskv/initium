@@ -8,7 +8,6 @@
 .apps-item-link {
   display: flex;
   width: 100%;
-  height: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -16,7 +15,7 @@
   padding: var(--space-sm);
   border-radius: 8px;
 
-  &:hover {
+  &:hover, &:focus-visible {
     background-color: var(--color-white-10);
   }
 
