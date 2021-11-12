@@ -42,8 +42,15 @@ export default function Notepad() {
     setTabs(notepad);
 
     chromeStorage.subscribeToChanges(({ notepad }) => {
-      if (notepad?.newValue) {
-        setTabs(notepad.newValue);
+      if (!notepad) {
+        return;
+      }
+
+      if (notepad.newValue) {
+        setTabs(notepad.newValue.map(tab => {
+          tab.id = getRandomString();
+          return tab;
+        }));
       }
       else {
         setNavigation({ activeIndex: 0, shift: 0 });
