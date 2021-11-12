@@ -44,7 +44,11 @@ export default function Tasks() {
     initGroups(groups);
 
     chromeStorage.subscribeToChanges(({ tasks }) => {
-      if (tasks?.newValue) {
+      if (!tasks) {
+        return;
+      }
+
+      if (tasks.newValue) {
         initGroups(tasks.newValue);
       }
       else {

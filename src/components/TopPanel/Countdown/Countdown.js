@@ -38,7 +38,11 @@ export default function Countdown({ visible }) {
     }
 
     chromeStorage.subscribeToChanges(({ countdowns }) => {
-      if (countdowns?.newValue) {
+      if (!countdowns) {
+        return;
+      }
+
+      if (countdowns.newValue) {
         startCountdowns(countdowns.newValue);
       }
       else {

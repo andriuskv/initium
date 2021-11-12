@@ -50,7 +50,7 @@
   transition: 0.1s opacity;
 
   &.disabled {
-    opacity: 0.4;
+    opacity: 40%;
 
     &::after {
       content: "";

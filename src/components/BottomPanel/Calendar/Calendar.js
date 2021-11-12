@@ -33,7 +33,11 @@ export default function Calendar({ showIndicator }) {
     initCalendar(reminders);
 
     chromeStorage.subscribeToChanges(({ reminders }) => {
-      if (reminders?.newValue) {
+      if (!reminders) {
+        return;
+      }
+
+      if (reminders.newValue) {
         initCalendar(reminders.newValue);
       }
       else {

@@ -22,7 +22,11 @@ export default function Greeting({ settings = {}, editorVisible, hideEditor }) {
     }
 
     chromeStorage.subscribeToChanges(({ greetings }) => {
-      if (greetings?.newValue) {
+      if (!greetings) {
+        return;
+      }
+
+      if (greetings.newValue) {
         setRandomGreeting(greetings.newValue);
       }
       else {

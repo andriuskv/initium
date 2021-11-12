@@ -5,7 +5,7 @@ import "./to-top.css";
 export default function ToTop() {
   const [visible, setVisible] = useState(false);
   const ref = useRef(null);
-  const scrolling = useRef(false);
+  const rafId = useRef(0);
 
   useLayoutEffect(() => {
     ref.current.previousElementSibling.addEventListener("scroll", handleScroll);
@@ -16,14 +16,9 @@ export default function ToTop() {
   }, [visible]);
 
   function handleScroll({ target }) {
-    if (scrolling.current) {
-      return;
-    }
-    scrolling.current = true;
-
-    requestAnimationFrame(() => {
+    cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(() => {
       setVisible(target.scrollTop > 0);
-      scrolling.current = false;
     });
   }
 

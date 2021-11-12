@@ -54,7 +54,11 @@ export default function RssFeed({ showIndicator }) {
     initFeeds();
 
     chromeStorage.subscribeToChanges(({ feeds }) => {
-      if (feeds?.newValue) {
+      if (!feeds) {
+        return;
+      }
+
+      if (feeds.newValue) {
         syncFeeds(feeds.newValue);
       }
       else {
@@ -76,11 +80,12 @@ export default function RssFeed({ showIndicator }) {
   }
 
   async function syncFeeds(newFeeds) {
-    const length = Math.max(newFeeds.length, feeds.active.length);
+    const length = Math.max(newFeeds.active.length, feeds.active.length);
+    feeds.inactive = newFeeds.inactive;
 
     for (let i = 0; i < length; i++) {
       const oldFeed = feeds.active[i];
-      const newFeed = newFeeds[i];
+      const newFeed = newFeeds.active[i];
 
       if (newFeed) {
         const match = feeds.active.find(({ url }) => newFeed.url === url);
@@ -92,6 +97,9 @@ export default function RssFeed({ showIndicator }) {
             if (data.url) {
               feeds.active.push(data);
             }
+            else {
+              feeds.failed.push(newFeed);
+            }
           } catch (e) {
             console.log(e);
             feeds.failed.push(newFeed);
@@ -102,8 +110,8 @@ export default function RssFeed({ showIndicator }) {
         }
       }
 
-      if (oldFeed && !newFeeds.some(({ url }) => oldFeed.url === url)) {
-        removeFeed(i, false);
+      if (oldFeed && !newFeeds.active.some(({ url }) => oldFeed.url === url)) {
+        removeFeed(i, "active", false);
       }
     }
     setFeeds({ ...feeds });
@@ -339,6 +347,7 @@ export default function RssFeed({ showIndicator }) {
     entry.truncated = false;
     setFeeds({ ...feeds });
   }
+
   function updateFeeds(feeds, save = true) {
     setFeeds({ ...feeds });
 
@@ -350,14 +359,12 @@ export default function RssFeed({ showIndicator }) {
   function removeFeed(index, type, save = true) {
     feeds[type].splice(index, 1);
 
-    if (type === "active") {
-      if (feeds.active.length) {
-        setNavigation({
-          ...navigation,
-          activeIndex: 0,
-          shift: 0
-        });
-      }
+    if (type === "active" && feeds.active.length) {
+      setNavigation({
+        ...navigation,
+        activeIndex: 0,
+        shift: 0
+      });
     }
 
     if (!feeds.active.length) {
@@ -370,7 +377,6 @@ export default function RssFeed({ showIndicator }) {
     }
     updateFeeds(feeds, save);
   }
-
 
   function addFeed(feed) {
     feeds.active.push(feed);
@@ -427,6 +433,7 @@ export default function RssFeed({ showIndicator }) {
         inactive: feeds.inactive.map(feed => {
           delete feed.fetching;
           delete feed.entries;
+          delete feed.newEntryCount;
           return feed;
         })
       }
