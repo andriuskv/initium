@@ -40,6 +40,20 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
     }, 100);
   }
 
+  async function downloadTabs() {
+    const [{ default: saveAs }, { default: JSZip }] = await Promise.all([
+      import("file-saver"),
+      import("jszip")
+    ]);
+    const zip = new JSZip();
+
+    for (const tab of tabs) {
+      zip.file(`${tab.title}.txt`, tab.content);
+    }
+    const archive = await zip.generateAsync({ type: "blob" });
+    saveAs(archive, "notepad.zip");
+  }
+
   function hideModal() {
     setModal(null);
   }
@@ -124,9 +138,16 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
     <div className="notepad">
       <div className="notepad-tabs-header">
         <h2 className="notepad-tabs-header-title">Notepad Tabs</h2>
-        <button className="btn icon-btn" onClick={showCreateTabForm} title="Create tab">
-          <Icon id="plus"/>
-        </button>
+        <Dropdown>
+          <button className="btn icon-text-btn dropdown-btn" onClick={downloadTabs}>
+            <Icon id="download"/>
+            <span>Download all tabs</span>
+          </button>
+          <button className="btn icon-text-btn dropdown-btn" onClick={showCreateTabForm}>
+            <Icon id="plus"/>
+            <span>Create tab</span>
+          </button>
+        </Dropdown>
         <button className="btn icon-btn" onClick={hide} title="Close">
           <Icon id="cross"/>
         </button>
