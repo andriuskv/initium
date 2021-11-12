@@ -18,6 +18,7 @@ export default function Twitter({ showIndicator }) {
   const [activeUser, setActiveUser] = useState({});
   const [fetchingMoreTweets, setFetchingMoreTweets] = useState(false);
   const [changingUser, setChangingUser] = useState(false);
+  const tweetsRef = useRef(null);
   const lastUpdate = useRef(0);
   const timelineTimeoutId = useRef(0);
 
@@ -187,7 +188,7 @@ export default function Twitter({ showIndicator }) {
       return;
     }
 
-    if (target.closest(".tweet-quoted-tweet")) {
+    if (target.closest(".quoted-tweet")) {
       window.open(quotedTweet.tweetUrl, "_blank");
     }
     else {
@@ -320,7 +321,7 @@ export default function Twitter({ showIndicator }) {
           </Dropdown>
         )}
       </div>
-      <ul className="tweets">
+      <ul className={`tweets${tweetsToLoad.length > 0 && tweetsRef.current.scrollTop > 0 ? " tweet-indicator" : ""}`} ref={tweetsRef}>
         {tweetsToLoad.length > 0 && (
           <li>
             <button className="btn text-btn new-tweet-btn" onClick={viewNewTweets}>View {tweetsToLoad.length} new tweet{tweetsToLoad.length > 1 ? "s": ""}</button>
