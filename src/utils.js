@@ -34,11 +34,18 @@ function findFocusableElement(element, direction) {
   return elements[index + direction];
 }
 
+function formatBytes(bytes) {
+  const kb = bytes / 1024;
+
+  return kb % 1 === 0 ? kb : kb.toFixed(2);
+}
+
 export {
   dispatchCustomEvent,
   delay,
   getRandomString,
   getRandomHslColor,
   getRandomHexColor,
-  findFocusableElement
+  findFocusableElement,
+  formatBytes
 };

@@ -1,13 +1,19 @@
-import { useState } from "react";
-import { getRandomString } from "utils";
+import { useEffect, useState } from "react";
+import { getRandomString, formatBytes } from "utils";
 import { SortableItem, SortableList } from "services/sortable";
+import * as chromeStorage from "services/chromeStorage";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./tabs.css";
 
-export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPosition, hide }) {
+export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPosition, getTabSize, hide }) {
   const [modal, setModal] = useState(null);
+  const [storage, setStorage] = useState({ current: 0, used: 0 });
+
+  useEffect(() => {
+    updateStorage();
+  }, [tabs]);
 
   function enableTabRename(tab) {
     tab.renameEnabled = true;
@@ -85,11 +91,16 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
   }
 
   function createTab(event) {
-    event.preventDefault();
-    tabs.push({
-      id: getRandomString(4),
+    const tab = {
       title : event.target.elements.title.value.trim() || "Tab",
       content: ""
+    };
+
+    event.preventDefault();
+    tabs.push({
+      ...tab,
+      id: getRandomString(),
+      sizeString: getTabSize(tab).sizeString
     });
     updateTabPosition(tabs.length - 1);
     updateTabs(tabs);
@@ -100,6 +111,16 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
     if (event.key === "Enter") {
       event.target.blur();
     }
+  }
+
+  async function updateStorage() {
+    const bytes = await chromeStorage.getBytesInUse("notepad");
+    const maxBytes = 8192;
+
+    setStorage({
+      current: formatBytes(bytes),
+      used: bytes / maxBytes
+    });
   }
 
   function renderModal() {
@@ -139,20 +160,20 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
       <div className="notepad-tabs-header">
         <h2 className="notepad-tabs-header-title">Notepad Tabs</h2>
         <Dropdown>
-          <button className="btn icon-text-btn dropdown-btn" onClick={downloadTabs}>
-            <Icon id="download"/>
-            <span>Download all tabs</span>
-          </button>
           <button className="btn icon-text-btn dropdown-btn" onClick={showCreateTabForm}>
             <Icon id="plus"/>
             <span>Create tab</span>
+          </button>
+          <button className="btn icon-text-btn dropdown-btn" onClick={downloadTabs}>
+            <Icon id="download"/>
+            <span>Download all tabs</span>
           </button>
         </Dropdown>
         <button className="btn icon-btn" onClick={hide} title="Close">
           <Icon id="cross"/>
         </button>
       </div>
-      <SortableList items={tabs} handleSort={updateTabs}>
+      <SortableList items={tabs} axis="xy" handleSort={updateTabs}>
         <ul className="notepad-tabs-items" data-dropdown-parent>
           {tabs.map((tab, index) => (
             <SortableItem key={tab.id} index={index}>
@@ -161,32 +182,46 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
                   <input type="text" className="input" autoFocus defaultValue={tab.title}
                     onBlur={event => renameTab(event, tab)} onKeyPress={blurTabTitleInput}/>
                 ) : (
-                  <>
-                    <button className="btn text-btn notepad-tabs-item-title" onClick={() => selectListTab(index)}>{tab.title}</button>
-                    <Dropdown>
-                      <button className="btn icon-text-btn dropdown-btn" onClick={() => enableTabRename(tab)}>
-                        <Icon id="edit"/>
-                        <span>Rename</span>
-                      </button>
-                      <a download={`${tab.title}.txt`} className="btn icon-text-btn dropdown-btn"
-                        onClick={event => downloadTab(event, index)} title="Download">
-                        <Icon id="download"/>
-                        <span>Download</span>
-                      </a>
-                      {tabs.length > 1 && (
-                        <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)} title="Remove">
-                          <Icon id="trash"/>
-                          <span>Remove</span>
-                        </button>
-                      )}
-                    </Dropdown>
-                  </>
+                  <button className="btn text-btn notepad-tabs-item-title" onClick={() => selectListTab(index)}>
+                    <span className="notepad-tabs-item-title-text">{tab.title}</span>
+                  </button>
                 )}
+                <div className="notepad-tabs-item-bottom">
+                  <span className="notepad-tab-size-text">Size: {tab.sizeString} kB</span>
+                  <Dropdown>
+                    <button className="btn icon-text-btn dropdown-btn" onClick={() => enableTabRename(tab)}>
+                      <Icon id="edit"/>
+                      <span>Rename</span>
+                    </button>
+                    <a download={`${tab.title}.txt`} className="btn icon-text-btn dropdown-btn"
+                      onClick={event => downloadTab(event, index)} title="Download">
+                      <Icon id="download"/>
+                      <span>Download</span>
+                    </a>
+                    {tabs.length > 1 && (
+                      <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
+                        <Icon id="trash"/>
+                        <span>Remove</span>
+                      </button>
+                    )}
+                  </Dropdown>
+                </div>
               </li>
             </SortableItem>
           ))}
         </ul>
       </SortableList>
+      <div className="notepad-storage">
+        <div className="notepad-storage-text">
+          <div>{storage.current} kB</div>
+          <div>8 kB</div>
+        </div>
+        <div className="notepad-storage-bar">
+          <div className={`notepad-storage-bar-inner${storage.used > 0.9 ? " full" : ""}`}
+            style={{ "--used": storage.used }}>
+          </div>
+        </div>
+      </div>
       {modal && renderModal()}
     </div>
   );

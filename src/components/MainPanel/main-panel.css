@@ -143,6 +143,8 @@
 }
 
 .main-panel-item-header-item-select-btn {
+  display: flex;
+  justify-content: center;
   width: 100%;
   height: 100%;
   padding: var(--space-sm) var(--space-md);

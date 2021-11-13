@@ -5,8 +5,8 @@
   padding: var(--space-sm);
   border-bottom: 1px solid var(--color-white-10);
 
-  & .icon-btn {
-    margin-left: var(--space-sm);
+  & .dropdown-container {
+    margin-right: var(--space-sm);
   }
 }
 
@@ -20,34 +20,69 @@
 
 .notepad-tabs-items {
   overflow-y: auto;
+  display: grid;
+  align-content: flex-start;
   flex-grow: 1;
+  gap: var(--space-md);
+  grid-template-columns: 1fr 1fr;
+  padding: var(--space-md);
 }
 
 .notepad-tabs-item {
   display: flex;
-  padding: var(--space-sm) var(--space-md);
-  border-bottom: 1px solid var(--color-white-10);
+  flex-direction: column;
+  height: 100px;
+  padding-top: var(--space-md);
+  border: 1px solid var(--color-white-10);
+  border-radius: 8px;
+  background-color: var(--color-white-4);
 
   &.dragging {
     z-index: 1000;
-    border-bottom: none;
     background-color: var(--color-white-10);
   }
 
   & .input {
-    width: 100%;
+    margin-left: var(--space-md);
+    margin-right: var(--space-md);
   }
 }
 
 .notepad-tabs-item-title {
-  margin-right: auto;
-  padding: 0;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
   border-radius: 0;
+  text-align: left;
+  font-weight: normal;
+  word-break: break-word;
 
   &:hover {
     background-color: transparent;
     text-decoration: underline;
   }
+}
+
+.notepad-tabs-item-title-text {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+}
+
+.notepad-tabs-item-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+  margin-top: auto;
+  border-top: 1px solid var(--color-white-4);
+}
+
+.notepad-tab-size-text {
+  color: var(--color-white-60);
+  font-size: var(--text-sm);
+  font-weight: bold;
 }
 
 .notepad-modal {
@@ -60,4 +95,37 @@
 
 .notepad-create-tab-modal-title {
   text-align: center;
+}
+
+.notepad-storage {
+  padding: var(--space-md);
+  border-top: 1px solid var(--color-white-10);
+}
+
+.notepad-storage-text {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-sm);
+  font-weight: bold;
+}
+
+.notepad-storage-bar {
+  overflow: hidden;
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--color-white-10);
+}
+
+.notepad-storage-bar-inner {
+  height: 100%;
+  background-color: var(--color-primary);
+  transform-origin: left;
+  transform: scaleX(var(--used));
+  transition: 0.2s transform;
+  transition-delay: 0.2s;
+
+  &.full {
+    background-color: var(--color-negative);
+  }
 }

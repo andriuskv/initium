@@ -127,7 +127,6 @@ select {
   padding: var(--space-sm) var(--space-lg);
   border-radius: 999px;
   background-color: var(--background-color);
-  line-height: 1.43;
 }
 
 .input::placeholder {
