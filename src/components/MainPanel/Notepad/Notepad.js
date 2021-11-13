@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { getRandomString } from "utils";
+import { getRandomString, formatBytes } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import Icon from "components/Icon";
+import Dropdown from "components/Dropdown";
 import "./notepad.css";
 
 const Tabs = lazy(() => import("./Tabs"));
@@ -10,6 +11,7 @@ export default function Notepad() {
   const [tabs, setTabs] = useState(null);
   const [{ activeIndex, shift }, setNavigation] = useState(() => ({ activeIndex: 0, shift: 0 }));
   const [tabListVisible, setTabListVisible] = useState(false);
+  const [storageWarning, setStorageWarning] = useState(null);
   const saveTimeoutId = useRef(0);
   const textareaRef = useRef(0);
   const VISIBLE_ITEM_COUNT = 3;
@@ -33,6 +35,7 @@ export default function Notepad() {
     if (notepad?.length) {
       notepad = notepad.map(tab => {
         tab.id = getRandomString();
+        tab.sizeString = getTabSize(tab).sizeString;
         return tab;
       });
     }
@@ -40,6 +43,7 @@ export default function Notepad() {
       notepad = [getDefaultTab()];
     }
     setTabs(notepad);
+    checkStorageSize();
 
     chromeStorage.subscribeToChanges(({ notepad }) => {
       if (!notepad) {
@@ -60,10 +64,14 @@ export default function Notepad() {
   }
 
   function getDefaultTab() {
-    return {
-      id: getRandomString(),
+    const tab = {
       title: "Tab",
       content: ""
+    };
+    return {
+      ...tab,
+      id: getRandomString(),
+      sizeString: getTabSize(tab).sizeString
     };
   }
 
@@ -100,10 +108,49 @@ export default function Notepad() {
     setTabListVisible(false);
   }
 
-  function handleTextareaChange(event) {
-    tabs[activeIndex].content = event.target.value;
+  async function checkStorageSize() {
+    /* global chrome */
+    if (chrome.runtime.lastError?.message.startsWith("QUOTA_BYTES_PER_ITEM")) {
+      setStorageWarning({
+        full: true,
+        message: "Storage is full, no additional data will be saved."
+      });
+    }
+    else {
+      const bytes = await chromeStorage.getBytesInUse("notepad");
+      const maxBytes = 8192;
+
+      if (bytes / maxBytes * 100 >= 90) {
+        setStorageWarning({ message: "Storage is almost full." });
+      }
+      else {
+        setStorageWarning(null);
+      }
+    }
+  }
+
+  function dismissWarning() {
+    storageWarning.hidden = true;
+    setStorageWarning({ ...storageWarning });
+  }
+
+  function getTabSize(tab) {
+    const { size } = new Blob([JSON.stringify({ title: tab.title, content: tab.content })]);
+
+    return {
+      size,
+      sizeString: formatBytes(size)
+    };
+  }
+
+  function handleTextareaChange({ target }) {
+    const tab = tabs[activeIndex];
+    const { value } = target;
+    tab.content = value;
+
     clearTimeout(saveTimeoutId.current);
     saveTimeoutId.current = setTimeout(() => {
+      tab.sizeString = getTabSize(tab).sizeString;
       updateTabs(tabs);
     }, 400);
   }
@@ -137,12 +184,36 @@ export default function Notepad() {
   }
 
   async function saveTabs(tabs) {
-    const { default: cloneDeep } = await import("lodash.clonedeep");
+    chromeStorage.set({ notepad: tabs.map(tab => ({
+      title: tab.title,
+      content: tab.content
+    })) }, () => {
+      checkStorageSize();
+    });
+  }
 
-    chromeStorage.set({ notepad: cloneDeep(tabs).map(tab => {
-      delete tab.id;
-      return tab;
-    }) });
+  function renderWarning() {
+    if (storageWarning.hidden) {
+      return null;
+    }
+    else if (storageWarning.full) {
+      return (
+        <div className="container notepad-warning">
+          <p>{storageWarning.message}</p>
+          <button className="btn icon-btn" onClick={dismissWarning} title="Dismiss">
+            <Icon id="cross"/>
+          </button>
+        </div>
+      );
+    }
+    return (
+      <Dropdown
+        container={{ className: "notepad-warning-dropdown-container" }}
+        toggle={{ title: "Show warning", iconId: "warning" }}
+        body={{ className: "notepad-warning-dropdown" }}>
+        <p>{storageWarning.message}</p>
+      </Dropdown>
+    );
   }
 
   if (!tabs) {
@@ -151,7 +222,8 @@ export default function Notepad() {
   else if (tabListVisible) {
     return (
       <Suspense fallback={null}>
-        <Tabs tabs={tabs} selectListTab={selectListTab} updateTabs={updateTabs} updateTabPosition={updateTabPosition} hide={hideTabList}/>
+        <Tabs tabs={tabs} selectListTab={selectListTab} updateTabs={updateTabs} updateTabPosition={updateTabPosition}
+          getTabSize={getTabSize} hide={hideTabList}/>
       </Suspense>
     );
   }
@@ -184,6 +256,7 @@ export default function Notepad() {
           <Icon id="menu"/>
         </button>
       </div>
+      {storageWarning && renderWarning()}
       <textarea className="notepad-input" ref={textareaRef}
         onChange={handleTextareaChange}
         defaultValue={tabs[activeIndex].content}

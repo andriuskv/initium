@@ -1,6 +1,8 @@
 /* global chrome */
 
 import { useState, useEffect, useCallback } from "react";
+import { formatBytes } from "utils";
+import { getBytesInUse } from "services/chromeStorage";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./storage-tab.css";
@@ -108,18 +110,6 @@ export default function StorageTab() {
       // 1000 = empty circle, 717 = full circle
       dashoffset: 1000 - 283 * usageRatio
     });
-  }
-
-  function getBytesInUse(name) {
-    return new Promise(resolve => {
-      chrome.storage.sync.getBytesInUse(name, resolve);
-    });
-  }
-
-  function formatBytes(bytes) {
-    const kb = bytes / 1024;
-
-    return kb % 1 === 0 ? kb : kb.toFixed(2);
   }
 
   function confirmModalAction() {

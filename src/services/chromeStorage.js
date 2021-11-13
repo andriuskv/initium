@@ -30,8 +30,15 @@ function set(value, cb) {
   chrome.storage.sync.set(value, cb);
 }
 
+function getBytesInUse(name) {
+  return new Promise(resolve => {
+    chrome.storage.sync.getBytesInUse(name, resolve);
+  });
+}
+
 export {
   subscribeToChanges,
   get,
-  set
+  set,
+  getBytesInUse
 };
