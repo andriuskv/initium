@@ -166,7 +166,7 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
           </button>
           <button className="btn icon-text-btn dropdown-btn" onClick={downloadTabs}>
             <Icon id="download"/>
-            <span>Download all tabs</span>
+            <span>Download all</span>
           </button>
         </Dropdown>
         <button className="btn icon-btn" onClick={hide} title="Close">

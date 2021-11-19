@@ -120,14 +120,16 @@ export default function App() {
   return (
     <>
       <Background settings={settings.background}/>
-      <Suspense fallback={null}>
-        {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
-      </Suspense>
-      <Suspense fallback={null}>
-        {settings.general.greetingDisabled || !greeting || greeting.editorVisible ? null : (
-          <Greeting settings={settings.greeting}/>
-        )}
-      </Suspense>
+      <div className="middle-top">
+        <Suspense fallback={null}>
+          {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
+        </Suspense>
+        <Suspense fallback={null}>
+          {settings.general.greetingDisabled || !greeting || greeting.editorVisible ? null : (
+            <Greeting settings={settings.greeting}/>
+          )}
+        </Suspense>
+      </div>
       <Suspense fallback={null}>
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>

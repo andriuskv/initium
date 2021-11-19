@@ -387,6 +387,17 @@ select {
   }
 }
 
+.middle-top {
+  position: absolute;
+  top: 16%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 28%;
+}
+
 @keyframes opacity-up {
   from {
     opacity: 0;
