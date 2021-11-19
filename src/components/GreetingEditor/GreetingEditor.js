@@ -5,7 +5,7 @@ import { useSettings } from "contexts/settings-context";
 import * as chromeStorage from "services/chromeStorage";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
-import "./editor.css";
+import "./greeting-editor.css";
 
 export default function Editor({ hide }) {
   const { settings: { greeting: settings }, updateSetting, toggleSetting, setSetting } = useSettings();

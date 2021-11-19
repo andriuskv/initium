@@ -6,6 +6,7 @@ import BottomPanel from "./BottomPanel";
 
 const Clock = lazy(() => import("./Clock"));
 const Greeting = lazy(() => import("./Greeting"));
+const GreetingEditor = lazy(() => import("./GreetingEditor"));
 const MainPanel = lazy(() => import("./MainPanel"));
 const TopPanel = lazy(() => import("./TopPanel"));
 const Weather = lazy(() => import("./Weather"));
@@ -123,12 +124,15 @@ export default function App() {
         {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
       </Suspense>
       <Suspense fallback={null}>
+        {settings.general.greetingDisabled || !greeting || greeting.editorVisible ? null : (
+          <Greeting settings={settings.greeting}/>
+        )}
+      </Suspense>
+      <Suspense fallback={null}>
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.general.greetingDisabled || !greeting ? null : (
-          <Greeting settings={settings.greeting} editorVisible={greeting.editorVisible} hideEditor={hideGreetingEditor}/>
-        )}
+        {greeting?.editorVisible ? <GreetingEditor hide={hideGreetingEditor}/> : null}
       </Suspense>
       <Suspense fallback={null}>
         {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
