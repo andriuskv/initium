@@ -17,12 +17,12 @@
     display: none;
   }
 
-  &.nav-hidden {
-    --nav-height: 0;
+  &.nav-hidden .main-panel-nav {
+    display: none;
   }
 
   &.expandable {
-    --max-height:  calc(100% - var(--offset-y));
+    --max-height: calc(100% - var(--offset-y));
     --initial-height: calc(var(--max-height) - 8%);
 
     height: var(--height, var(--initial-height));
