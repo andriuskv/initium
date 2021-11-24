@@ -614,7 +614,9 @@ export default function Calendar({ showIndicator }) {
               {calendar[currentYear].map((month, index) => (
                 <li className={`calendar-month${month.isCurrentMonth ? " current" : ""}`}
                   onClick={({ target }) => showMonth(target, index)} key={month.name}
-                  tabIndex="0" data-index={index}>{month.name}</li>
+                  tabIndex="0" data-index={index}>
+                  <div className="calendar-month-inner">{month.name}</div>
+                </li>
               ))}
             </ul>
           </div>

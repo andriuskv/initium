@@ -245,8 +245,9 @@ export default function Countdown({ visible }) {
         </Suspense>
       ) : (
         <>
-          <button className="btn icon-btn countdown-create-btn" onClick={showForm} title="Create countdown">
+          <button className="btn icon-text-btn countdown-create-btn" onClick={showForm}>
             <Icon id="plus"/>
+            <span className="countdown-create-btn-title">Create</span>
           </button>
           {renderCountdowns()}
         </>

@@ -2,8 +2,9 @@
   &:hover {
     & .feed-new-entry-count-container::before {
       background-color: var(--color-black-8);
-      box-shadow: inset 0 1px 2px 0 var(--color-black-16),
-                  inset 0 2px 4px 0 var(--color-black-8);
+      box-shadow:
+        inset 0 1px 2px 0 var(--color-black-16),
+        inset 0 2px 4px 0 var(--color-black-8);
     }
   }
 }
@@ -36,6 +37,7 @@
     opacity: 1;
     transform: scale(0.1);
   }
+
   to {
     opacity: 0;
     transform: scale(1.5);
@@ -55,14 +57,6 @@
   font-weight: bold;
   line-height: 1;
 
-  &:hover {
-    background-color: transparent;
-
-    &::before {
-      transform: scale(1.2);
-    }
-  }
-
   &::before {
     position: absolute;
     content: "";
@@ -70,10 +64,19 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    box-shadow: 0 1px 2px 0 var(--color-black-8),
-                0 2px 4px 0 var(--color-black-4);
+    box-shadow:
+      0 1px 2px 0 var(--color-black-8),
+      0 2px 4px 0 var(--color-black-4);
     background-color: var(--color-white-10);
     transition: 0.1s transform, 0.1s box-shadow, 0.1s background-color;
+  }
+
+  &:hover {
+    background-color: transparent;
+
+    &::before {
+      transform: scale(1.2);
+    }
   }
 }
 
@@ -86,10 +89,6 @@
 .feed-entries {
   overflow-y: auto;
   flex-grow: 1;
-
-  &:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--color-primary);
-  }
 }
 
 .feed-entry {
@@ -118,8 +117,9 @@
   margin-right: var(--space-md);
   border-radius: 99px;
   background-color: var(--color-white-10);
-  box-shadow: 0 1px 2px 0 var(--color-black-8),
-              0 2px 4px 0 var(--color-black-4);
+  box-shadow:
+    1px 2px 2px 0 var(--color-black-4),
+    2px 4px 4px 0 var(--color-black-2);
   font-size: var(--text-xs);
   font-weight: bold;
   cursor: default;

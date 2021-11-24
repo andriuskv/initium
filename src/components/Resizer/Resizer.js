@@ -11,10 +11,12 @@ export default function Resizer({ container, saveHeight }) {
   useLayoutEffect(() => {
     containerRef.current = container || resizerRef.current.parentElement;
     containerRef.current.classList.add("resizing");
+    document.body.style.touchAction = "none";
     resizerRef.current.addEventListener("pointerdown", handlePointerDown);
 
     return () => {
       containerRef.current.classList.remove("resizing");
+      document.body.style.touchAction = "";
       resizerRef.current.removeEventListener("pointerdown", handlePointerDown);
     };
   }, []);
@@ -31,8 +33,8 @@ export default function Resizer({ container, saveHeight }) {
   function handlePointerMove({ clientY }) {
     height.current = clientY - startY.current + initialHeight.current;
 
-    if (height.current < 320) {
-      height.current = 320;
+    if (height.current < 360) {
+      height.current = 360;
     }
     containerRef.current.style.setProperty("--height", `${height.current}px`);
   }

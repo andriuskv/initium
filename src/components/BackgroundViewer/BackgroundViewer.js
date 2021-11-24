@@ -11,8 +11,8 @@ export default function BackgroundViewer({ settings, hide }) {
   const [area, setArea] = useState(null);
   const [image, setImage] = useState(null);
   const containerRef = useRef(null);
-  const startingMousePosition = useRef(null);
-  const mouseMoveHandler = useRef(null);
+  const startingPointerPosition = useRef(null);
+  const pointerMoveHandler = useRef(null);
   const updating = useRef(false);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export default function BackgroundViewer({ settings, hide }) {
     return widthDiff > heightDiff ? "width" : "height";
   }
 
-  function getMousePosition({ clientX, clientY }, target) {
+  function getPointerPosition({ clientX, clientY }, target) {
     const { left, top } = target.getBoundingClientRect();
 
     return {
@@ -118,35 +118,35 @@ export default function BackgroundViewer({ settings, hide }) {
     return value;
   }
 
-  function handleMouseDown(event) {
-    startingMousePosition.current = getMousePosition(event, event.currentTarget);
-    mouseMoveHandler.current = handleMouseMove;
+  function handlePointerDown(event) {
+    startingPointerPosition.current = getPointerPosition(event, event.currentTarget);
+    pointerMoveHandler.current = handlePointerMove;
 
-    window.addEventListener("mousemove", mouseMoveHandler.current);
-    window.addEventListener("mouseup", handleMouseUp, { once: true });
+    window.addEventListener("pointermove", pointerMoveHandler.current);
+    window.addEventListener("pointerup", handlePointerUp, { once: true });
   }
 
-  function handleMouseMove(event) {
+  function handlePointerMove(event) {
     if (updating.current) {
       return;
     }
     updating.current = true;
 
     requestAnimationFrame(() => {
-      const { x, y } = getMousePosition(event, containerRef.current);
+      const { x, y } = getPointerPosition(event, containerRef.current);
 
       setArea({
         ...area,
-        x: normalizeSelectionAreaPosition(x - startingMousePosition.current.x, "width"),
-        y: normalizeSelectionAreaPosition(y - startingMousePosition.current.y, "height")
+        x: normalizeSelectionAreaPosition(x - startingPointerPosition.current.x, "width"),
+        y: normalizeSelectionAreaPosition(y - startingPointerPosition.current.y, "height")
       });
       updating.current = false;
     });
   }
 
-  function handleMouseUp() {
-    window.removeEventListener("mousemove", mouseMoveHandler.current);
-    mouseMoveHandler.current = null;
+  function handlePointerUp() {
+    window.removeEventListener("pointermove", pointerMoveHandler.current);
+    pointerMoveHandler.current = null;
   }
 
   function getBackgroundPosition(value, dimensionName) {
@@ -187,7 +187,7 @@ export default function BackgroundViewer({ settings, hide }) {
             width: `${area.width}px`,
             height: `${area.height}px`,
             transform: `translate(${area.x}px, ${area.y}px)`
-          }} onMouseDown={handleMouseDown}></div>}
+          }} onPointerDown={handlePointerDown}></div>}
         </div>
         <div className="container background-viewer-bar">
           <button className="btn text-btn" onClick={resetArea}>Reset</button>

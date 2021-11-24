@@ -210,37 +210,36 @@ export default function Form({ form, groups, updateGroups, replaceLink, hide }) 
 
   return (
     <div className="tasks-item-container task-form-container task-transition-target">
-      <form onSubmit={handleLabelFormSubmit}>
-        <div className="task-form-label-input-container">
-          <div className="task-form-color-picker-container" style={{ backgroundColor: state.color }}>
-            <input type="color" name="color" className="task-form-color-picker"
-              onInput={handleColorChange} defaultValue={state.color} title="Change color"/>
-          </div>
-          <input type="text" name="name" className="input task-form-label-title-input"
-            placeholder="Label" autoComplete="off" required/>
-          <button className="btn">Create</button>
+      <form onSubmit={handleLabelFormSubmit} className="task-label-form">
+        <div className="task-form-color-picker-container" style={{ backgroundColor: state.color }}>
+          <input type="color" name="color" className="task-form-color-picker"
+            onInput={handleColorChange} defaultValue={state.color} title="Change color"/>
         </div>
-        {state.labels.length > 0 && (
-          <ul className="task-form-labels">
-            {state.labels.map((label, i) => (
-              <li className="task-form-label" key={i}>
-                <button type="button" className={`btn icon-text-btn task-form-label-btn${label.flagged ? " flagged" : ""}`}
-                  onClick={() => flagLabel(i)}
-                  title={label.flagged ? "Deselect label" : "Select label"}>
-                  <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
-                  <div className="task-label-title">{label.name}</div>
-                  <div className="checkbox-tick task-form-label-btn-tick"></div>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="input-btn-container">
+          <input type="text" name="name" className="input" placeholder="Label" autoComplete="off" required/>
+          <button className="btn text-btn">Create</button>
+        </div>
       </form>
+      {state.labels.length > 0 && (
+        <ul className="task-form-labels">
+          {state.labels.map((label, i) => (
+            <li className="task-form-label" key={i}>
+              <button type="button" className={`btn icon-text-btn task-form-label-btn${label.flagged ? " flagged" : ""}`}
+                onClick={() => flagLabel(i)}
+                title={label.flagged ? "Deselect label" : "Select label"}>
+                <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
+                <div className="task-label-title">{label.name}</div>
+                <div className="checkbox-tick task-form-label-btn-tick"></div>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
       <form className="task-form" onSubmit={handleTaskFormSubmit} onKeyDown={handleFormKeydown}>
         <label className="task-form-group-select-container">
           <span className="task-form-group-select-input-name">Group</span>
           <div className="select-container">
-            <select className="input" onChange={handleGroupSelection} value={state.selectedGroupId}>
+            <select className="input select" onChange={handleGroupSelection} value={state.selectedGroupId}>
               {groups.map(group => (
                 <option value={group.id} key={group.id}>{group.id === "unorganized" ? "" : group.name}</option>
               ))}
@@ -253,13 +252,14 @@ export default function Form({ form, groups, updateGroups, replaceLink, hide }) 
         </div>
         <button type="button" className="btn icon-text-btn subtask-add-btn" onClick={addFormSubtask}>
           <Icon id="plus"/>
-          <span>Add subtask</span>
+          <span>Add a subtask</span>
         </button>
         {state.task.subtasks.length > 0 && (
           <ul className="task-form-subtasks">
             {state.task.subtasks.map((subtask, i) => (
               <li className="task-form-subtask" key={subtask.id}>
-                <input type="text" name="subtask" className="input" defaultValue={subtask.rawText} autoComplete="off"/>
+                <input type="text" name="subtask" className="input task-form-subtask-input"
+                  defaultValue={subtask.rawText} autoComplete="off"/>
                 <button type="button" className="btn icon-btn alt-icon-btn" onClick={() => removeFormSubtask(i)} title="Remove">
                   <Icon id="trash"/>
                 </button>

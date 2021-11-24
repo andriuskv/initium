@@ -1,12 +1,5 @@
 .timer-content {
-  &.has-presets {
-    flex-direction: column;
-
-    & .timer-input-container {
-      justify-content: space-between;
-      align-self: auto;
-    }
-  }
+  flex-direction: column;
 }
 
 .timer-preset-select {
@@ -16,17 +9,12 @@
 .timer-selected-preset-name {
   display: flex;
   align-items: center;
-  min-height: 45px;
+  min-height: 44px;
   font-size: calc(var(--text-lg) * var(--size-multiplier));
 }
 
-.timer-dropdown-setting {
-  padding: var(--space-sm) var(--space-md);
-}
-
 .timer-input-container {
-  align-self: stretch;
-  height: auto;
+  height: 100%;
 }
 
 .timer-input {
@@ -38,4 +26,8 @@
     outline: none;
     box-shadow: 0 1px 0 0 var(--color-primary);
   }
+}
+
+.timer-dropdown-setting {
+  padding: var(--space-sm) var(--space-md);
 }

@@ -99,10 +99,10 @@ export default function BottomPanel() {
     return (
       <ul className="bottom-panel-item-selection">
         {Object.values(items).map(item => (
-          <li className="bottom-panel-item" key={item.id}>
+          <li key={item.id}>
             <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
               onClick={() => selectItem(item.id)} title={item.title}>
-              <Icon id={item.iconId}/>
+              <Icon id={item.iconId} className="panel-item-btn-icon"/>
             </button>
           </li>
         ))}

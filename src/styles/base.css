@@ -58,27 +58,19 @@ button,
 input,
 textarea,
 select {
+  height: 30px;
   border: none;
   background-color: transparent;
   color: inherit;
+  line-height: 1.43;
   font-family: inherit;
   font-size: var(--text-md);
 }
 
 textarea {
-  resize: none;
+  height: auto;
   padding: var(--space-sm) var(--space-md);
-}
-
-select {
-  min-width: 100px;
-  max-width: 120px;
-  height: 28px;
-  border-right: var(--space-md) solid transparent;
-
-  & option {
-    background-color: var(--color-grey-90);
-  }
+  resize: none;
 }
 
 ::-webkit-scrollbar {
@@ -94,24 +86,25 @@ select {
   }
 }
 
-#root {
-  height: 100%;
-}
-
 :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-primary);
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+#root {
+  height: 100%;
 }
 
 .container {
   padding: 1px;
   border: 1px solid transparent;
   border-radius: 8px;
-  box-shadow: inset 0 0 0 1px var(--color-white-10),
-              1px 2px 2px 0 var(--color-black-16),
-              2px 4px 4px 0 var(--color-black-8),
-              4px 8px 8px 0 var(--color-black-4),
-              8px 16px 16px 0 var(--color-black-2);
+  box-shadow:
+    inset 0 0 0 1px var(--color-white-10),
+    1px 2px 2px 0 var(--color-black-16),
+    2px 4px 4px 0 var(--color-black-8),
+    4px 8px 8px 0 var(--color-black-4),
+    8px 16px 16px 0 var(--color-black-2);
   background-color: hsl(224deg 7% 12% / var(--background-opacity));
   backdrop-filter: blur(var(--background-blur));
 }
@@ -124,24 +117,36 @@ select {
 .input, .btn {
   --background-color: var(--color-white-10);
 
-  padding: var(--space-sm) var(--space-lg);
   border-radius: 999px;
   background-color: var(--background-color);
 }
 
-.input::placeholder {
-  color: var(--color-white-40);
+.input {
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--color-white-4);
+
+  &::placeholder {
+    color: var(--color-white-40);
+  }
 }
 
 .btn {
   --color: inherit;
 
+  padding: var(--space-sm) var(--space-xl);
+  border: 1px solid var(--color-white-4);
   color: var(--color);
   font-weight: bold;
-  transition: 0.1s color,
-              0.1s background-color,
-              0.1s opacity;
+  transition:
+    0.1s color,
+    0.1s border-color,
+    0.1s background-color,
+    0.1s opacity;
   cursor: pointer;
+
+  &:disabled {
+    --color: var(--color-white-40);
+  }
 
   &:hover {
     --background-color: var(--color-white-20);
@@ -152,26 +157,33 @@ select {
       cursor: default;
     }
   }
-
-  &:disabled {
-    color: var(--color-white-40);
-  }
 }
 
-.icon-btn, .text-btn, .icon-text-btn {
-   --background-color: transparent;
+.input-btn-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--color-white-4);
+  border-radius: 999px;
+  background-color: var(--color-white-10);
 
-  &:hover {
-    --background-color: var(--color-white-10);
+  & .input {
+    --background-color: transparent;
 
-    &:disabled {
-      --background-color: transparent;
-    }
+    width: 100%;
+    border: none;
+    border-right: 1px solid var(--color-white-4);
+    border-radius: 999px 0 0 999px;
+  }
+
+  & .text-btn {
+    border: none;
+    border-radius: 0 999px 999px 0;
   }
 }
 
 .icon-btn {
-   --color: var(--color-white);
+  --color: var(--color-white);
 
   display: block;
   padding: var(--space-sm);
@@ -197,17 +209,68 @@ select {
   }
 }
 
+.icon-btn, .text-btn, .icon-text-btn {
+  --background-color: transparent;
+
+  border-color: transparent;
+
+  &:hover, &:focus-visible {
+    --background-color: var(--color-white-10);
+
+    border-color: var(--color-white-4);
+  }
+
+  &:hover {
+    &:disabled {
+      --background-color: transparent;
+
+      border-color: transparent;
+    }
+  }
+}
+
 .panel-item-btn {
+  height: auto;
   padding: 0;
   filter: drop-shadow(0 1px 1px var(--color-black-16)) drop-shadow(0 2px 2px var(--color-black-8));
 
   &:hover {
     --background-color: transparent;
+
+    border-color: transparent;
   }
 
-  & svg {
-    width: 24px;
-    height: 24px;
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-primary);
+  }
+}
+
+.panel-item-btn-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.select-container {
+  border: 1px solid var(--color-white-4);
+  border-radius: 999px;
+  background-color: var(--color-white-10);
+}
+
+.select {
+  --background-color: transparent;
+
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+  min-width: 100px;
+  max-width: 156px;
+  border: none;
+  border-right: var(--space-md) solid transparent;
+
+  & option {
+    background-color: var(--color-grey-90);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-primary);
   }
 }
 
@@ -226,24 +289,6 @@ select {
   align-items: center;
 }
 
-.checkbox-input {
-  &:checked + .checkbox .checkbox-tick {
-    display: block;
-  }
-
-  &:checked + .toggle {
-    &::before {
-       transform: translateX(100%);
-    }
-  }
-
-  &:focus-visible {
-    & + .checkbox, & + .toggle {
-      box-shadow: 0 0 0 2px var(--color-primary);
-    }
-  }
-}
-
 .checkbox {
   display: flex;
   justify-content: center;
@@ -252,6 +297,7 @@ select {
   height: 20px;
   border-radius: 4px;
   background-color: var(--color-white-10);
+  border: 1px solid var(--color-white-4);
 }
 
 .checkbox-tick {
@@ -267,6 +313,16 @@ select {
   animation-fill-mode: forwards;
 }
 
+.checkbox-input {
+  &:checked + .checkbox .checkbox-tick {
+    display: block;
+  }
+
+  &:focus-visible + .checkbox {
+    box-shadow: 0 0 0 2px var(--color-primary);
+  }
+}
+
 .checkbox-label-right {
   margin-left: var(--space-md);
 }
@@ -274,9 +330,10 @@ select {
 .radio {
   width: 20px;
   height: 20px;
-  padding: 6px;
+  padding: 5px;
   border-radius: 50%;
   background-color: var(--color-white-10);
+  border: 1px solid var(--color-white-4);
 
   &::after {
     content: "";
@@ -304,12 +361,13 @@ select {
   position: relative;
   display: flex;
   min-width: 80px;
-  height: 28px;
+  height: 30px;
   padding: var(--space-xs);
   border-radius: 99px;
   background-color: var(--color-white-10);
   cursor: pointer;
   user-select: none;
+  border: 1px solid var(--color-white-4);
 
   &::before {
     z-index: -1;
@@ -324,20 +382,22 @@ select {
     background-color: var(--color-primary);
     transition: 0.1s transform;
   }
+}
 
-  & div {
-    width: 50%;
-    padding: var(--space-xs) var(--space-md);
-    text-align: center;
+.toggle-input {
+  &:checked + .toggle::before {
+    transform: translateX(100%);
+  }
+
+  &:focus-visible + .toggle {
+    box-shadow: 0 0 0 2px var(--color-primary);
   }
 }
 
-.select-container {
-  border-radius: 999px;
-
-  &:focus-within {
-    box-shadow: 0 0 0 2px var(--color-primary);
-  }
+.toggle-item {
+  width: 50%;
+  padding: var(--space-xs) var(--space-md);
+  text-align: center;
 }
 
 .range-input {
@@ -402,6 +462,7 @@ select {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -411,6 +472,7 @@ select {
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
@@ -420,6 +482,7 @@ select {
   from {
     transform: rotateZ(45deg) scale(0);
   }
+
   to {
     transform: rotateZ(45deg) scale(1);
   }

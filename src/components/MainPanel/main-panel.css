@@ -1,5 +1,37 @@
 @import "../../styles/mixins.css";
 
+.main-panel-nav {
+  position: absolute;
+  top: calc(-1 * var(--nav-height));
+  left: 50%;
+  opacity: 1;
+  visibility: visible;
+  display: flex;
+  padding-bottom: var(--space-md);
+  transform: translateX(-50%);
+  transition:
+    0.2s opacity,
+    0.2s visibility,
+    0.2s transform;
+  transition-delay: 0.2s;
+  pointer-events: auto;
+}
+
+.main-panel-item {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 320px;
+  max-height: 100%;
+  pointer-events: auto;
+
+  &.hidden {
+    display: none;
+  }
+}
+
 .main-panel {
   --nav-height: 32px;
   --offset-y: calc(44% + var(--nav-height));
@@ -46,7 +78,6 @@
     --offset-y: var(--space-md);
 
     height: 100%;
-    max-height: calc(100% - var(--space-xl));
 
     & .main-panel-nav {
       opacity: 0;
@@ -54,46 +85,11 @@
       transform: translate(-50%, 100%);
       transition-delay: 0s;
     }
-
-    & .main-panel-item {
-      height: 100%;
-    }
   }
-}
-
-.main-panel-nav {
-  position: absolute;
-  top: calc(-1 * var(--nav-height));
-  left: 50%;
-  opacity: 1;
-  visibility: visible;
-  display: flex;
-  padding-bottom: var(--space-md);
-  transform: translateX(-50%);
-  transition: 0.2s opacity,
-              0.2s visibility,
-              0.2s transform;
-  transition-delay: 0.2s;
-  pointer-events: auto;
 }
 
 .main-panel-nav-item:not(:last-of-type) {
   margin-right: var(--space-md);
-}
-
-.main-panel-item {
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 320px;
-  max-height: 100%;
-  pointer-events: auto;
-
-  &.hidden {
-    display: none;
-  }
 }
 
 .main-panel-item-header {
@@ -119,7 +115,7 @@
   justify-content: center;
   flex: 1;
   min-width: 0;
-  padding: 0 var(--space-xs);
+  padding: 0 var(--space-sm);
 
   &.active::after {
     content: "";
@@ -161,7 +157,7 @@
   margin: auto;
 
   &.animate {
-    animation: oscillate 1s cubic-bezier(.17, .67, .45, 1.32) infinite alternate;
+    animation: oscillate 1s cubic-bezier(0.17, 0.67, 0.45, 1.32) infinite alternate;
   }
 }
 

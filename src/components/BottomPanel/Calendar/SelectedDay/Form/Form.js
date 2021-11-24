@@ -285,13 +285,14 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
           <span className="label-right">Repeat</span>
         </label>
         {form.repeat.enabled && (
-          <select className="input reminder-form-repeat-type-selection"
-            onChange={handleRepeatTypeChange} value={form.repeat.type}>
-            <option value="custom">Custom</option>
-            <option value="weekday">Every weekday</option>
-            <option value="week">Every week</option>
-            <option value="month">Every month</option>
-          </select>
+          <div className="select-container reminder-form-repeat-type-selection">
+            <select className="input select" onChange={handleRepeatTypeChange} value={form.repeat.type}>
+              <option value="custom">Custom</option>
+              <option value="weekday">Every weekday</option>
+              <option value="week">Every week</option>
+              <option value="month">Every month</option>
+            </select>
+          </div>
         )}
       </div>
       {form.range.enabled && (

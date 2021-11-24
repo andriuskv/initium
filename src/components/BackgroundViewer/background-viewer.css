@@ -38,6 +38,7 @@
   background-color: var(--color-grey-90-50);
   backdrop-filter: none;
   user-select: none;
+  touch-action: none;
 }
 
 .background-viewer-image {

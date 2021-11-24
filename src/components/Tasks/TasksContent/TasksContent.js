@@ -276,10 +276,6 @@ export default function Tasks() {
   return (
     <>
       <div className="tasks-header">
-        <button className="btn icon-text-btn tasks-create-btn" onClick={showForm}>
-          <Icon id="plus"/>
-          <span>Add task</span>
-        </button>
         <Dropdown>
           <button className="btn icon-text-btn dropdown-btn" onClick={showGroups}>
             <Icon id="menu"/>
@@ -366,6 +362,10 @@ export default function Tasks() {
             <button className="btn text-btn tasks-dialog-btn" onClick={undoRemovedTasks}>UNDO</button>
           </div>
         )}
+        <button className="btn icon-text-btn tasks-create-btn" onClick={showForm}>
+          <Icon id="plus"/>
+          <span className="tasks-create-btn-title">Create</span>
+        </button>
       </div>
     </>
   );

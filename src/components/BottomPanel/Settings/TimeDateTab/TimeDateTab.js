@@ -51,12 +51,12 @@ export default function TimeDateTab() {
       </label>
       <label className="setting">
         <span>Time display format</span>
-        <input type="checkbox" className="sr-only checkbox-input"
+        <input type="checkbox" className="sr-only toggle-input"
           checked={settings.format === 24}
           onChange={toggleTimeFormat}/>
         <div className="toggle">
-          <div>12</div>
-          <div>24</div>
+          <div className="toggle-item">12</div>
+          <div className="toggle-item">24</div>
         </div>
       </label>
     </div>

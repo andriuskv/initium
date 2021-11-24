@@ -12,7 +12,10 @@
 
 .pomodoro-btn {
   width: 100%;
+  height: auto;
   padding: var(--space-md);
+  border-left: none;
+  border-right: none;
   border-radius: 0;
   font-weight: normal;
 
@@ -20,8 +23,9 @@
     box-shadow: inset 2px 0 0 0 var(--color-primary);
 
     &:focus-visible {
-      box-shadow: inset 2px 0 0 0 var(--color-primary),
-                  0 0 0 2px var(--color-primary);
+      box-shadow:
+        inset 4px 0 0 0 var(--color-primary),
+        inset 0 0 0 2px var(--color-primary);
     }
   }
 }

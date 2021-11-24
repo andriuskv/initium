@@ -17,7 +17,7 @@
 }
 
 .reminder-form-setting {
-  min-height: 28px;
+  min-height: 32px;
   margin-top: var(--space-md);
 }
 
@@ -26,13 +26,13 @@
 }
 
 .reminder-form-repeat-type-selection {
-  max-width: 150px;
   margin-left: auto;
 }
 
 .reminder-form-weeekdays {
   overflow: hidden;
   display: flex;
+  border: 1px solid var(--color-white-4);
   border-radius: 999px;
   background-color: var(--color-white-10);
 }
@@ -41,7 +41,7 @@
   flex: 1;
 
   &:not(:last-of-type) {
-    border-right: 1px solid var(--color-black-30);
+    border-right: 1px solid var(--color-white-4);
   }
 
   &:first-of-type .reminder-form-weekday-content {

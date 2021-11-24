@@ -43,8 +43,9 @@ export default function Settings() {
     return (
       <ul className="settings-nav">
         {tabs.map(tab => (
-          <li className={`settings-nav-item${activeTab === tab.id ? " active" : ""}`} key={tab.id}>
-            <button className="btn text-btn settings-nav-item-btn" onClick={() => setActiveTab(tab.id)}>{tab.name}</button>
+          <li key={tab.id}>
+            <button className={`btn text-btn settings-nav-item-btn${activeTab === tab.id ? " active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}>{tab.name}</button>
           </li>
         ))}
       </ul>

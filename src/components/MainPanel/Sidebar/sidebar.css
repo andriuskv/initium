@@ -30,4 +30,8 @@
     background-color: var(--color-white-10);
     cursor: pointer;
   }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-primary);
+  }
 }

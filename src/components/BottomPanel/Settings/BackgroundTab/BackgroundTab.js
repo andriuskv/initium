@@ -91,9 +91,9 @@ export default function BackgroundTab() {
       <div className="setting-tab setting-tab-form-container">
         <form onSubmit={handleBackgroundFormSubmit}>
           <h3 className="setting-tab-form-title">Set background from URL</h3>
-          <div className="setting-tab-form-input-container">
-            <input type="text" className="input" placeholder="URL" name="input"/>
-            <button className="btn setting-tab-form-submit-btn">Set</button>
+          <div className="input-btn-container">
+            <input type="text" className="input " placeholder="URL" name="input"/>
+            <button className="btn text-btn">Set</button>
           </div>
           {form.invalid && <div className="setting-tab-form-message">URL does not contain valid image.</div>}
         </form>

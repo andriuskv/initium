@@ -7,21 +7,11 @@
 
 .apps-item-link {
   display: flex;
-  width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 80px;
-  padding: var(--space-sm);
   border-radius: 8px;
-
-  &:hover, &:focus-visible {
-    background-color: var(--color-white-10);
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px var(--color-primary);
-  }
 }
 
 .apps-item-title {
