@@ -74,8 +74,10 @@ export default function Groups({ groups, updateGroups, hide }) {
   return (
     <div className="tasks-item-container task-transition-target">
       <form className="tasks-groups-form" onSubmit={handleGroupFormSubmit}>
-        <input type="text" className="input tasks-groups-form-input" name="name" placeholder="Group name" autoComplete="off" required/>
-        <button className="btn">Create</button>
+        <div className="input-btn-container">
+          <input type="text" className="input" name="name" placeholder="Group name" autoComplete="off" required/>
+          <button className="btn text-btn">Create</button>
+        </div>
       </form>
       {groups.length > 1 ? (
         <SortableList items={groups} indexOffset={1} handleSort={updateGroups}>
@@ -85,7 +87,7 @@ export default function Groups({ groups, updateGroups, hide }) {
                 <li className="tasks-groups-item" key={group.id}>
                   {group.renameEnabled ? (
                     <input type="text" className="input tasks-group-input" autoFocus defaultValue={group.name}
-                      onBlur={(event) => renameGroup(event, group)} onKeyUp={blurGroupNameInput}/>
+                      onBlur={(event) => renameGroup(event, group)} onKeyPress={blurGroupNameInput}/>
                   ) : (
                     <>
                       <div className="tasks-group-count">{group.tasks.length}</div>

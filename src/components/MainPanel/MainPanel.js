@@ -219,7 +219,7 @@ export default function MainPanel({ settings }) {
             <li className="main-panel-nav-item" key={tab.id}>
               <button className={`btn icon-btn panel-item-btn${tab.indicatorVisible ? " indicator" : ""}`}
                 onClick={() => selectTab(tab.id)} title={tab.title}>
-                <Icon id={tab.iconId}/>
+                <Icon id={tab.iconId} className="panel-item-btn-icon"/>
               </button>
             </li>
           )

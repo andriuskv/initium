@@ -56,13 +56,13 @@ export default function WeatherTab() {
       </div>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
         <span>Temperature units</span>
-        <input type="checkbox" className="sr-only checkbox-input"
+        <input type="checkbox" className="sr-only toggle-input"
           disabled={settings.disabled}
           checked={settings.units === "F"}
           onChange={toggleTemperatureUnits}/>
         <div className="toggle">
-          <div>°C</div>
-          <div>°F</div>
+          <div className="toggle-item">°C</div>
+          <div className="toggle-item">°F</div>
         </div>
       </label>
       <form className={`setting${settings.disabled || settings.useGeo ? " disabled" : ""}`}

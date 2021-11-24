@@ -30,10 +30,6 @@
   width: 100%;
   height: 100%;
   border-radius: 0;
-
-  &:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--color-primary);
-  }
 }
 
 .setting-background-info {
@@ -53,14 +49,6 @@
 .setting-tab-form-title {
   margin-bottom: var(--space-xl);
   text-align: center;
-}
-
-.setting-tab-form-input-container {
-  display: flex;
-}
-
-.setting-tab-form-submit-btn {
-  margin-left: var(--space-md);
 }
 
 .setting-tab-form-message {

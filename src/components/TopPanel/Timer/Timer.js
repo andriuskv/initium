@@ -261,7 +261,7 @@ export default function Timer({ visible, expand }) {
         </Suspense>
       ) : (
         <>
-          <div className={`top-panel-item-content timer-content${presets.length ? " has-presets" : ""}`}>
+          <div className="top-panel-item-content timer-content">
             {running ? (
               <>
                 {!presetNameHidden && activePreset ? <h4 className="timer-selected-preset-name">{activePreset.name}</h4> : null}
@@ -285,15 +285,14 @@ export default function Timer({ visible, expand }) {
             ) : (
               <>
                 {presets.length ? (
-                  <div className="timer-preset-select">
-                    <div className="select-container">
-                      <select className="input" onChange={handlePresetSelection} value={activePreset?.id || ""} title="Presets">
-                        <option value=""></option>
-                        {presets.map(preset => (
-                          <option value={preset.id} key={preset.id}>{preset.name}</option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="select-container timer-preset-select">
+                    <select className="input select"
+                      onChange={handlePresetSelection} value={activePreset?.id || ""} title="Presets">
+                      <option value=""></option>
+                      {presets.map(preset => (
+                        <option value={preset.id} key={preset.id}>{preset.name}</option>
+                      ))}
+                    </select>
                   </div>
                 ) : null}
                 <Inputs state={state} setState={setState} disableActivePreset={disableActivePreset}/>

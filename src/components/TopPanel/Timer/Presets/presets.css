@@ -4,14 +4,10 @@
   align-items: center;
   height: 132px;
   padding: var(--space-md) var(--space-md) 0 var(--space-md);
-
-  & .timer-input-container {
-    align-self: auto;
-    height: 100%;
-  }
 }
 
 .timer-form-name-input {
+  flex-shrink: 0;
   width: 100%;
   margin-bottom: var(--space-md);
 }

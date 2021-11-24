@@ -20,6 +20,7 @@
   --color-primary: hsl(205deg 80% 56%);
   --color-primary-0-20: hsl(205deg 80% 56% / 20%);
   --color-primary-10: hsl(205deg 84% 64%);
+  --color-primary-20: hsl(205deg 76% 50%);
 
   --color-white: hsl(224deg 100% 98%);
   --color-white-4: hsl(224deg 100% 98% / 4%);

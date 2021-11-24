@@ -19,25 +19,33 @@
 }
 
 .tasks-toggle-btn {
+  --background-color: transparent;
+
   z-index: 1;
   position: absolute;
   top: 0;
   left: 0;
+  height: auto;
   padding: var(--space-xs) var(--space-sm);
-  background-color: transparent;
+  border: none;
   text-shadow: 0 1px 1px var(--color-black-16), 0 2px 2px var(--color-black-8);
-  letter-spacing: 1px;
   transition: 0.2s transform;
   transition-delay: 0.1s;
 
   &:hover {
-    background-color: transparent;
+    --background-color: transparent;
   }
 
   &.shifted {
     transition-delay: 0s;
     transform: translate(var(--space-md), var(--space-md));
   }
+}
+
+.tasks-transition-target {
+  opacity: 0;
+  height: 100%;
+  transition: 0.2s opacity;
 }
 
 .tasks-content {
@@ -49,10 +57,11 @@
   border-bottom-right-radius: 999px;
   transform-origin: top left;
   transform: scale(0);
-  transition: 0.2s transform,
-              0.2s opacity,
-              0.2s visibility,
-              0.2s border-bottom-right-radius;
+  transition:
+    0.2s transform,
+    0.2s opacity,
+    0.2s visibility,
+    0.2s border-bottom-right-radius;
   transition-delay: 0.1s;
 
   &.visible {
@@ -67,10 +76,4 @@
       transition-delay: 0.1s;
     }
   }
-}
-
-.tasks-transition-target {
-  opacity: 0;
-  height: 100%;
-  transition: 0.2s opacity;
 }

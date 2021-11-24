@@ -57,6 +57,9 @@ module.exports = function(env = {}) {
       path: path.resolve(__dirname, "./dist"),
       filename: "[name].js"
     },
+    experiments: {
+      futureDefaults: true
+    },
     optimization: {
       splitChunks: {
         cacheGroups: {
@@ -144,6 +147,7 @@ module.exports = function(env = {}) {
     devtool: env.prod ? false : "inline-source-map",
     stats: {
       entrypoints: false,
+      warnings:false,
       children: false
     }
   };

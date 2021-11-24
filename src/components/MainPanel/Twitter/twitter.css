@@ -27,10 +27,6 @@
   &:hover .twitter-user-name {
     text-decoration: underline;
   }
-
-  &:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--color-primary);
-  }
 }
 
 .twitter-user-image {
@@ -60,7 +56,7 @@
   text-align: left;
 
   &:disabled {
-    color: var(--color-white);
+    --color: var(--color-white);
   }
 }
 
@@ -87,6 +83,7 @@
 .new-tweet-btn,
 .more-tweets-btn {
   width: 100%;
+  height: auto;
   padding: var(--space-md);
   border-radius: 0;
 
@@ -103,10 +100,6 @@
   overflow-y: auto;
   flex-grow: 1;
   contain: strict;
-
-  &:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--color-primary);
-  }
 
   &.tweet-indicator {
     box-shadow: 0 -2px 0 0 var(--color-primary);
