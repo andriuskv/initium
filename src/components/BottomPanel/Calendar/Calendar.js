@@ -57,8 +57,8 @@ export default function Calendar({ showIndicator }) {
     calendar[year][month].isCurrentMonth = true;
 
     setCurrentYear(year);
-    getVisibleMonth(calendar, currentDate);
     setCurrentDay(getCurrentDay(calendar, currentDate));
+    getVisibleMonth(calendar, currentDate);
 
     if (reminders?.length) {
       setReminders(reminders);
@@ -98,6 +98,7 @@ export default function Calendar({ showIndicator }) {
     const { days, firstDayIndex, name } = calendar[year][month];
     let previousMonth = month - 1;
     let nextMonth = month + 1;
+    let isNewYear = false;
 
     if (previousMonth < 0) {
       year -= 1;
@@ -109,8 +110,8 @@ export default function Calendar({ showIndicator }) {
     }
 
     if (!calendar[year]) {
+      isNewYear = true;
       calendar[year] = generateYear(year);
-      setCalendar({ ...calendar });
     }
     const { days: previousMonthDays, name: previousMonthName } = calendar[year][previousMonth];
     const { days: nextMonthDays, name: nextMonthName } = calendar[year][nextMonth];
@@ -126,6 +127,10 @@ export default function Calendar({ showIndicator }) {
       },
       current: { name, month, days }
     });
+
+    if (isNewYear) {
+      setCalendar({ ...calendar });
+    }
   }
 
   function changeMonth(direction) {
