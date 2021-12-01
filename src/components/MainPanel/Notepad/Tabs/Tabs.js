@@ -194,7 +194,7 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
                       <span>Rename</span>
                     </button>
                     <a download={`${tab.title}.txt`} className="btn icon-text-btn dropdown-btn"
-                      onClick={event => downloadTab(event, index)} title="Download">
+                      onClick={event => downloadTab(event, index)}>
                       <Icon id="download"/>
                       <span>Download</span>
                     </a>

@@ -27,7 +27,7 @@
     4px 8px 8px 0 var(--color-black-2);
 
   @nest .tasks-dialog + & {
-    bottom: 44px;
+    bottom: 47px;
   }
 
   & svg {
