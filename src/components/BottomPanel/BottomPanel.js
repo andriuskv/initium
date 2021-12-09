@@ -147,7 +147,7 @@ export default function BottomPanel() {
       {selectedItem.id ? null : renderItems()}
       <div className={`container bottom-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""}`}>
         <div className="bottom-panel-item-header bottom-panel-transition-target">
-          <Icon id={selectedItem.iconId}/>
+          <Icon id={selectedItem.iconId} className="bottom-panel-item-icon"/>
           <h3 className="bottom-panel-item-title">{selectedItem.title}</h3>
           <button className="btn icon-btn" onClick={hideItem} title="Close">
             <Icon id="cross"/>

@@ -54,6 +54,11 @@
   border-bottom: 1px solid var(--color-white-10);
 }
 
+.bottom-panel-item-icon {
+  width: 24px;
+  height: 24px;
+}
+
 .bottom-panel-item-title {
   font-size: var(--text-lg);
   text-transform: capitalize;
