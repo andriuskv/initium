@@ -217,7 +217,9 @@ export default function Calendar({ showIndicator }) {
     if (!calendar[year]) {
       calendar[year] = generateYear(year);
 
-      repeatFutureReminders(calendar);
+      if (direction === 1) {
+        repeatFutureReminders(calendar);
+      }
       setCalendar({ ...calendar });
     }
     setCurrentYear(year);
@@ -376,7 +378,7 @@ export default function Calendar({ showIndicator }) {
 
   function repeatFutureReminders(calendar) {
     const repeatableReminders = reminders.reduce((reminders, reminder) => {
-      if (calendar[reminder.nextRepeat.year] && !reminder.nextRepeat.done) {
+      if (reminder.repeat && calendar[reminder.nextRepeat.year] && !reminder.nextRepeat.done) {
         reminders.push(reminder);
       }
       return reminders;
@@ -385,7 +387,6 @@ export default function Calendar({ showIndicator }) {
     for (const reminder of repeatableReminders) {
       repeatReminder(calendar, reminder);
     }
-    setCalendar({ ...calendar });
   }
 
   function updateCalendar() {
