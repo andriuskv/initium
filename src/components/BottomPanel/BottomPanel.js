@@ -112,18 +112,21 @@ export default function BottomPanel() {
 
   function renderSelectedItem() {
     let Component = null;
+    let placeholder = null;
 
     if (selectedItem.id === "google-apps") {
       Component = GoogleApps;
+      placeholder = <div className="apps-placeholder"></div>;
     }
     else if (selectedItem.id === "settings") {
       Component = Settings;
+      placeholder = <div className="settings-placeholder"></div>;
     }
 
     if (Component) {
       return (
         <div className={`bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}>
-          <Suspense fallback={null}><Component/></Suspense>
+          <Suspense fallback={placeholder}><Component/></Suspense>
         </div>
       );
     }
@@ -133,7 +136,7 @@ export default function BottomPanel() {
     if (items.calendar.rendered) {
       return (
         <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}>
-          <Suspense fallback={null}>
+          <Suspense fallback={<div className="calendar-placeholder"></div>}>
             <Calendar showIndicator={toggleIndicator}/>
           </Suspense>
         </div>

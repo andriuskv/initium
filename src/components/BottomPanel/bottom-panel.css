@@ -67,3 +67,18 @@
 .bottom-panel-item-content.hidden {
   display: none;
 }
+
+.apps-placeholder {
+  width: 360px;
+  height: 272px;
+}
+
+.settings-placeholder {
+  width: 500px;
+  height: 272px;
+}
+
+.calendar-placeholder {
+  width: 600px;
+  height: 328px;
+}
