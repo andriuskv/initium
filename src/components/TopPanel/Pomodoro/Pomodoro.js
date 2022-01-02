@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { setPageTitle } from "../../../utils";
 import { padTime } from "services/timeDate";
 import { getSetting, updateSetting } from "services/settings";
 import Icon from "components/Icon";
@@ -45,10 +46,12 @@ export default function Pomodoro({ visible, expand }) {
       setAlarm({ ...alarm, element });
     }
     setRunning(true);
+    updatePageTitle(state);
   }
 
   function stop() {
     setRunning(false);
+    setPageTitle();
   }
 
   function update(duration, elapsed) {
@@ -58,7 +61,10 @@ export default function Pomodoro({ visible, expand }) {
     elapsed += interval;
     duration -= 1;
 
-    setState(parseDuration(duration));
+    const state = parseDuration(duration);
+
+    setState(state);
+    updatePageTitle(state);
 
     if (duration > 0) {
       timeoutId.current = setTimeout(() => {
@@ -78,7 +84,12 @@ export default function Pomodoro({ visible, expand }) {
 
     if (running) {
       setRunning(false);
+      setPageTitle();
     }
+  }
+
+  function updatePageTitle({ hours, minutes, seconds }) {
+    setPageTitle(`${hours ? `${hours} h ` : ""}${hours || minutes ? `${minutes} m ` : ""}${seconds} s${getAlarmIcon()}`);
   }
 
   function selectMode(newMode) {
@@ -116,6 +127,10 @@ export default function Pomodoro({ visible, expand }) {
   function runAlarm() {
     alarm.element.play();
     setTimeout(reset, 3000);
+  }
+
+  function getAlarmIcon() {
+    return alarm.shouldRun ? " \uD83D\uDD14" : "";
   }
 
   function toggleSettings() {

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { setPageTitle } from "../../../utils";
 import { padTime } from "services/timeDate";
 import Icon from "components/Icon";
 
@@ -29,11 +30,13 @@ export default function Stopwatch({ visible, expand }) {
 
   function start() {
     setRunning(true);
+    setPageTitle("0 m 00 s");
   }
 
   function stop() {
     cancelAnimationFrame(animationId.current);
     setRunning(false);
+    setPageTitle();
   }
 
   function update(elapsed) {
@@ -55,6 +58,8 @@ export default function Stopwatch({ visible, expand }) {
       }
       state.minutesDisplay = padTime(state.minutes, state.hours);
       state.secondsDisplay = padTime(state.seconds, state.minutes);
+
+      setPageTitle(`${state.hours ? `${state.hours} h ` : ""}${state.minutesDisplay} m ${padTime(state.seconds)} s`);
     }
     state.millisecondsDisplay = padTime(Math.floor(state.milliseconds).toString().slice(0, 2));
 
