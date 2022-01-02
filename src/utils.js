@@ -1,3 +1,7 @@
+function setPageTitle(title) {
+  document.title = `${title || "New Tab"} | Initium`;
+}
+
 function dispatchCustomEvent(eventName, data = null) {
   const event = new CustomEvent(eventName, { detail: data });
 
@@ -41,6 +45,7 @@ function formatBytes(bytes) {
 }
 
 export {
+  setPageTitle,
   dispatchCustomEvent,
   delay,
   getRandomString,

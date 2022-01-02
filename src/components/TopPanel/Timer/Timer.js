@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { setPageTitle } from "../../../utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting, updateSetting } from "services/settings";
@@ -77,9 +78,8 @@ export default function Timer({ visible, expand }) {
     const duration = calculateDuration(values);
 
     if (duration) {
-      values.minutes = padTime(values.minutes, values.hours);
-      values.seconds = padTime(values.seconds, values.hours || values.minutes);
-      values.duration = duration;
+      const paddedMinutes = padTime(values.minutes, values.hours);
+      const paddedSeconds = padTime(values.seconds, values.hours || values.minutes);
 
       if (!alarm.element) {
         const element = new Audio("./assets/alarm.mp3");
@@ -88,7 +88,13 @@ export default function Timer({ visible, expand }) {
         setAlarm({ ...alarm, element });
       }
       setRunning(true);
-      setState(values);
+      setState({
+        hours: values.hours,
+        minutes: paddedMinutes,
+        seconds: paddedSeconds,
+        duration
+      });
+      setPageTitle(`${values.hours ? `${values.hours} h ` : ""}${values.hours || values.minutes ? `${paddedMinutes} m ` : ""}${paddedSeconds} s${getAlarmIcon()}`);
     }
   }
 
@@ -99,6 +105,7 @@ export default function Timer({ visible, expand }) {
       seconds: padTime(state.seconds)
     });
     setRunning(false);
+    setPageTitle();
   }
 
   function normalizeValues() {
@@ -137,12 +144,16 @@ export default function Timer({ visible, expand }) {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor(duration / 60 % 60);
     const seconds = duration % 60;
+    const paddedMinutes = padTime(minutes, hours);
+    const paddedSeconds = padTime(seconds, hours || minutes);
 
     setState({
       hours,
-      minutes: padTime(minutes, hours),
-      seconds: padTime(seconds, hours || minutes)
+      minutes: paddedMinutes,
+      seconds: paddedSeconds
     });
+
+    setPageTitle(`${hours ? `${hours} h ` : ""}${hours || minutes ? `${paddedMinutes} m ` : ""}${paddedSeconds} s${getAlarmIcon()}`);
 
     if (duration > 0) {
       timeoutId.current = setTimeout(() => {
@@ -171,6 +182,7 @@ export default function Timer({ visible, expand }) {
 
     if (running) {
       setRunning(false);
+      setPageTitle();
     }
   }
 
@@ -181,6 +193,10 @@ export default function Timer({ visible, expand }) {
   function runAlarm() {
     alarm.element.play();
     setTimeout(reset, 3000);
+  }
+
+  function getAlarmIcon() {
+    return alarm.shouldRun ? " \uD83D\uDD14" : "";
   }
 
   function showPresets() {
