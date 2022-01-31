@@ -11,6 +11,7 @@
   overflow: hidden;
   width: 0;
   transition: 0.1s width;
+  transition-delay: 0.1s;
 }
 
 .tasks-create-btn {
@@ -221,7 +222,6 @@
   margin-right: var(--space-md);
   width: 16px;
   height: 16px;
-  cursor: pointer;
 
   &:hover .checkbox-tick {
     display: block;

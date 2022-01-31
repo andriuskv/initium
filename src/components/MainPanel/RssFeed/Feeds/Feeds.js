@@ -109,7 +109,7 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
                     <a href={feed.url} className="feed-list-item-url" target="_blank" rel="noreferrer">{feed.url}</a>
                   </div>
                   <SortHandle>
-                    <button className="btn icon-btn feed-list-item-drag-handle">
+                    <button className="btn icon-btn feed-list-item-drag-handle" tabIndex="-1">
                       <Icon id="drag"/>
                     </button>
                   </SortHandle>

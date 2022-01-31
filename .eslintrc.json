@@ -33,6 +33,7 @@
     "react/display-name": 0,
     "react/no-unescaped-entities": 0,
     "react-hooks/exhaustive-deps": 0,
+    "react/jsx-no-target-blank": 0,
     "array-callback-return": 2,
     "arrow-spacing": [2, {
       "before": true,

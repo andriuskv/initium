@@ -30,6 +30,10 @@
   width: 100%;
   height: 100%;
   border-radius: 0;
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-primary);
+  }
 }
 
 .setting-background-info {

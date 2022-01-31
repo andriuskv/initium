@@ -109,8 +109,10 @@
     text-decoration: underline;
   }
 
-  &:hover {
-    background-color: transparent;
+  &:hover, &:focus-visible {
+    --background-color: transparent;
+
+    border-color: transparent;
   }
 }
 
