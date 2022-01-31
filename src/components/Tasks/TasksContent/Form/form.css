@@ -101,6 +101,10 @@
   height: 76px;
   padding: var(--space-sm) var(--space-md);
   border-radius: 8px;
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-primary);
+  }
 }
 
 .subtask-add-btn {

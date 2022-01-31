@@ -5,7 +5,7 @@ export default function MoreWeather({ current, hourly, units, hide }) {
   return (
     <div className="weather-transition-target weather-more-info">
       <div className="weather-more-current">
-        <img src={current.icon} className="weather-more-current-icon" alt="" width="100px" height="100px"/>
+        <img src={current.icon} className="weather-more-current-icon" alt="" width="100px" height="100px" loading="lazy"/>
         <div className="weather-more-current-main">
           <div className="weather-more-current-city">{current.city}</div>
           <div className="weather-more-current-main-info">
@@ -38,7 +38,7 @@ export default function MoreWeather({ current, hourly, units, hide }) {
         {hourly?.map(item => (
           <div className="weather-more-hourly-item" key={item.id}>
             <div className="weather-more-hourly-time">{item.time}</div>
-            <img src={item.icon} alt="" width="64px" height="64px"/>
+            <img src={item.icon} alt="" width="64px" height="64px" loading="lazy"/>
             <div className="weather-more-hourly-temperature">
               <div>{item.temperature}</div>
               <div className="weather-more-hourly-temperature-units">°{units}</div>
