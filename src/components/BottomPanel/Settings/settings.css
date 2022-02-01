@@ -76,3 +76,15 @@
 .setting-tab-spinner {
   margin: auto;
 }
+
+.settings-group {
+  padding-top: var(--space-md);
+}
+
+.settings-group-title {
+  margin-left: var(--space-lg);
+  margin-bottom: var(--space-md);
+  padding-left: var(--space-md);
+  font-weight: bold;
+  box-shadow: -2px 0 0 0 var(--color-primary);
+}
