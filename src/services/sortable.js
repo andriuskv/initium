@@ -8,14 +8,23 @@ const SortableListContainer = SortableContainer(component);
 const SortHandle = SortableHandle(component);
 
 function SortableList({ items, axis = "y", indexOffset = 0, useDragHandle, handleSort, children }) {
+  const options = {};
+
+  if (axis === "xy") {
+    options.axis = axis;
+  }
+  else {
+    options.lockAxis = axis;
+  }
+
   function onSortEnd({ oldIndex, newIndex }) {
     handleSort(arrayMoveImmutable(items, oldIndex + indexOffset, newIndex + indexOffset));
   }
 
   return (
     <SortableListContainer
+      {...options}
       distance={10}
-      axis={axis}
       useDragHandle={useDragHandle}
       lockToContainerEdges={true}
       lockOffset={["0%", "0%"]}
