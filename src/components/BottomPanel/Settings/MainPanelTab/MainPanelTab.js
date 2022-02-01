@@ -21,11 +21,15 @@ export default function MainPanelTab() {
   }
 
   function resetTopSites() {
-    dispatchCustomEvent("top-sites-reset");
+    dispatchCustomEvent("reset-top-sites");
   }
 
   function toggleTopSiteItemCount({ target }) {
     toggleTopSiteSetting({ visibleItemCount: target.checked ? 4 : 8 });
+  }
+
+  function toggleTopSiteOpenSetting({ target }) {
+    toggleTopSiteSetting({ openInNewTab: target.checked });
   }
 
   function toggleTopSiteButtonVisibility({ target }) {
@@ -66,30 +70,6 @@ export default function MainPanelTab() {
           <div className="checkbox-tick"></div>
         </div>
       </label>
-      <div className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
-        <span>Restore default top sites</span>
-        <button className="btn" onClick={resetTopSites}>Reset</button>
-      </div>
-      <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
-        <span>Show one row of top sites</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          disabled={settings.components.topSites.disabled}
-          checked={settings.components.topSites.visibleItemCount === 4}
-          onChange={toggleTopSiteItemCount}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
-        </div>
-      </label>
-      <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
-        <span>Hide add site button</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          disabled={settings.components.topSites.disabled}
-          checked={settings.components.topSites.addSiteButtonHidden}
-          onChange={toggleTopSiteButtonVisibility}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
-        </div>
-      </label>
       <label className="setting">
         <span>Disable notepad</span>
         <input type="checkbox" className="sr-only checkbox-input"
@@ -117,6 +97,43 @@ export default function MainPanelTab() {
           <div className="checkbox-tick"></div>
         </div>
       </label>
+      <div className="settings-group">
+        <h4 className="settings-group-title">Top Sites</h4>
+        <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
+          <span>Show one row of top sites</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            disabled={settings.components.topSites.disabled}
+            checked={settings.components.topSites.visibleItemCount === 4}
+            onChange={toggleTopSiteItemCount}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
+        <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
+          <span>Always open page in a new tab</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            disabled={settings.components.topSites.disabled}
+            checked={settings.components.topSites.openInNewTab}
+            onChange={toggleTopSiteOpenSetting}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
+        <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
+          <span>Hide add site button</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            disabled={settings.components.topSites.disabled}
+            checked={settings.components.topSites.addSiteButtonHidden}
+            onChange={toggleTopSiteButtonVisibility}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
+        <div className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
+          <span>Restore default top sites</span>
+          <button className="btn" onClick={resetTopSites}>Reset</button>
+        </div>
+      </div>
     </div>
   );
 }

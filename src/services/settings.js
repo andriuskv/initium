@@ -19,6 +19,7 @@ function getDefault() {
         topSites: {
           disabled: false,
           visibleItemCount: 4,
+          openInNewTab: false,
           addSiteButtonHidden: false
         },
         notepad: { disabled: false },

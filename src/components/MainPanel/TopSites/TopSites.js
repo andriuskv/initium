@@ -14,10 +14,10 @@ export default function TopSites({ settings }) {
 
   useEffect(() => {
     init();
-    window.addEventListener("top-sites-reset", resetTopSites);
+    window.addEventListener("reset-top-sites", resetTopSites);
 
     return () => {
-      window.removeEventListener("top-sites-reset", resetTopSites);
+      window.removeEventListener("reset-top-sites", resetTopSites);
     };
   }, []);
 
@@ -98,7 +98,7 @@ export default function TopSites({ settings }) {
     <ul className="top-sites">
       {visibleSites.map((site, i) => (
         <li className="top-site" key={site.id}>
-          <a href={site.url} className="top-site-link" aria-label={site.title}>
+          <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"}>
             <div className="container top-site-container top-site-title">{site.title}</div>
             <div className="container top-site-container top-site-thumbnail-container">
               <img src={site.iconUrl} className="top-site-thumbnail" alt=""/>

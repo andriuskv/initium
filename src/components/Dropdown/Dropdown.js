@@ -47,7 +47,6 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
       const container = currentTarget.parentElement;
       const element = getParentElement(container);
 
-
       if (element) {
         element.style.position = "relative";
 
