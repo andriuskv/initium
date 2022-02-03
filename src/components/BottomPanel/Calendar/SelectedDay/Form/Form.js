@@ -39,6 +39,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
     const repeat = {
       enabled: false,
       type: "custom",
+      customTypeGapName: "days",
       currentWeekday: weekday,
       weekdays,
       ends: "never",
@@ -136,6 +137,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
       if (form.repeat.type === "custom") {
         if (form.repeat.gap) {
           reminder.repeat.gap = Number(form.repeat.gap);
+          reminder.repeat.customTypeGapName = form.repeat.customTypeGapName;
         }
         else {
           form.repeat.gapError = true;
@@ -175,6 +177,11 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
 
   function handleRepeatTypeChange({ target }) {
     form.repeat.type = target.value;
+    setForm({ ...form });
+  }
+
+  function handleCustomTypeGapNameChange({ target }) {
+    form.repeat.customTypeGapName = target.value;
     setForm({ ...form });
   }
 
@@ -327,9 +334,15 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
             <div className="reminder-form-setting">
               <div>
                 <span>Repeat every</span>
-                <input type="text" className="input repeat-input" name="gap" autoComplete="off"
-                  value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
-                <span>days</span>
+                <span className="repeat-input-container">
+                  <input type="text" className="input repeat-input" name="gap" autoComplete="off"
+                    value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
+                  <select className="input select" onChange={handleCustomTypeGapNameChange} value={form.repeat.customTypeGapName}>
+                    <option value="days">days</option>
+                    <option value="weeks">weeks</option>
+                    <option value="months">months</option>
+                  </select>
+                </span>
               </div>
               {form.repeat.gapError && <div className="reminder-form-message">Please insert a whole number</div>}
             </div>

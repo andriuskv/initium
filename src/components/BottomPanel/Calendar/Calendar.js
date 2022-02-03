@@ -239,6 +239,22 @@ export default function Calendar({ showIndicator }) {
     setSelectedDay(null);
   }
 
+  function getDayCountFromMonthCount(monthCount, startDate) {
+    let dayCount = 0;
+
+    for (let i = 1; i <= monthCount; i += 1) {
+      let year = startDate.year;
+      let month = startDate.month + i;
+
+      if (month > 11) {
+        month = 0;
+        year += 1;
+      }
+      dayCount += timeDateService.getDaysInMonth(year, month);
+    }
+    return dayCount;
+  }
+
   function getWeekdayRepeatGaps(reminder) {
     const { weekdays } = reminder.repeat;
     const gaps = [];
@@ -355,7 +371,15 @@ export default function Calendar({ showIndicator }) {
       }
 
       if (reminder.repeat.type === "custom") {
-        reminder.nextRepeat.day += reminder.repeat.gap;
+        if (reminder.repeat.customTypeGapName === "days") {
+          reminder.nextRepeat.day += reminder.repeat.gap;
+        }
+        else if (reminder.repeat.customTypeGapName === "weeks") {
+          reminder.nextRepeat.day += reminder.repeat.gap * 7;
+        }
+        else if (reminder.repeat.customTypeGapName === "months") {
+          reminder.nextRepeat.day += getDayCountFromMonthCount(reminder.repeat.gap, reminder.nextRepeat);
+        }
       }
       else if (reminder.repeat.type === "weekday") {
         reminder.nextRepeat.day += reminder.nextRepeat.gaps[reminder.nextRepeat.gapIndex];
@@ -369,7 +393,14 @@ export default function Calendar({ showIndicator }) {
         reminder.nextRepeat.day += 7;
       }
       else if (reminder.repeat.type === "month") {
-        const days = timeDateService.getDaysInMonth(reminder.nextRepeat.year, reminder.nextRepeat.month);
+        let year = reminder.nextRepeat.year;
+        let month = reminder.nextRepeat.month + 1;
+
+        if (month > 11) {
+          month = 0;
+          year += 1;
+        }
+        const days = timeDateService.getDaysInMonth(year, month);
         reminder.nextRepeat.day += days;
       }
       day = month.days[reminder.nextRepeat.day];
