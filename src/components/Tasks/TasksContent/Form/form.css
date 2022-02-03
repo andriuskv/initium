@@ -90,8 +90,11 @@
   overflow: hidden;
   width: calc(100% - var(--space-xl));
   margin: var(--space-md) var(--space-md) var(--space-xl) var(--space-md);
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-radius: 8px;
+
+  &:focus-within {
+    box-shadow: 0 0 0 2px var(--color-primary);
+  }
 }
 
 .task-form-textarea {
@@ -103,7 +106,7 @@
   border-radius: 8px;
 
   &:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--color-primary);
+    box-shadow: none;
   }
 }
 

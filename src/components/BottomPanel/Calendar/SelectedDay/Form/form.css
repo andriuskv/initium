@@ -116,8 +116,33 @@
   }
 }
 
+.repeat-input-container {
+  display: inline-flex;
+  margin-left: var(--space-md);
+  border: 1px solid var(--color-white-4);
+  border-radius: 999px;
+  background-color: var(--color-white-10);
+
+  & .repeat-input {
+    margin: 0;
+    border: none;
+    border-right: 1px solid var(--color-white-4);
+    border-radius: 0;
+    border-top-left-radius: 999px;
+    border-bottom-left-radius: 999px;
+    background-color: transparent;
+  }
+
+  & .select {
+    min-width: auto;
+    border-radius: 0;
+    border-top-right-radius: 999px;
+    border-bottom-right-radius: 999px;
+  }
+}
+
 .repeat-input {
-  width: calc(3ch + 24px);
+  width: calc(3ch + 26px);
   margin-left: var(--space-md);
   margin-right: var(--space-md);
   text-align: center;
