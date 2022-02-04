@@ -1,11 +1,16 @@
 import { getMonthName } from "./timeDate";
 
 const serverUrl = `${process.env.SERVER_URL}/twitter`;
+const userCache = {};
 let users = JSON.parse(localStorage.getItem("twitter_users")) || [];
 let activeUserIndex = users.findIndex(user => user.active);
 let oauth = null;
 let requestToken = "";
 let requestTokenSecret = "";
+
+if (users.length && activeUserIndex < 0) {
+  activeUserIndex = 0;
+}
 
 function hasUsers() {
   return users.length > 0;
@@ -67,6 +72,14 @@ function removeActiveUser() {
   return users.length > 0;
 }
 
+function cacheUser(user) {
+  userCache[user.handle.toLowerCase()] = user;
+}
+
+function getCachedUser(handle) {
+  return userCache[handle.toLowerCase()];
+}
+
 async function fetchLoginUrl() {
   const json = await fetch(`${serverUrl}/request_token`).then(res => res.json());
 
@@ -103,6 +116,13 @@ async function fetchUser() {
   }).then(res => res.json());
 }
 
+async function fetchUserByHandle(handle) {
+  return fetch(`${serverUrl}/users/${handle}`, {
+    method: "GET",
+    headers: getAuthorizationHeaders()
+  }).then(res => res.json());
+}
+
 async function fetchTimeline(params = {}) {
   const url = buildURL(`${serverUrl}/timeline`, {
     count: 30,
@@ -125,7 +145,7 @@ function getAuthorizationHeaders() {
     ({ token, tokenSecret } = oauth);
   }
   else {
-    ({ token, tokenSecret } = users.find(user => user.active));
+    ({ token, tokenSecret } = users[activeUserIndex]);
   }
   return {
     "x-authorization": `OAuth oauth_token=${token} oauth_token_secret=${tokenSecret}`
@@ -176,9 +196,12 @@ export {
   updateActiveUser,
   getActiveUser,
   removeActiveUser,
+  cacheUser,
+  getCachedUser,
   fetchLoginUrl,
   fetchAccessToken,
   fetchUser,
+  fetchUserByHandle,
   fetchTimeline,
   getTweetDate
 };
