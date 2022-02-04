@@ -1,0 +1,83 @@
+.twitter-user-card {
+  position: absolute;
+  opacity: 0;
+  visibility: hidden;
+  width: 300px;
+  padding: var(--space-xl);
+  background-color: var(--color-grey-90);
+  backdrop-filter: none;
+  white-space: pre-wrap;
+  transition: 0.2s opacity, 0.2s visibility;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.tweet-user-card-info {
+  display: block;
+  width: min-content;
+  margin-top: var(--space-sm);
+  white-space: nowrap;
+
+  & .tweet-user-handle {
+    margin-left: 0;
+  }
+
+  &:hover .twitter-user-card-name {
+    text-decoration: underline;
+  }
+}
+
+.twitter-user-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tweet-user-image-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--color-white-10);
+}
+
+.twitter-user-card-follow-status {
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--color-white-10);
+  border-radius: 999px;
+  color: var(--color-white-60);
+  font-weight: bold;
+  font-size: var(--text-sm);
+  cursor: default;
+}
+
+.twitter-user-card-name-container {
+  display: flex;
+}
+
+.twitter-user-card-name {
+  font-weight: bold;
+}
+
+.twitter-user-card-description {
+  margin-top: var(--space-xl);
+}
+
+.twitter-user-card-bottom {
+  margin-top: var(--space-xl);
+}
+
+.twitter-user-card-info-item:first-of-type {
+  margin-right: var(--space-xl);
+}
+
+.twitter-user-card-info-item-value {
+  margin-right: var(--space-sm);
+  font-weight: bold;
+}
+
+.twitter-user-card-info-item-name {
+  color: var(--color-white-60);
+}

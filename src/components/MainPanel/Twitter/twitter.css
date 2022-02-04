@@ -132,6 +132,7 @@
 
 .retweet-by {
   margin-left: var(--space-md);
+  font-weight: bold;
 
   &:hover {
     text-decoration: underline;
@@ -348,7 +349,8 @@
   }
 
   & .tweet-media-container {
-    border-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
 
   &:hover {
