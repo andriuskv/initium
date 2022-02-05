@@ -371,7 +371,7 @@ export default function Calendar({ showIndicator }) {
       }
 
       if (reminder.repeat.type === "custom") {
-        if (reminder.repeat.customTypeGapName === "days") {
+        if (!reminder.repeat.customTypeGapName || reminder.repeat.customTypeGapName === "days") {
           reminder.nextRepeat.day += reminder.repeat.gap;
         }
         else if (reminder.repeat.customTypeGapName === "weeks") {
