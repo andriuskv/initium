@@ -22,7 +22,7 @@
 }
 
 .calendar-title {
-  min-width: 130px;
+  min-width: 140px;
   padding: var(--space-xs) var(--space-md);
   margin-left: var(--space-md);
   margin-right: var(--space-md);

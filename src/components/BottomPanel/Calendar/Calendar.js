@@ -30,6 +30,9 @@ export default function Calendar({ showIndicator }) {
   async function init() {
     const reminders = await chromeStorage.get("reminders");
 
+    if (reminders) {
+      updateReminderFormat(reminders);
+    }
     initCalendar(reminders);
 
     chromeStorage.subscribeToChanges(({ reminders }) => {
@@ -67,6 +70,41 @@ export default function Calendar({ showIndicator }) {
     else {
       setCalendar(calendar);
     }
+  }
+
+  function updateReminderFormat(reminders) {
+    const updated = localStorage.getItem("reminders-updated");
+
+    if (updated) {
+      return;
+    }
+
+    for (const reminder of reminders) {
+      if (reminder.repeat) {
+        if (typeof reminder.repeat === "boolean") {
+          reminder.repeat = {
+            gap: reminder.repeatGap || reminder.gap,
+            count: reminder.repeatCount || reminder.count
+          };
+          delete reminder.repeatGap;
+          delete reminder.repeatCount;
+        }
+
+        if (!reminder.repeat.type) {
+          reminder.repeat.type = "custom";
+        }
+
+        if (reminder.repeat.type === "custom" && !reminder.repeat.customTypeGapName) {
+          reminder.repeat.customTypeGapName = "days";
+        }
+      }
+
+      if (reminder.range === -1) {
+        delete reminder.range;
+      }
+    }
+    localStorage.setItem("reminders-updated", 1);
+    chromeStorage.set({ reminders });
   }
 
   function generateYear(year) {
@@ -239,18 +277,25 @@ export default function Calendar({ showIndicator }) {
     setSelectedDay(null);
   }
 
-  function getDayCountFromMonthCount(monthCount, startDate) {
+  function getDayCountFromMonthCount(monthCount, repeatAtDay, nextRepeat) {
     let dayCount = 0;
 
-    for (let i = 1; i <= monthCount; i += 1) {
-      let year = startDate.year;
-      let month = startDate.month + i;
+    nextRepeat.leftoverDays ??= 0;
 
-      if (month > 11) {
-        month = 0;
-        year += 1;
+    for (let i = 1; i <= monthCount; i += 1) {
+      const year = nextRepeat.year;
+      const month = nextRepeat.month + i;
+      const nextMonthDays = getDaysInMonth(year, month);
+
+      if (repeatAtDay > nextMonthDays) {
+        nextRepeat.leftoverDays = repeatAtDay - nextMonthDays;
+        dayCount += nextMonthDays;
       }
-      dayCount += timeDateService.getDaysInMonth(year, month);
+      else {
+        const days = timeDateService.getDaysInMonth(year, month - 1);
+        dayCount += days + nextRepeat.leftoverDays;
+        nextRepeat.leftoverDays = 0;
+      }
     }
     return dayCount;
   }
@@ -371,14 +416,14 @@ export default function Calendar({ showIndicator }) {
       }
 
       if (reminder.repeat.type === "custom") {
-        if (!reminder.repeat.customTypeGapName || reminder.repeat.customTypeGapName === "days") {
+        if (reminder.repeat.customTypeGapName === "days") {
           reminder.nextRepeat.day += reminder.repeat.gap;
         }
         else if (reminder.repeat.customTypeGapName === "weeks") {
           reminder.nextRepeat.day += reminder.repeat.gap * 7;
         }
         else if (reminder.repeat.customTypeGapName === "months") {
-          reminder.nextRepeat.day += getDayCountFromMonthCount(reminder.repeat.gap, reminder.nextRepeat);
+          reminder.nextRepeat.day += getDayCountFromMonthCount(reminder.repeat.gap, reminder.day, reminder.nextRepeat);
         }
       }
       else if (reminder.repeat.type === "weekday") {
@@ -393,18 +438,30 @@ export default function Calendar({ showIndicator }) {
         reminder.nextRepeat.day += 7;
       }
       else if (reminder.repeat.type === "month") {
-        let year = reminder.nextRepeat.year;
-        let month = reminder.nextRepeat.month + 1;
+        const nextDays = getDaysInMonth(reminder.nextRepeat.year, reminder.nextRepeat.month + 1);
 
-        if (month > 11) {
-          month = 0;
-          year += 1;
+        reminder.nextRepeat.leftoverDays ??= 0;
+
+        if (reminder.day > nextDays) {
+          reminder.nextRepeat.leftoverDays = reminder.day - nextDays;
+          reminder.nextRepeat.day += nextDays;
         }
-        const days = timeDateService.getDaysInMonth(year, month);
-        reminder.nextRepeat.day += days;
+        else {
+          const days = timeDateService.getDaysInMonth(reminder.nextRepeat.year, reminder.nextRepeat.month);
+          reminder.nextRepeat.day += days + reminder.nextRepeat.leftoverDays;
+          reminder.nextRepeat.leftoverDays = 0;
+        }
       }
       day = month.days[reminder.nextRepeat.day];
     }
+  }
+
+  function getDaysInMonth(year, month) {
+    if (month > 11) {
+      month = 0;
+      year += 1;
+    }
+    return timeDateService.getDaysInMonth(year, month);
   }
 
   function repeatFutureReminders(calendar) {
@@ -437,21 +494,10 @@ export default function Calendar({ showIndicator }) {
       calendar[year] = generateYear(year);
     }
     reminder.id ??= getRandomString();
-
-    if (reminder.range === -1) {
-      delete reminder.range;
-    }
     reminder.range ??= {};
     reminder.range.text = getReminderRangeString(reminder.range);
 
     if (reminder.repeat) {
-      if (typeof reminder.repeat === "boolean") {
-        reminder.repeat = {
-          gap: reminder.repeatGap || reminder.gap,
-          count: reminder.repeatCount || reminder.count
-        };
-      }
-      reminder.repeat.type ??= "custom";
       reminder.repeat.tooltip = getReminderRepeatTooltip(reminder.repeat);
       repeatReminder(calendar, reminder, shouldReplace);
     }
@@ -486,9 +532,9 @@ export default function Calendar({ showIndicator }) {
     return timeDateService.getTimeString(from);
   }
 
-  function getReminderRepeatTooltip({ type, gap, count, weekdays }) {
+  function getReminderRepeatTooltip({ type, gap, count, weekdays, customTypeGapName }) {
     if (type === "custom") {
-      return `Repeating ${count > 1 ? `${count} times ` : ""}every ${gap === 1 ? "day" : `${gap} days`}`;
+      return `Repeating ${count > 1 ? `${count} times ` : ""}every ${gap === 1 ? customTypeGapName.slice(0, -1) : `${gap} ${customTypeGapName}`}`;
     }
     else if (type === "week") {
       return "Repeating every week";
