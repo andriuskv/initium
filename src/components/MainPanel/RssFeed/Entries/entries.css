@@ -44,42 +44,6 @@
   }
 }
 
-.feed-new-entry-count-container {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  margin-right: var(--space-md);
-  font-size: 10px;
-  font-weight: bold;
-  line-height: 1;
-
-  &::before {
-    position: absolute;
-    content: "";
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    box-shadow:
-      0 1px 2px 0 var(--color-black-8),
-      0 2px 4px 0 var(--color-black-4);
-    background-color: var(--color-white-10);
-    transition: 0.1s transform, 0.1s box-shadow, 0.1s background-color;
-  }
-
-  &:hover {
-    background-color: transparent;
-
-    &::before {
-      transform: scale(1.2);
-    }
-  }
-}
-
 .feed-list-btn.indicator::after {
   bottom: 5px;
   right: var(--space-sm);
