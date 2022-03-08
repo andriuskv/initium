@@ -401,6 +401,7 @@ textarea {
 
 .range-input {
   appearance: none;
+  height: auto;
 
   &::-webkit-slider-runnable-track {
     height: 6px;

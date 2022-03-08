@@ -101,7 +101,7 @@ export default function TopSites({ settings }) {
           <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"}>
             <div className="container top-site-container top-site-title">{site.title}</div>
             <div className="container top-site-container top-site-thumbnail-container">
-              <img src={site.iconUrl} className="top-site-thumbnail" alt=""/>
+              <img src={site.iconUrl} width="32px" height="32px" loading="lazy" alt=""/>
             </div>
           </a>
           <Dropdown container={{ className: "top-site-dropdown" }}>
