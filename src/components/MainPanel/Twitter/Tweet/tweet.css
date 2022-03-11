@@ -104,7 +104,7 @@
 }
 
 .tweet-link {
-  color: var(--profile-color);
+  color: var(--highlight-color);
 
   &:hover {
     text-decoration: underline;

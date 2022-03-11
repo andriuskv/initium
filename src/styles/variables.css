@@ -5,6 +5,7 @@
   --space-md: calc(1 * var(--space-unit));
   --space-lg: calc(1.5 * var(--space-unit));
   --space-xl: calc(2 * var(--space-unit));
+  --space-xxl: calc(4 * var(--space-unit));
 
   --text-base-size: 1rem;
   --text-xxs: calc(0.785 * var(--text-base-size));
