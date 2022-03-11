@@ -9,6 +9,14 @@
   border-bottom-right-radius: 6px;
 }
 
+.twitter-header {
+  padding: var(--space-sm);
+}
+
+.twitter-header-btn {
+  margin-left: var(--space-sm);
+}
+
 .twitter-content-mask {
   position: absolute;
   inset: 0;
