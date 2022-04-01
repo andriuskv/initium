@@ -1,15 +1,16 @@
 import "./styles/base.css";
 import "./components/Dropdown/dropdown.css";
 
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { SettingsProvider } from "./contexts/settings-context";
 import App from "./components/App";
 
-render(
+const root = createRoot(document.getElementById("root"));
+
+root.render(
   <SettingsProvider>
     <App/>
-  </SettingsProvider>,
-  document.getElementById("root")
+  </SettingsProvider>
 );
 
 navigator.serviceWorker.register("sw.js");

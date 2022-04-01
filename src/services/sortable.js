@@ -1,40 +1,88 @@
-import { SortableContainer, SortableElement, SortableHandle } from "react-sortable-hoc";
-import { arrayMoveImmutable } from "array-move";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from "@dnd-kit/core";
+import {
+  useSortable,
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  rectSortingStrategy
+} from "@dnd-kit/sortable";
+import {
+  restrictToVerticalAxis,
+  restrictToFirstScrollableAncestor
+} from "@dnd-kit/modifiers";
+import { CSS } from "@dnd-kit/utilities";
 
-const component = ({ children }) => children;
-
-const SortableItem = SortableElement(component);
-const SortableListContainer = SortableContainer(component);
-const SortHandle = SortableHandle(component);
-
-function SortableList({ items, axis = "y", indexOffset = 0, useDragHandle, handleSort, children }) {
-  const options = {};
+function SortableList({ children, items, axis, handleDragStart, handleSort }) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  );
+  const modifiers = [restrictToFirstScrollableAncestor];
+  let sortingStrategy = verticalListSortingStrategy;
 
   if (axis === "xy") {
-    options.axis = axis;
+    sortingStrategy = rectSortingStrategy;
   }
   else {
-    options.lockAxis = axis;
+    modifiers.push(restrictToVerticalAxis);
   }
 
-  function onSortEnd({ oldIndex, newIndex }) {
-    handleSort(arrayMoveImmutable(items, oldIndex + indexOffset, newIndex + indexOffset));
+  function handleDragEnd(event) {
+    const { active, over } = event;
+    let newItems = null;
+
+    if (active.id !== over.id) {
+      const oldIndex = items.findIndex(({ id }) => id === active.id);
+      const newIndex = items.findIndex(({ id }) => id === over.id);
+
+      newItems = arrayMove(items, oldIndex, newIndex);
+    }
+    handleSort(newItems);
   }
 
   return (
-    <SortableListContainer
-      {...options}
-      distance={10}
-      useDragHandle={useDragHandle}
-      lockToContainerEdges={true}
-      lockOffset={["0%", "0%"]}
-      helperClass="dragging"
-      onSortEnd={onSortEnd}>{children}</SortableListContainer>
+    <DndContext
+      sensors={sensors}
+      modifiers={modifiers}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}>
+      <SortableContext items={items} strategy={sortingStrategy}>
+        {children}
+      </SortableContext>
+    </DndContext>
   );
 }
 
+
+function SortableItem({ children, id, className }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  };
+
+  return <li ref={setNodeRef} style={style} className={className} {...attributes} {...listeners}>{children}</li>;
+}
+
 export {
-  SortableItem,
   SortableList,
-  SortHandle
+  SortableItem
 };

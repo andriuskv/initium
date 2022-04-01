@@ -74,6 +74,7 @@ function parseFeed(feed, { title, url }) {
   return {
     ...data,
     url,
+    id: getRandomString(),
     // If feed's title was manually changed, don't overwrite it.
     title: title || feed.title,
     description: feed.description,
