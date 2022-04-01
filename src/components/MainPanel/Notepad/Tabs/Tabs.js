@@ -10,6 +10,7 @@ import "./tabs.css";
 export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPosition, getTabSize, hide }) {
   const [modal, setModal] = useState(null);
   const [storage, setStorage] = useState({ current: 0, used: 0 });
+  const [activeDragId, setActiveDragId] = useState(null);
 
   useEffect(() => {
     updateStorage();
@@ -123,6 +124,17 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
     });
   }
 
+  function handleSort(items) {
+    if (items) {
+      updateTabs(items);
+    }
+    setActiveDragId(null);
+  }
+
+  function handleDragStart(event) {
+    setActiveDragId(event.active.id);
+  }
+
   function renderModal() {
     if (modal.type === "create") {
       return (
@@ -173,44 +185,46 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
           <Icon id="cross"/>
         </button>
       </div>
-      <SortableList items={tabs} axis="xy" handleSort={updateTabs}>
-        <ul className="notepad-tabs-items" data-dropdown-parent>
+      <ul className="notepad-tabs-items" data-dropdown-parent>
+        <SortableList
+          items={tabs}
+          axis="xy"
+          handleSort={handleSort}
+          handleDragStart={handleDragStart}>
           {tabs.map((tab, index) => (
-            <SortableItem key={tab.id} index={index}>
-              <li className="notepad-tabs-item" key={tab.id}>
-                {tab.renameEnabled ? (
-                  <input type="text" className="input" autoFocus defaultValue={tab.title}
-                    onBlur={event => renameTab(event, tab)} onKeyPress={blurTabTitleInput}/>
-                ) : (
-                  <button className="btn text-btn notepad-tabs-item-title" onClick={() => selectListTab(index)}>
-                    <span className="notepad-tabs-item-title-text">{tab.title}</span>
+            <SortableItem className={`notepad-tabs-item${tab.id === activeDragId ? " dragging" : ""}`} key={tab.id} id={tab.id}>
+              {tab.renameEnabled ? (
+                <input type="text" className="input" autoFocus defaultValue={tab.title}
+                  onBlur={event => renameTab(event, tab)} onKeyPress={blurTabTitleInput}/>
+              ) : (
+                <button className="btn text-btn notepad-tabs-item-title" onClick={() => selectListTab(index)}>
+                  <span className="notepad-tabs-item-title-text">{tab.title}</span>
+                </button>
+              )}
+              <div className="notepad-tabs-item-bottom">
+                <span className="notepad-tab-size-text">Size: {tab.sizeString} kB</span>
+                <Dropdown>
+                  <button className="btn icon-text-btn dropdown-btn" onClick={() => enableTabRename(tab)}>
+                    <Icon id="edit"/>
+                    <span>Rename</span>
                   </button>
-                )}
-                <div className="notepad-tabs-item-bottom">
-                  <span className="notepad-tab-size-text">Size: {tab.sizeString} kB</span>
-                  <Dropdown>
-                    <button className="btn icon-text-btn dropdown-btn" onClick={() => enableTabRename(tab)}>
-                      <Icon id="edit"/>
-                      <span>Rename</span>
+                  <a download={`${tab.title}.txt`} className="btn icon-text-btn dropdown-btn"
+                    onClick={event => downloadTab(event, index)}>
+                    <Icon id="download"/>
+                    <span>Download</span>
+                  </a>
+                  {tabs.length > 1 && (
+                    <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
+                      <Icon id="trash"/>
+                      <span>Remove</span>
                     </button>
-                    <a download={`${tab.title}.txt`} className="btn icon-text-btn dropdown-btn"
-                      onClick={event => downloadTab(event, index)}>
-                      <Icon id="download"/>
-                      <span>Download</span>
-                    </a>
-                    {tabs.length > 1 && (
-                      <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
-                        <Icon id="trash"/>
-                        <span>Remove</span>
-                      </button>
-                    )}
-                  </Dropdown>
-                </div>
-              </li>
+                  )}
+                </Dropdown>
+              </div>
             </SortableItem>
           ))}
-        </ul>
-      </SortableList>
+        </SortableList>
+      </ul>
       <div className="notepad-storage">
         <div className="notepad-storage-text">
           <div>{storage.current} kB</div>

@@ -32,10 +32,6 @@
   padding: var(--space-md);
   border-bottom: 1px solid var(--color-white-10);
 
-  &:hover .feed-list-item-drag-handle {
-    animation: 0s linear 0.4s forwards delayed-reveal;
-  }
-
   &.dragging {
     z-index: 1000;
     display: block;
@@ -124,16 +120,6 @@
 
   &:hover {
     text-decoration: underline;
-  }
-}
-
-.feed-list-item-drag-handle {
-  opacity: 0;
-  margin-right: var(--space-sm);
-  cursor: move;
-
-  &:hover, &:focus-visible {
-    opacity: 1;
   }
 }
 
