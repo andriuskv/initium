@@ -1,0 +1,12 @@
+.top-panel-settings-tab {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  height: 174px;
+}
+
+.top-panel-setting {
+  width: 100%;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-white-10);
+}

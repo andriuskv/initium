@@ -27,6 +27,10 @@ function getDefault() {
         rssFeed: { disabled: false }
       }
     },
+    topPanel: {
+      alarmVolume: 0.2,
+      fullscreenTextScale: 1.5
+    },
     timeDate: {
       clockDisabled: false,
       dateHidden: false,

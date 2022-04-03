@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { handleZIndex, getIincreasedZIndex } from "services/zIndex";
+import { getSetting } from "services/settings";
 import Icon from "../Icon";
 import "./top-panel.css";
 import Countdown from "./Countdown";
@@ -7,6 +8,7 @@ import Countdown from "./Countdown";
 const Timer = lazy(() => import("./Timer"));
 const Stopwatch = lazy(() => import("./Stopwatch"));
 const Pomodoro = lazy(() => import("./Pomodoro"));
+const Settings = lazy(() => import("./Settings"));
 
 export default function TopPanel({ forceVisibility = false }) {
   const [visible, setVisible] = useState(false);
@@ -19,6 +21,12 @@ export default function TopPanel({ forceVisibility = false }) {
     pomodoro: {}
   }));
   const containerRef = useRef(null);
+
+  useEffect(() => {
+    const { fullscreenTextScale } = getSetting("topPanel");
+
+    setFullscreenTextScale(fullscreenTextScale);
+  }, []);
 
   useEffect(() => {
     if (forceVisibility) {
@@ -72,7 +80,7 @@ export default function TopPanel({ forceVisibility = false }) {
 
   function hideTopPanel() {
     if (expanded) {
-      setExpanded(false);
+      exitFullscreen();
     }
     else {
       setVisible(false);
@@ -87,13 +95,21 @@ export default function TopPanel({ forceVisibility = false }) {
     setActiveTab(name);
   }
 
+  function setFullscreenTextScale(value) {
+    containerRef.current.style.setProperty("--fullscreen-text-scale", value);
+  }
+
+  function exitFullscreen() {
+    setExpanded(false);
+  }
+
   function expand() {
     setExpanded(true);
   }
 
   function collapse(event) {
     if (event.key === "Escape") {
-      setExpanded(false);
+      exitFullscreen();
     }
   }
 
@@ -127,15 +143,21 @@ export default function TopPanel({ forceVisibility = false }) {
             </button>
           </li>
           <li className="top-panel-close-btn">
+            <button className="btn icon-btn" onClick={() => setActiveTab("settings")} title="Settings">
+              <Icon id="settings"/>
+            </button>
+          </li>
+          <li className="top-panel-close-btn">
             <button className="btn icon-btn" onClick={hideTopPanel} title="Close">
               <Icon id="cross"/>
             </button>
           </li>
         </ul>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
-          {tabs.timer.rendered ? <Timer visible={activeTab === "timer"} expand={expand}/> : null}
+          {tabs.timer.rendered ? <Timer visible={activeTab === "timer"} expand={expand} exitFullscreen={exitFullscreen}/> : null}
           {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} expand={expand}/> : null}
-          {tabs.pomodoro.rendered ? <Pomodoro visible={activeTab === "pomodoro"} expand={expand}/> : null}
+          {tabs.pomodoro.rendered ? <Pomodoro visible={activeTab === "pomodoro"} expand={expand} exitFullscreen={exitFullscreen}/> : null}
+          {activeTab === "settings" ? <Settings setFullscreenTextScale={setFullscreenTextScale}/> : null}
         </Suspense>
         <Countdown visible={activeTab === "countdown"}/>
         {expanded && (

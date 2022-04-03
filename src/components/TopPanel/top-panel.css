@@ -12,7 +12,7 @@
   left: 50%;
   opacity: 0;
   visibility: hidden;
-  width: 514px;
+  width: 550px;
   border-bottom-left-radius: 999px;
   border-bottom-right-radius: 999px;
   transform-origin: top center;
@@ -41,7 +41,7 @@
   }
 
   &.expanded {
-    --size-multiplier: 1.5;
+    --size-multiplier: var(--fullscreen-text-scale, 1.5);
 
     top: 0;
     display: flex;

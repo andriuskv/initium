@@ -61,7 +61,8 @@ export default function Stopwatch({ visible, expand }) {
 
       setPageTitle(`${state.hours ? `${state.hours} h ` : ""}${state.minutesDisplay} m ${padTime(state.seconds)} s`);
     }
-    state.millisecondsDisplay = padTime(Math.floor(state.milliseconds).toString().slice(0, 2));
+    const millisecondString = Math.floor(state.milliseconds).toString();
+    state.millisecondsDisplay = state.milliseconds < 100 ? `0${millisecondString[0]}` : millisecondString.slice(0, 2);
 
     setState({ ...state });
     animationId.current = requestAnimationFrame(() => {
