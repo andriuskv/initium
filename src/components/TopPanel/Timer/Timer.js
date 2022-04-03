@@ -10,7 +10,7 @@ import Inputs from "./Inputs";
 
 const Presets = lazy(() => import("./Presets"));
 
-export default function Timer({ visible, expand }) {
+export default function Timer({ visible, expand, exitFullscreen }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState({
     hours: "00",
@@ -82,10 +82,7 @@ export default function Timer({ visible, expand }) {
       const paddedSeconds = padTime(values.seconds, values.hours || values.minutes);
 
       if (!alarm.element) {
-        const element = new Audio("./assets/alarm.mp3");
-        element.volume = 0.2;
-
-        setAlarm({ ...alarm, element });
+        setAlarm({ ...alarm, element: new Audio("./assets/alarm.mp3") });
       }
       setRunning(true);
       setState({
@@ -191,8 +188,15 @@ export default function Timer({ visible, expand }) {
   }
 
   function runAlarm() {
+    const { alarmVolume } = getSetting("topPanel");
+
+    alarm.element.volume = alarmVolume;
     alarm.element.play();
-    setTimeout(reset, 3000);
+
+    setTimeout(() => {
+      exitFullscreen();
+      reset();
+    }, 3000);
   }
 
   function getAlarmIcon() {
