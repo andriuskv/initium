@@ -9,6 +9,7 @@ function initSettings() {
 function getDefault() {
   return {
     general: {
+      centerClock: false,
       backgroundOpacity: 50,
       backgroundBlurRadius: 12,
       greetingDisabled: false

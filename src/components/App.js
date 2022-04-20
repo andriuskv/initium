@@ -19,6 +19,7 @@ export default function App() {
   const [tweetImageData, setTweetImageData] = useState(null);
   const [topPanel, setTopPanel] = useState({ rendered: false, forceVisibility: false });
   const [greeting, setGreeting] = useState(null);
+  const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
   const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const topPanelTimeoutId = useRef(0);
   const weatherTimeoutId = useRef(0);
@@ -27,6 +28,10 @@ export default function App() {
     document.body.style.setProperty("--background-opacity", `${settings.general.backgroundOpacity}%`);
     document.body.style.setProperty("--background-blur", `${settings.general.backgroundBlurRadius}px`);
   }, []);
+
+  useLayoutEffect(() => {
+    setShouldCenterClock(getClockCenterState());
+  }, [settings.mainPanel, settings.general]);
 
   useEffect(() => {
     initGreeting();
@@ -63,6 +68,13 @@ export default function App() {
       setWeather({ rendered: false });
     }
   }, [settings.weather]);
+
+  function getClockCenterState() {
+    if (settings.mainPanel.disabled || (settings.mainPanel.navHidden && !localStorage.getItem("mainPanelTab"))) {
+      return settings.general.centerClock;
+    }
+    return false;
+  }
 
   function isWeatherEnabled() {
     return !settings.weather.disabled && (settings.weather.cityName || settings.weather.useGeo);
@@ -120,7 +132,7 @@ export default function App() {
   return (
     <>
       <Background settings={settings.background}/>
-      <div className="middle-top">
+      <div className={`middle-top${shouldCenterClock ? " full-height": ""}`}>
         <Suspense fallback={null}>
           {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
         </Suspense>

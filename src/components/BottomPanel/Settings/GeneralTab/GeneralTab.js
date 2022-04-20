@@ -28,16 +28,25 @@ export default function GeneralTab() {
   }
 
   return (
-    <div className="setting-tab" onChange={handleRangeInputChange}>
+    <div className="setting-tab">
+      <label className="setting">
+        <span>Center clock when main panel is hidden</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.centerClock}
+          onChange={() => toggleSetting("general", "centerClock")}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
       <label className="setting">
         <span>Background opacity</span>
         <input type="range" className="range-input" min="0" max="100" step="5"
-          defaultValue={settings.backgroundOpacity} name="backgroundOpacity"/>
+          defaultValue={settings.backgroundOpacity} onChange={handleRangeInputChange} name="backgroundOpacity"/>
       </label>
       <label className="setting">
         <span>Background blur radius</span>
         <input type="range" className="range-input" min="0" max="24" step="1"
-          defaultValue={settings.backgroundBlurRadius} name="backgroundBlurRadius"/>
+          defaultValue={settings.backgroundBlurRadius} onChange={handleRangeInputChange} name="backgroundBlurRadius"/>
       </label>
       <div className="setting setting-greeting">
         <div className="setting-greeting-item">

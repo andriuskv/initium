@@ -56,8 +56,9 @@
   border: 1px solid transparent;
 
   &:hover, &:focus-visible {
-    border-color: var(--color-white-4);
-    background-color: var(--color-white-10);
+    & .top-site-icon {
+      transform: scale(1.2);
+    }
   }
 }
 
@@ -81,6 +82,10 @@
   text-align: center;
   line-height: 1;
   text-shadow: 0 1px 1px var(--color-black-8);
+}
+
+.top-site-icon {
+  transition: 0.2s transform;
 }
 
 .top-site-add-btn {
