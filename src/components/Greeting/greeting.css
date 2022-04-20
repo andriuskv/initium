@@ -1,11 +1,8 @@
 .greeting {
   --text-size: var(--text-lg);
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  grid-row: 3;
   max-width: 572px;
-  margin: auto 0;
   font-size: var(--text-size);
   text-align: center;
   text-shadow:

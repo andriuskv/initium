@@ -449,13 +449,25 @@ textarea {
 
 .middle-top {
   position: absolute;
-  top: 16%;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  height: 28%;
+  display: grid;
+  grid-template-rows: 1fr min-content 1fr;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+  justify-items: center;
+  height: 44%;
+
+  &.full-height {
+    height: 100%;
+
+    & .greeting {
+      align-self: flex-end;
+      padding-bottom: 42px;
+    }
+  }
 }
 
 @keyframes opacity-up {
