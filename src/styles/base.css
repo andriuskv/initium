@@ -460,10 +460,14 @@ textarea {
   justify-items: center;
   height: 44%;
 
+  &.clock-disabled .greeting {
+    grid-row: 2;
+  }
+
   &.full-height {
     height: 100%;
 
-    & .greeting {
+    &:not(.clock-disabled) .greeting {
       align-self: flex-end;
       padding-bottom: 42px;
     }

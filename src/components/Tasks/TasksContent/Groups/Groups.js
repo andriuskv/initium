@@ -129,9 +129,11 @@ export default function Groups({ groups, updateGroups, hide }) {
         <button className="btn text-btn" onClick={hide}>Done</button>
       </div>
       {removeModal && (
-        <Modal>
-          <h4 className="modal-title">Remove group?</h4>
-          <p>Do you want to remove this group?</p>
+        <Modal hide={hideRemoveModal}>
+          <h4 className="modal-title">Remove group</h4>
+          <div className="modal-text-body">
+            <p>Do you want to remove this group?</p>
+          </div>
           <div className="modal-actions">
             <button className="btn text-btn" onClick={hideRemoveModal}>Cancel</button>
             <button className="btn" onClick={confirmGroupRemoval}>Remove</button>

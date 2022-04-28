@@ -132,7 +132,7 @@ export default function App() {
   return (
     <>
       <Background settings={settings.background}/>
-      <div className={`middle-top${shouldCenterClock ? " full-height": ""}`}>
+      <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}>
         <Suspense fallback={null}>
           {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
         </Suspense>

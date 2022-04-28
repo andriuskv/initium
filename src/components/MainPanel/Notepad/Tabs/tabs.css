@@ -49,6 +49,7 @@
 }
 
 .notepad-tabs-item-title {
+  align-self: flex-start;
   padding-left: var(--space-md);
   padding-right: var(--space-md);
   border-radius: 0;
@@ -96,6 +97,7 @@
 }
 
 .notepad-create-tab-modal-title {
+  margin-left: 0;
   text-align: center;
 }
 

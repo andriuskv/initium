@@ -1,4 +1,5 @@
 .modal-mask {
+  z-index: 1;
   position: absolute;
   top: 1px;
   right: 1px;
@@ -15,17 +16,17 @@
   margin: auto;
   background-color: var(--color-grey-90);
   backdrop-filter: none;
-
-  & p {
-     margin-left: var(--space-md);
-     margin-right: var(--space-md);
-  }
 }
 
 .modal-title {
   margin-left: var(--space-md);
   margin-bottom: var(--space-xl);
   font-size: var(--text-lg);
+}
+
+.modal-text-body {
+  margin-left: var(--space-md);
+  margin-right: var(--space-md);
 }
 
 .modal-actions {

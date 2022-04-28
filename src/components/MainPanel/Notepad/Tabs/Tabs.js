@@ -138,7 +138,7 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
   function renderModal() {
     if (modal.type === "create") {
       return (
-        <Modal className="notepad-modal">
+        <Modal className="notepad-modal" hide={hideModal}>
           <form onSubmit={createTab}>
             <h4 className="modal-title notepad-create-tab-modal-title">Create Tab</h4>
             <input type="text" className="input" name="title"
@@ -154,9 +154,11 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
     }
     else if (modal.type === "remove") {
       return (
-        <Modal className="notepad-modal">
-          <h4 className="modal-title">Remove tab?</h4>
-          <p>Do you want to remove this tab?</p>
+        <Modal className="notepad-modal" hide={hideModal}>
+          <h4 className="modal-title">Remove tab</h4>
+          <div className="modal-text-body">
+            <p>Do you want to remove this tab?</p>
+          </div>
           <div className="modal-actions">
             <button className="btn text-btn" onClick={hideModal}>Cancel</button>
             <button className="btn" onClick={confirmTabRemoval}>Remove</button>

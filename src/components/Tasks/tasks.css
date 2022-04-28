@@ -49,6 +49,7 @@
 }
 
 .tasks-content {
+  overflow: hidden;
   opacity: 0;
   visibility: hidden;
   max-height: 100%;
