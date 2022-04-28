@@ -1,8 +1,9 @@
 import { useState } from "react";
+import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./settings.css";
 
-export default function Settings({ defaultColor, updateHighlightColor, close }) {
+export default function Settings({ defaultColor, updateHighlightColor, hide }) {
   const colors = [
     "#1d9bf0",
     "#ffd400",
@@ -26,10 +27,10 @@ export default function Settings({ defaultColor, updateHighlightColor, close }) 
   }
 
   return (
-    <div className="container twitter-settings">
+    <Modal className="twitter-settings" hide={hide}>
       <div className="twitter-settings-header">
         <h3 className="twitter-settings-title">Settings</h3>
-        <button className="btn icon-btn" onClick={close} title="Close">
+        <button className="btn icon-btn" onClick={hide} title="Close">
           <Icon id="cross"/>
         </button>
       </div>
@@ -46,6 +47,6 @@ export default function Settings({ defaultColor, updateHighlightColor, close }) 
           ))}
         </ul>
       </div>
-    </div>
+    </Modal>
   );
 }

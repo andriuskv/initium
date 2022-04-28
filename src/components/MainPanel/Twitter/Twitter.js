@@ -251,7 +251,7 @@ export default function Twitter({ showIndicator }) {
     setSettingsOpened(true);
   }
 
-  function closeSettings() {
+  function hideSettings() {
     setSettingsOpened(false);
   }
 
@@ -319,9 +319,7 @@ export default function Twitter({ showIndicator }) {
       </ul>
       <ToTop/>
       {settingsOpened && (
-        <div className="twitter-content-mask">
-          <Settings defaultColor={user.profileColor} updateHighlightColor={updateHighlightColor} close={closeSettings}/>
-        </div>
+        <Settings defaultColor={user.profileColor} updateHighlightColor={updateHighlightColor} hide={hideSettings}/>
       )}
       {changingUser && (
         <div className="twitter-content-mask">

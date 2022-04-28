@@ -45,7 +45,7 @@
   pointer-events: auto;
 
   &:hover .top-site-dropdown:not(.visible) {
-    animation: 0s linear 0.4s forwards delayed-reveal;
+    animation: 0s linear 0.5s forwards delayed-reveal;
   }
 }
 

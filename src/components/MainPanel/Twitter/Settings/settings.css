@@ -1,7 +1,6 @@
 .twitter-settings {
   width: calc(100% - var(--space-xxl));
-  background-color: var(--color-grey-90);
-  backdrop-filter: none;
+  padding: 0;
 }
 
 .twitter-settings-header {

@@ -166,10 +166,12 @@ export default function StorageTab() {
         ))}
       </ul>
       {modal && (
-        <Modal className="notepad-modal">
+        <Modal hide={hideModal}>
           <h4 className="modal-title">Delete {modal.fullName} data?</h4>
-          <p>Do you really want to delete {modal.fullName} data?</p>
-          <p>All associated data will be removed.</p>
+          <div className="modal-text-body">
+            <p>Do you really want to delete {modal.fullName} data?</p>
+            <p>All associated data will be removed.</p>
+          </div>
           <div className="modal-actions">
             <button className="btn text-btn" onClick={hideModal}>Cancel</button>
             <button className="btn" onClick={confirmModalAction}>Delete</button>
