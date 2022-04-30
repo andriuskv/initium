@@ -26,6 +26,16 @@
   color: var(--color-white-60);
 }
 
+.twitter-settings-video-quality {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  & .twitter-settings-section-title {
+    margin-bottom: 0;
+  }
+}
+
 .twitter-settings-colors {
   display: flex;
   justify-content: space-around;

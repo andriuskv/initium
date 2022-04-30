@@ -4,9 +4,10 @@ import { getCachedUser, cacheUser, fetchUserByHandle } from "services/twitter";
 import Icon from "components/Icon";
 import "./tweet.css";
 
-export default function Tweet({ tweet, activateMedia, showUserCard, handleTweetPointerLeave }) {
+export default function Tweet({ tweet, settings, activateMedia, showUserCard, handleTweetPointerLeave }) {
   const [fetchingUser, setFetchingUser] = useState(false);
   const hoveringOverHandle = useRef(false);
+  const currentVideoQuality = useRef(settings.videoQuality);
 
   function handleTweetClick({ target }, { tweetUrl, quotedTweet }) {
     if (target.closest("a") || !window.getSelection().isCollapsed) {
@@ -23,7 +24,6 @@ export default function Tweet({ tweet, activateMedia, showUserCard, handleTweetP
 
   async function handleTweetTextPointerOver({ target }) {
     if (target.nodeName === "A" && target.classList.contains("handle")) {
-      const handle = target.textContent.slice(1);
       const cachedUser = getCachedUser(target.textContent);
 
       if (cachedUser) {
@@ -39,6 +39,7 @@ export default function Tweet({ tweet, activateMedia, showUserCard, handleTweetP
         setFetchingUser(true);
 
         try {
+          const handle = target.textContent.slice(1);
           const user = await fetchUserByHandle(handle);
 
           if (hoveringOverHandle.current) {
@@ -101,6 +102,59 @@ export default function Tweet({ tweet, activateMedia, showUserCard, handleTweetP
     return ` multiple ${classes[images.length]}`;
   }
 
+  function getTweetVideo(media) {
+    let video = null;
+
+    if (media.type === "gif") {
+      video = <video src={media.url} className="tweet-video" loop autoPlay></video>;
+    }
+    else {
+      let src = "";
+      let autoPlay = true;
+
+      if (currentVideoQuality.current !== settings.videoQuality) {
+        currentVideoQuality.current = settings.videoQuality;
+        autoPlay = false;
+      }
+
+      if (media.url) {
+        src = media.url;
+      }
+      else if (media.sources[settings.videoQuality]) {
+        src = media.sources[settings.videoQuality];
+      }
+      else {
+        for (const key of Object.keys(media.sources)) {
+          if (media.sources[key]) {
+            src = media.sources[key];
+            break;
+          }
+        }
+      }
+
+      video = <video src={src} className="tweet-video" controls loop={media.durationInSeconds < 60} autoPlay={autoPlay}></video>;
+    }
+
+    return (
+      <div className="tweet-video-container" style={{ "--height": `${media.height}px` }}
+        onClick={event => handleTweetVideoClick(event, media)}>
+        {media.active ? video : (
+          <>
+            <div className="tweet-media-item">
+              <img src={media.thumbUrl} className="tweet-image" alt=""/>
+            </div>
+            <Icon id="play-circle" className="tweet-video-play-icon"/>
+          </>
+        )}
+        {media.type === "gif" ? (
+          <div className="tweet-media-info">GIF</div>
+        ) : (
+          media.duration && !media.active && <div className="tweet-media-info">{media.duration}</div>
+        )}
+      </div>
+    );
+  }
+
   function getTweetMedia(tweet, isQuotedTweet = false) {
     const [mediaItem] = tweet.media;
     const maxImageHeight = "284px";
@@ -118,34 +172,13 @@ export default function Tweet({ tweet, activateMedia, showUserCard, handleTweetP
               </div>
             ))}
           </div>
-        ) : (
-          <div className="tweet-video-container" style={{ "--height": `${mediaItem.height}px` }}
-            onClick={event => handleTweetVideoClick(event, mediaItem)}>
-            {mediaItem.active ? (
-              <video src={mediaItem.url} className="tweet-video" controls={mediaItem.type === "video"}
-                loop={mediaItem.type === "gif" || mediaItem.durationInSeconds < 60} autoPlay>
-              </video>
-            ) : (
-              <>
-                <div className="tweet-media-item">
-                  <img src={mediaItem.thumbUrl} className="tweet-image" alt=""/>
-                </div>
-                <Icon id="play-circle" className="tweet-video-play-icon"/>
-              </>
-            )}
-            {mediaItem.type === "gif" ? (
-              <div className="tweet-media-info">GIF</div>
-            ) : (
-              mediaItem.duration && !mediaItem.active && <div className="tweet-media-info">{mediaItem.duration}</div>
-            )}
-          </div>
-        )}
+        ) : getTweetVideo(mediaItem)}
       </div>
     );
   }
 
   return (
-    <li className="tweet" onClick={event => handleTweetClick(event, tweet)}>
+    <li className="tweet" onClick={event => handleTweetClick(event, tweet)} onPointerLeave={handleTweetPointerLeave}>
       {tweet.retweetedBy && (
         <div className="retweet">
           <Icon id="retweet"/>
