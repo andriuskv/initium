@@ -1,9 +1,8 @@
-import { useState } from "react";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./settings.css";
 
-export default function Settings({ defaultColor, updateHighlightColor, hide }) {
+export default function Settings({ settings, defaultColor, updateSetting, hide }) {
   const colors = [
     "#1d9bf0",
     "#ffd400",
@@ -13,17 +12,13 @@ export default function Settings({ defaultColor, updateHighlightColor, hide }) {
     "#00ba7c",
     defaultColor
   ];
-  const [selectedColor, setSelectedColor] = useState(() => {
-    const savedColor = localStorage.getItem("twitter-highlight-color");
-    const color = colors.find(color => color === savedColor) || colors.at(-1);
 
-    return color;
-  });
+  function handleVideoQualityChange(event) {
+    updateSetting("videoQuality", event.target.value);
+  }
 
   function selectColor(color) {
-    setSelectedColor(color);
-    updateHighlightColor(color);
-    localStorage.setItem("twitter-highlight-color", color);
+    updateSetting("highlightColor", color);
   }
 
   return (
@@ -34,6 +29,16 @@ export default function Settings({ defaultColor, updateHighlightColor, hide }) {
           <Icon id="cross"/>
         </button>
       </div>
+      <label className="twitter-settings-section twitter-settings-video-quality">
+        <span className="twitter-settings-section-title">Video quality</span>
+        <div className="select-container">
+          <select className="input select" onChange={handleVideoQualityChange} value={settings.videoQuality}>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </label>
       <div className="twitter-settings-section">
         <h4 className="twitter-settings-section-title">Highlight color</h4>
         <ul className="twitter-settings-colors">
@@ -41,7 +46,7 @@ export default function Settings({ defaultColor, updateHighlightColor, hide }) {
             <li key={index}>
               <button className="btn icon-btn twitter-settings-color-btn"
                 onClick={() => selectColor(color)} style={{ backgroundColor: color }}>
-                {selectedColor === color ? <Icon id="check"/> : null}
+                {settings.highlightColor === color ? <Icon id="check"/> : null}
               </button>
             </li>
           ))}

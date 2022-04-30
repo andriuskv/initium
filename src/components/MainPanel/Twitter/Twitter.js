@@ -21,7 +21,7 @@ export default function Twitter({ showIndicator }) {
   const [fetchingMoreTweets, setFetchingMoreTweets] = useState(false);
   const [changingUser, setChangingUser] = useState(false);
   const [userCard, setUserCard] = useState({ reveal: false });
-  const [hightlightColor, setHightlightColor] = useState(() => localStorage.getItem("twitter-highlight-color"));
+  const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem("twitter-settings")) || { videoQuality: "high" });
   const [settingsOpened, setSettingsOpened] = useState(false);
   const tweetsRef = useRef(null);
   const lastUpdate = useRef(0);
@@ -63,8 +63,14 @@ export default function Twitter({ showIndicator }) {
         setUsers([...addUser(user)]);
         setActiveUser({ ...getActiveUser() });
 
-        if (!hightlightColor) {
-          setHightlightColor(user.profileColor);
+        if (!settings.highlightColor) {
+          const color = localStorage.getItem("twitter-highlight-color") || user.profileColor;
+
+          setSettings(settings => {
+            settings.highlightColor = color;
+            localStorage.setItem("twitter-settings", JSON.stringify(settings));
+            return { ...settings };
+          });
         }
 
         if (addingAnotherUser) {
@@ -243,8 +249,11 @@ export default function Twitter({ showIndicator }) {
     setTweets([...tweets]);
   }
 
-  function updateHighlightColor(color) {
-    setHightlightColor(color);
+  function updateSetting(setting, value) {
+    const updatedSettings = { ...settings, [setting]: value };
+
+    setSettings(updatedSettings);
+    localStorage.setItem("twitter-settings", JSON.stringify(updatedSettings));
   }
 
   function openSettings() {
@@ -259,7 +268,7 @@ export default function Twitter({ showIndicator }) {
     return <Form initialLoading={loading} loadContent={loadContent} addingAnotherUser={addingAnotherUser} hide={hideAnotherUserForm}/>;
   }
   return (
-    <div className="twitter-content" style={{ "--highlight-color": hightlightColor }}>
+    <div className="twitter-content" style={{ "--highlight-color": settings.highlightColor }}>
       <div className="main-panel-item-header twitter-header">
         <a href={user.homepage} className="twitter-user" target="_blank" rel="noreferrer">
           <img src={user.profileImage} className="twitter-user-image" alt=""/>
@@ -306,7 +315,8 @@ export default function Twitter({ showIndicator }) {
           </li>
         )}
         {tweets.map(tweet => (
-          <Tweet tweet={tweet} key={tweet.id} activateMedia={activateMedia} showUserCard={showUserCard} handleTweetPointerLeave={handleTweetPointerLeave}/>
+          <Tweet tweet={tweet} settings={settings} activateMedia={activateMedia} showUserCard={showUserCard}
+            handleTweetPointerLeave={handleTweetPointerLeave} key={tweet.id}/>
         ))}
         <li>
           <button className="btn text-btn more-tweets-btn" onClick={fetchMoreTweets} disabled={fetchingMoreTweets}>
@@ -319,7 +329,7 @@ export default function Twitter({ showIndicator }) {
       </ul>
       <ToTop/>
       {settingsOpened && (
-        <Settings defaultColor={user.profileColor} updateHighlightColor={updateHighlightColor} hide={hideSettings}/>
+        <Settings settings={settings} defaultColor={user.profileColor} updateSetting={updateSetting} hide={hideSettings}/>
       )}
       {changingUser && (
         <div className="twitter-content-mask">
