@@ -34,6 +34,8 @@ function getDefault() {
     },
     timeDate: {
       clockDisabled: false,
+      dateAligment: "right",
+      dateAboveClock: false,
       dateHidden: false,
       clockScale: 1,
       format: 24
