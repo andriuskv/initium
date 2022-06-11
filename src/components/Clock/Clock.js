@@ -29,7 +29,10 @@ export default function Clock({ settings }) {
         <span className="clock-time">{clock.hours}:{clock.minutes}</span>
         {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
       </div>
-      {settings.dateHidden ? null : <div className="clock-date">{date}</div>}
+      {settings.dateHidden ? null : (
+        <div className={`clock-date${settings.dateAboveClock ? " above" : ""}`}
+          style={{ textAlign : settings.dateAligment }}>{date}</div>
+      )}
     </div>
   );
 }

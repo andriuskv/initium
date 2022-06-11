@@ -22,6 +22,10 @@ export default function TimeDateTab() {
     }, 1000);
   }
 
+  function handleDateAligmentChange({ target }) {
+    updateSetting("timeDate", { dateAligment: target.value });
+  }
+
   return (
     <div className="setting-tab">
       <label className="setting">
@@ -41,6 +45,26 @@ export default function TimeDateTab() {
           disabled={settings.clockDisabled}/>
         <div className="checkbox">
           <div className="checkbox-tick"></div>
+        </div>
+      </label>
+      <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
+        <span>Display date above clock</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.dateAboveClock}
+          onChange={() => toggleSetting("timeDate", "dateAboveClock")}
+          disabled={settings.clockDisabled || settings.dateHidden}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
+      <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
+        <span>Date aligment</span>
+        <div className="select-container">
+          <select className="input select" onChange={handleDateAligmentChange} value={settings.dateAligment}>
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+          </select>
         </div>
       </label>
       <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
