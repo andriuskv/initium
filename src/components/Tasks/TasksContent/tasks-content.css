@@ -202,8 +202,7 @@
 }
 
 .task-label-title {
-  line-height: 1;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
 }
 
 .task-text-container {

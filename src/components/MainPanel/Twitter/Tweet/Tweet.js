@@ -178,7 +178,7 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
   }
 
   return (
-    <li className="tweet" onClick={event => handleTweetClick(event, tweet)} onPointerLeave={handleTweetPointerLeave}>
+    <li className="tweet" onClick={event => handleTweetClick(event, tweet)}>
       {tweet.retweetedBy && (
         <div className="retweet">
           <Icon id="retweet"/>
