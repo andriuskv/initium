@@ -1,3 +1,5 @@
+@import "../../../../styles/mixins.css";
+
 .twitter-user-card {
   position: absolute;
   opacity: 0;
@@ -18,6 +20,7 @@
 .tweet-user-card-info {
   display: block;
   width: min-content;
+  max-width: 100%;
   margin-top: var(--space-sm);
   white-space: nowrap;
 
@@ -58,6 +61,8 @@
 }
 
 .twitter-user-card-name {
+  @mixin text-truncate;
+
   font-weight: bold;
 }
 
