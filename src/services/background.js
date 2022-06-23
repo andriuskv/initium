@@ -35,11 +35,13 @@ async function cacheUnsplashInfo() {
 
 async function fetchBackgroundInfo() {
   if (backgroundInfo) {
-    if (Date.now() - backgroundInfo.cacheDate > 1000 * 60 * 60 * 20) {
+    if (Date.now() - backgroundInfo.cacheDate > 1000 * 60 * 60 * 18) {
       cacheUnsplashInfo();
+      return backgroundInfo;
     }
-    else if (!downscaledBackground || downscaledBackground.id !== backgroundInfo.url) {
-      cacheImage(backgroundInfo.url);
+    cacheImage(backgroundInfo.url);
+
+    if (!downscaledBackground || downscaledBackground.id !== backgroundInfo.url) {
       cacheDownscaledBackground({ url: backgroundInfo.url });
     }
     return backgroundInfo;
@@ -55,15 +57,21 @@ async function fetchBackgroundInfo() {
 }
 
 function cacheImage(url) {
-  caches.open("background-image-cache").then(cache => {
-    cache.add(url);
-    cache.keys().then(responses => {
-      responses.forEach(response => {
-        if (response.url !== url) {
-          cache.delete(response.url);
-        }
-      });
-    });
+  caches.open("background-image-cache").then(async cache => {
+    const matchedResponse = await cache.match(url);
+
+    if (matchedResponse) {
+      return;
+    }
+    await cache.add(url);
+
+    const responses = await cache.keys();
+
+    for (const response of responses) {
+      if (response.url !== url) {
+        cache.delete(response.url);
+      }
+    }
   });
 }
 
@@ -73,7 +81,7 @@ function buildImageUrl(url) {
   const crop = "edges";
   const fit = "crop";
 
-  return `${url}&fit=${fit}&crop=${crop}&auto=format&w=${width}&h=${height}&dpi=${dpi}`;
+  return `${url}&fit=${fit}&crop=${crop}&auto=format&w=${width}&h=${height}&dpi=${dpi}&q=90`;
 }
 
 function getBackgroundInfo() {
