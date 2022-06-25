@@ -315,8 +315,8 @@ export default function Twitter({ showIndicator }) {
           </li>
         )}
         {tweets.map(tweet => (
-          <Tweet tweet={tweet} settings={settings} activateMedia={activateMedia} showUserCard={showUserCard}
-            handleTweetPointerLeave={handleTweetPointerLeave} key={tweet.id}/>
+          <Tweet tweet={tweet} settings={settings} activateMedia={activateMedia}
+            showUserCard={showUserCard} handleTweetPointerLeave={handleTweetPointerLeave} key={tweet.id}/>
         ))}
         <li>
           <button className="btn text-btn more-tweets-btn" onClick={fetchMoreTweets} disabled={fetchingMoreTweets}>
