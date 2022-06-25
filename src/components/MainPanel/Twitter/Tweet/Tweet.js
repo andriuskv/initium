@@ -68,17 +68,17 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
   }
 
   function handleTweetVideoClick(event, media) {
+    const element = event.target;
+
     event.preventDefault();
     event.stopPropagation();
 
-    if (event.target.nodeName === "VIDEO") {
-      const video = event.target;
-
-      if (video.paused) {
-        video.play();
+    if (element.nodeName === "VIDEO") {
+      if (element.paused) {
+        element.play();
       }
       else {
-        video.pause();
+        element.pause();
       }
     }
     else {
@@ -131,8 +131,8 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
           }
         }
       }
-
-      video = <video src={src} className="tweet-video" controls loop={media.durationInSeconds < 60} autoPlay={autoPlay}></video>;
+      video = <video src={src} className="tweet-video" controls loop={media.durationInSeconds < 60}
+        autoPlay={autoPlay} poster={media.thumbUrl}></video>;
     }
 
     return (
