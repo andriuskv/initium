@@ -13,3 +13,59 @@
   font-display: swap;
   src: local(""), url("./assets/fonts/open-sans-600.woff2") format("woff2");
 }
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/Inter-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JotiOne";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/JotiOne-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JuliusSansOne";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/JuliusSansOne-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "KdamThmorPro";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/KdamThmorPro-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "OleoScript";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/OleoScript-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "RockSalt";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/RockSalt-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Stoke";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/Stoke-Regular.ttf") format("truetype");
+}
