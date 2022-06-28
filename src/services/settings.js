@@ -36,7 +36,7 @@ function getDefault() {
       clockDisabled: false,
       dateAligment: "right",
       dateAboveClock: false,
-      clockStyle: "default",
+      clockStyle: "Inter",
       dontChangeDateStyle: false,
       dateHidden: false,
       clockScale: 1,
