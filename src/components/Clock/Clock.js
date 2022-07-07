@@ -25,12 +25,12 @@ export default function Clock({ settings }) {
 
   return (
     <div className={`clock${settings.dateAboveClock ? " date-above" : ""}`}
-      style={{ "--scale": settings.clockScale, "--font-family": settings.clockStyle }}>
-      <span className="clock-time">{clock.hours}:{clock.minutes}</span>
+      style={{ "--scale": settings.clockScale, "--date-offset": settings.dateOffset, "--font-family": settings.clockStyle }}>
+      <span className={`clock-time${settings.boldedClock ? " bolded" : ""}`}>{clock.hours}:{clock.minutes}</span>
       {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
       {settings.dateHidden ? null : (
-        <div className={`clock-date${settings.dontChangeDateStyle ? " ignore-style" : ""}`}
-          style={{ textAlign : settings.dateAligment }}>{date}</div>
+        <div className={`clock-date${settings.boldedDate ? " bolded" : ""}${settings.dontChangeDateStyle ? " ignore-style" : ""}`}
+          style={{ textAlign : settings.dateAligment, "--date-scale": settings.dateScale }}>{date}</div>
       )}
     </div>
   );
