@@ -19,7 +19,7 @@
   position: absolute;
   right: -8px;
   top: -8px;
-  opacity: 0%;
+  opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,10 +29,10 @@
   border-bottom-left-radius: 999px;
 
   &:hover, &:focus-visible {
-    opacity: 100%;
+    opacity: 1;
 
     & + .weather-current {
-      opacity: 40%;
+      opacity: 0.4;
     }
   }
 }
@@ -74,17 +74,18 @@
 }
 
 .weather-more {
-  opacity: 0%;
+  opacity: 0;
   visibility: hidden;
-  width: 436px;
-  height: 270px;
+  width: 580px;
+  height: 424px;
   border-bottom-left-radius: 999px;
   transform-origin: top right;
   transform: scale(0);
-  transition: 0.2s transform,
-              0.2s opacity,
-              0.2s visibility,
-              0.2s border-bottom-left-radius;
+  transition:
+    0.2s transform,
+    0.2s opacity,
+    0.2s visibility,
+    0.2s border-bottom-left-radius;
   transition-delay: 0.1s;
 
   &.visible {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
-import { fetchWeather, fetchHourlyWeather, convertTemperature } from "services/weather";
+import { fetchWeather, fetchMoreWeather, convertTemperature } from "services/weather";
 import { getTimeString } from "services/timeDate";
 import { getIincreasedZIndex, handleZIndex } from "services/zIndex";
 import Icon from "../Icon";
@@ -9,11 +9,11 @@ import "./weather.css";
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ settings, timeFormat }) {
+  const [state, setState] = useState({});
   const [current, setCurrentWeather] = useState(null);
-  const [hourly, setHourlyWeather] = useState(null);
-  const [moreWeather, setMoreWeather] = useState({ rendered: false });
+  const [moreWeather, setMoreWeather] = useState(null);
   const firstRender = useRef(true);
-  const lastHourlyWeatherUpdate = useRef(0);
+  const lastMoreWeatherUpdate = useRef(0);
   const timeoutId = useRef(0);
   const zIndex = useRef(0);
 
@@ -41,30 +41,42 @@ export default function Weather({ settings, timeFormat }) {
         temperature: convertTemperature(current.temperature, settings.units)
       });
 
-      if (hourly) {
-        setHourlyWeather([...hourly.map(item => {
-          item.temperature = convertTemperature(item.temperature, settings.units);
-          return item;
-        })]);
+      if (moreWeather) {
+        setMoreWeather({
+          hourly: [...moreWeather.hourly.map(item => {
+            item.temperature = convertTemperature(item.temperature, settings.units);
+            return item;
+          })],
+          daily: [...moreWeather.daily.map(item => {
+            item.temperature = {
+              min: convertTemperature(item.temperature.min, settings.units),
+              max: convertTemperature(item.temperature.max, settings.units)
+            };
+            return item;
+          })]
+        });
       }
     }
   }, [settings.units]);
 
   useEffect(() => {
-    if (hourly) {
-      setHourlyWeather([...hourly.map(item => {
-        item.time = getTimeString({ hours: item.hour });
-        return item;
-      })]);
+    if (moreWeather) {
+      setMoreWeather({
+        ...moreWeather,
+        hourly: [...moreWeather.hourly.map(item => {
+          item.time = getTimeString({ hours: item.hour });
+          return item;
+        })]
+      });
     }
   }, [timeFormat]);
 
   useEffect(() => {
-    if (moreWeather.reveal) {
-      moreWeather.visible = true;
-      setMoreWeather({ ...moreWeather });
+    if (state.reveal) {
+      state.visible = true;
+      setState({ ...state });
     }
-  }, [moreWeather.reveal]);
+  }, [state.reveal]);
 
   function scheduleWeatherUpdate() {
     timeoutId.current = setTimeout(updateWeather, 1200000);
@@ -72,18 +84,18 @@ export default function Weather({ settings, timeFormat }) {
 
   function showMoreWeather() {
     zIndex.current = getIincreasedZIndex();
-    moreWeather.reveal = true;
+    state.reveal = true;
 
-    setMoreWeather({ ...moreWeather });
-    updateHourlyWeather(current.coords);
+    setState({ ...state });
+    updateMoreWeather(current.coords);
   }
 
   function hideMoreWeather() {
-    moreWeather.visible = false;
-    setMoreWeather({ ...moreWeather });
+    state.visible = false;
+    setState({ ...state });
 
     setTimeout(() => {
-      setMoreWeather({});
+      setState({});
     }, 320);
   }
 
@@ -102,11 +114,11 @@ export default function Weather({ settings, timeFormat }) {
         setCurrentWeather(json);
 
         if (forceHourlyUpdate) {
-          lastHourlyWeatherUpdate.current = 0;
+          lastMoreWeatherUpdate.current = 0;
         }
 
-        if (moreWeather.visible) {
-          updateHourlyWeather(json.coords);
+        if (state.visible) {
+          updateMoreWeather(json.coords);
         }
       }
     }
@@ -118,15 +130,19 @@ export default function Weather({ settings, timeFormat }) {
     }
   }
 
-  async function updateHourlyWeather(coords) {
-    if (Date.now() - lastHourlyWeatherUpdate.current < 1200000) {
+  async function updateMoreWeather(coords) {
+    if (Date.now() - lastMoreWeatherUpdate.current < 1200000) {
       return;
     }
     try {
-      const json = await fetchHourlyWeather(coords);
+      const json = await fetchMoreWeather(coords);
 
-      setHourlyWeather(json);
-      lastHourlyWeatherUpdate.current = Date.now();
+      setCurrentWeather({ ...current, precipitation: json.hourly[0].precipitation });
+      setMoreWeather({
+        hourly: json.hourly,
+        daily: json.daily
+      });
+      lastMoreWeatherUpdate.current = Date.now();
     }
     catch (e) {
       console.log(e);
@@ -136,12 +152,12 @@ export default function Weather({ settings, timeFormat }) {
   if (!current) {
     return null;
   }
-  else if (moreWeather.reveal) {
+  else if (state.reveal) {
     return (
       <div className="weather" style={{ "--z-index": zIndex.current }} onClick={handleZIndex}>
-        <div className={`container weather-more${moreWeather.visible ? " visible" : ""}`}>
+        <div className={`container weather-more${state.visible ? " visible" : ""}`}>
           <Suspense fallback={null}>
-            <MoreWeather current={current} hourly={hourly} units={settings.units} hide={hideMoreWeather}/>
+            <MoreWeather current={current} more={moreWeather} units={settings.units} hide={hideMoreWeather}/>
           </Suspense>
         </div>
       </div>
