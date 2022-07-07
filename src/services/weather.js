@@ -26,16 +26,19 @@ async function fetchWeather() {
   }
 }
 
-async function fetchHourlyWeather({ lat, lon }) {
-  const data = await fetchWeatherData(`type=hourly&lat=${lat}&lon=${lon}`);
+async function fetchMoreWeather({ lat, lon }) {
+  const data = await fetchWeatherData(`type=more&lat=${lat}&lon=${lon}`);
+  const hourly = data.hourly.map(item => ({
+    ...item,
+    id: getRandomString(),
+    time: getTimeString({ hours: item.hour })
+  }));
+  const daily = data.daily.map(item => ({
+    ...item,
+    id: getRandomString()
+  }));
 
-  return data.hourly.map(item => {
-    return {
-      ...item,
-      id: getRandomString(),
-      time: getTimeString({ hours: item.hour })
-    };
-  });
+  return { hourly, daily };
 }
 
 function fetchCoords() {
@@ -74,6 +77,6 @@ function fetchWeatherData(params) {
 
 export {
   fetchWeather,
-  fetchHourlyWeather,
+  fetchMoreWeather,
   convertTemperature
 };
