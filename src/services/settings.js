@@ -33,14 +33,18 @@ function getDefault() {
       fullscreenTextScale: 1.5
     },
     timeDate: {
+      format: 24,
       clockDisabled: false,
+      clockStyle: "Inter",
+      clockScale: 1,
+      boldedClock: false,
+      dateHidden: false,
+      boldedDate: true,
+      dateScale: 1,
+      dateOffset: 8,
       dateAligment: "right",
       dateAboveClock: false,
-      clockStyle: "Inter",
-      dontChangeDateStyle: false,
-      dateHidden: false,
-      clockScale: 1,
-      format: 24
+      dontChangeDateStyle: false
     },
     background: {
       url: ""

@@ -11,15 +11,32 @@ export default function TimeDateTab() {
     updateSetting("timeDate", { format: format === 24 ? 12 : 24 });
   }
 
-  function handleRangeInputChange({ target }) {
-    const { name, value } = target;
-
-    document.querySelector(".clock").style.setProperty("--scale", value);
-
+  function updateRangeSetting(name, value) {
     clearTimeout(timeoutId.current);
     timeoutId.current = setTimeout(() => {
       updateSetting("timeDate", { [name]: Number(value) });
     }, 1000);
+  }
+
+  function handleClockScaleChange({ target }) {
+    const { name, value } = target;
+
+    document.querySelector(".clock").style.setProperty("--scale", value);
+    updateRangeSetting(name, value);
+  }
+
+  function handleDateScaleChange({ target }) {
+    const { name, value } = target;
+
+    document.querySelector(".clock-date").style.setProperty("--date-scale", value);
+    updateRangeSetting(name, value);
+  }
+
+  function handleDateOffsetChange({ target }) {
+    const { name, value } = target;
+
+    document.querySelector(".clock").style.setProperty("--date-offset", value);
+    updateRangeSetting(name, value);
   }
 
   function handleDateAligmentChange({ target }) {
@@ -55,7 +72,7 @@ export default function TimeDateTab() {
         <span>Clock scale</span>
         <input type="range" className="range-input" min="0.5" max="3" step="0.1"
           defaultValue={settings.clockScale} name="clockScale"
-          onChange={handleRangeInputChange} disabled={settings.clockDisabled}/>
+          onChange={handleClockScaleChange} disabled={settings.clockDisabled}/>
       </label>
       <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
         <span>Clock style</span>
@@ -73,6 +90,16 @@ export default function TimeDateTab() {
         </div>
       </label>
       <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
+        <span>Bolded clock</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.boldedClock}
+          onChange={() => toggleSetting("timeDate", "boldedClock")}
+          disabled={settings.clockDisabled}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
+      <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
         <span>Hide date</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.dateHidden}
@@ -81,6 +108,22 @@ export default function TimeDateTab() {
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
+      </label>
+      <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
+        <span>Don't change date style</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.dontChangeDateStyle}
+          onChange={() => toggleSetting("timeDate", "dontChangeDateStyle")}
+          disabled={settings.clockDisabled || settings.dateHidden}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
+      <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
+        <span>Date offset</span>
+        <input type="range" className="range-input" min="0" max="48" step="2"
+          defaultValue={settings.dateOffset} name="dateOffset"
+          onChange={handleDateOffsetChange} disabled={settings.clockDisabled || settings.dateHidden}/>
       </label>
       <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
         <span>Display date above clock</span>
@@ -104,14 +147,20 @@ export default function TimeDateTab() {
         </div>
       </label>
       <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-        <span>Don't change date's style</span>
+        <span>Bolded date</span>
         <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.dontChangeDateStyle}
-          onChange={() => toggleSetting("timeDate", "dontChangeDateStyle")}
+          checked={settings.boldedDate}
+          onChange={() => toggleSetting("timeDate", "boldedDate")}
           disabled={settings.clockDisabled || settings.dateHidden}/>
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
+      </label>
+      <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
+        <span>Date scale</span>
+        <input type="range" className="range-input" min="0.8" max="2" step="0.1"
+          defaultValue={settings.dateScale} name="dateScale"
+          onChange={handleDateScaleChange} disabled={settings.clockDisabled || settings.dateHidden}/>
       </label>
     </div>
   );
