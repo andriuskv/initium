@@ -199,7 +199,7 @@
 .weather-more-hourly-view-time {
   display: flex;
   padding: var(--space-sm) 0;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--color-white-80);
 }
 

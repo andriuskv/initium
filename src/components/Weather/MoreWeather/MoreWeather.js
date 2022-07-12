@@ -46,9 +46,9 @@ export default function MoreWeather({ current, more, units, hide }) {
   }
 
   function renderTempValues() {
-    return more.hourly.filter((_, index) => index % 3 === 2).map((item, index) => {
+    return more.hourly.filter((_, index) => index % 3 === 1).map((item, index) => {
       const x = `calc(${index * 72 + 36}px - ${item.temperature.toString().length / 2}ch)`;
-      const y = `${getSvgY(item.temperature, 8)}px`;
+      const y = `${getSvgY(item.temperature, 10)}px`;
 
       return <text className=" weather-more-hourly-temp-view-text" style={{ transform: `translate(${x}, ${y})` }}
         key={item.id}>{item.temperature}°</text>;
@@ -71,7 +71,7 @@ export default function MoreWeather({ current, more, units, hide }) {
       return (
         <div className="weather-more-hourly-view">
           <div className="weather-more-hourly-prec-view-values">
-            {more.hourly.filter((_, index) => index % 3 === 2).map(item => (
+            {more.hourly.filter((_, index) => index % 3 === 1).map(item => (
               <div className="weather-more-hourly-prec-view-value" key={item.id}>{item.precipitation}%</div>
             ))}
           </div>
@@ -86,7 +86,7 @@ export default function MoreWeather({ current, more, units, hide }) {
     else if (view === "wind") {
       return (
         <div className="weather-more-hourly-view weather-more-hourly-wind-view">
-          {more.hourly.filter((_, index) => index % 3 === 2).map(item => (
+          {more.hourly.filter((_, index) => index % 3 === 1).map(item => (
             <div className="weather-more-hourly-wind-view-item" key={item.id}>
               <div className="weather-more-hourly-wind-view-item-speed">{item.wind.speed} m/s</div>
               <svg viewBox="0 0 24 24" className="weather-more-hourly-wind-view-item-icon"
@@ -157,7 +157,7 @@ export default function MoreWeather({ current, more, units, hide }) {
             </ul>
             {renderHourlyView()}
             <div className="weather-more-hourly-view-time">
-              {more.hourly.filter((_, index) => index % 3 === 2).map(item => (
+              {more.hourly.filter((_, index) => index % 3 === 1).map(item => (
                 <div className="weather-more-hourly-view-time-item" key={item.id}>{item.time}</div>
               ))}
             </div>
