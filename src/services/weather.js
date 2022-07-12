@@ -27,7 +27,7 @@ async function fetchWeather() {
 }
 
 async function fetchMoreWeather({ lat, lon }) {
-  const data = await fetchWeatherData(`type=more&lat=${lat}&lon=${lon}`);
+  const data = await fetchWeatherData(`type=more&timestamp=${Date.now()}&lat=${lat}&lon=${lon}`);
   const hourly = data.hourly.map(item => ({
     ...item,
     id: getRandomString(),
