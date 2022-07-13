@@ -78,6 +78,12 @@ export default function Weather({ settings, timeFormat }) {
     }
   }, [state.reveal]);
 
+  useEffect(() => {
+    if (current && state.visible) {
+      updateMoreWeather(current.coords);
+    }
+  }, [current, state.visible]);
+
   function scheduleWeatherUpdate() {
     timeoutId.current = setTimeout(updateWeather, 1200000);
   }
@@ -99,7 +105,7 @@ export default function Weather({ settings, timeFormat }) {
     }, 320);
   }
 
-  async function updateWeather(forceHourlyUpdate = false) {
+  async function updateWeather(forceMoreWeatherUpdate = false) {
     try {
       const json = await fetchWeather();
 
@@ -113,12 +119,8 @@ export default function Weather({ settings, timeFormat }) {
       else {
         setCurrentWeather(json);
 
-        if (forceHourlyUpdate) {
+        if (forceMoreWeatherUpdate) {
           lastMoreWeatherUpdate.current = 0;
-        }
-
-        if (state.visible) {
-          updateMoreWeather(json.coords);
         }
       }
     }
