@@ -108,7 +108,7 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
                 <div className="feed-list-item-title-container">
                   {feed.updatingTitle ? (
                     <input type="text" className="input feed-list-item-title-input"
-                      onBlur={(event) => renameFeed(event, feed)} onKeyPress={blurFeedTitleInput}
+                      onBlur={(event) => renameFeed(event, feed)} onKeyDown={e => e.stopPropagation()} onKeyPress={blurFeedTitleInput}
                       autoFocus defaultValue={feed.title}/>
                   ) : (
                     <button className="btn text-btn feed-list-item-title" onClick={event => selectFeedFromList(event, index)}>
