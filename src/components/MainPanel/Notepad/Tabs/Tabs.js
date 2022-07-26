@@ -197,7 +197,7 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
             <SortableItem className={`notepad-tabs-item${tab.id === activeDragId ? " dragging" : ""}`} key={tab.id} id={tab.id}>
               {tab.renameEnabled ? (
                 <input type="text" className="input" autoFocus defaultValue={tab.title}
-                  onBlur={event => renameTab(event, tab)} onKeyPress={blurTabTitleInput}/>
+                  onBlur={event => renameTab(event, tab)} onKeyDown={e => e.stopPropagation()} onKeyPress={blurTabTitleInput}/>
               ) : (
                 <button className="btn text-btn notepad-tabs-item-title" onClick={() => selectListTab(index)}>
                   <span className="notepad-tabs-item-title-text">{tab.title}</span>
