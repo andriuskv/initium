@@ -3,6 +3,10 @@ const settings = initSettings();
 function initSettings() {
   const settings = JSON.parse(localStorage.getItem("settings")) || {};
 
+  if (settings.dateAboveClock) {
+    delete settings.dateAboveClock;
+    settings.datePosition = "top";
+  }
   return copyObject(settings, getDefault());
 }
 
@@ -42,8 +46,8 @@ function getDefault() {
       boldedDate: true,
       dateScale: 1,
       dateOffset: 8,
-      dateAligment: "right",
-      dateAboveClock: false,
+      datePosition: "bottom",
+      dateAligment: "end",
       dontChangeDateStyle: false
     },
     background: {

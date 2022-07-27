@@ -5,7 +5,7 @@ import "./clock.css";
 export default function Clock({ settings }) {
   const [clock, setClock] = useState(() => ({ ...getDisplayTime() }));
   const timeoutId = useRef(0);
-  const date = useMemo(() => getDate("weekday, month day"), []);
+  const date = useMemo(() => getDate("weekday, month&nbsp;day"), []);
 
   useEffect(() => {
     if (settings.clockDisabled) {
@@ -24,13 +24,14 @@ export default function Clock({ settings }) {
   }
 
   return (
-    <div className={`clock${settings.dateAboveClock ? " date-above" : ""}`}
-      style={{ "--scale": settings.clockScale, "--date-offset": settings.dateOffset, "--font-family": settings.clockStyle }}>
+    <div className={`clock date-${settings.datePosition}`}
+      style={{ "--scale": settings.clockScale, "--date-offset": settings.dateOffset, "--date-aligment": settings.dateAligment, "--font-family": settings.clockStyle }}>
       <span className={`clock-time${settings.boldedClock ? " bolded" : ""}`}>{clock.hours}:{clock.minutes}</span>
       {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
       {settings.dateHidden ? null : (
         <div className={`clock-date${settings.boldedDate ? " bolded" : ""}${settings.dontChangeDateStyle ? " ignore-style" : ""}`}
-          style={{ textAlign : settings.dateAligment, "--date-scale": settings.dateScale }}>{date}</div>
+          style={{ "--date-scale": settings.dateScale }}
+          dangerouslySetInnerHTML={{ __html: date }}></div>
       )}
     </div>
   );
