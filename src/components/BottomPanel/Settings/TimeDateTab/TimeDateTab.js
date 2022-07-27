@@ -39,9 +39,14 @@ export default function TimeDateTab() {
     updateRangeSetting(name, value);
   }
 
+  function handleDatePositionChange({ target }) {
+    updateSetting("timeDate", { datePosition: target.value });
+  }
+
   function handleDateAligmentChange({ target }) {
     updateSetting("timeDate", { dateAligment: target.value });
   }
+
 
   function handleClockStyleChange({ target }) {
     updateSetting("timeDate", { clockStyle: target.value });
@@ -126,13 +131,14 @@ export default function TimeDateTab() {
           onChange={handleDateOffsetChange} disabled={settings.clockDisabled || settings.dateHidden}/>
       </label>
       <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-        <span>Display date above clock</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.dateAboveClock}
-          onChange={() => toggleSetting("timeDate", "dateAboveClock")}
-          disabled={settings.clockDisabled || settings.dateHidden}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
+        <span>Date position</span>
+        <div className="select-container">
+          <select className="input select" onChange={handleDatePositionChange} value={settings.datePosition}
+            disabled={settings.clockDisabled || settings.dateHidden}>
+            <option value="top">Top</option>
+            <option value="bottom">Bottom</option>
+            <option value="right">Right</option>
+          </select>
         </div>
       </label>
       <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
@@ -140,9 +146,9 @@ export default function TimeDateTab() {
         <div className="select-container">
           <select className="input select" onChange={handleDateAligmentChange} value={settings.dateAligment}
             disabled={settings.clockDisabled || settings.dateHidden}>
-            <option value="left">Left</option>
+            <option value="start">Start</option>
             <option value="center">Center</option>
-            <option value="right">Right</option>
+            <option value="end">End</option>
           </select>
         </div>
       </label>
