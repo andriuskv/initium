@@ -23,14 +23,6 @@
 }
 
 @font-face {
-  font-family: "JotiOne";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: local(""), url("./assets/fonts/clock/JotiOne-Regular.ttf") format("truetype");
-}
-
-@font-face {
   font-family: "JuliusSansOne";
   font-style: normal;
   font-weight: 400;
@@ -55,17 +47,57 @@
 }
 
 @font-face {
-  font-family: "RockSalt";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: local(""), url("./assets/fonts/clock/RockSalt-Regular.ttf") format("truetype");
-}
-
-@font-face {
   font-family: "Stoke";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
   src: local(""), url("./assets/fonts/clock/Stoke-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Caveat";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/Caveat-VariableFont_wght.ttf") format("truetype-variations");
+}
+
+@font-face {
+  font-family: "Digital";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/Technology.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Digital";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/Technology-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Foundation";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/EduNSWACTFoundation-VariableFont_wght.ttf") format("truetype-variations");
+}
+
+@font-face {
+  font-family: "PressStart2P";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/PressStart2P-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Sniglet";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""), url("./assets/fonts/clock/Sniglet-Regular.ttf") format("truetype");
 }
