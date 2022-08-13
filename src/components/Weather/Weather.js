@@ -9,7 +9,7 @@ import "./weather.css";
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ settings, timeFormat }) {
-  const [state, setState] = useState({});
+  const [state, setState] = useState({ view: "temp" });
   const [current, setCurrentWeather] = useState(null);
   const [moreWeather, setMoreWeather] = useState(null);
   const firstRender = useRef(true);
@@ -101,8 +101,13 @@ export default function Weather({ settings, timeFormat }) {
     setState({ ...state });
 
     setTimeout(() => {
-      setState({});
+      state.reveal = false;
+      setState({ ...state });
     }, 320);
+  }
+
+  function selectView(view) {
+    setState({ ...state, view });
   }
 
   async function updateWeather(forceMoreWeatherUpdate = false) {
@@ -159,7 +164,7 @@ export default function Weather({ settings, timeFormat }) {
       <div className="weather" style={{ "--z-index": zIndex.current }} onClick={handleZIndex}>
         <div className={`container weather-more${state.visible ? " visible" : ""}`}>
           <Suspense fallback={null}>
-            <MoreWeather current={current} more={moreWeather} units={settings.units} hide={hideMoreWeather}/>
+            <MoreWeather current={current} more={moreWeather} units={settings.units} view={state.view} selectView={selectView} hide={hideMoreWeather}/>
           </Suspense>
         </div>
       </div>

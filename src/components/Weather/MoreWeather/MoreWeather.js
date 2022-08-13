@@ -3,10 +3,9 @@ import Icon from "components/Icon";
 import Spinner from "components/Spinner";
 import "./more-weather.css";
 
-export default function MoreWeather({ current, more, units, hide }) {
+export default function MoreWeather({ current, more, units, view, selectView, hide }) {
   const [ready, setReady] = useState(false);
   const [maxHourlyTemp, setMaxHourlyTemp] = useState();
-  const [view, setView] = useState("temp");
 
   useEffect(() => {
     if (!more) {
@@ -39,7 +38,6 @@ export default function MoreWeather({ current, more, units, hide }) {
     }
     return `M${path.slice(2)}`;
   }
-
 
   function getSvgY(current, offset = 0) {
     return (100 - ((current / (maxHourlyTemp + maxHourlyTemp * 0.5)) * 100) - offset).toFixed(2);
@@ -144,15 +142,15 @@ export default function MoreWeather({ current, more, units, hide }) {
             <ul className="weather-more-hourly-view-top">
               <li>
                 <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "temp" ? " active" : ""}`}
-                  onClick={() => setView("temp")}>Temperature</button>
+                  onClick={() => selectView("temp")}>Temperature</button>
               </li>
               <li>
                 <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "prec" ? " active" : ""}`}
-                  onClick={() => setView("prec")}>Precipitation</button>
+                  onClick={() => selectView("prec")}>Precipitation</button>
               </li>
               <li>
                 <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "wind" ? " active" : ""}`}
-                  onClick={() => setView("wind")}>Wind</button>
+                  onClick={() => selectView("wind")}>Wind</button>
               </li>
             </ul>
             {renderHourlyView()}

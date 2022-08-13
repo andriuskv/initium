@@ -74,12 +74,6 @@ export default function TimeDateTab() {
         </div>
       </label>
       <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-        <span>Clock scale</span>
-        <input type="range" className="range-input" min="0.5" max="3" step="0.1"
-          defaultValue={settings.clockScale} name="clockScale"
-          onChange={handleClockScaleChange} disabled={settings.clockDisabled}/>
-      </label>
-      <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
         <span>Clock style</span>
         <div className="select-container">
           <select className="input select" onChange={handleClockStyleChange} value={settings.clockStyle}
@@ -89,10 +83,19 @@ export default function TimeDateTab() {
             <option value="OleoScript">OleoScript</option>
             <option value="Stoke">Stoke</option>
             <option value="KdamThmorPro">KdamThmorPro</option>
-            <option value="JotiOne">JotiOne</option>
-            <option value="RockSalt">RockSalt</option>
+            <option value="Caveat">Caveat</option>
+            <option value="Digital">Digital</option>
+            <option value="Foundation">Foundation</option>
+            <option value="PressStart2P">PressStart2P</option>
+            <option value="Sniglet">Sniglet</option>
           </select>
         </div>
+      </label>
+      <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
+        <span>Clock scale</span>
+        <input type="range" className="range-input" min="0.5" max="3" step="0.1"
+          defaultValue={settings.clockScale} name="clockScale"
+          onChange={handleClockScaleChange} disabled={settings.clockDisabled}/>
       </label>
       <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
         <span>Bolded clock</span>
