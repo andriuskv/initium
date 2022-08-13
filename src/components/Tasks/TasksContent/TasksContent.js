@@ -300,7 +300,7 @@ export default function Tasks() {
                     <span className="tasks-group-count">{group.tasks.length}</span>
                     <span className="tasks-group-title">{group.name}</span>
                     {group.tasks.length > 0 && (
-                      <Icon id={`chevron-${group.expanded ? "down" : "up"}`} className="tasks-group-icon"/>
+                      <Icon id={`chevron-${group.expanded ? "up" : "down"}`} className="tasks-group-icon"/>
                     )}
                   </button>
                 )}

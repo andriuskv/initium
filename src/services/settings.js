@@ -43,7 +43,7 @@ function getDefault() {
       clockScale: 1,
       boldedClock: false,
       dateHidden: false,
-      boldedDate: true,
+      boldedDate: false,
       dateScale: 1,
       dateOffset: 8,
       datePosition: "bottom",
