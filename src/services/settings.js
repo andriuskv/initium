@@ -44,7 +44,7 @@ function getDefault() {
       boldedClock: false,
       dateHidden: false,
       boldedDate: false,
-      dateScale: 1,
+      dateScale: 1.2,
       dateOffset: 8,
       datePosition: "bottom",
       dateAligment: "end",
