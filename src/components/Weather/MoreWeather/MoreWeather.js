@@ -43,6 +43,41 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
     return (100 - ((current / (maxHourlyTemp + maxHourlyTemp * 0.5)) * 100) - offset).toFixed(2);
   }
 
+  function renderWindView(items) {
+    const [minSpeed, maxSpeed] = items.reduce(([minSpeed, maxSpeed], item) => {
+      if (item.wind.speed > maxSpeed) {
+        maxSpeed = item.wind.speed;
+      }
+
+      if (item.wind.speed < minSpeed) {
+        minSpeed = item.wind.speed;
+      }
+      return [minSpeed, maxSpeed];
+    }, [Infinity, -Infinity]);
+
+    return (
+      <div className="weather-more-hourly-view weather-more-hourly-wind-view">
+        {items.map(({ id, wind }) => {
+          let ratio = 1;
+
+          if (minSpeed !== maxSpeed) {
+            ratio = (wind.speed - minSpeed) / (maxSpeed - minSpeed);
+          }
+          return (
+            <div className="weather-more-hourly-wind-view-item" key={id}>
+              <div className="weather-more-hourly-wind-view-item-speed">{wind.speed} m/s</div>
+              <svg viewBox="0 0 24 24" className="weather-more-hourly-wind-view-item-icon"
+                style={{ "--degrees": wind.direction.degrees, "--ratio": ratio }}>
+                <title>{wind.direction.name}</title>
+                <use href="#arrow-up"></use>
+              </svg>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   function renderTempValues() {
     return more.hourly.filter((_, index) => index % 3 === 1).map((item, index) => {
       const x = `calc(${index * 72 + 36}px - ${item.temperature.toString().length / 2}ch)`;
@@ -82,20 +117,7 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
       );
     }
     else if (view === "wind") {
-      return (
-        <div className="weather-more-hourly-view weather-more-hourly-wind-view">
-          {more.hourly.filter((_, index) => index % 3 === 1).map(item => (
-            <div className="weather-more-hourly-wind-view-item" key={item.id}>
-              <div className="weather-more-hourly-wind-view-item-speed">{item.wind.speed} m/s</div>
-              <svg viewBox="0 0 24 24" className="weather-more-hourly-wind-view-item-icon"
-                style={{ "--degrees": item.wind.direction.degrees }}>
-                <title>{item.wind.direction.name}</title>
-                <use href="#arrow-up"></use>
-              </svg>
-            </div>
-          ))}
-        </div>
-      );
+      return renderWindView(more.hourly.filter((_, index) => index % 3 === 1));
     }
     return null;
   }
