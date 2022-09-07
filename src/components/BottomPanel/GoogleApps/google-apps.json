@@ -18,17 +18,17 @@
     {
       "title": "Calendar",
       "iconPath": "assets/google-product-logos/calendar.png",
-      "url": "https://www.google.com/calendar"
+      "url": "https://calendar.google.com"
     },
     {
       "title": "Docs",
       "iconPath": "assets/google-product-logos/docs.png",
-      "url": "https://docs.google.com/document"
+      "url": "https://docs.google.com"
     },
     {
       "title": "Maps",
       "iconPath": "assets/google-product-logos/maps.png",
-      "url": "https://maps.google.com/maps"
+      "url": "https://maps.google.com"
     },
     {
       "title": "Translate",
@@ -51,9 +51,9 @@
       "url": "https://meet.google.com"
     },
     {
-      "title": "Hangouts",
-      "iconPath": "assets/google-product-logos/hangouts.png",
-      "url": "https://hangouts.google.com"
+      "title": "Chat",
+      "iconPath": "assets/google-product-logos/chat.png",
+      "url": "https://chat.google.com"
     },
     {
       "title": "Keep",
