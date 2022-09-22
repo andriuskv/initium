@@ -83,7 +83,7 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
       const x = `calc(${index * 72 + 36}px - ${item.temperature.toString().length / 2}ch)`;
       const y = `${getSvgY(item.temperature, 10)}px`;
 
-      return <text className=" weather-more-hourly-temp-view-text" style={{ transform: `translate(${x}, ${y})` }}
+      return <text className="weather-more-hourly-temp-view-text" style={{ transform: `translate(${x}, ${y})` }}
         key={item.id}>{item.temperature}°</text>;
     });
   }
@@ -93,9 +93,9 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
       return (
         <svg className="weather-more-hourly-view weather-more-hourly-temp-view">
           {renderTempValues()}
-          <path className=" weather-more-hourly-temp-view-path"
+          <path className="weather-more-hourly-temp-view-path"
             fill="none" stroke="var(--color-primary)" strokeWidth="2px" d={getTempPath()}></path>
-          <path className=" weather-more-hourly-temp-view-path"
+          <path className="weather-more-hourly-temp-view-path"
             fill="var(--color-primary-0-40)" d={getTempPath(true)}></path>
         </svg>
       );

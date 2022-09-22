@@ -28,19 +28,6 @@
     }
   }
 
-  &.date-right {
-    & .clock-date {
-      grid-column: 2;
-      grid-row: 1 / 2;
-      align-self: var(--date-aligment);
-      text-align: left;
-    }
-
-    & .clock-date, & .clock-time-period {
-      transform: translateX(calc(100% + calc(var(--date-offset) * 1px)));
-    }
-  }
-
   @media (max-height: 720px) {
     & .clock-time {
       --size: 6rem;
@@ -89,6 +76,7 @@
   grid-column: 1 / 3;
   font-size: calc(var(--size) * var(--scale) * var(--date-scale));
   letter-spacing: 1px;
+  line-height: 1;
   text-align: right;
 
   &.bolded {

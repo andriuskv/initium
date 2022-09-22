@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, useMemo } from "react";
-import { getDisplayTime, getDate } from "services/timeDate";
+import { useState, useEffect, useRef } from "react";
+import { getDisplayTime } from "services/timeDate";
 import "./clock.css";
 
 export default function Clock({ settings }) {
   const [clock, setClock] = useState(() => ({ ...getDisplayTime() }));
   const timeoutId = useRef(0);
-  const date = useMemo(() => getDate("weekday, month&nbsp;day"), []);
+  const [date, setDate] = useState(null, []);
 
   useEffect(() => {
     if (settings.clockDisabled) {
@@ -17,6 +17,26 @@ export default function Clock({ settings }) {
       clearTimeout(timeoutId.current);
     };
   }, [settings]);
+
+  useEffect(() => {
+    let locale = settings.dateLocale;
+
+    if (locale === "system") {
+      locale = navigator.language;
+    }
+    const options = { weekday: "long", month: "long", day: "numeric" };
+
+    try {
+      const date = new Intl.DateTimeFormat(locale, options).format();
+
+      setDate(date);
+    } catch (e) {
+      console.log(e);
+      const date = new Intl.DateTimeFormat("en-US", options).format();
+
+      setDate(date);
+    }
+  }, [settings.dateLocale]);
 
   function updateTime() {
     setClock({ ...getDisplayTime() });

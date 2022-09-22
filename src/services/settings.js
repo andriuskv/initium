@@ -3,9 +3,12 @@ const settings = initSettings();
 function initSettings() {
   const settings = JSON.parse(localStorage.getItem("settings")) || {};
 
-  if (settings.dateAboveClock) {
-    delete settings.dateAboveClock;
-    settings.datePosition = "top";
+  if (settings.timeDate.dateAboveClock) {
+    delete settings.timeDate.dateAboveClock;
+    settings.timeDate.datePosition = "top";
+  }
+  else if (settings.timeDate.datePosition === "right") {
+    settings.timeDate.datePosition = "top";
   }
   return copyObject(settings, getDefault());
 }
@@ -47,8 +50,9 @@ function getDefault() {
       dateScale: 1.2,
       dateOffset: 8,
       datePosition: "bottom",
-      dateAligment: "end",
-      dontChangeDateStyle: false
+      dateAligment: "center",
+      dontChangeDateStyle: false,
+      dateLocale: "en-US"
     },
     background: {
       url: ""
