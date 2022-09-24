@@ -1,33 +1,20 @@
-.task-label-form {
+.task-form-item-container {
   display: flex;
   align-items: center;
-  padding: var(--space-md) var(--space-md) 0 var(--space-md);
-}
-
-.task-form-color-picker-container {
-  flex-shrink: 0;
-  overflow: hidden;
-  width: 20px;
-  height: 20px;
-  margin-right: var(--space-md);
-  border-radius: 50%;
-  border: 1px solid var(--color-white-4);
-
-  &:focus-within {
-    box-shadow: 0 0 0 2px var(--color-primary);
-  }
-}
-
-.task-form-color-picker {
-  opacity: 0;
-  cursor: pointer;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: var(--space-md);
+  padding-left: var(--space-lg);
+  padding-right: var(--space-md);
+  font-weight: bold;
 }
 
 .task-form-labels {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
-  margin: var(--space-md) var(--space-sm) 0 var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md) 0 var(--space-md);
 }
 
 .task-form-label {
@@ -70,26 +57,12 @@
   flex-direction: column;
   align-items: flex-start;
   flex-grow: 1;
-  padding-top: var(--space-xl);
-}
-
-.task-form-group-select-container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: var(--space-md);
-  margin-left: auto;
-}
-
-.task-form-group-select-input-name {
-  font-weight: bold;
-  margin-right: var(--space-md);
 }
 
 .task-form-textarea-container {
   overflow: hidden;
   width: calc(100% - var(--space-xl));
-  margin: var(--space-md) var(--space-md) var(--space-xl) var(--space-md);
+  margin: var(--space-md) var(--space-md) 0 var(--space-md);
   border-radius: 8px;
 
   &:focus-within {
@@ -110,18 +83,13 @@
   }
 }
 
-.subtask-add-btn {
-  flex-shrink: 0;
-  margin-left: var(--space-md);
-  margin-bottom: var(--space-sm);
-}
-
 .task-form-subtasks {
   overflow-y: auto;
   flex-grow: 1;
   flex-basis: 0;
   width: 100%;
   padding: var(--space-sm) var(--space-md) 0 var(--space-md);
+  margin-top: var(--space-sm);
 }
 
 .task-form-subtask {
@@ -133,4 +101,11 @@
 .task-form-subtask-input {
   flex-grow: 1;
   margin-right: var(--space-md);
+}
+
+.task-form-item-title {
+  padding-left: var(--space-md);
+  box-shadow: -2px 0 0 0 var(--color-primary);
+  font-weight: bold;
+  font-size: var(--text-sm);
 }

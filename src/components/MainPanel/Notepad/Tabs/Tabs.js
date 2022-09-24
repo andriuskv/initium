@@ -140,7 +140,7 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
       return (
         <Modal className="notepad-modal" hide={hideModal}>
           <form onSubmit={createTab}>
-            <h4 className="modal-title notepad-create-tab-modal-title">Create Tab</h4>
+            <h4 className="modal-title modal-title-center">Create Tab</h4>
             <input type="text" className="input" name="title"
               autoComplete="off"
               placeholder="Tab title"/>
