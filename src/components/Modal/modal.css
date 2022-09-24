@@ -24,6 +24,11 @@
   font-size: var(--text-lg);
 }
 
+.modal-title-center {
+  margin-left: 0;
+  text-align: center;
+}
+
 .modal-text-body {
   margin-left: var(--space-md);
   margin-right: var(--space-md);
