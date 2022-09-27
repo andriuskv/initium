@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { fetchBackgroundInfo, getIDBBackground } from "services/background";
-import "./background.css";
+import { fetchWallpaperInfo, getIDBWallpaper } from "services/wallpaper";
+import "./wallpaper.css";
 
-export default function Background({ settings }) {
-  const [background, setBackground] = useState(null);
+export default function Wallpaper({ settings }) {
+  const [wallpaper, setWallpaper] = useState(null);
   const firstRender = useRef(true);
 
   useEffect(() => {
@@ -11,12 +11,12 @@ export default function Background({ settings }) {
   }, [settings]);
 
   useEffect(() => {
-    if (firstRender.current && background) {
+    if (firstRender.current && wallpaper) {
       const image = new Image();
       firstRender.current = false;
 
       image.onload = () => {
-        const element = document.getElementById("downscaled-background");
+        const element = document.getElementById("downscaled-wallpaper");
 
         if (element) {
           element.classList.add("hide");
@@ -26,19 +26,19 @@ export default function Background({ settings }) {
           }, 600);
         }
       };
-      image.src = background.url;
+      image.src = wallpaper.url;
     }
-  }, [background]);
+  }, [wallpaper]);
 
   async function init(settings) {
     if (settings.type === "blob") {
-      let url = background?.url;
+      let url = wallpaper?.url;
 
-      if (settings.id !== background?.id) {
-        const image = await getIDBBackground(settings.id);
+      if (settings.id !== wallpaper?.id) {
+        const image = await getIDBWallpaper(settings.id);
         url = URL.createObjectURL(image);
       }
-      setBackground({
+      setWallpaper({
         id: settings.id,
         url,
         x: settings.x,
@@ -46,28 +46,28 @@ export default function Background({ settings }) {
       });
     }
     else if (settings.type === "url") {
-      setBackground({
+      setWallpaper({
         url: settings.url,
         x: settings.x,
         y: settings.y
       });
     }
     else {
-      const info = await fetchBackgroundInfo();
+      const info = await fetchWallpaperInfo();
 
       if (info) {
-        setBackground({ url: info.url });
+        setWallpaper({ url: info.url });
       }
     }
   }
 
-  if (!background) {
+  if (!wallpaper) {
     return null;
   }
   return (
-    <div className="background" style={{
-      backgroundPosition: `${background.x ?? 50}% ${background.y ?? 50}%`,
-      backgroundImage: `url(${background.url})`
+    <div className="wallpaper" style={{
+      backgroundPosition: `${wallpaper.x ?? 50}% ${wallpaper.y ?? 50}%`,
+      backgroundImage: `url(${wallpaper.url})`
     }}></div>
   );
 }

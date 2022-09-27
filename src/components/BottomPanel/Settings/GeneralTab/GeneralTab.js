@@ -1,27 +1,9 @@
-import { useRef } from "react";
 import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings-context";
-import { updateSetting } from "services/settings";
 import "./general-tab.css";
 
 export default function GeneralTab() {
   const { settings: { general: settings }, toggleSetting } = useSettings();
-  const timeoutId = useRef(0);
-
-  function handleRangeInputChange({ target }) {
-    const { name, value } = target;
-
-    if (name === "backgroundOpacity") {
-      document.body.style.setProperty("--background-opacity", `${value}%`);
-    }
-    else if (name === "backgroundBlurRadius") {
-      document.body.style.setProperty("--background-blur", `${value}px`);
-    }
-    clearTimeout(timeoutId.current);
-    timeoutId.current = setTimeout(() => {
-      updateSetting({ general: { [name]: Number(value) } });
-    }, 1000);
-  }
 
   function showGreetingEditor() {
     dispatchCustomEvent("greeting-editor-visible");
@@ -38,16 +20,6 @@ export default function GeneralTab() {
           <div className="checkbox-tick"></div>
         </div>
       </label>
-      <label className="setting">
-        <span>Background opacity</span>
-        <input type="range" className="range-input" min="0" max="100" step="5"
-          defaultValue={settings.backgroundOpacity} onChange={handleRangeInputChange} name="backgroundOpacity"/>
-      </label>
-      <label className="setting">
-        <span>Background blur radius</span>
-        <input type="range" className="range-input" min="0" max="24" step="1"
-          defaultValue={settings.backgroundBlurRadius} onChange={handleRangeInputChange} name="backgroundBlurRadius"/>
-      </label>
       <div className="setting setting-greeting">
         <div className="setting-greeting-item">
           <button className="btn" onClick={showGreetingEditor} disabled={settings.greetingDisabled}>Set a greeting</button>
@@ -62,6 +34,10 @@ export default function GeneralTab() {
           <span className="checkbox-label-right">Disable greeting</span>
         </label>
       </div>
+      {/* <div className="setting">
+        <span>Reset Settings</span>
+        <button className="btn">Reset</button>
+      </div> */}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { dispatchCustomEvent } from "../utils";
 
-const downscaledBackground = JSON.parse(localStorage.getItem("downscaled-background"));
-let backgroundInfo = JSON.parse(localStorage.getItem("background-info"));
+const downscaledWallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper"));
+let wallpaperInfo = JSON.parse(localStorage.getItem("wallpaper-info"));
 
 async function fetchUnsplashInfo() {
   try {
@@ -26,38 +26,38 @@ async function cacheUnsplashInfo() {
   if (info) {
     setTimeout(() => {
       cacheImage(info.url);
-      cacheDownscaledBackground({ url: info.url });
-      localStorage.setItem("background-info", JSON.stringify(info));
+      cacheDownscaledWallpaper({ url: info.url });
+      localStorage.setItem("wallpaper-info", JSON.stringify(info));
     }, 1000);
     return info;
   }
 }
 
-async function fetchBackgroundInfo() {
-  if (backgroundInfo) {
-    if (Date.now() - backgroundInfo.cacheDate > 1000 * 60 * 60 * 18) {
+async function fetchWallpaperInfo() {
+  if (wallpaperInfo) {
+    if (Date.now() - wallpaperInfo.cacheDate > 1000 * 60 * 60 * 18) {
       cacheUnsplashInfo();
-      return backgroundInfo;
+      return wallpaperInfo;
     }
-    cacheImage(backgroundInfo.url);
+    cacheImage(wallpaperInfo.url);
 
-    if (!downscaledBackground || downscaledBackground.id !== backgroundInfo.url) {
-      cacheDownscaledBackground({ url: backgroundInfo.url });
+    if (!downscaledWallpaper || downscaledWallpaper.id !== wallpaperInfo.url) {
+      cacheDownscaledWallpaper({ url: wallpaperInfo.url });
     }
-    return backgroundInfo;
+    return wallpaperInfo;
   }
   const info = await cacheUnsplashInfo();
 
   if (info) {
-    backgroundInfo = info;
-    dispatchCustomEvent("background-info-update", info);
+    wallpaperInfo = info;
+    dispatchCustomEvent("wallpaper-info-update", info);
     resetIDBStore();
     return info;
   }
 }
 
 function cacheImage(url) {
-  caches.open("background-image-cache").then(async cache => {
+  caches.open("wallpaper-image-cache").then(async cache => {
     const matchedResponse = await cache.match(url);
 
     if (matchedResponse) {
@@ -84,72 +84,85 @@ function buildImageUrl(url) {
   return `${url}&fit=${fit}&crop=${crop}&auto=format&w=${width}&h=${height}&dpi=${dpi}&q=90`;
 }
 
-function getBackgroundInfo() {
-  return backgroundInfo;
+function getWallpaperInfo() {
+  return wallpaperInfo;
 }
 
-function resetBackgroundInfo() {
-  backgroundInfo = null;
-  localStorage.removeItem("background-info");
+function resetWallpaperInfo() {
+  wallpaperInfo = null;
+  localStorage.removeItem("wallpaper-info");
   deleteServiceWokerCache();
-  dispatchCustomEvent("background-info-update", null);
+  dispatchCustomEvent("wallpaper-info-update", null);
 }
 
 function deleteServiceWokerCache() {
   caches.keys().then(keys => {
     keys.forEach(key => {
-      if (key === "background-image-cache") {
+      if (key === "wallpaper-image-cache") {
         caches.delete(key);
       }
     });
   });
 }
 
-function setUrlBackground(url) {
+function setUrlWallpaper(url) {
   setTimeout(() => {
-    cacheDownscaledBackground({ url });
-    resetBackgroundInfo();
+    cacheDownscaledWallpaper({ url });
+    resetWallpaperInfo();
     resetIDBStore();
   }, 1000);
 }
 
-async function getIDBBackground(id) {
+async function getIDBWallpaper(id) {
   const { createStore, get } = await import("idb-keyval");
-  const store = createStore("initium", "background");
 
-  return get(id, store);
+  try {
+    const store = createStore("initium", "wallpaper");
+    const image = await get(id, store);
+
+    return image;
+  } catch (e) {
+    console.log(e);
+    const store = createStore("initium", "background");
+    const image = await get(id, store);
+
+    await indexedDB.deleteDatabase("initium");
+
+    setIDBWallpaper(image);
+    return image;
+  }
 }
 
-async function setIDBBackground(image) {
+async function setIDBWallpaper(image) {
   const { createStore, set, clear } = await import("idb-keyval");
-  const store = createStore("initium", "background");
+  const store = createStore("initium", "wallpaper");
 
   await clear(store);
   await set(image.name, image, store);
 
   setTimeout(() => {
-    cacheDownscaledBackground({
+    cacheDownscaledWallpaper({
       id: image.name,
       url: URL.createObjectURL(image)
     });
-    resetBackgroundInfo();
+    resetWallpaperInfo();
   }, 1000);
 }
 
 async function resetIDBStore() {
   const { createStore, clear } = await import("idb-keyval");
-  const store = createStore("initium", "background");
+  const store = createStore("initium", "wallpaper");
 
   clear(store);
 }
 
-async function cacheDownscaledBackground({ url, id = url }) {
-  const image = await preloadBackground(url);
+async function cacheDownscaledWallpaper({ url, id = url }) {
+  const image = await preloadImage(url);
 
-  createDownscaledBackground({ id, image });
+  createDownscaledWallpaper({ id, image });
 }
 
-function getDownscaledBackground(image) {
+function getDownscaledWallpaper(image) {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
@@ -162,27 +175,27 @@ function getDownscaledBackground(image) {
   return canvas.toDataURL("image/png", 0.8);
 }
 
-function createDownscaledBackground({ id, image }) {
-  const background = JSON.parse(localStorage.getItem("downscaled-background")) || {};
+function createDownscaledWallpaper({ id, image }) {
+  const wallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper")) || {};
 
-  if (background.id === id) {
+  if (wallpaper.id === id) {
     return;
   }
-  const dataURL = getDownscaledBackground(image);
+  const dataURL = getDownscaledWallpaper(image);
 
-  localStorage.setItem("downscaled-background", JSON.stringify({ id, dataURL }));
+  localStorage.setItem("downscaled-wallpaper", JSON.stringify({ id, dataURL }));
 }
 
-function updateDownscaledBackgroundPosition(x, y) {
-  const background = JSON.parse(localStorage.getItem("downscaled-background"));
+function updateDownscaledWallpaperPosition(x, y) {
+  const wallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper"));
 
-  background.x = x;
-  background.y = y;
+  wallpaper.x = x;
+  wallpaper.y = y;
 
-  localStorage.setItem("downscaled-background", JSON.stringify(background));
+  localStorage.setItem("downscaled-wallpaper", JSON.stringify(wallpaper));
 }
 
-function preloadBackground(url) {
+function preloadImage(url) {
   return new Promise(resolve => {
     const image = new Image();
     image.crossOrigin = "anonymous";
@@ -195,10 +208,11 @@ function preloadBackground(url) {
 }
 
 export {
-  fetchBackgroundInfo,
-  getBackgroundInfo,
-  setUrlBackground,
-  getIDBBackground,
-  setIDBBackground,
-  updateDownscaledBackgroundPosition
+  fetchWallpaperInfo,
+  getWallpaperInfo,
+  resetWallpaperInfo,
+  setUrlWallpaper,
+  getIDBWallpaper,
+  setIDBWallpaper,
+  updateDownscaledWallpaperPosition
 };

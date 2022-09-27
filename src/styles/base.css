@@ -11,8 +11,18 @@ html, body {
 }
 
 body {
-  --background-opacity: 50%;
-  --background-blur: 12px;
+  --panel-background-opacity: 50%;
+  --panel-background-blur: 12px;
+
+  --accent-hue: 205deg;
+  --accent-saturation: 80%;
+  --accent-lightness: 56%;
+
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) var(--accent-lightness));
+  --color-primary-0-20: hsl(var(--accent-hue) var(--accent-saturation) var(--accent-lightness) / 20%);
+  --color-primary-0-40: hsl(var(--accent-hue) var(--accent-saturation) var(--accent-lightness) / 40%);
+  --color-primary-10: hsl(var(--accent-hue) calc(var(--accent-saturation) + 4 * 1%) calc(var(--accent-lightness) + 8 * 1%));
+  --color-primary-20: hsl(var(--accent-hue) calc(var(--accent-saturation) - 4 * 1%) calc(var(--accent-lightness) - 6 * 1%));
 
   overflow: hidden;
   margin: 0;
@@ -105,13 +115,13 @@ textarea {
     2px 4px 4px 0 var(--color-black-8),
     4px 8px 8px 0 var(--color-black-4),
     8px 16px 16px 0 var(--color-black-2);
-  background-color: hsl(224deg 7% 12% / var(--background-opacity));
-  backdrop-filter: blur(var(--background-blur));
+  background-color: hsl(var(--accent-hue) 10% 15% / var(--panel-background-opacity));
+  backdrop-filter: blur(var(--panel-background-blur));
 }
 
 .fullscreen-mask {
-  background-color: hsl(224deg 7% 12% / var(--background-opacity));
-  backdrop-filter: blur(var(--background-blur));
+  background-color: hsl(var(--accent-hue) 10% 15% / var(--panel-background-opacity));
+  backdrop-filter: blur(var(--panel-background-blur));
 }
 
 .input, .btn {

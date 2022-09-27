@@ -3,12 +3,34 @@ const settings = initSettings();
 function initSettings() {
   const settings = JSON.parse(localStorage.getItem("settings")) || {};
 
+  settings.timeDate ??= {};
+
   if (settings.timeDate.dateAboveClock) {
     delete settings.timeDate.dateAboveClock;
     settings.timeDate.datePosition = "top";
   }
   else if (settings.timeDate.datePosition === "right") {
     settings.timeDate.datePosition = "top";
+  }
+
+  settings.appearance ??= {};
+
+  if (settings.background) {
+    settings.appearance.wallpaper ??= {};
+    settings.appearance.wallpaper = settings.background;
+    delete settings.background;
+  }
+
+  settings.general ??= {};
+
+  if (settings.general.backgroundOpacity) {
+    settings.appearance.panelBackgroundOpacity = settings.general.backgroundOpacity;
+    delete settings.general.backgroundOpacity;
+  }
+
+  if (settings.general.backgroundBlurRadius) {
+    settings.appearance.panelBackgroundBlur = settings.general.backgroundBlurRadius;
+    delete settings.general.backgroundBlurRadius;
   }
   return copyObject(settings, getDefault());
 }
@@ -17,27 +39,13 @@ function getDefault() {
   return {
     general: {
       centerClock: false,
-      backgroundOpacity: 50,
-      backgroundBlurRadius: 12,
       greetingDisabled: false
     },
-    mainPanel: {
-      navHidden: false,
-      components: {
-        topSites: {
-          disabled: false,
-          visibleItemCount: 4,
-          openInNewTab: false,
-          addSiteButtonHidden: false
-        },
-        notepad: { disabled: false },
-        twitter: { disabled: false },
-        rssFeed: { disabled: false }
-      }
-    },
-    topPanel: {
-      alarmVolume: 0.2,
-      fullscreenTextScale: 1.5
+    appearance: {
+      accentColor: { hue: "205deg", saturation: "80%", lightness: "56%" },
+      panelBackgroundOpacity: 50,
+      panelBackgroundBlur: 12,
+      wallpaper: { url: "" }
     },
     timeDate: {
       format: 24,
@@ -54,14 +62,29 @@ function getDefault() {
       dontChangeDateStyle: false,
       dateLocale: "en-US"
     },
-    background: {
-      url: ""
+    mainPanel: {
+      navHidden: false,
+      components: {
+        topSites: {
+          disabled: false,
+          visibleItemCount: 4,
+          openInNewTab: false,
+          addSiteButtonHidden: false
+        },
+        notepad: { disabled: false },
+        twitter: { disabled: false },
+        rssFeed: { disabled: false }
+      }
     },
     weather: {
       disabled: false,
       useGeo: false,
       cityName: "",
       units: "C"
+    },
+    topPanel: {
+      alarmVolume: 0.2,
+      fullscreenTextScale: 1.5
     },
     pomodoro: {
       duration: 25,
@@ -71,16 +94,16 @@ function getDefault() {
   };
 }
 
-function copyObject(obj, mainObj) {
-  for (const key of Object.keys(mainObj)) {
-    if (typeof obj[key] === "undefined") {
-      obj[key] = mainObj[key];
+function copyObject(target, source) {
+  for (const key of Object.keys(source)) {
+    if (typeof target[key] === "undefined") {
+      target[key] = source[key];
     }
-    else if (typeof obj[key] === "object") {
-      obj[key] = copyObject(obj[key], mainObj[key]);
+    else if (typeof target[key] === "object") {
+      target[key] = copyObject(target[key], source[key]);
     }
   }
-  return obj;
+  return target;
 }
 
 function getSettings() {
