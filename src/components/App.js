@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { useSettings } from "../contexts/settings-context";
-import Background from "./Background";
+import Wallpaper from "./Wallpaper";
 import Tasks from "./Tasks";
 import BottomPanel from "./BottomPanel";
 
@@ -10,12 +10,12 @@ const GreetingEditor = lazy(() => import("./GreetingEditor"));
 const MainPanel = lazy(() => import("./MainPanel"));
 const TopPanel = lazy(() => import("./TopPanel"));
 const Weather = lazy(() => import("./Weather"));
-const BackgroundViewer = lazy(() => import("./BackgroundViewer"));
+const WallpaperViewer = lazy(() => import("./WallpaperViewer"));
 const TweetImageViewer = lazy(() => import("./TweetImageViewer"));
 
 export default function App() {
   const { settings } = useSettings();
-  const [backgroundViewerVisible, setBackgroundViewerVisible] = useState(false);
+  const [wallpaperViewerVisible, setWallpaperViewerVisible] = useState(false);
   const [tweetImageData, setTweetImageData] = useState(null);
   const [topPanel, setTopPanel] = useState({ rendered: false, forceVisibility: false });
   const [greeting, setGreeting] = useState(null);
@@ -25,8 +25,12 @@ export default function App() {
   const weatherTimeoutId = useRef(0);
 
   useLayoutEffect(() => {
-    document.body.style.setProperty("--background-opacity", `${settings.general.backgroundOpacity}%`);
-    document.body.style.setProperty("--background-blur", `${settings.general.backgroundBlurRadius}px`);
+    document.body.style.setProperty("--accent-hue", settings.appearance.accentColor.hue);
+    document.body.style.setProperty("--accent-saturation", settings.appearance.accentColor.saturation);
+    document.body.style.setProperty("--accent-lightness", settings.appearance.accentColor.lightness);
+
+    document.body.style.setProperty("--panel-background-opacity", `${settings.appearance.panelBackgroundOpacity}%`);
+    document.body.style.setProperty("--panel-background-blur", `${settings.appearance.panelBackgroundBlur}px`);
   }, []);
 
   useLayoutEffect(() => {
@@ -37,13 +41,13 @@ export default function App() {
     initGreeting();
     initTopPanel();
 
-    window.addEventListener("background-viewer-visible", showBackgroundViewer);
+    window.addEventListener("wallpaper-viewer-visible", showWallpaperViewer);
     window.addEventListener("tweet-image-viewer-visible", showTweetImageViewer);
     window.addEventListener("greeting-editor-visible", showGreetingEditor);
     window.addEventListener("top-panel-visible", renderTopPanel, { once: true });
 
     return () => {
-      window.removeEventListener("background-viewer-visible", showBackgroundViewer);
+      window.removeEventListener("wallpaper-viewer-visible", showWallpaperViewer);
       window.removeEventListener("tweet-image-viewer-visible", showTweetImageViewer);
       window.removeEventListener("greeting-editor-visible", showGreetingEditor);
     };
@@ -100,12 +104,12 @@ export default function App() {
     }
   }
 
-  function showBackgroundViewer() {
-    setBackgroundViewerVisible(true);
+  function showWallpaperViewer() {
+    setWallpaperViewerVisible(true);
   }
 
-  function hideBackgroundViewer() {
-    setBackgroundViewerVisible(false);
+  function hideWallpaperViewer() {
+    setWallpaperViewerVisible(false);
   }
 
   function showTweetImageViewer({ detail }) {
@@ -131,7 +135,7 @@ export default function App() {
 
   return (
     <>
-      <Background settings={settings.background}/>
+      <Wallpaper settings={settings.appearance.wallpaper}/>
       <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}>
         <Suspense fallback={null}>
           {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
@@ -151,7 +155,7 @@ export default function App() {
       <Suspense fallback={null}>
         {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
         {weather.rendered && <Weather settings={settings.weather} timeFormat={settings.timeDate.format}/>}
-        {backgroundViewerVisible && <BackgroundViewer settings={settings.background} hide={hideBackgroundViewer}/>}
+        {wallpaperViewerVisible && <WallpaperViewer settings={settings.appearance.wallpaper} hide={hideWallpaperViewer}/>}
         {tweetImageData && <TweetImageViewer data={tweetImageData} hide={hideTweetImageViewer}/>}
       </Suspense>
       <BottomPanel/>

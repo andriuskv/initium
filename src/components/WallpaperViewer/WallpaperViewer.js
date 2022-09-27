@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useSettings } from "contexts/settings-context";
-import { getIDBBackground, updateDownscaledBackgroundPosition } from "services/background";
+import { getIDBWallpaper, updateDownscaledWallpaperPosition } from "services/wallpaper";
 import Spinner from "../Spinner";
-import "./background-viewer.css";
+import "./wallpaper-viewer.css";
 
-export default function BackgroundViewer({ settings, hide }) {
+export default function WallpaperViewer({ settings, hide }) {
   const { updateSetting } = useSettings();
   const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState("");
@@ -21,7 +21,7 @@ export default function BackgroundViewer({ settings, hide }) {
 
   async function init() {
     if (settings.id) {
-      const image = await getIDBBackground(settings.id);
+      const image = await getIDBWallpaper(settings.id);
       setUrl(URL.createObjectURL(image));
     }
     else {
@@ -149,7 +149,7 @@ export default function BackgroundViewer({ settings, hide }) {
     pointerMoveHandler.current = null;
   }
 
-  function getBackgroundPosition(value, dimensionName) {
+  function getWallpaperPosition(value, dimensionName) {
     const areaDimension = area[dimensionName];
     const imageDimension = image[dimensionName];
     const diff = imageDimension - areaDimension;
@@ -160,12 +160,19 @@ export default function BackgroundViewer({ settings, hide }) {
     return value / diff * 100;
   }
 
-  function saveBackgroundPosition() {
-    const x = getBackgroundPosition(area.x, "width");
-    const y = getBackgroundPosition(area.y, "height");
+  function saveWallpaperPosition() {
+    const x = getWallpaperPosition(area.x, "width");
+    const y = getWallpaperPosition(area.y, "height");
 
-    updateSetting("background", { x, y });
-    updateDownscaledBackgroundPosition(x, y);
+    updateSetting("appearance", {
+      wallpaper: {
+        ...settings,
+        x,
+        y
+      }
+    });
+
+    updateDownscaledWallpaperPosition(x, y);
     hide();
   }
 
@@ -178,21 +185,21 @@ export default function BackgroundViewer({ settings, hide }) {
   }
 
   return (
-    <div className="fullscreen-mask background-viewer">
-      {loading && <Spinner className="background-viewer-spinner"/>}
-      <div className={`background-viewer-image-content${loading ? " hidden" : ""}`}>
-        <div className="container background-viewer-image-container" ref={containerRef}>
-          <img src={url} className="background-viewer-image" onLoad={handleLoad}/>
-          {area && <div className="background-viewer-area" style={{
+    <div className="fullscreen-mask wallpaper-viewer">
+      {loading && <Spinner className="wallpaper-viewer-spinner"/>}
+      <div className={`wallpaper-viewer-image-content${loading ? " hidden" : ""}`}>
+        <div className="container wallpaper-viewer-image-container" ref={containerRef}>
+          <img src={url} className="wallpaper-viewer-image" onLoad={handleLoad}/>
+          {area && <div className="wallpaper-viewer-area" style={{
             width: `${area.width}px`,
             height: `${area.height}px`,
             transform: `translate(${area.x}px, ${area.y}px)`
           }} onPointerDown={handlePointerDown}></div>}
         </div>
-        <div className="container background-viewer-bar">
+        <div className="container wallpaper-viewer-bar">
           <button className="btn text-btn" onClick={resetArea}>Reset</button>
           <button className="btn text-btn" onClick={hide}>Cancel</button>
-          <button className="btn text-btn" onClick={saveBackgroundPosition}>Save</button>
+          <button className="btn text-btn" onClick={saveWallpaperPosition}>Save</button>
         </div>
       </div>
     </div>

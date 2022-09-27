@@ -3,9 +3,9 @@ import Spinner from "components/Spinner";
 import "./settings.css";
 import GeneralTab from "./GeneralTab";
 
+const AppearanceTab = lazy(() => import("./AppearanceTab"));
 const TimeDateTab = lazy(() => import("./TimeDateTab"));
 const MainPanelTab = lazy(() => import("./MainPanelTab"));
-const BackgroundTab = lazy(() => import("./BackgroundTab"));
 const WeatherTab = lazy(() => import("./WeatherTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 
@@ -19,16 +19,16 @@ export default function Settings() {
         name: "General"
       },
       {
+        id: "appearance",
+        name: "Appearance"
+      },
+      {
         id: "timeDate",
         name: "Time & Date"
       },
       {
         id: "mainPanel",
         name: "Main Panel"
-      },
-      {
-        id: "background",
-        name: "Background"
       },
       {
         id: "weather",
@@ -58,14 +58,14 @@ export default function Settings() {
     }
     let Component = null;
 
-    if (activeTab === "timeDate") {
+    if (activeTab === "appearance") {
+      Component = AppearanceTab;
+    }
+    else if (activeTab === "timeDate") {
       Component = TimeDateTab;
     }
     else if (activeTab === "mainPanel") {
       Component = MainPanelTab;
-    }
-    else if (activeTab === "background") {
-      Component = BackgroundTab;
     }
     else if (activeTab === "weather") {
       Component = WeatherTab;

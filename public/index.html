@@ -5,12 +5,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>New Tab | Initium</title>
-  <link rel="preload" href="downscaled-background.js" as="script">
+  <link rel="preload" href="downscaled-wallpaper.js" as="script">
   <link rel="preload" href="main.css" as="style">
   <link rel="preload" href="vendor.js" as="script">
   <link rel="preload" href="main.js" as="script">
   <style>
-    #downscaled-background {
+    #downscaled-wallpaper {
       z-index: 1;
       position: absolute;
       width: 100%;
@@ -18,11 +18,11 @@
       transition: 0.4s opacity;
     }
 
-    #downscaled-background.hide {
+    #downscaled-wallpaper.hide {
       opacity: 0;
     }
 
-    .downscaled-background-image {
+    .downscaled-wallpaper-image {
       width: 100%;
       height: 100%;
       background-size: cover;
@@ -32,7 +32,7 @@
   </style>
 </head>
 <body>
-  <script src="downscaled-background.js"></script>
+  <script src="downscaled-wallpaper.js"></script>
   <svg style="display: none;">
     <defs>
       <symbol id="logout" viewBox="0 0 24 24">
@@ -172,6 +172,14 @@
       </symbol>
       <symbol id="check" viewBox="0 0 24 24">
         <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+      </symbol>
+      <symbol id="spinner" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+        <rect x="0" y="0" width="100" height="100" fill="none"></rect>
+        <circle cx="50" cy="50" r="40" stroke="none" fill="none" stroke-width="10" stroke-linecap="round"></circle>
+        <circle cx="50" cy="50" r="40" stroke="currentColor" fill="none" stroke-width="6" stroke-linecap="round">
+          <animate attributeName="stroke-dashoffset" dur="2s" repeatCount="indefinite" from="0" to="502"></animate>
+          <animate attributeName="stroke-dasharray" dur="2s" repeatCount="indefinite" values="150.6 100.4;1 250;150.6 100.4"></animate>
+        </circle>
       </symbol>
     </defs>
   </svg>
