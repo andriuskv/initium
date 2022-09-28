@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { dispatchCustomEvent } from "utils";
+import { dispatchCustomEvent, generateNoise } from "utils";
 import { useSettings } from "contexts/settings-context";
 import { getWallpaperInfo, resetWallpaperInfo, setUrlWallpaper, setIDBWallpaper } from "services/wallpaper";
 import { updateSetting } from "services/settings";
@@ -120,6 +120,40 @@ export default function AppearanceTab() {
     clearTimeout(timeoutId.current);
     timeoutId.current = setTimeout(() => {
       updateSetting({ appearance: { [name]: Number(value) } });
+    }, 1000);
+  }
+
+  function handleNoiseChange({ target }) {
+    const { name, value } = target;
+    const num = Number(value);
+    let amount = 0;
+    let opacity = 0;
+
+    if (name === "panelBackgroundNoiseOpacity") {
+      opacity = num;
+      amount = settings.panelBackgroundNoiseAmount;
+    }
+    else if (name === "panelBackgroundNoiseAmount") {
+      amount = num;
+      opacity = settings.panelBackgroundNoiseOpacity;
+    }
+    clearTimeout(timeoutId.current);
+    timeoutId.current = setTimeout(() => {
+      // Disable noise if either amount or opacity is 0
+      if (num === 0) {
+        document.body.style.setProperty("--panel-background-noise", "");
+        localStorage.removeItem("noise");
+      }
+      else {
+        const noise = generateNoise(amount, opacity);
+
+        document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
+        localStorage.setItem("noise", noise);
+      }
+      updateContextSetting("appearance", {
+        panelBackgroundNoiseOpacity: opacity,
+        panelBackgroundNoiseAmount: amount
+      });
     }, 1000);
   }
 
@@ -261,6 +295,16 @@ export default function AppearanceTab() {
         <span>Panel background blur</span>
         <input type="range" className="range-input" min="0" max="24" step="1"
           defaultValue={settings.panelBackgroundBlur} onChange={handleRangeInputChange} name="panelBackgroundBlur"/>
+      </label>
+      <label className="setting">
+        <span>Panel background noise amount</span>
+        <input type="range" className="range-input" min="0" max="0.25" step="0.01"
+          defaultValue={settings.panelBackgroundNoiseAmount} onChange={handleNoiseChange} name="panelBackgroundNoiseAmount"/>
+      </label>
+      <label className="setting">
+        <span>Panel background noise opacity</span>
+        <input type="range" className="range-input" min="0" max="0.08" step="0.005"
+          defaultValue={settings.panelBackgroundNoiseOpacity} onChange={handleNoiseChange} name="panelBackgroundNoiseOpacity"/>
       </label>
       <div className="setting setting-wallpaper">
         <div className="setting-wallpaper-title">Set wallpaper from...</div>

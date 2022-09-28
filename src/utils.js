@@ -44,6 +44,29 @@ function formatBytes(bytes) {
   return kb % 1 === 0 ? kb : kb.toFixed(2);
 }
 
+function generateNoise(amount, opacity) {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const size = 128;
+  const imageData = ctx.createImageData(size, size);
+  const length = imageData.data.length;
+
+  canvas.width = size;
+  canvas.height = size;
+
+  for (let i = 0; i < length; i += 4) {
+    if (Math.random() < amount) {
+      imageData.data[i] = 255;
+      imageData.data[i + 1] = 255;
+      imageData.data[i + 2] = 255;
+      imageData.data[i + 3] = Math.round(255 * opacity);
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+
+  return canvas.toDataURL("image/png");
+}
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -52,5 +75,6 @@ export {
   getRandomHslColor,
   getRandomHexColor,
   findFocusableElement,
-  formatBytes
+  formatBytes,
+  generateNoise
 };

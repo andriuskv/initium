@@ -52,6 +52,8 @@ async function fetchWallpaperInfo() {
     wallpaperInfo = info;
     dispatchCustomEvent("wallpaper-info-update", info);
     resetIDBStore();
+    deleteOldServiceWokerCache();
+    localStorage.removeItem("background-info");
     return info;
   }
 }
@@ -99,6 +101,16 @@ function deleteServiceWokerCache() {
   caches.keys().then(keys => {
     keys.forEach(key => {
       if (key === "wallpaper-image-cache") {
+        caches.delete(key);
+      }
+    });
+  });
+}
+
+function deleteOldServiceWokerCache() {
+  caches.keys().then(keys => {
+    keys.forEach(key => {
+      if (key === "background-image-cache") {
         caches.delete(key);
       }
     });

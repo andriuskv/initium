@@ -1,8 +1,9 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
-import { useSettings } from "../contexts/settings-context";
-import Wallpaper from "./Wallpaper";
-import Tasks from "./Tasks";
-import BottomPanel from "./BottomPanel";
+import { generateNoise } from "../utils";
+import { useSettings } from "contexts/settings-context";
+import Wallpaper from "components/Wallpaper";
+import Tasks from "components/Tasks";
+import BottomPanel from "components/BottomPanel";
 
 const Clock = lazy(() => import("./Clock"));
 const Greeting = lazy(() => import("./Greeting"));
@@ -31,6 +32,18 @@ export default function App() {
 
     document.body.style.setProperty("--panel-background-opacity", `${settings.appearance.panelBackgroundOpacity}%`);
     document.body.style.setProperty("--panel-background-blur", `${settings.appearance.panelBackgroundBlur}px`);
+
+    const noise = localStorage.getItem("noise");
+
+    if (noise) {
+      document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
+    }
+    else if (settings.appearance.panelBackgroundNoiseAmount && settings.appearance.panelBackgroundNoiseOpacity) {
+      const noise = generateNoise(settings.appearance.panelBackgroundNoiseAmount, settings.appearance.panelBackgroundNoiseOpacity);
+
+      document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
+      localStorage.setItem("noise", noise);
+    }
   }, []);
 
   useLayoutEffect(() => {
