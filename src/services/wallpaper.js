@@ -119,7 +119,7 @@ function deleteOldServiceWokerCache() {
 
 function setUrlWallpaper(url) {
   setTimeout(() => {
-    cacheDownscaledWallpaper({ url });
+    cacheDownscaledWallpaper({ url, source: "url" });
     resetWallpaperInfo();
     resetIDBStore();
   }, 1000);
@@ -147,9 +147,16 @@ async function getIDBWallpaper(id) {
 
 async function setIDBWallpaper(image) {
   const { createStore, set, clear } = await import("idb-keyval");
-  const store = createStore("initium", "wallpaper");
+  let store = null;
 
-  await clear(store);
+  try {
+    store = createStore("initium", "wallpaper");
+    await clear(store);
+  } catch (e) {
+    console.log(e);
+    await indexedDB.deleteDatabase("initium");
+    store = createStore("initium", "wallpaper");
+  }
   await set(image.name, image, store);
 
   setTimeout(() => {
@@ -162,14 +169,19 @@ async function setIDBWallpaper(image) {
 }
 
 async function resetIDBStore() {
-  const { createStore, clear } = await import("idb-keyval");
-  const store = createStore("initium", "wallpaper");
+  try {
+    const { createStore, clear } = await import("idb-keyval");
+    const store = createStore("initium", "wallpaper");
 
-  clear(store);
+    clear(store);
+  } catch (e) {
+    console.log(e);
+    indexedDB.deleteDatabase("initium");
+  }
 }
 
-async function cacheDownscaledWallpaper({ url, id = url }) {
-  const image = await preloadImage(url);
+async function cacheDownscaledWallpaper({ url, id = url, source }) {
+  const image = await preloadImage(url, source);
 
   createDownscaledWallpaper({ id, image });
 }
@@ -207,7 +219,7 @@ function updateDownscaledWallpaperPosition(x, y) {
   localStorage.setItem("downscaled-wallpaper", JSON.stringify(wallpaper));
 }
 
-function preloadImage(url) {
+function preloadImage(url, source) {
   return new Promise(resolve => {
     const image = new Image();
     image.crossOrigin = "anonymous";
@@ -215,6 +227,18 @@ function preloadImage(url) {
     image.onload = () => {
       resolve(image);
     };
+
+    image.onerror = (e) => {
+      console.log(e);
+
+      if (source === "url") {
+        localStorage.setItem("downscaled-wallpaper", JSON.stringify({ url }));
+      }
+      else {
+        localStorage.removeItem("downscaled-wallpaper");
+      }
+    };
+
     image.src = url;
   });
 }
@@ -226,5 +250,6 @@ export {
   setUrlWallpaper,
   getIDBWallpaper,
   setIDBWallpaper,
+  resetIDBStore,
   updateDownscaledWallpaperPosition
 };

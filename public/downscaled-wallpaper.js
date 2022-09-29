@@ -1,7 +1,7 @@
 const wallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper"));
 
 if (wallpaper) {
-  const { dataURL, x = 50, y = 50 } = wallpaper;
+  const { url, dataURL = url, x = 50, y = 50 } = wallpaper;
 
   document.body.insertAdjacentHTML("beforeend", `
     <div id="downscaled-wallpaper">
