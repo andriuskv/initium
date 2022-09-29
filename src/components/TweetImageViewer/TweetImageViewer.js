@@ -47,7 +47,7 @@ export default function TweetImageViewer({ data, hide }) {
   }
   return (
     <div className="fullscreen-mask tweet-image-viewer" onClick={handleClick}>
-      {!loaded && <Spinner/>}
+      {!loaded && <Spinner className="tweet-image-viewer-spinner"/>}
       <div className={`viewer-image-container${loaded ? " visible" : ""}`}>
         {images.length > 1 && (
           <button className="btn icon-btn viewer-direction-btn left"

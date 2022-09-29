@@ -88,3 +88,8 @@
   top: var(--space-sm);
   right: var(--space-sm);
 }
+
+.tweet-image-viewer-spinner {
+  width: 48px;
+  height: 48px;
+}
