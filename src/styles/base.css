@@ -405,9 +405,13 @@ textarea {
 }
 
 .toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 50%;
   padding: var(--space-xs) var(--space-md);
-  text-align: center;
+  font-weight: bold;
+  line-height: 1;
 }
 
 .range-input {
@@ -502,6 +506,16 @@ textarea {
 
   to {
     opacity: 0;
+  }
+}
+
+@keyframes scale-up {
+  from {
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
   }
 }
 

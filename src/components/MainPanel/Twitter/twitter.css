@@ -26,6 +26,11 @@
   justify-content: center;
 }
 
+.twitter-content-mask-spinner {
+  width: 48px;
+  height: 48px;
+}
+
 .twitter-user {
   display: flex;
   align-items: center;

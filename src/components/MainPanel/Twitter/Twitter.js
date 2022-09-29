@@ -333,7 +333,7 @@ export default function Twitter({ showIndicator }) {
       )}
       {changingUser && (
         <div className="twitter-content-mask">
-          <Spinner/>
+          <Spinner className="twitter-content-mask-spinner"/>
         </div>
       )}
     </div>
