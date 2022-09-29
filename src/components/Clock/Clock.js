@@ -4,21 +4,25 @@ import "./clock.css";
 
 export default function Clock({ settings }) {
   const [clock, setClock] = useState(() => ({ ...getDisplayTime() }));
+  const [date, setDate] = useState(() => ({ day: new Date().getDate() }));
   const timeoutId = useRef(0);
-  const [date, setDate] = useState(null, []);
 
   useEffect(() => {
     if (settings.clockDisabled) {
       return;
     }
-    updateTime();
+    update();
 
     return () => {
       clearTimeout(timeoutId.current);
     };
-  }, [settings]);
+  }, [settings, date]);
 
   useEffect(() => {
+    updateDate();
+  }, [settings.dateLocale]);
+
+  function updateDate() {
     let locale = settings.dateLocale;
 
     if (locale === "system") {
@@ -29,18 +33,22 @@ export default function Clock({ settings }) {
     try {
       const date = new Intl.DateTimeFormat(locale, options).format();
 
-      setDate(date);
+      setDate({ day: new Date().getDate(), string: date });
     } catch (e) {
       console.log(e);
       const date = new Intl.DateTimeFormat("en-US", options).format();
 
-      setDate(date);
+      setDate({ day: new Date().getDate(), string: date });
     }
-  }, [settings.dateLocale]);
+  }
 
-  function updateTime() {
+  function update() {
     setClock({ ...getDisplayTime() });
-    timeoutId.current = setTimeout(updateTime, 1000);
+
+    if (new Date().getDate() !== date.day) {
+      updateDate();
+    }
+    timeoutId.current = setTimeout(update, 1000);
   }
 
   return (
@@ -50,8 +58,7 @@ export default function Clock({ settings }) {
       {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
       {settings.dateHidden ? null : (
         <div className={`clock-date${settings.boldedDate ? " bolded" : ""}${settings.dontChangeDateStyle ? " ignore-style" : ""}`}
-          style={{ "--date-scale": settings.dateScale }}
-          dangerouslySetInnerHTML={{ __html: date }}></div>
+          style={{ "--date-scale": settings.dateScale }}>{date.string}</div>
       )}
     </div>
   );
