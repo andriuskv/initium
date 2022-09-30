@@ -59,6 +59,7 @@
   overflow-y: auto;
   flex-grow: 1;
   flex-basis: 0;
+  width: 100%;
 }
 
 .task-form-textarea-container {

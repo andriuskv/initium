@@ -33,6 +33,7 @@
 .setting-wallpaper-items {
   display: flex;
   height: 32px;
+  border-top: 1px solid var(--color-white-10);
 }
 
 .setting-wallpaper-item {

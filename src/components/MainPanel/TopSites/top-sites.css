@@ -56,7 +56,7 @@
   border: 1px solid transparent;
 
   &:hover, &:focus-visible {
-    & .top-site-icon {
+    & .top-site-icon, & .top-site-add-btn-icon {
       transform: scale(1.2);
     }
   }
@@ -97,6 +97,7 @@
 .top-site-add-btn-icon {
   width: 32px;
   height: 32px;
+  transition: 0.2s transform;
 }
 
 .top-site-thumbnail-container {

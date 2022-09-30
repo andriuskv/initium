@@ -60,6 +60,10 @@
       margin: auto;
     }
 
+    & .top-panel-item-content {
+      height: auto;
+    }
+
     & .timer-selected-preset-name {
       min-height: auto;
     }
