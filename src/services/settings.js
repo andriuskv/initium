@@ -46,7 +46,7 @@ function getDefault() {
       panelBackgroundOpacity: 50,
       panelBackgroundBlur: 12,
       panelBackgroundNoiseAmount: 0.12,
-      panelBackgroundNoiseOpacity: 0.02,
+      panelBackgroundNoiseOpacity: 0.025,
       wallpaper: { url: "" }
     },
     timeDate: {
@@ -58,7 +58,7 @@ function getDefault() {
       dateHidden: false,
       boldedDate: false,
       dateScale: 1.2,
-      dateOffset: 8,
+      dateOffset: 12,
       datePosition: "bottom",
       dateAligment: "center",
       dontChangeDateStyle: false,
