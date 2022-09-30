@@ -230,7 +230,6 @@ export default function AppearanceTab() {
     });
   }
 
-
   function selectColor(index) {
     if (index !== colorIndex) {
       const color = colors[index];

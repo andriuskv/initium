@@ -59,6 +59,18 @@ export default function App() {
     window.addEventListener("greeting-editor-visible", showGreetingEditor);
     window.addEventListener("top-panel-visible", renderTopPanel, { once: true });
 
+    localStorage.removeItem("downscaled-background");
+    localStorage.removeItem("background-info");
+    localStorage.removeItem("twitter-highlight-color");
+
+    caches.keys().then(keys => {
+      keys.forEach(key => {
+        if (key === "background-image-cache") {
+          caches.delete(key);
+        }
+      });
+    });
+
     return () => {
       window.removeEventListener("wallpaper-viewer-visible", showWallpaperViewer);
       window.removeEventListener("tweet-image-viewer-visible", showTweetImageViewer);
