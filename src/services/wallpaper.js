@@ -103,6 +103,9 @@ function deleteServiceWokerCache() {
       if (key === "wallpaper-image-cache") {
         caches.delete(key);
       }
+      else if (key === "background-image-cache") {
+        caches.delete(key);
+      }
     });
   });
 }
