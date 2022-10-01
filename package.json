@@ -2,7 +2,6 @@
   "name": "initium",
   "version": "0.0.0",
   "license": "GPL-3.0",
-  "repository": "",
   "scripts": {
     "webpack": "source config/env && webpack --progress",
     "start": "npm run dist && npm run webpack -- --watch",
@@ -34,7 +33,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.1",
-    "postcss": "^8.4.16",
+    "postcss": "^8.4.17",
     "postcss-import": "^15.0.0",
     "postcss-loader": "^7.0.1",
     "postcss-mixins": "^9.0.4",

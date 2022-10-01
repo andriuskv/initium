@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { convertTemperature } from "services/weather";
 import Icon from "components/Icon";
 import Spinner from "components/Spinner";
 import "./more-weather.css";
@@ -12,8 +13,10 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
       return;
     }
     const maxHourlyTemp = more.hourly.reduce((max, item) => {
-      if (item.temperature > max) {
-        max = item.temperature;
+      const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
+
+      if (temp > max) {
+        max = temp;
       }
       return max;
     }, -Infinity);
@@ -24,13 +27,20 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
 
   function getTempPath(closePath) {
     let path = "";
+    let offset = 0;
 
     for (const [index, item] of Object.entries(more.hourly)) {
-      const y = getSvgY(item.temperature);
+      const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
+      const y = getSvgY(temp);
 
       // 576 = container width; 24 = item count
       // 24 = 576 / 24
-      path += ` L${Number(index) * 24} ${y}`;
+      path += ` L${Number(index) * 24 + offset} ${y}`;
+
+      // Skip first point
+      if (offset === 0) {
+        offset = 12;
+      }
     }
 
     if (closePath) {
@@ -40,7 +50,7 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
   }
 
   function getSvgY(current, offset = 0) {
-    return (100 - ((current / (maxHourlyTemp + maxHourlyTemp * 0.5)) * 100) - offset).toFixed(2);
+    return (100 - ((current / (maxHourlyTemp + maxHourlyTemp * 0.8)) * 100) - offset).toFixed(2);
   }
 
   function renderWindView(items) {
@@ -79,12 +89,16 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
   }
 
   function renderTempValues() {
-    return more.hourly.filter((_, index) => index % 3 === 1).map((item, index) => {
-      const x = `calc(${index * 72 + 36}px - ${item.temperature.toString().length / 2}ch)`;
-      const y = `${getSvgY(item.temperature, 10)}px`;
+    return more.hourly.map((item, index) => {
+      const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
+      const x = `calc(${index * 24 + 12}px - ${item.temperature.toString().length / 2}ch)`;
+      const y = `${getSvgY(temp, 12)}px`;
 
-      return <text className="weather-more-hourly-temp-view-text" style={{ transform: `translate(${x}, ${y})` }}
-        key={item.id}>{item.temperature}°</text>;
+      if (index % 3 === 1) {
+        return <text className="weather-more-hourly-temp-view-text" style={{ transform: `translate(${x}, ${y})` }}
+          key={item.id}>{item.temperature}°</text>;
+      }
+      return null;
     });
   }
 
