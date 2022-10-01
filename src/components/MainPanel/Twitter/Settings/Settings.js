@@ -10,7 +10,8 @@ export default function Settings({ settings, defaultColor, updateSetting, hide }
     "#7856ff",
     "#ff7a00",
     "#00ba7c",
-    defaultColor
+    defaultColor,
+    "var(--color-primary)"
   ];
 
   function handleVideoQualityChange(event) {
