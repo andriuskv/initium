@@ -27,7 +27,7 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
       const cachedUser = getCachedUser(target.textContent);
 
       if (cachedUser) {
-        target.addEventListener("pointerleave", handleTweetPointerLeave, { once: true });
+        target.addEventListener("pointerleave", handleLinkPointerLeave, { once: true });
         showUserCard(target, cachedUser);
       }
       else {
@@ -43,7 +43,7 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
           const user = await fetchUserByHandle(handle);
 
           if (hoveringOverHandle.current) {
-            target.addEventListener("pointerleave", handleTweetPointerLeave, { once: true });
+            target.addEventListener("pointerleave", handleLinkPointerLeave, { once: true });
             showUserCard(target, user);
 
             hoveringOverHandle.current = false;
@@ -56,6 +56,14 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
         }
       }
     }
+    else {
+      hoveringOverHandle.current = false;
+    }
+  }
+
+  function handleLinkPointerLeave(event) {
+    hoveringOverHandle.current = false;
+    handleTweetPointerLeave(event);
   }
 
   function handleTweetImageClick(event, media, index) {
@@ -184,20 +192,20 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
           <Icon id="retweet"/>
           <a href={tweet.retweetedBy.url} className="retweet-by" target="_blank" rel="noreferrer"
             onPointerEnter={event => handleTweetUserPointerEnter(event, tweet.retweetedBy)}
-            onPointerLeave={handleTweetPointerLeave}>{tweet.retweetedBy.name} Retweeted</a>
+            onPointerLeave={handleLinkPointerLeave}>{tweet.retweetedBy.name} Retweeted</a>
         </div>
       )}
       <div className="tweet-content">
         <div className="tweet-user-image-container">
           <a href={tweet.user.url} className="tweet-user-image-link" target="_blank" rel="noreferrer"
-            onPointerEnter={event => handleTweetUserPointerEnter(event, tweet.user)} onPointerLeave={handleTweetPointerLeave}>
+            onPointerEnter={event => handleTweetUserPointerEnter(event, tweet.user)} onPointerLeave={handleLinkPointerLeave}>
             <img src={tweet.user.profileImageUrl} className="tweet-user-image" width="48px" height="48px" loading="lazy" alt=""/>
           </a>
         </div>
         <div className="tweet-content-body">
           <div className="tweet-info">
             <a href={tweet.user.url} className="tweet-user-info" target="_blank" rel="noreferrer"
-              onPointerEnter={event => handleTweetUserPointerEnter(event, tweet.user)} onPointerLeave={handleTweetPointerLeave}>
+              onPointerEnter={event => handleTweetUserPointerEnter(event, tweet.user)} onPointerLeave={handleLinkPointerLeave}>
               <span className="tweeted-by-name">{tweet.user.name}</span>
               {tweet.user.verified ? <Icon id="verified" className="tweet-verified-icon"/> : null}
               <span className="tweet-user-handle">
@@ -217,7 +225,7 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
               <div className="tweet-info">
                 <div className="tweet-user-info quoted-tweet-info"
                   onPointerEnter={event => handleTweetUserPointerEnter(event, tweet.quotedTweet.user, true)}
-                  onPointerLeave={handleTweetPointerLeave}>
+                  onPointerLeave={handleLinkPointerLeave}>
                   <img src={tweet.quotedTweet.user.profileImageUrl} className="quoted-tweet-user-image" loading="lazy" alt=""/>
                   <span className="tweeted-by-name">{tweet.quotedTweet.user.name}</span>
                   {tweet.quotedTweet.user.verified ? <Icon id="verified" className="tweet-verified-icon"/> : null}
