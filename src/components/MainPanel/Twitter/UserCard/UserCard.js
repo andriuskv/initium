@@ -30,6 +30,9 @@ export default function UserCard({ userCard, handlePointerEnter, handlePointerLe
       }
       setState({ offset, onTop, onRight, visible: true });
     }
+    else {
+      setState({});
+    }
   }, [userCard.reveal]);
 
   function getStyles() {
