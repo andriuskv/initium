@@ -13,3 +13,9 @@
     border-right: 1px solid var(--color-white-10);
   }
 }
+
+.setting-reset {
+  margin-top: auto;
+  border-top: 1px solid var(--color-white-10);
+  border-bottom: none;
+}

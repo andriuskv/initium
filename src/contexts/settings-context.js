@@ -1,5 +1,5 @@
 import { createContext, useState, useContext } from "react";
-import * as settingsService from "../services/settings";
+import * as settingsService from "services/settings";
 
 const SettingsContext = createContext();
 
@@ -22,7 +22,14 @@ function SettingsProvider({ children }) {
     });
   }
 
-  return <SettingsContext.Provider value={{ settings, setSetting, updateSetting, toggleSetting }}>{children}</SettingsContext.Provider>;
+  function resetSettings() {
+    const settings = { ...settingsService.resetSettings() };
+
+    setSettings(settings);
+    return settings;
+  }
+
+  return <SettingsContext.Provider value={{ settings, setSetting, updateSetting, toggleSetting, resetSettings }}>{children}</SettingsContext.Provider>;
 }
 
 function useSettings() {

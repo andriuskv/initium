@@ -1,4 +1,6 @@
-const settings = initSettings();
+import { generateNoise } from "../utils";
+
+let settings = initSettings();
 
 function initSettings() {
   const settings = JSON.parse(localStorage.getItem("settings")) || {};
@@ -33,6 +35,27 @@ function initSettings() {
     delete settings.general.backgroundBlurRadius;
   }
   return copyObject(settings, getDefault());
+}
+
+function initAppearanceSettings(settings) {
+  document.body.style.setProperty("--accent-hue", settings.accentColor.hue);
+  document.body.style.setProperty("--accent-saturation", settings.accentColor.saturation);
+  document.body.style.setProperty("--accent-lightness", settings.accentColor.lightness);
+
+  document.body.style.setProperty("--panel-background-opacity", `${settings.panelBackgroundOpacity}%`);
+  document.body.style.setProperty("--panel-background-blur", `${settings.panelBackgroundBlur}px`);
+
+  const noise = localStorage.getItem("noise");
+
+  if (noise) {
+    document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
+  }
+  else if (settings.panelBackgroundNoiseAmount && settings.panelBackgroundNoiseOpacity) {
+    const noise = generateNoise(settings.panelBackgroundNoiseAmount, settings.panelBackgroundNoiseOpacity);
+
+    document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
+    localStorage.setItem("noise", noise);
+  }
 }
 
 function getDefault() {
@@ -108,6 +131,12 @@ function copyObject(target, source) {
   return target;
 }
 
+function resetSettings() {
+  localStorage.removeItem("settings");
+  settings = initSettings();
+  return settings;
+}
+
 function getSettings() {
   return settings;
 }
@@ -133,6 +162,8 @@ function updateSetting(setting) {
 }
 
 export {
+  initAppearanceSettings,
+  resetSettings,
   getSettings,
   getSetting,
   setSetting,
