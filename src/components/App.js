@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
-import { generateNoise } from "../utils";
+import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings-context";
 import Wallpaper from "components/Wallpaper";
 import Tasks from "components/Tasks";
@@ -26,24 +26,7 @@ export default function App() {
   const weatherTimeoutId = useRef(0);
 
   useLayoutEffect(() => {
-    document.body.style.setProperty("--accent-hue", settings.appearance.accentColor.hue);
-    document.body.style.setProperty("--accent-saturation", settings.appearance.accentColor.saturation);
-    document.body.style.setProperty("--accent-lightness", settings.appearance.accentColor.lightness);
-
-    document.body.style.setProperty("--panel-background-opacity", `${settings.appearance.panelBackgroundOpacity}%`);
-    document.body.style.setProperty("--panel-background-blur", `${settings.appearance.panelBackgroundBlur}px`);
-
-    const noise = localStorage.getItem("noise");
-
-    if (noise) {
-      document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
-    }
-    else if (settings.appearance.panelBackgroundNoiseAmount && settings.appearance.panelBackgroundNoiseOpacity) {
-      const noise = generateNoise(settings.appearance.panelBackgroundNoiseAmount, settings.appearance.panelBackgroundNoiseOpacity);
-
-      document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
-      localStorage.setItem("noise", noise);
-    }
+    initAppearanceSettings(settings.appearance);
   }, []);
 
   useLayoutEffect(() => {
