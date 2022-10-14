@@ -111,8 +111,13 @@
 }
 
 .tasks-group-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 var(--space-md);
   margin-right: var(--space-md);
-  padding: var(--space-sm) var(--space-md);
   border-radius: 99px;
   background-color: var(--color-white-10);
   box-shadow:
@@ -120,7 +125,6 @@
     2px 4px 4px 0 var(--color-black-2);
   font-weight: bold;
   font-size: var(--text-sm);
-  line-height: 1.22;
 }
 
 .tasks-group-title {

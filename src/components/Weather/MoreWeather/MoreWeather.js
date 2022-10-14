@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { convertTemperature } from "services/weather";
 import Icon from "components/Icon";
 import Spinner from "components/Spinner";
+import Dropdown from "components/Dropdown";
 import "./more-weather.css";
 
-export default function MoreWeather({ current, more, units, view, selectView, hide }) {
+export default function MoreWeather({ current, more, units, speedUnits, view, selectView, toggleUnits, hide }) {
   const [ready, setReady] = useState(false);
   const [maxHourlyTemp, setMaxHourlyTemp] = useState();
 
@@ -75,7 +76,7 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
           }
           return (
             <div className="weather-more-hourly-wind-view-item" key={id}>
-              <div className="weather-more-hourly-wind-view-item-speed">{wind.speed} m/s</div>
+              <div className="weather-more-hourly-wind-view-item-speed">{Math.round(wind.speed)} {speedUnits}</div>
               <svg viewBox="0 0 24 24" className="weather-more-hourly-wind-view-item-icon"
                 style={{ "--degrees": wind.direction.degrees, "--ratio": ratio }}>
                 <title>{wind.direction.name}</title>
@@ -91,12 +92,12 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
   function renderTempValues() {
     return more.hourly.map((item, index) => {
       const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
-      const x = `calc(${index * 24 + 12}px - ${item.temperature.toString().length / 2}ch)`;
+      const x = `calc(${index * 24 + 12}px - ${Math.round(item.temperature).toString().length / 2}ch)`;
       const y = `${getSvgY(temp, 12)}px`;
 
       if (index % 3 === 1) {
         return <text className="weather-more-hourly-temp-view-text" style={{ transform: `translate(${x}, ${y})` }}
-          key={item.id}>{item.temperature}°</text>;
+          key={item.id}>{Math.round(item.temperature)}°</text>;
       }
       return null;
     });
@@ -144,7 +145,7 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
           <div className="weather-more-current-city">{current.city}</div>
           <div className="weather-more-current-main-info">
             <div className="weather-more-current-temperature">
-              <div className="weather-more-current-temperature-value">{current.temperature}</div>
+              <div className="weather-more-current-temperature-value">{Math.round(current.temperature)}</div>
               <div className="weather-more-current-temperature-units">°{units}</div>
             </div>
             <div className="weather-more-current-secondary">
@@ -159,7 +160,7 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
               <div className="weather-more-current-secondary-item">
                 <span className="weather-more-current-secondary-name">Wind:</span>
                 <span className="weather-more-current-wind">
-                  <span>{current.wind.speed} m/s</span>
+                  <span>{Math.round(current.wind.speed)} {speedUnits}</span>
                   <svg viewBox="0 0 24 24" className="weather-more-current-wind-icon"
                     style={{ "--degrees": current.wind.direction.degrees }}>
                     <title>{current.wind.direction.name}</title>
@@ -202,14 +203,36 @@ export default function MoreWeather({ current, more, units, view, selectView, hi
                 <div className="weather-more-daily-weekday-name">{item.weekday}</div>
                 <img src={item.icon} alt={item.description} width="64px" height="64px" loading="lazy"/>
                 <div className="weather-more-daily-weekday-temp">
-                  <div>{item.temperature.min}°</div>
-                  <div>{item.temperature.max}°</div>
+                  <div>{Math.round(item.temperature.min)}°</div>
+                  <div>{Math.round(item.temperature.max)}°</div>
                 </div>
               </div>
             ))}
           </div>
         </>
       ) : <Spinner className="weather-more-spinner"/>}
+      <Dropdown container={{ className: "weather-more-settings" }} toggle={{ iconId: "settings" }}>
+        <label className="weather-more-setting">
+          <div>Temperature units</div>
+          <input type="checkbox" className="sr-only toggle-input"
+            checked={units === "F"}
+            onChange={() => toggleUnits("temp")}/>
+          <div className="toggle">
+            <div className="toggle-item">°C</div>
+            <div className="toggle-item">°F</div>
+          </div>
+        </label>
+        <label className="weather-more-setting">
+          <div>Wind speed units</div>
+          <input type="checkbox" className="sr-only toggle-input"
+            checked={speedUnits === "ft/s"}
+            onChange={() => toggleUnits("wind")}/>
+          <div className="toggle">
+            <div className="toggle-item">m/s</div>
+            <div className="toggle-item">ft/s</div>
+          </div>
+        </label>
+      </Dropdown>
       <button className="btn icon-btn weather-more-hide-btn" onClick={hide} title="Hide">
         <Icon id="cross"/>
       </button>

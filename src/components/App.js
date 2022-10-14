@@ -162,7 +162,7 @@ export default function App() {
       </Suspense>
       <Suspense fallback={null}>
         {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
-        {weather.rendered && <Weather settings={settings.weather} timeFormat={settings.timeDate.format}/>}
+        {weather.rendered && <Weather timeFormat={settings.timeDate.format}/>}
         {wallpaperViewerVisible && <WallpaperViewer settings={settings.appearance.wallpaper} hide={hideWallpaperViewer}/>}
         {tweetImageData && <TweetImageViewer data={tweetImageData} hide={hideTweetImageViewer}/>}
       </Suspense>

@@ -147,7 +147,7 @@ export default function MainPanel({ settings }) {
       tab.indicatorVisible = false;
       setTabs({ ...tabs });
     }
-    setActiveTab({ id: newId, manuallySelected: true });
+    setActiveTab({ id: newId });
     localStorage.setItem("mainPanelTab", newId);
   }
 

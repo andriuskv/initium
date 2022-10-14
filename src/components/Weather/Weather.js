@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
-import { fetchWeather, fetchMoreWeather, convertTemperature } from "services/weather";
+import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
 import { getIincreasedZIndex, handleZIndex } from "services/zIndex";
+import { useSettings } from "contexts/settings-context";
 import Icon from "../Icon";
 import "./weather.css";
 
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
-export default function Weather({ settings, timeFormat }) {
+export default function Weather({ timeFormat }) {
+  const { settings: { weather: settings }, updateSetting } = useSettings();
   const [state, setState] = useState({ view: "temp" });
   const [current, setCurrentWeather] = useState(null);
   const [moreWeather, setMoreWeather] = useState(null);
@@ -60,6 +62,28 @@ export default function Weather({ settings, timeFormat }) {
   }, [settings.units]);
 
   useEffect(() => {
+    if (current) {
+      setCurrentWeather({
+        ...current,
+        wind: {
+          ...current.wind,
+          speed: convertWindSpeed(current.wind.speed, settings.speedUnits)
+        }
+      });
+
+      if (moreWeather) {
+        setMoreWeather({
+          hourly: [...moreWeather.hourly.map(item => {
+            item.wind.speed = convertWindSpeed(item.wind.speed, settings.speedUnits);
+            return item;
+          })],
+          daily: moreWeather.daily
+        });
+      }
+    }
+  }, [settings.speedUnits]);
+
+  useEffect(() => {
     if (moreWeather) {
       setMoreWeather({
         ...moreWeather,
@@ -84,16 +108,26 @@ export default function Weather({ settings, timeFormat }) {
     }
   }, [current, state.visible]);
 
+  function toggleUnits(type) {
+    if (type === "temp") {
+      const { units } = settings;
+
+      updateSetting("weather", { units: units === "C" ? "F" : "C" });
+    }
+    else if (type === "wind") {
+      const { speedUnits } = settings;
+
+      updateSetting("weather", { speedUnits: speedUnits === "m/s" ? "ft/s" : "m/s" });
+    }
+  }
+
   function scheduleWeatherUpdate() {
     timeoutId.current = setTimeout(updateWeather, 1200000);
   }
 
   function showMoreWeather() {
     zIndex.current = getIincreasedZIndex();
-    state.reveal = true;
-
-    setState({ ...state });
-    updateMoreWeather(current.coords);
+    setState({ ...state, reveal: true });
   }
 
   function hideMoreWeather() {
@@ -142,6 +176,8 @@ export default function Weather({ settings, timeFormat }) {
       return;
     }
     try {
+      lastMoreWeatherUpdate.current = Date.now();
+
       const json = await fetchMoreWeather(coords);
 
       setCurrentWeather({ ...current, precipitation: json.hourly[0].precipitation });
@@ -149,7 +185,6 @@ export default function Weather({ settings, timeFormat }) {
         hourly: json.hourly,
         daily: json.daily
       });
-      lastMoreWeatherUpdate.current = Date.now();
     }
     catch (e) {
       console.log(e);
@@ -164,7 +199,8 @@ export default function Weather({ settings, timeFormat }) {
       <div className="weather" style={{ "--z-index": zIndex.current }} onClick={handleZIndex}>
         <div className={`container weather-more${state.visible ? " visible" : ""}`}>
           <Suspense fallback={null}>
-            <MoreWeather current={current} more={moreWeather} units={settings.units} view={state.view} selectView={selectView} hide={hideMoreWeather}/>
+            <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits} view={state.view}
+              selectView={selectView} toggleUnits={toggleUnits} hide={hideMoreWeather}/>
           </Suspense>
         </div>
       </div>
@@ -178,7 +214,7 @@ export default function Weather({ settings, timeFormat }) {
       <div className="weather-current">
         <div className="weather-temperature-icon-container">
           <div className="weather-temperature">
-            <span className="weather-temperature-value">{current.temperature}</span>
+            <span className="weather-temperature-value">{Math.round(current.temperature)}</span>
             <span className="weather-temperature-units">°{settings.units}</span>
           </div>
           <img src={current.icon} className="weather-icon" width="80px" height="80px" alt=""/>
