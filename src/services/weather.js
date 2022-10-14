@@ -60,23 +60,34 @@ function fetchCoords() {
   });
 }
 
-function convertTemperature(temp, units) {
+function convertTemperature(value, units) {
   if (units === "F") {
-    temp = temp * 1.8 + 32;
+    value = value * 1.8 + 32;
   }
   else {
-    temp = (temp - 32) / 1.8;
+    value = (value - 32) / 1.8;
   }
-  return Math.round(temp);
+  return value;
+}
+
+function convertWindSpeed(value, units) {
+  if (units === "m/s") {
+    value = value * 0.3048;
+  }
+  else {
+    value = value / 0.3048;
+  }
+  return value;
 }
 
 function fetchWeatherData(params) {
-  const { units } = getSetting("weather");
-  return fetch(`${process.env.SERVER_URL}/owm?${params}&units=${units}`).then(res => res.json());
+  const { units, speedUnits } = getSetting("weather");
+  return fetch(`${process.env.SERVER_URL}/owm?${params}&units=${units},${speedUnits}`).then(res => res.json());
 }
 
 export {
   fetchWeather,
   fetchMoreWeather,
-  convertTemperature
+  convertTemperature,
+  convertWindSpeed
 };

@@ -1,10 +1,19 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useMemo } from "react";
 import * as settingsService from "services/settings";
 
 const SettingsContext = createContext();
 
 function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(() => settingsService.getSettings());
+  const memoizedValue = useMemo(() => {
+    return {
+      settings,
+      setSetting,
+      updateSetting,
+      toggleSetting,
+      resetSettings
+    };
+  }, [settings]);
 
   function setSetting(group, setting) {
     setSettings({ ...settingsService.setSetting({ [group]: setting }) });
@@ -29,7 +38,7 @@ function SettingsProvider({ children }) {
     return settings;
   }
 
-  return <SettingsContext.Provider value={{ settings, setSetting, updateSetting, toggleSetting, resetSettings }}>{children}</SettingsContext.Provider>;
+  return <SettingsContext.Provider value={memoizedValue}>{children}</SettingsContext.Provider>;
 }
 
 function useSettings() {

@@ -105,7 +105,8 @@ function getDefault() {
       disabled: false,
       useGeo: false,
       cityName: "",
-      units: "C"
+      units: "C",
+      speedUnits: "m/s"
     },
     topPanel: {
       alarmVolume: 0.2,

@@ -244,6 +244,30 @@
   margin: auto;
 }
 
+.weather-more-settings {
+  position: absolute;
+  top: var(--space-sm);
+  right: 34px;
+
+  & .dropdown {
+    width: 200px;
+  }
+}
+
+.weather-more-setting {
+  padding: 0 var(--space-md);
+
+  & > div {
+    margin-bottom: var(--space-md);
+  }
+
+  &:not(:first-of-type) {
+    padding-top: var(--space-md);
+    margin-top: var(--space-md);
+    border-top: 1px solid var(--color-white-10);
+  }
+}
+
 .weather-more-hide-btn {
   position: absolute;
   top: var(--space-sm);
