@@ -20,10 +20,28 @@ import {
 } from "@dnd-kit/modifiers";
 import { CSS } from "@dnd-kit/utilities";
 
+class CustomKeyboardSensor extends KeyboardSensor {
+  static activators = [
+    {
+      eventName: "onKeyDown",
+      handler: ({ nativeEvent: event }) => {
+        if (event.key === " " || event.key === "Enter") {
+          if (event.target.getAttribute("aria-roledescription") === "sortable") {
+            event.preventDefault();
+            return true;
+          }
+          return false;
+        }
+        return false;
+      }
+    }
+  ];
+}
+
 function SortableList({ children, items, axis, handleDragStart, handleSort }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, {
+    useSensor(CustomKeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   );
