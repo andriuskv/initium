@@ -110,7 +110,8 @@ function getDefault() {
     },
     topPanel: {
       alarmVolume: 0.2,
-      fullscreenTextScale: 1.5
+      fullscreenTextScale: 1.5,
+      showMinimal: false
     },
     pomodoro: {
       duration: 25,

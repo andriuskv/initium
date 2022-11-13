@@ -246,8 +246,8 @@
 
 .weather-more-settings {
   position: absolute;
-  top: var(--space-sm);
-  right: 34px;
+  top: 6px;
+  right: 40px;
 
   & .dropdown {
     width: 200px;
@@ -270,6 +270,6 @@
 
 .weather-more-hide-btn {
   position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
+  top: 6px;
+  right: 6px;
 }

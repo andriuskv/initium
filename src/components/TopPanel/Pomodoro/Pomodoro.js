@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { setPageTitle } from "../../../utils";
 import { padTime } from "services/timeDate";
 import { getSetting, updateSetting } from "services/settings";
+import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
 import Icon from "components/Icon";
 import "./pomodoro.css";
 
-export default function Pomodoro({ visible, expand, exitFullscreen }) {
+export default function Pomodoro({ visible, expand, exitFullscreen, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => {
     const { duration } = getSetting("pomodoro");
@@ -17,12 +18,15 @@ export default function Pomodoro({ visible, expand, exitFullscreen }) {
   const [settingForm, setSettingForm] = useState(null);
   const timeoutId = useRef(0);
 
-
   useEffect(() => {
     if (running) {
       timeoutId.current = setTimeout(() => {
         update(state.duration, performance.now());
       }, 1000);
+      addToRunning("pomodoro");
+    }
+    else {
+      removeFromRunning("pomodoro");
     }
     return () => {
       clearTimeout(timeoutId.current);
@@ -43,12 +47,12 @@ export default function Pomodoro({ visible, expand, exitFullscreen }) {
       setAlarm({ ...alarm, element: new Audio("./assets/alarm.mp3") });
     }
     setRunning(true);
-    updatePageTitle(state);
+    updateTitle(state);
   }
 
   function stop() {
     setRunning(false);
-    setPageTitle();
+    updateTitle();
   }
 
   function update(duration, elapsed) {
@@ -61,7 +65,7 @@ export default function Pomodoro({ visible, expand, exitFullscreen }) {
     const state = parseDuration(duration);
 
     setState(state);
-    updatePageTitle(state);
+    updateTitle(state);
 
     if (duration > 0) {
       timeoutId.current = setTimeout(() => {
@@ -76,7 +80,10 @@ export default function Pomodoro({ visible, expand, exitFullscreen }) {
     }
   }
 
-  function reset() {
+  async function reset() {
+    if (isLastRunningTimer("pomodoro")) {
+      await handleReset("pomodoro");
+    }
     resetTimer(mode);
 
     if (running) {
@@ -85,8 +92,17 @@ export default function Pomodoro({ visible, expand, exitFullscreen }) {
     }
   }
 
-  function updatePageTitle({ hours, minutes, seconds }) {
-    setPageTitle(`${hours ? `${hours} h ` : ""}${hours || minutes ? `${minutes} m ` : ""}${seconds} s${getAlarmIcon()}`);
+  function updateTitle(values) {
+    if (isLastRunningTimer("pomodoro")) {
+      if (values) {
+        const { hours, minutes, seconds } = values;
+
+        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes ? `${minutes} m ` : ""}${seconds} s${getAlarmIcon()}`);
+      }
+      else {
+        setPageTitle();
+      }
+    }
   }
 
   function selectMode(newMode) {
@@ -167,7 +183,7 @@ export default function Pomodoro({ visible, expand, exitFullscreen }) {
   }
 
   return (
-    <div className={`top-panel-item${visible ? " visible" : ""}`}>
+    <div className={`top-panel-item pomodoro${visible ? " visible" : ""}`}>
       {settingForm ? (
         <>
           <div>

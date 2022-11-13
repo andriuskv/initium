@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
+import { delay } from "../../utils";
 import { handleZIndex, getIincreasedZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
+import { removeFromRunning, getLastRunningTimer } from "./running-timers";
 import Icon from "../Icon";
 import "./top-panel.css";
 import Countdown from "./Countdown";
@@ -12,6 +14,7 @@ const Settings = lazy(() => import("./Settings"));
 
 export default function TopPanel({ forceVisibility = false }) {
   const [visible, setVisible] = useState(false);
+  const [minimal, setMinimal] = useState(false);
   const [rerender, setRerender] = useState(false);
   const [activeTab, setActiveTab] = useState("");
   const [expanded, setExpanded] = useState(false);
@@ -21,6 +24,7 @@ export default function TopPanel({ forceVisibility = false }) {
     pomodoro: {}
   }));
   const containerRef = useRef(null);
+  const minimalVisible = useRef(false);
 
   useEffect(() => {
     const { fullscreenTextScale } = getSetting("topPanel");
@@ -55,7 +59,7 @@ export default function TopPanel({ forceVisibility = false }) {
     return () => {
       window.removeEventListener("top-panel-visible", toggleTopPanel);
     };
-  }, [visible]);
+  }, [visible, minimal]);
 
   useEffect(() => {
     if (expanded) {
@@ -69,12 +73,48 @@ export default function TopPanel({ forceVisibility = false }) {
     };
   }, [expanded]);
 
-  function toggleTopPanel() {
-    setVisible(!visible);
+  useLayoutEffect(() => {
+    const timer = getLastRunningTimer();
 
-    if (!visible) {
+    if (minimal) {
+      containerRef.current.classList.add(timer);
+    }
+    else if (timer) {
+      containerRef.current.classList.remove("minimal");
+      containerRef.current.classList.remove(timer);
+    }
+  }, [minimal]);
+
+  function handleReset(name) {
+    if (minimalVisible.current) {
+      removeFromRunning(name);
+
+      if (getLastRunningTimer()) {
+        containerRef.current.classList.replace(name, getLastRunningTimer());
+      }
+      else {
+        resetMinimal();
+        return delay(250);
+      }
+    }
+  }
+
+  function toggleTopPanel() {
+    const nextVisible = !visible;
+
+    if (nextVisible && minimal) {
+      resetMinimal(true);
+    }
+    else {
+      setVisible(nextVisible);
+    }
+
+    if (nextVisible) {
       const zIndex = getIincreasedZIndex();
       containerRef.current.style.setProperty("--z-index", zIndex);
+    }
+    else {
+      showMinimalTimer();
     }
   }
 
@@ -84,6 +124,36 @@ export default function TopPanel({ forceVisibility = false }) {
     }
     else {
       setVisible(false);
+      showMinimalTimer();
+    }
+  }
+
+  function resetMinimal(shouldShowFull = false) {
+    minimalVisible.current = false;
+
+    containerRef.current.classList.remove("visible");
+
+    setTimeout(() => {
+      setMinimal(false);
+
+      if (shouldShowFull) {
+        setVisible(true);
+      }
+    }, 250);
+  }
+
+  function showMinimalTimer() {
+    const { showMinimal } = getSetting("topPanel");
+
+    if (showMinimal && getLastRunningTimer()) {
+      minimalVisible.current = true;
+
+      setTimeout(() => {
+        if (activeTab === "settings") {
+          selectTab("timer");
+        }
+        setMinimal(true);
+      }, 250);
     }
   }
 
@@ -114,7 +184,7 @@ export default function TopPanel({ forceVisibility = false }) {
   }
 
   return (
-    <div className={`container top-panel${visible ? " visible" : ""}${expanded ? " expanded" : ""}`}
+    <div className={`top-panel${minimal ? ` minimal visible` : " container"}${visible ? " visible" : ""}${expanded ? " expanded" : ""}`}
       onClick={handleZIndex} ref={containerRef}>
       <div className="top-panel-content">
         <ul className="top-panel-hide-target top-panel-header">
@@ -154,9 +224,9 @@ export default function TopPanel({ forceVisibility = false }) {
           </li>
         </ul>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
-          {tabs.timer.rendered ? <Timer visible={activeTab === "timer"} expand={expand} exitFullscreen={exitFullscreen}/> : null}
+          {tabs.timer.rendered ? <Timer visible={activeTab === "timer"} expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/> : null}
           {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} expand={expand}/> : null}
-          {tabs.pomodoro.rendered ? <Pomodoro visible={activeTab === "pomodoro"} expand={expand} exitFullscreen={exitFullscreen}/> : null}
+          {tabs.pomodoro.rendered ? <Pomodoro visible={activeTab === "pomodoro"} expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/> : null}
           {activeTab === "settings" ? <Settings setFullscreenTextScale={setFullscreenTextScale}/> : null}
         </Suspense>
         <Countdown visible={activeTab === "countdown"}/>

@@ -27,6 +27,9 @@ async function cacheUnsplashInfo() {
     setTimeout(() => {
       cacheImage(info.url);
       cacheDownscaledWallpaper({ url: info.url });
+      resetIDBStore();
+      deleteOldServiceWokerCache();
+      localStorage.removeItem("background-info");
       localStorage.setItem("wallpaper-info", JSON.stringify(info));
     }, 1000);
     return info;
@@ -51,9 +54,6 @@ async function fetchWallpaperInfo() {
   if (info) {
     wallpaperInfo = info;
     dispatchCustomEvent("wallpaper-info-update", info);
-    resetIDBStore();
-    deleteOldServiceWokerCache();
-    localStorage.removeItem("background-info");
     return info;
   }
 }

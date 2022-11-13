@@ -11,7 +11,7 @@
   flex-direction: column;
   min-width: 160px;
   padding: var(--space-md) 1px;
-  background-color: var(--color-grey-90);
+  background-color: hsl(var(--accent-hue) 7% 12%);
   backdrop-filter: none;
   transform: translateY(var(--space-sm));
   white-space: nowrap;

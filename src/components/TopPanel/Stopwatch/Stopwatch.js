@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { setPageTitle } from "../../../utils";
 import { padTime } from "services/timeDate";
+import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
 import Icon from "components/Icon";
 
 export default function Stopwatch({ visible, expand }) {
@@ -13,6 +14,10 @@ export default function Stopwatch({ visible, expand }) {
       animationId.current = requestAnimationFrame(() => {
         update(performance.now());
       });
+      addToRunning("stopwatch");
+    }
+    else {
+      removeFromRunning("stopwatch");
     }
     return () => {
       cancelAnimationFrame(animationId.current);
@@ -30,13 +35,13 @@ export default function Stopwatch({ visible, expand }) {
 
   function start() {
     setRunning(true);
-    setPageTitle("0 m 00 s");
+    updateTitle({ minutes: "0", seconds: "00" });
   }
 
   function stop() {
     cancelAnimationFrame(animationId.current);
     setRunning(false);
-    setPageTitle();
+    updateTitle();
   }
 
   function update(elapsed) {
@@ -59,7 +64,7 @@ export default function Stopwatch({ visible, expand }) {
       state.minutesDisplay = padTime(state.minutes, state.hours);
       state.secondsDisplay = padTime(state.seconds, state.minutes);
 
-      setPageTitle(`${state.hours ? `${state.hours} h ` : ""}${state.minutesDisplay} m ${padTime(state.seconds)} s`);
+      updateTitle({ hours: state.hours, minutes: state.minutesDisplay, seconds: state.secondsDisplay });
     }
     const millisecondString = Math.floor(state.milliseconds).toString();
     state.millisecondsDisplay = state.milliseconds < 100 ? `0${millisecondString[0]}` : millisecondString.slice(0, 2);
@@ -78,6 +83,19 @@ export default function Stopwatch({ visible, expand }) {
     }
   }
 
+  function updateTitle(values) {
+    if (isLastRunningTimer("stopwatch")) {
+      if (values) {
+        const { hours, minutes, seconds } = values;
+
+        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes} m ${seconds} s`);
+      }
+      else {
+        setPageTitle();
+      }
+    }
+  }
+
   function getInitialState() {
     return {
       millisecondsDisplay: "00",
@@ -90,7 +108,7 @@ export default function Stopwatch({ visible, expand }) {
   }
 
   return (
-    <div className={`top-panel-item${visible ? " visible" : ""}`}>
+    <div className={`top-panel-item stopwatch${visible ? " visible" : ""}`}>
       <div className="top-panel-item-content">
         <div>
           {state.hours > 0 && (
