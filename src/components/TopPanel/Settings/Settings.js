@@ -27,6 +27,10 @@ export default function Settings({ setFullscreenTextScale }) {
     setSetting("fullscreenTextScale", valueAsNumber);
   }
 
+  function handleCheckboxChange({ target }) {
+    setSetting("showMinimal", target.checked);
+  }
+
   return (
     <div className="top-panel-item-content top-panel-settings-tab">
       <label className="top-panel-setting">
@@ -34,11 +38,19 @@ export default function Settings({ setFullscreenTextScale }) {
         <input type="range" className="range-input" min="0" max="1" step="0.05"
           defaultValue={settings.alarmVolume} onChange={handleAlarmVolumeChange}/>
       </label>
-
       <label className="top-panel-setting">
         <span className="label-left">Fullscreen text scale</span>
         <input type="range" className="range-input" min="1" max="5" step="0.5"
           defaultValue={settings.fullscreenTextScale} onChange={handleTextScaleChange}/>
+      </label>
+      <label className="top-panel-setting">
+        <span>Show minimal timer when top panel is hidden</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.showMinimal}
+          onChange={handleCheckboxChange}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
       </label>
     </div>
   );

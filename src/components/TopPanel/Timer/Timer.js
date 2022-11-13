@@ -3,6 +3,7 @@ import { setPageTitle } from "../../../utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting, updateSetting } from "services/settings";
+import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./timer.css";
@@ -10,7 +11,7 @@ import Inputs from "./Inputs";
 
 const Presets = lazy(() => import("./Presets"));
 
-export default function Timer({ visible, expand, exitFullscreen }) {
+export default function Timer({ visible, expand, exitFullscreen, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState({
     hours: "00",
@@ -36,6 +37,10 @@ export default function Timer({ visible, expand, exitFullscreen }) {
       timeoutId.current = setTimeout(() => {
         update(state.duration, performance.now());
       }, 1000);
+      addToRunning("timer");
+    }
+    else {
+      removeFromRunning("timer");
     }
     return () => {
       clearTimeout(timeoutId.current);
@@ -91,7 +96,8 @@ export default function Timer({ visible, expand, exitFullscreen }) {
         seconds: paddedSeconds,
         duration
       });
-      setPageTitle(`${values.hours ? `${values.hours} h ` : ""}${values.hours || values.minutes ? `${paddedMinutes} m ` : ""}${paddedSeconds} s${getAlarmIcon()}`);
+
+      updateTitle({ hours: values.hours, minutes: values.hours || values.minutes ? paddedMinutes : "", seconds: paddedSeconds });
     }
   }
 
@@ -102,7 +108,7 @@ export default function Timer({ visible, expand, exitFullscreen }) {
       seconds: padTime(state.seconds)
     });
     setRunning(false);
-    setPageTitle();
+    updateTitle();
   }
 
   function normalizeValues() {
@@ -150,7 +156,7 @@ export default function Timer({ visible, expand, exitFullscreen }) {
       seconds: paddedSeconds
     });
 
-    setPageTitle(`${hours ? `${hours} h ` : ""}${hours || minutes ? `${paddedMinutes} m ` : ""}${paddedSeconds} s${getAlarmIcon()}`);
+    updateTitle({ hours, minutes: hours || minutes ? paddedMinutes : "", seconds: paddedSeconds });
 
     if (duration > 0) {
       timeoutId.current = setTimeout(() => {
@@ -165,7 +171,11 @@ export default function Timer({ visible, expand, exitFullscreen }) {
     }
   }
 
-  function reset() {
+  async function reset() {
+    if (isLastRunningTimer("timer")) {
+      await handleReset("timer");
+    }
+
     if (activePreset) {
       setState({
         hours: activePreset.hours,
@@ -180,6 +190,19 @@ export default function Timer({ visible, expand, exitFullscreen }) {
     if (running) {
       setRunning(false);
       setPageTitle();
+    }
+  }
+
+  function updateTitle(values) {
+    if (isLastRunningTimer("timer")) {
+      if (values) {
+        const { hours, minutes, seconds } = values;
+
+        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes ? `${minutes} m ` : ""}${seconds} s${getAlarmIcon()}`);
+      }
+      else {
+        setPageTitle();
+      }
     }
   }
 
@@ -274,7 +297,7 @@ export default function Timer({ visible, expand, exitFullscreen }) {
     });
   }
   return (
-    <div className={`top-panel-item${visible ? " visible" : ""}`}>
+    <div className={`top-panel-item timer${visible ? " visible" : ""}`}>
       {presetsVisible ? (
         <Suspense fallback={null}>
           <Presets presets={presets} updatePresets={updatePresets} resetActivePreset={resetActivePreset} hide={hidePresets}/>
