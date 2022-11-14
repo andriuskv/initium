@@ -11,6 +11,17 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
     selectFeed(event.target, index, containerRef.current);
   }
 
+  function getEntryDescription(description) {
+    const div = document.createElement("div");
+
+    div.innerHTML = description;
+
+    for (const link of div.querySelectorAll("a")) {
+      link.setAttribute("target", "_blank");
+    }
+    return div.innerHTML;
+  }
+
   return (
     <div className="rss-feed">
       <div className="main-panel-item-header">
@@ -58,7 +69,7 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
             <div className={`feed-entry-description-container${entry.truncated ? " truncated" : ""}`}>
               {entry.thumbnail ? <img src={entry.thumbnail} className="feed-entry-thumbnail" height="90px" loading="lazy" alt=""/> : null}
               {entry.description ? (
-                <p className="feed-entry-description" dangerouslySetInnerHTML={{ __html: entry.description }}></p>
+                <p className="feed-entry-description" dangerouslySetInnerHTML={{ __html: getEntryDescription(entry.description) }}></p>
               ) : null}
             </div>
             <button className="btn text-btn feed-entry-expand-btn" onClick={() => expandEntry(entry)}>Show More</button>
