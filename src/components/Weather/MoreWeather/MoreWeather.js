@@ -7,23 +7,27 @@ import "./more-weather.css";
 
 export default function MoreWeather({ current, more, units, speedUnits, view, selectView, toggleUnits, hide }) {
   const [ready, setReady] = useState(false);
-  const [maxHourlyTemp, setMaxHourlyTemp] = useState();
+  const [tempRange, setTempRange] = useState();
 
   useEffect(() => {
     if (!more) {
       return;
     }
-    const maxHourlyTemp = more.hourly.reduce((max, item) => {
+    const tempRange = more.hourly.reduce((range, item) => {
       const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
 
-      if (temp > max) {
-        max = temp;
+      if (temp < range.min) {
+        range.min = temp;
       }
-      return max;
-    }, -Infinity);
+
+      if (temp > range.max) {
+        range.max = temp;
+      }
+      return range;
+    }, { min: Infinity, max: -Infinity });
 
     setReady(true);
-    setMaxHourlyTemp(maxHourlyTemp);
+    setTempRange({ min: tempRange.min - 1, max: tempRange.max });
   }, [more]);
 
   function getTempPath(closePath) {
@@ -51,7 +55,10 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
   }
 
   function getSvgY(current, offset = 0) {
-    return (100 - ((current / (maxHourlyTemp + maxHourlyTemp * 0.8)) * 100) - offset).toFixed(2);
+    const maxRange = tempRange.max - tempRange.min;
+    const range = current - tempRange.min;
+
+    return (100 - (range / maxRange * 100 * 0.8) - offset).toFixed(2);
   }
 
   function renderWindView(items) {
