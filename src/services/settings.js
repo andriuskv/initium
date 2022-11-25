@@ -3,7 +3,7 @@ import { generateNoise } from "../utils";
 let settings = initSettings();
 
 function initSettings() {
-  const settings = JSON.parse(localStorage.getItem("settings")) || {};
+  let settings = JSON.parse(localStorage.getItem("settings")) || {};
 
   settings.timeDate ??= {};
 
@@ -34,7 +34,14 @@ function initSettings() {
     settings.appearance.panelBackgroundBlur = settings.general.backgroundBlurRadius;
     delete settings.general.backgroundBlurRadius;
   }
-  return copyObject(settings, getDefault());
+
+  settings = copyObject(settings, getDefault());
+
+  if (!localStorage.getItem("settings-updated")) {
+    localStorage.setItem("settings-updated", 1);
+    localStorage.setItem("settings", JSON.stringify(settings));
+  }
+  return settings;
 }
 
 function initAppearanceSettings(settings) {

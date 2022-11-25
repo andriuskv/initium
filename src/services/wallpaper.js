@@ -1,4 +1,5 @@
 import { dispatchCustomEvent } from "../utils";
+import { getSetting, setSetting } from "./settings";
 
 const downscaledWallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper"));
 let wallpaperInfo = JSON.parse(localStorage.getItem("wallpaper-info"));
@@ -28,8 +29,6 @@ async function cacheUnsplashInfo() {
       cacheImage(info.url);
       cacheDownscaledWallpaper({ url: info.url });
       resetIDBStore();
-      deleteOldServiceWokerCache();
-      localStorage.removeItem("background-info");
       localStorage.setItem("wallpaper-info", JSON.stringify(info));
     }, 1000);
     return info;
@@ -103,19 +102,6 @@ function deleteServiceWokerCache() {
       if (key === "wallpaper-image-cache") {
         caches.delete(key);
       }
-      else if (key === "background-image-cache") {
-        caches.delete(key);
-      }
-    });
-  });
-}
-
-function deleteOldServiceWokerCache() {
-  caches.keys().then(keys => {
-    keys.forEach(key => {
-      if (key === "background-image-cache") {
-        caches.delete(key);
-      }
     });
   });
 }
@@ -128,24 +114,22 @@ function setUrlWallpaper(url) {
   }, 1000);
 }
 
+function resetIDBWallpaper() {
+  setSetting({
+    appearance: {
+      ...getSetting("appearance"),
+      wallpaper: { url: "" }
+    }
+  });
+  resetIDBStore();
+}
+
 async function getIDBWallpaper(id) {
   const { createStore, get } = await import("idb-keyval");
+  const store = createStore("initium", "wallpaper");
+  const image = await get(id, store);
 
-  try {
-    const store = createStore("initium", "wallpaper");
-    const image = await get(id, store);
-
-    return image;
-  } catch (e) {
-    console.log(e);
-    const store = createStore("initium", "background");
-    const image = await get(id, store);
-
-    await indexedDB.deleteDatabase("initium");
-
-    setIDBWallpaper(image);
-    return image;
-  }
+  return image;
 }
 
 async function setIDBWallpaper(image) {
@@ -173,13 +157,9 @@ async function setIDBWallpaper(image) {
 
 async function resetIDBStore() {
   try {
-    const { createStore, clear } = await import("idb-keyval");
-    const store = createStore("initium", "wallpaper");
-
-    clear(store);
+    indexedDB.deleteDatabase("initium");
   } catch (e) {
     console.log(e);
-    indexedDB.deleteDatabase("initium");
   }
 }
 
@@ -254,5 +234,6 @@ export {
   getIDBWallpaper,
   setIDBWallpaper,
   resetIDBStore,
+  resetIDBWallpaper,
   updateDownscaledWallpaperPosition
 };

@@ -27,7 +27,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
     }, { min: Infinity, max: -Infinity });
 
     setReady(true);
-    setTempRange({ min: tempRange.min - 1, max: tempRange.max });
+    setTempRange({ min: tempRange.min - 1, max: tempRange.max + 1 });
   }, [more]);
 
   function getTempPath(closePath) {
@@ -100,7 +100,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
     return more.hourly.map((item, index) => {
       const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
       const x = `calc(${index * 24 + 12}px - ${Math.round(item.temperature).toString().length / 2}ch)`;
-      const y = `${getSvgY(temp, 12)}px`;
+      const y = `calc(${getSvgY(temp, 6)}px - 0.5ch)`;
 
       if (index % 3 === 1) {
         return <text className="weather-more-hourly-temp-view-text" style={{ transform: `translate(${x}, ${y})` }}
