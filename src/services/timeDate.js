@@ -42,17 +42,28 @@ function formatTime(time) {
   return `${hours ? `${hours}:` : ""}${padTime(minutes, hours)}:${padTime(seconds)}`;
 }
 
-function getWeekdayName(day, useShortName = false) {
-  const weekdays = {
-    0: "Monday",
-    1: "Tuesday",
-    2: "Wednesday",
-    3: "Thursday",
-    4: "Friday",
-    5: "Saturday",
-    6: "Sunday"
-  };
+function getWeekdays() {
+  const { firstWeekday } = getSetting("timeDate");
+  const weekdays = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
 
+  if (firstWeekday === 1) {
+    weekdays.unshift("Sunday");
+  }
+  else {
+    weekdays.push("Sunday");
+  }
+  return weekdays;
+}
+
+function getWeekdayName(day, useShortName = false) {
+  const weekdays = getWeekdays();
   return useShortName ? weekdays[day].slice(0, 3) : weekdays[day];
 }
 
@@ -95,9 +106,18 @@ function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
 }
 
+function adjustWeekday(weekday) {
+  const { firstWeekday } = getSetting("timeDate");
+
+  if (firstWeekday === 1) {
+    return weekday;
+  }
+  return weekday === 0 ? 6 : weekday - 1;
+}
+
 function getWeekday(year, month, day) {
   const weekday = new Date(`${year}-${month + 1}-${day}`).getDay();
-  return weekday=== 0 ? 6 : weekday - 1;
+  return adjustWeekday(weekday);
 }
 
 function getFirstDayIndex(year, month) {
@@ -112,7 +132,7 @@ function getCurrentDate() {
     year: date.getFullYear(),
     month: date.getMonth(),
     day: date.getDate(),
-    weekday: weekday === 0 ? 6 : weekday - 1
+    weekday: adjustWeekday(weekday)
   };
 }
 
@@ -155,6 +175,7 @@ export {
   getWeekday,
   getFirstDayIndex,
   getCurrentDate,
+  getWeekdays,
   getWeekdayName,
   getMonthName,
   getDay,

@@ -92,7 +92,8 @@ function getDefault() {
       datePosition: "bottom",
       dateAligment: "center",
       dontChangeDateStyle: false,
-      dateLocale: "en-US"
+      dateLocale: "en-US",
+      firstWeekday: 0
     },
     mainPanel: {
       navHidden: false,

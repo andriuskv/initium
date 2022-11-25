@@ -95,8 +95,8 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
       };
 
       if (reminder.repeat.type === "weekday") {
-        form.repeat.weekdays = [...reminder.repeat.weekdays];
-        form.repeat.weekdays[form.repeat.currentWeekday] = true;
+        form.repeat.weekdays = { static: [...reminder.repeat.weekdays.dynamic] };
+        form.repeat.weekdays.static[form.repeat.currentWeekday] = true;
       }
     }
     setForm(form);
@@ -155,6 +155,10 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
 
       if (reminder.repeat) {
         delete reminder.repeat.tooltip;
+
+        if (reminder.repeat.type === "weekday") {
+          delete reminder.repeat.weekdays.dynamic;
+        }
       }
 
       return {
