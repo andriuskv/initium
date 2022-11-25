@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getRandomString, findFocusableElement } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
+import { useSettings } from "contexts/settings-context";
 import Icon from "components/Icon";
 import "./calendar.css";
 import Sidebar from "./Sidebar";
 import SelectedDay from "./SelectedDay";
 
 export default function Calendar({ showIndicator }) {
+  const { settings: { timeDate: settings } } = useSettings();
   const [calendar, setCalendar] = useState(null);
   const [currentDay, setCurrentDay] = useState(null);
   const [currentYear, setCurrentYear] = useState();
@@ -16,10 +18,24 @@ export default function Calendar({ showIndicator }) {
   const [reminders, setReminders] = useState([]);
   const [viewingYear, setViewingYear] = useState(false);
   const [transition, setTransition] = useState({ x: 0, y: 0 });
+  const [weekdays, setWeekdays] = useState(null);
+  const currentFirstWeekday = useRef(settings.firstWeekday);
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (currentFirstWeekday.current !== settings.firstWeekday) {
+      const r = reminders.map(reminder => {
+        delete reminder.nextRepeat;
+        return reminder;
+      });
+
+      currentFirstWeekday.current = settings.firstWeekday;
+      initCalendar(r);
+    }
+  }, [settings]);
 
   useEffect(() => {
     if (currentDay) {
@@ -59,6 +75,7 @@ export default function Calendar({ showIndicator }) {
     setCurrentYear(year);
     setCurrentDay(getCurrentDay(calendar, currentDate));
     getVisibleMonth(calendar, currentDate);
+    setWeekdays(timeDateService.getWeekdays());
 
     if (reminders?.length) {
       setReminders(reminders);
@@ -277,7 +294,7 @@ export default function Calendar({ showIndicator }) {
         weekday += 1;
       }
 
-      if (weekdays[weekday]) {
+      if (weekdays.dynamic[weekday]) {
         gaps.push(gap);
         gap = 1;
       }
@@ -460,6 +477,21 @@ export default function Calendar({ showIndicator }) {
     reminder.range.text = getReminderRangeString(reminder.range);
 
     if (reminder.repeat) {
+      if (reminder.repeat.type === "weekday") {
+        if (Array.isArray(reminder.repeat.weekdays)) {
+          reminder.repeat.weekdays = { static: reminder.repeat.weekdays };
+        }
+        reminder.repeat.weekdays.dynamic = [...reminder.repeat.weekdays.static];
+
+        if (reminder.repeat.firstWeekday !== currentFirstWeekday.current) {
+          if (reminder.repeat.firstWeekday === 0) {
+            reminder.repeat.weekdays.dynamic.unshift(reminder.repeat.weekdays.dynamic.pop());
+          }
+          else {
+            reminder.repeat.weekdays.dynamic.push(reminder.repeat.weekdays.dynamic.shift());
+          }
+        }
+      }
       reminder.repeat.tooltip = getReminderRepeatTooltip(reminder.repeat);
       repeatReminder(calendar, reminder, shouldReplace);
     }
@@ -505,38 +537,42 @@ export default function Calendar({ showIndicator }) {
       return "Repeating every month";
     }
     else if (type === "weekday") {
-      const fullySelected = weekdays.every(weekday => weekday);
-      let str = "";
+      const fullySelected = weekdays.dynamic.every(weekday => weekday);
 
       if (fullySelected) {
-        str = "weekday";
+        return "Repeating every weekday";
       }
       else {
-        const arr = weekdays.reduce((arr, weekday, index) => {
-          if (weekday) {
-            const name = timeDateService.getWeekdayName(index);
-
-            arr.push(name);
-          }
-          return arr;
-        }, []);
-
-        if (arr.length === 1) {
-          str = arr[0];
-        }
-        else {
-          const ending = arr.slice(-2).join(" and ");
-
-          if (arr.length > 2) {
-            str = `${arr.slice(0, -2).join(", ")}, ${ending}`;
-          }
-          else {
-            str = ending;
-          }
-        }
+        return getWeekdayRepeatTooltip(weekdays.dynamic);
       }
-      return `Repeating every ${str}`;
     }
+  }
+
+  function getWeekdayRepeatTooltip(weekdays) {
+    const arr = weekdays.reduce((arr, weekday, index) => {
+      if (weekday) {
+        const name = timeDateService.getWeekdayName(index);
+
+        arr.push(name);
+      }
+      return arr;
+    }, []);
+    let str = "";
+
+    if (arr.length === 1) {
+      str = arr[0];
+    }
+    else {
+      const ending = arr.slice(-2).join(" and ");
+
+      if (arr.length > 2) {
+        str = `${arr.slice(0, -2).join(", ")}, ${ending}`;
+      }
+      else {
+        str = ending;
+      }
+    }
+    return `Repeating every ${str}`;
   }
 
   function selectCurrentDay() {
@@ -677,13 +713,9 @@ export default function Calendar({ showIndicator }) {
               </button>
             </div>
             <ul className="calendar-week-days">
-              <li className="calendar-cell">Mon</li>
-              <li className="calendar-cell">Tue</li>
-              <li className="calendar-cell">Wed</li>
-              <li className="calendar-cell">Thu</li>
-              <li className="calendar-cell">Fri</li>
-              <li className="calendar-cell">Sat</li>
-              <li className="calendar-cell">Sun</li>
+              {weekdays.map(weekday => (
+                <li className="calendar-cell" key={weekday}>{weekday.slice(0, 3)}</li>
+              ))}
             </ul>
             <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
               {visibleMonth.previous.days.map((day, index) => (

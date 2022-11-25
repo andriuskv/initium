@@ -55,6 +55,10 @@ export default function TimeDateTab() {
     updateSetting("timeDate", { dateLocale: target.value });
   }
 
+  function handleWeekdayChange({ target }) {
+    updateSetting("timeDate", { firstWeekday: Number(target.value) });
+  }
+
   return (
     <div className="setting-tab">
       <label className="setting">
@@ -67,49 +71,52 @@ export default function TimeDateTab() {
           <div className="toggle-item">24</div>
         </div>
       </label>
-      <label className="setting">
-        <span>Disable clock</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.clockDisabled}
-          onChange={() => toggleSetting("timeDate", "clockDisabled")}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
-        </div>
-      </label>
-      <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-        <span>Clock style</span>
-        <div className="select-container">
-          <select className="input select" onChange={handleClockStyleChange} value={settings.clockStyle}
-            disabled={settings.clockDisabled}>
-            <option value="Inter">Inter</option>
-            <option value="JuliusSansOne">JuliusSansOne</option>
-            <option value="OleoScript">OleoScript</option>
-            <option value="Stoke">Stoke</option>
-            <option value="KdamThmorPro">KdamThmorPro</option>
-            <option value="Caveat">Caveat</option>
-            <option value="Digital">Digital</option>
-            <option value="Foundation">Foundation</option>
-            <option value="PressStart2P">PressStart2P</option>
-            <option value="Sniglet">Sniglet</option>
-          </select>
-        </div>
-      </label>
-      <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-        <span>Clock scale</span>
-        <input type="range" className="range-input" min="0.5" max="3" step="0.1"
-          defaultValue={settings.clockScale} name="clockScale"
-          onChange={handleClockScaleChange} disabled={settings.clockDisabled}/>
-      </label>
-      <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-        <span>Bolded clock</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.boldedClock}
-          onChange={() => toggleSetting("timeDate", "boldedClock")}
-          disabled={settings.clockDisabled}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
-        </div>
-      </label>
+      <div className="settings-group">
+        <h4 className="settings-group-title">Clock</h4>
+        <label className="setting">
+          <span>Disable clock</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            checked={settings.clockDisabled}
+            onChange={() => toggleSetting("timeDate", "clockDisabled")}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
+        <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
+          <span>Clock style</span>
+          <div className="select-container">
+            <select className="input select" onChange={handleClockStyleChange} value={settings.clockStyle}
+              disabled={settings.clockDisabled}>
+              <option value="Inter">Inter</option>
+              <option value="JuliusSansOne">JuliusSansOne</option>
+              <option value="OleoScript">OleoScript</option>
+              <option value="Stoke">Stoke</option>
+              <option value="KdamThmorPro">KdamThmorPro</option>
+              <option value="Caveat">Caveat</option>
+              <option value="Digital">Digital</option>
+              <option value="Foundation">Foundation</option>
+              <option value="PressStart2P">PressStart2P</option>
+              <option value="Sniglet">Sniglet</option>
+            </select>
+          </div>
+        </label>
+        <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
+          <span>Clock scale</span>
+          <input type="range" className="range-input" min="0.5" max="3" step="0.1"
+            defaultValue={settings.clockScale} name="clockScale"
+            onChange={handleClockScaleChange} disabled={settings.clockDisabled}/>
+        </label>
+        <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
+          <span>Bolded clock</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            checked={settings.boldedClock}
+            onChange={() => toggleSetting("timeDate", "boldedClock")}
+            disabled={settings.clockDisabled}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
+      </div>
       <div className="settings-group">
         <h4 className="settings-group-title">Date</h4>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
@@ -222,6 +229,19 @@ export default function TimeDateTab() {
           <input type="range" className="range-input" min="0.8" max="2" step="0.1"
             defaultValue={settings.dateScale} name="dateScale"
             onChange={handleDateScaleChange} disabled={settings.clockDisabled || settings.dateHidden}/>
+        </label>
+      </div>
+      <div className="settings-group">
+        <h4 className="settings-group-title">Calendar</h4>
+        <label className="setting">
+          <span>First day of the week</span>
+          <div className="select-container">
+            <select className="input select" onChange={handleWeekdayChange} value={settings.firstWeekday}
+              disabled={settings.clockDisabled}>
+              <option value="0">Monday</option>
+              <option value="1">Sunday</option>
+            </select>
+          </div>
         </label>
       </div>
     </div>

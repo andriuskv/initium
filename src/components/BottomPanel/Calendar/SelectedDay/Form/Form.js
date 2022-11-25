@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { getRandomHslColor } from "utils";
 import { getWeekday, getWeekdayName, getTimeString } from "services/timeDate";
+import { getSetting } from "services/settings";
 import "./form.css";
 
 export default function Form({ form: initialForm, day, updateReminder, hide }) {
@@ -25,9 +26,9 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
 
   function getInitialForm(form) {
     const weekday = getWeekday(day.year, day.month, day.day);
-    const weekdays = [false, false, false, false, false, false, false];
+    const weekdays = { static: [false, false, false, false, false, false, false] };
 
-    weekdays[weekday] = true;
+    weekdays.static[weekday] = true;
 
     const range = {
       enabled: false,
@@ -144,7 +145,13 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
         }
       }
       else if (form.repeat.type === "weekday") {
-        reminder.repeat.weekdays = form.repeat.weekdays;
+        const settings = getSetting("timeDate");
+
+        reminder.repeat.firstWeekday = settings.firstWeekday;
+        reminder.repeat.weekdays = {
+          static: form.repeat.weekdays.static,
+          dynamic: [...form.repeat.weekdays.static]
+        };
       }
 
       if (form.repeat.ends === "occurences") {
@@ -191,7 +198,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
     if (weekday === form.repeat.currentWeekday) {
       return;
     }
-    form.repeat.weekdays[weekday] = target.checked;
+    form.repeat.weekdays.static[weekday] = target.checked;
     setForm({ ...form });
   }
 
@@ -348,7 +355,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
             </div>
           ) : form.repeat.type === "weekday" ? (
             <div className="reminder-form-setting reminder-form-weeekdays">
-              {form.repeat.weekdays.map((selected, index) => (
+              {form.repeat.weekdays.static.map((selected, index) => (
                 <label className="checkbox-container reminder-form-weekday" key={index}>
                   <input type="checkbox" className="sr-only checkbox-input" name={index}
                     onChange={handleWeekdaySelection} checked={selected || index === form.repeat.currentWeekday}
