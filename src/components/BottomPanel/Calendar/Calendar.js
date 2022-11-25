@@ -30,9 +30,6 @@ export default function Calendar({ showIndicator }) {
   async function init() {
     const reminders = await chromeStorage.get("reminders");
 
-    if (reminders) {
-      updateReminderFormat(reminders);
-    }
     initCalendar(reminders);
 
     chromeStorage.subscribeToChanges(({ reminders }) => {
@@ -70,41 +67,6 @@ export default function Calendar({ showIndicator }) {
     else {
       setCalendar(calendar);
     }
-  }
-
-  function updateReminderFormat(reminders) {
-    const updated = localStorage.getItem("reminders-updated");
-
-    if (updated) {
-      return;
-    }
-
-    for (const reminder of reminders) {
-      if (reminder.repeat) {
-        if (typeof reminder.repeat === "boolean") {
-          reminder.repeat = {
-            gap: reminder.repeatGap || reminder.gap,
-            count: reminder.repeatCount || reminder.count
-          };
-          delete reminder.repeatGap;
-          delete reminder.repeatCount;
-        }
-
-        if (!reminder.repeat.type) {
-          reminder.repeat.type = "custom";
-        }
-
-        if (reminder.repeat.type === "custom" && !reminder.repeat.customTypeGapName) {
-          reminder.repeat.customTypeGapName = "days";
-        }
-      }
-
-      if (reminder.range === -1) {
-        delete reminder.range;
-      }
-    }
-    localStorage.setItem("reminders-updated", 1);
-    chromeStorage.set({ reminders });
   }
 
   function generateYear(year) {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { fetchWallpaperInfo, getIDBWallpaper } from "services/wallpaper";
+import { fetchWallpaperInfo, getIDBWallpaper, resetIDBWallpaper } from "services/wallpaper";
 import "./wallpaper.css";
 
 export default function Wallpaper({ settings }) {
@@ -35,15 +35,27 @@ export default function Wallpaper({ settings }) {
       let url = wallpaper?.url;
 
       if (settings.id !== wallpaper?.id) {
-        const image = await getIDBWallpaper(settings.id);
-        url = URL.createObjectURL(image);
+        try {
+          const image = await getIDBWallpaper(settings.id);
+          url = URL.createObjectURL(image);
+
+          setWallpaper({
+            id: settings.id,
+            url,
+            x: settings.x,
+            y: settings.y
+          });
+        } catch (e) {
+          console.log(e);
+
+          const info = await fetchWallpaperInfo();
+
+          if (info) {
+            setWallpaper({ url: info.url });
+          }
+          resetIDBWallpaper();
+        }
       }
-      setWallpaper({
-        id: settings.id,
-        url,
-        x: settings.x,
-        y: settings.y
-      });
     }
     else if (settings.type === "url") {
       setWallpaper({

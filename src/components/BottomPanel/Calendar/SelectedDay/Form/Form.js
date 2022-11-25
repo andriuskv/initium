@@ -338,9 +338,9 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
                   <input type="text" className="input repeat-input" name="gap" autoComplete="off"
                     value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
                   <select className="input select" onChange={handleCustomTypeGapNameChange} value={form.repeat.customTypeGapName}>
-                    <option value="days">days</option>
-                    <option value="weeks">weeks</option>
-                    <option value="months">months</option>
+                    <option value="days">day(s)</option>
+                    <option value="weeks">week(s)</option>
+                    <option value="months">month(s)</option>
                   </select>
                 </span>
               </div>
