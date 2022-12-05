@@ -1,7 +1,6 @@
 import "./form.css";
-import { getRandomString } from "utils";
 
-export default function Form({ form, sites, updateSites, hide }) {
+export default function Form({ form, updateSite, hide }) {
   function handleFormSubmit(event) {
     const { elements } = event.target;
     const url = /^https?:\/\//.test(elements.url.value) ? elements.url.value : `https://${elements.url.value}`;
@@ -10,21 +9,17 @@ export default function Form({ form, sites, updateSites, hide }) {
     event.preventDefault();
 
     if (form.updating) {
-      sites[form.index] = {
-        ...sites[form.index],
+      updateSite({
         url,
         title: title || form.title
-      };
+      }, "update");
     }
     else {
-      sites.push({
+      updateSite({
         url,
-        id: getRandomString(4),
-        iconUrl: `chrome://favicon/size/16@2x/${url}`,
         title: title || url
-      });
+      }, "add");
     }
-    updateSites(sites);
     hide();
   }
 
