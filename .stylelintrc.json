@@ -1,6 +1,7 @@
 {
   "extends": "stylelint-config-standard",
   "rules": {
+    "import-notation": null,
     "custom-property-empty-line-before": null,
     "max-line-length": null,
     "shorthand-property-no-redundant-values": null,

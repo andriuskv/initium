@@ -33,6 +33,7 @@
   right: 0;
   bottom: 0;
   opacity: 0;
+  pointer-events: auto;
 
   &.visible, &:hover, &:focus-within {
     opacity: 1;
@@ -42,7 +43,6 @@
 .top-site {
   position: relative;
   width: 136px;
-  pointer-events: auto;
 
   &:hover .top-site-dropdown:not(.visible) {
     animation: 0s linear 0.5s forwards delayed-reveal;
@@ -82,6 +82,7 @@
   text-align: center;
   line-height: 1;
   text-shadow: 0 1px 1px var(--color-black-8);
+  pointer-events: auto;
 }
 
 .top-site-icon {
@@ -105,8 +106,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 96px;
-  height: 96px;
+  width: 80px;
+  height: 80px;
   margin: 0 auto;
   border-radius: 50%;
+  pointer-events: auto;
 }
