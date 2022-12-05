@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useSettings } from "contexts/settings-context";
 import { dispatchCustomEvent } from "utils";
 
 export default function MainPanelTab() {
   const { settings: { mainPanel: settings }, updateSetting, toggleSetting } = useSettings();
+  const [persistentSitesEditEnabled, setPersistentSiteEditEnabled] = useState(false);
 
   function toggleComponent(item) {
     let disabledComponentCount = 0;
@@ -48,6 +50,20 @@ export default function MainPanelTab() {
         }
       }
     });
+  }
+
+  function togglePersistentSiteEditMode({ target }) {
+    setPersistentSiteEditEnabled(target.checked);
+    dispatchCustomEvent("enable-persistent-site-edit", target.checked);
+  }
+
+  function togglePersistentSitesVisibility({ target }) {
+    toggleTopSiteSetting({ persistentSitesHidden: target.checked });
+
+    if (target.checked) {
+      setPersistentSiteEditEnabled(false);
+      dispatchCustomEvent("enable-persistent-site-edit", false);
+    }
   }
 
   return (
@@ -133,6 +149,26 @@ export default function MainPanelTab() {
           <span>Restore default top sites</span>
           <button className="btn" onClick={resetTopSites}>Reset</button>
         </div>
+        <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
+          <span>Hide persistent sites</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            checked={settings.components.topSites.persistentSitesHidden}
+            onChange={togglePersistentSitesVisibility}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
+        <label className={`setting${settings.components.topSites.persistentSitesHidden ? " disabled" : ""}`}>
+          <span>Toggle persistent site edit mode</span>
+          <input type="checkbox" className="sr-only toggle-input"
+            disabled={settings.components.topSites.persistentSitesHidden}
+            checked={persistentSitesEditEnabled}
+            onChange={togglePersistentSiteEditMode}/>
+          <div className="toggle">
+            <div className="toggle-item">Off</div>
+            <div className="toggle-item">On</div>
+          </div>
+        </label>
       </div>
     </div>
   );

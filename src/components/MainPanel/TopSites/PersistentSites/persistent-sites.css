@@ -1,0 +1,99 @@
+.persistent-sites {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+
+  & .top-site {
+    width: auto;
+
+    & .top-site-dropdown {
+      transform: translate(25%, 25%);
+    }
+  }
+
+  & .top-site-link {
+    width: 50px;
+    height: 50px;
+    padding: 0;
+
+    &:hover, &:focus-visible {
+      & .top-site-title {
+        animation-delay: 0.5s;
+        animation-duration: 0.2s;
+        animation-fill-mode: forwards;
+        animation-name: reveal-persistent-title;
+      }
+    }
+
+    & .top-site-add-btn-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  & .top-site-thumbnail-container {
+    width: 100%;
+    height: 100%;
+    margin-bottom: var(--space-md);
+  }
+
+  & .top-site-title {
+    position: relative;
+    left: 50%;
+    opacity: 0;
+    width: 126px;
+    margin-bottom: 0;
+    transform: translate(-50%, calc(-1 * var(--space-sm)));
+    pointer-events: none;
+  }
+}
+
+.persistent-site-edit-btn {
+  cursor: pointer;
+
+  & .top-site-icon {
+    opacity: 0.5;
+  }
+}
+
+.persistent-site-edit-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.persistent-site-remove-btn {
+  --color: var(--color-white-60);
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  padding: var(--space-xs);
+  transform: translate(25%, -25%);
+  pointer-events: auto;
+
+  &:hover, &:focus-visible {
+    --color: var(--color-white);
+  }
+
+  & svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@keyframes reveal-persistent-title {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-1 * var(--space-sm)));
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

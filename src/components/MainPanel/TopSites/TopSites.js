@@ -6,6 +6,7 @@ import Icon from "components/Icon";
 import "./top-sites.css";
 
 const Form = lazy(() => import("./Form"));
+const PersistentSites = lazy(() => import("./PersistentSites"));
 
 export default function TopSites({ settings }) {
   const [sites, setSites] = useState(null);
@@ -174,6 +175,11 @@ export default function TopSites({ settings }) {
           </li>
         )}
       </ul>
+      {settings.persistentSitesHidden ? null : (
+        <Suspense fallback={null}>
+          <PersistentSites settings={settings} getFaviconURL={getFaviconURL}/>
+        </Suspense>
+      )}
       {form ? (
         <Suspense fallback={null}>
           <Form form={form} updateSite={updateSite} hide={hideForm}/>
