@@ -102,7 +102,8 @@ function getDefault() {
           disabled: false,
           visibleItemCount: 4,
           openInNewTab: false,
-          addSiteButtonHidden: false
+          addSiteButtonHidden: false,
+          persistentSitesHidden: false
         },
         notepad: { disabled: false },
         twitter: { disabled: false },
