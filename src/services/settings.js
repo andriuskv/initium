@@ -76,7 +76,7 @@ function getDefault() {
       panelBackgroundOpacity: 50,
       panelBackgroundBlur: 12,
       panelBackgroundNoiseAmount: 0.12,
-      panelBackgroundNoiseOpacity: 0.025,
+      panelBackgroundNoiseOpacity: 0.02,
       wallpaper: { url: "" }
     },
     timeDate: {

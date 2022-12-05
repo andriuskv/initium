@@ -208,7 +208,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
             {more.daily.map(item => (
               <div className="weather-more-daily-weekday" key={item.id}>
                 <div className="weather-more-daily-weekday-name">{item.weekday}</div>
-                <img src={item.icon} alt={item.description} width="64px" height="64px" loading="lazy"/>
+                <img src={item.icon} alt={item.description} className="weather-more-daily-weekday-icon" width="56px" height="56px" loading="lazy"/>
                 <div className="weather-more-daily-weekday-temp">
                   <div>{Math.round(item.temperature.min)}°</div>
                   <div>{Math.round(item.temperature.max)}°</div>
