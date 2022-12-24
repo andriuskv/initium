@@ -146,9 +146,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
   }
 
   async function saveReminders(reminders) {
-    const { default: cloneDeep } = await import("lodash.clonedeep");
-
-    chromeStorage.set({ reminders: cloneDeep(reminders).map(reminder => {
+    chromeStorage.set({ reminders: structuredClone(reminders).map(reminder => {
       if (!reminder.range.from) {
         delete reminder.range;
       }
