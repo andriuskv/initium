@@ -23,7 +23,10 @@ export default function PersistentSites({ settings, getFaviconURL }) {
   async function init() {
     const sites = await chromeStorage.get("persistentSites") || [];
 
-    setSites(sites);
+    setSites(sites.map(site => {
+      site.iconUrl = getFaviconURL(site.url);
+      return site;
+    }));
 
     chromeStorage.subscribeToChanges(({ persistentSites }) => {
       if (!persistentSites) {
@@ -72,7 +75,10 @@ export default function PersistentSites({ settings, getFaviconURL }) {
   }
 
   function saveSites(sites) {
-    chromeStorage.set({ persistentSites: sites });
+    chromeStorage.set({ persistentSites: sites.map(site => {
+      delete site.iconUrl;
+      return site;
+    }) });
   }
 
   function editSite(index) {

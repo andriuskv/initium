@@ -192,9 +192,7 @@ export default function Tasks() {
   }
 
   async function saveTasks(groups) {
-    const { default: cloneDeep } = await import("lodash.clonedeep");
-
-    chromeStorage.set({ tasks: cloneDeep(groups).map(group => {
+    chromeStorage.set({ tasks: structuredClone(groups).map(group => {
       group.tasks = group.tasks.map(task => {
         task = cleanupTask(task);
         task.subtasks = task.subtasks.map(cleanupTask);

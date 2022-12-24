@@ -27,7 +27,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
     }, { min: Infinity, max: -Infinity });
 
     setReady(true);
-    setTempRange({ min: tempRange.min - 1, max: tempRange.max + 1 });
+    setTempRange({ min: tempRange.min - 2, max: tempRange.max + 1 });
   }, [more]);
 
   function getTempPath(closePath) {
@@ -58,7 +58,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
     const maxRange = tempRange.max - tempRange.min;
     const range = current - tempRange.min;
 
-    return (100 - (range / maxRange * 100 * 0.8) - offset).toFixed(2);
+    return (100 - (range / maxRange * 100 * 0.6) - offset).toFixed(2);
   }
 
   function renderWindView(items) {

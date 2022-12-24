@@ -14,10 +14,11 @@
 }
 
 .weather-more-current-icon {
-  background-color: var(--color-white-10);
+  margin: auto var(--space-xl) auto 0;
   border: 1px solid var(--color-white-4);
   border-radius: 50%;
-  margin: auto var(--space-xl) auto 0;
+  background-color: var(--color-white-10);
+  mix-blend-mode: plus-lighter;
 }
 
 .weather-more-current-main {
@@ -233,9 +234,7 @@
 
 .weather-more-daily-weekday-icon {
   margin: var(--space-sm);
-  border: 1px solid var(--color-white-4);
-  border-radius: 50%;
-  background-color: var(--color-white-10);
+  mix-blend-mode: exclusion;
 }
 
 .weather-more-daily-weekday-temp {
