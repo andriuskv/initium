@@ -61,7 +61,7 @@ export default function TopSites({ settings }) {
 
   function getFaviconURL(url) {
     const { href } = new URL(url);
-    return `chrome://favicon/size/16@2x/${href}`;
+    return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${href}&size=32`;
   }
 
   function showForm() {
