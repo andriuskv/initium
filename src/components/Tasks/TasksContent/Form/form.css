@@ -9,6 +9,18 @@
   font-weight: bold;
 }
 
+.task-form-item-title {
+  padding-left: var(--space-md);
+  box-shadow: -2px 0 0 0 var(--color-primary);
+  font-weight: bold;
+  font-size: var(--text-sm);
+}
+
+.task-form-datetime-input {
+  width: 154px;
+  font-size: var(--text-xs);
+}
+
 .task-form-labels {
   display: flex;
   flex-wrap: wrap;
@@ -103,9 +115,16 @@
   margin-right: var(--space-md);
 }
 
-.task-form-item-title {
-  padding-left: var(--space-md);
-  box-shadow: -2px 0 0 0 var(--color-primary);
-  font-weight: bold;
-  font-size: var(--text-sm);
+.task-form-message-container {
+  position: absolute;
+  bottom: 42px;
+  left: var(--space-sm);
+  right: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-lg);
+  background-color: hsl(var(--accent-hue) 7% 12%);
+  backdrop-filter: none;
+  font-size: var(--text-xs);
 }
