@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, useRef, lazy, Suspense } from "react";
 import { getRandomString } from "utils";
 import Icon from "components/Icon";
 import "./form.css";
@@ -25,6 +25,11 @@ export default function Form({ form, groups, updateGroups, replaceLink, hide }) 
       }
       defaultForm.task.rawText = form.task.rawText;
       defaultForm.task.subtasks = subtasks;
+
+      if (form.task.expirationDate) {
+        defaultForm.expirationDate = form.task.expirationDate;
+        defaultForm.expirationDateTimeString = getDateTimeString(form.task.expirationDate);
+      }
       delete form.task;
 
       return {
@@ -35,6 +40,8 @@ export default function Form({ form, groups, updateGroups, replaceLink, hide }) 
     return defaultForm;
   });
   const [labelFormVisible, setLabelFormVisible] = useState(false);
+  const [message, setMessage] = useState("");
+  const messageTimeountId = useRef();
 
   function getUniqueTaskLabels(groupIndex = -1, taskIndex = -1) {
     let labels = [];
@@ -110,6 +117,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, hide }) 
   function handleTaskFormSubmit(event) {
     const { elements } = event.target;
     const text = elements.text.value.trim();
+    const datetime = elements.datetime.value;
     const { groupId, selectedGroupId = "unorganized" } = state;
     const { tasks } = groups.find(({ id }) => id === selectedGroupId);
     const task = {
@@ -125,6 +133,24 @@ export default function Form({ form, groups, updateGroups, replaceLink, hide }) 
     if (state.updating) {
       const { taskIndex } = state;
 
+      if (datetime) {
+        const selectedDateTime = new Date(datetime).getTime();
+
+        if (selectedDateTime !== state.expirationDate) {
+          task.creationDate = Date.now();
+          task.expirationDate = selectedDateTime;
+
+          if (task.expirationDate <= task.creationDate) {
+            showMessage("Expiration date can't be in the past.");
+            return;
+          }
+        }
+      }
+      else if (state.expirationDate) {
+        task.creationDate = 0;
+        task.expirationDate = 0;
+      }
+
       if (groupId !== selectedGroupId) {
         const group = groups.find(({ id }) => id === groupId);
 
@@ -136,6 +162,15 @@ export default function Form({ form, groups, updateGroups, replaceLink, hide }) 
       }
     }
     else {
+      if (datetime) {
+        task.creationDate = Date.now();
+        task.expirationDate = new Date(datetime).getTime();
+
+        if (task.expirationDate <= task.creationDate) {
+          showMessage("Expiration date can't be in the past.");
+          return;
+        }
+      }
       tasks.unshift(task);
     }
     updateGroups(groups);
@@ -196,10 +231,40 @@ export default function Form({ form, groups, updateGroups, replaceLink, hide }) 
     setLabelFormVisible(false);
   }
 
+  function getDateTimeString(time) {
+    const date = time ? new Date(time) : new Date();
+
+    // Split date/time string to display date, hours, and minutes
+    const items = date.toISOString().split(":");
+
+    return `${items[0]}:${items[1]}`;
+  }
+
+  function showMessage(message) {
+    setMessage(message);
+    clearTimeout(messageTimeountId.current);
+
+    messageTimeountId.current = setTimeout(() => {
+      setMessage("");
+    }, 4000);
+  }
+
+  function hideMessage() {
+    clearTimeout(messageTimeountId.current);
+    setMessage("");
+  }
+
   return (
     <div className="tasks-item-container task-form-container task-transition-target">
       <form className="task-form" onSubmit={handleTaskFormSubmit} onKeyDown={handleFormKeydown}>
         <div className="task-form-body">
+          <div className="task-form-item-container">
+            <h4 className="task-form-item-title">Expiration Date</h4>
+            <input name="datetime" type="datetime-local" className="task-form-datetime-input"
+              min={getDateTimeString()}
+              defaultValue={state.expirationDateTimeString}
+            />
+          </div>
           <div className="task-form-item-container">
             <h4 className="task-form-item-title">Labels</h4>
             <button type="button" className="btn icon-btn subtask-add-btn" onClick={showLabelForm} title="Create new label">
@@ -260,6 +325,14 @@ export default function Form({ form, groups, updateGroups, replaceLink, hide }) 
           <button type="submit" className="btn">{state.makingEdit ? "Update" : "Create"}</button>
         </div>
       </form>
+      {message ? (
+        <div className="container task-form-message-container">
+          <p className="task-form-message">{message}</p>
+          <button className="btn icon-btn" onClick={hideMessage}>
+            <Icon id="cross"/>
+          </button>
+        </div>
+      ) : null}
       {labelFormVisible && (
         <Suspense fallback={null}>
           <LabelForm addUniqueLabel={addUniqueLabel} hide={hideLabelForm}/>

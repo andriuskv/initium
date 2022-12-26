@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting, updateSetting } from "services/settings";
+import { getDate } from "services/timeDate";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./tasks-content.css";
@@ -22,10 +23,33 @@ export default function Tasks() {
   const [activeComponent, setActiveComponent] = useState(null);
   const [taskCount, setTaskCount] = useState(null);
   const taskRemoveTimeoutId = useRef(0);
+  const ignoreUpdate = useRef(false);
+  const checkIntervalId = useRef(0);
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (!groups) {
+      return;
+    }
+    if (ignoreUpdate.current) {
+      ignoreUpdate.current = false;
+      return;
+    }
+    checkIntervalId.current = setInterval(() => {
+      ignoreUpdate.current = true;
+
+      checkGroups(groups);
+      setGroups([...groups]);
+    }, 1000);
+
+    return () => {
+      clearInterval(checkIntervalId.current);
+      ignoreUpdate.current = false;
+    };
+  }, [groups]);
 
   useEffect(() => {
     clearTimeout(taskRemoveTimeoutId.current);
@@ -59,6 +83,7 @@ export default function Tasks() {
   }
 
   function initGroups(groups) {
+    checkGroups(groups);
     setGroups(groups.map(group => {
       group.tasks.map(task => {
         task = parseTask(task);
@@ -85,6 +110,19 @@ export default function Tasks() {
       expanded: true,
       tasks: []
     };
+  }
+
+  function checkGroups(groups) {
+    const currentDate = Date.now();
+
+    for (const group of groups) {
+      group.tasks = group.tasks.filter(task => {
+        if (task.expirationDate) {
+          return task.expirationDate > currentDate;
+        }
+        return true;
+      });
+    }
   }
 
   function parseTask(task) {
@@ -138,7 +176,7 @@ export default function Tasks() {
 
   function editTask(groupIndex, taskIndex) {
     const group = groups[groupIndex];
-    const { rawText, subtasks } = group.tasks[taskIndex];
+    const { rawText, subtasks, expirationDate } = group.tasks[taskIndex];
 
     setActiveComponent("form");
     setForm({
@@ -149,7 +187,8 @@ export default function Tasks() {
       selectedGroupId: group.id,
       task: {
         rawText,
-        subtasks
+        subtasks,
+        expirationDate
       }
     });
   }
@@ -244,6 +283,30 @@ export default function Tasks() {
 
   function updateComponentHeight(height) {
     updateSetting({ tasks: { height } });
+  }
+
+  function renderExpirationIndicator(task) {
+    const full = task.expirationDate - task.creationDate;
+    const partial = task.expirationDate - Date.now();
+    const dashoffset = 200 - 25 * (1 - partial / full);
+    const expirationDate = new Date(task.expirationDate);
+    const dateTimeString = getDate("hours:minutes period month day, year", {
+      year: expirationDate.getFullYear(),
+      month: expirationDate.getMonth(),
+      day: expirationDate.getDate(),
+      hours: expirationDate.getHours(),
+      minutes: expirationDate.getMinutes(),
+      dayWithSuffix: false
+    });
+
+    return (
+      <svg className="task-expiration-indicator">
+        <title>Expires on {dateTimeString}</title>
+        <circle cx="8" cy="8" r="4" strokeDasharray="100"
+          className="task-expiration-indicator-visual"
+          style={{ "--dashoffset": dashoffset }}/>
+      </svg>
+    );
   }
 
   if (!groups) {
@@ -343,6 +406,7 @@ export default function Tasks() {
                             onClick={() => editTask(groupIndex, taskIndex)} title="Edit">
                             <Icon id="edit"/>
                           </button>
+                          {task.expirationDate ? renderExpirationIndicator(task) : null}
                         </div>
                       </li>
                     ))}

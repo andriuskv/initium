@@ -173,8 +173,14 @@
   position: relative;
   box-shadow: 0 1px 0 0 var(--color-white-10);
 
-  &:hover .task-edit-btn {
-    animation: 0s linear 0.4s forwards delayed-reveal;
+  &:hover {
+    & .task-expiration-indicator {
+      transform: translateX(-30px);
+    }
+
+    & .task-edit-btn {
+      animation: 0s linear 0.4s forwards delayed-reveal;
+    }
   }
 }
 
@@ -310,4 +316,24 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: var(--text-lg);
+}
+
+.task-expiration-indicator {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-sm);
+  width: 16px;
+  height: 16px;
+  transition: 0.2s transform;
+}
+
+.task-expiration-indicator-visual {
+  --dashoffset: 200;
+
+  stroke: var(--color-white-10);
+  stroke-dashoffset: var(--dashoffset);
+  stroke-width: 8px;
+  fill: none;
+  transform: rotateZ(-90deg);
+  transform-origin: center;
 }
