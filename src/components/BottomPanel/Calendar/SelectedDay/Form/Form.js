@@ -341,10 +341,10 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
             <div className="reminder-form-setting">
               <div>
                 <span>Repeat every</span>
-                <span className="repeat-input-container">
-                  <input type="text" className="input repeat-input" name="gap" autoComplete="off"
+                <span className="multi-input-container repeat-input-container">
+                  <input type="text" className="input multi-input-left repeat-input" name="gap" autoComplete="off"
                     value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
-                  <select className="input select" onChange={handleCustomTypeGapNameChange} value={form.repeat.customTypeGapName}>
+                  <select className="input select multi-input-right" onChange={handleCustomTypeGapNameChange} value={form.repeat.customTypeGapName}>
                     <option value="days">day(s)</option>
                     <option value="weeks">week(s)</option>
                     <option value="months">month(s)</option>
