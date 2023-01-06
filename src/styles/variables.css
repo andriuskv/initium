@@ -42,6 +42,11 @@
   --color-black-30: hsl(0deg 0% 0% / 30%);
   --color-black-40: hsl(0deg 0% 0% / 40%);
 
-  --color-positive: hsl(108deg 100% 44%);
+  --color-positive: hsl(108deg 66% 46%);
+
   --color-negative: hsl(0deg 86% 72%);
+  --color-negative-4: hsl(0deg 86% 72% / 4%);
+  --color-negative-10: hsl(0deg 86% 72% / 10%);
+
+  --color-neutral: hsl(33deg 80% 56%);
 }

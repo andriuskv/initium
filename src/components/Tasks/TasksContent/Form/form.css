@@ -1,3 +1,7 @@
+.task-form-container {
+  margin-top: 0;
+}
+
 .task-form-item-container {
   display: flex;
   align-items: center;
@@ -6,7 +10,6 @@
   margin-top: var(--space-md);
   padding-left: var(--space-lg);
   padding-right: var(--space-md);
-  font-weight: bold;
 }
 
 .task-form-item-title {
@@ -17,8 +20,32 @@
 }
 
 .task-form-datetime-input {
-  width: 154px;
+  width: 170px;
+  padding: var(--space-sm) var(--space-md);
   font-size: var(--text-xs);
+}
+
+.task-form-repeat-options-container {
+  align-items: flex-start;
+
+  & .task-form-item-title {
+    margin-top: var(--space-md);
+  }
+}
+
+.task-form-repeat-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.task-form-repeat-gap-unit-container {
+  margin-bottom: var(--space-md);
+}
+
+.task-form-repeat-input {
+  width: 52px;
+  text-align: center;
 }
 
 .task-form-labels {
@@ -113,6 +140,14 @@
 .task-form-subtask-input {
   flex-grow: 1;
   margin-right: var(--space-md);
+}
+
+.task-form-delete-btn {
+  margin-right: auto;
+}
+
+.task-form-submit-btn {
+  margin-left: var(--space-md);
 }
 
 .task-form-message-container {

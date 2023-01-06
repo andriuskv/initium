@@ -1,6 +1,6 @@
 .tasks {
   --height: 448px;
-  --header-height: 36px;
+  --header-height: 38px;
 
   z-index: var(--z-index, 1);
   position: absolute;

@@ -86,9 +86,9 @@ export default function Groups({ groups, updateGroups, hide }) {
   return (
     <div className="tasks-item-container task-transition-target">
       <form className="tasks-groups-form" onSubmit={handleGroupFormSubmit}>
-        <div className="input-btn-container">
-          <input type="text" className="input" name="name" placeholder="Group name" autoComplete="off" required/>
-          <button className="btn text-btn">Create</button>
+        <div className="multi-input-container group-create-input-container">
+          <input type="text" className="input multi-input-left" name="name" placeholder="Group name" autoComplete="off" required/>
+          <button className="btn text-btn multi-input-right">Create</button>
         </div>
       </form>
       {groups.length > 1 ? (

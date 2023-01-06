@@ -11,10 +11,23 @@ const Form = lazy(() => import("./Form"));
 const Groups = lazy(() => import("./Groups"));
 const Settings = lazy(() => import("./Settings"));
 
+const IN_PROGRESS_STATUS = 0;
+const FAILED_STATUS = 1;
+const PARTIAL_STATUS = 2;
+const COMPLETED_STATUS = 3;
+
+const taskStatusMap = {
+  "1": "failed",
+  "2": "partial",
+  "3": "completed"
+};
+
 export default function Tasks() {
   const [settings, setSettings] = useState(() => ({
     defaultGroupVisible: false,
     emptyGroupsHidden: false,
+    repeatHistoryHidden: false,
+    showCompletedRepeatingTasks: false,
     ...getSetting("tasks")
   }));
   const [groups, setGroups] = useState(null);
@@ -43,7 +56,7 @@ export default function Tasks() {
 
       checkGroups(groups);
       setGroups([...groups]);
-    }, 1000);
+    }, 30000);
 
     return () => {
       clearInterval(checkIntervalId.current);
@@ -65,7 +78,7 @@ export default function Tasks() {
     const tasks = await chromeStorage.get("tasks");
     const groups = tasks?.length > 0 ? tasks : [getDefaultGroup()];
 
-    initGroups(groups);
+    initGroups(groups, true);
 
     chromeStorage.subscribeToChanges(({ tasks }) => {
       if (!tasks) {
@@ -73,7 +86,7 @@ export default function Tasks() {
       }
 
       if (tasks.newValue) {
-        initGroups(tasks.newValue);
+        initGroups(tasks.newValue, false);
       }
       else {
         setGroups([getDefaultGroup()]);
@@ -82,8 +95,9 @@ export default function Tasks() {
     });
   }
 
-  function initGroups(groups) {
-    checkGroups(groups);
+  function initGroups(groups, shouldSave) {
+    const modified = checkGroups(groups);
+
     setGroups(groups.map(group => {
       group.tasks.map(task => {
         task = parseTask(task);
@@ -96,11 +110,22 @@ export default function Tasks() {
           delete label.title;
           return label;
         });
+
+        if (task.repeat) {
+          task.repeat.history = task.repeat.history.map(item => {
+            item.id = getRandomString(4);
+            return item;
+          });
+        }
         return task;
       });
       return group;
     }));
     countTasks(groups);
+
+    if (shouldSave && modified) {
+      saveTasks(groups);
+    }
   }
 
   function getDefaultGroup() {
@@ -112,17 +137,123 @@ export default function Tasks() {
     };
   }
 
+  function getTaskRepeatGap(task) {
+    let gapInMs = 0;
+
+    if (task.repeat.unit === "day") {
+      gapInMs = 24 * 60 * 60 * 1000 * task.repeat.gap;
+    }
+    else if (task.repeat.unit === "week") {
+      gapInMs = 7 * 24 * 60 * 60 * 1000 * task.repeat.gap;
+    }
+    else if (task.repeat.unit === "month") {
+      const creationDate = new Date(task.creationDate);
+      let year = creationDate.getFullYear();
+      let month = creationDate.getMonth();
+
+      for (let i = 0; i < task.repeat.gap; i += 1) {
+        month += 1;
+
+        if (month > 12) {
+          year += 1;
+          month = 1;
+        }
+      }
+      const day = creationDate.getDate();
+      const hours = creationDate.getHours();
+      const minutes = creationDate.getMinutes();
+
+      const endMonthDays = new Date(year, month + 1, 0).getDate();
+      const nextRepeatDay = Math.min(endMonthDays, day);
+      const nextRepeatDate = new Date(year, month, nextRepeatDay, hours, minutes);
+
+      gapInMs = nextRepeatDate - creationDate;
+    }
+    return gapInMs;
+  }
+
+  function updateTaskRepeatProgress(task, elapsed, gapInMs) {
+    const ratio = task.repeat.number > 0 ? elapsed / (gapInMs * task.repeat.number) : elapsed / gapInMs;
+    const decimal = ratio - Math.floor(ratio);
+    task.repeat.history[task.repeat.history.length - 1].elapsed = decimal * 100;
+  }
+
+  function updateTaskRepeatHistory(task, missedCount) {
+    task.repeat.number += 1;
+
+    task.repeat.history[task.repeat.history.length - 1] = {
+      id: getRandomString(4),
+      status: task.repeat.status !== COMPLETED_STATUS ? FAILED_STATUS : task.repeat.status
+    };
+
+    task.repeat.status = FAILED_STATUS;
+
+    for (let i = 1; i < missedCount; i += 1) {
+      task.repeat.number += 1;
+
+      task.repeat.history.push({
+        id: getRandomString(4),
+        status: task.repeat.status
+      });
+    }
+    task.repeat.status = IN_PROGRESS_STATUS;
+    task.repeat.history.push({
+      id: getRandomString(4),
+      status: IN_PROGRESS_STATUS,
+      elapsed: 0
+    });
+
+    if (task.repeat.history.length > 10) {
+      task.repeat.history = task.repeat.history.slice(-10);
+    }
+  }
+
   function checkGroups(groups) {
     const currentDate = Date.now();
+    let modified = false;
 
     for (const group of groups) {
-      group.tasks = group.tasks.filter(task => {
+      const currentTaskCount = group.tasks.length;
+
+      group.tasks = group.tasks.map(task => {
+        if (task.repeat) {
+          const elapsed = currentDate - task.creationDate;
+          const gapInMs = getTaskRepeatGap(task);
+
+          if (elapsed >= gapInMs * task.repeat.number) {
+            const number = Math.floor(elapsed / gapInMs);
+            const missedCount = number - task.repeat.number;
+
+            if (missedCount > 0) {
+              updateTaskRepeatHistory(task, missedCount);
+
+              delete task.hidden;
+              task.subtasks = task.subtasks.map(task => {
+                delete task.hidden;
+                return task;
+              });
+
+              modified = true;
+            }
+            updateTaskRepeatProgress(task, elapsed, gapInMs);
+          }
+        }
+        return task;
+      }).filter(task => {
         if (task.expirationDate) {
           return task.expirationDate > currentDate;
         }
+        else if (task.repeat?.limit > 0 && task.repeat.number >= task.repeat.limit) {
+          return false;
+        }
         return true;
       });
+
+      if (!modified) {
+        modified = currentTaskCount !== group.tasks.length;
+      }
     }
+    return modified;
   }
 
   function parseTask(task) {
@@ -146,9 +277,35 @@ export default function Tasks() {
     setRemovedItems([...removedItems, { groupIndex, taskIndex, subtaskIndex }]);
   }
 
+  function setRepeatingTaskStatus(task, status) {
+    task.repeat.status = status;
+    task.repeat.history[task.repeat.history.length - 1].status = status;
+  }
+
   function removeCompletedItems() {
     for (const group of groups) {
-      group.tasks = group.tasks.filter(task => {
+      group.tasks = group.tasks.map(task => {
+        if (task.repeat) {
+          if (task.removed) {
+            delete task.removed;
+            task.hidden = true;
+            setRepeatingTaskStatus(task, COMPLETED_STATUS);
+            return task;
+          }
+          task.subtasks = task.subtasks.map(subtask => {
+            if (subtask.removed) {
+              delete subtask.removed;
+              subtask.hidden = true;
+              setRepeatingTaskStatus(task, PARTIAL_STATUS);
+            }
+            return subtask;
+          });
+        }
+        return task;
+      }).filter(task => {
+        if (task.repeat) {
+          return true;
+        }
         task.subtasks = task.subtasks.filter(subtask => !subtask.removed);
         return !task.removed;
       });
@@ -176,7 +333,7 @@ export default function Tasks() {
 
   function editTask(groupIndex, taskIndex) {
     const group = groups[groupIndex];
-    const { rawText, subtasks, expirationDate } = group.tasks[taskIndex];
+    const { id, rawText, subtasks, creationDate, expirationDate, repeat } = group.tasks[taskIndex];
 
     setActiveComponent("form");
     setForm({
@@ -186,11 +343,29 @@ export default function Tasks() {
       groupId: group.id,
       selectedGroupId: group.id,
       task: {
+        id,
         rawText,
         subtasks,
-        expirationDate
+        creationDate,
+        expirationDate,
+        repeat
       }
     });
+  }
+
+  function removeFormTask() {
+    const group = groups[form.groupIndex];
+    const task = group.tasks[form.taskIndex];
+
+    if (task.id === form.task.id) {
+      group.tasks = group.tasks.filter(task => {
+        return task.id !== form.task.id;
+      });
+      setGroups([...groups]);
+      countTasks(groups);
+      saveTasks(groups);
+    }
+    hideForm();
   }
 
   function replaceLink(text) {
@@ -235,6 +410,14 @@ export default function Tasks() {
       group.tasks = group.tasks.map(task => {
         task = cleanupTask(task);
         task.subtasks = task.subtasks.map(cleanupTask);
+
+        if (task.repeat) {
+          task.repeat.history = task.repeat.history.map(item => {
+            delete item.id;
+            delete item.elapsed;
+            return item;
+          });
+        }
         return task;
       });
       return group;
@@ -274,11 +457,13 @@ export default function Tasks() {
       [event.target.name]: event.target.checked
     });
 
-    updateSetting({
-      tasks: {
-        emptyGroupsHidden: event.target.checked
-      }
-    });
+    if (event.target.name !== "showCompletedRepeatingTasks") {
+      updateSetting({
+        tasks: {
+          [event.target.name]: event.target.checked
+        }
+      });
+    }
   }
 
   function updateComponentHeight(height) {
@@ -316,14 +501,14 @@ export default function Tasks() {
   if (activeComponent === "form") {
     return (
       <Suspense fallback={null}>
-        <Form form={form} groups={groups} updateGroups={updateGroups} replaceLink={replaceLink} hide={hideActiveComponent}/>
+        <Form form={form} groups={groups} updateGroups={updateGroups} replaceLink={replaceLink} removeTask={removeFormTask} hide={hideForm}/>
       </Suspense>
     );
   }
   else if (activeComponent === "groups") {
     return (
       <Suspense fallback={null}>
-        <Groups groups={groups} updateGroups={updateGroups} hide={hideForm}/>
+        <Groups groups={groups} updateGroups={updateGroups} hide={hideActiveComponent}/>
       </Suspense>
     );
   }
@@ -368,47 +553,71 @@ export default function Tasks() {
                 {group.expanded && (
                   <ul>
                     {group.tasks.map((task, taskIndex) => (
-                      <li className={`task${task.removed ? " removed" : ""}`} key={task.id}>
-                        <div className="task-body">
-                          {task.labels.length > 0 && (
-                            <ul className="task-labels">
-                              {task.labels.map((label, i) => (
-                                <li className="task-label" key={i}>
-                                  <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
-                                  <div className="task-label-title">{label.name}</div>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                          <div className="task-text-container">
-                            <button className="checkbox task-checkbox-btn"
-                              onClick={() => removeTask(groupIndex, taskIndex)} title="Remove">
-                              <div className="checkbox-tick"></div>
+                      !settings.showCompletedRepeatingTasks && task.hidden ? null : (
+                        <li className={`task${task.removed ? " removed" : ""}`} key={task.id}>
+                          <div className="task-body">
+                            {task.labels.length > 0 && (
+                              <ul className="task-labels">
+                                {task.labels.map((label, i) => (
+                                  <li className="task-label" key={i}>
+                                    <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
+                                    <div className="task-label-title">{label.name}</div>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                            <div className="task-text-container">
+                              {task.hidden ? (
+                                <div className="checkbox task-checkbox-btn disabled"></div>
+                              ) : (
+                                <button className="checkbox task-checkbox-btn"
+                                  onClick={() => removeTask(groupIndex, taskIndex)} title="Complete">
+                                  <div className="checkbox-tick"></div>
+                                </button>
+                              )}
+                              <div className="task-text" dangerouslySetInnerHTML={{ __html: task.text }}></div>
+                            </div>
+                            {task.subtasks.length > 0 && (
+                              <ul className="subtasks">
+                                {task.subtasks.map((subtask, subtaskIndex) => (
+                                  !settings.showCompletedRepeatingTasks && subtask.hidden ? null : (
+                                    <li className={`subtask${subtask.removed ? " removed" : ""}`} key={subtask.id}>
+                                      <div className="subtask-body">
+                                        {subtask.hidden ? (
+                                          <div className="checkbox task-checkbox-btn disabled"></div>
+                                        ) : (
+                                          <button className="checkbox task-checkbox-btn"
+                                            onClick={() => removeSubtask(groupIndex, taskIndex, subtaskIndex)} title="Complete">
+                                            <div className="checkbox-tick"></div>
+                                          </button>
+                                        )}
+                                        <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text }}></span>
+                                      </div>
+                                    </li>
+                                  )
+                                ))}
+                              </ul>
+                            )}
+                            <button className="btn icon-btn alt-icon-btn task-edit-btn"
+                              onClick={() => editTask(groupIndex, taskIndex)} title="Edit">
+                              <Icon id="edit"/>
                             </button>
-                            <div className="task-text" dangerouslySetInnerHTML={{ __html: task.text }}></div>
-                          </div>
-                          {task.subtasks.length > 0 && (
-                            <ul className="subtasks">
-                              {task.subtasks.map((subtask, subtaskIndex) => (
-                                <li className={`subtask${subtask.removed ? " removed" : ""}`} key={subtask.id}>
-                                  <div className="subtask-body">
-                                    <button className="checkbox task-checkbox-btn"
-                                      onClick={() => removeSubtask(groupIndex, taskIndex, subtaskIndex)}title="Remove">
-                                      <div className="checkbox-tick"></div>
-                                    </button>
-                                    <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text }}></span>
+                            {task.expirationDate ? renderExpirationIndicator(task) : null}
+                            {!settings.repeatHistoryHidden && task.repeat?.history.length ? (
+                              <div className="task-repeat-history">
+                                {task.repeat.history.map(item => (
+                                  <div className={`task-repeat-history-item${item.status > 0 ? ` ${taskStatusMap[item.status]}` : ""}`}
+                                    key={item.id}>
+                                    {item.elapsed > 0 ? (
+                                      <div className="task-repeat-history-item-inner" style={{ "--elapsed" : item.elapsed }}></div>
+                                    ) : null}
                                   </div>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                          <button className="btn icon-btn alt-icon-btn task-edit-btn"
-                            onClick={() => editTask(groupIndex, taskIndex)} title="Edit">
-                            <Icon id="edit"/>
-                          </button>
-                          {task.expirationDate ? renderExpirationIndicator(task) : null}
-                        </div>
-                      </li>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
+                        </li>
+                      )
                     ))}
                   </ul>
                 )}

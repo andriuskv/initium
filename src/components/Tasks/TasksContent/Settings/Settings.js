@@ -31,7 +31,7 @@ export default function Settings({ settings, toggleSetting, saveHeight, hide }) 
           <div className="checkbox">
             <div className="checkbox-tick"></div>
           </div>
-          <span>Show unorganized group</span>
+          <span>Show default group header</span>
         </label>
         <label className="checkbox-container tasks-settings-item">
           <input type="checkbox" className="sr-only checkbox-input"
@@ -41,6 +41,24 @@ export default function Settings({ settings, toggleSetting, saveHeight, hide }) 
             <div className="checkbox-tick"></div>
           </div>
           <span>Hide empty groups</span>
+        </label>
+        <label className="checkbox-container tasks-settings-item">
+          <input type="checkbox" className="sr-only checkbox-input"
+            name="repeatHistoryHidden" checked={settings.repeatHistoryHidden}
+            onChange={toggleSetting}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+          <span>Hide task repeat history</span>
+        </label>
+        <label className="checkbox-container tasks-settings-item">
+          <input type="checkbox" className="sr-only checkbox-input"
+            name="showCompletedRepeatingTasks" checked={settings.showCompletedRepeatingTasks}
+            onChange={toggleSetting}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+          <span>Show completed repeating tasks</span>
         </label>
         <label className="checkbox-container tasks-settings-item">
           <input type="checkbox" className="sr-only checkbox-input"
