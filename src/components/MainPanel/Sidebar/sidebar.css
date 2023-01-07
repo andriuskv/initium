@@ -5,7 +5,7 @@
   border-radius: 0;
   border-top-right-radius: 999px;
   border-bottom-right-radius: 999px;
-  transform: translate(-2px, 5px);
+  transform: translate(-2px, 6px);
   pointer-events: auto;
 
   &.expanded {

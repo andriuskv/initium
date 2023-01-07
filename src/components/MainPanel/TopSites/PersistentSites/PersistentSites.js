@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import * as chromeStorage from "services/chromeStorage";
+import { SortableList, SortableItem } from "services/sortable";
 import Icon from "components/Icon";
 import "./persistent-sites.css";
 
@@ -9,6 +10,7 @@ export default function PersistentSites({ settings, getFaviconURL }) {
   const [sites, setSites] = useState(null);
   const [siteEditEnabled, setSiteEditEnabled] = useState(false);
   const [form, setForm] = useState(null);
+  const [activeDragId, setActiveDragId] = useState(null);
 
   useEffect(() => {
     init();
@@ -23,10 +25,7 @@ export default function PersistentSites({ settings, getFaviconURL }) {
   async function init() {
     const sites = await chromeStorage.get("persistentSites") || [];
 
-    setSites(sites.map(site => {
-      site.iconUrl = getFaviconURL(site.url);
-      return site;
-    }));
+    setSites(initSites(sites));
 
     chromeStorage.subscribeToChanges(({ persistentSites }) => {
       if (!persistentSites) {
@@ -34,12 +33,20 @@ export default function PersistentSites({ settings, getFaviconURL }) {
       }
 
       if (persistentSites.newValue) {
-        setSites(persistentSites);
+        setSites(initSites(persistentSites.newValue));
       }
       else {
         setSites([]);
       }
       hideForm();
+    });
+  }
+
+  function initSites(sites) {
+    return sites.map(site => {
+      site.id = crypto.randomUUID();
+      site.iconUrl = getFaviconURL(site.url);
+      return site;
     });
   }
 
@@ -56,18 +63,23 @@ export default function PersistentSites({ settings, getFaviconURL }) {
   }
 
   function updateSite(site, action) {
+    if (sites.some(({ url }) => site.url === url)) {
+      return;
+    }
+
     if (action === "add") {
-      if (!sites.some(({ url }) => site.url === url)) {
-        site.iconUrl = getFaviconURL(site.url);
-        sites.push(site);
-        setSites([...sites]);
-        saveSites(sites);
-      }
+      site.id = crypto.randomUUID();
+      site.iconUrl = getFaviconURL(site.url);
+
+      sites.push(site);
+      setSites([...sites]);
+      saveSites(sites);
     }
     else if (action === "update") {
       sites[form.index] = {
-        iconUrl: getFaviconURL(site.url),
-        ...site
+        ...site,
+        id: crypto.randomUUID(),
+        iconUrl: getFaviconURL(site.url)
       };
       setSites([...sites]);
       saveSites(sites);
@@ -75,7 +87,8 @@ export default function PersistentSites({ settings, getFaviconURL }) {
   }
 
   function saveSites(sites) {
-    chromeStorage.set({ persistentSites: sites.map(site => {
+    chromeStorage.set({ persistentSites: structuredClone(sites).map(site => {
+      delete site.id;
       delete site.iconUrl;
       return site;
     }) });
@@ -95,48 +108,76 @@ export default function PersistentSites({ settings, getFaviconURL }) {
     saveSites(sites);
   }
 
+  function handleSort(sites) {
+    if (sites) {
+      setSites([...sites]);
+      saveSites(sites);
+    }
+    setActiveDragId(null);
+  }
+
+  function handleDragStart(event) {
+    setActiveDragId(event.active.id);
+  }
+
+  function renderSites() {
+    if (siteEditEnabled) {
+      return (
+        <ul className="persistent-sites">
+          <SortableList
+            axis="x"
+            items={sites}
+            handleSort={handleSort}
+            handleDragStart={handleDragStart}>
+            {sites.map((site, i) => (
+              <SortableItem className={`top-site${site.id === activeDragId ? " dragging" : ""}`} id={site.id} key={site.id}>
+                <button className="top-site-link persistent-site-edit-btn" onClick={() => editSite(i)} title="Edit">
+                  <div className="container top-site-container top-site-thumbnail-container">
+                    <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt=""/>
+                  </div>
+                  <div className="container top-site-container top-site-title">{site.title}</div>
+                  <Icon id="edit" className="persistent-site-edit-icon"/>
+                </button>
+                <button className="btn icon-btn persistent-site-remove-btn" onClick={() => removeSite(i)} title="Remove">
+                  <Icon id="trash"/>
+                </button>
+              </SortableItem>
+            ))}
+          </SortableList>
+          {sites.length < 8 && (
+            <li className="top-site">
+              <button className="top-site-link top-site-add-btn" onClick={showForm}>
+                <div className="container top-site-container top-site-thumbnail-container">
+                  <Icon id="plus" className="top-site-add-btn-icon"/>
+                </div>
+                <div className="container top-site-container top-site-title">Add site</div>
+              </button>
+            </li>
+          )}
+        </ul>
+      );
+    }
+    return (
+      <ul className="persistent-sites">{sites.map(site => (
+        <li className="top-site" key={site.id}>
+          <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"}>
+            <div className="container top-site-container top-site-thumbnail-container">
+              <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt=""/>
+            </div>
+            <div className="container top-site-container top-site-title">{site.title}</div>
+          </a>
+        </li>
+      ))}
+      </ul>
+    );
+  }
+
   if (!sites) {
     return null;
   }
   return (
     <>
-      <ul className={`persistent-sites${siteEditEnabled ? " edit" : ""}`}>
-        {sites.map((site, i) => (
-          <li className="top-site" key={site.url}>
-            {siteEditEnabled ? (
-              <button className="top-site-link persistent-site-edit-btn" onClick={() => editSite(i)} title="Edit">
-                <div className="container top-site-container top-site-thumbnail-container">
-                  <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt=""/>
-                </div>
-                <div className="container top-site-container top-site-title">{site.title}</div>
-                <Icon id="edit" className="persistent-site-edit-icon"/>
-              </button>
-            ) : (
-              <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"}>
-                <div className="container top-site-container top-site-thumbnail-container">
-                  <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt=""/>
-                </div>
-                <div className="container top-site-container top-site-title">{site.title}</div>
-              </a>
-            )}
-            {siteEditEnabled && (
-              <button className="btn icon-btn persistent-site-remove-btn" onClick={() => removeSite(i)} title="Remove">
-                <Icon id="trash"/>
-              </button>
-            )}
-          </li>
-        ))}
-        {sites.length < 8 && siteEditEnabled && (
-          <li className="top-site">
-            <button className="top-site-link top-site-add-btn" onClick={showForm}>
-              <div className="container top-site-container top-site-thumbnail-container">
-                <Icon id="plus" className="top-site-add-btn-icon"/>
-              </div>
-              <div className="container top-site-container top-site-title">Add site</div>
-            </button>
-          </li>
-        )}
-      </ul>
+      {renderSites()}
       {form ? (
         <Suspense fallback={null}>
           <Form form={form} updateSite={updateSite} hide={hideForm}/>

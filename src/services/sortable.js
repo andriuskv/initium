@@ -12,6 +12,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
+  horizontalListSortingStrategy,
   rectSortingStrategy
 } from "@dnd-kit/sortable";
 import {
@@ -50,6 +51,9 @@ function SortableList({ children, items, axis, handleDragStart, handleSort }) {
 
   if (axis === "xy") {
     sortingStrategy = rectSortingStrategy;
+  }
+  else if (axis === "x") {
+    sortingStrategy = horizontalListSortingStrategy;
   }
   else {
     modifiers.push(restrictToVerticalAxis);
