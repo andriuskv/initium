@@ -7,6 +7,12 @@
   & .top-site {
     width: auto;
 
+    &.dragging {
+      z-index: 1000;
+      background-color: var(--color-white-10);
+      border-radius: 8px;
+    }
+
     & .top-site-dropdown {
       transform: translate(25%, 25%);
     }
