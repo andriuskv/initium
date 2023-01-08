@@ -2,7 +2,6 @@ import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "re
 import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings-context";
 import Wallpaper from "components/Wallpaper";
-import Tasks from "components/Tasks";
 import BottomPanel from "components/BottomPanel";
 
 const Clock = lazy(() => import("./Clock"));
@@ -11,6 +10,7 @@ const GreetingEditor = lazy(() => import("./GreetingEditor"));
 const MainPanel = lazy(() => import("./MainPanel"));
 const TopPanel = lazy(() => import("./TopPanel"));
 const Weather = lazy(() => import("./Weather"));
+const Tasks = lazy(() => import("./Tasks"));
 const WallpaperViewer = lazy(() => import("./WallpaperViewer"));
 const TweetImageViewer = lazy(() => import("./TweetImageViewer"));
 
@@ -158,16 +158,18 @@ export default function App() {
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {greeting?.editorVisible ? <GreetingEditor hide={hideGreetingEditor}/> : null}
-      </Suspense>
-      <Suspense fallback={null}>
         {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
         {weather.rendered && <Weather timeFormat={settings.timeDate.format}/>}
         {wallpaperViewerVisible && <WallpaperViewer settings={settings.appearance.wallpaper} hide={hideWallpaperViewer}/>}
         {tweetImageData && <TweetImageViewer data={tweetImageData} hide={hideTweetImageViewer}/>}
       </Suspense>
       <BottomPanel/>
-      <Tasks/>
+      <Suspense fallback={null}>
+        {settings.general.tasksDisabled ? null : <Tasks/>}
+      </Suspense>
+      <Suspense fallback={null}>
+        {greeting?.editorVisible ? <GreetingEditor hide={hideGreetingEditor}/> : null}
+      </Suspense>
     </>
   );
 }
