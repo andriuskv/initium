@@ -69,7 +69,8 @@ function getDefault() {
   return {
     general: {
       centerClock: false,
-      greetingDisabled: false
+      greetingDisabled: false,
+      tasksDisabled: false
     },
     appearance: {
       accentColor: { hue: "205deg", saturation: "80%", lightness: "56%" },

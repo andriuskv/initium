@@ -49,6 +49,15 @@ export default function GeneralTab() {
           <span className="checkbox-label-right">Disable greeting</span>
         </label>
       </div>
+      <label className="setting">
+        <span>Disable tasks</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.general.tasksDisabled}
+          onChange={() => toggleSetting("general", "tasksDisabled")}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
       <div className="setting setting-reset">
         <span>Reset settings</span>
         <button className="btn" onClick={reset}>Reset</button>
