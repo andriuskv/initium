@@ -1,4 +1,5 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
+import { dispatchCustomEvent } from "utils";
 import Spinner from "components/Spinner";
 import "./settings.css";
 import GeneralTab from "./GeneralTab";
@@ -11,6 +12,12 @@ const StorageTab = lazy(() => import("./StorageTab"));
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("general");
+
+  useEffect(() => {
+    return () => {
+      dispatchCustomEvent("enable-persistent-site-edit", false);
+    };
+  });
 
   function renderNavigation() {
     const tabs = [
