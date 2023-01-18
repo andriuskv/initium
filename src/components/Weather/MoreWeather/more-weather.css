@@ -135,14 +135,9 @@
 }
 
 .weather-more-hourly-temp-view-text {
-  transition: 0.4s all;
   font-size: var(--text-xxs);
   font-weight: bold;
   fill: var(--color-white-80);
-}
-
-.weather-more-hourly-temp-view-path {
-  transition: 0.4s all;
 }
 
 .weather-more-hourly-prec-view-values {

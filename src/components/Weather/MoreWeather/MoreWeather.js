@@ -37,14 +37,17 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
     for (const [index, item] of Object.entries(more.hourly)) {
       const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
       const y = getSvgY(temp);
+      const numIndex = Number(index);
 
       // 576 = container width; 24 = item count
       // 24 = 576 / 24
-      path += ` L${Number(index) * 24 + offset} ${y}`;
+      path += ` L${numIndex * 24 + offset} ${y}`;
 
-      // Skip first point
       if (offset === 0) {
         offset = 12;
+      }
+      else if (numIndex + 2 === more.hourly.length) {
+        offset = 0;
       }
     }
 
@@ -115,10 +118,8 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
       return (
         <svg className="weather-more-hourly-view weather-more-hourly-temp-view">
           {renderTempValues()}
-          <path className="weather-more-hourly-temp-view-path"
-            fill="none" stroke="var(--color-primary)" strokeWidth="2px" d={getTempPath()}></path>
-          <path className="weather-more-hourly-temp-view-path"
-            fill="var(--color-primary-0-40)" d={getTempPath(true)}></path>
+          <path fill="none" stroke="var(--color-primary)" strokeWidth="2px" d={getTempPath()}></path>
+          <path fill="var(--color-primary-0-40)" d={getTempPath(true)}></path>
         </svg>
       );
     }
@@ -132,7 +133,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
           </div>
           <div className="weather-more-hourly-prec-view-graph">
             {more.hourly.slice(0, -1).map(item => (
-              <div className="weather-more-hourly-prec-view-graph-bar" key={item.id} style={{ height: `${item.precipitation}%`}}></div>
+              <div className="weather-more-hourly-prec-view-graph-bar" key={item.id} style={{ height: `${item.precipitation}%` }}></div>
             ))}
           </div>
         </div>

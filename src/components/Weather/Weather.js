@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
 import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
@@ -36,7 +36,7 @@ export default function Weather({ timeFormat }) {
     };
   }, [settings.cityName, settings.useGeo]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (current) {
       setCurrentWeather({
         ...current,
