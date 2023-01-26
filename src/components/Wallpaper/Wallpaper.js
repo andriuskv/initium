@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { delay } from "../../utils";
 import { fetchWallpaperInfo, getIDBWallpaper, resetIDBWallpaper } from "services/wallpaper";
 import "./wallpaper.css";
 
@@ -13,19 +14,19 @@ export default function Wallpaper({ settings }) {
   useEffect(() => {
     if (firstRender.current && wallpaper) {
       const image = new Image();
+      const start = Date.now();
       firstRender.current = false;
 
-      image.onload = () => {
-        const element = document.getElementById("downscaled-wallpaper");
+      image.onload = async () => {
+        const elapsed = Date.now() - start;
 
-        if (element) {
-          element.classList.add("hide");
-
-          setTimeout(() => {
-            element.remove();
-          }, 600);
+        // Show downscaled wallpaper for at least 200 ms.
+        if (elapsed < 200) {
+          await delay(200 - elapsed);
         }
+        removeDownscaled();
       };
+
       image.src = wallpaper.url;
     }
   }, [wallpaper]);
@@ -70,6 +71,18 @@ export default function Wallpaper({ settings }) {
       if (info) {
         setWallpaper({ url: info.url });
       }
+    }
+  }
+
+  function removeDownscaled() {
+    const element = document.getElementById("downscaled-wallpaper");
+
+    if (element) {
+      element.classList.add("hide");
+
+      setTimeout(() => {
+        element.remove();
+      }, 200);
     }
   }
 
