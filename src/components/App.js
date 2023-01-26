@@ -70,7 +70,7 @@ export default function App() {
       if (weather.shouldDelay) {
         weatherTimeoutId.current = setTimeout(() => {
           setWeather({ rendered: true });
-        }, 4000);
+        }, 2000);
       }
       else {
         setWeather({ rendered: true });
@@ -158,8 +158,10 @@ export default function App() {
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
         {weather.rendered && <Weather timeFormat={settings.timeDate.format}/>}
+      </Suspense>
+      <Suspense fallback={null}>
+        {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
         {wallpaperViewerVisible && <WallpaperViewer settings={settings.appearance.wallpaper} hide={hideWallpaperViewer}/>}
         {tweetImageData && <TweetImageViewer data={tweetImageData} hide={hideTweetImageViewer}/>}
       </Suspense>

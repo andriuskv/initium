@@ -75,6 +75,7 @@
 .top-site-title {
   @mixin text-truncate;
 
+  min-height: 20px;
   margin-bottom: var(--space-md);
   padding: var(--space-sm) var(--space-md);
   border-radius: 99px;
