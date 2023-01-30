@@ -116,6 +116,16 @@ export default function TimeDateTab() {
             <div className="checkbox-tick"></div>
           </div>
         </label>
+        <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
+          <span>Center clock when main panel is hidden</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            checked={settings.centerClock}
+            onChange={() => toggleSetting("timeDate", "centerClock")}
+            disabled={settings.clockDisabled}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
       </div>
       <div className="settings-group">
         <h4 className="settings-group-title">Date</h4>
