@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
+import { useSettings } from "contexts/settings-context";
 import { handleZIndex } from "services/zIndex";
 import Icon from "../Icon";
 import "./bottom-panel.css";
@@ -9,11 +10,12 @@ const Settings = lazy(() => import("./Settings"));
 const Calendar = lazy(() => import("./Calendar"));
 
 export default function BottomPanel() {
+  const { settings: { general: settings } } = useSettings();
   const [selectedItem, setSelectedItem] = useState({});
   const [items, setItems] = useState(() => ({
-    "google-apps": {
-      id: "google-apps",
-      title: "Google Apps",
+    "googleApps": {
+      id: "googleApps",
+      title: "Google apps",
       iconId: "grid"
     },
     "timers": {
@@ -35,10 +37,12 @@ export default function BottomPanel() {
   const calendarTimeoutId = useRef(0);
 
   useEffect(() => {
-    calendarTimeoutId.current = setTimeout(() => {
-      items.calendar.rendered = true;
-      setItems({ ...items });
-    }, 4000);
+    if (!settings.calendarDisabled) {
+      calendarTimeoutId.current = setTimeout(() => {
+        items.calendar.rendered = true;
+        setItems({ ...items });
+      }, 4000);
+    }
 
     window.addEventListener("indicator-visibility", toggleTimersIndicator);
 
@@ -46,6 +50,14 @@ export default function BottomPanel() {
       window.removeEventListener("indicator-visibility", toggleTimersIndicator);
     };
   }, []);
+
+  useEffect(() => {
+    items.googleApps.disabled = settings.googleAppsDisabled;
+    items.timers.disabled = settings.timersDisabled;
+    items.calendar.disabled = settings.calendarDisabled;
+
+    setItems({ ...items });
+  }, [settings]);
 
   useEffect(() => {
     if (!selectedItem.id) {
@@ -59,7 +71,6 @@ export default function BottomPanel() {
     }
     else {
       setSelectedItem({ ...selectedItem, visible: true });
-
     }
   }, [selectedItem.id]);
 
@@ -98,7 +109,7 @@ export default function BottomPanel() {
   function renderItems() {
     return (
       <ul className="bottom-panel-item-selection">
-        {Object.values(items).map(item => (
+        {Object.values(items).filter(item => !item.disabled).map(item => (
           <li key={item.id}>
             <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
               onClick={() => selectItem(item.id)} title={item.title}>
@@ -114,7 +125,7 @@ export default function BottomPanel() {
     let Component = null;
     let placeholder = null;
 
-    if (selectedItem.id === "google-apps") {
+    if (selectedItem.id === "googleApps") {
       Component = GoogleApps;
       placeholder = <div className="apps-placeholder"></div>;
     }

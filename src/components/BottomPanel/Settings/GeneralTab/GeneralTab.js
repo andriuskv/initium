@@ -26,15 +26,6 @@ export default function GeneralTab() {
 
   return (
     <div className="setting-tab">
-      <label className="setting">
-        <span>Center clock when main panel is hidden</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.general.centerClock}
-          onChange={() => toggleSetting("general", "centerClock")}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
-        </div>
-      </label>
       <div className="setting setting-greeting">
         <div className="setting-greeting-item">
           <button className="btn" onClick={showGreetingEditor} disabled={settings.general.greetingDisabled}>Set the greeting</button>
@@ -54,6 +45,33 @@ export default function GeneralTab() {
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.tasksDisabled}
           onChange={() => toggleSetting("general", "tasksDisabled")}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
+      <label className="setting">
+        <span>Disable Google apps</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.general.googleAppsDisabled}
+          onChange={() => toggleSetting("general", "googleAppsDisabled")}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
+      <label className="setting">
+        <span>Disable timers</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.general.timersDisabled}
+          onChange={() => toggleSetting("general", "timersDisabled")}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
+      <label className="setting">
+        <span>Disable calendar</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.general.calendarDisabled}
+          onChange={() => toggleSetting("general", "calendarDisabled")}/>
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>

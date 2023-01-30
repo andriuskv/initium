@@ -158,10 +158,10 @@ export default function MainPanelTab() {
             <div className="checkbox-tick"></div>
           </div>
         </label>
-        <label className={`setting${settings.components.topSites.persistentSitesHidden ? " disabled" : ""}`}>
+        <label className={`setting${settings.components.topSites.disabled || settings.components.topSites.persistentSitesHidden ? " disabled" : ""}`}>
           <span>Toggle persistent site edit mode</span>
           <input type="checkbox" className="sr-only toggle-input"
-            disabled={settings.components.topSites.persistentSitesHidden}
+            disabled={settings.components.topSites.disabled || settings.components.topSites.persistentSitesHidden}
             checked={persistentSitesEditEnabled}
             onChange={togglePersistentSiteEditMode}/>
           <div className="toggle">

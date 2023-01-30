@@ -68,9 +68,11 @@ function initAppearanceSettings(settings) {
 function getDefault() {
   return {
     general: {
-      centerClock: false,
       greetingDisabled: false,
-      tasksDisabled: false
+      tasksDisabled: false,
+      googleAppsDisabled: false,
+      timersDisabled: false,
+      calendarDisabled: false
     },
     appearance: {
       accentColor: { hue: "205deg", saturation: "80%", lightness: "56%" },
@@ -86,6 +88,7 @@ function getDefault() {
       clockStyle: "Inter",
       clockScale: 1,
       boldedClock: false,
+      centerClock: false,
       dateHidden: false,
       boldedDate: false,
       dateScale: 1.2,

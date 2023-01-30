@@ -31,7 +31,7 @@ export default function App() {
 
   useLayoutEffect(() => {
     setShouldCenterClock(getClockCenterState());
-  }, [settings.mainPanel, settings.general]);
+  }, [settings.mainPanel, settings.timeDate]);
 
   useEffect(() => {
     initGreeting();
@@ -83,7 +83,7 @@ export default function App() {
 
   function getClockCenterState() {
     if (settings.mainPanel.disabled || (settings.mainPanel.navHidden && !localStorage.getItem("mainPanelTab"))) {
-      return settings.general.centerClock;
+      return settings.timeDate.centerClock;
     }
     return false;
   }
@@ -102,6 +102,9 @@ export default function App() {
   }
 
   async function initTopPanel() {
+    if (settings.general.timersDisabled) {
+      return;
+    }
     const chromeStorage = await import("../services/chromeStorage");
     const countdowns = await chromeStorage.get("countdowns");
 
@@ -161,13 +164,15 @@ export default function App() {
         {weather.rendered && <Weather timeFormat={settings.timeDate.format}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
-        {wallpaperViewerVisible && <WallpaperViewer settings={settings.appearance.wallpaper} hide={hideWallpaperViewer}/>}
-        {tweetImageData && <TweetImageViewer data={tweetImageData} hide={hideTweetImageViewer}/>}
+        {!settings.general.timersDisabled && topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
       </Suspense>
       <BottomPanel/>
       <Suspense fallback={null}>
         {settings.general.tasksDisabled ? null : <Tasks/>}
+      </Suspense>
+      <Suspense fallback={null}>
+        {wallpaperViewerVisible && <WallpaperViewer settings={settings.appearance.wallpaper} hide={hideWallpaperViewer}/>}
+        {tweetImageData && <TweetImageViewer data={tweetImageData} hide={hideTweetImageViewer}/>}
       </Suspense>
       <Suspense fallback={null}>
         {greeting?.editorVisible ? <GreetingEditor hide={hideGreetingEditor}/> : null}
