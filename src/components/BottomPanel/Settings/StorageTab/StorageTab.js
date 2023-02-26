@@ -63,6 +63,10 @@ export default function StorageTab() {
       {
         name: "persistentSites",
         fullName: "Persistent sites"
+      },
+      {
+        name: "shortcuts",
+        fullName: "Shortcuts"
       }
     ];
 

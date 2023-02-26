@@ -94,7 +94,6 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
           </button>
         )}
       </div>
-      {/* <SortableList items={feeds.active} useDragHandle={true} handleSort={handleSort}> */}
       <ul className="feed-list-items" data-dropdown-parent>
         <SortableList
           items={feeds.active}
