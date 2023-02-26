@@ -70,7 +70,7 @@ function getDefault() {
     general: {
       greetingDisabled: false,
       tasksDisabled: false,
-      googleAppsDisabled: false,
+      shortcutsDisabled: false,
       timersDisabled: false,
       calendarDisabled: false
     },

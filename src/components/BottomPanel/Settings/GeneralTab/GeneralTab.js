@@ -50,10 +50,10 @@ export default function GeneralTab() {
         </div>
       </label>
       <label className="setting">
-        <span>Disable Google apps</span>
+        <span>Disable shortcuts</span>
         <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.general.googleAppsDisabled}
-          onChange={() => toggleSetting("general", "googleAppsDisabled")}/>
+          checked={settings.general.shortcutsDisabled}
+          onChange={() => toggleSetting("general", "shortcutsDisabled")}/>
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>

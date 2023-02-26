@@ -5,7 +5,7 @@ import { handleZIndex } from "services/zIndex";
 import Icon from "../Icon";
 import "./bottom-panel.css";
 
-const GoogleApps = lazy(() => import("./GoogleApps"));
+const Shortcuts = lazy(() => import("./Shortcuts"));
 const Settings = lazy(() => import("./Settings"));
 const Calendar = lazy(() => import("./Calendar"));
 
@@ -13,9 +13,9 @@ export default function BottomPanel() {
   const { settings: { general: settings } } = useSettings();
   const [selectedItem, setSelectedItem] = useState({});
   const [items, setItems] = useState(() => ({
-    "googleApps": {
-      id: "googleApps",
-      title: "Google apps",
+    "shortcuts": {
+      id: "shortcuts",
+      title: "Shortcuts",
       iconId: "grid"
     },
     "timers": {
@@ -52,7 +52,7 @@ export default function BottomPanel() {
   }, []);
 
   useEffect(() => {
-    items.googleApps.disabled = settings.googleAppsDisabled;
+    items.shortcuts.disabled = settings.shortcutsDisabled;
     items.timers.disabled = settings.timersDisabled;
     items.calendar.disabled = settings.calendarDisabled;
 
@@ -125,8 +125,8 @@ export default function BottomPanel() {
     let Component = null;
     let placeholder = null;
 
-    if (selectedItem.id === "googleApps") {
-      Component = GoogleApps;
+    if (selectedItem.id === "shortcuts") {
+      Component = Shortcuts;
       placeholder = <div className="apps-placeholder"></div>;
     }
     else if (selectedItem.id === "settings") {
