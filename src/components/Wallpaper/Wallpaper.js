@@ -6,28 +6,56 @@ import "./wallpaper.css";
 export default function Wallpaper({ settings }) {
   const [wallpaper, setWallpaper] = useState(null);
   const firstRender = useRef(true);
+  const videoElementRef = useRef(null);
 
   useEffect(() => {
     init(settings);
   }, [settings]);
 
   useEffect(() => {
+    if (videoElementRef.current && settings.mimeType?.startsWith("video")) {
+      if (!firstRender.current && videoElementRef.current.paused) {
+        videoElementRef.current.play();
+      }
+      videoElementRef.current.playbackRate = settings.videoPlaybackSpeed;
+      document.addEventListener("visibilitychange", handlePageVisibilityChange);
+    }
+    return () => {
+      document.removeEventListener("visibilitychange", handlePageVisibilityChange);
+    };
+  }, [settings, wallpaper]);
+
+  useEffect(() => {
     if (firstRender.current && wallpaper) {
-      const image = new Image();
-      const start = Date.now();
       firstRender.current = false;
+      const start = Date.now();
 
-      image.onload = async () => {
-        const elapsed = Date.now() - start;
+      if (wallpaper.type === "video") {
+        videoElementRef.current.addEventListener("canplay", async () => {
+          const elapsed = Date.now() - start;
 
-        // Show downscaled wallpaper for at least 200 ms.
-        if (elapsed < 200) {
-          await delay(200 - elapsed);
-        }
-        removeDownscaled();
-      };
+          // Show downscaled wallpaper for at least 200 ms.
+          if (elapsed < 200) {
+            await delay(200 - elapsed);
+          }
+          videoElementRef.current.play();
+          removeDownscaled();
+        });
+      }
+      else {
+        const image = new Image();
 
-      image.src = wallpaper.url;
+        image.onload = async () => {
+          const elapsed = Date.now() - start;
+
+          // Show downscaled wallpaper for at least 200 ms.
+          if (elapsed < 200) {
+            await delay(200 - elapsed);
+          }
+          removeDownscaled();
+        };
+        image.src = wallpaper.url;
+      }
     }
   }, [wallpaper]);
 
@@ -37,11 +65,12 @@ export default function Wallpaper({ settings }) {
 
       if (settings.id !== wallpaper?.id) {
         try {
-          const image = await getIDBWallpaper(settings.id);
-          url = URL.createObjectURL(image);
+          const file = await getIDBWallpaper(settings.id);
+          url = URL.createObjectURL(file);
 
           setWallpaper({
             id: settings.id,
+            type: settings.mimeType?.split("/")[0],
             url,
             x: settings.x,
             y: settings.y
@@ -61,6 +90,7 @@ export default function Wallpaper({ settings }) {
     else if (settings.type === "url") {
       setWallpaper({
         url: settings.url,
+        type: settings.mimeType?.split("/")[0],
         x: settings.x,
         y: settings.y
       });
@@ -71,6 +101,14 @@ export default function Wallpaper({ settings }) {
       if (info) {
         setWallpaper({ url: info.url });
       }
+    }
+  }
+
+  function handlePageVisibilityChange() {
+    if (document.hidden) {
+      videoElementRef.current.pause();
+    } else {
+      videoElementRef.current.play();
     }
   }
 
@@ -88,6 +126,10 @@ export default function Wallpaper({ settings }) {
 
   if (!wallpaper) {
     return null;
+  }
+
+  if (wallpaper.type === "video") {
+    return <video src={wallpaper.url} className="wallpaper-video" loop muted crossOrigin="anonymous" ref={videoElementRef}></video>;
   }
   return (
     <div className="wallpaper" style={{

@@ -92,6 +92,7 @@ function getWallpaperInfo() {
 function resetWallpaperInfo() {
   wallpaperInfo = null;
   localStorage.removeItem("wallpaper-info");
+  localStorage.removeItem("downscaled-wallpaper");
   deleteServiceWokerCache();
   dispatchCustomEvent("wallpaper-info-update", null);
 }
@@ -106,9 +107,9 @@ function deleteServiceWokerCache() {
   });
 }
 
-function setUrlWallpaper(url) {
+function setUrlWallpaper(url, mimeType) {
   setTimeout(() => {
-    cacheDownscaledWallpaper({ url, source: "url" });
+    cacheDownscaledWallpaper({ url, source: "url", mimeType });
     resetWallpaperInfo();
     resetIDBStore();
   }, 1000);
@@ -132,7 +133,7 @@ async function getIDBWallpaper(id) {
   return image;
 }
 
-async function setIDBWallpaper(image) {
+async function setIDBWallpaper(file) {
   const { createStore, set, clear } = await import("idb-keyval");
   let store = null;
 
@@ -144,12 +145,13 @@ async function setIDBWallpaper(image) {
     await indexedDB.deleteDatabase("initium");
     store = createStore("initium", "wallpaper");
   }
-  await set(image.name, image, store);
+  await set(file.name, file, store);
 
   setTimeout(() => {
     cacheDownscaledWallpaper({
-      id: image.name,
-      url: URL.createObjectURL(image)
+      id: file.name,
+      mimeType: file.type,
+      url: URL.createObjectURL(file)
     });
     resetWallpaperInfo();
   }, 1000);
@@ -163,18 +165,29 @@ async function resetIDBStore() {
   }
 }
 
-async function cacheDownscaledWallpaper({ url, id = url, source }) {
-  const image = await preloadImage(url, source);
+async function cacheDownscaledWallpaper({ url, id = url, source, mimeType }) {
+  const wallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper")) || {};
 
-  createDownscaledWallpaper({ id, image });
+  if (wallpaper.id === id) {
+    return;
+  }
+  const dataURL = await createDownscaledWallpaper({ id, url, source, mimeType });
+
+  localStorage.setItem("downscaled-wallpaper", JSON.stringify({ id, dataURL }));
 }
 
-function getDownscaledWallpaper(image) {
+function getDownscaledImage(image) {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
+  let canvasWidth = image.width / 10;
+  let canvasHeight = image.height / 10;
 
-  canvas.width = Math.ceil(image.width / 10);
-  canvas.height = Math.ceil(image.height / 10);
+  if (image.width > 3000) {
+    canvasWidth /= 2;
+    canvasHeight /= 2;
+  }
+  canvas.width = Math.ceil(canvasWidth);
+  canvas.height = Math.ceil(canvasHeight);
 
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   ctx.filter = "blur(2px) brightness(90%)";
@@ -182,15 +195,43 @@ function getDownscaledWallpaper(image) {
   return canvas.toDataURL("image/png", 0.8);
 }
 
-function createDownscaledWallpaper({ id, image }) {
-  const wallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper")) || {};
+function getDownscaledVideo({ url }) {
+  return new Promise(resolve => {
+    const video = document.createElement("video");
 
-  if (wallpaper.id === id) {
-    return;
+    video.crossOrigin = "anonymous";
+
+    video.addEventListener("seeked", () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      let canvasWidth = video.videoWidth / 10;
+      let canvasHeight = video.videoHeight / 10;
+
+      if (video.videoWidth > 3000) {
+        canvasWidth /= 2;
+        canvasHeight /= 2;
+      }
+      canvas.width = Math.ceil(canvasWidth);
+      canvas.height = Math.ceil(canvasHeight);
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.filter = "blur(2px)";
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      resolve(canvas.toDataURL("image/png", 0.8));
+    });
+    video.src = url;
+    // This allows canvas to render first frame of the video.
+    video.currentTime = 0.01;
+  });
+}
+
+async function createDownscaledWallpaper({ url, source, mimeType }) {
+  if (!mimeType || mimeType.startsWith("image")) {
+    const image = await preloadImage(url, source);
+    return getDownscaledImage(image);
   }
-  const dataURL = getDownscaledWallpaper(image);
-
-  localStorage.setItem("downscaled-wallpaper", JSON.stringify({ id, dataURL }));
+  return getDownscaledVideo({ url });
 }
 
 function updateDownscaledWallpaperPosition(x, y) {
