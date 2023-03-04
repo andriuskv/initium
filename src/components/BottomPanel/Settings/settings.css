@@ -81,10 +81,24 @@
   padding-top: var(--space-md);
 }
 
+.settings-group-top {
+  display: flex;
+  justify-content: space-between;
+  margin-right: var(--space-md);
+}
+
 .settings-group-title {
   margin-left: var(--space-lg);
   margin-bottom: var(--space-md);
   padding-left: var(--space-md);
   font-weight: bold;
   box-shadow: -2px 0 0 0 var(--color-primary);
+}
+
+.settings-group-top-btn {
+  padding: var(--space-xs) var(--space-lg);
+}
+
+.setting-message {
+  padding: var(--space-ms);
 }

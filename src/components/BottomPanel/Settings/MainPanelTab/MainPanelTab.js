@@ -114,7 +114,11 @@ export default function MainPanelTab() {
         </div>
       </label>
       <div className="settings-group">
-        <h4 className="settings-group-title">Top Sites</h4>
+        <div className="settings-group-top">
+          <h4 className="settings-group-title">Top Sites</h4>
+          <button className="btn outline-btn settings-group-top-btn" onClick={resetTopSites}
+            disabled={settings.components.topSites.disabled} title="Reset to default">Reset</button>
+        </div>
         <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
           <span>Show one row of top sites</span>
           <input type="checkbox" className="sr-only checkbox-input"
@@ -145,13 +149,10 @@ export default function MainPanelTab() {
             <div className="checkbox-tick"></div>
           </div>
         </label>
-        <div className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
-          <span>Restore default top sites</span>
-          <button className="btn" onClick={resetTopSites}>Reset</button>
-        </div>
         <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
           <span>Hide persistent sites</span>
           <input type="checkbox" className="sr-only checkbox-input"
+            disabled={settings.components.topSites.disabled}
             checked={settings.components.topSites.persistentSitesHidden}
             onChange={togglePersistentSitesVisibility}/>
           <div className="checkbox">

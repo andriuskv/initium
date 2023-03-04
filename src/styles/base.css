@@ -170,6 +170,20 @@ textarea {
   }
 }
 
+.outline-btn {
+  --background-color: transparent;
+
+  border: 2px solid var(--color-white-4);
+
+  &:hover, &:focus-visible {
+    --background-color: var(--color-white-10);
+
+    &:disabled {
+      --background-color: transparent;
+    }
+  }
+}
+
 .icon-btn {
   --color: var(--color-white);
 
