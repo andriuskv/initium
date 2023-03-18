@@ -110,7 +110,7 @@ export default function Shortcuts() {
           </li>
         ))}
       </ul>
-      <button className="btn icon-btn shortcuts-edit-toggle-btn" onClick={toggleEditMode} title="Edit">
+      <button className="btn icon-btn shortcuts-edit-toggle-btn" onClick={toggleEditMode} title="Reorder">
         <Icon id="edit"/>
       </button>
     </>
