@@ -172,10 +172,13 @@ export default function Tasks() {
     return gapInMs;
   }
 
-  function updateTaskRepeatProgress(task, elapsed, gapInMs) {
-    const ratio = task.repeat.number > 0 ? elapsed / (gapInMs * task.repeat.number) : elapsed / gapInMs;
-    const decimal = ratio - Math.floor(ratio);
-    task.repeat.history[task.repeat.history.length - 1].elapsed = decimal * 100;
+  function updateTaskRepeatProgress(task, elapsed, totalMs) {
+    let ratio = (elapsed - totalMs) / totalMs;
+
+    if (ratio < 0) {
+      ratio += 1;
+    }
+    task.repeat.history[task.repeat.history.length - 1].elapsed = ratio * 100;
   }
 
   function updateTaskRepeatHistory(task, missedCount) {
@@ -203,8 +206,8 @@ export default function Tasks() {
       elapsed: 0
     });
 
-    if (task.repeat.history.length > 10) {
-      task.repeat.history = task.repeat.history.slice(-10);
+    if (task.repeat.history.length > 8) {
+      task.repeat.history = task.repeat.history.slice(-8);
     }
   }
 
@@ -219,9 +222,10 @@ export default function Tasks() {
         if (task.repeat) {
           const elapsed = currentDate - task.creationDate;
           const gapInMs = getTaskRepeatGap(task);
+          const number = Math.floor(elapsed / gapInMs);
+          const totalMs = number > 1 ? gapInMs * number : gapInMs;
 
-          if (elapsed >= gapInMs * task.repeat.number) {
-            const number = Math.floor(elapsed / gapInMs);
+          if (elapsed > totalMs) {
             const missedCount = number - task.repeat.number;
 
             if (missedCount > 0) {
@@ -235,8 +239,8 @@ export default function Tasks() {
 
               modified = true;
             }
-            updateTaskRepeatProgress(task, elapsed, gapInMs);
           }
+          updateTaskRepeatProgress(task, elapsed, totalMs);
         }
         return task;
       }).filter(task => {
