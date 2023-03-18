@@ -56,11 +56,18 @@ export default function Twitter({ showIndicator }) {
       const [user, timeline] = await Promise.all([fetchUser(), fetchTimeline()]);
 
       if (user && timeline) {
+        if (user.statusCode) {
+          // TODO: if there was an error trying to fetch the user we should:
+          // show some kind of indicator,
+          // try to fetch another one,
+          // and in the end fallback back to login form with an error message.
+          return;
+        }
         lastUpdate.current = Date.now();
 
         setUser(user);
         setTweets(timeline.tweets);
-        setUsers([...addUser(user)]);
+        setUsers([...addUser(user, addingAnotherUser)]);
         setActiveUser({ ...getActiveUser() });
 
         if (!settings.highlightColor) {
