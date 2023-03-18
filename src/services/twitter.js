@@ -16,7 +16,7 @@ function hasUsers() {
   return users.length > 0;
 }
 
-function addUser(newUser) {
+function addUser(newUser, addingAnother) {
   users = users.map(user => {
     delete user.active;
     return user;
@@ -35,8 +35,13 @@ function addUser(newUser) {
     users[index] = { ...users[index], ...newUser };
   }
   else {
-    activeUserIndex = users.length;
-    users.push(newUser);
+    if (addingAnother) {
+      activeUserIndex = users.length;
+      users.push(newUser);
+    }
+    else if (users[activeUserIndex]) {
+      users[activeUserIndex] = { ...users[activeUserIndex], ...newUser };
+    }
   }
   saveUsers(users);
   return users;
