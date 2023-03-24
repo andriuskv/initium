@@ -1,37 +1,66 @@
-import { useState, useEffect, useRef } from "react";
-import { hasUsers, addUser, updateActiveUser, getActiveUser, removeActiveUser, fetchUser, fetchTimeline, getTweetDate } from "services/twitter";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import * as twitterService from "services/twitter";
 import ToTop from "components/ToTop";
 import Icon from "components/Icon";
-import Dropdown from "components/Dropdown";
 import Spinner from "components/Spinner";
 import "./twitter.css";
 import Form from "./Form";
-import Settings from "./Settings";
+import UserSelectDropdown from "./UserSelectDropdown";
 import UserCard from "./UserCard";
 import Tweet from "./Tweet";
+
+const Settings = lazy(() => import("./Settings"));
+const Timelines = lazy(() => import("./Timelines"));
 
 export default function Twitter({ showIndicator }) {
   const [loading, setLoading] = useState(true);
   const [addingAnotherUser, setAddingAnotherUser] = useState(false);
-  const [user, setUser] = useState(null);
-  const [tweets, setTweets] = useState([]);
-  const [tweetsToLoad, setTweetsToLoad] = useState([]);
-  const [users, setUsers] = useState(null);
-  const [activeUser, setActiveUser] = useState({});
+  const [timelines, setTimelines] = useState(() => {
+    const users = twitterService.getUsers();
+    const timelines = users.reduce((timelines, user) => {
+      if (user.active) {
+        timelines.push({
+          user,
+          tweets: [],
+          tweetsToLoad: []
+        });
+      }
+      return timelines;
+
+    }, []);
+
+    if (timelines.length === 0 && users.length > 1) {
+      timelines.push({
+        user: users[0],
+        tweets: [],
+        tweetsToLoad: []
+      });
+    }
+    return timelines;
+  });
+  const [selectedTimelineIndex, setSelectedTimelineIndex] = useState(() => {
+    const user = twitterService.getSelectedUser();
+    const index = timelines.findIndex(timeline => timeline.user.handle === user.handle);
+
+    return index < 0 ? 0 : index;
+  });
   const [fetchingMoreTweets, setFetchingMoreTweets] = useState(false);
   const [changingUser, setChangingUser] = useState(false);
   const [userCard, setUserCard] = useState({ reveal: false });
   const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem("twitter-settings")) || { videoQuality: "high" });
   const [settingsOpened, setSettingsOpened] = useState(false);
+  const [timelinesVisible, setTimelinesVisible] = useState(false);
   const tweetsRef = useRef(null);
   const lastUpdate = useRef(0);
   const timelineTimeoutId = useRef(0);
   const userCardEnterTimeoutId = useRef(0);
   const userCardLeaveTimeoutId = useRef(0);
 
+  const selectedTimeline = timelines[selectedTimelineIndex];
+
   useEffect(() => {
-    if (hasUsers()) {
-      loadContent();
+    if (twitterService.hasUsers()) {
+      loadTimelines();
     }
     else {
       setLoading(false);
@@ -43,41 +72,76 @@ export default function Twitter({ showIndicator }) {
       return;
     }
 
-    if (tweets.length) {
+    if (timelines.some(timeline => timeline.tweets.length > 0)) {
       scheduleTimelineUpdate();
     }
     return () => {
       clearTimeout(timelineTimeoutId.current);
     };
-  }, [loading, tweets, tweetsToLoad]);
+  }, [loading, timelines]);
 
-  async function loadContent() {
-    try {
-      const [user, timeline] = await Promise.all([fetchUser(), fetchTimeline()]);
+  async function loadTimelines() {
+    for (const timeline of timelines) {
+      try {
+        const { user, tweets } = await fetchUserAndTweets(timeline.user);
 
-      if (user && timeline) {
-        if (user.statusCode) {
-          // TODO: if there was an error trying to fetch the user we should:
-          // show some kind of indicator,
-          // try to fetch another one,
-          // and in the end fallback back to login form with an error message.
-          return;
+        if (user && tweets) {
+          timeline.user = user;
+          timeline.tweets = tweets;
+
+          twitterService.updateUser(timeline.user.handle, user);
         }
-        lastUpdate.current = Date.now();
+      } catch (e) {
+        console.log(e);
+      }
+    }
 
-        setUser(user);
-        setTweets(timeline.tweets);
-        setUsers([...addUser(user, addingAnotherUser)]);
-        setActiveUser({ ...getActiveUser() });
+    setTimelines([...timelines]);
 
-        if (!settings.highlightColor) {
-          const color = localStorage.getItem("twitter-highlight-color") || user.profileColor;
+    if (loading) {
+      setLoading(false);
+    }
+  }
 
-          setSettings(settings => {
-            settings.highlightColor = color;
-            localStorage.setItem("twitter-settings", JSON.stringify(settings));
-            return { ...settings };
+  async function fetchUserAndTweets(user) {
+    const [fetchedUser, fetchedTimeline] = await Promise.all([twitterService.fetchUser(user), twitterService.fetchTimeline(user)]);
+
+    if (fetchedUser && fetchedTimeline) {
+      if (fetchedUser.statusCode) {
+        // TODO: handle erorr.
+        return {};
+      }
+      lastUpdate.current = Date.now();
+
+      return {
+        user: { ...user, ...fetchedUser },
+        tweets: fetchedTimeline.tweets
+      };
+    }
+    return {};
+  }
+
+  async function addAnotherUser() {
+    try {
+      const { user, tweets } = await fetchUserAndTweets();
+
+      if (user && tweets) {
+        twitterService.addUser(user);
+
+        if (timelines.length) {
+          timelines.splice(selectedTimelineIndex, 1, {
+            user,
+            tweets,
+            tweetsToLoad: []
           });
+          setTimelines([...timelines]);
+        }
+        else {
+          setTimelines([{
+            user,
+            tweets,
+            tweetsToLoad: []
+          }]);
         }
 
         if (addingAnotherUser) {
@@ -99,7 +163,7 @@ export default function Twitter({ showIndicator }) {
 
       if (currentDate - lastUpdate.current > 600000) {
         lastUpdate.current = currentDate;
-        updateTimeline();
+        updateTimelines();
       }
       else {
         updateTweetTime();
@@ -107,33 +171,40 @@ export default function Twitter({ showIndicator }) {
     }, 60000);
   }
 
-  async function updateTimeline() {
-    const lastTweetId = tweets[tweets.length - 1].id;
-    const timeline = await fetchTimeline({ since_id: lastTweetId });
+  async function updateTimelines() {
+    let updated = false;
 
-    if (timeline) {
-      const currentTweets = tweetsToLoad.concat(tweets);
-      const newTweets = [];
+    for (const timeline of timelines) {
+      const lastTweetId = timeline.tweets[timeline.tweets.length - 1].id;
+      const fetchedTimeline = await twitterService.fetchTimeline(timeline.user, { since_id: lastTweetId });
 
-      for (const tweet of timeline.tweets) {
-        const foundTweet = currentTweets.find(({ id }) => tweet.id === id);
+      if (fetchedTimeline) {
+        const currentTweets = timeline.tweetsToLoad.concat(timeline.tweets);
+        const newTweets = [];
 
-        if (foundTweet) {
-          foundTweet.retweetCount = tweet.retweetCount;
-          foundTweet.likeCount = tweet.likeCount;
-          foundTweet.date = getTweetDate(foundTweet.date.createdAt);
+        for (const tweet of fetchedTimeline.tweets) {
+          const foundTweet = currentTweets.find(({ id }) => tweet.id === id);
+
+          if (foundTweet) {
+            foundTweet.retweetCount = tweet.retweetCount;
+            foundTweet.likeCount = tweet.likeCount;
+            foundTweet.date = twitterService.getTweetDate(foundTweet.date.createdAt);
+          }
+          else {
+            newTweets.push(tweet);
+          }
         }
-        else {
-          newTweets.push(tweet);
+
+        if (newTweets.length) {
+          timeline.tweetsToLoad.push(...newTweets);
+          showIndicator("twitter");
         }
+        updated = true;
       }
+    }
 
-      setTweets([...tweets]);
-
-      if (newTweets.length) {
-        setTweetsToLoad(newTweets.concat(tweetsToLoad));
-        showIndicator("twitter");
-      }
+    if (updated) {
+      setTimelines([...timelines]);
     }
     else {
       scheduleTimelineUpdate();
@@ -141,10 +212,13 @@ export default function Twitter({ showIndicator }) {
   }
 
   function updateTweetTime() {
-    setTweets(tweets.map(tweet => {
-      tweet.date = getTweetDate(tweet.date.createdAt);
-      return tweet;
-    }));
+    for (const timeline of timelines) {
+      timeline.tweets.map(tweet => {
+        tweet.date = twitterService.getTweetDate(tweet.date.createdAt);
+        return tweet;
+      });
+    }
+    setTimelines([...timelines]);
   }
 
   async function fetchMoreTweets() {
@@ -153,54 +227,90 @@ export default function Twitter({ showIndicator }) {
     }
     setFetchingMoreTweets(true);
 
-    const { id } = tweets[tweets.length - 1];
-    const timeline = await fetchTimeline({ max_id: id });
+    const { id } = selectedTimeline.tweets[selectedTimeline.tweets.length - 1];
+    const timeline = await twitterService.fetchTimeline(selectedTimeline.user, { max_id: id });
 
     if (timeline) {
       const newTweets = timeline.tweets.filter(tweet => tweet.id !== id);
 
       if (newTweets.length) {
-        setTweets(tweets.concat(newTweets));
+        selectedTimeline.tweets = selectedTimeline.tweets.concat(newTweets);
+        setTimelines([...timelines]);
       }
     }
     setFetchingMoreTweets(false);
   }
 
   function viewNewTweets() {
-    setTweets(tweetsToLoad.concat(tweets));
-    setTweetsToLoad([]);
+    selectedTimeline.tweets = selectedTimeline.tweetsToLoad.concat(selectedTimeline.tweets);
+    selectedTimeline.tweetsToLoad.length = 0;
+
+    setTimelines([...timelines]);
   }
 
   async function logout() {
-    const hasMoreUsers = removeActiveUser();
+    const hasMoreUsers = twitterService.removeSelectedUser();
 
     if (hasMoreUsers) {
-      setChangingUser(true);
-      await loadContent();
-      setChangingUser(false);
+      if (timelines.length > 1) {
+        timelines.splice(selectedTimelineIndex, 1);
+        setSelectedTimelineIndex(0);
+      }
+      else {
+        setChangingUser(true);
+
+        const selectedUser = twitterService.getSelectedUser();
+        const { user, tweets } = await fetchUserAndTweets(selectedUser);
+
+        timelines.splice(selectedTimelineIndex, 1, {
+          user,
+          tweets,
+          tweetsToLoad: []
+        });
+        setChangingUser(false);
+      }
     }
     else {
-      setUser(null);
-      setTweets([]);
-      setTweetsToLoad([]);
+      setTimelines([]);
+      setSelectedTimelineIndex(0);
     }
   }
 
-  async function selectUser(user, index) {
-    if (user.active) {
+  async function selectUser(userToSelect) {
+    if (userToSelect.selected) {
       return;
     }
-    tweetsToLoad.length = 0;
+    const activeTimelineIndex = timelines.findIndex(timeline => userToSelect.handle === timeline.user.handle);
 
-    setChangingUser(true);
-    setTweetsToLoad([]);
-    updateActiveUser(index);
-    await loadContent();
-    tweetsRef.current.scrollTo(0, 0);
-    setChangingUser(false);
+    if (activeTimelineIndex >= 0) {
+      setSelectedTimelineIndex(activeTimelineIndex);
+      setTimelines([...timelines]);
+      twitterService.markUserAsSelected(userToSelect, true);
+      tweetsRef.current.scrollTo(0, 0);
+    }
+    else {
+      try {
+        setChangingUser(true);
+
+        const { user, tweets } = await fetchUserAndTweets(userToSelect);
+
+        timelines.splice(selectedTimelineIndex, 1, {
+          user,
+          tweets,
+          tweetsToLoad: []
+        });
+
+        setChangingUser(false);
+        setTimelines([...timelines]);
+        twitterService.markUserAsSelected(userToSelect);
+        tweetsRef.current.scrollTo(0, 0);
+      } catch (e) {
+        console.log(e);
+      }
+    }
   }
 
-  function addAnotherUser() {
+  function showAnotherUserForm() {
     setAddingAnotherUser(true);
   }
 
@@ -253,14 +363,26 @@ export default function Twitter({ showIndicator }) {
 
   function activateMedia(media) {
     media.active = true;
-    setTweets([...tweets]);
+    setTimelines([...timelines]);
   }
 
   function updateSetting(setting, value) {
-    const updatedSettings = { ...settings, [setting]: value };
+    if (setting === "highlightColor") {
+      setUserHighlightColor(value);
+    }
+    else {
+      const updatedSettings = { ...settings, [setting]: value };
 
-    setSettings(updatedSettings);
-    localStorage.setItem("twitter-settings", JSON.stringify(updatedSettings));
+      setSettings(updatedSettings);
+      localStorage.setItem("twitter-settings", JSON.stringify(updatedSettings));
+    }
+  }
+
+  function setUserHighlightColor(color) {
+    selectedTimeline.user.highlightColor = color;
+
+    setTimelines([...timelines]);
+    twitterService.updateUserHighlightColor(color, selectedTimeline.user.handle);
   }
 
   function openSettings() {
@@ -271,57 +393,106 @@ export default function Twitter({ showIndicator }) {
     setSettingsOpened(false);
   }
 
-  if (loading || !user || addingAnotherUser) {
-    return <Form initialLoading={loading} loadContent={loadContent} addingAnotherUser={addingAnotherUser} hide={hideAnotherUserForm}/>;
+  function showTimelines() {
+    setTimelinesVisible(true);
+  }
+
+  function hideTimelines() {
+    setTimelinesVisible(false);
+  }
+
+  async function addTimeline(user) {
+    if (user.active || timelines.length >= 2) {
+      return;
+    }
+    setChangingUser(true);
+    setTimelinesVisible(false);
+
+    const timeline = await fetchUserAndTweets(user);
+
+    if (timelines.length === 1) {
+      timelines.push({
+        user: timeline.user,
+        tweets: timeline.tweets,
+        tweetsToLoad: []
+      });
+      setSelectedTimelineIndex(timelines.length - 1);
+      twitterService.markUserAsSelected(user, true);
+    }
+    else {
+      timelines.splice(selectedTimelineIndex, 1, {
+        user: timeline.user,
+        tweets: timeline.tweets,
+        tweetsToLoad: []
+      });
+      twitterService.markUserAsSelected(user);
+    }
+    setTimelines([...timelines]);
+    setChangingUser(false);
+    tweetsRef.current.scrollTo(0, 0);
+  }
+
+  function removeTimeline(handle) {
+    const index = timelines.findIndex(timeline => timeline.user.handle === handle);
+
+    twitterService.removeActiveUserProp(timelines[index].user.handle);
+    timelines.splice(index, 1);
+    setSelectedTimelineIndex(0);
+    setTimelines([...timelines]);
+    twitterService.markUserAsSelected(timelines[0].user);
+    tweetsRef.current.scrollTo(0, 0);
+  }
+
+  function switchTimeline(user, index) {
+    setSelectedTimelineIndex(index);
+    twitterService.markUserAsSelected(user, true);
+    tweetsRef.current.scrollTo(0, 0);
+  }
+
+  function renderSwitchTimelineButton() {
+    const secondTimelineIndex = selectedTimelineIndex === 0 ? 1 : 0;
+    const secondTimeline = timelines[secondTimelineIndex];
+
+    return (
+      <button className="btn icon-text-btn twitter-second-user" onClick={() => switchTimeline(secondTimeline.user, secondTimelineIndex)} title={`Switch to ${secondTimeline.user.name}`}>
+        <img src={secondTimeline.user.profileImage} className="twitter-user-image" alt=""/>
+        <div className="twitter-second-user-name-handle">
+          <span className="twitter-user-name">{secondTimeline.user.name}</span>
+          <span className="twitter-user-handle">{secondTimeline.user.handle}</span>
+        </div>
+        {secondTimeline.tweetsToLoad.length ? (
+          <span className="twitter-second-user-tweet-indicator">{secondTimeline.tweetsToLoad.length}</span>
+        ) : null}
+      </button>
+    );
+  }
+
+  if (loading || !selectedTimeline?.user || addingAnotherUser) {
+    return <Form initialLoading={loading} loadContent={addAnotherUser} addingAnotherUser={addingAnotherUser} hide={hideAnotherUserForm}/>;
   }
   return (
-    <div className="twitter-content" style={{ "--highlight-color": settings.highlightColor }}>
+    <div className="twitter-content" style={{ "--highlight-color": selectedTimeline.user.highlightColor || selectedTimeline.user.profileColor }}>
       <div className="main-panel-item-header twitter-header">
-        <a href={user.homepage} className="twitter-user" target="_blank" rel="noreferrer">
-          <img src={user.profileImage} className="twitter-user-image" alt=""/>
-          <span className="twitter-user-name">{user.name}</span>
-          <span className="twitter-user-handle">{user.handle}</span>
-        </a>
+        <div className="twitter-user-container">
+          <a href={selectedTimeline.user.homepage} className="twitter-user" target="_blank" rel="noreferrer">
+            <img src={selectedTimeline.user.profileImage} className="twitter-user-image" alt=""/>
+            <span className="twitter-user-name">{selectedTimeline.user.name}</span>
+            <span className="twitter-user-handle">{selectedTimeline.user.handle}</span>
+          </a>
+        </div>
+        {timelines.length > 1 ? renderSwitchTimelineButton() : null}
         <button className="btn icon-btn twitter-header-btn" onClick={openSettings} title="Settings">
           <Icon id="settings"/>
         </button>
-        {users && (
-          <Dropdown
-            container={{ className: "twitter-header-btn" }}
-            body={{ className: "twitter-header-dropdown" }}>
-            <div className="dropdown-group">
-              {users.map((user, i) => (
-                <button className="btn icon-text-btn dropdown-btn twitter-header-dropdown-user"
-                  onClick={() => selectUser(user, i)} disabled={user.active} key={i}>
-                  <img src={user.profileImage} className="twitter-header-dropdown-user-image" width="48px" height="48px" alt=""/>
-                  <div>
-                    <div>{user.name}</div>
-                    <div className="twitter-header-dropdown-user-handle">{user.handle}</div>
-                  </div>
-                  {user.active && (
-                    <div className="twitter-header-dropdown-user-indicator"></div>
-                  )}
-                </button>
-              ))}
-            </div>
-            <button className="btn icon-text-btn dropdown-btn" onClick={addAnotherUser}>
-              <Icon id="plus"/>
-              <span>Add another account</span>
-            </button>
-            <button className="btn icon-text-btn dropdown-btn" onClick={logout}>
-              <Icon id="logout"/>
-              <span>Log out {activeUser.handle}</span>
-            </button>
-          </Dropdown>
-        )}
+        <UserSelectDropdown selectUser={selectUser} showTimelines={showTimelines} showAnotherUserForm={showAnotherUserForm} logout={logout}/>
       </div>
-      <ul className={`tweets${tweetsToLoad.length > 0 && tweetsRef.current.scrollTop > 0 ? " tweet-indicator" : ""}`} ref={tweetsRef}>
-        {tweetsToLoad.length > 0 && (
+      <ul className={`tweets${selectedTimeline.tweetsToLoad.length > 0 && tweetsRef.current.scrollTop > 0 ? " tweet-indicator" : ""}`} ref={tweetsRef}>
+        {selectedTimeline.tweetsToLoad.length > 0 && (
           <li>
-            <button className="btn text-btn new-tweet-btn" onClick={viewNewTweets}>View {tweetsToLoad.length} new tweet{tweetsToLoad.length > 1 ? "s": ""}</button>
+            <button className="btn text-btn new-tweet-btn" onClick={viewNewTweets}>View {selectedTimeline.tweetsToLoad.length} new tweet{selectedTimeline.tweetsToLoad.length > 1 ? "s": ""}</button>
           </li>
         )}
-        {tweets.map(tweet => (
+        {selectedTimeline.tweets.map(tweet => (
           <Tweet tweet={tweet} settings={settings} activateMedia={activateMedia}
             showUserCard={showUserCard} handleTweetPointerLeave={handleTweetPointerLeave} key={tweet.id}/>
         ))}
@@ -335,9 +506,14 @@ export default function Twitter({ showIndicator }) {
         )}
       </ul>
       <ToTop/>
-      {settingsOpened && (
-        <Settings settings={settings} defaultColor={user.profileColor} updateSetting={updateSetting} hide={hideSettings}/>
-      )}
+      <Suspense fallback={null}>
+        {settingsOpened && (
+          <Settings settings={settings} user={selectedTimeline.user} updateSetting={updateSetting} hide={hideSettings}/>
+        )}
+      </Suspense>
+      <Suspense fallback={null}>
+        {timelinesVisible && <Timelines addTimeline={addTimeline} removeTimeline={removeTimeline} hide={hideTimelines}/>}
+      </Suspense>
       {changingUser && (
         <div className="twitter-content-mask">
           <Spinner className="twitter-content-mask-spinner"/>
