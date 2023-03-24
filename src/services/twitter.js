@@ -2,79 +2,105 @@ import { getMonthName } from "./timeDate";
 
 const serverUrl = `${process.env.SERVER_URL}/twitter`;
 const userCache = {};
-let users = JSON.parse(localStorage.getItem("twitter_users")) || [];
-let activeUserIndex = users.findIndex(user => user.active);
+const users = JSON.parse(localStorage.getItem("twitter_users")) || [];
+let selectedUserIndex = users.findIndex(user => user.selected);
 let oauth = null;
 let requestToken = "";
 let requestTokenSecret = "";
 
-if (users.length && activeUserIndex < 0) {
-  activeUserIndex = 0;
+if (users.length) {
+  if (selectedUserIndex < 0) {
+    setSelectedActiveUser(0);
+  }
+  else if (!users.some(user => user.active)) {
+    users[0].active = true;
+  }
 }
 
 function hasUsers() {
   return users.length > 0;
 }
 
-function addUser(newUser, addingAnother) {
-  users = users.map(user => {
-    delete user.active;
-    return user;
-  });
-  newUser.active = true;
+function getUsers() {
+  return users;
+}
+
+function addUser(newUser) {
+  removeSelectedActiveUser();
 
   if (oauth) {
     newUser.token = oauth.token;
     newUser.tokenSecret = oauth.tokenSecret;
     oauth = null;
   }
-  const index = users.findIndex(user => user.handle === newUser.handle);
-
-  if (index >= 0) {
-    activeUserIndex = index;
-    users[index] = { ...users[index], ...newUser };
-  }
-  else {
-    if (addingAnother) {
-      activeUserIndex = users.length;
-      users.push(newUser);
-    }
-    else if (users[activeUserIndex]) {
-      users[activeUserIndex] = { ...users[activeUserIndex], ...newUser };
-    }
-  }
+  users.push(newUser);
+  setSelectedActiveUser(users.length - 1);
   saveUsers(users);
   return users;
 }
 
-function updateActiveUser(index) {
-  users = users.map(user => {
-    delete user.active;
-    return user;
-  });
+function updateUser(handle, data) {
+  const index = users.findIndex(user => user.handle === handle);
 
-  activeUserIndex = index;
-  users[index].active = true;
-
+  users[index] = data;
   saveUsers(users);
 }
 
-function getActiveUser() {
-  return users[activeUserIndex];
+function markUserAsSelected(userToSelect, keepActive) {
+  const index = users.findIndex(user => user.handle === userToSelect.handle);
+
+  removeSelectedActiveUser(keepActive);
+  setSelectedActiveUser(index);
+  saveUsers(users);
 }
 
-function removeActiveUser() {
-  users.splice(activeUserIndex, 1);
+function getSelectedUser() {
+  return users[selectedUserIndex];
+}
+
+function removeSelectedUser() {
+  users.splice(selectedUserIndex, 1);
 
   if (users.length) {
-    activeUserIndex = 0;
-    users[activeUserIndex].active = true;
+    setSelectedActiveUser(0);
   }
   else {
-    activeUserIndex = -1;
+    selectedUserIndex = -1;
   }
   saveUsers(users);
   return users.length > 0;
+}
+
+function setSelectedActiveUser(index) {
+  selectedUserIndex = index;
+  users[index].selected = true;
+  users[index].active = true;
+}
+
+function removeSelectedActiveUser(keepActive) {
+  const user = users[selectedUserIndex];
+
+  if (user) {
+    delete user.selected;
+
+    if (!keepActive) {
+      delete user.active;
+    }
+  }
+}
+
+function removeActiveUserProp(handle) {
+  const user = users.find(user => user.handle === handle);
+
+  delete user.active;
+  saveUsers(users);
+}
+
+function updateUserHighlightColor(color, handle) {
+  const user = users.find(user => user.handle === handle);
+
+  user.highlightColor = color;
+  saveUsers(users);
 }
 
 function cacheUser(user) {
@@ -114,21 +140,21 @@ async function fetchAccessToken(pinCode) {
   }
 }
 
-async function fetchUser() {
+async function fetchUser(user) {
   return fetch(`${serverUrl}/user`, {
     method: "GET",
-    headers: getAuthorizationHeaders()
+    headers: getAuthorizationHeaders(user)
   }).then(res => res.json());
 }
 
 async function fetchUserByHandle(handle) {
   return fetch(`${serverUrl}/users/${handle}`, {
     method: "GET",
-    headers: getAuthorizationHeaders()
+    headers: getAuthorizationHeaders(getSelectedUser())
   }).then(res => res.json());
 }
 
-async function fetchTimeline(params = {}) {
+async function fetchTimeline(user, params = {}) {
   const url = buildURL(`${serverUrl}/timeline`, {
     count: 30,
     include_entities: true,
@@ -138,19 +164,22 @@ async function fetchTimeline(params = {}) {
 
   return fetch(url, {
     method: "GET",
-    headers: getAuthorizationHeaders()
+    headers: getAuthorizationHeaders(user)
   }).then(res => res.json());
 }
 
-function getAuthorizationHeaders() {
+function getAuthorizationHeaders(user) {
   let token = "";
   let tokenSecret = "";
 
-  if (oauth) {
+  if (user) {
+    ({ token, tokenSecret } = user);
+  }
+  else if (oauth) {
     ({ token, tokenSecret } = oauth);
   }
   else {
-    ({ token, tokenSecret } = users[activeUserIndex]);
+    throw new Error("Access token not found.");
   }
   return {
     "x-authorization": `OAuth oauth_token=${token} oauth_token_secret=${tokenSecret}`
@@ -197,10 +226,14 @@ function saveUsers(users) {
 
 export {
   hasUsers,
+  getUsers,
   addUser,
-  updateActiveUser,
-  getActiveUser,
-  removeActiveUser,
+  updateUser,
+  getSelectedUser,
+  removeSelectedUser,
+  updateUserHighlightColor,
+  markUserAsSelected,
+  removeActiveUserProp,
   cacheUser,
   getCachedUser,
   fetchLoginUrl,

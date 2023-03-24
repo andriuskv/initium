@@ -31,11 +31,17 @@
   height: 48px;
 }
 
+.twitter-user-container {
+  display: flex;
+  min-width: 0;
+  margin-right: auto;
+}
+
 .twitter-user {
   display: flex;
   align-items: center;
-  margin-left: var(--space-md);
-  margin-right: auto;
+  width: calc(100% - var(--space-sm));
+  margin-left: var(--space-sm);
 
   &:hover .twitter-user-name {
     text-decoration: underline;
@@ -48,46 +54,68 @@
 }
 
 .twitter-user-name {
+  @mixin text-truncate;
+
+  flex: 1;
   margin-left: var(--space-md);
   margin-right: var(--space-sm);
   font-weight: bold;
 }
 
 .twitter-user-handle {
+  @mixin text-truncate;
+
+  max-width: 200px;
   color: var(--color-white-60);
 }
 
-.twitter-header-dropdown {
-  width: 240px;
-  margin-right: var(--space-sm);
-}
+.twitter-second-user {
+  margin-left: var(--space-sm);
+  padding-left: var(--space-sm);
+  padding-right: var(--space-md);
+  filter: grayscale(1);
+  opacity: 0.6;
+  transition: 0.2s filter, 0.2s opacity;
 
-.twitter-header-dropdown-user {
-  justify-content: flex-start;
-  width: 100%;
-  border-radius: 0;
-  text-align: left;
+  &:has(.twitter-second-user-tweet-indicator) {
+    padding-right: var(--space-sm);
+  }
 
-  &:disabled {
-    --color: var(--color-white);
+  &:hover, &:focus-visible {
+    filter: grayscale(0);
+    opacity: 1;
   }
 }
 
-.twitter-header-dropdown-user-image {
-  border-radius: 50%;
-  margin-right: var(--space-md);
-}
-
-.twitter-header-dropdown-user-handle {
-  color: var(--color-white-60);
+.twitter-second-user-name-handle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: var(--space-sm);
+  font-size: var(--text-sm);
+  line-height: 1;
   font-weight: normal;
+
+  & .twitter-user-name {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
-.twitter-header-dropdown-user-indicator {
+.twitter-second-user-tweet-indicator {
+  min-width: 17px;
+  padding: 0 var(--space-sm);
+  margin-left: var(--space-sm);
+  border-radius: 99px;
+  background-color: var(--color-white-10);
+  box-shadow: 1px 2px 2px 0 var(--color-black-4),
+              2px 4px 4px 0 var(--color-black-2);
+  font-size: var(--text-xs);
+}
+
+.twitter-checkmark {
   width: 8px;
   height: 16px;
-  margin-left: auto;
-  margin-right: var(--space-md);
   border-right: 2px solid var(--color-primary);
   border-bottom: 2px solid var(--color-primary);
   transform: rotateZ(45deg);

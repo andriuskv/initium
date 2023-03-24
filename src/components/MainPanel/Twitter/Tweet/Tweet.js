@@ -82,6 +82,8 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
     event.stopPropagation();
 
     if (element.nodeName === "VIDEO") {
+      element.muted = false;
+
       if (element.paused) {
         element.play();
       }
@@ -139,7 +141,7 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
           }
         }
       }
-      video = <video src={src} className="tweet-video" controls loop={media.durationInSeconds < 60}
+      video = <video src={src} className="tweet-video" controls muted loop={media.durationInSeconds < 60}
         autoPlay={autoPlay} poster={media.thumbUrl}></video>;
     }
 

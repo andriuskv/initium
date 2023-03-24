@@ -1,20 +1,17 @@
 .modal-mask {
   z-index: 1;
   position: absolute;
-  top: 1px;
-  right: 1px;
-  bottom: 1px;
-  left: 1px;
+  inset: 1px;
   display: flex;
   border-radius: 8px;
-  background-color: var(--color-grey-90-50);
+  background-color: hsl(var(--accent-hue) 7% 12% / 50%);
 }
 
 .modal {
   min-width: 280px;
   padding: var(--space-xl) var(--space-md) var(--space-md) var(--space-md);
   margin: auto;
-  background-color: var(--color-grey-90);
+  background-color: hsl(var(--accent-hue) 7% 12%);
   backdrop-filter: none;
 }
 

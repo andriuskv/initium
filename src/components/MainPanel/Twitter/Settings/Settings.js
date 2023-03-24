@@ -2,7 +2,8 @@ import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./settings.css";
 
-export default function Settings({ settings, defaultColor, updateSetting, hide }) {
+export default function Settings({ settings, user, updateSetting, hide }) {
+  const userColor = user.highlightColor || user.profileColor;
   const colors = [
     "#1d9bf0",
     "#ffd400",
@@ -10,7 +11,7 @@ export default function Settings({ settings, defaultColor, updateSetting, hide }
     "#7856ff",
     "#ff7a00",
     "#00ba7c",
-    defaultColor,
+    user.profileColor,
     "var(--color-primary)"
   ];
 
@@ -47,7 +48,7 @@ export default function Settings({ settings, defaultColor, updateSetting, hide }
             <li key={index}>
               <button className="btn icon-btn twitter-settings-color-btn"
                 onClick={() => selectColor(color)} style={{ backgroundColor: color }}>
-                {settings.highlightColor === color ? <Icon id="check"/> : null}
+                {userColor === color ? <Icon id="check"/> : null}
               </button>
             </li>
           ))}
