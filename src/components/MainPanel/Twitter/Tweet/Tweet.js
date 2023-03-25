@@ -178,7 +178,7 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
           <div className={`tweet-image-container${imageContainerClasses}`}>
             {tweet.media.map((media, i) => (
               <div className="tweet-media-item" onClick={event => handleTweetImageClick(event, tweet.media, i)} key={i}>
-                <img src={media.url} className={`tweet-image ${media.smallestDimension}`} alt=""/>
+                <img src={media.url} className={`tweet-image ${media.smallestDimension}`} alt="" loading="lazy"/>
               </div>
             ))}
           </div>
