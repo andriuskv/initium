@@ -73,8 +73,13 @@
   font-weight: bold;
 }
 
-.viewer-open-btn {
+.viewer-bottom-bar-right {
+  display: flex;
   margin-left: auto;
+
+  & .icon-btn {
+    margin-left: var(--space-sm);
+  }
 }
 
 .viewer-image {
