@@ -96,6 +96,11 @@
   line-height: 1;
   font-weight: normal;
 
+  & .twitter-user-name,
+  & .twitter-user-handle {
+    max-width: 120px;
+  }
+
   & .twitter-user-name {
     margin-left: 0;
     margin-right: 0;
