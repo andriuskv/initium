@@ -213,9 +213,11 @@ export default function Twitter({ showIndicator }) {
 
   function updateTweetTime() {
     for (const timeline of timelines) {
-      timeline.tweets.map(tweet => {
+      timeline.tweets.forEach(tweet => {
         tweet.date = twitterService.getTweetDate(tweet.date.createdAt);
-        return tweet;
+      });
+      timeline.tweetsToLoad.forEach(tweet => {
+        tweet.date = twitterService.getTweetDate(tweet.date.createdAt);
       });
     }
     setTimelines([...timelines]);
