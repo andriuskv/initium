@@ -285,8 +285,8 @@ export default function Twitter({ showIndicator }) {
     const activeTimelineIndex = timelines.findIndex(timeline => userToSelect.handle === timeline.user.handle);
 
     if (activeTimelineIndex >= 0) {
+      deactiveMedia();
       setSelectedTimelineIndex(activeTimelineIndex);
-      setTimelines([...timelines]);
       twitterService.markUserAsSelected(userToSelect, true);
       tweetsRef.current.scrollTo(0, 0);
     }
@@ -361,6 +361,25 @@ export default function Twitter({ showIndicator }) {
 
   function handleUserCardPointerEnter() {
     clearTimeout(userCardLeaveTimeoutId.current);
+  }
+
+  function deactiveMedia() {
+    let modified = false;
+
+    for (const tweet of selectedTimeline.tweets) {
+      if (tweet.media.length) {
+        const [mediaItem] = tweet.media;
+
+        if (mediaItem.active) {
+          delete mediaItem.active;
+          modified = true;
+        }
+      }
+    }
+
+    if (modified) {
+      setTimelines([...timelines]);
+    }
   }
 
   function activateMedia(media) {
@@ -446,6 +465,7 @@ export default function Twitter({ showIndicator }) {
   }
 
   function switchTimeline(user, index) {
+    deactiveMedia();
     setSelectedTimelineIndex(index);
     twitterService.markUserAsSelected(user, true);
     tweetsRef.current.scrollTo(0, 0);
