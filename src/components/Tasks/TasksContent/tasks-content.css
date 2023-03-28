@@ -367,6 +367,10 @@
 
   &.completed {
     background-color: var(--color-positive);
+
+    & .task-repeat-history-item-inner {
+      background-color: var(--color-black-16);
+    }
   }
 }
 
