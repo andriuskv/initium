@@ -16,8 +16,8 @@ export default function UserSelectDropdown({ selectUser, showTimelines, showAnot
           <button className="btn icon-text-btn dropdown-btn twitter-header-dropdown-user"
             onClick={() => selectUser(user, i)} disabled={user.selected} key={i} title={`Switch to ${user.handle}`}>
             <img src={user.profileImage} className="twitter-header-dropdown-user-image" width="48px" height="48px" loading="lazy" alt=""/>
-            <div>
-              <div>{user.name}</div>
+            <div className="twitter-header-dropdown-user-name-handle">
+              <div className="twitter-header-dropdown-user-name">{user.name}</div>
               <div className="twitter-header-dropdown-user-handle">{user.handle}</div>
             </div>
             {users.length > 1 && user.selected && (

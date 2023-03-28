@@ -15,7 +15,7 @@ module.exports = function(env = {}) {
         NODE_ENV: JSON.stringify(mode),
         UNSPLASH_KEY: JSON.stringify(process.env.UNSPLASH_KEY),
         SERVER_URL: JSON.stringify(process.env.SERVER_URL),
-        TEST_SERVER_URL: JSON.stringify(process.env.TEST_SERVER_URL)
+        DEV_SERVER_URL: JSON.stringify(process.env.DEV_SERVER_URL)
       }
     }),
     new MiniCssExtractPlugin({

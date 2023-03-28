@@ -1,3 +1,5 @@
+@import "../../../../styles/mixins.css";
+
 .twitter-header-dropdown {
   width: 240px;
   margin-right: var(--space-sm);
@@ -16,6 +18,15 @@
 .twitter-header-dropdown-user-image {
   border-radius: 50%;
   margin-right: var(--space-md);
+}
+
+.twitter-header-dropdown-user-name-handle {
+  overflow: hidden;
+}
+
+.twitter-header-dropdown-user-name,
+.twitter-header-dropdown-user-handle {
+  @mixin text-truncate;
 }
 
 .twitter-header-dropdown-user-handle {
