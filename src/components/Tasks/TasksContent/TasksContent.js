@@ -55,6 +55,7 @@ export default function Tasks() {
       ignoreUpdate.current = true;
 
       checkGroups(groups);
+      updateAllGroupTaskCount(groups);
       setGroups([...groups]);
     }, 30000);
 
@@ -119,6 +120,7 @@ export default function Tasks() {
         }
         return task;
       });
+      group.taskCount = getGroupTaskCount(group.tasks);
       return group;
     }));
     countTasks(groups);
@@ -313,6 +315,7 @@ export default function Tasks() {
         task.subtasks = task.subtasks.filter(subtask => !subtask.removed);
         return !task.removed;
       });
+      group.taskCount = getGroupTaskCount(group.tasks);
     }
     setGroups([...groups]);
     setRemovedItems([]);
@@ -362,6 +365,7 @@ export default function Tasks() {
     const task = group.tasks[form.taskIndex];
 
     if (task.id === form.task.id) {
+      group.taskCount -= 1;
       group.tasks = group.tasks.filter(task => {
         return task.id !== form.task.id;
       });
@@ -429,19 +433,44 @@ export default function Tasks() {
   }
 
   function updateGroups(groups, shouldSave = true) {
-    setGroups([...groups]);
+    updateAllGroupTaskCount(groups);
     countTasks(groups);
+    setGroups([...groups]);
 
     if (shouldSave) {
       saveTasks(groups);
     }
   }
 
+  function updateAllGroupTaskCount(groups) {
+    for (const group of groups) {
+      group.taskCount = getGroupTaskCount(group.tasks);
+    }
+  }
+
+  function getGroupTaskCount(tasks) {
+    const completedTaskCount = countCompletedTasks(tasks);
+
+    return tasks.length - completedTaskCount;
+  }
+
+  function countCompletedTasks(tasks) {
+    return settings.showCompletedRepeatingTasks ? 0 : tasks.reduce((total, task) => {
+      if (task.hidden) {
+        total += 1;
+      }
+      return total;
+    }, 0);
+  }
+
   function countTasks(groups) {
     let count = 0;
 
     for (const group of groups) {
+      const completedTaskCount = countCompletedTasks(group.tasks);
+
       count += group.tasks.length;
+      count -= completedTaskCount;
     }
     setTaskCount(count);
   }
@@ -456,12 +485,16 @@ export default function Tasks() {
       setGroups([...groups]);
       saveTasks(groups);
     }
-    setSettings({
-      ...settings,
-      [event.target.name]: event.target.checked
-    });
+    settings[event.target.name] = event.target.checked;
 
-    if (event.target.name !== "showCompletedRepeatingTasks") {
+    setSettings({ ...settings });
+
+    if (event.target.name === "showCompletedRepeatingTasks") {
+      updateAllGroupTaskCount(groups);
+      countTasks(groups);
+      setGroups([...groups]);
+    }
+    else {
       updateSetting({
         tasks: {
           [event.target.name]: event.target.checked
@@ -540,16 +573,16 @@ export default function Tasks() {
       <div className={`tasks-main${removedItems.length > 0 ? " dialog-visible" : ""}`}>
         {taskCount > 0 ? (
           <ul className="tasks-groups-container">
-            {groups.map((group, groupIndex) => (group.tasks.length === 0 && settings.emptyGroupsHidden ? null : (
+            {groups.map((group, groupIndex) => (group.taskCount === 0 && settings.emptyGroupsHidden ? null : (
               <li key={group.id}>
                 {(groupIndex > 0 || settings.defaultGroupVisible) && (
                   <button className="btn icon-btn tasks-groups-item tasks-groups-item-toggle-btn"
                     onClick={() => toggleGroupVisibility(group)}
-                    disabled={!group.tasks.length}
-                    title={group.tasks.length > 0 ? group.expanded ? "Collapse group" : "Expand group" : ""}>
-                    <span className="tasks-group-count">{group.tasks.length}</span>
+                    disabled={!group.taskCount}
+                    title={group.taskCount > 0 ? group.expanded ? "Collapse group" : "Expand group" : ""}>
+                    <span className="tasks-group-count">{group.taskCount}</span>
                     <span className="tasks-group-title">{group.name}</span>
-                    {group.tasks.length > 0 && (
+                    {group.taskCount > 0 && (
                       <Icon id={`chevron-${group.expanded ? "up" : "down"}`} className="tasks-group-icon"/>
                     )}
                   </button>
