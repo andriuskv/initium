@@ -1,9 +1,9 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
-import { delay } from "../../utils";
+import { delay } from "../../../utils";
 import { handleZIndex, getIincreasedZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
 import { removeFromRunning, getLastRunningTimer } from "./running-timers";
-import Icon from "../Icon";
+import Icon from "components/Icon";
 import "./top-panel.css";
 import Countdown from "./Countdown";
 

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import Spinner from "../Spinner";
-import Icon from "../Icon";
+import Spinner from "components/Spinner";
+import Icon from "components/Icon";
 import "./tweet-image-viewer.css";
 
 export default function TweetImageViewer({ data, hide }) {

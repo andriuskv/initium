@@ -4,7 +4,7 @@ import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } 
 import { getTimeString } from "services/timeDate";
 import { getIincreasedZIndex, handleZIndex } from "services/zIndex";
 import { useSettings } from "contexts/settings-context";
-import Icon from "../Icon";
+import Icon from "components/Icon";
 import "./weather.css";
 
 const MoreWeather = lazy(() => import("./MoreWeather"));

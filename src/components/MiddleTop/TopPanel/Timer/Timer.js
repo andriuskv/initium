@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { setPageTitle } from "../../../utils";
+import { setPageTitle } from "../../../../utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting, updateSetting } from "services/settings";

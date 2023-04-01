@@ -1,5 +1,5 @@
 import { useState, useLayoutEffect, useRef } from "react";
-import Icon from "../Icon";
+import Icon from "components/Icon";
 import "./to-top.css";
 
 export default function ToTop() {

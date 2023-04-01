@@ -3,7 +3,7 @@ import { getSetting, updateSetting } from "services/settings";
 import { handleZIndex } from "services/zIndex";
 import { hasUsers } from "services/twitter";
 import { hasStoredFeeds } from "services/feeds";
-import Icon from "../Icon";
+import Icon from "components/Icon";
 import "./main-panel.css";
 import Sidebar from "./Sidebar";
 
@@ -11,7 +11,7 @@ const TopSites = lazy(() => import("./TopSites"));
 const Notepad = lazy(() => import("./Notepad"));
 const Twitter = lazy(() => import("./Twitter"));
 const RssFeed = lazy(() => import("./RssFeed"));
-const Resizer = lazy(() => import("../Resizer"));
+const Resizer = lazy(() => import("components/Resizer"));
 
 export default function MainPanel({ settings }) {
   const [activeTab, setActiveTab] = useState(() => {

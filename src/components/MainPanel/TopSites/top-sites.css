@@ -13,7 +13,7 @@
   justify-content: center;
   gap: var(--space-sm);
 
-  @media (max-height: 720px) {
+  @media (height <= 720px) {
     gap: var(--space-xs);
 
     & .top-site-title {

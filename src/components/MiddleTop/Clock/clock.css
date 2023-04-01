@@ -28,7 +28,7 @@
     }
   }
 
-  @media (max-height: 720px) {
+  @media (height <= 720px) {
     & .clock-time {
       --size: 6rem;
     }
