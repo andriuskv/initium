@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings-context";
 import { handleZIndex } from "services/zIndex";
-import Icon from "../Icon";
+import Icon from "components/Icon";
 import "./bottom-panel.css";
 
 const Shortcuts = lazy(() => import("./Shortcuts"));

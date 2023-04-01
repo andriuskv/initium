@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSettings } from "contexts/settings-context";
 import { getIDBWallpaper, updateDownscaledWallpaperPosition } from "services/wallpaper";
-import Spinner from "../Spinner";
+import Spinner from "components/Spinner";
 import "./wallpaper-viewer.css";
 
 export default function WallpaperViewer({ settings, hide }) {

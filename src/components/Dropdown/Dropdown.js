@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { getRandomString } from "utils";
-import Icon from "../Icon";
+import Icon from "components/Icon";
 import "./dropdown.css";
 
 export default function Dropdown({ container, toggle = {}, body, children }) {
