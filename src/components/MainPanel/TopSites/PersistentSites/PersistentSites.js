@@ -63,11 +63,9 @@ export default function PersistentSites({ settings, getFaviconURL }) {
   }
 
   function updateSite(site, action) {
-    if (sites.some(({ url }) => site.url === url)) {
-      return;
-    }
+    const isNewSite = !sites.some(({ url }) => site.url === url);
 
-    if (action === "add") {
+    if (action === "add" && isNewSite) {
       site.id = crypto.randomUUID();
       site.iconUrl = getFaviconURL(site.url);
 
@@ -75,7 +73,7 @@ export default function PersistentSites({ settings, getFaviconURL }) {
       setSites([...sites]);
       saveSites(sites);
     }
-    else if (action === "update") {
+    else if (action === "update" && (isNewSite || site.title !== sites[form.index].title)) {
       sites[form.index] = {
         ...site,
         id: crypto.randomUUID(),
