@@ -5,42 +5,8 @@ let settings = initSettings();
 function initSettings() {
   let settings = JSON.parse(localStorage.getItem("settings")) || {};
 
-  settings.timeDate ??= {};
-
-  if (settings.timeDate.dateAboveClock) {
-    delete settings.timeDate.dateAboveClock;
-    settings.timeDate.datePosition = "top";
-  }
-  else if (settings.timeDate.datePosition === "right") {
-    settings.timeDate.datePosition = "top";
-  }
-
-  settings.appearance ??= {};
-
-  if (settings.background) {
-    settings.appearance.wallpaper ??= {};
-    settings.appearance.wallpaper = settings.background;
-    delete settings.background;
-  }
-
-  settings.general ??= {};
-
-  if (settings.general.backgroundOpacity) {
-    settings.appearance.panelBackgroundOpacity = settings.general.backgroundOpacity;
-    delete settings.general.backgroundOpacity;
-  }
-
-  if (settings.general.backgroundBlurRadius) {
-    settings.appearance.panelBackgroundBlur = settings.general.backgroundBlurRadius;
-    delete settings.general.backgroundBlurRadius;
-  }
-
   settings = copyObject(settings, getDefault());
 
-  if (!localStorage.getItem("settings-updated")) {
-    localStorage.setItem("settings-updated", 1);
-    localStorage.setItem("settings", JSON.stringify(settings));
-  }
   return settings;
 }
 
