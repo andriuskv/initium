@@ -31,26 +31,30 @@ export default function TopSites({ settings }) {
     }
 
     if (Array.isArray(data.static)) {
-      setSites(data.static);
+      const sites = parseSites(data.static, data);
+      setSites(sites);
     }
     else {
       fetchTopSites(data);
     }
   }
 
-  function fetchTopSites({ filtered = [], modified = [] } = {}) {
+  function fetchTopSites(localSites) {
     chrome.topSites.get(data => {
-      const sites = data.filter(site => !filtered.includes(site.url)).map(site => {
-        const modifiedSite = modified.find(({ url }) => url === site.url);
-
-        if (modifiedSite) {
-          site.title = modifiedSite.title;
-        }
-        site.iconUrl = getFaviconURL(site.url);
-        return site;
-      });
-
+      const sites = parseSites(data, localSites);
       setSites(sites);
+    });
+  }
+
+  function parseSites(sites, { filtered = [], modified = [] } = {}) {
+    return sites.filter(site => !filtered.includes(site.url)).map(site => {
+      const modifiedSite = modified.find(({ url }) => url === site.url);
+
+      if (modifiedSite) {
+        site.title = modifiedSite.title;
+      }
+      site.iconUrl = getFaviconURL(site.url);
+      return site;
     });
   }
 
@@ -120,7 +124,28 @@ export default function TopSites({ settings }) {
         const data = getLocalSites();
 
         data.modified ??= [];
-        data.modified.push(site);
+
+        const index = data.modified.findIndex(({ url }) => site.url === url);
+
+        if (index >= 0) {
+          const modifiedSite = data.modified[index];
+
+          if (site.title === modifiedSite.initialTitle) {
+            data.modified.splice(index, 1);
+          }
+          else {
+            data.modified[index] = {
+              ...site,
+              initialTitle: modifiedSite.initialTitle
+            };
+          }
+        }
+        else {
+          data.modified.push({
+            ...site,
+            initialTitle: oldSite.title
+          });
+        }
 
         saveSites(data);
       }
