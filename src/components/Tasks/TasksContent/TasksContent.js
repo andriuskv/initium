@@ -174,8 +174,8 @@ export default function Tasks() {
     return gapInMs;
   }
 
-  function updateTaskRepeatProgress(task, elapsed, totalMs) {
-    let ratio = (elapsed - totalMs) / totalMs;
+  function updateTaskRepeatProgress(task, diff, gapInMs) {
+    let ratio = diff / gapInMs;
 
     if (ratio < 0) {
       ratio += 1;
@@ -242,7 +242,7 @@ export default function Tasks() {
               modified = true;
             }
           }
-          updateTaskRepeatProgress(task, elapsed, totalMs);
+          updateTaskRepeatProgress(task, elapsed - totalMs, gapInMs);
         }
         return task;
       }).filter(task => {
