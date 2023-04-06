@@ -1,10 +1,4 @@
-/* @import "styles/mixins.css"; */
-
 .middle-top {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
   align-items: center;
   display: grid;
   grid-template-rows: 1fr min-content 1fr;
