@@ -42,6 +42,7 @@ export default function TopPanel({ forceVisibility = false }) {
 
   useEffect(() => {
     if (rerender) {
+      increaseContainerZIndex();
       setVisible(true);
       setRerender(false);
     }
@@ -110,8 +111,7 @@ export default function TopPanel({ forceVisibility = false }) {
     }
 
     if (nextVisible) {
-      const zIndex = getIincreasedZIndex();
-      containerRef.current.style.setProperty("--z-index", zIndex);
+      increaseContainerZIndex();
     }
     else {
       showMinimalTimer();
@@ -167,6 +167,11 @@ export default function TopPanel({ forceVisibility = false }) {
 
   function setFullscreenTextScale(value) {
     containerRef.current.style.setProperty("--fullscreen-text-scale", value);
+  }
+
+  function increaseContainerZIndex() {
+    const zIndex = getIincreasedZIndex();
+    containerRef.current.style.setProperty("--z-index", zIndex);
   }
 
   function exitFullscreen() {
