@@ -71,7 +71,7 @@
 
   &.visible {
     opacity: 1;
-    visibility: visible;
+    visibility: inherit;
     border-bottom-right-radius: 8px;
     transform: scale(1);
     transition-delay: 0s;

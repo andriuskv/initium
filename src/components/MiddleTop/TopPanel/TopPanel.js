@@ -69,6 +69,8 @@ export default function TopPanel({ forceVisibility = false }) {
     else {
       window.removeEventListener("keydown", collapse);
     }
+    toggleBehindElements(!expanded);
+
     return () => {
       window.removeEventListener("keydown", collapse);
     };
@@ -125,6 +127,38 @@ export default function TopPanel({ forceVisibility = false }) {
     else {
       setVisible(false);
       showMinimalTimer();
+    }
+  }
+
+  function toggleBehindElements(shouldShow) {
+    const rootElement = document.getElementById("root");
+    const parentElement = containerRef.current.parentElement;
+
+    if (shouldShow) {
+      for (const element of rootElement.children) {
+        element.style.opacity = "";
+        element.style.visibility = "";
+      }
+
+      for (const element of parentElement.children) {
+        element.style.opacity = "";
+        element.style.visibility = "";
+      }
+    }
+    else {
+      for (const element of rootElement.children) {
+        if (!element.classList.contains("wallpaper") && !element.classList.contains("middle-top")) {
+          element.style.opacity = "0";
+          element.style.visibility = "hidden";
+        }
+      }
+
+      for (const element of parentElement.children) {
+        if (element !== containerRef.current) {
+          element.style.opacity = "0";
+          element.style.visibility = "hidden";
+        }
+      }
     }
   }
 
