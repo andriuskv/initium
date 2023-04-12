@@ -4,8 +4,6 @@
   position: absolute;
   top: calc(-1 * var(--nav-height));
   left: 50%;
-  opacity: 1;
-  visibility: visible;
   display: flex;
   padding-bottom: var(--space-md);
   transform: translateX(-50%);

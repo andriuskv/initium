@@ -90,7 +90,7 @@
 
   &.visible {
     opacity: 1;
-    visibility: visible;
+    visibility: inherit;
     border-bottom-left-radius: 8px;
     transform: scale(1);
     transition-delay: 0s;
