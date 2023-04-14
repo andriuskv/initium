@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";
 import "./tweet-image-viewer.css";
@@ -8,6 +8,14 @@ export default function TweetImageViewer({ data, hide }) {
   const [images, setImages] = useState(data.images);
   const [index, setIndex] = useState(data.startIndex);
   const imgElementRef = useRef();
+
+  useEffect(() => {
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [index]);
 
   function handleLoad({ target }) {
     const { innerWidth, innerHeight } = window;
@@ -23,6 +31,18 @@ export default function TweetImageViewer({ data, hide }) {
     }, 200);
   }
 
+  function handleKeyUp(event) {
+    if (event.key === "ArrowRight") {
+      nextImage();
+    }
+    else if (event.key === "ArrowLeft") {
+      previousImage();
+    }
+    else if (event.key === "Escape") {
+      hide();
+    }
+  }
+
   function previousImage() {
     const nextIndex = index === 0 ? images.length - 1 : index - 1;
 
@@ -35,12 +55,6 @@ export default function TweetImageViewer({ data, hide }) {
 
     setIndex(nextIndex);
     setLoaded(images[nextIndex].loaded);
-  }
-
-  function handleClick({ currentTarget, target }) {
-    if (target === currentTarget) {
-      hide();
-    }
   }
 
   function downloadImage() {
@@ -69,22 +83,24 @@ export default function TweetImageViewer({ data, hide }) {
     return null;
   }
   return (
-    <div className="fullscreen-mask tweet-image-viewer" onClick={handleClick}>
+    <div className="fullscreen-mask tweet-image-viewer">
       {!loaded && <Spinner className="tweet-image-viewer-spinner"/>}
-      <div className={`viewer-image-container${loaded ? " visible" : ""}`}>
-        {images.length > 1 && (
-          <button className="btn icon-btn viewer-direction-btn left"
-            onClick={previousImage} aria-label="Previous image">
-            <Icon id="chevron-left" className="viewer-direction-icon"/>
-          </button>
-        )}
-        <img src={images[index].url} className="container viewer-image" onLoad={handleLoad} ref={imgElementRef} crossOrigin="anonymous" alt=""/>
-        {images.length > 1 && (
-          <button className="btn icon-btn viewer-direction-btn right"
-            onClick={nextImage} aria-label="Next image">
-            <Icon id="chevron-right" className="viewer-direction-icon"/>
-          </button>
-        )}
+      <div className={`viewer-content${loaded ? " visible" : ""}`}>
+        <div className="viewer-image-container">
+          {images.length > 1 && (
+            <button className="btn icon-btn viewer-direction-btn left"
+              onClick={previousImage} aria-label="Previous image">
+              <Icon id="chevron-left" className="viewer-direction-icon"/>
+            </button>
+          )}
+          <img src={images[index].url} className="container viewer-image" onLoad={handleLoad} ref={imgElementRef} crossOrigin="anonymous" alt=""/>
+          {images.length > 1 && (
+            <button className="btn icon-btn viewer-direction-btn right"
+              onClick={nextImage} aria-label="Next image">
+              <Icon id="chevron-right" className="viewer-direction-icon"/>
+            </button>
+          )}
+        </div>
         <div className="container viewer-bottom-bar">
           {images.length > 1 && <span>{index + 1}/{images.length}</span>}
           <div className="viewer-bottom-bar-right">
