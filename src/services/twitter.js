@@ -9,11 +9,18 @@ let requestToken = "";
 let requestTokenSecret = "";
 
 if (users.length) {
+  const activeUserIndex = users.findIndex(user => user.active);
+
   if (selectedUserIndex < 0) {
-    setSelectedActiveUser(0);
+    if (activeUserIndex < 0) {
+      setSelectedActiveUser(0);
+    }
+    else {
+      setSelectedActiveUser(activeUserIndex);
+    }
   }
-  else if (!users.some(user => user.active)) {
-    users[0].active = true;
+  else if (activeUserIndex < 0) {
+    users[selectedUserIndex].active = true;
   }
 }
 
