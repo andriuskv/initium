@@ -375,6 +375,15 @@ export default function Twitter({ showIndicator }) {
           modified = true;
         }
       }
+
+      if (tweet.quotedTweet?.media.length) {
+        const [mediaItem] = tweet.quotedTweet.media;
+
+        if (mediaItem.active) {
+          delete mediaItem.active;
+          modified = true;
+        }
+      }
     }
 
     if (modified) {
