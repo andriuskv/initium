@@ -176,7 +176,8 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
           <div className={`tweet-image-container${imageContainerClasses}`}>
             {tweet.media.map((media, i) => (
               <div className="tweet-media-item" onClick={event => handleTweetImageClick(event, tweet.media, i)} key={i}>
-                <img src={media.url} className={`tweet-image ${media.smallestDimension}`} alt="" loading="lazy"/>
+                <img src={media.url} className={`tweet-image ${media.smallestDimension}`}
+                  width={`${media.width}px`} height={`${media.height}px`} loading="lazy" alt=""/>
               </div>
             ))}
           </div>
@@ -226,7 +227,7 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
                 <div className="tweet-user-info quoted-tweet-info"
                   onPointerEnter={event => handleTweetUserPointerEnter(event, tweet.quotedTweet.user, true)}
                   onPointerLeave={handleLinkPointerLeave}>
-                  <img src={tweet.quotedTweet.user.profileImageUrl} className="quoted-tweet-user-image" loading="lazy" alt=""/>
+                  <img src={tweet.quotedTweet.user.profileImageUrl} className="quoted-tweet-user-image" width="24px" height="24px" loading="lazy" alt=""/>
                   <span className="tweeted-by-name">{tweet.quotedTweet.user.name}</span>
                   {tweet.quotedTweet.user.verified ? <Icon id="verified" className="tweet-verified-icon"/> : null}
                   <span className="tweet-user-handle">

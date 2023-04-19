@@ -259,8 +259,6 @@
 }
 
 .quoted-tweet-user-image {
-  width: 24px;
-  height: 24px;
   margin-right: var(--space-md);
   border-radius: 50%;
 }
