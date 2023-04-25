@@ -122,6 +122,7 @@
 }
 
 .tweet-image-container {
+  max-width: 500px;
   max-height: var(--max-height);
 
   &.multiple {
@@ -145,12 +146,9 @@
       }
     }
 
-    & .tweet-image {
-      max-width: none;
-
+    .tweet-image {
       &.height {
         height: 100%;
-        width: auto;
       }
     }
   }
@@ -162,11 +160,6 @@
   align-items: center;
   overflow: hidden;
   max-height: var(--max-height);
-}
-
-.tweet-image {
-  max-width: 100%;
-  width: 100%;
 }
 
 .tweet-video-container {
