@@ -6,7 +6,7 @@ import "./tweet.css";
 
 export default function Tweet({ tweet, settings, activateMedia, showUserCard, handleTweetPointerLeave }) {
   const [fetchingUser, setFetchingUser] = useState(false);
-  const hoveringOverHandle = useRef(false);
+  const hoveringOverHandles = useRef({});
   const currentVideoQuality = useRef(settings.videoQuality);
 
   function handleTweetClick({ target }, { tweetUrl, quotedTweet }) {
@@ -26,27 +26,25 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
     if (target.nodeName === "A" && target.classList.contains("handle")) {
       const cachedUser = getCachedUser(target.textContent);
 
+      hoveringOverHandles.current[target.textContent] = true;
+      target.addEventListener("pointerleave", handleLinkPointerLeave, { once: true });
+
       if (cachedUser) {
-        target.addEventListener("pointerleave", handleLinkPointerLeave, { once: true });
         showUserCard(target, cachedUser);
       }
       else {
         if (fetchingUser) {
           return;
         }
-        hoveringOverHandle.current = true;
-
         setFetchingUser(true);
 
         try {
           const handle = target.textContent.slice(1);
           const user = await fetchUserByHandle(handle);
 
-          if (hoveringOverHandle.current) {
-            target.addEventListener("pointerleave", handleLinkPointerLeave, { once: true });
+          if (hoveringOverHandles.current[target.textContent]) {
             showUserCard(target, user);
-
-            hoveringOverHandle.current = false;
+            delete hoveringOverHandles.current[target.textContent];
           }
           cacheUser(user);
         } catch (e) {
@@ -57,12 +55,12 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
       }
     }
     else {
-      hoveringOverHandle.current = false;
+      delete hoveringOverHandles.current[target.textContent];
     }
   }
 
   function handleLinkPointerLeave(event) {
-    hoveringOverHandle.current = false;
+    delete hoveringOverHandles.current[event.target.textContent];
     handleTweetPointerLeave(event);
   }
 
