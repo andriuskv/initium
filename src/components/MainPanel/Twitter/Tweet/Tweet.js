@@ -92,6 +92,10 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
     }
   }
 
+  function handleVideoLoadStart(event) {
+    event.currentTarget.volume = settings.videoVolume;
+  }
+
   function handleTweetUserPointerEnter(event, user, isQuotedTweet) {
     showUserCard(event.currentTarget, user, isQuotedTweet);
   }
@@ -138,7 +142,7 @@ export default function Tweet({ tweet, settings, activateMedia, showUserCard, ha
         }
       }
       video = <video src={src} className="tweet-video" controls loop={media.durationInSeconds < 60}
-        autoPlay={autoPlay} poster={media.thumbUrl}></video>;
+        autoPlay={autoPlay} poster={media.thumbUrl} onLoadStart={handleVideoLoadStart}></video>;
     }
 
     return (

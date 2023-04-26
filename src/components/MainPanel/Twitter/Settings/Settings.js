@@ -1,8 +1,10 @@
+import { useRef } from "react";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./settings.css";
 
 export default function Settings({ settings, user, updateSetting, hide }) {
+  const timeoutId = useRef(null);
   const userColor = user.highlightColor || user.profileColor;
   const colors = [
     "#1d9bf0",
@@ -19,6 +21,13 @@ export default function Settings({ settings, user, updateSetting, hide }) {
     updateSetting("videoQuality", event.target.value);
   }
 
+  function handleVideoVolumeChange(event) {
+    clearTimeout(timeoutId.current);
+    timeoutId.current = setTimeout(() => {
+      updateSetting("videoVolume", event.target.valueAsNumber);
+    }, 1000);
+  }
+
   function selectColor(color) {
     updateSetting("highlightColor", color);
   }
@@ -31,7 +40,7 @@ export default function Settings({ settings, user, updateSetting, hide }) {
           <Icon id="cross"/>
         </button>
       </div>
-      <label className="twitter-settings-section twitter-settings-video-quality">
+      <label className="twitter-settings-section twitter-settings-section-row">
         <span className="twitter-settings-section-title">Video quality</span>
         <div className="select-container">
           <select className="input select" onChange={handleVideoQualityChange} value={settings.videoQuality}>
@@ -40,6 +49,11 @@ export default function Settings({ settings, user, updateSetting, hide }) {
             <option value="high">High</option>
           </select>
         </div>
+      </label>
+      <label className="twitter-settings-section twitter-settings-section-row">
+        <span className="twitter-settings-section-title">Video volume</span>
+        <input type="range" className="range-input" min="0" max="1" step="0.05"
+          onChange={handleVideoVolumeChange} defaultValue={settings.videoVolume}/>
       </label>
       <div className="twitter-settings-section">
         <h4 className="twitter-settings-section-title">Highlight color</h4>
