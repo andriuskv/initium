@@ -26,7 +26,7 @@
   color: var(--color-white-60);
 }
 
-.twitter-settings-video-quality {
+.twitter-settings-section-row {
   display: flex;
   align-items: center;
   justify-content: space-between;

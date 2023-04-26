@@ -47,7 +47,11 @@ export default function Twitter({ showIndicator }) {
   const [fetchingMoreTweets, setFetchingMoreTweets] = useState(false);
   const [changingUser, setChangingUser] = useState(false);
   const [userCard, setUserCard] = useState({ reveal: false });
-  const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem("twitter-settings")) || { videoQuality: "high" });
+  const [settings, setSettings] = useState(() => ({
+    videoQuality: "high",
+    videoVolume: 0.5,
+    ...JSON.parse(localStorage.getItem("twitter-settings"))
+  }));
   const [settingsOpened, setSettingsOpened] = useState(false);
   const [timelinesVisible, setTimelinesVisible] = useState(false);
   const tweetsRef = useRef(null);
