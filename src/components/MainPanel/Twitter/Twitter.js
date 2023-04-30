@@ -113,7 +113,10 @@ export default function Twitter({ showIndicator }) {
     if (fetchedUser && fetchedTimeline) {
       if (fetchedUser.statusCode) {
         // TODO: handle erorr.
-        return {};
+        return {
+          user,
+          tweets: []
+        };
       }
       lastUpdate.current = Date.now();
 
@@ -122,7 +125,10 @@ export default function Twitter({ showIndicator }) {
         tweets: fetchedTimeline.tweets
       };
     }
-    return {};
+    return {
+      user,
+      tweets: []
+    };
   }
 
   async function addAnotherUser() {
