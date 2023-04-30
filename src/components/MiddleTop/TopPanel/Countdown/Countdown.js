@@ -21,7 +21,7 @@ export default function Countdown({ visible }) {
       return;
     }
     timeoutId.current = setTimeout(() => {
-      update(performance.now());
+      updateCountdowns();
     }, 1000);
 
     return () => {
@@ -59,34 +59,25 @@ export default function Countdown({ visible }) {
         id: getRandomString(),
         title: countdown.title,
         date: getCountdownDateString(date),
-        dateString: countdown.dateString
+        dateString: countdown.dateString,
+        isInPast: countdown.isInPast
       };
     }));
-  }
-
-  function update(elapsed) {
-    const interval = 1000;
-    const diff = performance.now() - elapsed;
-    const countdownsRunning = updateCountdowns();
-
-    if (countdownsRunning) {
-      timeoutId.current = setTimeout(() => {
-        update(elapsed + interval);
-      }, interval - diff);
-    }
   }
 
   function updateCountdowns() {
     const startDate = new Date();
     const updatedCountdowns = [];
-    let countdownsRunning = true;
+    let modified = false;
 
     for (const countdown of countdowns) {
       const endDate = new Date(countdown.dateString);
-      const diff = Math.floor((endDate - startDate) / 1000);
+      let diff = Math.floor((countdown.isInPast ? startDate - endDate : endDate - startDate) / 1000);
 
-      if (diff > 0) {
-        countdownsRunning = false;
+      if (diff < 0) {
+        countdown.isInPast = true;
+        diff *= -1;
+        modified = true;
       }
       updatedCountdowns.push({
         ...countdown,
@@ -95,7 +86,10 @@ export default function Countdown({ visible }) {
       });
     }
     setCountdowns(updatedCountdowns);
-    return countdownsRunning;
+
+    if (modified) {
+      saveCountdowns(updatedCountdowns);
+    }
   }
 
   function parseDateDiff(duration) {
@@ -177,7 +171,8 @@ export default function Countdown({ visible }) {
     chromeStorage.set({
       countdowns: countdowns.map(countdown => ({
         title: countdown.title,
-        dateString: countdown.dateString
+        dateString: countdown.dateString,
+        isInPast: countdown.isInPast
       }))
     });
   }
@@ -187,9 +182,14 @@ export default function Countdown({ visible }) {
       return (
         <ul className="countdown-items">
           {countdowns.map((countdown, i) => (
-            <li className={`countdown-item${countdown.diff <= 0 ? " ended" : ""}`} key={countdown.id}>
+            <li className="countdown-item" key={countdown.id}>
               {countdown.title && <div className="countdown-item-title">{countdown.title}</div>}
               <div className="countdown-item-timer">
+                {countdown.isInPast && (
+                  <div className="countdown-item-timer-part">
+                    <span className="countdown-item-timer-digit">-</span>
+                  </div>
+                )}
                 {countdown.years > 0 && (
                   <div className="countdown-item-timer-part">
                     <span className="countdown-item-timer-digit">{countdown.years}</span>

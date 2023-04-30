@@ -71,7 +71,7 @@
   right: var(--space-md);
   opacity: 0;
 
-  &:focus-visible {
+  &:hover, &:focus-visible {
     opacity: 1;
   }
 }
@@ -91,10 +91,6 @@
 
   &:hover .countdown-item-remove-btn {
     animation: 0s linear 0.4s forwards delayed-reveal;
-  }
-
-  &.ended .countdown-item-timer {
-    opacity: 0.6;
   }
 
   &:not(:last-of-type) {

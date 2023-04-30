@@ -65,17 +65,23 @@ export default function Presets({ createCountdown, hide }) {
       return;
     }
     const currentDate = new Date();
+    let diff = 0;
+    let isInPast = false;
 
-    if (date.getTime() - currentDate.getTime() < 1000) {
-      setForm({ ...form, message: "Can't countdown to the past." });
-      return;
+    if (date.getTime() - currentDate.getTime() > 0) {
+      diff = date - currentDate;
+    }
+    else {
+      diff = currentDate - date;
+      isInPast = true;
     }
     createCountdown({
       dateString,
       id: getRandomString(4),
       date,
       title: title.value.trim(),
-      diff: Math.floor((date - currentDate) / 1000)
+      isInPast,
+      diff: Math.floor(diff / 1000)
     });
     hide();
   }

@@ -68,6 +68,8 @@
 
 .twitter-user-card-description {
   margin-top: var(--space-xl);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .twitter-user-card-bottom {
