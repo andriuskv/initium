@@ -7,6 +7,8 @@ function initSettings() {
 
   settings = copyObject(settings, getDefault());
 
+  delete settings.mainPanel.components.twitter;
+
   return settings;
 }
 
@@ -76,7 +78,7 @@ function getDefault() {
           persistentSitesHidden: false
         },
         notepad: { disabled: false },
-        twitter: { disabled: false },
+        // twitter: { disabled: false },
         rssFeed: { disabled: false }
       }
     },

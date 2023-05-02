@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { getSetting, updateSetting } from "services/settings";
 import { handleZIndex } from "services/zIndex";
-import { hasUsers } from "services/twitter";
+// import { hasUsers } from "services/twitter";
 import { hasStoredFeeds } from "services/feeds";
 import Icon from "components/Icon";
 import "./main-panel.css";
@@ -9,7 +9,7 @@ import Sidebar from "./Sidebar";
 
 const TopSites = lazy(() => import("./TopSites"));
 const Notepad = lazy(() => import("./Notepad"));
-const Twitter = lazy(() => import("./Twitter"));
+// const Twitter = lazy(() => import("./Twitter"));
 const RssFeed = lazy(() => import("./RssFeed"));
 const Resizer = lazy(() => import("components/Resizer"));
 
@@ -32,11 +32,12 @@ export default function MainPanel({ settings }) {
   }, []);
 
   useEffect(() => {
+    const tabsArray = Object.values(tabs);
     let firstEnabledTab = "";
     let activeTabDisabled = false;
     let disabledComponentCount = 0;
 
-    for (const tab of Object.values(tabs)) {
+    for (const tab of tabsArray) {
       const { disabled } = settings.components[tab.id];
       tab.disabled = disabled;
 
@@ -52,7 +53,7 @@ export default function MainPanel({ settings }) {
       }
     }
 
-    if (activeTabDisabled || activeTab.id === "" && disabledComponentCount > 2) {
+    if (activeTabDisabled || activeTab.id === "twitter" || activeTab.id === "" && disabledComponentCount >= tabsArray - 1) {
       selectTab(firstEnabledTab);
     }
     setTabs({ ...tabs });
@@ -68,9 +69,9 @@ export default function MainPanel({ settings }) {
       setTabs({ ...tabs });
     }
 
-    if (tabs.twitter.renderPending) {
-      initComponent("twitter", hasUsers);
-    }
+    // if (tabs.twitter.renderPending) {
+    //   initComponent("twitter", hasUsers);
+    // }
 
     if (tabs.rssFeed.renderPending) {
       initComponent("rssFeed", hasStoredFeeds);
@@ -113,15 +114,15 @@ export default function MainPanel({ settings }) {
         expandable: true,
         renderPending: true
       },
-      twitter: {
-        id: "twitter",
-        title: "Twitter",
-        iconId: "twitter",
-        delay: 600000,
-        expandable: true,
-        firstRender: true,
-        renderPending: true
-      },
+      // twitter: {
+      //   id: "twitter",
+      //   title: "Twitter",
+      //   iconId: "twitter",
+      //   delay: 600000,
+      //   expandable: true,
+      //   firstRender: true,
+      //   renderPending: true
+      // },
       rssFeed: {
         id: "rssFeed",
         title: "RSS feed",
@@ -236,7 +237,7 @@ export default function MainPanel({ settings }) {
       )}
       {renderTopSites()}
       {renderComponent("notepad", <Notepad/>, true)}
-      {renderComponent("twitter", <Twitter showIndicator={showIndicator}/>)}
+      {/* {renderComponent("twitter", <Twitter showIndicator={showIndicator}/>)} */}
       {renderComponent("rssFeed", <RssFeed showIndicator={showIndicator}/>)}
       <Suspense fallback={null}>
         {resizerEnabled && <Resizer saveHeight={saveHeight}/>}

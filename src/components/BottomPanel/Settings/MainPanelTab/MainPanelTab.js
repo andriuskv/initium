@@ -7,17 +7,18 @@ export default function MainPanelTab() {
   const [persistentSitesEditEnabled, setPersistentSiteEditEnabled] = useState(false);
 
   function toggleComponent(item) {
+    const componentsArray = Object.keys(settings.components);
     let disabledComponentCount = 0;
     settings.components[item].disabled = !settings.components[item].disabled;
 
-    for (const key of Object.keys(settings.components)) {
+    for (const key of componentsArray) {
       if (settings.components[key].disabled) {
         disabledComponentCount += 1;
       }
     }
     updateSetting("mainPanel", {
-      navDisabled: disabledComponentCount > 2,
-      disabled: disabledComponentCount === 4,
+      navDisabled: disabledComponentCount >= componentsArray.length - 1,
+      disabled: disabledComponentCount === componentsArray.length,
       components: { ...settings.components }
     });
   }
@@ -95,7 +96,7 @@ export default function MainPanelTab() {
           <div className="checkbox-tick"></div>
         </div>
       </label>
-      <label className="setting">
+      {/* <label className="setting">
         <span>Disable twitter</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.components.twitter.disabled}
@@ -103,7 +104,7 @@ export default function MainPanelTab() {
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
-      </label>
+      </label> */}
       <label className="setting">
         <span>Disable RSS feed</span>
         <input type="checkbox" className="sr-only checkbox-input"
