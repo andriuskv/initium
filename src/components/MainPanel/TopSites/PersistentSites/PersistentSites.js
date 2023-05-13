@@ -158,9 +158,9 @@ export default function PersistentSites({ settings, getFaviconURL }) {
     return (
       <ul className="persistent-sites">{sites.map(site => (
         <li className="top-site" key={site.id}>
-          <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"}>
+          <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"} draggable="false">
             <div className="container top-site-container top-site-thumbnail-container">
-              <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt=""/>
+              <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt="" draggable="false"/>
             </div>
             <div className="container top-site-container top-site-title">{site.title}</div>
           </a>
