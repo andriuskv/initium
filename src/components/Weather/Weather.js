@@ -2,7 +2,7 @@ import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "re
 import { dispatchCustomEvent } from "utils";
 import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
-import { getIincreasedZIndex, handleZIndex } from "services/zIndex";
+import { getIncreasedZIndex, handleZIndex } from "services/zIndex";
 import { useSettings } from "contexts/settings-context";
 import Icon from "components/Icon";
 import "./weather.css";
@@ -126,7 +126,7 @@ export default function Weather({ timeFormat }) {
   }
 
   function showMoreWeather() {
-    zIndex.current = getIincreasedZIndex();
+    zIndex.current = getIncreasedZIndex();
     setState({ ...state, reveal: true });
   }
 

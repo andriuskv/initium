@@ -43,8 +43,8 @@ export default function TimeDateTab() {
     updateSetting("timeDate", { datePosition: target.value });
   }
 
-  function handleDateAligmentChange({ target }) {
-    updateSetting("timeDate", { dateAligment: target.value });
+  function handleDateAlignmentChange({ target }) {
+    updateSetting("timeDate", { dateAlignment: target.value });
   }
 
   function handleClockStyleChange({ target }) {
@@ -214,9 +214,9 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-          <span>Date aligment</span>
+          <span>Date alignment</span>
           <div className="select-container">
-            <select className="input select" onChange={handleDateAligmentChange} value={settings.dateAligment}
+            <select className="input select" onChange={handleDateAlignmentChange} value={settings.dateAlignment}
               disabled={settings.clockDisabled || settings.dateHidden}>
               <option value="start">Start</option>
               <option value="center">Center</option>

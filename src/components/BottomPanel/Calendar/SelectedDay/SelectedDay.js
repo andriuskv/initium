@@ -86,7 +86,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
         wasEnabled: true,
         enabled: true,
         type: reminder.repeat.type || "custom",
-        ends: reminder.repeat.count > 0 ? "occurences" : "never",
+        ends: reminder.repeat.count > 0 ? "occurrences" : "never",
         gap: reminder.repeat.gap,
         count: reminder.repeat.count,
         year: reminder.year,

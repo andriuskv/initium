@@ -176,7 +176,7 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
     }
   }
 
-  function handleInputChanage({ target }) {
+  function handleInputChange({ target }) {
     settingForm[target.name] = target.value;
     settingForm.error = !target.value || /\D/.test(target.value);
     setSettingForm({ ...settingForm });
@@ -190,17 +190,17 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
             <div className="pomodoro-setting">
               <span>Pomodoro duration</span>
               <input type="text" className="input pomodoro-setting-input"
-                value={settingForm.duration} onChange={handleInputChanage} name="duration"/>
+                value={settingForm.duration} onChange={handleInputChange} name="duration"/>
             </div>
             <div className="pomodoro-setting">
               <span>Short break duration</span>
               <input type="text" className="input pomodoro-setting-input"
-                value={settingForm.short} onChange={handleInputChanage} name="short"/>
+                value={settingForm.short} onChange={handleInputChange} name="short"/>
             </div>
             <div className="pomodoro-setting">
               <span>Long break duration</span>
               <input type="text" className="input pomodoro-setting-input"
-                value={settingForm.long} onChange={handleInputChanage} name="long"/>
+                value={settingForm.long} onChange={handleInputChange} name="long"/>
             </div>
           </div>
           <div className="top-panel-hide-target top-panel-item-actions pomodoro-settings-footer">

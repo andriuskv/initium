@@ -93,11 +93,11 @@ function resetWallpaperInfo() {
   wallpaperInfo = null;
   localStorage.removeItem("wallpaper-info");
   localStorage.removeItem("downscaled-wallpaper");
-  deleteServiceWokerCache();
+  deleteServiceWorkerCache();
   dispatchCustomEvent("wallpaper-info-update", null);
 }
 
-function deleteServiceWokerCache() {
+function deleteServiceWorkerCache() {
   caches.keys().then(keys => {
     keys.forEach(key => {
       if (key === "wallpaper-image-cache") {

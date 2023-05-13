@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { delay } from "../../../utils";
-import { handleZIndex, getIincreasedZIndex } from "services/zIndex";
+import { handleZIndex, getIncreasedZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
 import { removeFromRunning, getLastRunningTimer } from "./running-timers";
 import Icon from "components/Icon";
@@ -204,7 +204,7 @@ export default function TopPanel({ forceVisibility = false }) {
   }
 
   function increaseContainerZIndex() {
-    const zIndex = getIincreasedZIndex();
+    const zIndex = getIncreasedZIndex();
     containerRef.current.style.setProperty("--z-index", zIndex);
   }
 
