@@ -150,7 +150,7 @@ export default function Presets({ createCountdown, hide }) {
       let hour = 0;
 
       while (hour < 24) {
-        const value = format === 24 ? hour : getTimeString({ hours: hour }, true);
+        const value = format === 24 ? hour : getTimeString({ hours: hour }, { excludeMinutes: true });
 
         dataList.items.push({
           value,

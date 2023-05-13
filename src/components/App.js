@@ -11,12 +11,14 @@ const Tasks = lazy(() => import("./Tasks"));
 const WallpaperViewer = lazy(() => import("./WallpaperViewer"));
 const TweetImageViewer = lazy(() => import("./TweetImageViewer"));
 const GreetingEditor = lazy(() => import("./GreetingEditor"));
+const FullscreenModal = lazy(() => import("./FullscreenModal"));
 
 export default function App() {
   const { settings } = useSettings();
   const [wallpaperViewerVisible, setWallpaperViewerVisible] = useState(false);
   const [tweetImageData, setTweetImageData] = useState(null);
   const [greetingEditorVisible, setGreetingEditorVisible] = useState(false);
+  const [fullscreenModal, setFullscreenModal] = useState(null);
   const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const weatherTimeoutId = useRef(0);
 
@@ -28,11 +30,13 @@ export default function App() {
     window.addEventListener("wallpaper-viewer-visible", showWallpaperViewer);
     window.addEventListener("tweet-image-viewer-visible", showTweetImageViewer);
     window.addEventListener("greeting-editor-visible", showGreetingEditor);
+    window.addEventListener("fullscreen-modal-visible", showFullscreenModal);
 
     return () => {
       window.removeEventListener("wallpaper-viewer-visible", showWallpaperViewer);
       window.removeEventListener("tweet-image-viewer-visible", showTweetImageViewer);
       window.removeEventListener("greeting-editor-visible", showGreetingEditor);
+      window.removeEventListener("fullscreen-modal-visible", showFullscreenModal);
     };
   }, []);
 
@@ -85,6 +89,14 @@ export default function App() {
     setGreetingEditorVisible(false);
   }
 
+  function showFullscreenModal({ detail }) {
+    setFullscreenModal(detail);
+  }
+
+  function hideFullscreenModal() {
+    setFullscreenModal(null);
+  }
+
   return (
     <>
       <Wallpaper settings={settings.appearance.wallpaper}/>
@@ -105,6 +117,9 @@ export default function App() {
       </Suspense>
       <Suspense fallback={null}>
         {greetingEditorVisible ? <GreetingEditor hide={hideGreetingEditor}/> : null}
+      </Suspense>
+      <Suspense fallback={null}>
+        {fullscreenModal ? <FullscreenModal content={fullscreenModal} hide={hideFullscreenModal}/> : null}
       </Suspense>
     </>
   );

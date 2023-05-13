@@ -67,6 +67,10 @@ export default function StorageTab() {
       {
         name: "shortcuts",
         fullName: "Shortcuts"
+      },
+      {
+        name: "clocks",
+        fullName: "World clocks"
       }
     ];
 
