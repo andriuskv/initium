@@ -59,10 +59,10 @@ function getDefault() {
       centerClock: false,
       dateHidden: false,
       boldedDate: false,
-      dateScale: 1.2,
+      dateScale: 1.3,
       dateOffset: 12,
       datePosition: "bottom",
-      dateAligment: "center",
+      dateAlignment: "center",
       dontChangeDateStyle: false,
       dateLocale: "en-US",
       firstWeekday: 0

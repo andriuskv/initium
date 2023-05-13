@@ -154,7 +154,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
         };
       }
 
-      if (form.repeat.ends === "occurences") {
+      if (form.repeat.ends === "occurrences") {
         if (form.repeat.count) {
           reminder.repeat.count = Number(form.repeat.count);
         }
@@ -375,15 +375,15 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
             </label>
             <label className="reminder-form-row">
               <input type="radio" className="sr-only radio-input" name="ends"
-                value="occurences" defaultChecked={form.repeat.ends === "occurences"}/>
+                value="occurrences" defaultChecked={form.repeat.ends === "occurrences"}/>
               <div className="radio"></div>
               <span className="label-right">After</span>
               <input type="text" className="input repeat-input" name="count" autoComplete="off"
                 value={form.repeat.count} onChange={handleRepeatInputChange}
-                disabled={form.repeat.ends === "never"} required={form.repeat.ends === "occurences"}/>
+                disabled={form.repeat.ends === "never"} required={form.repeat.ends === "occurrences"}/>
               <span>occurrences</span>
             </label>
-            {form.repeat.ends === "occurences" && form.repeat.countError && (
+            {form.repeat.ends === "occurrences" && form.repeat.countError && (
               <div className="reminder-form-message">Please insert a whole number</div>
             )}
           </div>

@@ -24,7 +24,7 @@
     grid-row-gap: calc(var(--date-offset) * 1px);
 
     & .clock-date {
-      text-align: var(--date-aligment);
+      text-align: var(--date-alignment);
     }
   }
 

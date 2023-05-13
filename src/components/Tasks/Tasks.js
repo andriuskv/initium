@@ -6,7 +6,7 @@ import "./tasks.css";
 const TasksContent = lazy(() => import("./TasksContent"));
 
 export default function Tasks() {
-  const [{ visible, rendered }, setState] = useState({ visibile: false, rendered: false });
+  const [{ visible, rendered }, setState] = useState({ visible: false, rendered: false });
   const containerRef = useRef(null);
   const timeoutId = useRef(0);
 

@@ -53,7 +53,7 @@ export default function Clock({ settings }) {
 
   return (
     <div className={`clock date-${settings.datePosition}`}
-      style={{ "--scale": settings.clockScale, "--date-offset": settings.dateOffset, "--date-aligment": settings.dateAligment, "--font-family": settings.clockStyle }}>
+      style={{ "--scale": settings.clockScale, "--date-offset": settings.dateOffset, "--date-alignment": settings.dateAlignment, "--font-family": settings.clockStyle }}>
       <span className={`clock-time${settings.boldedClock ? " bolded" : ""}`}>{clock.hours}:{clock.minutes}</span>
       {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
       {settings.dateHidden ? null : (

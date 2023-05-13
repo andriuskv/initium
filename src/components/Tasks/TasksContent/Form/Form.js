@@ -18,11 +18,11 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
 
     if (form.updating) {
       const subtasks = [...form.task.subtasks];
-      let misingSubtaskCount = 2 - subtasks.length;
+      let missingSubtaskCount = 2 - subtasks.length;
 
-      while (misingSubtaskCount > 0) {
+      while (missingSubtaskCount > 0) {
         subtasks.push(getNewSubtask());
-        misingSubtaskCount -= 1;
+        missingSubtaskCount -= 1;
       }
       defaultForm.task.rawText = form.task.rawText;
       defaultForm.task.subtasks = subtasks;
@@ -52,7 +52,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
   });
   const [labelFormVisible, setLabelFormVisible] = useState(false);
   const [message, setMessage] = useState("");
-  const messageTimeountId = useRef();
+  const messageTimeoutId = useRef();
 
   function toggleMoreOptions() {
     setState({
@@ -135,7 +135,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
   function handleTaskFormSubmit(event) {
     const { elements } = event.target;
     const text = elements.text.value.trim();
-    const datetime = state.moreOptionsVisible ? elements.datetime.value : "";
+    const dateTime = state.moreOptionsVisible ? elements.datetime.value : "";
     const repeatGap = state.moreOptionsVisible ? Number(elements.repeatGap.value) : -1;
     const { selectedGroupId = "unorganized" } = state;
     const { tasks } = groups.find(({ id }) => id === selectedGroupId);
@@ -171,8 +171,8 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
     if (state.updating) {
       const { taskIndex } = form;
 
-      if (datetime) {
-        const selectedDateTime = new Date(datetime).getTime();
+      if (dateTime) {
+        const selectedDateTime = new Date(dateTime).getTime();
 
         if (selectedDateTime !== state.task.expirationDate) {
           task.expirationDate = selectedDateTime;
@@ -203,8 +203,8 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
       }
     }
     else {
-      if (datetime) {
-        task.expirationDate = new Date(datetime).getTime();
+      if (dateTime) {
+        task.expirationDate = new Date(dateTime).getTime();
 
         if (task.expirationDate <= task.creationDate) {
           showMessage("Expiration date can't be in the past.");
@@ -282,15 +282,15 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
 
   function showMessage(message) {
     setMessage(message);
-    clearTimeout(messageTimeountId.current);
+    clearTimeout(messageTimeoutId.current);
 
-    messageTimeountId.current = setTimeout(() => {
+    messageTimeoutId.current = setTimeout(() => {
       setMessage("");
     }, 4000);
   }
 
   function hideMessage() {
-    clearTimeout(messageTimeountId.current);
+    clearTimeout(messageTimeoutId.current);
     setMessage("");
   }
 

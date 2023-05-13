@@ -83,7 +83,7 @@ export default function MainPanel({ settings }) {
     let delay = -1;
 
     if (activeTab.id === id) {
-      delay = activeTab.manualySelected ? 1 : 2000;
+      delay = activeTab.manuallySelected ? 1 : 2000;
       clearTimeout(tabTimeouts.current[id]);
     }
     else if (tab.firstRender && await callback()) {

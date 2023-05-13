@@ -1,6 +1,6 @@
 let zIndex = 1;
 
-function getIincreasedZIndex() {
+function getIncreasedZIndex() {
   zIndex += 1;
   return zIndex;
 }
@@ -15,6 +15,6 @@ function handleZIndex({ currentTarget }) {
 }
 
 export {
-  getIincreasedZIndex,
+  getIncreasedZIndex,
   handleZIndex
 };
