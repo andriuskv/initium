@@ -10,6 +10,7 @@ import Countdown from "./Countdown";
 const Timer = lazy(() => import("./Timer"));
 const Stopwatch = lazy(() => import("./Stopwatch"));
 const Pomodoro = lazy(() => import("./Pomodoro"));
+const World = lazy(() => import("./World"));
 const Settings = lazy(() => import("./Settings"));
 
 export default function TopPanel({ forceVisibility = false }) {
@@ -21,7 +22,8 @@ export default function TopPanel({ forceVisibility = false }) {
   const [tabs, setTabs] = useState(() => ({
     timer: {},
     stopwatch: {},
-    pomodoro: {}
+    pomodoro: {},
+    world: {}
   }));
   const containerRef = useRef(null);
   const minimalVisible = useRef(false);
@@ -251,6 +253,12 @@ export default function TopPanel({ forceVisibility = false }) {
               <span>Countdown</span>
             </button>
           </li>
+          <li className={`top-panel-header-item${activeTab === "world" ? " active" : ""}`}>
+            <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab("world")}>
+              <Icon id="earth"/>
+              <span>World</span>
+            </button>
+          </li>
           <li className="top-panel-close-btn">
             <button className="btn icon-btn" onClick={() => setActiveTab("settings")} title="Settings">
               <Icon id="settings"/>
@@ -266,6 +274,7 @@ export default function TopPanel({ forceVisibility = false }) {
           {tabs.timer.rendered ? <Timer visible={activeTab === "timer"} expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/> : null}
           {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} expand={expand}/> : null}
           {tabs.pomodoro.rendered ? <Pomodoro visible={activeTab === "pomodoro"} expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/> : null}
+          {tabs.world.rendered ? <World visible={activeTab === "world"}/> : null}
           {activeTab === "settings" ? <Settings setFullscreenTextScale={setFullscreenTextScale}/> : null}
         </Suspense>
         <Countdown visible={activeTab === "countdown"}/>

@@ -1,6 +1,6 @@
 import { getSetting } from "./settings";
 
-function getTime({ hours, minutes = 0 }) {
+function adjustTime({ hours, minutes = 0 }) {
   const { format } = getSetting("timeDate");
   let period = "";
 
@@ -21,13 +21,14 @@ function getTime({ hours, minutes = 0 }) {
   };
 }
 
-function getTimeString(time, excludeMinutes = false) {
-  const { hours, minutes, period } = getTime(time);
+function getTimeString(time, { padHours = false, excludeMinutes = false } = {}) {
+  const { hours, minutes, period } = adjustTime(time);
+  const h = padHours ? padTime(hours) : hours;
 
   if (excludeMinutes) {
-    return `${hours}${period && ` ${period}`}`;
+    return `${h}${period && ` ${period}`}`;
   }
-  return `${hours}:${padTime(minutes)}${period && ` ${period}`}`;
+  return `${h}:${padTime(minutes)}${period && ` ${period}`}`;
 }
 
 function padTime(time, pad = true) {
@@ -136,8 +137,8 @@ function getCurrentDate() {
   };
 }
 
-function getCurrentTime() {
-  const date = new Date();
+function getTimeObj(milliseconds) {
+  const date = milliseconds ? new Date(milliseconds) : new Date();
 
   return {
     hours: date.getHours(),
@@ -145,8 +146,13 @@ function getCurrentTime() {
   };
 }
 
+function getClockTimeString(milliseconds, params) {
+  const obj = getTimeObj(milliseconds);
+  return getTimeString(obj, params);
+}
+
 function getDisplayTime() {
-  const time = getTime(getCurrentTime());
+  const time = adjustTime(getTimeObj());
   time.minutes = padTime(time.minutes);
   return time;
 }
@@ -157,7 +163,7 @@ function getDate(string, date = getCurrentDate()) {
     month: getMonthName(date.month),
     day: getDay(date.day, date.dayWithSuffix),
     weekday: getWeekdayName(date.weekday),
-    ...getTime(date)
+    ...adjustTime(date)
   };
   const regex = new RegExp(Object.keys(map).join("|"), "g");
 
@@ -168,8 +174,8 @@ function getDate(string, date = getCurrentDate()) {
 }
 
 export {
-  getTime,
   getTimeString,
+  getClockTimeString,
   getDisplayTime,
   getDaysInMonth,
   getWeekday,
