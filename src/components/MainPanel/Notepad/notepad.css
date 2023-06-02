@@ -8,7 +8,10 @@
 }
 
 .notepad-input {
+  --text-size: inherit;
+
   flex-grow: 1;
+  font-size: var(--text-size);
 
   &:focus {
     outline: none;

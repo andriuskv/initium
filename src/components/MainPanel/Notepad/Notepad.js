@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString, formatBytes } from "utils";
 import * as chromeStorage from "services/chromeStorage";
+import { getSetting } from "services/settings";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./notepad.css";
@@ -12,6 +13,10 @@ export default function Notepad() {
   const [{ activeIndex, shift }, setNavigation] = useState(() => ({ activeIndex: 0, shift: 0 }));
   const [tabListVisible, setTabListVisible] = useState(false);
   const [storageWarning, setStorageWarning] = useState(null);
+  const [textSize, setTextSize] = useState(() => {
+    const { textSize } = getSetting("notepad");
+    return textSize ?? 14;
+  });
   const saveTimeoutId = useRef(0);
   const textareaRef = useRef(0);
   const VISIBLE_ITEM_COUNT = 3;
@@ -222,8 +227,8 @@ export default function Notepad() {
   else if (tabListVisible) {
     return (
       <Suspense fallback={null}>
-        <Tabs tabs={tabs} selectListTab={selectListTab} updateTabs={updateTabs} updateTabPosition={updateTabPosition}
-          getTabSize={getTabSize} hide={hideTabList}/>
+        <Tabs tabs={tabs} textSize={textSize} selectListTab={selectListTab} updateTabs={updateTabs} updateTabPosition={updateTabPosition}
+          getTabSize={getTabSize} setTextSize={setTextSize} hide={hideTabList}/>
       </Suspense>
     );
   }
@@ -257,7 +262,7 @@ export default function Notepad() {
         </button>
       </div>
       {storageWarning && renderWarning()}
-      <textarea className="notepad-input" ref={textareaRef}
+      <textarea className="notepad-input" ref={textareaRef} style={{ "--text-size": `${textSize}px` }}
         onChange={handleTextareaChange}
         defaultValue={tabs[activeIndex].content}
         key={tabs[activeIndex].id}>
