@@ -274,7 +274,7 @@ export default function TopPanel({ forceVisibility = false }) {
           {tabs.timer.rendered ? <Timer visible={activeTab === "timer"} expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/> : null}
           {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} expand={expand}/> : null}
           {tabs.pomodoro.rendered ? <Pomodoro visible={activeTab === "pomodoro"} expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/> : null}
-          {tabs.world.rendered ? <World visible={activeTab === "world"}/> : null}
+          {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible}/> : null}
           {activeTab === "settings" ? <Settings setFullscreenTextScale={setFullscreenTextScale}/> : null}
         </Suspense>
         <Countdown visible={activeTab === "countdown"}/>

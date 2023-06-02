@@ -6,7 +6,7 @@ import Icon from "components/Icon";
 import "./world.css";
 import Form from "./Form";
 
-export default function World({ visible }) {
+export default function World({ visible, parentVisible }) {
   const [clocks, setClocks] = useState([]);
   const timeoutId = useRef(0);
 
@@ -18,12 +18,14 @@ export default function World({ visible }) {
     if (!clocks.length) {
       return;
     }
-    timeoutId.current = setTimeout(update, 1000);
 
+    if (parentVisible) {
+      timeoutId.current = setTimeout(update, 1000);
+    }
     return () => {
       clearTimeout(timeoutId.current);
     };
-  }, [clocks]);
+  }, [parentVisible, clocks]);
 
   async function init() {
     const clocks = await chromeStorage.get("clocks");
