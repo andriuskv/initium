@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getRandomString, formatBytes } from "utils";
 import { SortableItem, SortableList } from "services/sortable";
+import { updateSetting } from "services/settings";
 import * as chromeStorage from "services/chromeStorage";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./tabs.css";
 
-export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPosition, getTabSize, hide }) {
+export default function Tabs({ tabs, textSize, selectListTab, updateTabs, updateTabPosition, getTabSize, setTextSize, hide }) {
   const [modal, setModal] = useState(null);
   const [storage, setStorage] = useState({ current: 0, used: 0 });
   const [activeDragId, setActiveDragId] = useState(null);
+  const textSizeInputTimeoutId = useRef(0);
 
   useEffect(() => {
     updateStorage();
@@ -135,6 +137,16 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
     setActiveDragId(event.active.id);
   }
 
+  function handleTextSizeChange(event) {
+    const value = event.target.valueAsNumber;
+
+    setTextSize(value);
+    clearTimeout(textSizeInputTimeoutId.current);
+    textSizeInputTimeoutId.current = setTimeout(() => {
+      updateSetting({ notepad: { textSize: value } });
+    }, 1000);
+  }
+
   function renderModal() {
     if (modal.type === "create") {
       return (
@@ -174,6 +186,13 @@ export default function Tabs({ tabs, selectListTab, updateTabs, updateTabPositio
       <div className="notepad-tabs-header">
         <h2 className="notepad-tabs-header-title">Notepad Tabs</h2>
         <Dropdown>
+          <div className="dropdown-group">
+            <label className="notepad-tabs-dropdown-setting">
+              <span className="notepad-tabs-dropdown-setting-title">Text size: {textSize}px</span>
+              <input type="range" className="range-input" min="10" max="32" step="1"
+                defaultValue={textSize} onChange={handleTextSizeChange} name="textSize"/>
+            </label>
+          </div>
           <button className="btn icon-text-btn dropdown-btn" onClick={showCreateTabForm}>
             <Icon id="plus"/>
             <span>Create tab</span>
