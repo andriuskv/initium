@@ -156,12 +156,27 @@ export default function MainPanel({ settings }) {
     const willExpand = !activeTab.expanded;
 
     if (willExpand) {
+      setActiveTab({
+        ...activeTab,
+        expanded: willExpand
+      });
       setResizerEnabled(false);
     }
-    setActiveTab({
-      ...activeTab,
-      expanded: !activeTab.expanded
-    });
+    else {
+      setActiveTab({
+        ...activeTab,
+        expanded: false,
+        collapsing: true
+      });
+
+      setTimeout(() => {
+        setActiveTab({
+          ...activeTab,
+          collapsing: false,
+          expanded: false
+        });
+      }, 200);
+    }
   }
 
   function showIndicator(id) {
@@ -230,7 +245,7 @@ export default function MainPanel({ settings }) {
   }
 
   return (
-    <div className={`main-panel${tabExpandable ? " expandable" : ""}${activeTab.expanded ? " expanded" : ""}${settings.navHidden || settings.navDisabled ? " nav-hidden" : ""}`} onClick={handleZIndex} ref={containerRef}>
+    <div className={`main-panel${tabExpandable ? " expandable" : ""}${activeTab.expanded ? " expanded" : ""}${settings.navHidden || settings.navDisabled ? " nav-hidden" : ""}${activeTab.collapsing ? " collapsing" : ""}`} onClick={handleZIndex} ref={containerRef}>
       {renderNavigation()}
       {tabExpandable && (
         <Sidebar expanded={activeTab.expanded} expandTab={expandTab} resizerEnabled={resizerEnabled} toggleResizer={toggleResizer}/>
