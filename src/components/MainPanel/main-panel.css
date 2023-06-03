@@ -40,7 +40,6 @@
   left: 50%;
   transform: translateX(-50%);
   width: 588px;
-  transition: 0.2s top, 0.2s max-height, 0.2s height;
   pointer-events: none;
 
   &.hidden {
@@ -58,18 +57,22 @@
     height: var(--height, var(--initial-height));
     max-height: calc(var(--max-height) - var(--space-md));
 
-    & .main-panel-item {
+    .main-panel-item {
       height: 100%;
     }
 
     &.resizing {
       transition: none;
 
-      & .main-panel-item {
+      .main-panel-item {
         height: calc(100% - var(--space-xl));
         transition: none;
       }
     }
+  }
+
+  &.expanded, &.collapsing {
+    transition: 0.2s top, 0.2s max-height, 0.2s height;
   }
 
   &.expanded {
@@ -77,7 +80,7 @@
 
     height: 100%;
 
-    & .main-panel-nav {
+    .main-panel-nav {
       opacity: 0;
       visibility: hidden;
       transform: translate(-50%, 100%);
