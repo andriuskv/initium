@@ -35,7 +35,7 @@
   }
 
   &:hover {
-    background-color: transparent;
+    cursor: pointer;
 
     &::before {
       transform: scale(1.2);
@@ -55,10 +55,13 @@
 .feed-entry-thumbnail {
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  float: left;
   margin-top: var(--space-xs);
   margin-right: var(--space-md);
   border-radius: 8px;
+
+  &:has(+ .feed-entry-description) {
+    float: left;
+  }
 }
 
 .feed-entry-description {

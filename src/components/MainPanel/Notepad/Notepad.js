@@ -243,8 +243,7 @@ export default function Notepad() {
         <ul className="main-panel-item-header-items">
           {tabs.map((tab, i) => (
             <li className={`main-panel-item-header-item${activeIndex === i ? " active" : ""}${i < shift || i >= shift + VISIBLE_ITEM_COUNT ? " hidden" : ""}`} key={tab.id}>
-              <button className="btn text-btn main-panel-item-header-item-select-btn"
-                onClick={() => selectTab(i)} disabled={tabs.length === 1}>
+              <button className="btn text-btn main-panel-item-header-item-select-btn" onClick={() => selectTab(i)}>
                 <span className="main-panel-item-header-item-title">{tab.title}</span>
               </button>
             </li>

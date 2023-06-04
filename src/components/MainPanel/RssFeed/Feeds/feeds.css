@@ -49,10 +49,7 @@
     &::after {
       content: "";
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      inset: 0;
       display: block;
       background-image: url("./assets/ring.svg");
       background-repeat: no-repeat;
@@ -94,8 +91,11 @@
 .feed-list-item-title {
   display: flex;
   align-items: center;
+  height: auto;
+  min-height: 24px;
   padding: 0;
   margin-right: auto;
+  border: none;
   border-radius: 0;
   text-align: left;
   font-size: var(--text-md);
