@@ -494,13 +494,11 @@ export default function Tasks() {
       countTasks(groups);
       setGroups([...groups]);
     }
-    else {
-      updateSetting({
-        tasks: {
-          [event.target.name]: event.target.checked
-        }
-      });
-    }
+    updateSetting({
+      tasks: {
+        [event.target.name]: event.target.checked
+      }
+    });
   }
 
   function updateComponentHeight(height) {
