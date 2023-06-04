@@ -34,7 +34,7 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
         <ul className="main-panel-item-header-items">
           {feeds.active.map((feed, i) => (
             <li className={`main-panel-item-header-item${activeIndex === i ? " active" : ""}${i < shift || i >= shift + VISIBLE_ITEM_COUNT ? " hidden" : ""}`} key={feed.url}>
-              <button className="btn icon-text-btn main-panel-item-header-item-select-btn feed-select-btn"
+              <button className={`btn icon-text-btn main-panel-item-header-item-select-btn feed-select-btn${feeds.active.length === 1 ? " one" : ""}`}
                 onClick={event => handleFeedSelection(event, i)}>
                 {feed.newEntryCount > 0 && (
                   <div className="feed-new-entry-count-container" data-entry-count>

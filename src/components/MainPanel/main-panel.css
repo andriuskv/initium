@@ -108,6 +108,16 @@
   flex-grow: 1;
   min-width: 0;
   padding: var(--space-sm) 0;
+
+  /* If element has less than 2 children */
+  &:not(:has(.main-panel-item-header-item:nth-last-child(n + 2))) {
+    .main-panel-item-header-item-select-btn:is(:hover, :focus-visible) {
+      --background-color: transparent;
+
+      border-color: transparent;
+      cursor: default;
+    }
+  }
 }
 
 .main-panel-item-header-item {
