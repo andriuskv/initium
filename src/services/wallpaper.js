@@ -4,27 +4,21 @@ import { getSetting, setSetting } from "./settings";
 const downscaledWallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper"));
 let wallpaperInfo = JSON.parse(localStorage.getItem("wallpaper-info"));
 
-async function fetchUnsplashInfo() {
-  try {
-    const apiUrl = "https://api.unsplash.com/photos/random";
-    const key = process.env.UNSPLASH_KEY;
-    const json = await fetch(`${apiUrl}?collections=825407&client_id=${key}`).then(res => res.json());
-
-    return {
-      url: buildImageUrl(json.urls.raw),
-      cacheDate: Date.now(),
-      name: json.user.name,
-      username: json.user.username
-    };
-  } catch (e) {
-    console.log(e);
-  }
+function fetchDailyWallpaperInfo(provider) {
+  return fetch(`${process.env.SERVER_URL}/wallpaper?p=${provider}`).then(res => res.json());
 }
 
-async function cacheUnsplashInfo() {
-  const info = await fetchUnsplashInfo();
+async function cacheDailyWallpaperInfo() {
+  const { wallpaper } = getSetting("appearance");
+  const provider = wallpaper.provider ?? "unsplash";
+  const info = await fetchDailyWallpaperInfo(provider);
 
   if (info) {
+    info.cacheDate = Date.now();
+
+    if (provider === "unsplash") {
+      info.url = buildUnsplashImageUrl(info.url);
+    }
     setTimeout(() => {
       cacheImage(info.url);
       cacheDownscaledWallpaper({ url: info.url });
@@ -37,8 +31,10 @@ async function cacheUnsplashInfo() {
 
 async function fetchWallpaperInfo() {
   if (wallpaperInfo) {
-    if (Date.now() - wallpaperInfo.cacheDate > 1000 * 60 * 60 * 18) {
-      cacheUnsplashInfo();
+    const currentDate = Date.now();
+
+    if (currentDate - wallpaperInfo.cacheDate > 1000 * 60 * 60 * 18 || (wallpaperInfo.endDate && currentDate > wallpaperInfo.endDate)) {
+      cacheDailyWallpaperInfo();
       return wallpaperInfo;
     }
     cacheImage(wallpaperInfo.url);
@@ -48,7 +44,7 @@ async function fetchWallpaperInfo() {
     }
     return wallpaperInfo;
   }
-  const info = await cacheUnsplashInfo();
+  const info = await cacheDailyWallpaperInfo();
 
   if (info) {
     wallpaperInfo = info;
@@ -76,7 +72,7 @@ function cacheImage(url) {
   });
 }
 
-function buildImageUrl(url) {
+function buildUnsplashImageUrl(url) {
   const { width, height } = screen;
   const dpi = window.devicePixelRatio;
   const crop = "edges";

@@ -1,7 +1,7 @@
 import { dispatchCustomEvent } from "utils";
 import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings-context";
-import { resetIDBStore } from "services/wallpaper";
+import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
 import "./general-tab.css";
 
 export default function GeneralTab() {
@@ -15,6 +15,9 @@ export default function GeneralTab() {
     if (settings.appearance.wallpaper.type === "blob") {
       localStorage.removeItem("downscaled-wallpaper");
       resetIDBStore();
+    }
+    else if (settings.appearance.wallpaper.provider === "bing") {
+      resetWallpaperInfo();
     }
     localStorage.removeItem("noise");
     document.body.style.setProperty("--panel-background-noise", "");
