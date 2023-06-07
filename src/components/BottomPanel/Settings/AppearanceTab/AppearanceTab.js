@@ -94,6 +94,7 @@ export default function AppearanceTab() {
   const { settings: { appearance: settings }, updateSetting: updateContextSetting } = useSettings();
   const [wallpaperInfo, setWallpaperInfo] = useState(() => getWallpaperInfo());
   const [wallpaperForm, setWallpaperForm] = useState(null);
+  const [wallpaperProvider, setWallpaperProvider] = useState(settings.wallpaper.provider);
   const [messages, setMessages] = useState({});
   const [colorIndex, setColorIndex] = useState(() => {
     return colors.findIndex(color => settings.accentColor.hue === color.hue && settings.accentColor.saturation === color.saturation);
@@ -172,6 +173,7 @@ export default function AppearanceTab() {
   }
 
   function resetWallpaper() {
+    setWallpaperProvider("");
     updateContextSetting("appearance", { wallpaper: { url: "" } });
     resetWallpaperInfo();
   }
@@ -312,6 +314,15 @@ export default function AppearanceTab() {
     }
   }
 
+  function handleWallpaperProviderClick(provider) {
+    if (provider === settings.wallpaper.provider) {
+      return;
+    }
+    setWallpaperProvider(provider);
+    resetWallpaperInfo();
+    updateContextSetting("appearance", { wallpaper: { url: "", provider } });
+  }
+
   function renderAccentColors() {
     return (
       <ul className="setting setting-appearance-tab-accent-colors">
@@ -341,6 +352,19 @@ export default function AppearanceTab() {
           </div>
         </form>
       </Modal>
+    );
+  }
+
+  function renderWallpaperInfo() {
+    if (wallpaperProvider === "bing") {
+      return (
+        <p className="setting-wallpaper-info">
+          <a href={wallpaperInfo.copyrightLink} target="_blank" rel="noreferrer">{wallpaperInfo.copyright}</a>
+        </p>
+      );
+    }
+    return (
+      <p className="setting-wallpaper-info">Wallpaper image by <a href={`https://unsplash.com/@${wallpaperInfo.username}?utm_source=initium&utm_medium=referral`} className="setting-wallpaper-info-link" target="_blank" rel="noreferrer">{wallpaperInfo.name}</a> on <a href="https://unsplash.com/?utm_source=initium&utm_medium=referral" className="setting-wallpaper-info-link" target="_blank" rel="noreferrer">Unsplash</a></p>
     );
   }
 
@@ -406,9 +430,20 @@ export default function AppearanceTab() {
               defaultValue={settings.wallpaper.videoPlaybackSpeed} onChange={handleVideoPlaybackSpeedChange} name="videoPlaybackSpeed"/>
           </label>
         ) : null}
-        {wallpaperInfo && (
-          <p className="setting-wallpaper-info">Wallpaper image by <a href={`https://unsplash.com/@${wallpaperInfo.username}?utm_source=initium&utm_medium=referral`} className="setting-wallpaper-info-link">{wallpaperInfo.name}</a> on <a href="https://unsplash.com/?utm_source=initium&utm_medium=referral" className="setting-wallpaper-info-link">Unsplash</a></p>
-        )}
+        <div className="setting setting-wallpaper">
+          <div className="setting-wallpaper-title">Daily wallpaper provider</div>
+          <div className="setting-wallpaper-items">
+            <div className="setting-wallpaper-item">
+              <button className={`btn text-btn setting-wallpaper-item-btn${!wallpaperProvider || wallpaperProvider === "unsplash" ? " active" : ""}`}
+                onClick={() => handleWallpaperProviderClick("unsplash")}>Unsplash</button>
+            </div>
+            <div className="setting-wallpaper-item">
+              <button className={`btn text-btn setting-wallpaper-item-btn${wallpaperProvider === "bing" ? " active" : ""}`}
+                onClick={() => handleWallpaperProviderClick("bing")}>Bing</button>
+            </div>
+          </div>
+        </div>
+        {wallpaperInfo && renderWallpaperInfo()}
       </div>
       {wallpaperForm && renderWallpaperForm()}
     </div>

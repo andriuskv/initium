@@ -7,7 +7,7 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
-  if (event.request.url.startsWith("https://images.unsplash.com/")) {
+  if (event.request.url.startsWith("https://images.unsplash.com/") || event.request.url.startsWith("https://www.bing.com/th")) {
     event.respondWith(
       caches.open("wallpaper-image-cache").then(cache => {
         return cache.match(event.request, { ignoreVary: true }).then(response => {
