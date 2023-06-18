@@ -28,7 +28,7 @@
 .task-form-repeat-options-container {
   align-items: flex-start;
 
-  & .task-form-item-title {
+  .task-form-item-title {
     margin-top: var(--space-md);
   }
 }
@@ -76,13 +76,13 @@
   font-weight: normal;
 
   &.flagged {
-    & .task-label-color,
-    & .task-label-title {
+    .task-label-color,
+    .task-label-title {
       opacity: 0.4;
     }
   }
 
-  & .task-form-label-btn-tick {
+  .task-form-label-btn-tick {
     margin-right: 0;
   }
 }

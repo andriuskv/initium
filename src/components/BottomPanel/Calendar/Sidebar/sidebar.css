@@ -12,7 +12,7 @@
   &.visible {
     width: var(--sidebar-width);
 
-    & .calendar-sidebar-item {
+    .calendar-sidebar-item {
       opacity: 1;
     }
   }

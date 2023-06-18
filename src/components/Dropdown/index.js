@@ -1,2 +1,2 @@
-import Dropdown from "./Dropdown.js";
+import Dropdown from "./Dropdown";
 export default Dropdown;

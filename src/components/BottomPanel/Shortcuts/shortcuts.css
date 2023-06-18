@@ -7,13 +7,13 @@
   padding: var(--space-md);
 
   &.editing  {
-    & .shortcuts-item:hover {
+    .shortcuts-item:hover {
       border-color: var(--color-primary);
       background-color: var(--color-white-10);
       cursor: move;
     }
 
-    & .shortcuts-item-icon {
+    .shortcuts-item-icon {
       opacity: 0.5;
     }
   }
