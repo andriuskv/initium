@@ -61,7 +61,7 @@
   height: 32px;
   padding: 2px;
 
-  .calendar-cell {
+  & .calendar-cell {
     flex: 1;
   }
 }

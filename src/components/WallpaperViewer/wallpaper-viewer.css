@@ -63,11 +63,11 @@
   padding: var(--space-sm);
   backdrop-filter: none;
 
-  .btn:not(:last-of-type) {
+  & .btn:not(:last-of-type) {
     margin-right: var(--space-sm);
   }
 
-  .btn:first-of-type {
+  & .btn:first-of-type {
     margin-right: auto;
   }
 }

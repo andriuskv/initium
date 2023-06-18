@@ -42,10 +42,9 @@ module.exports = function(env = {}) {
     mode,
     target: "browserslist",
     entry: {
-      main: "./src/index.jsx"
+      main: "./src/index.js"
     },
     resolve: {
-      extensions: [".jsx", ".js"],
       alias: {
         components: path.resolve(__dirname, "src/components"),
         contexts: path.resolve(__dirname, "src/contexts"),
@@ -122,7 +121,7 @@ module.exports = function(env = {}) {
           ]
         },
         {
-          test: /\.jsx?$/,
+          test: /\.js$/,
           exclude: /node_modules/,
           use: {
             loader: "babel-loader",

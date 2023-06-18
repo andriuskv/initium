@@ -86,6 +86,7 @@ function SortableList({ children, items, axis, handleDragStart, handleSort }) {
   );
 }
 
+
 function SortableItem({ children, id, className }) {
   const {
     attributes,

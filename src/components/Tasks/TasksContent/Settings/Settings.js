@@ -44,15 +44,6 @@ export default function Settings({ settings, toggleSetting, saveHeight, hide }) 
         </label>
         <label className="checkbox-container tasks-settings-item">
           <input type="checkbox" className="sr-only checkbox-input"
-            name="countSubtasks" checked={settings.countSubtasks}
-            onChange={toggleSetting}/>
-          <div className="checkbox">
-            <div className="checkbox-tick"></div>
-          </div>
-          <span>Include subtasks in task count</span>
-        </label>
-        <label className="checkbox-container tasks-settings-item">
-          <input type="checkbox" className="sr-only checkbox-input"
             name="repeatHistoryHidden" checked={settings.repeatHistoryHidden}
             onChange={toggleSetting}/>
           <div className="checkbox">

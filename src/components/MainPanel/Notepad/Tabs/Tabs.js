@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { getRandomString, formatBytes } from "utils";
+import { SortableItem, SortableList } from "services/sortable";
 import { updateSetting } from "services/settings";
 import * as chromeStorage from "services/chromeStorage";
-import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
 import Icon from "components/Icon";

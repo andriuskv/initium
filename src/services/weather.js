@@ -48,10 +48,12 @@ function fetchCoords() {
       error => {
         console.log(error);
 
-        resolve({
-          type: "geo",
-          message: error.code === 1 ? "Access to geolocation is not permitted." : "Something went wrong."
-        });
+        if (error.code === 1) {
+          resolve({
+            type: "geo",
+            message: "Access to geolocation is not permitted."
+          });
+        }
       },
       { enableHighAccuracy: true }
     );

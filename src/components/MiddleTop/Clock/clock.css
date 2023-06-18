@@ -23,21 +23,21 @@
   &.date-bottom, &.date-top {
     grid-row-gap: calc(var(--date-offset) * 1px);
 
-    .clock-date {
+    & .clock-date {
       text-align: var(--date-alignment);
     }
   }
 
   @media (height <= 720px) {
-    .clock-time {
+    & .clock-time {
       --size: 6rem;
     }
 
-    .clock-time-period {
+    & .clock-time-period {
       --size: var(--text-xxl);
     }
 
-    .clock-date {
+    & .clock-date {
       --size: var(--text-sm);
     }
   }

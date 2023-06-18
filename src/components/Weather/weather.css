@@ -95,7 +95,7 @@
     transform: scale(1);
     transition-delay: 0s;
 
-    .weather-transition-target {
+    & .weather-transition-target {
       opacity: 1;
       transition-delay: 0.1s;
     }

@@ -46,7 +46,7 @@
   &:hover, &:focus-visible {
     --background-color: var(--color-primary-20);
 
-    .countdown-create-btn-title {
+    & .countdown-create-btn-title {
       width: 56px;
     }
   }

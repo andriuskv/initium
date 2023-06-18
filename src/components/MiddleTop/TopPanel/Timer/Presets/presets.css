@@ -57,7 +57,7 @@
 .timer-create-preset-footer {
   justify-content: flex-end;
 
-  .btn {
+  & .btn {
     margin-left: var(--space-md);
   }
 }

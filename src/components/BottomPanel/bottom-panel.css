@@ -30,7 +30,7 @@
     transform: scale(1);
     transition-delay: 0s;
 
-    .bottom-panel-transition-target {
+    & .bottom-panel-transition-target {
       opacity: 1;
       transition-delay: 0.1s;
     }

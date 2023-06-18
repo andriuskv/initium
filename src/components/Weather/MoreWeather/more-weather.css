@@ -250,7 +250,7 @@
   top: 6px;
   right: 40px;
 
-  .dropdown {
+  & .dropdown {
     width: 200px;
   }
 }
