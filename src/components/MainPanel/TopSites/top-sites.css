@@ -16,11 +16,11 @@
   @media (height <= 720px) {
     gap: var(--space-xs);
 
-    & .top-site-title {
+    .top-site-title {
       font-size: var(--text-xxs);
     }
 
-    & .top-site-thumbnail-container {
+    .top-site-thumbnail-container {
       width: 72px;
       height: 72px;
     }
@@ -56,7 +56,8 @@
   border: 1px solid transparent;
 
   &:hover, &:focus-visible {
-    & .top-site-icon, & .top-site-add-btn-icon {
+    .top-site-icon,
+    .top-site-add-btn-icon {
       transform: scale(1.2);
     }
   }

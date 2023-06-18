@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import * as chromeStorage from "services/chromeStorage";
-import { SortableList, SortableItem } from "services/sortable";
+import { SortableItem, SortableList } from "components/Sortable";
 import Icon from "components/Icon";
 import "./persistent-sites.css";
 

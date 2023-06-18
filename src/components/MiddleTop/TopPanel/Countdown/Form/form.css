@@ -8,11 +8,11 @@
 }
 
 .countdown-form-date-fields {
-  & .countdown-form-field-title {
+  .countdown-form-field-title {
     text-align: center;
   }
 
-  & .countdown-form-field {
+  .countdown-form-field {
     width: 68px;
     text-align: center;
   }
@@ -54,7 +54,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
 
-    & .countdown-form-field-datalist-item {
+    .countdown-form-field-datalist-item {
       padding: var(--space-md);
 
       &:hover {
@@ -69,7 +69,7 @@
     grid-template-rows: repeat(8, 1fr);
     padding: var(--space-md);
 
-    & .countdown-form-field-datalist-item {
+    .countdown-form-field-datalist-item {
       width: 64px;
       padding: var(--space-sm) var(--space-md);
 

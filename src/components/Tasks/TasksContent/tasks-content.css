@@ -27,7 +27,7 @@
     2px 4px 4px 0 var(--color-black-4),
     4px 8px 8px 0 var(--color-black-2);
 
-  @nest .tasks-dialog + & {
+  .tasks-dialog + & {
     bottom: 47px;
   }
 
@@ -38,7 +38,7 @@
   &:hover, &:focus-visible {
     --background-color: var(--color-primary-20);
 
-    & .tasks-create-btn-title {
+    .tasks-create-btn-title {
       width: 56px;
     }
   }
@@ -86,7 +86,7 @@
     background-color: var(--color-white-10);
   }
 
-  & .dropdown-container {
+  .dropdown-container {
     margin-left: var(--space-sm);
   }
 }
@@ -174,11 +174,11 @@
   box-shadow: 0 1px 0 0 var(--color-white-10);
 
   &:hover {
-    & .task-expiration-indicator {
+    .task-expiration-indicator {
       transform: translateX(-30px);
     }
 
-    & .task-edit-btn {
+    .task-edit-btn {
       animation: 0s linear 0.4s forwards delayed-reveal;
     }
   }
@@ -310,7 +310,7 @@
   padding: var(--space-md);
   border-bottom: 1px solid var(--color-white-10);
 
-  & .checkbox {
+  .checkbox {
     margin-right: var(--space-md);
   }
 }
@@ -368,7 +368,7 @@
   &.completed {
     background-color: var(--color-positive);
 
-    & .task-repeat-history-item-inner {
+    .task-repeat-history-item-inner {
       background-color: var(--color-black-16);
     }
   }
