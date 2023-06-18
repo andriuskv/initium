@@ -1,8 +1,8 @@
 /* global chrome */
 
 import { useState, useEffect } from "react";
-import { SortableItem, SortableList } from "services/sortable";
 import * as chromeStorage from "services/chromeStorage";
+import { SortableItem, SortableList } from "components/Sortable";
 import Icon from "components/Icon";
 import "./shortcuts.css";
 

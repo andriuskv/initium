@@ -16,7 +16,7 @@
   &.resizing {
     max-height: calc(100% - 24px);
 
-    & .tasks-content {
+    .tasks-content {
       overflow: initial;
     }
   }
@@ -76,7 +76,7 @@
     transform: scale(1);
     transition-delay: 0s;
 
-    & .tasks-transition-target {
+    .tasks-transition-target {
       opacity: 1;
       transition-delay: 0.1s;
     }

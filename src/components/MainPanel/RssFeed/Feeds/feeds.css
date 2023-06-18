@@ -6,7 +6,7 @@
   padding: var(--space-sm);
   border-bottom: 1px solid var(--color-white-10);
 
-  & .icon-btn {
+  .icon-btn {
     margin-left: var(--space-sm);
   }
 }
@@ -42,10 +42,6 @@
   &.fetching {
     position: relative;
 
-    & .feed-list-item-content {
-      opacity: 0.4;
-    }
-
     &::after {
       content: "";
       position: absolute;
@@ -55,10 +51,14 @@
       background-repeat: no-repeat;
       background-position: center;
     }
+
+  .feed-list-item-content {
+    opacity: 0.4;
+  }
   }
 
   &.inactive {
-    & .feed-list-item-title span:hover {
+    .feed-list-item-title span:hover {
       text-decoration: none;
     }
   }
@@ -132,7 +132,7 @@
   font-weight: bold;
   color: var(--color-negative);
 
-  & .btn {
+  .btn {
     margin-left: var(--space-md);
   }
 }

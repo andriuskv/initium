@@ -4,7 +4,7 @@
 }
 
 .reminder-form-header {
-  & .selected-day-header-btn {
+  .selected-day-header-btn {
     opacity: 0;
     visibility: hidden;
   }

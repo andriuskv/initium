@@ -5,7 +5,7 @@
   padding: var(--space-sm);
   border-bottom: 1px solid var(--color-white-10);
 
-  & .dropdown-container {
+  .dropdown-container {
     margin-right: var(--space-sm);
   }
 }
@@ -52,7 +52,7 @@
     background-color: var(--color-white-10);
   }
 
-  & .input {
+  .input {
     margin-left: var(--space-md);
     margin-right: var(--space-md);
   }
@@ -101,7 +101,7 @@
 .notepad-modal {
   min-width: 320px;
 
-  & .input {
+  .input {
     width: 100%;
   }
 }

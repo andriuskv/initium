@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getRandomString } from "utils";
-import { SortableList, SortableItem } from "services/sortable";
+import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
 import Icon from "components/Icon";

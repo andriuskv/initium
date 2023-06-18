@@ -1,6 +1,6 @@
 import { useState } from "react";
 import * as feedService from "services/feeds";
-import { SortableItem, SortableList } from "services/sortable";
+import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./feeds.css";
