@@ -266,6 +266,7 @@ export default function Tasks() {
   function parseTask(task) {
     task.id = getRandomString();
     task.rawText ??= task.text;
+    task.rawText = task.rawText.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
     task.text = replaceLink(task.rawText);
     return task;
   }
