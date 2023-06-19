@@ -26,6 +26,7 @@ export default function Tasks() {
   const [settings, setSettings] = useState(() => ({
     defaultGroupVisible: false,
     emptyGroupsHidden: false,
+    countSubtasks: false,
     repeatHistoryHidden: false,
     showCompletedRepeatingTasks: false,
     ...getSetting("tasks")
@@ -448,10 +449,35 @@ export default function Tasks() {
     }
   }
 
+  function getAllSubtaskCount(tasks) {
+    let total = 0;
+
+    for (const task of tasks) {
+      total += getSubtaskCount(task);
+    }
+    return total;
+  }
+
+  function getSubtaskCount(task) {
+    return task.subtasks.reduce((total, task) => {
+      if (task.hidden) {
+        if (settings.showCompletedRepeatingTasks) {
+          return total + 1;
+        }
+        return total;
+      }
+      return total + 1;
+    }, 0);
+  }
+
   function getGroupTaskCount(tasks) {
     const completedTaskCount = countCompletedTasks(tasks);
+    let subtaskCount = 0;
 
-    return tasks.length - completedTaskCount;
+    if (settings.countSubtasks) {
+      subtaskCount = getAllSubtaskCount(tasks);
+    }
+    return tasks.length + subtaskCount - completedTaskCount;
   }
 
   function countCompletedTasks(tasks) {
@@ -480,23 +506,25 @@ export default function Tasks() {
   }
 
   function toggleSetting(event) {
-    if (event.target.name === "defaultGroupVisible" && !groups[0].expanded) {
+    const { name, checked } = event.target;
+
+    if (name === "defaultGroupVisible" && !groups[0].expanded) {
       groups[0].expanded = true;
       setGroups([...groups]);
       saveTasks(groups);
     }
-    settings[event.target.name] = event.target.checked;
+    settings[name] = checked;
 
     setSettings({ ...settings });
 
-    if (event.target.name === "showCompletedRepeatingTasks") {
+    if (name === "showCompletedRepeatingTasks" || name === "countSubtasks") {
       updateAllGroupTaskCount(groups);
       countTasks(groups);
       setGroups([...groups]);
     }
     updateSetting({
       tasks: {
-        [event.target.name]: event.target.checked
+        [name]: checked
       }
     });
   }
