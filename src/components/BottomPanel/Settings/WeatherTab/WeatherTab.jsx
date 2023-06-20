@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 import "./weather-tab.css";
 
 export default function WeatherTab() {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 import { handleZIndex } from "services/zIndex";
 import Icon from "components/Icon";
 import "./bottom-panel.css";
@@ -157,7 +157,7 @@ export default function BottomPanel() {
   }
 
   return (
-    <div className="bottom-panel" onClick={handleZIndex}>
+    <div className="bottom-panel" onClick={event => handleZIndex(event, "bottom-panel")}>
       {selectedItem.id ? null : renderItems()}
       <div className={`container bottom-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""}`}>
         <div className="bottom-panel-item-header bottom-panel-transition-target">

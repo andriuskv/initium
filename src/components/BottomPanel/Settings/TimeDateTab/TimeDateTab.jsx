@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 
 export default function TimeDateTab() {
   const { settings: { timeDate: settings }, updateSetting, toggleSetting } = useSettings();

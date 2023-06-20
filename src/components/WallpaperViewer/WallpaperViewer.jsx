@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 import { getIDBWallpaper, updateDownscaledWallpaperPosition } from "services/wallpaper";
 import Spinner from "components/Spinner";
 import "./wallpaper-viewer.css";

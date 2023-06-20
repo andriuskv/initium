@@ -1,7 +1,7 @@
 /* global chrome */
 
 import { useState, useEffect, useRef } from "react";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 import * as chromeStorage from "services/chromeStorage";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";

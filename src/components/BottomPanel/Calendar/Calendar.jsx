@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { getRandomString, findFocusableElement } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
 import "./calendar.css";
 import Sidebar from "./Sidebar";

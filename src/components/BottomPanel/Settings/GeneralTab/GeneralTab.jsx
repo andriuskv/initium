@@ -1,6 +1,6 @@
 import { dispatchCustomEvent } from "utils";
 import { initAppearanceSettings } from "services/settings";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
 import "./general-tab.css";
 

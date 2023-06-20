@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { dispatchCustomEvent, generateNoise } from "utils";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 import { getWallpaperInfo, resetWallpaperInfo, setUrlWallpaper, setIDBWallpaper } from "services/wallpaper";
 import { updateSetting } from "services/settings";
 import Modal from "components/Modal";

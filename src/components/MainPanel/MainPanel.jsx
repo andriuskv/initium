@@ -245,7 +245,8 @@ export default function MainPanel({ settings }) {
   }
 
   return (
-    <div className={`main-panel${tabExpandable ? " expandable" : ""}${activeTab.expanded ? " expanded" : ""}${settings.navHidden || settings.navDisabled ? " nav-hidden" : ""}${activeTab.collapsing ? " collapsing" : ""}`} onClick={handleZIndex} ref={containerRef}>
+    <div className={`main-panel${tabExpandable ? " expandable" : ""}${activeTab.expanded ? " expanded" : ""}${settings.navHidden || settings.navDisabled ? " nav-hidden" : ""}${activeTab.collapsing ? " collapsing" : ""}`}
+      onClick={event => handleZIndex(event, "main-panel")} ref={containerRef}>
       {renderNavigation()}
       {tabExpandable && (
         <Sidebar expanded={activeTab.expanded} expandTab={expandTab} resizerEnabled={resizerEnabled} toggleResizer={toggleResizer}/>

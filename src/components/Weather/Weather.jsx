@@ -2,8 +2,8 @@ import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "re
 import { dispatchCustomEvent } from "utils";
 import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
-import { getIncreasedZIndex, handleZIndex } from "services/zIndex";
-import { useSettings } from "contexts/settings-context";
+import { handleZIndex, increaseZIndex } from "services/zIndex";
+import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
 import "./weather.css";
 
@@ -17,7 +17,6 @@ export default function Weather({ timeFormat }) {
   const firstRender = useRef(true);
   const lastMoreWeatherUpdate = useRef(0);
   const timeoutId = useRef(0);
-  const zIndex = useRef(0);
 
   useEffect(() => {
     if (firstRender.current) {
@@ -126,7 +125,6 @@ export default function Weather({ timeFormat }) {
   }
 
   function showMoreWeather() {
-    zIndex.current = getIncreasedZIndex();
     setState({ ...state, reveal: true });
   }
 
@@ -196,7 +194,7 @@ export default function Weather({ timeFormat }) {
   }
   else if (state.reveal) {
     return (
-      <div className="weather" style={{ "--z-index": zIndex.current }} onClick={handleZIndex}>
+      <div className="weather" style={{ "--z-index": increaseZIndex("weather") }} onClick={event => handleZIndex(event, "weather")}>
         <div className={`container weather-more${state.visible ? " visible" : ""}`}>
           <Suspense fallback={null}>
             <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits} view={state.view}

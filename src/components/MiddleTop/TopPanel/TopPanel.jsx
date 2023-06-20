@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { delay } from "../../../utils";
-import { handleZIndex, getIncreasedZIndex } from "services/zIndex";
+import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
 import { removeFromRunning, getLastRunningTimer } from "./running-timers";
 import Icon from "components/Icon";
@@ -206,8 +206,7 @@ export default function TopPanel({ forceVisibility = false }) {
   }
 
   function increaseContainerZIndex() {
-    const zIndex = getIncreasedZIndex();
-    containerRef.current.style.setProperty("--z-index", zIndex);
+    containerRef.current.style.setProperty("--z-index", increaseZIndex("top-panel"));
   }
 
   function exitFullscreen() {
@@ -226,7 +225,7 @@ export default function TopPanel({ forceVisibility = false }) {
 
   return (
     <div className={`top-panel${minimal ? ` minimal visible` : " container"}${visible ? " visible" : ""}${expanded ? " expanded" : ""}`}
-      onClick={handleZIndex} ref={containerRef}>
+      onClick={event => handleZIndex(event, "top-panel")} ref={containerRef}>
       <div className="top-panel-content">
         <ul className="top-panel-hide-target top-panel-header">
           <li className={`top-panel-header-item${activeTab === "timer" ? " active" : ""}`}>

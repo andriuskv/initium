@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 import { dispatchCustomEvent } from "utils";
 
 export default function MainPanelTab() {

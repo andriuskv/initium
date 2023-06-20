@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { initAppearanceSettings } from "services/settings";
-import { useSettings } from "contexts/settings-context";
+import { useSettings } from "contexts/settings";
 import Wallpaper from "components/Wallpaper";
 import MiddleTop from "components/MiddleTop";
 import BottomPanel from "components/BottomPanel";
