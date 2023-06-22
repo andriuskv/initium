@@ -39,10 +39,11 @@
 }
 
 .notepad-tabs-item {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100px;
-  padding-top: var(--space-md);
+  padding-top: var(--space-sm);
   border: 1px solid var(--color-white-10);
   border-radius: 8px;
   background-color: var(--color-white-4);
@@ -50,18 +51,42 @@
   &.dragging {
     z-index: 1000;
     background-color: var(--color-white-10);
+
+    .notepad-tabs-item-handle {
+      opacity: 1;
+      background-color: var(--color-white-10);
+    }
+  }
+
+  &:hover .notepad-tabs-item-handle {
+    animation: 0s linear 0.5s forwards delayed-reveal;
   }
 
   .input {
     margin-left: var(--space-md);
     margin-right: var(--space-md);
+
+    & ~ .notepad-tabs-item-handle {
+      display: none;
+    }
+  }
+}
+
+.notepad-tabs-item-handle {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  opacity: 0;
+
+  &:hover, &:focus-visible {
+    opacity: 1;
   }
 }
 
 .notepad-tabs-item-title {
   align-self: flex-start;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+  padding-left: var(--space-lg);
+  padding-right: 36px;
   border-radius: 0;
   text-align: left;
   font-weight: normal;

@@ -101,7 +101,8 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
           handleSort={handleSort}
           handleDragStart={handleDragStart}>
           {feeds.active.map((feed, index) => (
-            <SortableItem className={`feed-list-item${feed.id === activeDragId ? " dragging" : ""}`} key={feed.id} id={feed.id}>
+            <SortableItem className={`feed-list-item${feed.id === activeDragId ? " dragging" : ""}`}
+              key={feed.id} id={feed.id} handle={{ className: "feed-list-item-handle" }}>
               <div className="feed-list-item-header">
                 {feed.image ? <img src={feed.image} className="feed-list-item-logo" width="40px" height="40px" alt=""/> : null}
                 <div className="feed-list-item-title-container">

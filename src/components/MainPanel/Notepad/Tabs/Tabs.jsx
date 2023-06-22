@@ -213,7 +213,8 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
           handleSort={handleSort}
           handleDragStart={handleDragStart}>
           {tabs.map((tab, index) => (
-            <SortableItem className={`notepad-tabs-item${tab.id === activeDragId ? " dragging" : ""}`} key={tab.id} id={tab.id}>
+            <SortableItem className={`notepad-tabs-item${tab.id === activeDragId ? " dragging" : ""}`}
+              key={tab.id} id={tab.id} handle={{ className: "notepad-tabs-item-handle" }}>
               {tab.renameEnabled ? (
                 <input type="text" className="input" autoFocus defaultValue={tab.title}
                   onBlur={event => renameTab(event, tab)} onKeyDown={e => e.stopPropagation()} onKeyPress={blurTabTitleInput}/>

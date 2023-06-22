@@ -20,6 +20,7 @@ import {
   restrictToFirstScrollableAncestor
 } from "@dnd-kit/modifiers";
 import { CSS } from "@dnd-kit/utilities";
+import Icon from "components/Icon";
 
 class CustomKeyboardSensor extends KeyboardSensor {
   static activators = [
@@ -86,7 +87,7 @@ function SortableList({ children, items, axis, handleDragStart, handleSort }) {
   );
 }
 
-function SortableItem({ children, id, className }) {
+function SortableItem({ children, id, className, handle }) {
   const {
     attributes,
     listeners,
@@ -100,6 +101,16 @@ function SortableItem({ children, id, className }) {
     transition
   };
 
+  if (handle) {
+    return (
+      <li ref={setNodeRef} style={style} className={className}>
+        {children}
+        <button className={`btn icon-btn ${handle.className}`} {...attributes} {...listeners} title="Drag">
+          <Icon id="drag"/>
+        </button>
+      </li>
+    );
+  }
   return <li ref={setNodeRef} style={style} className={className} {...attributes} {...listeners}>{children}</li>;
 }
 
