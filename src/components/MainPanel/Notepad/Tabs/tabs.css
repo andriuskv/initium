@@ -18,14 +18,30 @@
   font-size: var(--text-lg);
 }
 
-.notepad-tabs-dropdown-setting {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.notepad-tabs-dropdown-setting-group {
+  position: relative;
+  padding-bottom: 0;
 }
 
 .notepad-tabs-dropdown-setting-title {
   margin-bottom: var(--space-md);
+  text-align: center;
+}
+
+.notepad-tabs-dropdown-setting {
+  display: flex;
+  align-items: center;
+}
+
+.notepad-tabs-dropdown-setting-btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  border-radius: 0;
+}
+
+.notepad-tabs-dropdown-setting-value {
+  margin: 0 var(--space-md);
 }
 
 .notepad-tabs-items {

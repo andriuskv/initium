@@ -41,3 +41,13 @@
   background-color: var(--color-grey-90);
   backdrop-filter: none;
 }
+
+.notepad-text-size-label {
+  position: absolute;
+  top: 44px;
+  right: var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: 99px;
+  font-size: var(--text-sm);
+  font-weight: bold;
+}

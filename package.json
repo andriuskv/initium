@@ -40,7 +40,7 @@
     "postcss-mixins": "^9.0.4",
     "postcss-preset-env": "^8.5.1",
     "raw-loader": "^4.0.2",
-    "stylelint": "^15.8.0",
+    "stylelint": "^15.9.0",
     "stylelint-config-standard": "^33.0.0",
     "terser-webpack-plugin": "^5.3.9",
     "webpack": "^5.88.0",

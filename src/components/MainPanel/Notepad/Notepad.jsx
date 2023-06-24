@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString, formatBytes } from "utils";
 import * as chromeStorage from "services/chromeStorage";
-import { getSetting } from "services/settings";
+import { getSetting, updateSetting } from "services/settings";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./notepad.css";
@@ -17,6 +17,8 @@ export default function Notepad() {
     const { textSize } = getSetting("notepad");
     return textSize ?? 14;
   });
+  const [textSizeLabelVisible, setTextSizeLabelVisible] = useState(false);
+  const labelTimeoutId = useRef(0);
   const saveTimeoutId = useRef(0);
   const textareaRef = useRef(0);
   const VISIBLE_ITEM_COUNT = 3;
@@ -160,6 +162,61 @@ export default function Notepad() {
     }, 400);
   }
 
+  function handleTextareaKeyDown(event) {
+    if (!event.ctrlKey) {
+      return;
+    }
+
+    if (event.key === "=") {
+      event.preventDefault();
+
+      increaseTextSize();
+      showTextSizeLabel();
+    }
+    else if (event.key === "-") {
+      event.preventDefault();
+
+      decreaseTextSize();
+      showTextSizeLabel();
+    }
+  }
+
+  function decreaseTextSize() {
+    if (textSize > 10) {
+      const value = textSize - 1;
+
+      setTextSize(value);
+      saveTextSize(value);
+    }
+  }
+
+  function increaseTextSize() {
+    if (textSize < 32) {
+      const value = textSize + 1;
+
+      setTextSize(value);
+      saveTextSize(value);
+    }
+  }
+
+  function saveTextSize(value) {
+    clearTimeout(saveTimeoutId.current);
+    saveTimeoutId.current = setTimeout(() => {
+      updateSetting({ notepad: { textSize: value } });
+    }, 1000);
+  }
+
+  function showTextSizeLabel() {
+    clearTimeout(labelTimeoutId.current);
+
+    if (!textSizeLabelVisible) {
+      setTextSizeLabelVisible(true);
+    }
+    labelTimeoutId.current = setTimeout(() => {
+      setTextSizeLabelVisible(false);
+    }, 1000);
+  }
+
   function selectListTab(index) {
     let newShift = shift;
 
@@ -228,7 +285,7 @@ export default function Notepad() {
     return (
       <Suspense fallback={null}>
         <Tabs tabs={tabs} textSize={textSize} selectListTab={selectListTab} updateTabs={updateTabs} updateTabPosition={updateTabPosition}
-          getTabSize={getTabSize} setTextSize={setTextSize} hide={hideTabList}/>
+          getTabSize={getTabSize} setTextSize={setTextSize} decreaseTextSize={decreaseTextSize} increaseTextSize={increaseTextSize} hide={hideTabList}/>
       </Suspense>
     );
   }
@@ -263,9 +320,11 @@ export default function Notepad() {
       {storageWarning && renderWarning()}
       <textarea className="notepad-input" ref={textareaRef} style={{ "--text-size": `${textSize}px` }}
         onChange={handleTextareaChange}
+        onKeyDown={handleTextareaKeyDown}
         defaultValue={tabs[activeIndex].content}
         key={tabs[activeIndex].id}>
       </textarea>
+      {textSizeLabelVisible && <div className="container notepad-text-size-label">{textSize}px</div>}
     </div>
   );
 }
