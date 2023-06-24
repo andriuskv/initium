@@ -19,12 +19,17 @@ async function cacheDailyWallpaperInfo() {
     if (provider === "unsplash") {
       info.url = buildUnsplashImageUrl(info.url);
     }
+
+    if (wallpaperInfo?.url === info.url) {
+      return info;
+    }
     setTimeout(() => {
       cacheImage(info.url);
       cacheDownscaledWallpaper({ url: info.url });
       resetIDBStore();
       localStorage.setItem("wallpaper-info", JSON.stringify(info));
     }, 1000);
+
     return info;
   }
 }
@@ -217,7 +222,7 @@ function getDownscaledVideo({ url }) {
       resolve(canvas.toDataURL("image/png", 0.8));
     });
     video.src = url;
-    // This allows canvas to render first frame of the video.
+    // This allows canvas to render the first frame of the video.
     video.currentTime = 0.01;
   });
 }
