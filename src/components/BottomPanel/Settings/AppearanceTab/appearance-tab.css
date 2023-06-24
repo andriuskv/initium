@@ -82,3 +82,11 @@
   color: var(--color-negative);
   text-align: center;
 }
+
+.setting-wallpaper-info-inline-icon {
+  display: inline;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-left: var(--space-sm);
+}

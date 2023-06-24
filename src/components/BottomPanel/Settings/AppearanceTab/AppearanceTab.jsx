@@ -359,7 +359,7 @@ export default function AppearanceTab() {
     if (wallpaperProvider === "bing") {
       return (
         <p className="setting-wallpaper-info">
-          <a href={wallpaperInfo.copyrightLink} target="_blank" rel="noreferrer">{wallpaperInfo.copyright}</a>
+          <a href={wallpaperInfo.copyrightLink} target="_blank" rel="noreferrer">{wallpaperInfo.copyright}<Icon id="open-in-new" className="settings-wallpaper-info-inline-icon"/></a>
         </p>
       );
     }
