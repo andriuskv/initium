@@ -5,6 +5,7 @@ import { dispatchCustomEvent } from "utils";
 export default function MainPanelTab() {
   const { settings: { mainPanel: settings }, updateSetting, toggleSetting } = useSettings();
   const [persistentSitesEditEnabled, setPersistentSiteEditEnabled] = useState(false);
+  const [topSitesDirty, setTopSitesDirty] = useState(() => !!localStorage.getItem("top sites"));
 
   function toggleComponent(item) {
     const componentsArray = Object.keys(settings.components);
@@ -24,6 +25,7 @@ export default function MainPanelTab() {
   }
 
   function resetTopSites() {
+    setTopSitesDirty(false);
     dispatchCustomEvent("reset-top-sites");
   }
 
@@ -117,8 +119,8 @@ export default function MainPanelTab() {
       <div className="settings-group">
         <div className="settings-group-top">
           <h4 className="settings-group-title">Top Sites</h4>
-          <button className="btn outline-btn settings-group-top-btn" onClick={resetTopSites}
-            disabled={settings.components.topSites.disabled} title="Reset to default">Reset</button>
+          {topSitesDirty && <button className="btn outline-btn settings-group-top-btn" onClick={resetTopSites}
+            disabled={settings.components.topSites.disabled} title="Reset to default">Reset</button>}
         </div>
         <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
           <span>Show one row of top sites</span>

@@ -95,6 +95,14 @@ export default function AppearanceTab() {
   const [wallpaperInfo, setWallpaperInfo] = useState(() => getWallpaperInfo());
   const [wallpaperForm, setWallpaperForm] = useState(null);
   const [wallpaperProvider, setWallpaperProvider] = useState(settings.wallpaper.provider);
+  const [wallpaperSettingsDirty, setWallpaperSettingsDirty] = useState(() => {
+    const keys = Object.keys(settings.wallpaper);
+
+    if (keys.length > 2 || settings.wallpaper.provider === "bing") {
+      return true;
+    }
+    return false;
+  });
   const [messages, setMessages] = useState({});
   const [colorIndex, setColorIndex] = useState(() => {
     return colors.findIndex(color => settings.accentColor.hue === color.hue && settings.accentColor.saturation === color.saturation);
@@ -176,6 +184,7 @@ export default function AppearanceTab() {
     setWallpaperProvider("");
     updateContextSetting("appearance", { wallpaper: { url: "" } });
     resetWallpaperInfo();
+    setWallpaperSettingsDirty(false);
   }
 
   function showWallpaperViewer() {
@@ -260,6 +269,7 @@ export default function AppearanceTab() {
     setWallpaperForm(null);
     updateContextSetting("appearance", { wallpaper: { ...params, type: "url", url, mimeType } });
     setUrlWallpaper(url, mimeType);
+    setWallpaperSettingsDirty(true);
   }
 
   async function selectFile() {
@@ -280,6 +290,7 @@ export default function AppearanceTab() {
       params.videoPlaybackSpeed = settings.wallpaper.videoPlaybackSpeed ?? 1;
     }
     updateContextSetting("appearance", { wallpaper: { ...params, type: "blob", id: file.name, mimeType: file.type } });
+    setWallpaperSettingsDirty(true);
   }
 
   function getSelectedFile() {
@@ -319,6 +330,7 @@ export default function AppearanceTab() {
       return;
     }
     setWallpaperProvider(provider);
+    setWallpaperSettingsDirty(provider === "bing");
     resetWallpaperInfo();
     updateContextSetting("appearance", { wallpaper: { url: "", provider } });
   }
@@ -359,7 +371,7 @@ export default function AppearanceTab() {
     if (wallpaperProvider === "bing") {
       return (
         <p className="setting-wallpaper-info">
-          <a href={wallpaperInfo.copyrightLink} target="_blank" rel="noreferrer">{wallpaperInfo.copyright}<Icon id="open-in-new" className="settings-wallpaper-info-inline-icon"/></a>
+          <a href={wallpaperInfo.copyrightLink} target="_blank" rel="noreferrer">{wallpaperInfo.copyright}<Icon id="open-in-new" className="setting-wallpaper-info-inline-icon"/></a>
         </p>
       );
     }
@@ -400,7 +412,7 @@ export default function AppearanceTab() {
       <div className="settings-group">
         <div className="settings-group-top">
           <h4 className="settings-group-title">Wallpaper</h4>
-          <button className="btn outline-btn settings-group-top-btn" onClick={resetWallpaper} title="Reset to default">Reset</button>
+          {wallpaperSettingsDirty && <button className="btn outline-btn settings-group-top-btn" onClick={resetWallpaper} title="Reset to default">Reset</button>}
         </div>
         <div className="setting setting-wallpaper">
           <div className="setting-wallpaper-title">Set wallpaper from...</div>
@@ -434,7 +446,7 @@ export default function AppearanceTab() {
           <div className="setting-wallpaper-title">Daily wallpaper provider</div>
           <div className="setting-wallpaper-items">
             <div className="setting-wallpaper-item">
-              <button className={`btn text-btn setting-wallpaper-item-btn${!wallpaperProvider || wallpaperProvider === "unsplash" ? " active" : ""}`}
+              <button className={`btn text-btn setting-wallpaper-item-btn${!settings.wallpaper.type && !wallpaperProvider || wallpaperProvider === "unsplash" ? " active" : ""}`}
                 onClick={() => handleWallpaperProviderClick("unsplash")}>Unsplash</button>
             </div>
             <div className="setting-wallpaper-item">
