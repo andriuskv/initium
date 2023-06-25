@@ -47,6 +47,6 @@
     "webpack-cli": "^5.1.4"
   },
   "browserslist": [
-    "Chrome >= 105"
+    "Chrome >= 112"
   ]
 }

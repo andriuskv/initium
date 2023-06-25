@@ -21,7 +21,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
       let missingSubtaskCount = 2 - subtasks.length;
 
       while (missingSubtaskCount > 0) {
-        subtasks.push(getNewSubtask());
+        subtasks.unshift(getNewSubtask());
         missingSubtaskCount -= 1;
       }
       defaultForm.task.rawText = form.task.rawText;
@@ -123,7 +123,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
   }
 
   function addFormSubtask() {
-    state.task.subtasks.push(getNewSubtask());
+    state.task.subtasks.unshift(getNewSubtask());
     setState({ ...state });
   }
 
