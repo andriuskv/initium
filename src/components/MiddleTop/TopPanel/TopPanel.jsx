@@ -148,8 +148,10 @@ export default function TopPanel({ forceVisibility = false }) {
       }
     }
     else {
+      const excludes = ["wallpaper", "wallpaper-video", "middle-top"];
+
       for (const element of rootElement.children) {
-        if (!element.classList.contains("wallpaper") && !element.classList.contains("middle-top")) {
+        if (!excludes.some(exclude => element.classList.contains(exclude))) {
           element.style.opacity = "0";
           element.style.visibility = "hidden";
         }
