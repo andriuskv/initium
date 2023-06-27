@@ -1,6 +1,8 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
+import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
+import Icon from "components/Icon";
 import "./settings.css";
 import GeneralTab from "./GeneralTab";
 
@@ -10,7 +12,7 @@ const MainPanelTab = lazy(() => import("./MainPanelTab"));
 const WeatherTab = lazy(() => import("./WeatherTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 
-export default function Settings() {
+export default function Settings({ hide }) {
   const [activeTab, setActiveTab] = useState("general");
 
   useEffect(() => {
@@ -83,10 +85,24 @@ export default function Settings() {
     return <Suspense fallback={<Spinner className="setting-tab-spinner"/>}><Component/></Suspense>;
   }
 
+  // component: Form,
+  // params: { addClock }
+
   return (
-    <div className="settings">
-      {renderNavigation()}
-      {renderTab()}
-    </div>
+    <FullscreenModal hide={hide}>
+      <div className="settings">
+        <div className="settings-header">
+          <Icon id="settings"/>
+          <h3>Settings</h3>
+          <button className="btn icon-btn" onClick={hide} title="Close">
+            <Icon id="cross"/>
+          </button>
+        </div>
+        <div className="settings-body">
+          {renderNavigation()}
+          {renderTab()}
+        </div>
+      </div>
+    </FullscreenModal>
   );
 }

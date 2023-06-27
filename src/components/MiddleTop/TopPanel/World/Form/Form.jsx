@@ -107,8 +107,13 @@ export default function Form({ addClock, hide }) {
   }
 
   return (
-    <div className="container world-form">
-      <h4 className="world-form-title">Add a new world clock</h4>
+    <div className="world-form">
+      <div className="world-form-header">
+        <h3 className="world-form-title">Add a new world clock</h3>
+        <button className="btn icon-btn" onClick={hide} title="Close">
+          <Icon id="cross"/>
+        </button>
+      </div>
       <div className="world-form-top">
         <div className="world-form-input-container">
           <Icon id="search" className="world-form-input-icon"/>

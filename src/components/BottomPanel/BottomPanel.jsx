@@ -6,7 +6,6 @@ import Icon from "components/Icon";
 import "./bottom-panel.css";
 
 const Shortcuts = lazy(() => import("./Shortcuts"));
-const Settings = lazy(() => import("./Settings"));
 const Calendar = lazy(() => import("./Calendar"));
 
 export default function BottomPanel() {
@@ -31,7 +30,10 @@ export default function BottomPanel() {
     "settings": {
       id: "settings",
       title: "Settings",
-      iconId: "settings"
+      iconId: "settings",
+      attrs: {
+        "data-modal-initiator": true
+      }
     }
   }));
   const calendarTimeoutId = useRef(0);
@@ -84,6 +86,9 @@ export default function BottomPanel() {
     if (id === "timers") {
       dispatchCustomEvent("top-panel-visible");
     }
+    else if (id === "settings") {
+      dispatchCustomEvent("toggle-settings");
+    }
     else {
       setSelectedItem(items[id]);
     }
@@ -112,7 +117,7 @@ export default function BottomPanel() {
         {Object.values(items).filter(item => !item.disabled).map(item => (
           <li key={item.id}>
             <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
-              onClick={() => selectItem(item.id)} title={item.title}>
+              onClick={() => selectItem(item.id)} title={item.title} {...(item.attrs ? item.attrs : null)}>
               <Icon id={item.iconId} className="panel-item-btn-icon"/>
             </button>
           </li>
@@ -128,10 +133,6 @@ export default function BottomPanel() {
     if (selectedItem.id === "shortcuts") {
       Component = Shortcuts;
       placeholder = <div className="apps-placeholder"></div>;
-    }
-    else if (selectedItem.id === "settings") {
-      Component = Settings;
-      placeholder = <div className="settings-placeholder"></div>;
     }
 
     if (Component) {

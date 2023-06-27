@@ -1,16 +1,9 @@
-.fullscreen-modal-mask {
+.fullscreen-modal {
   z-index: 1000;
-  overflow: hidden;
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: none;
-}
-
-.fullscreen-modal-close-btn {
-  position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(100% - var(--space-xl));
+  max-height: calc(100% - var(--space-xl));
 }

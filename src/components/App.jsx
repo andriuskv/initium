@@ -8,6 +8,7 @@ import BottomPanel from "components/BottomPanel";
 const MainPanel = lazy(() => import("./MainPanel"));
 const Weather = lazy(() => import("./Weather"));
 const Tasks = lazy(() => import("./Tasks"));
+const Settings = lazy(() => import("./Settings"));
 const WallpaperViewer = lazy(() => import("./WallpaperViewer"));
 const TweetImageViewer = lazy(() => import("./TweetImageViewer"));
 const GreetingEditor = lazy(() => import("./GreetingEditor"));
@@ -19,6 +20,7 @@ export default function App() {
   const [tweetImageData, setTweetImageData] = useState(null);
   const [greetingEditorVisible, setGreetingEditorVisible] = useState(false);
   const [fullscreenModal, setFullscreenModal] = useState(null);
+  const [settingsVisible, setSettingsVisible] = useState(false);
   const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const weatherTimeoutId = useRef(0);
 
@@ -39,6 +41,14 @@ export default function App() {
       window.removeEventListener("fullscreen-modal-visible", showFullscreenModal);
     };
   }, []);
+
+  useEffect(() => {
+    window.addEventListener("toggle-settings", toggleSettings);
+
+    return () => {
+      window.removeEventListener("toggle-settings", toggleSettings);
+    };
+  }, [settingsVisible]);
 
   useEffect(() => {
     const shouldRender = isWeatherEnabled();
@@ -97,6 +107,14 @@ export default function App() {
     setFullscreenModal(null);
   }
 
+  function toggleSettings() {
+    setSettingsVisible(!settingsVisible);
+  }
+
+  function hideSettings() {
+    setSettingsVisible(false);
+  }
+
   return (
     <>
       <Wallpaper settings={settings.appearance.wallpaper}/>
@@ -119,7 +137,14 @@ export default function App() {
         {greetingEditorVisible ? <GreetingEditor hide={hideGreetingEditor}/> : null}
       </Suspense>
       <Suspense fallback={null}>
-        {fullscreenModal ? <FullscreenModal content={fullscreenModal} hide={hideFullscreenModal}/> : null}
+        {fullscreenModal ? (
+          <FullscreenModal content={fullscreenModal} hide={hideFullscreenModal}>
+            <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
+          </FullscreenModal>
+        ) : null}
+      </Suspense>
+      <Suspense fallback={null}>
+        {settingsVisible ? <Settings hide={hideSettings}/> : null}
       </Suspense>
     </>
   );

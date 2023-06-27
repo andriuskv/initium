@@ -1,17 +1,36 @@
-import { useEffect } from "react";
-import Icon from "components/Icon";
+import { useEffect, useRef } from "react";
 import "./fullscreen-modal.css";
 
-export default function FullscreenModal({ content, hide }) {
-  const Component = content.component;
+export default function FullscreenModal({ children, hide }) {
+  const containerRef = useRef(null);
+  let element = null;
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeydown);
+    window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointerup", handlePointerUp);
 
     return () => {
       window.removeEventListener("keydown", handleKeydown);
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerup", handlePointerUp);
     };
   }, []);
+
+  function handlePointerDown(event) {
+    if (event.target.closest(".fullscreen-modal")) {
+      element = true;
+    }
+  }
+
+  function handlePointerUp({ target }) {
+    if (element) {
+      element = null;
+    }
+    else if (!target.closest("[data-modal-initiator]")) {
+      hide();
+    }
+  }
 
   function handleKeydown(event) {
     if (event.key === "Escape") {
@@ -19,12 +38,5 @@ export default function FullscreenModal({ content, hide }) {
     }
   }
 
-  return (
-    <div className="fullscreen-mask fullscreen-modal-mask">
-      <Component {...content.params} hide={hide}/>
-      <button className="btn icon-btn fullscreen-modal-close-btn" onClick={hide} title="Close">
-        <Icon id="cross"/>
-      </button>
-    </div>
-  );
+  return <div className="container fullscreen-modal" ref={containerRef}>{children}</div>;
 }
