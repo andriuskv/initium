@@ -22,7 +22,7 @@ const taskStatusMap = {
   "3": "completed"
 };
 
-export default function Tasks() {
+export default function Tasks({ expanded, toggleSize }) {
   const [settings, setSettings] = useState(() => ({
     defaultGroupVisible: false,
     emptyGroupsHidden: false,
@@ -530,10 +530,6 @@ export default function Tasks() {
     });
   }
 
-  function updateComponentHeight(height) {
-    updateSetting({ tasks: { height } });
-  }
-
   function renderExpirationIndicator(task) {
     const full = task.expirationDate - task.creationDate;
     const partial = task.expirationDate - Date.now();
@@ -579,7 +575,7 @@ export default function Tasks() {
   else if (activeComponent === "settings") {
     return (
       <Suspense fallback={null}>
-        <Settings settings={settings} toggleSetting={toggleSetting} saveHeight={updateComponentHeight} hide={hideActiveComponent}/>
+        <Settings settings={settings} toggleSetting={toggleSetting} hide={hideActiveComponent}/>
       </Suspense>
     );
   }
@@ -590,6 +586,10 @@ export default function Tasks() {
           <button className="btn icon-text-btn dropdown-btn" onClick={showGroups}>
             <Icon id="menu"/>
             <span>Groups</span>
+          </button>
+          <button className="btn icon-text-btn dropdown-btn" onClick={toggleSize} title={expanded ? "Shrink" : "Expand"}>
+            <Icon id={`vertical-${expanded ? "shrink" : "expand"}`}/>
+            <span>{expanded ? "Shrink" : "Expand"}</span>
           </button>
           <button className="btn icon-text-btn dropdown-btn" onClick={showSettings}>
             <Icon id="settings"/>

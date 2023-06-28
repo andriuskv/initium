@@ -1,5 +1,5 @@
 .tasks {
-  --height: 448px;
+  --height: 0;
   --header-height: 38px;
 
   z-index: var(--z-index, 1);
@@ -7,18 +7,16 @@
   top: var(--space-md);
   left: var(--space-md);
   max-height: calc(100% - var(--space-xl));
-  height: 0;
+  height: var(--height);
 
   &.revealed {
-    height: var(--height);
+    --height: 510px;
+
+    transition: 0.2s height;
   }
 
-  &.resizing {
-    max-height: calc(100% - 24px);
-
-    .tasks-content {
-      overflow: initial;
-    }
+  &.expanded {
+    --height: 100%;
   }
 }
 

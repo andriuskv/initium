@@ -3,7 +3,7 @@ import "./fullscreen-modal.css";
 
 export default function FullscreenModal({ children, hide }) {
   const containerRef = useRef(null);
-  let element = null;
+  let pointerInside = false;
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeydown);
@@ -19,13 +19,13 @@ export default function FullscreenModal({ children, hide }) {
 
   function handlePointerDown(event) {
     if (event.target.closest(".fullscreen-modal")) {
-      element = true;
+      pointerInside = true;
     }
   }
 
   function handlePointerUp({ target }) {
-    if (element) {
-      element = null;
+    if (pointerInside) {
+      pointerInside = false;
     }
     else if (!target.closest("[data-modal-initiator]")) {
       hide();

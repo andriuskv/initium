@@ -85,9 +85,6 @@ export default function Settings({ hide }) {
     return <Suspense fallback={<Spinner className="setting-tab-spinner"/>}><Component/></Suspense>;
   }
 
-  // component: Form,
-  // params: { addClock }
-
   return (
     <FullscreenModal hide={hide}>
       <div className="settings">
