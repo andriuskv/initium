@@ -68,14 +68,9 @@
   display: none;
 }
 
-.apps-placeholder {
+.shortcuts-placeholder {
   width: 360px;
   height: 272px;
-}
-
-.settings-placeholder {
-  width: 500px;
-  height: 320px;
 }
 
 .calendar-placeholder {

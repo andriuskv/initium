@@ -11,9 +11,8 @@ const Timer = lazy(() => import("./Timer"));
 const Stopwatch = lazy(() => import("./Stopwatch"));
 const Pomodoro = lazy(() => import("./Pomodoro"));
 const World = lazy(() => import("./World"));
-const Settings = lazy(() => import("./Settings"));
 
-export default function TopPanel({ forceVisibility = false }) {
+export default function TopPanel({ settings, forceVisibility = false, resetTopPanel }) {
   const [visible, setVisible] = useState(false);
   const [minimal, setMinimal] = useState(false);
   const [rerender, setRerender] = useState(false);
@@ -29,10 +28,13 @@ export default function TopPanel({ forceVisibility = false }) {
   const minimalVisible = useRef(false);
 
   useEffect(() => {
-    const { fullscreenTextScale } = getSetting("topPanel");
-
-    setFullscreenTextScale(fullscreenTextScale);
-  }, []);
+    if (settings.showMinimal) {
+      showMinimalTimer();
+    }
+    else if (minimalVisible.current) {
+      resetMinimal();
+    }
+  }, [settings]);
 
   useEffect(() => {
     if (forceVisibility) {
@@ -47,6 +49,7 @@ export default function TopPanel({ forceVisibility = false }) {
       increaseContainerZIndex();
       setVisible(true);
       setRerender(false);
+      resetTopPanel();
     }
   }, [rerender]);
 
@@ -181,15 +184,12 @@ export default function TopPanel({ forceVisibility = false }) {
   }
 
   function showMinimalTimer() {
-    const { showMinimal } = getSetting("topPanel");
+    const { showMinimal } = getSetting("timers");
 
     if (showMinimal && getLastRunningTimer()) {
       minimalVisible.current = true;
 
       setTimeout(() => {
-        if (activeTab === "settings") {
-          selectTab("timer");
-        }
         setMinimal(true);
       }, 250);
     }
@@ -203,8 +203,9 @@ export default function TopPanel({ forceVisibility = false }) {
     setActiveTab(name);
   }
 
-  function setFullscreenTextScale(value) {
-    containerRef.current.style.setProperty("--fullscreen-text-scale", value);
+  function setFullscreenTextScale() {
+    const { fullscreenTextScale } = getSetting("timers");
+    containerRef.current.style.setProperty("--fullscreen-text-scale", fullscreenTextScale);
   }
 
   function increaseContainerZIndex() {
@@ -216,6 +217,7 @@ export default function TopPanel({ forceVisibility = false }) {
   }
 
   function expand() {
+    setFullscreenTextScale();
     setExpanded(true);
   }
 
@@ -261,11 +263,6 @@ export default function TopPanel({ forceVisibility = false }) {
             </button>
           </li>
           <li className="top-panel-close-btn">
-            <button className="btn icon-btn" onClick={() => setActiveTab("settings")} title="Settings">
-              <Icon id="settings"/>
-            </button>
-          </li>
-          <li className="top-panel-close-btn">
             <button className="btn icon-btn" onClick={hideTopPanel} title="Close">
               <Icon id="cross"/>
             </button>
@@ -276,7 +273,6 @@ export default function TopPanel({ forceVisibility = false }) {
           {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} expand={expand}/> : null}
           {tabs.pomodoro.rendered ? <Pomodoro visible={activeTab === "pomodoro"} expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/> : null}
           {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible}/> : null}
-          {activeTab === "settings" ? <Settings setFullscreenTextScale={setFullscreenTextScale}/> : null}
         </Suspense>
         <Countdown visible={activeTab === "countdown"}/>
         {expanded && (

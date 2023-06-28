@@ -4,7 +4,7 @@ import "./tasks.css";
 
 const TasksContent = lazy(() => import("./TasksContent"));
 
-export default function Tasks() {
+export default function Tasks({ settings }) {
   const [{ visible, rendered }, setState] = useState({ visible: false, rendered: false });
   const [expanded, setExpanded] = useState(false);
   const containerRef = useRef(null);
@@ -47,7 +47,7 @@ export default function Tasks() {
       <div className={`container tasks-content${visible ? " visible" : ""}`}>
         <div className="tasks-transition-target">
           <Suspense fallback={null}>
-            {rendered && <TasksContent expanded={expanded} toggleSize={toggleSize}/>}
+            {rendered && <TasksContent settings={settings} expanded={expanded} toggleSize={toggleSize}/>}
           </Suspense>
         </div>
       </div>

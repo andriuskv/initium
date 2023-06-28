@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
-import { getSetting, updateSetting } from "services/settings";
 import { getDate } from "services/timeDate";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
@@ -9,7 +8,6 @@ import "./tasks-content.css";
 
 const Form = lazy(() => import("./Form"));
 const Groups = lazy(() => import("./Groups"));
-const Settings = lazy(() => import("./Settings"));
 
 const IN_PROGRESS_STATUS = 0;
 const FAILED_STATUS = 1;
@@ -22,15 +20,7 @@ const taskStatusMap = {
   "3": "completed"
 };
 
-export default function Tasks({ expanded, toggleSize }) {
-  const [settings, setSettings] = useState(() => ({
-    defaultGroupVisible: false,
-    emptyGroupsHidden: false,
-    countSubtasks: false,
-    repeatHistoryHidden: false,
-    showCompletedRepeatingTasks: false,
-    ...getSetting("tasks")
-  }));
+export default function Tasks({ settings, expanded, toggleSize }) {
   const [groups, setGroups] = useState(null);
   const [removedItems, setRemovedItems] = useState([]);
   const [form, setForm] = useState(null);
@@ -39,10 +29,29 @@ export default function Tasks({ expanded, toggleSize }) {
   const taskRemoveTimeoutId = useRef(0);
   const ignoreUpdate = useRef(false);
   const checkIntervalId = useRef(0);
+  const ignoreFirst = useRef(true);
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (!groups) {
+      return;
+    }
+    else if (ignoreFirst.current) {
+      ignoreFirst.current = false;
+      return;
+    }
+
+    if (!groups[0].expanded) {
+      groups[0].expanded = !settings.defaultGroupVisible;
+      saveTasks(groups);
+    }
+    updateAllGroupTaskCount(groups);
+    countTasks(groups);
+    setGroups([...groups]);
+  }, [settings]);
 
   useEffect(() => {
     if (!groups) {
@@ -502,34 +511,6 @@ export default function Tasks({ expanded, toggleSize }) {
     setTaskCount(count);
   }
 
-  function showSettings() {
-    setActiveComponent("settings");
-  }
-
-  function toggleSetting(event) {
-    const { name, checked } = event.target;
-
-    if (name === "defaultGroupVisible" && !groups[0].expanded) {
-      groups[0].expanded = true;
-      setGroups([...groups]);
-      saveTasks(groups);
-    }
-    settings[name] = checked;
-
-    setSettings({ ...settings });
-
-    if (name === "showCompletedRepeatingTasks" || name === "countSubtasks") {
-      updateAllGroupTaskCount(groups);
-      countTasks(groups);
-      setGroups([...groups]);
-    }
-    updateSetting({
-      tasks: {
-        [name]: checked
-      }
-    });
-  }
-
   function renderExpirationIndicator(task) {
     const full = task.expirationDate - task.creationDate;
     const partial = task.expirationDate - Date.now();
@@ -572,13 +553,6 @@ export default function Tasks({ expanded, toggleSize }) {
       </Suspense>
     );
   }
-  else if (activeComponent === "settings") {
-    return (
-      <Suspense fallback={null}>
-        <Settings settings={settings} toggleSetting={toggleSetting} hide={hideActiveComponent}/>
-      </Suspense>
-    );
-  }
   return (
     <>
       <div className="tasks-header">
@@ -590,10 +564,6 @@ export default function Tasks({ expanded, toggleSize }) {
           <button className="btn icon-text-btn dropdown-btn" onClick={toggleSize} title={expanded ? "Shrink" : "Expand"}>
             <Icon id={`vertical-${expanded ? "shrink" : "expand"}`}/>
             <span>{expanded ? "Shrink" : "Expand"}</span>
-          </button>
-          <button className="btn icon-text-btn dropdown-btn" onClick={showSettings}>
-            <Icon id="settings"/>
-            <span>Settings</span>
           </button>
         </Dropdown>
       </div>

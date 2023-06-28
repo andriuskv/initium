@@ -37,9 +37,7 @@ function getDefault() {
   return {
     general: {
       greetingDisabled: false,
-      tasksDisabled: false,
       shortcutsDisabled: false,
-      timersDisabled: false,
       calendarDisabled: false
     },
     appearance: {
@@ -78,9 +76,16 @@ function getDefault() {
           persistentSitesHidden: false
         },
         notepad: { disabled: false },
-        // twitter: { disabled: false },
         rssFeed: { disabled: false }
       }
+    },
+    tasks: {
+      disabled: false,
+      defaultGroupVisible: false,
+      emptyGroupsHidden: false,
+      countSubtasks: false,
+      repeatHistoryHidden: false,
+      showCompletedRepeatingTasks: false
     },
     weather: {
       disabled: false,
@@ -89,7 +94,8 @@ function getDefault() {
       units: "C",
       speedUnits: "m/s"
     },
-    topPanel: {
+    timers: {
+      disabled: false,
       alarmVolume: 0.2,
       fullscreenTextScale: 1.5,
       showMinimal: false

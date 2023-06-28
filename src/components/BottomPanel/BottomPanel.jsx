@@ -9,7 +9,7 @@ const Shortcuts = lazy(() => import("./Shortcuts"));
 const Calendar = lazy(() => import("./Calendar"));
 
 export default function BottomPanel() {
-  const { settings: { general: settings } } = useSettings();
+  const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState({});
   const [items, setItems] = useState(() => ({
     "shortcuts": {
@@ -39,7 +39,7 @@ export default function BottomPanel() {
   const calendarTimeoutId = useRef(0);
 
   useEffect(() => {
-    if (!settings.calendarDisabled) {
+    if (!settings.general.calendarDisabled) {
       calendarTimeoutId.current = setTimeout(() => {
         items.calendar.rendered = true;
         setItems({ ...items });
@@ -54,9 +54,9 @@ export default function BottomPanel() {
   }, []);
 
   useEffect(() => {
-    items.shortcuts.disabled = settings.shortcutsDisabled;
-    items.timers.disabled = settings.timersDisabled;
-    items.calendar.disabled = settings.calendarDisabled;
+    items.shortcuts.disabled = settings.general.shortcutsDisabled;
+    items.timers.disabled = settings.timers.disabled;
+    items.calendar.disabled = settings.general.calendarDisabled;
 
     setItems({ ...items });
   }, [settings]);
@@ -132,7 +132,7 @@ export default function BottomPanel() {
 
     if (selectedItem.id === "shortcuts") {
       Component = Shortcuts;
-      placeholder = <div className="apps-placeholder"></div>;
+      placeholder = <div className="shortcuts-placeholder"></div>;
     }
 
     if (Component) {

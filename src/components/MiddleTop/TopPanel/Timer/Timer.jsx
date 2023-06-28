@@ -211,7 +211,7 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
   }
 
   function runAlarm() {
-    const { alarmVolume } = getSetting("topPanel");
+    const { alarmVolume } = getSetting("timers");
 
     alarm.element.volume = alarmVolume;
     alarm.element.play();

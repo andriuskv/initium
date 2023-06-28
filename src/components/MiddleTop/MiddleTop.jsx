@@ -1,4 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
+import { setPageTitle } from "../../utils";
 import "./middle-top.css";
 
 const TopPanel = lazy(() => import("./TopPanel"));
@@ -17,6 +18,12 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
 
     window.addEventListener("top-panel-visible", renderTopPanel, { once: true });
   }, []);
+
+  useEffect(() => {
+    if (settings.timers.disabled) {
+      setPageTitle();
+    }
+  }, [settings]);
 
   useLayoutEffect(() => {
     setShouldCenterClock(getClockCenterState());
@@ -39,7 +46,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   }
 
   async function initTopPanel() {
-    if (settings.general.timersDisabled) {
+    if (settings.timers.disabled) {
       return;
     }
     const chromeStorage = await import("services/chromeStorage");
@@ -52,6 +59,10 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
     }
   }
 
+  function resetTopPanel() {
+    setTopPanel({ rendered: true, forceVisibility: false });
+  }
+
   function renderTopPanel() {
     clearTimeout(topPanelTimeoutId.current);
     setTopPanel({ rendered: true, forceVisibility: true });
@@ -60,7 +71,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   return (
     <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}>
       <Suspense fallback={null}>
-        {!settings.general.timersDisabled && topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility}/>}
+        {!settings.timers.disabled && topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility} settings={settings.timers} resetTopPanel={resetTopPanel} />}
       </Suspense>
       <Suspense fallback={null}>
         {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}

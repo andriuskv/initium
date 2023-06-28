@@ -127,7 +127,7 @@ export default function App() {
       </Suspense>
       <BottomPanel/>
       <Suspense fallback={null}>
-        {settings.general.tasksDisabled ? null : <Tasks/>}
+        {settings.tasks.disabled ? null : <Tasks settings={settings.tasks}/>}
       </Suspense>
       <Suspense fallback={null}>
         {wallpaperViewerVisible && <WallpaperViewer settings={settings.appearance.wallpaper} hide={hideWallpaperViewer}/>}

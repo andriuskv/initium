@@ -9,7 +9,9 @@ import GeneralTab from "./GeneralTab";
 const AppearanceTab = lazy(() => import("./AppearanceTab"));
 const TimeDateTab = lazy(() => import("./TimeDateTab"));
 const MainPanelTab = lazy(() => import("./MainPanelTab"));
+const TasksTab = lazy(() => import("./TasksTab"));
 const WeatherTab = lazy(() => import("./WeatherTab"));
+const TimersTab = lazy(() => import("./TimersTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 
 export default function Settings({ hide }) {
@@ -40,8 +42,16 @@ export default function Settings({ hide }) {
         name: "Main Panel"
       },
       {
+        id: "tasks",
+        name: "Tasks"
+      },
+      {
         id: "weather",
         name: "Weather"
+      },
+      {
+        id: "timers",
+        name: "Timers"
       },
       {
         id: "storage",
@@ -76,8 +86,14 @@ export default function Settings({ hide }) {
     else if (activeTab === "mainPanel") {
       Component = MainPanelTab;
     }
+    else if (activeTab === "tasks") {
+      Component = TasksTab;
+    }
     else if (activeTab === "weather") {
       Component = WeatherTab;
+    }
+    else if (activeTab === "timers") {
+      Component = TimersTab;
     }
     else if (activeTab === "storage") {
       Component = StorageTab;
