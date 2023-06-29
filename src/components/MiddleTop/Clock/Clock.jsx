@@ -3,7 +3,7 @@ import { getDisplayTime } from "services/timeDate";
 import "./clock.css";
 
 export default function Clock({ settings }) {
-  const [clock, setClock] = useState(() => ({ ...getDisplayTime() }));
+  const [clock, setClock] = useState(() => ({ ...getDisplayTime(settings.clockStyle === "vertical") }));
   const [date, setDate] = useState(() => ({ day: new Date().getDate() }));
   const timeoutId = useRef(0);
 
@@ -43,7 +43,7 @@ export default function Clock({ settings }) {
   }
 
   function update() {
-    setClock({ ...getDisplayTime() });
+    setClock({ ...getDisplayTime(settings.clockStyle === "vertical") });
 
     if (new Date().getDate() !== date.day) {
       updateDate();
@@ -51,11 +51,25 @@ export default function Clock({ settings }) {
     timeoutId.current = setTimeout(update, 1000);
   }
 
+  function renderClock() {
+    if (settings.clockStyle === "vertical") {
+      return (
+        <div className={`clock-time${settings.boldedClock ? " bolded" : ""}`}>
+          <div className="clock-time-hours">{clock.hours}</div>
+          <div>{clock.minutes}</div>
+        </div>
+      );
+    }
+    return <span className={`clock-time${settings.boldedClock ? " bolded" : ""}`}>{clock.hours}:{clock.minutes}</span>;
+  }
+
   return (
     <div className={`clock date-${settings.datePosition}`}
-      style={{ "--scale": settings.clockScale, "--date-offset": settings.dateOffset, "--date-alignment": settings.dateAlignment, "--font-family": settings.clockStyle }}>
-      <span className={`clock-time${settings.boldedClock ? " bolded" : ""}`}>{clock.hours}:{clock.minutes}</span>
-      {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
+      style={{ "--scale": settings.clockScale, "--date-offset": settings.dateOffset, "--date-alignment": settings.dateAlignment, "--font-family": settings.clockFont }}>
+      <div className="clock-time-container">
+        {renderClock()}
+        {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
+      </div>
       {settings.dateHidden ? null : (
         <div className={`clock-date${settings.boldedDate ? " bolded" : ""}${settings.dontChangeDateStyle ? " ignore-style" : ""}`}
           style={{ "--date-scale": settings.dateScale }}>{date.string}</div>

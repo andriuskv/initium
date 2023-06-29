@@ -151,8 +151,9 @@ function getClockTimeString(milliseconds, params) {
   return getTimeString(obj, params);
 }
 
-function getDisplayTime() {
+function getDisplayTime(padHours = false) {
   const time = adjustTime(getTimeObj());
+  time.hours = padHours ? padTime(time.hours) : time.hours;
   time.minutes = padTime(time.minutes);
   return time;
 }

@@ -51,7 +51,8 @@ function getDefault() {
     timeDate: {
       format: 24,
       clockDisabled: false,
-      clockStyle: "Inter",
+      clockFont: "Inter",
+      clockStyle: "default",
       clockScale: 1,
       boldedClock: false,
       centerClock: false,

@@ -47,6 +47,10 @@ export default function TimeDateTab() {
     updateSetting("timeDate", { dateAlignment: target.value });
   }
 
+  function handleClockFontChange({ target }) {
+    updateSetting("timeDate", { clockFont: target.value });
+  }
+
   function handleClockStyleChange({ target }) {
     updateSetting("timeDate", { clockStyle: target.value });
   }
@@ -83,9 +87,19 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-          <span>Clock style</span>
+          <span>Clock Style</span>
           <div className="select-container">
             <select className="input select" onChange={handleClockStyleChange} value={settings.clockStyle}
+              disabled={settings.clockDisabled}>
+              <option value="default">Default</option>
+              <option value="vertical">Vertical</option>
+            </select>
+          </div>
+        </label>
+        <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
+          <span>Clock Font</span>
+          <div className="select-container">
+            <select className="input select" onChange={handleClockFontChange} value={settings.clockFont}
               disabled={settings.clockDisabled}>
               <option value="Inter">Inter</option>
               <option value="JuliusSansOne">JuliusSansOne</option>
