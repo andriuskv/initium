@@ -99,12 +99,12 @@ function getDefault() {
       disabled: false,
       alarmVolume: 0.2,
       fullscreenTextScale: 1.5,
-      showMinimal: false
-    },
-    pomodoro: {
-      duration: 25,
-      short: 5,
-      long: 15
+      showMinimal: false,
+      pomodoro: {
+        focus: 25,
+        short: 5,
+        long: 15
+      }
     }
   };
 }

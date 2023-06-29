@@ -112,6 +112,11 @@
   padding: var(--space-xs) var(--space-lg);
 }
 
+.setting-input {
+  width: 120px;
+  text-align: center;
+}
+
 .setting-message {
   padding: var(--space-ms);
 }

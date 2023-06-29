@@ -10,11 +10,6 @@
   font-size: var(--text-md);
 }
 
-.setting-input {
-  width: 120px;
-  text-align: center;
-}
-
 .setting-weather-item {
   display: flex;
   justify-content: space-between;

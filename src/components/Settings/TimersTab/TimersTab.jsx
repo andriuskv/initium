@@ -11,6 +11,13 @@ export default function TimersTab() {
     updateSetting("timers", { fullscreenTextScale: target.valueAsNumber });
   }
 
+  function handleInputChange({ target }) {
+    if (/\D/.test(target.value)) {
+      return;
+    }
+    updateSetting("timers", { pomodoro: { ...settings.pomodoro, [target.name]: Number(target.value) } });
+  }
+
   return (
     <div className="setting-tab">
       <label className="setting">
@@ -43,6 +50,32 @@ export default function TimersTab() {
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
+      </label>
+      <div className="settings-group">
+        <div className="settings-group-top">
+          <h4 className="settings-group-title">Pomodoro</h4>
+        </div>
+      </div>
+      <label className={`setting${settings.disabled ? " disabled" : ""}`}>
+        <span>Focus duration</span>
+        <input type="text" className="input setting-input"
+          disabled={settings.disabled}
+          value={settings.pomodoro.focus}
+          onChange={handleInputChange} name="focus"/>
+      </label>
+      <label className={`setting${settings.disabled ? " disabled" : ""}`}>
+        <span>Short break duration</span>
+        <input type="text" className="input setting-input"
+          disabled={settings.disabled}
+          value={settings.pomodoro.short}
+          onChange={handleInputChange} name="short"/>
+      </label>
+      <label className={`setting${settings.disabled ? " disabled" : ""}`}>
+        <span>Long break duration</span>
+        <input type="text" className="input setting-input"
+          disabled={settings.disabled}
+          value={settings.pomodoro.long}
+          onChange={handleInputChange} name="long"/>
       </label>
     </div>
   );
