@@ -110,6 +110,10 @@ export default function Tasks({ settings, expanded, toggleSize }) {
     const modified = checkGroups(groups);
 
     setGroups(groups.map(group => {
+      if (group.id === "unorganized") {
+        group.id = "default";
+        group.name = "Default";
+      }
       group.tasks.map(task => {
         task = parseTask(task);
         task.subtasks = task.subtasks.map(subtask => {
@@ -142,8 +146,8 @@ export default function Tasks({ settings, expanded, toggleSize }) {
 
   function getDefaultGroup() {
     return {
-      id: "unorganized",
-      name: "Unorganized",
+      id: "default",
+      name: "Default",
       expanded: true,
       tasks: []
     };

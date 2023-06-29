@@ -137,7 +137,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
     const text = elements.text.value.trim();
     const dateTime = state.moreOptionsVisible ? elements.datetime.value : "";
     const repeatGap = state.moreOptionsVisible ? Number(elements.repeatGap.value) : -1;
-    const { selectedGroupId = "unorganized" } = state;
+    const { selectedGroupId = "default" } = state;
     const { tasks } = groups.find(({ id }) => id === selectedGroupId);
     const task = {
       creationDate: Date.now(),
@@ -363,7 +363,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
               <div className="select-container">
                 <select className="input select" onChange={handleGroupSelection} value={state.selectedGroupId}>
                   {groups.map(group => (
-                    <option value={group.id} key={group.id}>{group.id === "unorganized" ? "" : group.name}</option>
+                    <option value={group.id} key={group.id}>{group.id === "default" ? "" : group.name}</option>
                   ))}
                 </select>
               </div>

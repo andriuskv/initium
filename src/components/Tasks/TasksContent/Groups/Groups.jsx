@@ -83,6 +83,33 @@ export default function Groups({ groups, updateGroups, hide }) {
     setActiveDragId(event.active.id);
   }
 
+  function renderGroupContent(group, index, allowRemoval = true) {
+    if (group.renameEnabled) {
+      return (
+        <input type="text" className="input tasks-group-input" autoFocus defaultValue={group.name}
+          onBlur={(event) => renameGroup(event, group)} onKeyPress={blurGroupNameInput}/>
+      );
+    }
+    return (
+      <>
+        <div className="tasks-group-count">{group.tasks.length}</div>
+        <div className="tasks-group-title">{group.name}</div>
+        <Dropdown>
+          <button className="btn icon-text-btn dropdown-btn" onClick={() => enableGroupRename(group)}>
+            <Icon id="edit"/>
+            <span>Rename</span>
+          </button>
+          {allowRemoval && (
+            <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
+              <Icon id="trash"/>
+              <span>Remove</span>
+            </button>
+          )}
+        </Dropdown>
+      </>
+    );
+  }
+
   return (
     <div className="tasks-item-container task-transition-target">
       <form className="tasks-groups-form" onSubmit={handleGroupFormSubmit}>
@@ -93,31 +120,16 @@ export default function Groups({ groups, updateGroups, hide }) {
       </form>
       {groups.length > 1 ? (
         <ul className="tasks-groups-items" data-dropdown-parent>
+          <li className="tasks-groups-item">
+            {renderGroupContent(groups[0], 0, false)}
+          </li>
           <SortableList
             items={groups}
             handleSort={handleSort}
             handleDragStart={handleDragStart}>
             {groups.slice(1).map((group, index) => (
               <SortableItem className={`tasks-groups-item${group.id === activeDragId ? " dragging" : ""}`} id={group.id} key={group.id}>
-                {group.renameEnabled ? (
-                  <input type="text" className="input tasks-group-input" autoFocus defaultValue={group.name}
-                    onBlur={(event) => renameGroup(event, group)} onKeyPress={blurGroupNameInput}/>
-                ) : (
-                  <>
-                    <div className="tasks-group-count">{group.tasks.length}</div>
-                    <div className="tasks-group-title">{group.name}</div>
-                    <Dropdown>
-                      <button className="btn icon-text-btn dropdown-btn" onClick={() => enableGroupRename(group)}>
-                        <Icon id="edit"/>
-                        <span>Rename</span>
-                      </button>
-                      <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
-                        <Icon id="trash"/>
-                        <span>Remove</span>
-                      </button>
-                    </Dropdown>
-                  </>
-                )}
+                {renderGroupContent(group, index)}
               </SortableItem>
             ))}
           </SortableList>
