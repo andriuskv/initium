@@ -29,7 +29,6 @@ export default function Tasks({ settings, expanded, toggleSize }) {
   const taskRemoveTimeoutId = useRef(0);
   const ignoreUpdate = useRef(false);
   const checkIntervalId = useRef(0);
-  const ignoreFirst = useRef(true);
 
   useEffect(() => {
     init();
@@ -37,10 +36,6 @@ export default function Tasks({ settings, expanded, toggleSize }) {
 
   useEffect(() => {
     if (!groups) {
-      return;
-    }
-    else if (ignoreFirst.current) {
-      ignoreFirst.current = false;
       return;
     }
 

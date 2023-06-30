@@ -92,7 +92,7 @@ export default function Groups({ groups, updateGroups, hide }) {
     }
     return (
       <>
-        <div className="tasks-group-count">{group.tasks.length}</div>
+        <div className="tasks-group-count">{group.taskCount}</div>
         <div className="tasks-group-title">{group.name}</div>
         <Dropdown>
           <button className="btn icon-text-btn dropdown-btn" onClick={() => enableGroupRename(group)}>
