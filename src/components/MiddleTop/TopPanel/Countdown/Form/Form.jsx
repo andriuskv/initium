@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { getRandomString } from "utils";
 import { padTime, getMonthName, getTimeString } from "services/timeDate";
 import "./form.css";
@@ -12,6 +12,7 @@ export default function Presets({ createCountdown, hide }) {
     hours: "",
     minutes: ""
   });
+  const selected = useRef(false);
 
   function parseHours(hours) {
     const value = hours.trim();
@@ -174,10 +175,15 @@ export default function Presets({ createCountdown, hide }) {
   }
 
   function handleFormBlur() {
-    if (form.dataList) {
+    if (!selected.current && form.dataList) {
       delete form.dataList;
       setForm({...form });
     }
+    selected.current = false;
+  }
+
+  function handleDataListPointerDown() {
+    selected.current = true;
   }
 
   function selectValue({ target }) {
@@ -191,55 +197,55 @@ export default function Presets({ createCountdown, hide }) {
   }
 
   return (
-    <form onSubmit={handleFormSubmit} onFocus={handleFormFocus} onBlur={handleFormBlur}
+    <form className="countdown-form" onSubmit={handleFormSubmit} onFocus={handleFormFocus} onBlur={handleFormBlur}
       onKeyDown={handleFormKeydown} autoComplete="off">
-      <label className="countdown-form-field-container">
+      <h3 className="countdown-form-title">Countdown form</h3>
+      <label>
         <div className="countdown-form-field-title">Title</div>
-        <input type="text" className="input countdown-form-field" name="title"/>
+        <input type="text" className="input countdown-form-field" name="title" autoFocus/>
       </label>
-      <div className="countdown-form-fields-group">
-        <div className="countdown-form-fields countdown-form-date-fields">
-          <label className="countdown-form-field-container">
-            <div className="countdown-form-field-title">Years</div>
-            <input type="text" className="input countdown-form-field" name="years"
-              onChange={handleInputChange} value={form.years} required/>
-          </label>
-          <label className="countdown-form-field-container">
-            <div className="countdown-form-field-title">Months</div>
-            <input type="text" className="input countdown-form-field" name="months"
-              onChange={handleInputChange} value={form.months} required/>
-          </label>
-          <label className="countdown-form-field-container">
-            <div className="countdown-form-field-title">Days</div>
-            <input type="text" className="input countdown-form-field" name="days"
-              onChange={handleInputChange} value={form.days} required/>
-          </label>
-        </div>
-        <div className="countdown-form-fields countdown-form-date-fields">
-          <label className="countdown-form-field-container">
-            <div className="countdown-form-field-title">Hours</div>
-            <input type="text" className="input countdown-form-field" name="hours"
-              onChange={handleInputChange} value={form.hours}/>
-          </label>
-          <label className="countdown-form-field-container">
-            <div className="countdown-form-field-title">Minutes</div>
-            <input type="text" className="input countdown-form-field" name="minutes"
-              onChange={handleInputChange} value={form.minutes}/>
-          </label>
-        </div>
-        {form.dataList ? (
-          <ul className={`container countdown-form-field-datalist ${form.dataList.name}`} onPointerDown={selectValue}
-            style={{ top: form.dataList.y, left:  form.dataList.x }}>
-            {form.dataList.items.map(item => (
-              <li className="countdown-form-field-datalist-item" key={item.value} data-item={item.value}>{item.displayValue}</li>
-            ))}
-          </ul>
-        ) : null}
+      <div className="countdown-form-fields countdown-form-date-fields">
+        <label>
+          <div className="countdown-form-field-title">Years</div>
+          <input type="text" className="input countdown-form-field" name="years"
+            onChange={handleInputChange} value={form.years} required/>
+        </label>
+        <label>
+          <div className="countdown-form-field-title">Months</div>
+          <input type="text" className="input countdown-form-field" name="months"
+            onChange={handleInputChange} value={form.months} required/>
+        </label>
+        <label>
+          <div className="countdown-form-field-title">Days</div>
+          <input type="text" className="input countdown-form-field" name="days"
+            onChange={handleInputChange} value={form.days} required/>
+        </label>
       </div>
+      <div className="countdown-form-fields countdown-form-date-fields">
+        <label>
+          <div className="countdown-form-field-title">Hours</div>
+          <input type="text" className="input countdown-form-field" name="hours"
+            onChange={handleInputChange} value={form.hours}/>
+        </label>
+        <label>
+          <div className="countdown-form-field-title">Minutes</div>
+          <input type="text" className="input countdown-form-field" name="minutes"
+            onChange={handleInputChange} value={form.minutes}/>
+        </label>
+      </div>
+      {form.dataList ? (
+        <ul className={`container countdown-form-field-datalist ${form.dataList.name}`}
+          onPointerDown={handleDataListPointerDown} onPointerUp={selectValue}
+          style={{ top: form.dataList.y, left:  form.dataList.x }}>
+          {form.dataList.items.map(item => (
+            <li className="countdown-form-field-datalist-item" key={item.value} data-item={item.value}>{item.displayValue}</li>
+          ))}
+        </ul>
+      ) : null}
       <div className="countdown-form-bottom">
         {form.message && <div className="countdown-form-bottom-message">{form.message}</div>}
-        <button type="button" className="btn text-btn countdown-form-bottom-btn" onClick={hide}>Cancel</button>
-        <button className="btn countdown-form-bottom-btn">Create</button>
+        <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
+        <button className="btn">Create</button>
       </div>
     </form>
   );

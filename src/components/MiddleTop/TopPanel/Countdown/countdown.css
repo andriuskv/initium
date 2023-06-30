@@ -5,11 +5,6 @@
   border-bottom-right-radius: 6px;
 }
 
-.countdown-form {
-  position: static;
-  padding: var(--space-md);
-}
-
 .countdowns-message {
   position: absolute;
   top: 50%;

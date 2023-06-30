@@ -1,15 +1,13 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useRef } from "react";
 import { dispatchCustomEvent, getRandomString } from "utils";
 import { getDate, getTimeString } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import Icon from "components/Icon";
 import "./countdown.css";
-
-const Form = lazy(() => import("./Form"));
+import Form from "./Form";
 
 export default function Countdown({ visible }) {
   const [countdowns, setCountdowns] = useState([]);
-  const [formVisible, setFormVisible] = useState(false);
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -119,11 +117,10 @@ export default function Countdown({ visible }) {
   }
 
   function showForm() {
-    setFormVisible(true);
-  }
-
-  function hideForm() {
-    setFormVisible(false);
+    dispatchCustomEvent("fullscreen-modal-visible", {
+      component: Form,
+      params: { createCountdown }
+    });
   }
 
   function createCountdown(countdown) {
@@ -238,20 +235,12 @@ export default function Countdown({ visible }) {
   }
 
   return (
-    <div className={`top-panel-item countdown${visible ? " visible" : ""}${formVisible ? " countdown-form" : ""}`}>
-      {formVisible ? (
-        <Suspense fallback={null}>
-          <Form createCountdown={createCountdown} hide={hideForm}/>
-        </Suspense>
-      ) : (
-        <>
-          <button className="btn icon-text-btn countdown-create-btn" onClick={showForm}>
-            <Icon id="plus"/>
-            <span className="countdown-create-btn-title">Create</span>
-          </button>
-          {renderCountdowns()}
-        </>
-      )}
+    <div className={`top-panel-item countdown${visible ? " visible" : ""}`}>
+      <button className="btn icon-text-btn countdown-create-btn" onClick={showForm}>
+        <Icon id="plus"/>
+        <span className="countdown-create-btn-title">Create</span>
+      </button>
+      {renderCountdowns()}
     </div>
   );
 }

@@ -1,10 +1,24 @@
-.countdown-form-fields-group {
-  margin-top: var(--space-md);
+.countdown-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 332px;
+  height: 280px;
+  padding: var(--space-md);
+}
+
+.countdown-form-title {
+  margin-bottom: var(--space-md);
+  text-align: center;
 }
 
 .countdown-form-fields {
   display: flex;
-  margin-bottom: var(--space-md);
+  gap: var(--space-md);
+}
+
+.countdown-form-field {
+  width: 100%;
 }
 
 .countdown-form-date-fields {
@@ -13,13 +27,9 @@
   }
 
   .countdown-form-field {
-    width: 68px;
+    width: 100px;
     text-align: center;
   }
-}
-
-.countdown-form-field-container {
-  margin-right: var(--space-md);
 }
 
 .countdown-form-field-title {
@@ -32,10 +42,8 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-}
-
-.countdown-form-bottom-btn {
-  margin-left: var(--space-md);
+  gap: var(--space-md);
+  margin-top: auto;
 }
 
 .countdown-form-field-datalist {
