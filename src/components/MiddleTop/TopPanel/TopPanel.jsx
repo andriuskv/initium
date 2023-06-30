@@ -28,13 +28,17 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
   const minimalVisible = useRef(false);
 
   useEffect(() => {
+    if (settings.showMinimal && visible) {
+      return;
+    }
+
     if (settings.showMinimal) {
       showMinimalTimer();
     }
     else if (minimalVisible.current) {
       resetMinimal();
     }
-  }, [settings]);
+  }, [settings.showMinimal]);
 
   useEffect(() => {
     if (forceVisibility) {
