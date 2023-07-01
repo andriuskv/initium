@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { padTime } from "services/timeDate";
 
-export default function Inputs({ state, setState, disableActivePreset }) {
+export default function Inputs({ state, setState, handleKeyDown: handleContainerKeyDown }) {
   const hoursInputRef = useRef(null);
   const minutesInputRef = useRef(null);
   const secondsInputRef = useRef(null);
@@ -169,7 +169,7 @@ export default function Inputs({ state, setState, disableActivePreset }) {
   }
 
   return (
-    <div className="timer-input-container" onKeyDown={disableActivePreset}>
+    <div className="timer-input-container" onKeyDown={handleContainerKeyDown}>
       <input type="text" className="top-panel-digit timer-input"
         onChange={handleChange} onKeyDown={handleKeyDown} value={state.hours} data-name="hours" ref={hoursInputRef}/>
       <span className="top-panel-digit-sep">h</span>

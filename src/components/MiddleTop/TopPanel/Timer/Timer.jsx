@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { setPageTitle } from "../../../../utils";
+import { useState, useEffect, useRef } from "react";
+import { dispatchCustomEvent, setPageTitle } from "utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting, updateSetting } from "services/settings";
@@ -8,8 +8,7 @@ import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./timer.css";
 import Inputs from "./Inputs";
-
-const Presets = lazy(() => import("./Presets"));
+import Presets from "./Presets";
 
 export default function Timer({ visible, expand, exitFullscreen, handleReset }) {
   const [running, setRunning] = useState(false);
@@ -18,7 +17,6 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
     minutes: "00",
     seconds: "00"
   });
-  const [presetsVisible, setPresetsVisible] = useState(false);
   const [presets, setPresets] = useState([]);
   const [activePreset, setActivePreset] = useState(null);
   const [alarm, setAlarm] = useState({ shouldRun: true });
@@ -226,12 +224,15 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
     return alarm.shouldRun ? " \uD83D\uDD14" : "";
   }
 
-  function showPresets() {
-    setPresetsVisible(true);
+  function updatePresetsModal(presets) {
+    dispatchCustomEvent("fullscreen-modal-visible", {
+      component: Presets,
+      params: { presets, updatePresets, resetActivePreset }
+    });
   }
 
-  function hidePresets() {
-    setPresetsVisible(false);
+  function showPresets() {
+    updatePresetsModal(presets);
   }
 
   function updatePresets(presets) {
@@ -240,6 +241,7 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
     }
     setPresets([...presets]);
     savePresets(presets);
+    updatePresetsModal(presets);
   }
 
   function resetState() {
@@ -296,88 +298,81 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
       }
     });
   }
+
   return (
     <div className={`top-panel-item timer${visible ? " visible" : ""}`}>
-      {presetsVisible ? (
-        <Suspense fallback={null}>
-          <Presets presets={presets} updatePresets={updatePresets} resetActivePreset={resetActivePreset} hide={hidePresets}/>
-        </Suspense>
-      ) : (
-        <>
-          <div className="top-panel-item-content timer-content">
-            {running ? (
-              <>
-                {!presetNameHidden && activePreset ? <h4 className="timer-selected-preset-name">{activePreset.name}</h4> : null}
-                <div>
-                  {state.hours > 0 && (
-                    <>
-                      <span className="top-panel-digit">{state.hours}</span>
-                      <span className="top-panel-digit-sep">h</span>
-                    </>
-                  )}
-                  {(state.hours > 0 || state.minutes > 0) && (
-                    <>
-                      <span className="top-panel-digit">{state.minutes}</span>
-                      <span className="top-panel-digit-sep">m</span>
-                    </>
-                  )}
-                  <span className="top-panel-digit">{state.seconds}</span>
-                  <span className="top-panel-digit-sep">s</span>
-                </div>
-              </>
-            ) : (
-              <>
-                {presets.length ? (
-                  <div className="select-container timer-preset-select">
-                    <select className="input select"
-                      onChange={handlePresetSelection} value={activePreset?.id || ""} title="Presets">
-                      <option value=""></option>
-                      {presets.map(preset => (
-                        <option value={preset.id} key={preset.id}>{preset.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                ) : null}
-                <Inputs state={state} setState={setState} disableActivePreset={disableActivePreset}/>
-              </>
-            )}
-          </div>
-          <div className="top-panel-hide-target top-panel-item-actions">
-            <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
-            <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>
-            <div className="top-panel-secondary-actions">
-              {running ? (
-                <button className="btn icon-btn" onClick={expand} title="Expand">
-                  <Icon id="expand"/>
-                </button>
-              ) : (
+      <div className="top-panel-item-content timer-content">
+        {running ? (
+          <>
+            {!presetNameHidden && activePreset ? <h4 className="timer-selected-preset-name">{activePreset.name}</h4> : null}
+            <div>
+              {state.hours > 0 && (
                 <>
-                  <Dropdown>
-                    <div className="dropdown-group">
-                      <label className="checkbox-container timer-dropdown-setting">
-                        <input type="checkbox" className="sr-only checkbox-input"
-                          onChange={togglePresetNameVisibility}
-                          checked={presetNameHidden}/>
-                        <div className="checkbox">
-                          <div className="checkbox-tick"></div>
-                        </div>
-                        <span className="label-right">Hide preset name</span>
-                      </label>
-                    </div>
-                    <button className="btn icon-text-btn dropdown-btn" onClick={showPresets}>
-                      <Icon id="menu"/>
-                      <span>Presets</span>
-                    </button>
-                  </Dropdown>
-                  <button className="btn icon-btn" onClick={toggleAlarm} title="Toggle alarm">
-                    <Icon id={`bell${alarm.shouldRun ? "" : "-off"}`}/>
-                  </button>
+                  <span className="top-panel-digit">{state.hours}</span>
+                  <span className="top-panel-digit-sep">h</span>
                 </>
               )}
+              {(state.hours > 0 || state.minutes > 0) && (
+                <>
+                  <span className="top-panel-digit">{state.minutes}</span>
+                  <span className="top-panel-digit-sep">m</span>
+                </>
+              )}
+              <span className="top-panel-digit">{state.seconds}</span>
+              <span className="top-panel-digit-sep">s</span>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        ) : (
+          <>
+            {presets.length ? (
+              <div className="select-container timer-preset-select">
+                <select className="input select"
+                  onChange={handlePresetSelection} value={activePreset?.id || ""} title="Presets">
+                  <option value=""></option>
+                  {presets.map(preset => (
+                    <option value={preset.id} key={preset.id}>{preset.name}</option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+            <Inputs state={state} setState={setState} handleKeyDown={disableActivePreset}/>
+          </>
+        )}
+      </div>
+      <div className="top-panel-hide-target top-panel-item-actions">
+        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
+        <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>
+        <div className="top-panel-secondary-actions">
+          {running ? (
+            <button className="btn icon-btn" onClick={expand} title="Expand">
+              <Icon id="expand"/>
+            </button>
+          ) : (
+            <>
+              <Dropdown>
+                <div className="dropdown-group">
+                  <label className="checkbox-container timer-dropdown-setting">
+                    <input type="checkbox" className="sr-only checkbox-input"
+                      onChange={togglePresetNameVisibility}
+                      checked={presetNameHidden}/>
+                    <div className="checkbox">
+                      <div className="checkbox-tick"></div>
+                    </div>
+                    <span className="label-right">Hide preset name</span>
+                  </label>
+                </div>
+                <button className="btn icon-text-btn dropdown-btn" onClick={showPresets}>
+                  <Icon id="menu"/>
+                  <span>Presets</span>
+                </button>
+              </Dropdown>
+              <button className="btn icon-btn" onClick={toggleAlarm} title="Toggle alarm">
+                <Icon id={`bell${alarm.shouldRun ? "" : "-off"}`}/>
+              </button>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
