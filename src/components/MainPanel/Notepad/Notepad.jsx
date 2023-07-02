@@ -72,7 +72,7 @@ export default function Notepad() {
 
   function getDefaultTab() {
     const tab = {
-      title: "Tab",
+      title: "Tab 1",
       content: ""
     };
     return {

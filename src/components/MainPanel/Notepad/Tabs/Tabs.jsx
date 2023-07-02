@@ -91,9 +91,27 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
     updateTabs(tabs);
   }
 
+  function getNewTabTitle() {
+    let number = 1;
+
+    for (const tab of tabs) {
+      const match = tab.title.match(/Tab (\d)/);
+
+      if (match) {
+        const n = Number(match[1]);
+
+        if (n >= number) {
+          number = n + 1;
+        }
+      }
+    }
+
+    return `Tab ${number}`;
+  }
+
   function createTab(event) {
     const tab = {
-      title : event.target.elements.title.value.trim() || "Tab",
+      title : event.target.elements.title.value.trim() || getNewTabTitle(),
       content: ""
     };
 
