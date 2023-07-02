@@ -54,6 +54,10 @@ export default function PersistentSites({ settings, getFaviconURL }) {
     setSiteEditEnabled(event.detail);
   }
 
+  function disableSiteEdit() {
+    setSiteEditEnabled(false);
+  }
+
   function showForm(data = {}) {
     setForm(data);
   }
@@ -121,38 +125,45 @@ export default function PersistentSites({ settings, getFaviconURL }) {
   function renderSites() {
     if (siteEditEnabled) {
       return (
-        <ul className="persistent-sites">
-          <SortableList
-            axis="x"
-            items={sites}
-            handleSort={handleSort}
-            handleDragStart={handleDragStart}>
-            {sites.map((site, i) => (
-              <SortableItem className={`top-site${site.id === activeDragId ? " dragging" : ""}`} id={site.id} key={site.id}>
-                <button className="top-site-link persistent-site-edit-btn" onClick={() => editSite(i)} title="Edit">
+        <>
+          <ul className="persistent-sites">
+            <SortableList
+              axis="x"
+              items={sites}
+              handleSort={handleSort}
+              handleDragStart={handleDragStart}>
+              {sites.map((site, i) => (
+                <SortableItem className={`top-site${site.id === activeDragId ? " dragging" : ""}`} id={site.id} key={site.id}>
+                  <button className="top-site-link persistent-site-edit-btn" onClick={() => editSite(i)} title="Edit">
+                    <div className="container top-site-container top-site-thumbnail-container">
+                      <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt=""/>
+                    </div>
+                    <div className="container top-site-container top-site-title">{site.title}</div>
+                    <Icon id="edit" className="persistent-site-edit-icon"/>
+                  </button>
+                  <button className="btn icon-btn persistent-site-remove-btn" onClick={() => removeSite(i)} title="Remove">
+                    <Icon id="trash" className="btn-icon"/>
+                  </button>
+                </SortableItem>
+              ))}
+            </SortableList>
+            {sites.length < 8 && (
+              <li className="top-site">
+                <button className="top-site-link top-site-add-btn" onClick={showForm}>
                   <div className="container top-site-container top-site-thumbnail-container">
-                    <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt=""/>
+                    <Icon id="plus" className="top-site-add-btn-icon"/>
                   </div>
-                  <div className="container top-site-container top-site-title">{site.title}</div>
-                  <Icon id="edit" className="persistent-site-edit-icon"/>
+                  <div className="container top-site-container top-site-title">Add site</div>
                 </button>
-                <button className="btn icon-btn persistent-site-remove-btn" onClick={() => removeSite(i)} title="Remove">
-                  <Icon id="trash"/>
-                </button>
-              </SortableItem>
-            ))}
-          </SortableList>
-          {sites.length < 8 && (
-            <li className="top-site">
-              <button className="top-site-link top-site-add-btn" onClick={showForm}>
-                <div className="container top-site-container top-site-thumbnail-container">
-                  <Icon id="plus" className="top-site-add-btn-icon"/>
-                </div>
-                <div className="container top-site-container top-site-title">Add site</div>
-              </button>
-            </li>
-          )}
-        </ul>
+              </li>
+            )}
+          </ul>
+          <button className="btn icon-text-btn container top-site-container persistent-sites-cancel-edit-btn"
+            onClick={disableSiteEdit}>
+            <Icon id="cross" className="btn-icon"/>
+            <span>Cancel</span>
+          </button>
+        </>
       );
     }
     return (

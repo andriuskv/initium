@@ -108,26 +108,6 @@ textarea {
   height: 100%;
 }
 
-.container {
-  padding: 1px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  box-shadow:
-    inset 0 0 0 1px var(--color-white-10),
-    1px 2px 2px 0 var(--color-black-16),
-    2px 4px 4px 0 var(--color-black-8),
-    4px 8px 8px 0 var(--color-black-4),
-    8px 16px 16px 0 var(--color-black-2);
-  background-color: hsl(var(--accent-hue) 10% 15% / var(--panel-background-opacity));
-  backdrop-filter: blur(var(--panel-background-blur));
-  background-image: var(--panel-background-noise);
-}
-
-.fullscreen-mask {
-  background-color: hsl(var(--accent-hue) 10% 15% / var(--panel-background-opacity));
-  backdrop-filter: blur(var(--panel-background-blur));
-}
-
 .input, .btn {
   --background-color: var(--color-white-10);
 
@@ -495,6 +475,26 @@ textarea {
   & svg {
     mask: url("./assets/svg-mask.svg");
   }
+}
+
+.container {
+  padding: 1px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 0 1px var(--color-white-10),
+    1px 2px 2px 0 var(--color-black-16),
+    2px 4px 4px 0 var(--color-black-8),
+    4px 8px 8px 0 var(--color-black-4),
+    8px 16px 16px 0 var(--color-black-2);
+  background-color: hsl(var(--accent-hue) 10% 15% / var(--panel-background-opacity));
+  backdrop-filter: blur(var(--panel-background-blur));
+  background-image: var(--panel-background-noise);
+}
+
+.fullscreen-mask {
+  background-color: hsl(var(--accent-hue) 10% 15% / var(--panel-background-opacity));
+  backdrop-filter: blur(var(--panel-background-blur));
 }
 
 @keyframes opacity-up {

@@ -45,6 +45,7 @@
   }
 
   .top-site-title {
+    z-index: 1;
     position: relative;
     left: 50%;
     opacity: 0;
@@ -86,9 +87,27 @@
     --color: var(--color-white);
   }
 
-  & svg {
+  .btn-icon {
     width: 18px;
     height: 18px;
+  }
+}
+
+.persistent-sites-cancel-edit-btn {
+  align-self: center;
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-xl) var(--space-sm) var(--space-md);
+  border-radius: 999px;
+  pointer-events: auto;
+
+  &:hover, &:focus-visible {
+    .btn-icon {
+      transform: scale(1.2);
+    }
+  }
+
+  .btn-icon {
+    transition: 0.2s transform;
   }
 }
 

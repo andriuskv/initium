@@ -1,5 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
-import { dispatchCustomEvent } from "utils";
+import { useState, lazy, Suspense } from "react";
 import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";
@@ -16,12 +15,6 @@ const StorageTab = lazy(() => import("./StorageTab"));
 
 export default function Settings({ hide }) {
   const [activeTab, setActiveTab] = useState("general");
-
-  useEffect(() => {
-    return () => {
-      dispatchCustomEvent("enable-persistent-site-edit", false);
-    };
-  });
 
   function renderNavigation() {
     const tabs = [
