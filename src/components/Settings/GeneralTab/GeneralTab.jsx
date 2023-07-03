@@ -8,7 +8,7 @@ export default function GeneralTab() {
   const { settings, toggleSetting, resetSettings } = useSettings();
 
   function showGreetingEditor() {
-    dispatchCustomEvent("greeting-editor-visible");
+    dispatchCustomEvent("fullscreen-modal", { id: "greeting" });
   }
 
   function reset() {

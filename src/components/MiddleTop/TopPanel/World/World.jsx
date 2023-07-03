@@ -83,7 +83,7 @@ export default function World({ visible, parentVisible }) {
   }
 
   function showForm() {
-    dispatchCustomEvent("fullscreen-modal-visible", {
+    dispatchCustomEvent("fullscreen-modal", {
       component: Form,
       params: { addClock }
     });

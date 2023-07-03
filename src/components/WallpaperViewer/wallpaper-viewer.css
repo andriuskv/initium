@@ -1,16 +1,3 @@
-.wallpaper-viewer {
-  z-index: 1000;
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
 .wallpaper-viewer-spinner {
   position: absolute;
   top: 50%;
@@ -61,7 +48,6 @@
   width: 100%;
   margin-top: var(--space-md);
   padding: var(--space-sm);
-  backdrop-filter: none;
 
   .btn:not(:last-of-type) {
     margin-right: var(--space-sm);

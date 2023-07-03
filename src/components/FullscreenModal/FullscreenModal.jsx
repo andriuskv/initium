@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import "./fullscreen-modal.css";
 
-export default function FullscreenModal({ children, hide }) {
+export default function FullscreenModal({ children, transparent, hide }) {
   const containerRef = useRef(null);
   let pointerInside = false;
 
@@ -38,5 +38,5 @@ export default function FullscreenModal({ children, hide }) {
     }
   }
 
-  return <div className="container fullscreen-modal" ref={containerRef}>{children}</div>;
+  return <div className={`fullscreen-modal${transparent ? "" : " container"}`} ref={containerRef}>{children}</div>;
 }

@@ -40,7 +40,7 @@ export default function Wallpaper({ settings, updateContextSetting }) {
   }
 
   function showWallpaperViewer() {
-    dispatchCustomEvent("wallpaper-viewer-visible");
+    dispatchCustomEvent("fullscreen-modal", { id: "wallpaper" });
   }
 
   function showWallpaperForm() {

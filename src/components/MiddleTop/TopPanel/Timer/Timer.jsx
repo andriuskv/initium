@@ -225,7 +225,7 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
   }
 
   function updatePresetsModal(presets) {
-    dispatchCustomEvent("fullscreen-modal-visible", {
+    dispatchCustomEvent("fullscreen-modal", {
       component: Presets,
       params: { presets, updatePresets, resetActivePreset }
     });

@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useSettings } from "contexts/settings";
 import { getIDBWallpaper, updateDownscaledWallpaperPosition } from "services/wallpaper";
+import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
 import "./wallpaper-viewer.css";
 
-export default function WallpaperViewer({ settings, hide }) {
-  const { updateSetting } = useSettings();
+export default function WallpaperViewer({ hide }) {
+  const { settings: { appearance: { wallpaper: settings } }, updateSetting } = useSettings();
   const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState("");
   const [area, setArea] = useState(null);
@@ -33,7 +34,7 @@ export default function WallpaperViewer({ settings, hide }) {
     const { innerWidth, innerHeight } = window;
 
     target.style.maxWidth = `${innerWidth - 96}px`;
-    target.style.maxHeight = `${innerHeight - 64}px`;
+    target.style.maxHeight = `${innerHeight - 68}px`;
 
     setTimeout(() => {
       const { width, naturalWidth, height, naturalHeight } = target;
@@ -185,7 +186,7 @@ export default function WallpaperViewer({ settings, hide }) {
   }
 
   return (
-    <div className="fullscreen-mask wallpaper-viewer">
+    <FullscreenModal hide={hide} transparent>
       {loading && <Spinner className="wallpaper-viewer-spinner"/>}
       <div className={`wallpaper-viewer-image-content${loading ? " hidden" : ""}`}>
         <div className="container wallpaper-viewer-image-container" ref={containerRef}>
@@ -202,6 +203,6 @@ export default function WallpaperViewer({ settings, hide }) {
           <button className="btn text-btn" onClick={saveWallpaperPosition}>Save</button>
         </div>
       </div>
-    </div>
+    </FullscreenModal>
   );
 }

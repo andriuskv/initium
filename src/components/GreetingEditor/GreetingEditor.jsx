@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSettings } from "contexts/settings";
 import * as chromeStorage from "services/chromeStorage";
+import FullscreenModal from "components/FullscreenModal";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./greeting-editor.css";
@@ -93,8 +94,8 @@ export default function Editor({ hide }) {
   }
 
   return (
-    <div className="greeting-editor-mask fullscreen-mask">
-      <div className="container greeting-editor">
+    <FullscreenModal hide={hide}>
+      <div className="greeting-editor">
         <div className="greeting-editor-header">
           <Dropdown
             container={{ className: "" }}
@@ -144,6 +145,6 @@ export default function Editor({ hide }) {
         )}
         <textarea className="greeting-editor-textarea" value={textArea} onChange={handleTextareaChange}></textarea>
       </div>
-    </div>
+    </FullscreenModal>
   );
 }

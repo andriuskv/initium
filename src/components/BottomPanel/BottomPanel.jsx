@@ -87,7 +87,7 @@ export default function BottomPanel() {
       dispatchCustomEvent("top-panel-visible");
     }
     else if (id === "settings") {
-      dispatchCustomEvent("toggle-settings");
+      dispatchCustomEvent("fullscreen-modal", { id, shouldToggle: true });
     }
     else {
       setSelectedItem(items[id]);

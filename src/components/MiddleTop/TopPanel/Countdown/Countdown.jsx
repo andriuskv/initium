@@ -117,7 +117,7 @@ export default function Countdown({ visible }) {
   }
 
   function showForm() {
-    dispatchCustomEvent("fullscreen-modal-visible", {
+    dispatchCustomEvent("fullscreen-modal", {
       component: Form,
       params: { createCountdown }
     });

@@ -10,18 +10,13 @@ const Weather = lazy(() => import("./Weather"));
 const Tasks = lazy(() => import("./Tasks"));
 const Settings = lazy(() => import("./Settings"));
 const WallpaperViewer = lazy(() => import("./WallpaperViewer"));
-const TweetImageViewer = lazy(() => import("./TweetImageViewer"));
 const GreetingEditor = lazy(() => import("./GreetingEditor"));
 const FullscreenModal = lazy(() => import("./FullscreenModal"));
 
 export default function App() {
   const { settings } = useSettings();
-  const [wallpaperViewerVisible, setWallpaperViewerVisible] = useState(false);
-  const [tweetImageData, setTweetImageData] = useState(null);
-  const [greetingEditorVisible, setGreetingEditorVisible] = useState(false);
-  const [fullscreenModal, setFullscreenModal] = useState(null);
-  const [settingsVisible, setSettingsVisible] = useState(false);
   const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
+  const [fullscreenModal, setFullscreenModal] = useState(null);
   const weatherTimeoutId = useRef(0);
 
   useLayoutEffect(() => {
@@ -29,26 +24,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    window.addEventListener("wallpaper-viewer-visible", showWallpaperViewer);
-    window.addEventListener("tweet-image-viewer-visible", showTweetImageViewer);
-    window.addEventListener("greeting-editor-visible", showGreetingEditor);
-    window.addEventListener("fullscreen-modal-visible", showFullscreenModal);
+    window.addEventListener("fullscreen-modal", showFullscreenModal);
 
     return () => {
-      window.removeEventListener("wallpaper-viewer-visible", showWallpaperViewer);
-      window.removeEventListener("tweet-image-viewer-visible", showTweetImageViewer);
-      window.removeEventListener("greeting-editor-visible", showGreetingEditor);
-      window.removeEventListener("fullscreen-modal-visible", showFullscreenModal);
+      window.removeEventListener("fullscreen-modal", showFullscreenModal);
     };
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("toggle-settings", toggleSettings);
-
-    return () => {
-      window.removeEventListener("toggle-settings", toggleSettings);
-    };
-  }, [settingsVisible]);
+  }, [fullscreenModal]);
 
   useEffect(() => {
     const shouldRender = isWeatherEnabled();
@@ -75,50 +56,54 @@ export default function App() {
     return !settings.weather.disabled && (settings.weather.cityName || settings.weather.useGeo);
   }
 
-  function showWallpaperViewer() {
-    setWallpaperViewerVisible(true);
-  }
-
-  function hideWallpaperViewer() {
-    setWallpaperViewerVisible(false);
-  }
-
-  function showTweetImageViewer({ detail }) {
-    setTweetImageData(detail);
-  }
-
-  function hideTweetImageViewer() {
-    setTweetImageData(null);
-  }
-
-  function showGreetingEditor() {
-    setGreetingEditorVisible(true);
-  }
-
-  function hideGreetingEditor() {
-    setGreetingEditorVisible(false);
-  }
-
   function showFullscreenModal({ detail }) {
-    setFullscreenModal(detail);
+    if (detail.shouldToggle && detail.id === fullscreenModal?.id) {
+      hideFullscreenModal();
+    }
+    else {
+      setFullscreenModal(detail);
+    }
   }
 
   function hideFullscreenModal() {
     setFullscreenModal(null);
   }
 
-  function toggleSettings() {
-    setSettingsVisible(!settingsVisible);
-  }
-
-  function hideSettings() {
-    setSettingsVisible(false);
+  function renderFullscreenModal() {
+    if (fullscreenModal.id === "greeting") {
+      return (
+        <Suspense fallback={null}>
+          <GreetingEditor hide={hideFullscreenModal}/>
+        </Suspense>
+      );
+    }
+    else if (fullscreenModal.id === "settings") {
+      return (
+        <Suspense fallback={null}>
+          {<Settings hide={hideFullscreenModal}/>}
+        </Suspense>
+      );
+    }
+    else if (fullscreenModal.id === "wallpaper") {
+      return (
+        <Suspense fallback={null}>
+          <WallpaperViewer hide={hideFullscreenModal}/>
+        </Suspense>
+      );
+    }
+    return (
+      <Suspense fallback={null}>
+        <FullscreenModal hide={hideFullscreenModal}>
+          <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
+        </FullscreenModal>
+      </Suspense>
+    );
   }
 
   return (
     <>
       <Wallpaper settings={settings.appearance.wallpaper}/>
-      <MiddleTop settings={settings} greetingEditorVisible={greetingEditorVisible}/>
+      <MiddleTop settings={settings} greetingEditorVisible={fullscreenModal?.id === "greeting"}/>
       <Suspense fallback={null}>
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>
@@ -129,23 +114,7 @@ export default function App() {
       <Suspense fallback={null}>
         {settings.tasks.disabled ? null : <Tasks settings={settings.tasks}/>}
       </Suspense>
-      <Suspense fallback={null}>
-        {wallpaperViewerVisible && <WallpaperViewer settings={settings.appearance.wallpaper} hide={hideWallpaperViewer}/>}
-        {tweetImageData && <TweetImageViewer data={tweetImageData} hide={hideTweetImageViewer}/>}
-      </Suspense>
-      <Suspense fallback={null}>
-        {greetingEditorVisible ? <GreetingEditor hide={hideGreetingEditor}/> : null}
-      </Suspense>
-      <Suspense fallback={null}>
-        {fullscreenModal ? (
-          <FullscreenModal content={fullscreenModal} hide={hideFullscreenModal}>
-            <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
-          </FullscreenModal>
-        ) : null}
-      </Suspense>
-      <Suspense fallback={null}>
-        {settingsVisible ? <Settings hide={hideSettings}/> : null}
-      </Suspense>
+      {fullscreenModal ? renderFullscreenModal() : null}
     </>
   );
 }
