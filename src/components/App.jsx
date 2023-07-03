@@ -108,12 +108,12 @@ export default function App() {
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>
       <Suspense fallback={null}>
+        {settings.tasks.disabled ? null : <Tasks settings={settings.tasks}/>}
+      </Suspense>
+      <Suspense fallback={null}>
         {weather.rendered && <Weather timeFormat={settings.timeDate.format}/>}
       </Suspense>
       <BottomPanel/>
-      <Suspense fallback={null}>
-        {settings.tasks.disabled ? null : <Tasks settings={settings.tasks}/>}
-      </Suspense>
       {fullscreenModal ? renderFullscreenModal() : null}
     </>
   );

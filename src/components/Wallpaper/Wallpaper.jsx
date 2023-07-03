@@ -86,6 +86,13 @@ export default function Wallpaper({ settings }) {
           resetIDBWallpaper();
         }
       }
+      else {
+        setWallpaper({
+          ...wallpaper,
+          x: settings.x,
+          y: settings.y
+        });
+      }
     }
     else if (settings.type === "url") {
       setWallpaper({
