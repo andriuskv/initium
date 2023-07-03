@@ -1,9 +1,10 @@
 .greeting {
-  --text-size: var(--text-lg);
+  --text-size-scale: 1;
 
   grid-row: 3;
   max-width: 572px;
-  font-size: var(--text-size);
+  font-size: calc(var(--text-size-scale) * var(--text-lg));
+  line-height: 1.25;
   text-align: center;
   text-wrap: balance;
   text-shadow:

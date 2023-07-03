@@ -40,9 +40,8 @@
   transform: translate(-50%, -50%);
 }
 
-.greeting-editor-settings-btn {
+.greeting-editor-hide-btn {
   margin-left: auto;
-  margin-right: var(--space-sm);
 }
 
 .greeting-settings {

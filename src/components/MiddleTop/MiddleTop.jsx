@@ -77,8 +77,8 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
         {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.general.greetingDisabled || !greeting || greetingEditorVisible ? null : (
-          <Greeting settings={settings.greeting}/>
+        {settings.general.greeting.disabled || !greeting || greetingEditorVisible ? null : (
+          <Greeting settings={settings.general.greeting}/>
         )}
       </Suspense>
     </div>

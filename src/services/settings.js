@@ -36,9 +36,12 @@ function initAppearanceSettings(settings) {
 function getDefault() {
   return {
     general: {
-      greetingDisabled: false,
       shortcutsDisabled: false,
-      calendarDisabled: false
+      calendarDisabled: false,
+      greeting: {
+        disabled: false,
+        textSize: 1
+      }
     },
     appearance: {
       accentColor: { hue: "205deg", saturation: "80%", lightness: "56%" },

@@ -5,10 +5,19 @@ import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
 import "./general-tab.css";
 
 export default function GeneralTab() {
-  const { settings, toggleSetting, resetSettings } = useSettings();
+  const { settings, toggleSetting, updateSetting, resetSettings } = useSettings();
 
   function showGreetingEditor() {
     dispatchCustomEvent("fullscreen-modal", { id: "greeting" });
+  }
+
+  function toggleGreetingSetting(event) {
+    updateSetting("general", {
+      greeting: {
+        ...settings.general.greeting,
+        disabled: event.target.checked
+      }
+    });
   }
 
   function reset() {
@@ -31,12 +40,12 @@ export default function GeneralTab() {
     <div className="setting-tab">
       <div className="setting setting-greeting">
         <div className="setting-greeting-item">
-          <button className="btn" onClick={showGreetingEditor} disabled={settings.general.greetingDisabled}>Set the greeting</button>
+          <button className="btn" onClick={showGreetingEditor} disabled={settings.general.greeting.disabled}>Set the greeting</button>
         </div>
         <label className="setting-greeting-item">
           <input type="checkbox" className="sr-only checkbox-input"
-            checked={settings.general.greetingDisabled}
-            onChange={() => toggleSetting("general", "greetingDisabled")}/>
+            checked={settings.general.greeting.disabled}
+            onChange={toggleGreetingSetting}/>
           <div className="checkbox">
             <div className="checkbox-tick"></div>
           </div>
@@ -44,28 +53,10 @@ export default function GeneralTab() {
         </label>
       </div>
       <label className="setting">
-        <span>Disable tasks</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.general.tasksDisabled}
-          onChange={() => toggleSetting("general", "tasksDisabled")}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
-        </div>
-      </label>
-      <label className="setting">
         <span>Disable shortcuts</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.shortcutsDisabled}
           onChange={() => toggleSetting("general", "shortcutsDisabled")}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
-        </div>
-      </label>
-      <label className="setting">
-        <span>Disable timers</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.general.timersDisabled}
-          onChange={() => toggleSetting("general", "timersDisabled")}/>
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>

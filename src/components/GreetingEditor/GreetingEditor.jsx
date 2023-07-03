@@ -9,10 +9,9 @@ import Icon from "components/Icon";
 import "./greeting-editor.css";
 
 export default function Editor({ hide }) {
-  const { settings: { greeting: settings }, updateSetting, toggleSetting, setSetting } = useSettings();
+  const { settings: { general: { greeting: settings } }, updateSetting } = useSettings();
   const [textArea, setTextArea] = useState("");
   const [bytes, setBytes] = useState(null);
-  const [settingsVisible, setSettingsVisible] = useState(false);
   const saveTimeoutId = useRef(0);
 
   useEffect(() => {
@@ -44,17 +43,6 @@ export default function Editor({ hide }) {
     return `${value} kB`;
   }
 
-  function toggleSettings() {
-    setSettingsVisible(!settingsVisible);
-
-    if (!settings) {
-      setSetting("greeting", {
-        useBoldText: false,
-        textSize: 18
-      });
-    }
-  }
-
   function hideMessage() {
     delete bytes.message;
     setBytes({ ...bytes });
@@ -68,14 +56,15 @@ export default function Editor({ hide }) {
     }, 400);
   }
 
-  function toggleBoldnessSetting() {
-    toggleSetting("greeting", "useBoldText");
-  }
-
   function handleRangeInputChange({ target }) {
     clearTimeout(saveTimeoutId.current);
     saveTimeoutId.current = setTimeout(() => {
-      updateSetting("greeting", { textSize: Number(target.value) });
+      updateSetting("general", {
+        greeting: {
+          ...settings,
+          textSize: Number(target.value)
+        }
+      });
     }, 1000);
   }
 
@@ -98,7 +87,6 @@ export default function Editor({ hide }) {
       <div className="greeting-editor">
         <div className="greeting-editor-header">
           <Dropdown
-            container={{ className: "" }}
             toggle={{ title: "Info", iconId: "info" }}
             body={{ className: "greeting-editor-dropdown" }}>
             <ul className="greeting-editor-info-items">
@@ -110,31 +98,17 @@ export default function Editor({ hide }) {
             <span className="greeting-editor-space-usage">{bytes.current} / {bytes.max}</span>
           )}
           <h3 className="greeting-editor-header-title">Greeting Editor</h3>
-          <button className="btn icon-btn greeting-editor-settings-btn" onClick={toggleSettings} title="Settings">
-            <Icon id="settings"/>
-          </button>
           <button className="btn icon-btn greeting-editor-hide-btn" onClick={hide} title="Close">
             <Icon id="cross"/>
           </button>
         </div>
-        {settingsVisible && (
-          <div className="greeting-settings">
-            <label className="greeting-setting">
-              <input type="checkbox" className="sr-only checkbox-input"
-                checked={settings.useBoldText}
-                onChange={toggleBoldnessSetting}/>
-              <div className="checkbox">
-                <div className="checkbox-tick"></div>
-              </div>
-              <span className="label-right">Use bold text</span>
-            </label>
-            <label className="greeting-setting">
-              <span className="label-left">Text size</span>
-              <input type="range" className="range-input" min="14" max="32" step="1"
-                defaultValue={settings.textSize} onChange={handleRangeInputChange}/>
-            </label>
-          </div>
-        )}
+        <div className="greeting-settings">
+          <label className="greeting-setting">
+            <span className="label-left">Text size</span>
+            <input type="range" className="range-input" min="0.75" max="3" step="0.125"
+              defaultValue={settings.textSize} onChange={handleRangeInputChange}/>
+          </label>
+        </div>
         {bytes?.message && (
           <div className="greeting-editor-message-container">
             <p className="greeting-editor-message">{bytes.message}</p>

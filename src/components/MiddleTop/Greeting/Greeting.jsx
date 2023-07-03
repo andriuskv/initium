@@ -33,25 +33,13 @@ export default function Greeting({ settings = {} }) {
     });
   }
 
-  function setRandomGreeting(greetings) {
+  async function setRandomGreeting(greetings) {
+    const marked = await import("marked");
     const index = Math.floor(Math.random() * greetings.length);
-    setGreeting(greetings[index]);
+    const greeting = marked.parse(greetings[index], { mangle: false, headerIds: false });
+
+    setGreeting(greeting);
   }
 
-  function getStyles() {
-    const styles = {
-      "--text-size": `${settings.textSize || 18}px`
-    };
-
-    if (settings.useBoldText) {
-      styles.fontWeight = "bold";
-    }
-    return styles;
-  }
-
-  return (
-    <div className="greeting" style={getStyles()}>
-      <p dangerouslySetInnerHTML={{ __html: greeting }}></p>
-    </div>
-  );
+  return <div className="greeting" style={{ "--text-size-scale": settings.textSize }} dangerouslySetInnerHTML={{ __html: greeting }}></div>;
 }
