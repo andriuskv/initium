@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { dispatchCustomEvent, setPageTitle } from "utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
-import { getSetting, updateSetting } from "services/settings";
+import { getSetting } from "services/settings";
 import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
@@ -20,10 +20,7 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
   const [presets, setPresets] = useState([]);
   const [activePreset, setActivePreset] = useState(null);
   const [alarm, setAlarm] = useState({ shouldRun: true });
-  const [presetNameHidden, setPresetNameVisibility] = useState(() => {
-    const { presetNameHidden } = getSetting("timer");
-    return presetNameHidden ?? false;
-  });
+  const [label, setLabel] = useState("");
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -273,12 +270,20 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
     chromeStorage.set({ timer: presets });
   }
 
-  function handlePresetSelection({ target }) {
-    const preset = presets.find(preset => preset.id === target.value);
+  function handlePresetSelection(id) {
+    if (activePreset?.id === id) {
+      return;
+    }
+    const preset = presets.find(preset => preset.id === id);
 
     setActivePreset(preset || null);
 
     if (preset) {
+      const { timer: { usePresetNameAsLabel } } = getSetting("timers");
+
+      if (usePresetNameAsLabel) {
+        setLabel(preset.name);
+      }
       setState({
         hours: preset.hours,
         minutes: preset.minutes,
@@ -290,13 +295,8 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
     }
   }
 
-  function togglePresetNameVisibility({ target }) {
-    setPresetNameVisibility(target.checked);
-    updateSetting({
-      timer: {
-        presetNameHidden: target.checked
-      }
-    });
+  function handleLabelInputChange(event) {
+    setLabel(event.target.value);
   }
 
   return (
@@ -304,7 +304,7 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
       <div className="top-panel-item-content timer-content">
         {running ? (
           <>
-            {!presetNameHidden && activePreset ? <h4 className="timer-selected-preset-name">{activePreset.name}</h4> : null}
+            {label ? <h4 className="top-panel-item-content-label">{label}</h4> : null}
             <div>
               {state.hours > 0 && (
                 <>
@@ -324,17 +324,24 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
           </>
         ) : (
           <>
-            {presets.length ? (
-              <div className="select-container timer-preset-select">
-                <select className="input select"
-                  onChange={handlePresetSelection} value={activePreset?.id || ""} title="Presets">
-                  <option value=""></option>
-                  {presets.map(preset => (
-                    <option value={preset.id} key={preset.id}>{preset.name}</option>
-                  ))}
-                </select>
-              </div>
-            ) : null}
+            <div className="top-panel-item-content-top">
+              <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
+              <Dropdown
+                container={{ className: "top-panel-item-content-top-dropdown" }}
+                toggle={{ isIconTextBtn: true, title: "Presets", iconId: "menu" }}>
+                <div className="dropdown-group">
+                  {presets.length ? (
+                    presets.map(preset => (
+                      <button className={`btn text-btn dropdown-btn timer-dropdown-presets-item${activePreset?.id === preset.id ? " active" : ""}`} key={preset.id}
+                        onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
+                    ))
+                  ) : (
+                    <p className="timer-dropdown-presets-message">No presets</p>
+                  )}
+                </div>
+                <button className="btn text-btn dropdown-btn" onClick={showPresets}>Manage</button>
+              </Dropdown>
+            </div>
             <Inputs state={state} setState={setState} handleKeyDown={disableActivePreset}/>
           </>
         )}
@@ -348,28 +355,9 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
               <Icon id="expand"/>
             </button>
           ) : (
-            <>
-              <Dropdown>
-                <div className="dropdown-group">
-                  <label className="checkbox-container timer-dropdown-setting">
-                    <input type="checkbox" className="sr-only checkbox-input"
-                      onChange={togglePresetNameVisibility}
-                      checked={presetNameHidden}/>
-                    <div className="checkbox">
-                      <div className="checkbox-tick"></div>
-                    </div>
-                    <span className="label-right">Hide preset name</span>
-                  </label>
-                </div>
-                <button className="btn icon-text-btn dropdown-btn" onClick={showPresets}>
-                  <Icon id="menu"/>
-                  <span>Presets</span>
-                </button>
-              </Dropdown>
-              <button className="btn icon-btn" onClick={toggleAlarm} title="Toggle alarm">
-                <Icon id={`bell${alarm.shouldRun ? "" : "-off"}`}/>
-              </button>
-            </>
+            <button className="btn icon-btn" onClick={toggleAlarm} title="Toggle alarm">
+              <Icon id={`bell${alarm.shouldRun ? "" : "-off"}`}/>
+            </button>
           )}
         </div>
       </div>

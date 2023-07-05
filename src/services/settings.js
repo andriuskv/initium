@@ -103,6 +103,9 @@ function getDefault() {
       alarmVolume: 0.2,
       fullscreenTextScale: 1.5,
       showMinimal: false,
+      timer: {
+        usePresetNameAsLabel: false
+      },
       pomodoro: {
         focus: 25,
         short: 5,

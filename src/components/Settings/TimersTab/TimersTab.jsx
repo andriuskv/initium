@@ -11,6 +11,15 @@ export default function TimersTab() {
     updateSetting("timers", { fullscreenTextScale: target.valueAsNumber });
   }
 
+  function toggleTimerSetting(event) {
+    updateSetting("timers", {
+      timer: {
+        ...settings.timer,
+        usePresetNameAsLabel: event.target.checked
+      }
+    });
+  }
+
   function handleInputChange({ target }) {
     if (/\D/.test(target.value)) {
       return;
@@ -53,30 +62,45 @@ export default function TimersTab() {
       </label>
       <div className="settings-group">
         <div className="settings-group-top">
+          <h4 className="settings-group-title">Timer</h4>
+        </div>
+        <label className={`setting${settings.disabled ? " disabled" : ""}`}>
+          <span>Use preset name as a label when it's not provided</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            disabled={settings.disabled}
+            checked={settings.timer.usePresetNameAsLabel}
+            onChange={toggleTimerSetting}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
+      </div>
+      <div className="settings-group">
+        <div className="settings-group-top">
           <h4 className="settings-group-title">Pomodoro</h4>
         </div>
+        <label className={`setting${settings.disabled ? " disabled" : ""}`}>
+          <span>Focus duration</span>
+          <input type="text" className="input setting-input"
+            disabled={settings.disabled}
+            value={settings.pomodoro.focus}
+            onChange={handleInputChange} name="focus"/>
+        </label>
+        <label className={`setting${settings.disabled ? " disabled" : ""}`}>
+          <span>Short break duration</span>
+          <input type="text" className="input setting-input"
+            disabled={settings.disabled}
+            value={settings.pomodoro.short}
+            onChange={handleInputChange} name="short"/>
+        </label>
+        <label className={`setting${settings.disabled ? " disabled" : ""}`}>
+          <span>Long break duration</span>
+          <input type="text" className="input setting-input"
+            disabled={settings.disabled}
+            value={settings.pomodoro.long}
+            onChange={handleInputChange} name="long"/>
+        </label>
       </div>
-      <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Focus duration</span>
-        <input type="text" className="input setting-input"
-          disabled={settings.disabled}
-          value={settings.pomodoro.focus}
-          onChange={handleInputChange} name="focus"/>
-      </label>
-      <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Short break duration</span>
-        <input type="text" className="input setting-input"
-          disabled={settings.disabled}
-          value={settings.pomodoro.short}
-          onChange={handleInputChange} name="short"/>
-      </label>
-      <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Long break duration</span>
-        <input type="text" className="input setting-input"
-          disabled={settings.disabled}
-          value={settings.pomodoro.long}
-          onChange={handleInputChange} name="long"/>
-      </label>
     </div>
   );
 }

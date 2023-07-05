@@ -99,10 +99,18 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
 
   return (
     <div id={state.id} className={`dropdown-container${container ? ` ${container.className}` : ""}${state.visible ? " visible" : ""}`}>
-      <button className={`btn icon-btn${toggle.className ? ` ${toggle.className}` : ""}${state.visible ? " active" : ""}`}
-        onClick={toggleDropdown} title={toggle.title || "More"}>
-        <Icon id={toggle.iconId || "vertical-dots"}/>
-      </button>
+      {toggle.isIconTextBtn ? (
+        <button className={`btn icon-text-btn${toggle.className ? ` ${toggle.className}` : ""}${state.visible ? " active" : ""}`}
+          onClick={toggleDropdown}>
+          <Icon id={toggle.iconId || "vertical-dots"}/>
+          <span>{toggle.title}</span>
+        </button>
+      ) : (
+        <button className={`btn icon-btn${toggle.className ? ` ${toggle.className}` : ""}${state.visible ? " active" : ""}`}
+          onClick={toggleDropdown} title={toggle.title || "More"}>
+          <Icon id={toggle.iconId || "vertical-dots"}/>
+        </button>
+      )}
       <div ref={drop} className={`container dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}`}>{children}</div>
     </div>
   );
