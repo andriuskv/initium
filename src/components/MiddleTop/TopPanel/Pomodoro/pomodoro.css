@@ -3,6 +3,10 @@
   text-align: center;
 }
 
+.pomodoro-content {
+  flex-direction: row;
+}
+
 .pomodoro-selection {
   flex-shrink: 0;
   width: 100px;

@@ -7,6 +7,7 @@ import Icon from "components/Icon";
 export default function Stopwatch({ visible, expand }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
+  const [label, setLabel] = useState("");
   const animationId = useRef(0);
 
   useEffect(() => {
@@ -107,9 +108,20 @@ export default function Stopwatch({ visible, expand }) {
     };
   }
 
+  function handleLabelInputChange(event) {
+    setLabel(event.target.value);
+  }
+
   return (
     <div className={`top-panel-item stopwatch${visible ? " visible" : ""}`}>
       <div className="top-panel-item-content">
+        {running ? label ? (
+          <h4 className="top-panel-item-content-label">{label}</h4>
+        ) : null : (
+          <div className="top-panel-item-content-top">
+            <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
+          </div>
+        )}
         <div>
           {state.hours > 0 && (
             <>

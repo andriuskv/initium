@@ -153,7 +153,7 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
 
   return (
     <div className={`top-panel-item pomodoro${visible ? " visible" : ""}`}>
-      <div className="top-panel-item-content">
+      <div className="top-panel-item-content pomodoro-content">
         <div className="pomodoro">
           {state.hours > 0 && (
             <>

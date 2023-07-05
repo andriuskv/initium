@@ -301,7 +301,7 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
 
   return (
     <div className={`top-panel-item timer${visible ? " visible" : ""}`}>
-      <div className="top-panel-item-content timer-content">
+      <div className="top-panel-item-content">
         {running ? (
           <>
             {label ? <h4 className="top-panel-item-content-label">{label}</h4> : null}
