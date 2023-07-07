@@ -169,7 +169,7 @@ export default function Inputs({ state, setState, handleKeyDown: handleContainer
   }
 
   return (
-    <div className="timer-input-container" onKeyDown={handleContainerKeyDown}>
+    <div onKeyDown={handleContainerKeyDown}>
       <input type="text" className="top-panel-digit timer-input"
         onChange={handleChange} onKeyDown={handleKeyDown} value={state.hours} data-name="hours" ref={hoursInputRef}/>
       <span className="top-panel-digit-sep">h</span>

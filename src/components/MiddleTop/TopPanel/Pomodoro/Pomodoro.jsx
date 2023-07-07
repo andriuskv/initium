@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { setPageTitle } from "../../../../utils";
+import { setPageTitle } from "utils";
 import { padTime } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
@@ -12,9 +12,15 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
     const { pomodoro: { focus } } = getSetting("timers");
     return parseDuration(focus * 60);
   });
-  const [mode, setMode] = useState("focus");
+  const [stage, setStage] = useState("focus");
   const [alarm, setAlarm] = useState({ shouldRun: true });
+  const [label, setLabel] = useState("");
   const timeoutId = useRef(0);
+  const stages = {
+    focus: "Focus",
+    short: "Short break",
+    long: "Long break"
+  };
 
   useEffect(() => {
     if (running) {
@@ -82,7 +88,7 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
     if (isLastRunningTimer("pomodoro")) {
       await handleReset("pomodoro");
     }
-    resetTimer(mode);
+    resetTimer(stage);
 
     if (running) {
       setRunning(false);
@@ -103,17 +109,17 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
     }
   }
 
-  function selectMode(newMode) {
-    if (newMode === mode) {
+  function selectStage(newStage) {
+    if (newStage === stage) {
       return;
     }
-    setMode(newMode);
-    resetTimer(newMode);
+    setStage(newStage);
+    resetTimer(newStage);
   }
 
-  function resetTimer(mode) {
+  function resetTimer(stage) {
     const { pomodoro: settings } = getSetting("timers");
-    const duration = settings[mode];
+    const duration = settings[stage];
 
     setState(parseDuration(duration * 60));
   }
@@ -151,33 +157,47 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
     return alarm.shouldRun ? " \uD83D\uDD14" : "";
   }
 
+  function handleLabelInputChange(event) {
+    setLabel(event.target.value);
+  }
+
   return (
     <div className={`top-panel-item pomodoro${visible ? " visible" : ""}`}>
       <div className="top-panel-item-content pomodoro-content">
         <div className="pomodoro">
-          {state.hours > 0 && (
-            <>
-              <span className="top-panel-digit">{state.hours}</span>
-              <span className="top-panel-digit-sep">h</span>
-            </>
+          {running ? label ? (
+            <h4 className="top-panel-item-content-label pomodoro-label">
+              <div>{label}</div>
+              <div className="pomodoro-stage">{stages[stage]}</div>
+            </h4>
+          ) : <h4 className="top-panel-item-content-label">{stages[stage]}</h4> : (
+            <div className="top-panel-item-content-top">
+              <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
+            </div>
           )}
-          {(state.hours > 0 || state.minutes > 0) && (
-            <>
-              <span className="top-panel-digit">{state.minutes}</span>
-              <span className="top-panel-digit-sep">m</span>
-            </>
-          )}
-          <span className="top-panel-digit">{state.seconds}</span>
-          <span className="top-panel-digit-sep">s</span>
+          <div>
+            {state.hours > 0 && (
+              <>
+                <span className="top-panel-digit">{state.hours}</span>
+                <span className="top-panel-digit-sep">h</span>
+              </>
+            )}
+            {(state.hours > 0 || state.minutes > 0) && (
+              <>
+                <span className="top-panel-digit">{state.minutes}</span>
+                <span className="top-panel-digit-sep">m</span>
+              </>
+            )}
+            <span className="top-panel-digit">{state.seconds}</span>
+            <span className="top-panel-digit-sep">s</span>
+          </div>
         </div>
         {!running && (
           <div className="top-panel-hide-target pomodoro-selection">
-            <button className={`btn text-btn pomodoro-btn${mode === "focus" ? " active" : ""}`}
-              onClick={() => selectMode("focus")}>Focus</button>
-            <button className={`btn text-btn pomodoro-btn${mode === "short" ? " active" : ""}`}
-              onClick={() => selectMode("short")}>Short Break</button>
-            <button className={`btn text-btn pomodoro-btn${mode === "long" ? " active" : ""}`}
-              onClick={() => selectMode("long")}>Long Break</button>
+            {Object.keys(stages).map(key => (
+              <button className={`btn text-btn pomodoro-btn${stage === key ? " active" : ""}`} key={key}
+                onClick={() => selectStage(key)}>{stages[key]}</button>
+            ))}
           </div>
         )}
       </div>
@@ -190,11 +210,9 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
               <Icon id="expand"/>
             </button>
           ) : (
-            <>
-              <button className="btn icon-btn" onClick={toggleAlarm} title="Toggle alarm">
-                <Icon id={`bell${alarm.shouldRun ? "" : "-off"}`}/>
-              </button>
-            </>
+            <button className="btn icon-btn" onClick={toggleAlarm} title="Toggle alarm">
+              <Icon id={`bell${alarm.shouldRun ? "" : "-off"}`}/>
+            </button>
           )}
         </div>
       </div>

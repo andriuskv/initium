@@ -89,6 +89,10 @@
       &.pomodoro {
         display: block;
       }
+
+      .pomodoro-stage {
+        font-size: var(--text-xxs);
+      }
     }
 
     .top-panel-item-content-label {
@@ -199,8 +203,7 @@
   align-items: center;
   justify-content: center;
   max-width: 100%;
-  min-height: 44px;
-  line-height: 1.25;
+  min-height: 46px;
   text-wrap: balance;
   text-align: center;
   font-size: calc(var(--text-lg) * var(--size-multiplier));
