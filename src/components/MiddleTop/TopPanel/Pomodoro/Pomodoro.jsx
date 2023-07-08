@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { setPageTitle } from "utils";
 import { padTime } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
 import Icon from "components/Icon";
 import "./pomodoro.css";
 
-export default function Pomodoro({ visible, expand, exitFullscreen, handleReset }) {
+export default function Pomodoro({ visible, updateTitle, expand, exitFullscreen, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => {
     const { pomodoro: { focus } } = getSetting("timers");
@@ -51,12 +50,12 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
       setAlarm({ ...alarm, element: new Audio("./assets/alarm.mp3") });
     }
     setRunning(true);
-    updateTitle(state);
+    updateTitle("pomodoro", { ...state, isAlarmSet: alarm.shouldRun });
   }
 
   function stop() {
     setRunning(false);
-    updateTitle();
+    updateTitle("pomodoro");
   }
 
   function update(duration, elapsed) {
@@ -69,7 +68,7 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
     const state = parseDuration(duration);
 
     setState(state);
-    updateTitle(state);
+    updateTitle("pomodoro", { ...state, isAlarmSet: alarm.shouldRun });
 
     if (duration > 0) {
       timeoutId.current = setTimeout(() => {
@@ -92,20 +91,7 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
 
     if (running) {
       setRunning(false);
-      setPageTitle();
-    }
-  }
-
-  function updateTitle(values) {
-    if (isLastRunningTimer("pomodoro")) {
-      if (values) {
-        const { hours, minutes, seconds } = values;
-
-        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes ? `${minutes} m ` : ""}${seconds} s${getAlarmIcon()}`);
-      }
-      else {
-        setPageTitle();
-      }
+      updateTitle("pomodoro");
     }
   }
 
@@ -151,10 +137,6 @@ export default function Pomodoro({ visible, expand, exitFullscreen, handleReset 
       exitFullscreen();
       reset();
     }, 3000);
-  }
-
-  function getAlarmIcon() {
-    return alarm.shouldRun ? " \uD83D\uDD14" : "";
   }
 
   function handleLabelInputChange(event) {

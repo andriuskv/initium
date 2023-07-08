@@ -1,8 +1,8 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
-import { delay } from "../../../utils";
+import { delay, setPageTitle } from "utils";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
-import { removeFromRunning, getLastRunningTimer } from "./running-timers";
+import { removeFromRunning, getLastRunningTimer, isLastRunningTimer } from "./running-timers";
 import Icon from "components/Icon";
 import "./top-panel.css";
 import Countdown from "./Countdown";
@@ -107,6 +107,19 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
       else {
         resetMinimal();
         return delay(250);
+      }
+    }
+  }
+
+  function updateTitle(name, values) {
+    if (isLastRunningTimer(name)) {
+      if (values) {
+        const { hours, minutes, seconds, isAlarmSet } = values;
+
+        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes ? `${minutes} m ` : ""}${seconds} s${isAlarmSet ? " \uD83D\uDD14" : ""}`);
+      }
+      else {
+        setPageTitle();
       }
     }
   }
@@ -273,9 +286,15 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
           </li>
         </ul>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
-          {tabs.timer.rendered ? <Timer visible={activeTab === "timer"} expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/> : null}
-          {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} expand={expand}/> : null}
-          {tabs.pomodoro.rendered ? <Pomodoro visible={activeTab === "pomodoro"} expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/> : null}
+          {tabs.timer.rendered ? (
+            <Timer visible={activeTab === "timer"} updateTitle={updateTitle}
+              expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
+          ) : null}
+          {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} updateTitle={updateTitle} expand={expand}/> : null}
+          {tabs.pomodoro.rendered ? (
+            <Pomodoro visible={activeTab === "pomodoro"} updateTitle={updateTitle}
+              expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
+          ) : null}
           {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible}/> : null}
         </Suspense>
         <Countdown visible={activeTab === "countdown"}/>

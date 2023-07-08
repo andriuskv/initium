@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { dispatchCustomEvent, setPageTitle } from "utils";
+import { dispatchCustomEvent } from "utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
@@ -10,7 +10,7 @@ import "./timer.css";
 import Inputs from "./Inputs";
 import Presets from "./Presets";
 
-export default function Timer({ visible, expand, exitFullscreen, handleReset }) {
+export default function Timer({ visible, updateTitle, expand, exitFullscreen, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState({
     hours: "00",
@@ -92,7 +92,12 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
         duration
       });
 
-      updateTitle({ hours: values.hours, minutes: values.hours || values.minutes ? paddedMinutes : "", seconds: paddedSeconds });
+      updateTitle("timer", {
+        hours: values.hours,
+        minutes: values.hours || values.minutes ? paddedMinutes : "",
+        seconds: paddedSeconds,
+        isAlarmSet: alarm.shouldRun
+      });
     }
   }
 
@@ -103,7 +108,7 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
       seconds: padTime(state.seconds)
     });
     setRunning(false);
-    updateTitle();
+    updateTitle("timer");
   }
 
   function normalizeValues() {
@@ -151,7 +156,12 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
       seconds: paddedSeconds
     });
 
-    updateTitle({ hours, minutes: hours || minutes ? paddedMinutes : "", seconds: paddedSeconds });
+    updateTitle("timer", {
+      hours, minutes: hours ||
+      minutes ? paddedMinutes : "",
+      seconds: paddedSeconds,
+      isAlarmSet: alarm.shouldRun
+    });
 
     if (duration > 0) {
       timeoutId.current = setTimeout(() => {
@@ -184,20 +194,7 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
 
     if (running) {
       setRunning(false);
-      setPageTitle();
-    }
-  }
-
-  function updateTitle(values) {
-    if (isLastRunningTimer("timer")) {
-      if (values) {
-        const { hours, minutes, seconds } = values;
-
-        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes ? `${minutes} m ` : ""}${seconds} s${getAlarmIcon()}`);
-      }
-      else {
-        setPageTitle();
-      }
+      updateTitle("timer");
     }
   }
 
@@ -215,10 +212,6 @@ export default function Timer({ visible, expand, exitFullscreen, handleReset }) 
       exitFullscreen();
       reset();
     }, 3000);
-  }
-
-  function getAlarmIcon() {
-    return alarm.shouldRun ? " \uD83D\uDD14" : "";
   }
 
   function updatePresetsModal(presets) {

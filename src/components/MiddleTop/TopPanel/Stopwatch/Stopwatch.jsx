@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { setPageTitle } from "utils";
 import { padTime } from "services/timeDate";
-import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
+import { addToRunning, removeFromRunning } from "../running-timers";
 import Icon from "components/Icon";
 
-export default function Stopwatch({ visible, expand }) {
+export default function Stopwatch({ visible, updateTitle, expand }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
   const [label, setLabel] = useState("");
@@ -36,13 +35,13 @@ export default function Stopwatch({ visible, expand }) {
 
   function start() {
     setRunning(true);
-    updateTitle({ minutes: "0", seconds: "00" });
+    updateTitle("stopwatch", { minutes: "0", seconds: "00" });
   }
 
   function stop() {
     cancelAnimationFrame(animationId.current);
     setRunning(false);
-    updateTitle();
+    updateTitle("stopwatch");
   }
 
   function update(elapsed) {
@@ -65,7 +64,7 @@ export default function Stopwatch({ visible, expand }) {
       state.minutesDisplay = padTime(state.minutes, state.hours);
       state.secondsDisplay = padTime(state.seconds, state.minutes);
 
-      updateTitle({ hours: state.hours, minutes: state.minutesDisplay, seconds: state.secondsDisplay });
+      updateTitle("stopwatch", { hours: state.hours, minutes: state.minutesDisplay, seconds: state.secondsDisplay });
     }
     const millisecondString = Math.floor(state.milliseconds).toString();
     state.millisecondsDisplay = state.milliseconds < 100 ? `0${millisecondString[0]}` : millisecondString.slice(0, 2);
@@ -81,19 +80,6 @@ export default function Stopwatch({ visible, expand }) {
 
     if (running) {
       stop();
-    }
-  }
-
-  function updateTitle(values) {
-    if (isLastRunningTimer("stopwatch")) {
-      if (values) {
-        const { hours, minutes, seconds } = values;
-
-        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes} m ${seconds} s`);
-      }
-      else {
-        setPageTitle();
-      }
     }
   }
 
