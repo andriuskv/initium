@@ -371,18 +371,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
   }
 
   function removeFormTask() {
-    const group = groups[form.groupIndex];
-    const task = group.tasks[form.taskIndex];
-
-    if (task.id === form.task.id) {
-      group.taskCount -= 1;
-      group.tasks = group.tasks.filter(task => {
-        return task.id !== form.task.id;
-      });
-      setGroups([...groups]);
-      countTasks(groups);
-      saveTasks(groups);
-    }
+    removeTask(form.groupIndex, form.taskIndex);
     hideForm();
   }
 
