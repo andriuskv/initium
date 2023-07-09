@@ -21,6 +21,7 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
   const [activePreset, setActivePreset] = useState(null);
   const [alarm, setAlarm] = useState({ shouldRun: true });
   const [label, setLabel] = useState("");
+  const dirty = useRef(false);
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
       if (!alarm.element) {
         setAlarm({ ...alarm, element: new Audio("./assets/alarm.mp3") });
       }
+      dirty.current = true;
       setRunning(true);
       setState({
         hours: values.hours,
@@ -180,6 +182,7 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
     if (isLastRunningTimer("timer")) {
       await handleReset("timer");
     }
+    dirty.current = false;
 
     if (activePreset) {
       setState({
@@ -317,24 +320,26 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
           </>
         ) : (
           <>
-            <div className="top-panel-item-content-top">
-              <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
-              <Dropdown
-                container={{ className: "top-panel-item-content-top-dropdown" }}
-                toggle={{ isIconTextBtn: true, title: "Presets", iconId: "menu" }}>
-                <div className="dropdown-group">
-                  {presets.length ? (
-                    presets.map(preset => (
-                      <button className={`btn text-btn dropdown-btn timer-dropdown-presets-item${activePreset?.id === preset.id ? " active" : ""}`} key={preset.id}
-                        onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
-                    ))
-                  ) : (
-                    <p className="timer-dropdown-presets-message">No presets</p>
-                  )}
-                </div>
-                <button className="btn text-btn dropdown-btn" onClick={showPresets}>Manage</button>
-              </Dropdown>
-            </div>
+            {dirty.current ? label ? <h4 className="top-panel-item-content-label">{label}</h4> : null : (
+              <div className="top-panel-item-content-top">
+                <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
+                <Dropdown
+                  container={{ className: "top-panel-item-content-top-dropdown" }}
+                  toggle={{ isIconTextBtn: true, title: "Presets", iconId: "menu" }}>
+                  <div className="dropdown-group">
+                    {presets.length ? (
+                      presets.map(preset => (
+                        <button className={`btn text-btn dropdown-btn timer-dropdown-presets-item${activePreset?.id === preset.id ? " active" : ""}`} key={preset.id}
+                          onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
+                      ))
+                    ) : (
+                      <p className="timer-dropdown-presets-message">No presets</p>
+                    )}
+                  </div>
+                  <button className="btn text-btn dropdown-btn" onClick={showPresets}>Manage</button>
+                </Dropdown>
+              </div>
+            )}
             <Inputs state={state} setState={setState} handleKeyDown={disableActivePreset}/>
           </>
         )}

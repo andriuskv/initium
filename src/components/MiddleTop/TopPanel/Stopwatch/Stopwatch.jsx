@@ -7,6 +7,7 @@ export default function Stopwatch({ visible, updateTitle, expand }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
   const [label, setLabel] = useState("");
+  const dirty = useRef(false);
   const animationId = useRef(0);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function Stopwatch({ visible, updateTitle, expand }) {
   }
 
   function start() {
+    dirty.current = true;
     setRunning(true);
     updateTitle("stopwatch", { minutes: "0", seconds: "00" });
   }
@@ -76,6 +78,7 @@ export default function Stopwatch({ visible, updateTitle, expand }) {
   }
 
   function reset() {
+    dirty.current = false;
     setState(getInitialState());
 
     if (running) {
@@ -98,16 +101,24 @@ export default function Stopwatch({ visible, updateTitle, expand }) {
     setLabel(event.target.value);
   }
 
+  function renderTop() {
+    if (running || dirty.current) {
+      if (label) {
+        return <h4 className="top-panel-item-content-label">{label}</h4>;
+      }
+      return null;
+    }
+    return (
+      <div className="top-panel-item-content-top">
+        <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
+      </div>
+    );
+  }
+
   return (
     <div className={`top-panel-item stopwatch${visible ? " visible" : ""}`}>
       <div className="top-panel-item-content">
-        {running ? label ? (
-          <h4 className="top-panel-item-content-label">{label}</h4>
-        ) : null : (
-          <div className="top-panel-item-content-top">
-            <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
-          </div>
-        )}
+        {renderTop()}
         <div>
           {state.hours > 0 && (
             <>
