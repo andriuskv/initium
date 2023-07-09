@@ -100,7 +100,7 @@ function getDefault() {
     },
     timers: {
       disabled: false,
-      alarmVolume: 0.2,
+      volume: 0.2,
       fullscreenTextScale: 1.5,
       showMinimal: false,
       timer: {

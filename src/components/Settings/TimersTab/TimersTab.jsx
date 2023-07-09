@@ -3,8 +3,8 @@ import { useSettings } from "contexts/settings";
 export default function TimersTab() {
   const { settings: { timers: settings }, updateSetting, toggleSetting } = useSettings();
 
-  function handleAlarmVolumeChange({ target }) {
-    updateSetting("timers", { alarmVolume: target.valueAsNumber });
+  function handleVolumeChange({ target }) {
+    updateSetting("timers", { volume: target.valueAsNumber });
   }
 
   function handleTextScaleChange({ target }) {
@@ -39,10 +39,10 @@ export default function TimersTab() {
         </div>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Alarm volume</span>
+        <span>Volume</span>
         <input type="range" className="range-input" min="0" max="1" step="0.05"
           disabled={settings.disabled}
-          defaultValue={settings.alarmVolume} onChange={handleAlarmVolumeChange}/>
+          defaultValue={settings.volume} onChange={handleVolumeChange}/>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
         <span>Fullscreen text scale</span>

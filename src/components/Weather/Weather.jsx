@@ -153,7 +153,7 @@ export default function Weather({ timeFormat }) {
       if (json.message) {
         dispatchCustomEvent("weather-error", json);
       }
-      else {
+      else if (json.city) {
         setCurrentWeather(json);
 
         if (forceMoreWeatherUpdate) {

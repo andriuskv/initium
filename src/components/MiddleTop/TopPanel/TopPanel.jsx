@@ -114,9 +114,9 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
   function updateTitle(name, values) {
     if (isLastRunningTimer(name)) {
       if (values) {
-        const { hours, minutes, seconds, isAlarmSet } = values;
+        const { hours, minutes, seconds, isAudioEnabled } = values;
 
-        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes ? `${minutes} m ` : ""}${seconds} s${isAlarmSet ? " \uD83D\uDD14" : ""}`);
+        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes ? `${minutes} m ` : ""}${seconds} s${isAudioEnabled ? " \uD83D\uDD14" : ""}`);
       }
       else {
         setPageTitle();

@@ -19,7 +19,7 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
   });
   const [presets, setPresets] = useState([]);
   const [activePreset, setActivePreset] = useState(null);
-  const [alarm, setAlarm] = useState({ shouldRun: true });
+  const [audio, setAudio] = useState({ shouldPlay: true });
   const [label, setLabel] = useState("");
   const dirty = useRef(false);
   const timeoutId = useRef(0);
@@ -82,8 +82,8 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
       const paddedMinutes = padTime(values.minutes, values.hours);
       const paddedSeconds = padTime(values.seconds, values.hours || values.minutes);
 
-      if (!alarm.element) {
-        setAlarm({ ...alarm, element: new Audio("./assets/alarm.mp3") });
+      if (!audio.element) {
+        setAudio({ ...audio, element: new Audio("./assets/alarm.mp3") });
       }
       dirty.current = true;
       setRunning(true);
@@ -98,7 +98,7 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
         hours: values.hours,
         minutes: values.hours || values.minutes ? paddedMinutes : "",
         seconds: paddedSeconds,
-        isAlarmSet: alarm.shouldRun
+        isAudioEnabled: audio.shouldPlay
       });
     }
   }
@@ -162,7 +162,7 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
       hours, minutes: hours ||
       minutes ? paddedMinutes : "",
       seconds: paddedSeconds,
-      isAlarmSet: alarm.shouldRun
+      isAudioEnabled: audio.shouldPlay
     });
 
     if (duration > 0) {
@@ -170,8 +170,8 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
         update(duration, elapsed);
       }, interval - diff);
     }
-    else if (alarm.shouldRun) {
-      runAlarm();
+    else if (audio.shouldPlay) {
+      playAudio();
     }
     else {
       setTimeout(reset, interval - diff);
@@ -201,15 +201,15 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
     }
   }
 
-  function toggleAlarm() {
-    setAlarm({ ...alarm, shouldRun: !alarm.shouldRun });
+  function toggleAudio() {
+    setAudio({ ...audio, shouldPlay: !audio.shouldPlay });
   }
 
-  function runAlarm() {
-    const { alarmVolume } = getSetting("timers");
+  function playAudio() {
+    const { volume } = getSetting("timers");
 
-    alarm.element.volume = alarmVolume;
-    alarm.element.play();
+    audio.element.volume = volume;
+    audio.element.play();
 
     setTimeout(() => {
       exitFullscreen();
@@ -353,8 +353,8 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
               <Icon id="expand"/>
             </button>
           ) : (
-            <button className="btn icon-btn" onClick={toggleAlarm} title="Toggle alarm">
-              <Icon id={`bell${alarm.shouldRun ? "" : "-off"}`}/>
+            <button className="btn icon-btn" onClick={toggleAudio} title={`${audio.shouldPlay ? "Disable" : "Enable"} audio`}>
+              <Icon id={`bell${audio.shouldPlay ? "" : "-off"}`}/>
             </button>
           )}
         </div>

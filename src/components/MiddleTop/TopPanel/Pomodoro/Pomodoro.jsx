@@ -20,6 +20,7 @@ export default function Pomodoro({ visible, updateTitle, expand, handleReset }) 
   });
   const [stage, setStage] = useState("focus");
   const [label, setLabel] = useState("");
+  const [audio, setAudio] = useState({ shouldPlay: true });
   const dirty = useRef(false);
   const currentStageIndex = useRef(0);
   const timeoutId = useRef(0);
@@ -59,8 +60,12 @@ export default function Pomodoro({ visible, updateTitle, expand, handleReset }) 
 
   function start() {
     dirty.current = true;
+
+    if (!audio.element) {
+      setAudio({ ...audio, element: new Audio("./assets/chime.mp3") });
+    }
     setRunning(true);
-    updateTitle("pomodoro", state);
+    updateTitle("pomodoro", { ...state, isAudioEnabled: audio.shouldPlay });
   }
 
   function stop() {
@@ -78,13 +83,16 @@ export default function Pomodoro({ visible, updateTitle, expand, handleReset }) 
     const state = parseDuration(duration);
 
     setState(state);
-    updateTitle("pomodoro", state);
+    updateTitle("pomodoro", { ...state, isAudioEnabled: audio.shouldPlay });
 
     timeoutId.current = setTimeout(() => {
       if (duration > 0) {
         update(duration, elapsed);
       }
       else {
+        if (audio.shouldPlay) {
+          playAudio();
+        }
         setNextStage();
       }
     }, interval - diff);
@@ -137,6 +145,17 @@ export default function Pomodoro({ visible, updateTitle, expand, handleReset }) 
       minutes: padTime(minutes, hours),
       seconds: padTime(seconds, hours || minutes)
     };
+  }
+
+  function toggleAudio() {
+    setAudio({ ...audio, shouldPlay: !audio.shouldPlay });
+  }
+
+  function playAudio() {
+    const { volume } = getSetting("timers");
+
+    audio.element.volume = volume;
+    audio.element.play();
   }
 
   function handleLabelInputChange(event) {
@@ -193,7 +212,11 @@ export default function Pomodoro({ visible, updateTitle, expand, handleReset }) 
             <button className="btn icon-btn" onClick={expand} title="Expand">
               <Icon id="expand"/>
             </button>
-          ) : null}
+          ) : (
+            <button className="btn icon-btn" onClick={toggleAudio} title={`${audio.shouldPlay ? "Disable" : "Enable"} audio`}>
+              <Icon id={`bell${audio.shouldPlay ? "" : "-off"}`}/>
+            </button>
+          )}
         </div>
       </div>
     </div>
