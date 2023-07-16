@@ -22,6 +22,7 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
   const [audio, setAudio] = useState({ shouldPlay: true });
   const [label, setLabel] = useState("");
   const dirty = useRef(false);
+  const dirtyInput = useRef(false);
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -86,6 +87,7 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
         setAudio({ ...audio, element: new Audio("./assets/alarm.mp3") });
       }
       dirty.current = true;
+      dirtyInput.current = true;
       setRunning(true);
       setState({
         hours: values.hours,
@@ -183,6 +185,7 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
       await handleReset("timer");
     }
     dirty.current = false;
+    dirtyInput.current = false;
 
     if (activePreset) {
       setState({
@@ -199,6 +202,11 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
       setRunning(false);
       updateTitle("timer");
     }
+  }
+
+  function updateInputs(inputs) {
+    dirtyInput.current = true;
+    setState({ ...inputs });
   }
 
   function toggleAudio() {
@@ -340,13 +348,13 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
                 </Dropdown>
               </div>
             )}
-            <Inputs state={state} setState={setState} handleKeyDown={disableActivePreset}/>
+            <Inputs state={state} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
           </>
         )}
       </div>
       <div className="top-panel-hide-target top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
-        <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>
+        {running || !dirtyInput.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
         <div className="top-panel-secondary-actions">
           {running ? (
             <button className="btn icon-btn" onClick={expand} title="Expand">

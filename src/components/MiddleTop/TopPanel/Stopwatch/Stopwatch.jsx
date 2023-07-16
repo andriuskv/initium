@@ -139,7 +139,7 @@ export default function Stopwatch({ visible, updateTitle, expand }) {
       </div>
       <div className="top-panel-hide-target top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
-        <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>
+        {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
         <div className="top-panel-secondary-actions">
           {running && (
             <button className="btn icon-btn" onClick={expand} title="Expand">

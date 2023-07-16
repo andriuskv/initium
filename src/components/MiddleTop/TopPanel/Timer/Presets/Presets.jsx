@@ -13,6 +13,10 @@ export default function Presets({ presets, updatePresets, resetActivePreset, hid
   });
   const [form, setForm] = useState({ name: "" });
 
+  function updateInputs(inputs) {
+    setState({ ...inputs });
+  }
+
   function createPreset(event) {
     event.preventDefault();
 
@@ -93,7 +97,7 @@ export default function Presets({ presets, updatePresets, resetActivePreset, hid
         <div className="timer-presets-form-body">
           <input type="text" className="input timer-presets-form-name-input" name="name" placeholder="Preset name"
             value={form.name} onChange={handlePresetNameChange} autoComplete="off" required/>
-          <Inputs state={state} setState={setState} handleKeyDown={resetFormError}/>
+          <Inputs state={state} updateInputs={updateInputs} handleKeyDown={resetFormError}/>
         </div>
         {form.error && <p className="timer-presets-form-message">Please enter valid time.</p>}
         <div className="timer-presets-form-footer">

@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { padTime } from "services/timeDate";
 
-export default function Inputs({ state, setState, handleKeyDown: handleContainerKeyDown }) {
+export default function Inputs({ state, updateInputs, handleKeyDown: handleContainerKeyDown }) {
   const hoursInputRef = useRef(null);
   const minutesInputRef = useRef(null);
   const secondsInputRef = useRef(null);
@@ -26,7 +26,7 @@ export default function Inputs({ state, setState, handleKeyDown: handleContainer
     else {
       state[name] = padTime(target.value);
     }
-    setState({ ...state });
+    updateInputs(state);
     requestAnimationFrame(() => {
       target.setSelectionRange(selection.current.end, selection.current.end);
     });
@@ -122,7 +122,7 @@ export default function Inputs({ state, setState, handleKeyDown: handleContainer
           state.hours = "00";
         }
       }
-      setState({ ...state });
+      updateInputs(state);
       requestAnimationFrame(() => {
         target.setSelectionRange(selectionEnd, selectionEnd);
       });
