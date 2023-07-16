@@ -1,4 +1,5 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
+import * as focusService from "services/focus";
 import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";
@@ -15,6 +16,10 @@ const StorageTab = lazy(() => import("./StorageTab"));
 
 export default function Settings({ hide }) {
   const [activeTab, setActiveTab] = useState("general");
+
+  useEffect(() => {
+    focusService.updateFocusTrap("fullscreen-modal");
+  }, [activeTab]);
 
   function renderNavigation() {
     const tabs = [

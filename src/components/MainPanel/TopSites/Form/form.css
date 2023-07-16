@@ -1,19 +1,6 @@
 .top-sites-form {
-  z-index: 1;
-  position: absolute;
-  top: 50%;
-  left: 50%;
   width: 400px;
-  padding: var(--space-md);
-  transform: translate(-50%, -50%);
   pointer-events: auto;
-}
-
-.top-sites-form-title {
-  margin-top: var(--space-md);
-  margin-bottom: var(--space-xl);
-  font-size: var(--text-lg);
-  text-align: center;
 }
 
 .top-sites-form-label {

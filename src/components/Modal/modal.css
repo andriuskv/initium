@@ -4,15 +4,21 @@
   inset: 1px;
   display: flex;
   border-radius: 8px;
-  background-color: hsl(var(--accent-hue) 7% 12% / 50%);
+
+  &:not(.transparent) {
+    background-color: hsl(var(--accent-hue) 7% 12% / 50%);
+
+    .modal {
+      background-color: hsl(var(--accent-hue) 7% 12%);
+      backdrop-filter: none;
+    }
+  }
 }
 
 .modal {
   min-width: 280px;
   padding: var(--space-xl) var(--space-md) var(--space-md) var(--space-md);
   margin: auto;
-  background-color: hsl(var(--accent-hue) 7% 12%);
-  backdrop-filter: none;
 }
 
 .modal-title {

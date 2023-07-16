@@ -202,7 +202,7 @@ export default function Presets({ createCountdown, hide }) {
       <h3 className="countdown-form-title">Countdown form</h3>
       <label>
         <div className="countdown-form-field-title">Title</div>
-        <input type="text" className="input countdown-form-field" name="title" autoFocus/>
+        <input type="text" className="input countdown-form-field" name="title"/>
       </label>
       <div className="countdown-form-fields countdown-form-date-fields">
         <label>

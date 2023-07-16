@@ -1,5 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { getRandomString } from "utils";
+import * as focusService from "services/focus";
 import Icon from "components/Icon";
 import "./dropdown.css";
 
@@ -17,6 +18,22 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
       window.removeEventListener("click", memoizedWindowClickHandler);
     };
   }, [memoizedWindowClickHandler]);
+
+  useEffect(() => {
+    if (state.visible) {
+      focusService.setInitiator(document.activeElement);
+      focusService.trapFocus("dropdown", drop.current, { excludeDropdown: false });
+
+      window.addEventListener("keyup", handleKeyUp);
+    }
+    return () => {
+      if (state.visible) {
+        focusService.focusInitiator("dropdown");
+        focusService.clearFocusTrap("dropdown");
+      }
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [state.reveal, state.visible]);
 
   useLayoutEffect(() => {
     if (state.reveal) {
@@ -69,25 +86,35 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
     });
   }
 
+  function handleKeyUp(event) {
+    if (event.key === "Escape" || (event.key === "Tab" && !drop.current.contains(event.target))) {
+      hideDropdown();
+    }
+  }
+
   function handleWindowClick({ target }) {
     const closestContainer = target.closest(".dropdown-container");
-    let hideDropdown = true;
+    let shouldHide = true;
 
     if (closestContainer?.id === state.id) {
       if (target.closest("[data-dropdown-keep]")) {
-        hideDropdown = false;
+        shouldHide = false;
       }
       else {
-        hideDropdown = target.closest("a") || target.closest(".dropdown-btn");
+        shouldHide = target.closest("a") || target.closest(".dropdown-btn");
       }
     }
 
-    if (hideDropdown) {
-      if (isMounted.current) {
-        setState({ id: state.id, visible: false, reveal: false });
-      }
-      window.removeEventListener("click", memoizedWindowClickHandler);
+    if (shouldHide) {
+      hideDropdown();
     }
+  }
+
+  function hideDropdown() {
+    if (isMounted.current) {
+      setState({ id: state.id, visible: false, reveal: false });
+    }
+    window.removeEventListener("click", memoizedWindowClickHandler);
   }
 
   function getParentElement(element) {

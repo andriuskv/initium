@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
+import * as focusService from "services/focus";
 import "./form.css";
 import Icon from "components/Icon";
 
@@ -13,6 +14,10 @@ export default function Form({ addClock, hide }) {
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    focusService.updateFocusTrap("fullscreen-modal");
+  }, [searchResults]);
 
   async function init() {
     const clocks = await chromeStorage.get("clocks");
@@ -117,7 +122,7 @@ export default function Form({ addClock, hide }) {
       <div className="world-form-top">
         <div className="world-form-input-container">
           <Icon id="search" className="world-form-input-icon"/>
-          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} autoFocus placeholder="Paris"/>
+          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} placeholder="Paris"/>
           {inputValue.length ? (
             <button className="btn icon-btn world-form-input-clear-btn" onClick={clearInput} title="clear">
               <Icon id="cross"/>
