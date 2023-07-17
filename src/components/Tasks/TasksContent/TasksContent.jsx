@@ -655,9 +655,9 @@ export default function Tasks({ settings, expanded, toggleSize }) {
             <button className="btn text-btn tasks-dialog-btn" onClick={undoRemovedTasks}>UNDO</button>
           </div>
         )}
-        <button className="btn icon-text-btn tasks-create-btn" onClick={showForm}>
+        <button className="btn icon-text-btn create-btn tasks-create-btn" onClick={showForm}>
           <Icon id="plus"/>
-          <span className="tasks-create-btn-title">Create</span>
+          <span>Create</span>
         </button>
       </div>
     </>

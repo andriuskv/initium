@@ -122,9 +122,9 @@ export default function World({ visible, parentVisible }) {
           ))}
         </ul>
       ) : <p className="world-clocks-message">No clocks added</p>}
-      <button className="btn icon-text-btn world-create-btn" onClick={showForm}>
-        <Icon id="plus" className="world-create-btn-icon"/>
-        <span className="world-create-btn-title">Create</span>
+      <button className="btn icon-text-btn create-btn" onClick={showForm}>
+        <Icon id="plus"/>
+        <span>Create</span>
       </button>
     </div>
   );

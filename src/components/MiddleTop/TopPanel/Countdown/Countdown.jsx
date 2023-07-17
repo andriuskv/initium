@@ -239,9 +239,9 @@ export default function Countdown({ visible, toggleIndicator }) {
 
   return (
     <div className={`top-panel-item countdown${visible ? " visible" : ""}`}>
-      <button className="btn icon-text-btn countdown-create-btn" onClick={showForm}>
+      <button className="btn icon-text-btn create-btn" onClick={showForm}>
         <Icon id="plus"/>
-        <span className="countdown-create-btn-title">Create</span>
+        <span>Create</span>
       </button>
       {renderCountdowns()}
     </div>
