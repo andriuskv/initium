@@ -22,6 +22,7 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
     timer: {},
     stopwatch: {},
     pomodoro: {},
+    countdown: {},
     world: {}
   }));
   const containerRef = useRef(null);
@@ -229,6 +230,11 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
     containerRef.current.style.setProperty("--z-index", increaseZIndex("top-panel"));
   }
 
+  function toggleCountdownIndicator(value) {
+    tabs.countdown.indicatorVisible = value;
+    setTabs({ ...tabs });
+  }
+
   function exitFullscreen() {
     setExpanded(false);
   }
@@ -268,8 +274,10 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
             </button>
           </li>
           <li className={`top-panel-header-item${activeTab === "countdown" ? " active" : ""}`}>
-            <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => setActiveTab("countdown")}>
-              <Icon id="countdown"/>
+            <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab("countdown")}>
+              <span className={tabs.countdown.indicatorVisible ? "indicator" : ""}>
+                <Icon id="countdown"/>
+              </span>
               <span>Countdown</span>
             </button>
           </li>
@@ -297,7 +305,7 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
           ) : null}
           {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible}/> : null}
         </Suspense>
-        <Countdown visible={activeTab === "countdown"}/>
+        <Countdown visible={activeTab === "countdown"} toggleIndicator={toggleCountdownIndicator}/>
         {expanded && (
           <button className="btn icon-btn top-panel-collapse-btn" onClick={hideTopPanel} title="Close">
             <Icon id="cross"/>

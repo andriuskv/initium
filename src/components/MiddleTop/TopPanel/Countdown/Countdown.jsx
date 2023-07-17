@@ -6,7 +6,7 @@ import Icon from "components/Icon";
 import "./countdown.css";
 import Form from "./Form";
 
-export default function Countdown({ visible }) {
+export default function Countdown({ visible, toggleIndicator }) {
   const [countdowns, setCountdowns] = useState([]);
   const timeoutId = useRef(0);
 
@@ -31,8 +31,9 @@ export default function Countdown({ visible }) {
     const countdowns = await chromeStorage.get("countdowns");
 
     if (countdowns?.length) {
-      dispatchCustomEvent("indicator-visibility", true);
       startCountdowns(countdowns);
+      toggleIndicator(true);
+      dispatchCustomEvent("indicator-visibility", true);
     }
 
     chromeStorage.subscribeToChanges(({ countdowns }) => {
@@ -131,6 +132,7 @@ export default function Countdown({ visible }) {
     });
     setCountdowns([...countdowns]);
     saveCountdowns(countdowns);
+    toggleIndicator(true);
     dispatchCustomEvent("indicator-visibility", true);
   }
 
@@ -138,6 +140,7 @@ export default function Countdown({ visible }) {
     countdowns.splice(index, 1);
 
     if (!countdowns.length) {
+      toggleIndicator(false);
       dispatchCustomEvent("indicator-visibility", false);
     }
     setCountdowns([...countdowns]);

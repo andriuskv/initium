@@ -97,9 +97,10 @@ textarea {
   justify-content: center;
   align-items: center;
   padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-md);
+  gap: var(--space-md);
 
   & svg {
-    margin-right: var(--space-md);
+    flex-shrink: 0;
   }
 }
 

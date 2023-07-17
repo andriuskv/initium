@@ -12,7 +12,7 @@
   left: 50%;
   opacity: 0;
   visibility: hidden;
-  width: 642px;
+  width: 610px;
   border-bottom-left-radius: 999px;
   border-bottom-right-radius: 999px;
   transform-origin: top center;
@@ -164,6 +164,11 @@
   width: 100%;
   padding: var(--space-sm) var(--space-md);
   font-weight: normal;
+
+  .indicator::after {
+    bottom: 1px;
+    right: 1px;
+  }
 }
 
 .top-panel-close-btn {

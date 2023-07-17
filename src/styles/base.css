@@ -105,7 +105,7 @@ p {
     background-color: var(--color-primary);
   }
 
-  & svg {
+  & > svg {
     mask: url("./assets/svg-mask.svg");
   }
 }
