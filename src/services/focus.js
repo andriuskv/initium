@@ -17,8 +17,17 @@ function setInitiator(element) {
 }
 
 function focusInitiator(id) {
-  if (traps[id]?.initiator) {
-    traps[id].initiator.focus();
+  const trap = traps[id];
+
+  if (trap) {
+    if (trap.isDropdown) {
+      if (trap.container.contains(document.activeElement)) {
+        trap.initiator.focus();
+      }
+    }
+    else {
+      trap.initiator.focus();
+    }
   }
 }
 
