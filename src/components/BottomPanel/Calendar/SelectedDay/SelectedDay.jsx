@@ -176,47 +176,50 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
   }
   return (
     <div className="calendar">
-      <div className={`calendar-header selected-day-header${form ? " reminder-form-header" : ""}`}>
+      <div className="calendar-header selected-day-header">
         <button className="btn icon-btn" onClick={backToCalendar} title="Back to calendar">
           <Icon id="chevron-left"/>
         </button>
         <span className="selected-day-title">{day.dateString}</span>
-        <button className="btn icon-btn selected-day-header-btn" onClick={showForm} title="Create reminder">
-          <Icon id="plus"/>
-        </button>
       </div>
       {form ? (
         <Suspense fallback={null}>
           <Form form={form} day={day} updateReminder={updateReminder} hide={backToCalendar}/>
         </Suspense>
-      ) : day.reminders.length > 0 ? (
-        <ul className="selected-day-remainders" data-dropdown-parent>
-          {day.reminders.map((reminder, index) => (
-            <li className="selected-day-remainder" key={reminder.id}>
-              <div className="selected-day-reminder-color" style={{ "backgroundColor": reminder.color }}
-                onClick={() => changeReminderColor(reminder)}></div>
-              {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
-              <div>
-                <div>{reminder.text}</div>
-                <div className="calendar-reminder-range">{reminder.range.text}</div>
-              </div>
-              <Dropdown container={{ className: "selected-day-remainder-dropdown" }}>
-                <button className="btn icon-text-btn dropdown-btn"
-                  onClick={() => editReminder(reminder.id, index)}>
-                  <Icon id="edit"/>
-                  <span>Edit</span>
-                </button>
-                <button className="btn icon-text-btn dropdown-btn"
-                  onClick={() => removeReminder(reminder.id, index)}>
-                  <Icon id="trash"/>
-                  <span>Remove</span>
-                </button>
-              </Dropdown>
-            </li>
-          ))}
-        </ul>
       ) : (
-        <p className="empty-reminder-list-message">No reminders</p>
+        <>
+          {day.reminders.length > 0 ? (
+            <ul className="selected-day-remainders" data-dropdown-parent>
+              {day.reminders.map((reminder, index) => (
+                <li className="selected-day-remainder" key={reminder.id}>
+                  <div className="selected-day-reminder-color" style={{ "backgroundColor": reminder.color }}
+                    onClick={() => changeReminderColor(reminder)}></div>
+                  {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
+                  <div>
+                    <div>{reminder.text}</div>
+                    <div className="calendar-reminder-range">{reminder.range.text}</div>
+                  </div>
+                  <Dropdown container={{ className: "selected-day-remainder-dropdown" }}>
+                    <button className="btn icon-text-btn dropdown-btn"
+                      onClick={() => editReminder(reminder.id, index)}>
+                      <Icon id="edit"/>
+                      <span>Edit</span>
+                    </button>
+                    <button className="btn icon-text-btn dropdown-btn"
+                      onClick={() => removeReminder(reminder.id, index)}>
+                      <Icon id="trash"/>
+                      <span>Remove</span>
+                    </button>
+                  </Dropdown>
+                </li>
+              ))}
+            </ul>
+          ) : <p className="empty-reminder-list-message">No reminders</p>}
+          <button className="btn icon-text-btn create-btn" onClick={showForm}>
+            <Icon id="plus"/>
+            <span>Create</span>
+          </button>
+        </>
       )}
     </div>
   );

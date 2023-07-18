@@ -168,3 +168,9 @@
     opacity: 1;
   }
 }
+
+.feed-add-btn {
+  &:hover, &:focus-visible {
+    width: 80px;
+  }
+}

@@ -85,9 +85,6 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
     <div className="rss-feed">
       <div className="feed-list-header">
         <h2 className="feed-list-title">RSS Feeds</h2>
-        <button className="btn icon-btn" onClick={() => showForm(true)} title="Add feed">
-          <Icon id="plus"/>
-        </button>
         {feeds.active.length > 0 && (
           <button className="btn icon-btn" onClick={hide} title="Hide feeds">
             <Icon id="cross"/>
@@ -191,6 +188,10 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
           </li>
         ))}
       </ul>
+      <button className="btn icon-text-btn create-btn feed-add-btn" onClick={showForm}>
+        <Icon id="plus"/>
+        <span>Add</span>
+      </button>
     </div>
   );
 }

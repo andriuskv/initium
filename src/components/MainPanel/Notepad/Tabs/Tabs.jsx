@@ -206,10 +206,6 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
               </button>
             </div>
           </div>
-          <button className="btn icon-text-btn dropdown-btn" onClick={showCreateTabForm}>
-            <Icon id="plus"/>
-            <span>Create tab</span>
-          </button>
           <button className="btn icon-text-btn dropdown-btn" onClick={downloadTabs}>
             <Icon id="download"/>
             <span>Download all</span>
@@ -243,7 +239,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
                     <Icon id="edit"/>
                     <span>Rename</span>
                   </button>
-                  <a download={`${tab.title}.txt`} className="btn icon-text-btn dropdown-btn"
+                  <a href="" download={`${tab.title}.txt`} className="btn icon-text-btn dropdown-btn"
                     onClick={event => downloadTab(event, index)}>
                     <Icon id="download"/>
                     <span>Download</span>
@@ -260,6 +256,10 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
           ))}
         </SortableList>
       </ul>
+      <button className="btn icon-text-btn create-btn notepad-create-btn" onClick={showCreateTabForm}>
+        <Icon id="plus"/>
+        <span>Create</span>
+      </button>
       <div className="notepad-storage">
         <div className="notepad-storage-text">
           <div>{storage.current} kB</div>
