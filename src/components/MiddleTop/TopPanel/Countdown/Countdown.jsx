@@ -71,12 +71,15 @@ export default function Countdown({ visible, toggleIndicator }) {
 
     for (const countdown of countdowns) {
       const endDate = new Date(countdown.dateString);
-      let diff = Math.floor((countdown.isInPast ? startDate - endDate : endDate - startDate) / 1000);
+      const diff = Math.round(Math.abs(endDate - startDate) / 1000);
 
-      if (diff < 0) {
+      if (countdown.willBeInPast) {
         countdown.isInPast = true;
-        diff *= -1;
+        delete countdown.willBeInPast;
         modified = true;
+      }
+      else if (diff === 0) {
+        countdown.willBeInPast = true;
       }
       updatedCountdowns.push({
         ...countdown,
@@ -92,9 +95,6 @@ export default function Countdown({ visible, toggleIndicator }) {
   }
 
   function parseDateDiff(duration) {
-    if (duration < 0) {
-      return { seconds: 0 };
-    }
     const years = Math.floor(duration / 31540000);
     duration %= 31540000;
     const months = Math.floor(duration / 2628000);
