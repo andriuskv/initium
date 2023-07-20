@@ -87,6 +87,15 @@ async function updateFocusTrap(id) {
   currentTrap.last = elements.at(-1);
 }
 
+function focusFirstElement(container, { excludeDropdown = true } = {}) {
+  const focusableElements = findFocusableElements(container, excludeDropdown);
+
+  if (!focusableElements.length) {
+    return;
+  }
+  focusableElements[0].focus();
+}
+
 function handleKeyDown(event) {
   if (event.key === "Tab") {
     const trap = traps[activeTrapId];
@@ -126,6 +135,7 @@ function findFocusableElements(container, excludeDropdown) {
 export {
   setInitiator,
   focusInitiator,
+  focusFirstElement,
   trapFocus,
   clearFocusTrap,
   updateFocusTrap

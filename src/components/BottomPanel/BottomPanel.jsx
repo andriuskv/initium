@@ -15,7 +15,10 @@ export default function BottomPanel() {
     "shortcuts": {
       id: "shortcuts",
       title: "Shortcuts",
-      iconId: "grid"
+      iconId: "grid",
+      attrs: {
+        "data-focus-id": "shortcuts"
+      }
     },
     "timers": {
       id: "timers",
@@ -25,7 +28,10 @@ export default function BottomPanel() {
     "calendar": {
       id: "calendar",
       title: "Calendar",
-      iconId: "calendar"
+      iconId: "calendar",
+      attrs: {
+        "data-focus-id": "calendar"
+      }
     },
     "settings": {
       id: "settings",
@@ -37,6 +43,8 @@ export default function BottomPanel() {
     }
   }));
   const calendarTimeoutId = useRef(0);
+  const lastItemId = useRef("");
+  const closeButton = useRef(null);
 
   useEffect(() => {
     if (!settings.general.calendarDisabled) {
@@ -63,6 +71,14 @@ export default function BottomPanel() {
 
   useEffect(() => {
     if (!selectedItem.id) {
+      if (lastItemId.current) {
+        const element = document.querySelector(`[data-focus-id=${lastItemId.current}]`);
+
+        if (element) {
+          element.focus();
+        }
+        lastItemId.current = "";
+      }
       return;
     }
 
@@ -75,6 +91,14 @@ export default function BottomPanel() {
       setSelectedItem({ ...selectedItem, visible: true });
     }
   }, [selectedItem.id]);
+
+  useEffect(() => {
+    if (selectedItem.visible && closeButton.current) {
+      setTimeout(() => {
+        closeButton.current.focus();
+      }, 200);
+    }
+  }, [selectedItem.visible]);
 
   useEffect(() => {
     if (selectedItem.id === "calendar" && items.calendar.rendered) {
@@ -95,6 +119,7 @@ export default function BottomPanel() {
   }
 
   function hideItem() {
+    lastItemId.current = selectedItem.id;
     setSelectedItem({ ...selectedItem, visible: false });
 
     setTimeout(() => {
@@ -164,7 +189,7 @@ export default function BottomPanel() {
         <div className="bottom-panel-item-header bottom-panel-transition-target">
           <Icon id={selectedItem.iconId} className="bottom-panel-item-icon"/>
           <h3 className="bottom-panel-item-title">{selectedItem.title}</h3>
-          <button className="btn icon-btn" onClick={hideItem} title="Close">
+          <button className="btn icon-btn" onClick={hideItem} ref={closeButton} title="Close">
             <Icon id="cross"/>
           </button>
         </div>

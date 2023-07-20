@@ -3,6 +3,7 @@ import { dispatchCustomEvent } from "utils";
 import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
+// import * as focusService from "services/focus";
 import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
 import "./weather.css";
@@ -17,6 +18,7 @@ export default function Weather({ timeFormat }) {
   const firstRender = useRef(true);
   const lastMoreWeatherUpdate = useRef(0);
   const timeoutId = useRef(0);
+  const moreButton = useRef(null);
 
   useEffect(() => {
     if (firstRender.current) {
@@ -96,8 +98,10 @@ export default function Weather({ timeFormat }) {
 
   useEffect(() => {
     if (state.reveal) {
-      state.visible = true;
-      setState({ ...state });
+      setState({ ...state, visible: true });
+    }
+    else if (moreButton.current) {
+      moreButton.current.focus();
     }
   }, [state.reveal]);
 
@@ -133,8 +137,7 @@ export default function Weather({ timeFormat }) {
     setState({ ...state });
 
     setTimeout(() => {
-      state.reveal = false;
-      setState({ ...state });
+      setState({ ...state, reveal: false });
     }, 320);
   }
 
@@ -206,7 +209,7 @@ export default function Weather({ timeFormat }) {
   }
   return (
     <div className="weather">
-      <button className="btn icon-btn weather-more-btn" onClick={showMoreWeather} title="More">
+      <button className="btn icon-btn weather-more-btn" onClick={showMoreWeather} ref={moreButton} title="More">
         <Icon id="expand"/>
       </button>
       <div className="weather-current">

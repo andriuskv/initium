@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { convertTemperature } from "services/weather";
+import * as focusService from "services/focus";
 import Icon from "components/Icon";
 import Spinner from "components/Spinner";
 import Dropdown from "components/Dropdown";
@@ -8,6 +9,13 @@ import "./more-weather.css";
 export default function MoreWeather({ current, more, units, speedUnits, view, selectView, toggleUnits, hide }) {
   const [ready, setReady] = useState(false);
   const [tempRange, setTempRange] = useState();
+  const container = useRef(null);
+
+  useEffect(() => {
+    if (ready) {
+      focusService.focusFirstElement(container.current);
+    }
+  }, [ready]);
 
   useEffect(() => {
     if (!more) {
@@ -146,7 +154,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
   }
 
   return (
-    <div className="weather-transition-target weather-more-info">
+    <div className="weather-transition-target weather-more-info" ref={container}>
       <div className="weather-more-current">
         <img src={current.icon} className="weather-more-current-icon" alt="" width="100px" height="100px" loading="lazy"/>
         <div className="weather-more-current-main">
