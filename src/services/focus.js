@@ -1,4 +1,4 @@
-import { delay } from "utils";
+import { delay, findFocusableElements } from "utils";
 
 const traps = {};
 let stack = [];
@@ -121,15 +121,6 @@ function handleKeyDown(event) {
       }
     }
   }
-}
-
-function findFocusableElements(container, excludeDropdown) {
-  const elements = Array.from(container.querySelectorAll("button:not(:disabled), input:not(:disabled), a[href], [tabindex]"));
-
-  if (excludeDropdown) {
-    return elements.filter(element => !element.closest(".dropdown"));
-  }
-  return elements;
 }
 
 export {

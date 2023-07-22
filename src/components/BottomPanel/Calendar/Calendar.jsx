@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { getRandomString, findFocusableElement } from "utils";
+import { getRandomString, findFocusableElements, findRelativeFocusableElement } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import { useSettings } from "contexts/settings";
@@ -591,10 +591,10 @@ export default function Calendar({ visible, showIndicator }) {
 
   function findNextFocusableElement(element, shiftKey) {
     if (shiftKey) {
-      return findFocusableElement(element.parentElement.firstElementChild, -1);
+      return findRelativeFocusableElement(element.parentElement.firstElementChild, -1);
     }
     else {
-      return findFocusableElement(element.parentElement.lastElementChild, 1);
+      return findRelativeFocusableElement(element.parentElement.lastElementChild, 1);
     }
   }
 
@@ -631,6 +631,14 @@ export default function Calendar({ visible, showIndicator }) {
         event.preventDefault();
         element.focus();
       }
+      else {
+        const elements = findFocusableElements();
+
+        if (elements.length) {
+          event.preventDefault();
+          elements[0].focus();
+        }
+      }
     }
     else if (key.startsWith("Arrow")) {
       focusGridElement(key, target, 7);
@@ -659,6 +667,14 @@ export default function Calendar({ visible, showIndicator }) {
       if (element) {
         event.preventDefault();
         element.focus();
+      }
+      else {
+        const elements = findFocusableElements();
+
+        if (elements.length) {
+          event.preventDefault();
+          elements[0].focus();
+        }
       }
     }
     else if (key.startsWith("Arrow")) {
