@@ -174,9 +174,36 @@ function getDate(string, date = getCurrentDate()) {
   return string.replace(regex, item => map[item]).trim();
 }
 
+function getOffsettedCurrentTime(milliseconds) {
+  const offset = new Date(Date.now() + milliseconds).getTime();
+  return getClockTimeString(offset, { padHours: true });
+}
+
+function getHoursOffset(milliseconds, useNumerical = false) {
+  const hours = Math.round(milliseconds / 1000 / 60 / 60);
+
+  if (useNumerical) {
+    if (hours > 0) {
+      return `+${hours}`;
+    }
+    else if (hours < 0) {
+      return `${hours}`;
+    }
+    return "0";
+  }
+  const suffix = hours === 1 ? "" : "s";
+
+  if (hours > 0) {
+    return `${hours} hour${suffix} ahead`;
+  }
+  else if (hours < 0) {
+    return `${Math.abs(hours)} hour${suffix} behind`;
+  }
+  return "Current timezone";
+}
+
 export {
   getTimeString,
-  getClockTimeString,
   getDisplayTime,
   getDaysInMonth,
   getWeekday,
@@ -188,5 +215,7 @@ export {
   getDay,
   getDate,
   padTime,
-  formatTime
+  formatTime,
+  getOffsettedCurrentTime,
+  getHoursOffset
 };

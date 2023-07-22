@@ -12,7 +12,7 @@ const Stopwatch = lazy(() => import("./Stopwatch"));
 const Pomodoro = lazy(() => import("./Pomodoro"));
 const World = lazy(() => import("./World"));
 
-export default function TopPanel({ settings, forceVisibility = false, resetTopPanel }) {
+export default function TopPanel({ settings, initialTab = "", forceVisibility = false, resetTopPanel }) {
   const [visible, setVisible] = useState(false);
   const [minimal, setMinimal] = useState(false);
   const [rerender, setRerender] = useState(false);
@@ -60,9 +60,10 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
 
   useEffect(() => {
     if (visible && !activeTab) {
-      tabs.timer.rendered = true;
+      const tab = initialTab || "timer";
+      tabs[tab].rendered = true;
 
-      setActiveTab("timer");
+      setActiveTab(tab);
       setTabs({ ...tabs });
     }
     window.addEventListener("top-panel-visible", toggleTopPanel);
@@ -70,7 +71,7 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
     return () => {
       window.removeEventListener("top-panel-visible", toggleTopPanel);
     };
-  }, [visible, minimal]);
+  }, [visible, minimal, activeTab, tabs]);
 
   useEffect(() => {
     if (expanded) {
@@ -125,7 +126,24 @@ export default function TopPanel({ settings, forceVisibility = false, resetTopPa
     }
   }
 
-  function toggleTopPanel() {
+  function toggleTopPanel({ detail }) {
+    if (detail) {
+      if (!visible || activeTab !== detail.tab) {
+        if (minimal) {
+          resetMinimal(true);
+        }
+        else {
+          setVisible(true);
+        }
+        setActiveTab(detail.tab);
+
+        if (!tabs[detail.tab].rendered) {
+          tabs[detail.tab].rendered = true;
+          setTabs({ ...tabs });
+        }
+      }
+      return;
+    }
     const nextVisible = !visible;
 
     if (nextVisible && minimal) {

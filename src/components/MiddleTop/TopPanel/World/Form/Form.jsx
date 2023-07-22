@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { getRandomString } from "utils";
+import { getHoursOffset } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import * as focusService from "services/focus";
 import "./form.css";
@@ -53,7 +54,7 @@ export default function Form({ addClock, hide }) {
           city: city.city,
           country: city.country,
           diff,
-          diffString: getDiffString(diff)
+          diffString: getHoursOffset(diff)
 
         });
       } catch (e) {
@@ -83,19 +84,6 @@ export default function Form({ addClock, hide }) {
         setSearchResults(null);
       }
     }, 200);
-  }
-
-  function getDiffString(diff) {
-    const hours = Math.round(diff / 1000 / 60 / 60);
-    const suffix = hours === 1 ? "" : "s";
-
-    if (hours > 0) {
-      return `${hours} hour${suffix} ahead`;
-    }
-    else if (hours < 0) {
-      return `${Math.abs(hours)} hour${suffix} behind`;
-    }
-    return "Current timezone";
   }
 
   function clearInput() {

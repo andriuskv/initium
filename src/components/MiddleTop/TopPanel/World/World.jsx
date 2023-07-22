@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { dispatchCustomEvent } from "utils";
-import { getClockTimeString } from "services/timeDate";
+import { getOffsettedCurrentTime, getHoursOffset } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import Icon from "components/Icon";
 import "./world.css";
@@ -50,25 +50,21 @@ export default function World({ visible, parentVisible }) {
 
   function initClocks(clocks) {
     setClocks(clocks.map(clock => {
-      clock.time = getClockTime(clock.diff);
+      clock.time = getOffsettedCurrentTime(clock.diff);
+      clock.diffString = getHoursOffset(clock.diff);
       return clock;
     }));
   }
 
   function update() {
     for (const clock of clocks) {
-      clock.time = getClockTime(clock.diff);
+      clock.time = getOffsettedCurrentTime(clock.diff);
     }
     setClocks([...clocks]);
   }
 
-  function getClockTime(milliseconds) {
-    const offset = new Date(Date.now() + milliseconds).getTime();
-    return getClockTimeString(offset, { padHours: true });
-  }
-
   function addClock(clock) {
-    clock.time = getClockTime(clock.diff);
+    clock.time = getOffsettedCurrentTime(clock.diff);
     const newClocks = [clock, ...clocks];
 
     setClocks(newClocks);
@@ -96,7 +92,6 @@ export default function World({ visible, parentVisible }) {
         city: clock.city,
         country: clock.country,
         diff: clock.diff,
-        diffString: clock.diffString,
         timeZone: clock.timeZone
       }))
     });

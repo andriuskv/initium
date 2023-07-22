@@ -67,7 +67,8 @@ function getDefault() {
       dateAlignment: "center",
       dontChangeDateStyle: false,
       dateLocale: "en-US",
-      firstWeekday: 0
+      firstWeekday: 0,
+      worldClocksHidden: false
     },
     mainPanel: {
       navHidden: false,

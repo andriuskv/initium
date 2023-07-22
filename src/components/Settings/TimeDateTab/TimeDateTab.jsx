@@ -267,6 +267,15 @@ export default function TimeDateTab() {
             </select>
           </div>
         </label>
+        <label className="setting">
+          <span>Hide world clocks</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            checked={settings.worldClocksHidden}
+            onChange={() => toggleSetting("timeDate", "worldClocksHidden")}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
       </div>
     </div>
   );

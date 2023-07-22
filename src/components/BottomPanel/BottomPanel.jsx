@@ -174,7 +174,7 @@ export default function BottomPanel() {
       return (
         <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}>
           <Suspense fallback={<div className="calendar-placeholder"></div>}>
-            <Calendar showIndicator={toggleIndicator}/>
+            <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} showIndicator={toggleIndicator}/>
           </Suspense>
         </div>
       );

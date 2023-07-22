@@ -7,8 +7,9 @@ import Icon from "components/Icon";
 import "./calendar.css";
 import Sidebar from "./Sidebar";
 import SelectedDay from "./SelectedDay";
+import WorldClocks from "./WorldClocks";
 
-export default function Calendar({ showIndicator }) {
+export default function Calendar({ visible, showIndicator }) {
   const { settings: { timeDate: settings } } = useSettings();
   const [calendar, setCalendar] = useState(null);
   const [currentDay, setCurrentDay] = useState(null);
@@ -674,7 +675,7 @@ export default function Calendar({ showIndicator }) {
     return null;
   }
   return (
-    <div className="calendar-container">
+    <>
       <Sidebar currentDay={currentDay} selectCurrentDay={selectCurrentDay}/>
       <div className="calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px` }}>
         {selectedDay ? (
@@ -748,6 +749,7 @@ export default function Calendar({ showIndicator }) {
           </div>
         )}
       </div>
-    </div>
+      {settings.worldClocksHidden ? null : <WorldClocks parentVisible={visible}/>}
+    </>
   );
 }

@@ -138,7 +138,7 @@ textarea {
   --background-color: var(--color-primary);
 
   z-index: 1;
-  position: fixed;
+  position: absolute;
   bottom: var(--space-md);
   right: var(--space-md);
   height: auto;

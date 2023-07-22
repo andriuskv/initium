@@ -1,8 +1,3 @@
-.calendar-container {
-  display: flex;
-  height: 328px;
-}
-
 .calendar-reminder-range {
   margin-top: var(--space-sm);
   font-size: var(--text-xs);
@@ -12,6 +7,7 @@
 
 .calendar-wrapper {
   overflow: hidden;
+  height: 328px;
 }
 
 .calendar-header {

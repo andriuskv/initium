@@ -60,18 +60,18 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   }
 
   function resetTopPanel() {
-    setTopPanel({ rendered: true, forceVisibility: false });
+    setTopPanel({ ...topPanel, rendered: true, forceVisibility: false });
   }
 
-  function renderTopPanel() {
+  function renderTopPanel({ detail }) {
     clearTimeout(topPanelTimeoutId.current);
-    setTopPanel({ rendered: true, forceVisibility: true });
+    setTopPanel({ rendered: true, initialTab: detail ? detail.tab : "", forceVisibility: true });
   }
 
   return (
     <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}>
       <Suspense fallback={null}>
-        {!settings.timers.disabled && topPanel.rendered && <TopPanel forceVisibility={topPanel.forceVisibility} settings={settings.timers} resetTopPanel={resetTopPanel} />}
+        {!settings.timers.disabled && topPanel.rendered && <TopPanel initialTab={topPanel.initialTab} forceVisibility={topPanel.forceVisibility} settings={settings.timers} resetTopPanel={resetTopPanel} />}
       </Suspense>
       <Suspense fallback={null}>
         {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
