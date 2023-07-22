@@ -20,10 +20,6 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
       ...calendar[year][month].days[day - 1],
       dateString: getDate("month day, year", selectedDay)
     });
-
-    if (selectedDay.formVisible) {
-      showForm();
-    }
   }, [selectedDay]);
 
   function changeReminderColor(reminder) {
@@ -197,7 +193,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
                   {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
                   <div>
                     <div>{reminder.text}</div>
-                    <div className="calendar-reminder-range">{reminder.range.text}</div>
+                    <div className="selected-day-reminder-range">{reminder.range.text}</div>
                   </div>
                   <Dropdown container={{ className: "selected-day-remainder-dropdown" }}>
                     <button className="btn icon-text-btn dropdown-btn"

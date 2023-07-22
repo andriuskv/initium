@@ -38,6 +38,13 @@
   }
 }
 
+.selected-day-reminder-range {
+  margin-top: var(--space-sm);
+  font-size: var(--text-xs);
+  font-weight: bold;
+  color: var(--color-white-60);
+}
+
 .reminder-repeat-icon {
   flex-shrink: 0;
   margin-right: var(--space-sm);

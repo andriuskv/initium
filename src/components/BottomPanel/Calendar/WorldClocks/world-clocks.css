@@ -8,19 +8,13 @@
 }
 
 .calendar-world-clocks-title {
-  margin-top: var(--space-sm);
-  margin-bottom: var(--space-sm);
+  margin: var(--space-sm);
 }
 
 .calendar-world-clocks-title-btn {
   height: auto;
   padding: var(--space-xs) var(--space-md);
   font-size: var(--text-lg);
-  transition: 0.2s transform;
-
-  &:hover, &:focus-visible {
-    transform: translateX(var(--space-md));
-  }
 }
 
 .calendar-world-clocks-list {

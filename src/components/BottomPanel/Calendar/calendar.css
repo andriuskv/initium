@@ -1,8 +1,24 @@
-.calendar-reminder-range {
-  margin-top: var(--space-sm);
-  font-size: var(--text-xs);
-  font-weight: bold;
-  color: var(--color-white-60);
+.calendar-current-date {
+  position: relative;
+  display: flex;
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--color-white-10);
+}
+
+.calendar-current-date-btn {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  height: auto;
+  flex-direction: column;
+  border-radius: 8px;
+  line-height: 1;
+  font-weight: normal;
+  font-size: var(--text-lg);
+}
+
+.calendar-current-date-weekday {
+  font-size: var(--text-xxxl);
 }
 
 .calendar-wrapper {

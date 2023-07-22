@@ -5,7 +5,6 @@ import * as timeDateService from "services/timeDate";
 import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
 import "./calendar.css";
-import Sidebar from "./Sidebar";
 import SelectedDay from "./SelectedDay";
 import WorldClocks from "./WorldClocks";
 
@@ -253,7 +252,7 @@ export default function Calendar({ visible, showIndicator }) {
     setViewingYear(false);
   }
 
-  function hide() {
+  function hideSelectedDay() {
     setSelectedDay(null);
   }
 
@@ -576,17 +575,22 @@ export default function Calendar({ visible, showIndicator }) {
     return `Repeating every ${str}`;
   }
 
-  function selectCurrentDay() {
-    setSelectedDay({
-      formVisible: true,
-      year: currentDay.year,
-      month: currentDay.month,
-      day: currentDay.day
-    });
-  }
-
   function resetSelectedDay() {
     setSelectedDay({ ...selectedDay });
+  }
+
+  function showCurrentDateView() {
+    const currentDate = timeDateService.getCurrentDate();
+
+    setCurrentYear(currentDate.year);
+    getVisibleMonth(calendar, currentDate);
+
+    if (selectedDay) {
+      hideSelectedDay();
+    }
+    else if (viewingYear) {
+      setViewingYear(false);
+    }
   }
 
   function findNextFocusableElement(element, shiftKey) {
@@ -692,11 +696,16 @@ export default function Calendar({ visible, showIndicator }) {
   }
   return (
     <>
-      <Sidebar currentDay={currentDay} selectCurrentDay={selectCurrentDay}/>
+      <div className="calendar-current-date">
+        <button className="btn text-btn calendar-current-date-btn" onClick={showCurrentDateView}>
+          <div className="calendar-current-date-weekday">{currentDay.weekdayName}</div>
+          <div>{currentDay.day} {currentDay.monthName} {currentDay.year}</div>
+        </button>
+      </div>
       <div className="calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px` }}>
         {selectedDay ? (
           <SelectedDay calendar={calendar} selectedDay={selectedDay} reminders={reminders}
-            updateCalendar={updateCalendar} createReminder={createReminder} resetSelectedDay={resetSelectedDay} hide={hide}/>
+            updateCalendar={updateCalendar} createReminder={createReminder} resetSelectedDay={resetSelectedDay} hide={hideSelectedDay}/>
         ) : viewingYear ? (
           <div className={`calendar${transition.active ? " transition" : ""}`}>
             <div className="calendar-header">
