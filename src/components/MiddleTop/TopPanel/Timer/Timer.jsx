@@ -10,7 +10,7 @@ import "./timer.css";
 import Inputs from "./Inputs";
 import Presets from "./Presets";
 
-export default function Timer({ visible, updateTitle, expand, exitFullscreen, handleReset }) {
+export default function Timer({ visible, toggleIndicator, updateTitle, expand, exitFullscreen, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState({
     hours: "00",
@@ -34,9 +34,11 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
       timeoutId.current = setTimeout(() => {
         update(state.duration, performance.now());
       }, 1000);
+      toggleIndicator("timer", true);
       addToRunning("timer");
     }
     else {
+      toggleIndicator("timer", false);
       removeFromRunning("timer");
     }
     return () => {
@@ -95,7 +97,6 @@ export default function Timer({ visible, updateTitle, expand, exitFullscreen, ha
         seconds: paddedSeconds,
         duration
       });
-
       updateTitle("timer", {
         hours: values.hours,
         minutes: values.hours || values.minutes ? paddedMinutes : "",

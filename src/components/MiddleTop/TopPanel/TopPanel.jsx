@@ -19,11 +19,11 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const [activeTab, setActiveTab] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [tabs, setTabs] = useState(() => ({
-    timer: {},
-    stopwatch: {},
-    pomodoro: {},
-    countdown: {},
-    world: {}
+    timer: { name: "Timer" },
+    stopwatch: { name: "Stopwatch" },
+    pomodoro: { name: "Pomodoro" },
+    countdown: { name: "Countdown" },
+    world: { name: "World" }
   }));
   const containerRef = useRef(null);
   const minimalVisible = useRef(false);
@@ -248,8 +248,8 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     containerRef.current.style.setProperty("--z-index", increaseZIndex("top-panel"));
   }
 
-  function toggleCountdownIndicator(value) {
-    tabs.countdown.indicatorVisible = value;
+  function toggleIndicator(name, value) {
+    tabs[name].indicatorVisible = value;
     setTabs({ ...tabs });
   }
 
@@ -273,38 +273,16 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       onClick={event => handleZIndex(event, "top-panel")} ref={containerRef}>
       <div className="top-panel-content">
         <ul className="top-panel-hide-target top-panel-header">
-          <li className={`top-panel-header-item${activeTab === "timer" ? " active" : ""}`}>
-            <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab("timer")}>
-              <Icon id="timer"/>
-              <span>Timer</span>
-            </button>
-          </li>
-          <li className={`top-panel-header-item${activeTab === "stopwatch" ? " active" : ""}`}>
-            <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab("stopwatch")}>
-              <Icon id="stopwatch"/>
-              <span>Stopwatch</span>
-            </button>
-          </li>
-          <li className={`top-panel-header-item${activeTab === "pomodoro" ? " active" : ""}`}>
-            <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab("pomodoro")}>
-              <Icon id="pomodoro"/>
-              <span>Pomodoro</span>
-            </button>
-          </li>
-          <li className={`top-panel-header-item${activeTab === "countdown" ? " active" : ""}`}>
-            <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab("countdown")}>
-              <span className={tabs.countdown.indicatorVisible ? "indicator" : ""}>
-                <Icon id="countdown"/>
-              </span>
-              <span>Countdown</span>
-            </button>
-          </li>
-          <li className={`top-panel-header-item${activeTab === "world" ? " active" : ""}`}>
-            <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab("world")}>
-              <Icon id="earth"/>
-              <span>World</span>
-            </button>
-          </li>
+          {Object.keys(tabs).map(item => (
+            <li className={`top-panel-header-item${activeTab === item ? " active" : ""}`} key={item}>
+              <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab(item)}>
+                <span className={tabs[item].indicatorVisible ? "indicator" : ""}>
+                  <Icon id={item}/>
+                </span>
+                <span>{tabs[item].name}</span>
+              </button>
+            </li>
+          ))}
           <li className="top-panel-close-btn">
             <button className="btn icon-btn" onClick={hideTopPanel} title="Close">
               <Icon id="cross"/>
@@ -313,17 +291,18 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
         </ul>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
           {tabs.timer.rendered ? (
-            <Timer visible={activeTab === "timer"} updateTitle={updateTitle}
+            <Timer visible={activeTab === "timer"} toggleIndicator={toggleIndicator} updateTitle={updateTitle}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
-          {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} updateTitle={updateTitle} expand={expand}/> : null}
+          {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} toggleIndicator={toggleIndicator}
+            updateTitle={updateTitle} expand={expand}/> : null}
           {tabs.pomodoro.rendered ? (
-            <Pomodoro visible={activeTab === "pomodoro"} updateTitle={updateTitle}
+            <Pomodoro visible={activeTab === "pomodoro"} toggleIndicator={toggleIndicator} updateTitle={updateTitle}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
           {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible}/> : null}
         </Suspense>
-        <Countdown visible={activeTab === "countdown"} toggleIndicator={toggleCountdownIndicator}/>
+        <Countdown visible={activeTab === "countdown"} toggleIndicator={toggleIndicator}/>
         {expanded && (
           <button className="btn icon-btn top-panel-collapse-btn" onClick={hideTopPanel} title="Close">
             <Icon id="cross"/>

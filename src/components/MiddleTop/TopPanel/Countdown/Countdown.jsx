@@ -32,7 +32,7 @@ export default function Countdown({ visible, toggleIndicator }) {
 
     if (countdowns?.length) {
       startCountdowns(countdowns);
-      toggleIndicator(true);
+      toggleIndicator("countdown", true);
       dispatchCustomEvent("indicator-visibility", true);
     }
 
@@ -132,7 +132,7 @@ export default function Countdown({ visible, toggleIndicator }) {
     });
     setCountdowns([...countdowns]);
     saveCountdowns(countdowns);
-    toggleIndicator(true);
+    toggleIndicator("countdown", true);
     dispatchCustomEvent("indicator-visibility", true);
   }
 
@@ -140,7 +140,7 @@ export default function Countdown({ visible, toggleIndicator }) {
     countdowns.splice(index, 1);
 
     if (!countdowns.length) {
-      toggleIndicator(false);
+      toggleIndicator("countdown", false);
       dispatchCustomEvent("indicator-visibility", false);
     }
     setCountdowns([...countdowns]);

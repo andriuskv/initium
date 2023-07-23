@@ -3,7 +3,7 @@ import { padTime } from "services/timeDate";
 import { addToRunning, removeFromRunning } from "../running-timers";
 import Icon from "components/Icon";
 
-export default function Stopwatch({ visible, updateTitle, expand }) {
+export default function Stopwatch({ visible, toggleIndicator, updateTitle, expand }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
   const [label, setLabel] = useState("");
@@ -15,9 +15,11 @@ export default function Stopwatch({ visible, updateTitle, expand }) {
       animationId.current = requestAnimationFrame(() => {
         update(performance.now());
       });
+      toggleIndicator("stopwatch", true);
       addToRunning("stopwatch");
     }
     else {
+      toggleIndicator("stopwatch", false);
       removeFromRunning("stopwatch");
     }
     return () => {

@@ -12,7 +12,7 @@ const stages = {
   long: "Long break"
 };
 
-export default function Pomodoro({ visible, updateTitle, expand, handleReset }) {
+export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => {
     const { pomodoro: { focus } } = getSetting("timers");
@@ -30,9 +30,11 @@ export default function Pomodoro({ visible, updateTitle, expand, handleReset }) 
       timeoutId.current = setTimeout(() => {
         update(state.duration, performance.now());
       }, 1000);
+      toggleIndicator("pomodoro", true);
       addToRunning("pomodoro");
     }
     else {
+      toggleIndicator("pomodoro", false);
       removeFromRunning("pomodoro");
     }
     return () => {
