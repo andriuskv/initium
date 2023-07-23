@@ -53,18 +53,13 @@ function getDefault() {
     timeDate: {
       format: 24,
       clockDisabled: false,
-      clockFont: "Inter",
       clockStyle: "default",
       clockScale: 1,
-      boldedClock: false,
       centerClock: false,
       dateHidden: false,
-      boldedDate: false,
       dateScale: 1.3,
-      dateOffset: 12,
       datePosition: "bottom",
       dateAlignment: "center",
-      dontChangeDateStyle: false,
       dateLocale: "en-US",
       firstWeekday: 0,
       worldClocksHidden: false
@@ -157,11 +152,8 @@ function updateSetting(setting) {
   return settings;
 }
 
-
 function addPanelNoise(noise) {
   const sheet = new CSSStyleSheet();
-
-  removePanelNoise();
 
   sheet.replaceSync(`:root {
     --panel-background-noise: url("${noise}");

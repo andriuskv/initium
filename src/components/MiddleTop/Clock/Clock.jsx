@@ -54,25 +54,24 @@ export default function Clock({ settings }) {
   function renderClock() {
     if (settings.clockStyle === "vertical") {
       return (
-        <div className={`clock-time${settings.boldedClock ? " bolded" : ""}`}>
+        <div className="`clock-time">
           <div className="clock-time-hours">{clock.hours}</div>
           <div>{clock.minutes}</div>
         </div>
       );
     }
-    return <span className={`clock-time${settings.boldedClock ? " bolded" : ""}`}>{clock.hours}:{clock.minutes}</span>;
+    return <span className="clock-time">{clock.hours}:{clock.minutes}</span>;
   }
 
   return (
     <div className={`clock date-${settings.datePosition}`}
-      style={{ "--scale": settings.clockScale, "--date-offset": settings.dateOffset, "--date-alignment": settings.dateAlignment, "--font-family": settings.clockFont }}>
+      style={{ "--scale": settings.clockScale, "--date-alignment": settings.dateAlignment }}>
       <div className="clock-time-container">
         {renderClock()}
         {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
       </div>
       {settings.dateHidden ? null : (
-        <div className={`clock-date${settings.boldedDate ? " bolded" : ""}${settings.dontChangeDateStyle ? " ignore-style" : ""}`}
-          style={{ "--date-scale": settings.dateScale }}>{date.string}</div>
+        <div className="clock-date" style={{ "--date-scale": settings.dateScale }}>{date.string}</div>
       )}
     </div>
   );

@@ -32,23 +32,12 @@ export default function TimeDateTab() {
     updateRangeSetting(name, value);
   }
 
-  function handleDateOffsetChange({ target }) {
-    const { name, value } = target;
-
-    document.querySelector(".clock").style.setProperty("--date-offset", value);
-    updateRangeSetting(name, value);
-  }
-
   function handleDatePositionChange({ target }) {
     updateSetting("timeDate", { datePosition: target.value });
   }
 
   function handleDateAlignmentChange({ target }) {
     updateSetting("timeDate", { dateAlignment: target.value });
-  }
-
-  function handleClockFontChange({ target }) {
-    updateSetting("timeDate", { clockFont: target.value });
   }
 
   function handleClockStyleChange({ target }) {
@@ -87,7 +76,7 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-          <span>Clock Style</span>
+          <span>Clock style</span>
           <div className="select-container">
             <select className="input select" onChange={handleClockStyleChange} value={settings.clockStyle}
               disabled={settings.clockDisabled}>
@@ -97,38 +86,10 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-          <span>Clock Font</span>
-          <div className="select-container">
-            <select className="input select" onChange={handleClockFontChange} value={settings.clockFont}
-              disabled={settings.clockDisabled}>
-              <option value="Inter">Inter</option>
-              <option value="JuliusSansOne">JuliusSansOne</option>
-              <option value="OleoScript">OleoScript</option>
-              <option value="Stoke">Stoke</option>
-              <option value="KdamThmorPro">KdamThmorPro</option>
-              <option value="Caveat">Caveat</option>
-              <option value="Digital">Digital</option>
-              <option value="Foundation">Foundation</option>
-              <option value="PressStart2P">PressStart2P</option>
-              <option value="Sniglet">Sniglet</option>
-            </select>
-          </div>
-        </label>
-        <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
           <span>Clock scale</span>
           <input type="range" className="range-input" min="0.5" max="3" step="0.1"
             defaultValue={settings.clockScale} name="clockScale"
             onChange={handleClockScaleChange} disabled={settings.clockDisabled}/>
-        </label>
-        <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-          <span>Bolded clock</span>
-          <input type="checkbox" className="sr-only checkbox-input"
-            checked={settings.boldedClock}
-            onChange={() => toggleSetting("timeDate", "boldedClock")}
-            disabled={settings.clockDisabled}/>
-          <div className="checkbox">
-            <div className="checkbox-tick"></div>
-          </div>
         </label>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
           <span>Center clock when main panel is hidden</span>
@@ -154,7 +115,7 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-          <span>Date Language</span>
+          <span>Date language</span>
           <div className="select-container">
             <select className="input select" onChange={handleDateLocaleChange} value={settings.dateLocale}
               disabled={settings.clockDisabled || settings.dateHidden}>
@@ -202,22 +163,6 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-          <span>Don't change date style</span>
-          <input type="checkbox" className="sr-only checkbox-input"
-            checked={settings.dontChangeDateStyle}
-            onChange={() => toggleSetting("timeDate", "dontChangeDateStyle")}
-            disabled={settings.clockDisabled || settings.dateHidden}/>
-          <div className="checkbox">
-            <div className="checkbox-tick"></div>
-          </div>
-        </label>
-        <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-          <span>Date offset</span>
-          <input type="range" className="range-input" min="4" max="48" step="2"
-            defaultValue={settings.dateOffset} name="dateOffset"
-            onChange={handleDateOffsetChange} disabled={settings.clockDisabled || settings.dateHidden}/>
-        </label>
-        <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
           <span>Date position</span>
           <div className="select-container">
             <select className="input select" onChange={handleDatePositionChange} value={settings.datePosition}
@@ -236,16 +181,6 @@ export default function TimeDateTab() {
               <option value="center">Center</option>
               <option value="end">End</option>
             </select>
-          </div>
-        </label>
-        <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-          <span>Bolded date</span>
-          <input type="checkbox" className="sr-only checkbox-input"
-            checked={settings.boldedDate}
-            onChange={() => toggleSetting("timeDate", "boldedDate")}
-            disabled={settings.clockDisabled || settings.dateHidden}/>
-          <div className="checkbox">
-            <div className="checkbox-tick"></div>
           </div>
         </label>
         <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
