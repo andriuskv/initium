@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { generateNoise } from "utils";
 import { useSettings } from "contexts/settings";
-import { updateSetting } from "services/settings";
+import { updateSetting, addPanelNoise, removePanelNoise } from "services/settings";
 import Icon from "components/Icon";
 import "./appearance-tab.css";
 import Wallpaper from "./Wallpaper";
@@ -130,13 +130,13 @@ export default function AppearanceTab() {
     timeoutId.current = setTimeout(() => {
       // Disable noise if either amount or opacity is 0
       if (num === 0) {
-        document.body.style.setProperty("--panel-background-noise", "");
+        removePanelNoise();
         localStorage.removeItem("noise");
       }
       else {
         const noise = generateNoise(amount, opacity);
 
-        document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
+        addPanelNoise(noise);
         localStorage.setItem("noise", noise);
       }
       updateContextSetting("appearance", {

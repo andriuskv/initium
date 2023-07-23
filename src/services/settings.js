@@ -23,13 +23,12 @@ function initAppearanceSettings(settings) {
   const noise = localStorage.getItem("noise");
 
   if (noise) {
-    document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
+    addPanelNoise(noise);
   }
   else if (settings.panelBackgroundNoiseAmount && settings.panelBackgroundNoiseOpacity) {
     const noise = generateNoise(settings.panelBackgroundNoiseAmount, settings.panelBackgroundNoiseOpacity);
 
-    document.body.style.setProperty("--panel-background-noise", `url(${noise})`);
-    localStorage.setItem("noise", noise);
+    addPanelNoise(noise);
   }
 }
 
@@ -158,11 +157,29 @@ function updateSetting(setting) {
   return settings;
 }
 
+
+function addPanelNoise(noise) {
+  const sheet = new CSSStyleSheet();
+
+  removePanelNoise();
+
+  sheet.replaceSync(`:root {
+    --panel-background-noise: url("${noise}");
+  }`);
+  document.adoptedStyleSheets = [sheet];
+}
+
+function removePanelNoise() {
+  document.adoptedStyleSheets = [];
+}
+
 export {
   initAppearanceSettings,
   resetSettings,
   getSettings,
   getSetting,
   setSetting,
-  updateSetting
+  updateSetting,
+  addPanelNoise,
+  removePanelNoise
 };

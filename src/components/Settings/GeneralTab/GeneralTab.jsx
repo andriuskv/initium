@@ -29,7 +29,6 @@ export default function GeneralTab() {
       resetWallpaperInfo();
     }
     localStorage.removeItem("noise");
-    document.body.style.setProperty("--panel-background-noise", "");
 
     const newSettings = resetSettings();
 
