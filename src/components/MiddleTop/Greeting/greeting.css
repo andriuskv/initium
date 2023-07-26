@@ -1,7 +1,7 @@
 .greeting {
   --text-size-scale: 1;
 
-  grid-row: 3;
+  grid-area: greeting;
   max-width: 572px;
   font-size: calc(var(--text-size-scale) * var(--text-lg));
   line-height: 1.25;

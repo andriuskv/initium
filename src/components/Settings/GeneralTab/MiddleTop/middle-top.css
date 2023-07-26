@@ -1,0 +1,26 @@
+.settings-middle-top-order-title {
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+
+.settings-middle-top-order-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.settings-middle-top-order-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 32px;
+  border: 1px solid var(--color-white-10);
+  border-radius: 4px;
+  background-color: var(--color-white-4);
+  cursor: move;
+
+  &.dragging {
+    background-color: var(--color-white-10);
+  }
+}

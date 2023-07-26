@@ -1,22 +1,17 @@
 .middle-top {
+  --order: "timers" "clock" "greeting";
+
   align-items: center;
   display: grid;
-  grid-template-rows: 1fr min-content 1fr;
+  grid-template-areas: var(--order);
+  grid-template-rows: repeat(3, 1fr);
   grid-template-columns: 1fr;
   gap: var(--space-xl);
   justify-items: center;
   height: 44%;
-
-  &.clock-disabled .greeting {
-    grid-row: 2;
-  }
+  padding: var(--space-xl) 0;
 
   &.full-height {
     height: 100%;
-
-    &:not(.clock-disabled) .greeting {
-      align-self: flex-end;
-      padding-bottom: 42px;
-    }
   }
 }

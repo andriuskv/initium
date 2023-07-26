@@ -3,6 +3,7 @@ import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings";
 import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
 import "./general-tab.css";
+import MiddleTop from "./MiddleTop";
 
 export default function GeneralTab() {
   const { settings, toggleSetting, updateSetting, resetSettings } = useSettings();
@@ -69,6 +70,7 @@ export default function GeneralTab() {
           <div className="checkbox-tick"></div>
         </div>
       </label>
+      <MiddleTop settings={settings} updateSetting={updateSetting}/>
       <div className="setting setting-reset">
         <span>Reset settings</span>
         <button className="btn" onClick={reset}>Reset</button>

@@ -6,6 +6,7 @@
     "max-line-length": null,
     "shorthand-property-no-redundant-values": null,
     "font-family-name-quotes": "always-unless-keyword",
+    "declaration-block-no-redundant-longhand-properties": null,
     "value-keyword-case": null,
     "comment-empty-line-before": null,
     "selector-list-comma-newline-after": null,

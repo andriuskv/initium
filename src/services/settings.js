@@ -40,7 +40,21 @@ function getDefault() {
       greeting: {
         disabled: false,
         textSize: 1
-      }
+      },
+      middleTopItemOrder: [
+        {
+          id: "timers",
+          name: "Mini timer"
+        },
+        {
+          id: "clock",
+          name: "Clock"
+        },
+        {
+          id: "greeting",
+          name: "Greeting"
+        }
+      ]
     },
     appearance: {
       accentColor: { hue: "205deg", saturation: "80%", lightness: "56%" },

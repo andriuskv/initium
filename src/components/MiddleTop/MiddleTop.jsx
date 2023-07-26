@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
-import { setPageTitle } from "../../utils";
+import { setPageTitle } from "utils";
 import "./middle-top.css";
 
 const TopPanel = lazy(() => import("./TopPanel"));
@@ -10,6 +10,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
   const [greeting, setGreeting] = useState(null);
   const [topPanel, setTopPanel] = useState({ rendered: false, forceVisibility: false });
+  const [itemOrder, setItemOrder] = useState("");
   const topPanelTimeoutId = useRef(0);
 
   useEffect(() => {
@@ -26,8 +27,16 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   }, [settings]);
 
   useLayoutEffect(() => {
+    setItemOrder(getOrderString(settings.general.middleTopItemOrder));
+  }, [settings.general]);
+
+  useLayoutEffect(() => {
     setShouldCenterClock(getClockCenterState());
   }, [settings.mainPanel, settings.timeDate]);
+
+  function getOrderString(items) {
+    return items.reduce((str, item) => `${str} "${item.id}"`, ``).trimStart();
+  }
 
   function getClockCenterState() {
     if (settings.mainPanel.disabled || (settings.mainPanel.navHidden && !localStorage.getItem("mainPanelTab"))) {
@@ -69,7 +78,8 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   }
 
   return (
-    <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}>
+    <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}
+      style={{ "--order": itemOrder }}>
       <Suspense fallback={null}>
         {!settings.timers.disabled && topPanel.rendered && <TopPanel initialTab={topPanel.initialTab} forceVisibility={topPanel.forceVisibility} settings={settings.timers} resetTopPanel={resetTopPanel} />}
       </Suspense>

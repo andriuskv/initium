@@ -54,7 +54,7 @@ export default function Clock({ settings }) {
   function renderClock() {
     if (settings.clockStyle === "vertical") {
       return (
-        <div className="`clock-time">
+        <div className="clock-time">
           <div className="clock-time-hours">{clock.hours}</div>
           <div>{clock.minutes}</div>
         </div>

@@ -4,7 +4,7 @@
   --font-family: "Inter";
   --date-above: 0;
 
-  grid-row: 2;
+  grid-area: clock;
   display: grid;
   grid-template-rows: 1fr min-content;
   grid-template-columns: 1fr min-content;
