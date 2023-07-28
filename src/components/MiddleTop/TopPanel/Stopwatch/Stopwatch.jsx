@@ -2,10 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { padTime } from "services/timeDate";
 import { addToRunning, removeFromRunning } from "../running-timers";
 import Icon from "components/Icon";
+import "./stopwatch.css";
 
 export default function Stopwatch({ visible, toggleIndicator, updateTitle, expand }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
+  const [splits, setSplits] = useState([]);
   const [label, setLabel] = useState("");
   const dirty = useRef(false);
   const animationId = useRef(0);
@@ -50,6 +52,7 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
 
   function update(elapsed) {
     const diff = performance.now() - elapsed;
+    state.elapsed = state.elapsed + diff;
     state.milliseconds += diff;
 
     if (state.milliseconds >= 1000) {
@@ -82,6 +85,7 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
   function reset() {
     dirty.current = false;
     setState(getInitialState());
+    setSplits([]);
 
     if (running) {
       stop();
@@ -90,12 +94,52 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
 
   function getInitialState() {
     return {
+      elapsed: 0,
       millisecondsDisplay: "00",
       secondsDisplay: "0",
       milliseconds: 0,
       seconds: 0,
       minutes: 0,
       hours: 0
+    };
+  }
+
+  function makeSplit() {
+    const split = {
+      elapsed: state.elapsed,
+      elapsedString: getSplitString(state.elapsed)
+    };
+
+    if (splits.length) {
+      split.diffString = getSplitString(state.elapsed - splits[0].elapsed);
+    }
+    setSplits([split, ...splits]);
+  }
+
+  function getSplitString(milliseconds) {
+    const split = parseSplitTime(milliseconds);
+    const minutesDisplay = padTime(split.minutes, split.hours);
+    const secondsDisplay = padTime(split.seconds, split.minutes);
+    const millisecondString = Math.floor(split.milliseconds).toString();
+    const millisecondsDisplay = split.milliseconds < 100 ? `0${millisecondString[0]}` : millisecondString.slice(0, 2);
+
+    return `${split.hours ? `${split.hours} ` : ""}${split.minutes ? `${minutesDisplay} ` : ""}${secondsDisplay}.${millisecondsDisplay}`;
+  }
+
+  function parseSplitTime(diff) {
+    const hours = Math.floor(diff / 3600000);
+    diff %= 3600000;
+    const minutes = Math.floor(diff / 60000);
+    diff %= 60000;
+    const seconds = Math.floor(diff / 1000);
+    diff %= 1000;
+    const milliseconds = diff;
+
+    return {
+      hours,
+      minutes,
+      seconds,
+      milliseconds
     };
   }
 
@@ -118,7 +162,7 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
   }
 
   return (
-    <div className={`top-panel-item stopwatch${visible ? " visible" : ""}`}>
+    <div className={`top-panel-item stopwatch${visible ? " visible" : ""}${splits.length ? " with-splits" : ""}`}>
       <div className="top-panel-item-content">
         {renderTop()}
         <div>
@@ -138,9 +182,21 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
           <span className="top-panel-digit-sep">s</span>
           <span className="stopwatch-milliseconds">{state.millisecondsDisplay}</span>
         </div>
+        {splits.length ? (
+          <ul className="stopwatch-splits">
+            {splits.map((split, index) => (
+              <li className="stopwatch-split" key={index}>
+                <span>#{splits.length - index}</span>
+                <span>{split.elapsedString}</span>
+                {split.diffString ? <span>{split.diffString}</span> : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
       <div className="top-panel-hide-target top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
+        {running ? <button className="btn text-btn top-panel-item-action-btn" onClick={makeSplit}>Split</button> : null}
         {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
         <div className="top-panel-secondary-actions">
           {running && (

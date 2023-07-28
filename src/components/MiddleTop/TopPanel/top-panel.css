@@ -82,6 +82,10 @@
       &.stopwatch {
         display: block;
       }
+
+      .stopwatch-splits {
+        display: none;
+      }
     }
 
     &.pomodoro .top-panel-item {
@@ -130,6 +134,10 @@
 
     .top-panel-item-content-label {
       min-height: auto;
+    }
+
+    .stopwatch-splits {
+      display: none;
     }
   }
 }

@@ -1,0 +1,24 @@
+.stopwatch {
+  .top-panel-item-content {
+    position: relative;
+  }
+
+  &.with-splits .top-panel-item-content-label {
+    max-width: calc(100% - 256px);
+  }
+}
+
+.stopwatch-splits {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  padding: var(--space-md);
+  padding-left: 0;
+}
+
+.stopwatch-split {
+  display: flex;
+  gap: var(--space-md);
+}
