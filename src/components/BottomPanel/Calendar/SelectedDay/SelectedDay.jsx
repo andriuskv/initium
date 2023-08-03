@@ -4,6 +4,7 @@ import * as chromeStorage from "services/chromeStorage";
 import { getDate, padTime } from "services/timeDate";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
+import CreateButton from "components/CreateButton";
 import "./selected-day.css";
 
 const Form = lazy(() => import("./Form"));
@@ -211,10 +212,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
               ))}
             </ul>
           ) : <p className="empty-reminder-list-message">No reminders</p>}
-          <button className="btn icon-text-btn create-btn" onClick={showForm}>
-            <Icon id="plus"/>
-            <span>Create</span>
-          </button>
+          <CreateButton onClick={showForm} trackScroll></CreateButton>
         </>
       )}
     </div>

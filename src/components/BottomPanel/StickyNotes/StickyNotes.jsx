@@ -2,6 +2,7 @@ import { dispatchCustomEvent } from "utils";
 import { useNotes } from "contexts/stickyNotes";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
+import CreateButton from "components/CreateButton";
 import "./sticky-notes.css";
 
 export default function StickyNotes({ hide }) {
@@ -46,10 +47,7 @@ export default function StickyNotes({ hide }) {
       ) : (
         <p className="sticky-notes-list-message">No notes</p>
       )}
-      <button className="btn icon-text-btn create-btn" onClick={createNote}>
-        <Icon id="plus"/>
-        <span>Create</span>
-      </button>
+      <CreateButton onClick={createNote} trackScroll></CreateButton>
     </div>
   );
 }

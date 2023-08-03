@@ -3,6 +3,7 @@ import { dispatchCustomEvent, getRandomString } from "utils";
 import { getDate, getTimeString } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import Icon from "components/Icon";
+import CreateButton from "components/CreateButton";
 import "./countdown.css";
 import Form from "./Form";
 
@@ -239,10 +240,7 @@ export default function Countdown({ visible, toggleIndicator }) {
 
   return (
     <div className={`top-panel-item countdown${visible ? " visible" : ""}`}>
-      <button className="btn icon-text-btn create-btn" onClick={showForm}>
-        <Icon id="plus"/>
-        <span>Create</span>
-      </button>
+      <CreateButton onClick={showForm}></CreateButton>
       {renderCountdowns()}
     </div>
   );

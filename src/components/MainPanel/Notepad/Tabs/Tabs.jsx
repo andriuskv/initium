@@ -5,6 +5,7 @@ import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
+import CreateButton from "components/CreateButton";
 import "./tabs.css";
 
 export default function Tabs({ tabs, textSize, selectListTab, updateTabs, updateTabPosition, getTabSize, decreaseTextSize, increaseTextSize, hide }) {
@@ -256,10 +257,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
           ))}
         </SortableList>
       </ul>
-      <button className="btn icon-text-btn create-btn notepad-create-btn" onClick={showCreateTabForm}>
-        <Icon id="plus"/>
-        <span>Create</span>
-      </button>
+      <CreateButton style={{ "--bottom": "50px" }} onClick={showCreateTabForm} trackScroll></CreateButton>
       <div className="notepad-storage">
         <div className="notepad-storage-text">
           <div>{storage.current} kB</div>

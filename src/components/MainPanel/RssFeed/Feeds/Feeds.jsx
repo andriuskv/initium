@@ -3,6 +3,7 @@ import * as feedService from "services/feeds";
 import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
+import CreateButton from "components/CreateButton";
 import "./feeds.css";
 
 export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivateFeed, updateFeeds, showForm, hide }) {
@@ -188,10 +189,7 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
           </li>
         ))}
       </ul>
-      <button className="btn icon-text-btn create-btn feed-add-btn" onClick={showForm}>
-        <Icon id="plus"/>
-        <span>Add</span>
-      </button>
+      <CreateButton style={{ "--expanded-width": "80px" }} onClick={showForm}>Add</CreateButton>
     </div>
   );
 }

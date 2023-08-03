@@ -3,6 +3,7 @@ import { dispatchCustomEvent } from "utils";
 import { getOffsettedCurrentTime, getHoursOffset } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import Icon from "components/Icon";
+import CreateButton from "components/CreateButton";
 import "./world.css";
 import Form from "./Form";
 
@@ -117,10 +118,7 @@ export default function World({ visible, parentVisible }) {
           ))}
         </ul>
       ) : <p className="world-clocks-message">No clocks added</p>}
-      <button className="btn icon-text-btn create-btn" onClick={showForm}>
-        <Icon id="plus"/>
-        <span>Create</span>
-      </button>
+      <CreateButton onClick={showForm}></CreateButton>
     </div>
   );
 }

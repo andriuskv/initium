@@ -9,7 +9,7 @@
 
 .tasks-create-btn {
   .tasks-dialog + & {
-    bottom: 47px;
+    --bottom: 47px;
   }
 }
 

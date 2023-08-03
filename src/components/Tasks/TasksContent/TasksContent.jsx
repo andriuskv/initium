@@ -4,6 +4,7 @@ import * as chromeStorage from "services/chromeStorage";
 import { getDate } from "services/timeDate";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
+import CreateButton from "components/CreateButton";
 import "./tasks-content.css";
 
 const Form = lazy(() => import("./Form"));
@@ -655,10 +656,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
             <button className="btn text-btn tasks-dialog-btn" onClick={undoRemovedTasks}>UNDO</button>
           </div>
         )}
-        <button className="btn icon-text-btn create-btn tasks-create-btn" onClick={showForm}>
-          <Icon id="plus"/>
-          <span>Create</span>
-        </button>
+        <CreateButton className="tasks-create-btn" onClick={showForm} trackScroll></CreateButton>
       </div>
     </>
   );
