@@ -71,6 +71,10 @@ export default function StorageTab() {
       {
         name: "clocks",
         fullName: "World clocks"
+      },
+      {
+        name: "stickyNotes",
+        fullName: "Sticky notes"
       }
     ];
 

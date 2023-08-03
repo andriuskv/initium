@@ -1,7 +1,7 @@
 import { dispatchCustomEvent } from "utils";
 import { initAppearanceSettings } from "services/settings";
-import { useSettings } from "contexts/settings";
 import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
+import { useSettings } from "contexts/settings";
 import "./general-tab.css";
 import MiddleTop from "./MiddleTop";
 
@@ -52,6 +52,15 @@ export default function GeneralTab() {
           <span className="checkbox-label-right">Disable greeting</span>
         </label>
       </div>
+      <label className="setting">
+        <span>Disable sticky notes</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.general.stickyNotesDisabled}
+          onChange={() => toggleSetting("general", "stickyNotesDisabled")}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
       <label className="setting">
         <span>Disable shortcuts</span>
         <input type="checkbox" className="sr-only checkbox-input"

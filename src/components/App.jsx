@@ -12,6 +12,7 @@ const Settings = lazy(() => import("./Settings"));
 const WallpaperViewer = lazy(() => import("./WallpaperViewer"));
 const GreetingEditor = lazy(() => import("./GreetingEditor"));
 const FullscreenModal = lazy(() => import("./FullscreenModal"));
+const StickyNotes = lazy(() => import("./StickyNotes"));
 
 export default function App() {
   const { settings } = useSettings();
@@ -104,6 +105,9 @@ export default function App() {
     <>
       <Wallpaper settings={settings.appearance.wallpaper}/>
       <MiddleTop settings={settings} greetingEditorVisible={fullscreenModal?.id === "greeting"}/>
+      <Suspense fallback={null}>
+        {settings.general.stickyNotesDisabled ? null : <StickyNotes/>}
+      </Suspense>
       <Suspense fallback={null}>
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>

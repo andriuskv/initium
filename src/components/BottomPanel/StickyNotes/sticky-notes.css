@@ -1,0 +1,36 @@
+.sticky-notes-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 312px;
+  width: 272px;
+}
+
+.sticky-notes-list {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+}
+
+.sticky-notes-list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-md);
+  border-radius: 4px;
+}
+
+.sticky-notes-list-item-title {
+  font-size: var(--text-xl);
+  color: black;
+}
+
+.sticky-notes-list-item-content {
+  color: black;
+  white-space: pre-wrap;
+}
+
+.sticky-notes-list-message {
+  margin: auto;
+}

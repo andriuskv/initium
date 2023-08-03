@@ -1,0 +1,37 @@
+@import "../../styles/mixins.css";
+
+.sticky-note {
+  position: absolute;
+  top: calc(var(--y) * 1%);
+  left: calc(var(--x) * 1%);
+  transform: translate(-50%, -4px) rotate(calc(var(--tilt) * 1deg));
+  width: 168px;
+  height: 168px;
+  padding: var(--space-md);
+  background-color: var(--background-color);
+  box-shadow:
+    1px 2px 2px 0 var(--color-black-16),
+    2px 4px 4px 0 var(--color-black-8),
+    4px 8px 8px 0 var(--color-black-4),
+    8px 16px 16px 0 var(--color-black-2);
+}
+
+.sticky-note-title {
+  @mixin text-truncate;
+
+  font-size: var(--text-xxl);
+  font-family: "Caveat";
+  line-height: 1;
+  color: black;
+}
+
+.sticky-note-content {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  white-space: pre-wrap;
+  font-size: var(--text-xl);
+  font-family: "Caveat";
+  color: black;
+}

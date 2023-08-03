@@ -35,6 +35,7 @@ function initAppearanceSettings(settings) {
 function getDefault() {
   return {
     general: {
+      stickyNotesDisabled: false,
       shortcutsDisabled: false,
       calendarDisabled: false,
       greeting: {

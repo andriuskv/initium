@@ -5,6 +5,7 @@ import { handleZIndex } from "services/zIndex";
 import Icon from "components/Icon";
 import "./bottom-panel.css";
 
+const StickyNotes = lazy(() => import("./StickyNotes"));
 const Shortcuts = lazy(() => import("./Shortcuts"));
 const Calendar = lazy(() => import("./Calendar"));
 
@@ -12,6 +13,14 @@ export default function BottomPanel() {
   const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState({});
   const [items, setItems] = useState(() => ({
+    "stickyNotes": {
+      id: "stickyNotes",
+      title: "Sticky notes",
+      iconId: "sticky-notes",
+      attrs: {
+        "data-focus-id": "stickyNotes"
+      }
+    },
     "shortcuts": {
       id: "shortcuts",
       title: "Shortcuts",
@@ -62,12 +71,13 @@ export default function BottomPanel() {
   }, []);
 
   useEffect(() => {
+    items.stickyNotes.disabled = settings.general.stickyNotesDisabled;
     items.shortcuts.disabled = settings.general.shortcutsDisabled;
     items.timers.disabled = settings.timers.disabled;
     items.calendar.disabled = settings.general.calendarDisabled;
 
     setItems({ ...items });
-  }, [settings]);
+  }, [settings.general, settings.timers]);
 
   useEffect(() => {
     if (!selectedItem.id) {
@@ -152,10 +162,15 @@ export default function BottomPanel() {
   }
 
   function renderSelectedItem() {
+    const props = {};
     let Component = null;
     let placeholder = null;
 
-    if (selectedItem.id === "shortcuts") {
+    if (selectedItem.id === "stickyNotes") {
+      props.hide = hideItem;
+      Component = StickyNotes;
+    }
+    else if (selectedItem.id === "shortcuts") {
       Component = Shortcuts;
       placeholder = <div className="shortcuts-placeholder"></div>;
     }
@@ -163,7 +178,7 @@ export default function BottomPanel() {
     if (Component) {
       return (
         <div className={`bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}>
-          <Suspense fallback={placeholder}><Component/></Suspense>
+          <Suspense fallback={placeholder}><Component {...props}/></Suspense>
         </div>
       );
     }
