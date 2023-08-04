@@ -89,7 +89,10 @@ function getDefault() {
           addSiteButtonHidden: false,
           persistentSitesHidden: false
         },
-        notepad: { disabled: false },
+        notepad: {
+          disabled: false,
+          textSize: 14
+        },
         rssFeed: { disabled: false }
       }
     },
@@ -167,6 +170,22 @@ function updateSetting(setting) {
   return settings;
 }
 
+function updateMainPanelComponentSetting(name, setting) {
+  const { components } = settings.mainPanel;
+
+  return updateSetting({
+    mainPanel: {
+      components: {
+        ...components,
+        [name]: {
+          ...components[name],
+          ...setting
+        }
+      }
+    }
+  });
+}
+
 function addPanelNoise(noise) {
   const sheet = new CSSStyleSheet();
 
@@ -187,6 +206,7 @@ export {
   getSetting,
   setSetting,
   updateSetting,
+  updateMainPanelComponentSetting,
   addPanelNoise,
   removePanelNoise
 };

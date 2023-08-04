@@ -154,6 +154,31 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
     setActiveDragId(event.active.id);
   }
 
+  function renderTextSizeSetting(tab) {
+    let size = textSize;
+
+    if (tab?.textSize) {
+      size = tab.textSize;
+    }
+
+    return (
+      <div className="dropdown-group notepad-tabs-dropdown-setting-group">
+        <div className="notepad-tabs-dropdown-setting-title">Text size</div>
+        <div className="notepad-tabs-dropdown-setting">
+          <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
+            onClick={() => decreaseTextSize(size, tab)} title="Decrease text size" disabled={size <= 10}>
+            <Icon id="minus"/>
+          </button>
+          <span className="notepad-tabs-dropdown-setting-value">{size}px</span>
+          <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
+            onClick={() => increaseTextSize(size, tab)} title="Increase text size" disabled={size >= 32}>
+            <Icon id="plus"/>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   function renderModal() {
     if (modal.type === "create") {
       return (
@@ -193,20 +218,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
       <div className="notepad-tabs-header">
         <h2 className="notepad-tabs-header-title">Notepad Tabs</h2>
         <Dropdown>
-          <div className="dropdown-group notepad-tabs-dropdown-setting-group">
-            <div className="notepad-tabs-dropdown-setting-title">Text size</div>
-            <div className="notepad-tabs-dropdown-setting">
-              <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-                onClick={decreaseTextSize} title="Decrease text size" disabled={textSize <= 10}>
-                <Icon id="minus"/>
-              </button>
-              <span className="notepad-tabs-dropdown-setting-value">{textSize}px</span>
-              <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-                onClick={increaseTextSize} title="Increase text size" disabled={textSize >= 32}>
-                <Icon id="plus"/>
-              </button>
-            </div>
-          </div>
+          {renderTextSizeSetting()}
           <button className="btn icon-text-btn dropdown-btn" onClick={downloadTabs}>
             <Icon id="download"/>
             <span>Download all</span>
@@ -236,6 +248,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
               <div className="notepad-tabs-item-bottom">
                 <span className="notepad-tab-size-text">Size: {tab.sizeString} kB</span>
                 <Dropdown>
+                  {renderTextSizeSetting(tab)}
                   <button className="btn icon-text-btn dropdown-btn" onClick={() => enableTabRename(tab)}>
                     <Icon id="edit"/>
                     <span>Rename</span>

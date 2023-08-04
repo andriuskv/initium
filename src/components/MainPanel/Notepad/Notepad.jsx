@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString, formatBytes } from "utils";
 import * as chromeStorage from "services/chromeStorage";
-import { getSetting, updateSetting } from "services/settings";
+import { getSetting, updateMainPanelComponentSetting } from "services/settings";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./notepad.css";
@@ -14,10 +14,11 @@ export default function Notepad() {
   const [tabListVisible, setTabListVisible] = useState(false);
   const [storageWarning, setStorageWarning] = useState(null);
   const [textSize, setTextSize] = useState(() => {
-    const { textSize } = getSetting("notepad");
-    return textSize ?? 14;
+    const { components: { notepad } } = getSetting("mainPanel");
+    return notepad.textSize;
   });
   const [textSizeLabelVisible, setTextSizeLabelVisible] = useState(false);
+  const [resetTextSize, setResetTextSize] = useState(false);
   const labelTimeoutId = useRef(0);
   const saveTimeoutId = useRef(0);
   const textareaRef = useRef(0);
@@ -25,7 +26,24 @@ export default function Notepad() {
 
   useEffect(() => {
     init();
+
+    window.addEventListener("reset-notepad-text-size", handleTextSizeReset);
+
+    return () => {
+      window.removeEventListener("reset-notepad-text-size", handleTextSizeReset);
+    };
   }, []);
+
+  useEffect(() => {
+    if (resetTextSize) {
+      setTextSize(14);
+      setTabs(tabs.map(tab => {
+        delete tab.textSize;
+        return tab;
+      }));
+      setResetTextSize(false);
+    }
+  }, [resetTextSize, tabs]);
 
   useEffect(() => {
     if (!tabListVisible && tabs) {
@@ -40,11 +58,7 @@ export default function Notepad() {
     let notepad = await chromeStorage.get("notepad");
 
     if (notepad?.length) {
-      notepad = notepad.map(tab => {
-        tab.id = getRandomString();
-        tab.sizeString = getTabSize(tab).sizeString;
-        return tab;
-      });
+      notepad = initTabs(notepad);
     }
     else {
       notepad = [getDefaultTab()];
@@ -58,16 +72,34 @@ export default function Notepad() {
       }
 
       if (notepad.newValue) {
-        setTabs(notepad.newValue.map(tab => {
-          tab.id = getRandomString();
-          return tab;
-        }));
+        setTabs(initTabs(notepad.newValue));
       }
       else {
         setNavigation({ activeIndex: 0, shift: 0 });
         setTabs([getDefaultTab()]);
       }
     });
+  }
+
+  function initTabs(tabs) {
+    const { components: { notepad: settings } } = getSetting("mainPanel");
+    const settingsTabs = settings.tabs ?? [];
+
+    return tabs.map(tab => {
+      tab.id ??= getRandomString();
+      tab.sizeString = getTabSize(tab).sizeString;
+
+      const settingsTab = settingsTabs.find(({ id }) => id === tab.id);
+
+      if (settingsTab) {
+        tab.textSize = settingsTab.textSize;
+      }
+      return tab;
+    });
+  }
+
+  function handleTextSizeReset() {
+    setResetTextSize(true);
   }
 
   function getDefaultTab() {
@@ -168,42 +200,69 @@ export default function Notepad() {
     }
 
     if (event.key === "=") {
+      const activeTab = tabs[activeIndex];
+      const size = activeTab.textSize || textSize;
+
       event.preventDefault();
 
-      increaseTextSize();
+      increaseTextSize(size, activeTab);
       showTextSizeLabel();
     }
     else if (event.key === "-") {
+      const activeTab = tabs[activeIndex];
+      const size = activeTab.textSize || textSize;
+
       event.preventDefault();
 
-      decreaseTextSize();
+      decreaseTextSize(size, activeTab);
       showTextSizeLabel();
     }
   }
 
-  function decreaseTextSize() {
+  function decreaseTextSize(textSize, tab) {
     if (textSize > 10) {
-      const value = textSize - 1;
-
-      setTextSize(value);
-      saveTextSize(value);
+      updateTextSize(textSize - 1, tab);
     }
   }
 
-  function increaseTextSize() {
+  function increaseTextSize(textSize, tab) {
     if (textSize < 32) {
-      const value = textSize + 1;
+      updateTextSize(textSize + 1, tab);
+    }
+  }
 
+  function updateTextSize(value, tab) {
+    if (tab) {
+      tab.textSize = value;
+      updateTabs(tabs, false);
+      saveTabTextSize(tabs);
+    }
+    else {
       setTextSize(value);
       saveTextSize(value);
     }
   }
 
   function saveTextSize(value) {
+    delaySave(() => {
+      updateMainPanelComponentSetting("notepad", { textSize: value });
+    });
+  }
+
+  function saveTabTextSize(tabs) {
+    delaySave(() => {
+      updateMainPanelComponentSetting("notepad", {
+        tabs: tabs.filter(tab => tab.textSize).map(tab => ({
+          id: tab.id,
+          textSize: tab.textSize
+        }))
+      });
+    });
+  }
+
+  function delaySave(callback) {
     clearTimeout(saveTimeoutId.current);
-    saveTimeoutId.current = setTimeout(() => {
-      updateSetting({ notepad: { textSize: value } });
-    }, 1000);
+    saveTimeoutId.current = setTimeout(callback, 1000);
   }
 
   function showTextSizeLabel() {
@@ -245,12 +304,16 @@ export default function Notepad() {
     });
   }
 
-  async function saveTabs(tabs) {
-    chromeStorage.set({ notepad: tabs.map(tab => ({
-      title: tab.title,
-      content: tab.content
-    })) }, () => {
-      checkStorageSize();
+  function saveTabs(tabs) {
+    delaySave(() => {
+      saveTabTextSize(tabs);
+      chromeStorage.set({ notepad: tabs.map(tab => ({
+        id: tab.id,
+        title: tab.title,
+        content: tab.content
+      })) }, () => {
+        checkStorageSize();
+      });
     });
   }
 
@@ -289,6 +352,9 @@ export default function Notepad() {
       </Suspense>
     );
   }
+
+  const activeTab = tabs[activeIndex];
+
   return (
     <div className="notepad">
       <div className="main-panel-item-header">
@@ -318,13 +384,13 @@ export default function Notepad() {
         </button>
       </div>
       {storageWarning && renderWarning()}
-      <textarea className="notepad-input" ref={textareaRef} style={{ "--text-size": `${textSize}px` }}
+      <textarea className="notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` }}
         onChange={handleTextareaChange}
         onKeyDown={handleTextareaKeyDown}
-        defaultValue={tabs[activeIndex].content}
-        key={tabs[activeIndex].id}>
+        defaultValue={activeTab.content}
+        key={activeTab.id}>
       </textarea>
-      {textSizeLabelVisible && <div className="container notepad-text-size-label">{textSize}px</div>}
+      {textSizeLabelVisible && <div className="container notepad-text-size-label">{activeTab.textSize}px</div>}
     </div>
   );
 }

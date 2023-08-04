@@ -10,6 +10,7 @@ function SettingsProvider({ children }) {
       settings,
       setSetting,
       updateSetting,
+      updateMainPanelComponentSetting,
       toggleSetting,
       resetSettings
     };
@@ -21,6 +22,12 @@ function SettingsProvider({ children }) {
 
   function updateSetting(group, setting) {
     const settings = settingsService.updateSetting({ [group]: setting });
+
+    setSettings({ ...settings });
+  }
+
+  function updateMainPanelComponentSetting(name, setting) {
+    const settings = settingsService.updateMainPanelComponentSetting(name, setting);
 
     setSettings({ ...settings });
   }

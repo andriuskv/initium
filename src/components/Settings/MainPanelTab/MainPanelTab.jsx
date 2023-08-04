@@ -3,7 +3,7 @@ import { useSettings } from "contexts/settings";
 import { dispatchCustomEvent } from "utils";
 
 export default function MainPanelTab() {
-  const { settings: { mainPanel: settings }, updateSetting, toggleSetting } = useSettings();
+  const { settings: { mainPanel: settings }, updateSetting, updateMainPanelComponentSetting, toggleSetting } = useSettings();
   const [persistentSitesEditEnabled, setPersistentSiteEditEnabled] = useState(false);
   const [topSitesDirty, setTopSitesDirty] = useState(() => !!localStorage.getItem("top sites"));
 
@@ -42,17 +42,7 @@ export default function MainPanelTab() {
   }
 
   function toggleTopSiteSetting(setting) {
-    const { components } = settings;
-
-    updateSetting("mainPanel", {
-      components: {
-        ...components,
-        topSites: {
-          ...components.topSites,
-          ...setting
-        }
-      }
-    });
+    updateMainPanelComponentSetting("topSites", setting);
   }
 
   function togglePersistentSiteEditMode({ target }) {
@@ -67,6 +57,11 @@ export default function MainPanelTab() {
       setPersistentSiteEditEnabled(false);
       dispatchCustomEvent("enable-persistent-site-edit", false);
     }
+  }
+
+  function resetNotepadTextSize() {
+    updateMainPanelComponentSetting("notepad", { textSize: 14, tabs: [] });
+    dispatchCustomEvent("reset-notepad-text-size");
   }
 
   return (
@@ -173,6 +168,15 @@ export default function MainPanelTab() {
             <div className="toggle-item">On</div>
           </div>
         </label>
+      </div>
+      <div className="settings-group">
+        <div className="settings-group-top">
+          <h4 className="settings-group-title">Notepad</h4>
+        </div>
+        <div className={`setting${settings.components.notepad.disabled ? " disabled" : ""}`}>
+          <span>Reset notepad text size</span>
+          <button className="btn" onClick={resetNotepadTextSize}>Reset</button>
+        </div>
       </div>
     </div>
   );
