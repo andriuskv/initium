@@ -7,6 +7,7 @@ import Modal from "components/Modal";
 import Icon from "components/Icon";
 import CreateButton from "components/CreateButton";
 import "./tabs.css";
+import Tab from "./Tab";
 
 export default function Tabs({ tabs, textSize, selectListTab, updateTabs, updateTabPosition, getTabSize, decreaseTextSize, increaseTextSize, hide }) {
   const [modal, setModal] = useState(null);
@@ -16,37 +17,6 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
   useEffect(() => {
     updateStorage();
   }, [tabs]);
-
-  function enableTabRename(tab) {
-    tab.renameEnabled = true;
-    updateTabs(tabs, false);
-  }
-
-  function renameTab(event, tab) {
-    const newTitle = event.target.value;
-    let shouldSave = false;
-
-    delete tab.renameEnabled;
-
-    if (newTitle && newTitle !== tab.title) {
-      tab.title = newTitle;
-      shouldSave = true;
-    }
-    updateTabs(tabs, shouldSave);
-  }
-
-  function downloadTab(event, index) {
-    const { content } = tabs[index];
-    const data = new Blob([content], { type: "text/plain" });
-    const url = URL.createObjectURL(data);
-    const target = event.currentTarget;
-    target.href = url;
-
-    setTimeout(() => {
-      target.href = "";
-      URL.revokeObjectURL(url);
-    }, 100);
-  }
 
   async function downloadTabs() {
     const [{ default: saveAs }, { default: JSZip }] = await Promise.all([
@@ -127,12 +97,6 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
     hideModal();
   }
 
-  function blurTabTitleInput(event) {
-    if (event.key === "Enter") {
-      event.target.blur();
-    }
-  }
-
   async function updateStorage() {
     const bytes = await chromeStorage.getBytesInUse("notepad");
     const maxBytes = 8192;
@@ -152,31 +116,6 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
 
   function handleDragStart(event) {
     setActiveDragId(event.active.id);
-  }
-
-  function renderTextSizeSetting(tab) {
-    let size = textSize;
-
-    if (tab?.textSize) {
-      size = tab.textSize;
-    }
-
-    return (
-      <div className="dropdown-group notepad-tabs-dropdown-setting-group">
-        <div className="notepad-tabs-dropdown-setting-title">Text size</div>
-        <div className="notepad-tabs-dropdown-setting">
-          <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-            onClick={() => decreaseTextSize(size, tab)} title="Decrease text size" disabled={size <= 10}>
-            <Icon id="minus"/>
-          </button>
-          <span className="notepad-tabs-dropdown-setting-value">{size}px</span>
-          <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-            onClick={() => increaseTextSize(size, tab)} title="Increase text size" disabled={size >= 32}>
-            <Icon id="plus"/>
-          </button>
-        </div>
-      </div>
-    );
   }
 
   function renderModal() {
@@ -213,12 +152,47 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
     return null;
   }
 
+  function renderTab(tab, index) {
+    const component = {
+      Component: Tab,
+      params: {
+        index,
+        tab,
+        tabs,
+        textSize,
+        updateTabs,
+        decreaseTextSize,
+        increaseTextSize,
+        selectListTab,
+        showRemoveModal
+      }
+    };
+
+    return (
+      <SortableItem className={`notepad-tabs-item${tab.id === activeDragId ? " dragging" : ""}`}
+        component={component} id={tab.id} key={tab.id}/>
+    );
+  }
+
   return (
     <div className="notepad">
       <div className="notepad-tabs-header">
         <h2 className="notepad-tabs-header-title">Notepad Tabs</h2>
         <Dropdown>
-          {renderTextSizeSetting()}
+          <div className="dropdown-group notepad-tabs-dropdown-setting-group">
+            <div className="notepad-tabs-dropdown-setting-title">Text size</div>
+            <div className="notepad-tabs-dropdown-setting">
+              <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
+                onClick={() => decreaseTextSize(textSize)} title="Decrease text size" disabled={textSize <= 10}>
+                <Icon id="minus"/>
+              </button>
+              <span className="notepad-tabs-dropdown-setting-value">{textSize}px</span>
+              <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
+                onClick={() => increaseTextSize(textSize)} title="Increase text size" disabled={textSize >= 32}>
+                <Icon id="plus"/>
+              </button>
+            </div>
+          </div>
           <button className="btn icon-text-btn dropdown-btn" onClick={downloadTabs}>
             <Icon id="download"/>
             <span>Download all</span>
@@ -234,40 +208,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
           axis="xy"
           handleSort={handleSort}
           handleDragStart={handleDragStart}>
-          {tabs.map((tab, index) => (
-            <SortableItem className={`notepad-tabs-item${tab.id === activeDragId ? " dragging" : ""}`}
-              key={tab.id} id={tab.id} handle={{ className: "notepad-tabs-item-handle" }}>
-              {tab.renameEnabled ? (
-                <input type="text" className="input" autoFocus defaultValue={tab.title}
-                  onBlur={event => renameTab(event, tab)} onKeyDown={e => e.stopPropagation()} onKeyPress={blurTabTitleInput}/>
-              ) : (
-                <button className="btn text-btn notepad-tabs-item-title" onClick={() => selectListTab(index)}>
-                  <span className="notepad-tabs-item-title-text">{tab.title}</span>
-                </button>
-              )}
-              <div className="notepad-tabs-item-bottom">
-                <span className="notepad-tab-size-text">Size: {tab.sizeString} kB</span>
-                <Dropdown>
-                  {renderTextSizeSetting(tab)}
-                  <button className="btn icon-text-btn dropdown-btn" onClick={() => enableTabRename(tab)}>
-                    <Icon id="edit"/>
-                    <span>Rename</span>
-                  </button>
-                  <a href="" download={`${tab.title}.txt`} className="btn icon-text-btn dropdown-btn"
-                    onClick={event => downloadTab(event, index)}>
-                    <Icon id="download"/>
-                    <span>Download</span>
-                  </a>
-                  {tabs.length > 1 && (
-                    <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
-                      <Icon id="trash"/>
-                      <span>Remove</span>
-                    </button>
-                  )}
-                </Dropdown>
-              </div>
-            </SortableItem>
-          ))}
+          {tabs.map((tab, index) => renderTab(tab, index))}
         </SortableList>
       </ul>
       <CreateButton style={{ "--bottom": "50px" }} onClick={showCreateTabForm} trackScroll></CreateButton>

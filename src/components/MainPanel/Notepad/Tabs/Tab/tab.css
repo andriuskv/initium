@@ -1,0 +1,74 @@
+.notepad-tabs-item {
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+  padding-top: var(--space-sm);
+  border: 1px solid var(--color-white-10);
+  border-radius: 8px;
+  background-color: var(--color-white-4);
+
+  &.dragging {
+    z-index: 1000;
+    background-color: var(--color-white-10);
+
+    .drag-handle {
+      opacity: 1;
+      background-color: var(--color-white-10);
+    }
+  }
+
+  &:hover .drag-handle {
+    animation: 0s linear 0.5s forwards delayed-reveal;
+  }
+
+  .input {
+    margin-left: var(--space-md);
+    margin-right: var(--space-md);
+
+    & ~ .drag-handle {
+      display: none;
+    }
+  }
+}
+
+.notepad-tabs-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-right: var(--space-sm);
+}
+
+.notepad-tabs-item-select-btn {
+  align-self: flex-start;
+  height: auto;
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+  border-radius: 0;
+  text-align: left;
+  font-weight: normal;
+  word-break: break-word;
+
+  &:hover {
+    --background-color: transparent;
+
+    border-color: transparent;
+    text-decoration: underline;
+  }
+}
+
+.notepad-tabs-item-title {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+}
+
+.notepad-tabs-item-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+  margin-top: auto;
+  border-top: 1px solid var(--color-white-4);
+}

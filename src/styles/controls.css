@@ -366,3 +366,12 @@ textarea {
 .label-right {
   margin-left: var(--space-md);
 }
+
+.drag-handle {
+  opacity: 0;
+  cursor: move;
+
+  &:hover, &:focus-visible {
+    opacity: 1;
+  }
+}

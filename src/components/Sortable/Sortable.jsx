@@ -87,7 +87,7 @@ function SortableList({ children, items, axis, handleDragStart, handleSort }) {
   );
 }
 
-function SortableItem({ children, id, className, handle }) {
+function SortableItem({ children, id, className, component }) {
   const {
     attributes,
     listeners,
@@ -101,13 +101,14 @@ function SortableItem({ children, id, className, handle }) {
     transition
   };
 
-  if (handle) {
+  if (component) {
     return (
       <li ref={setNodeRef} style={style} className={className}>
-        {children}
-        <button className={`btn icon-btn ${handle.className}`} {...attributes} {...listeners} title="Drag">
-          <Icon id="drag"/>
-        </button>
+        <component.Component {...component.params}>
+          <button className="btn icon-btn drag-handle" {...attributes} {...listeners} title="Drag">
+            <Icon id="drag"/>
+          </button>
+        </component.Component>
       </li>
     );
   }
