@@ -53,7 +53,7 @@ export default function MainPanel({ settings }) {
       }
     }
 
-    if (activeTabDisabled || activeTab.id === "twitter" || activeTab.id === "" && disabledComponentCount >= tabsArray - 1) {
+    if (activeTabDisabled || activeTab.id === "twitter" || activeTab.id === "" && disabledComponentCount >= tabsArray.length - 1) {
       selectTab(firstEnabledTab);
     }
     setTabs({ ...tabs });
