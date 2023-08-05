@@ -402,6 +402,12 @@ export default function Tasks({ settings, expanded, toggleSize }) {
     setActiveComponent("groups");
   }
 
+  function createGroup(group) {
+    // Insert new group after the default group
+    groups.splice(1, 0, group);
+    updateGroups(groups);
+  }
+
   function hideActiveComponent() {
     setActiveComponent(null);
   }
@@ -531,14 +537,15 @@ export default function Tasks({ settings, expanded, toggleSize }) {
   if (activeComponent === "form") {
     return (
       <Suspense fallback={null}>
-        <Form form={form} groups={groups} updateGroups={updateGroups} replaceLink={replaceLink} removeTask={removeFormTask} hide={hideForm}/>
+        <Form form={form} groups={groups} updateGroups={updateGroups} replaceLink={replaceLink} removeTask={removeFormTask}
+          createGroup={createGroup} hide={hideForm}/>
       </Suspense>
     );
   }
   else if (activeComponent === "groups") {
     return (
       <Suspense fallback={null}>
-        <Groups groups={groups} updateGroups={updateGroups} hide={hideActiveComponent}/>
+        <Groups groups={groups} updateGroups={updateGroups} createGroup={createGroup} hide={hideActiveComponent}/>
       </Suspense>
     );
   }

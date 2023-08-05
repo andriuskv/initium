@@ -3,9 +3,10 @@ import { getRandomString } from "utils";
 import Icon from "components/Icon";
 import "./form.css";
 
+const GroupForm = lazy(() => import("../GroupForm"));
 const LabelForm = lazy(() => import("./LabelForm"));
 
-export default function Form({ form, groups, updateGroups, replaceLink, removeTask, hide }) {
+export default function Form({ form, groups, updateGroups, replaceLink, removeTask, createGroup, hide }) {
   const [state, setState] = useState(() => {
     const defaultForm = {
       moreOptionsVisible: false,
@@ -51,6 +52,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
     return defaultForm;
   });
   const [labelFormVisible, setLabelFormVisible] = useState(false);
+  const [groupFormVisible, setGroupFormVisible] = useState(false);
   const [message, setMessage] = useState("");
   const messageTimeoutId = useRef();
 
@@ -271,6 +273,14 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
     setLabelFormVisible(false);
   }
 
+  function showGroupForm() {
+    setGroupFormVisible(true);
+  }
+
+  function hideGroupForm() {
+    setGroupFormVisible(false);
+  }
+
   function getDateTimeString(time) {
     const date = time ? new Date(time) : new Date();
 
@@ -358,8 +368,8 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
                 ))}
               </ul>
             )}
-            <label className="task-form-item-container">
-              <span className="task-form-item-title">Group</span>
+            <div className="task-form-item-container">
+              <h4 className="task-form-item-title">Group</h4>
               <div className="select-container">
                 <select className="input select" onChange={handleGroupSelection} value={state.selectedGroupId}>
                   {groups.map(group => (
@@ -367,7 +377,10 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
                   ))}
                 </select>
               </div>
-            </label>
+              <button type="button" className="btn icon-btn subtask-add-btn" onClick={showGroupForm} title="Create group">
+                <Icon id="plus"/>
+              </button>
+            </div>
             <div className="task-form-textarea-container">
               <textarea className="input task-form-textarea" name="text" defaultValue={state.task.rawText}
                 placeholder="Details" required></textarea>
@@ -409,6 +422,11 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
         {labelFormVisible && (
           <Suspense fallback={null}>
             <LabelForm addUniqueLabel={addUniqueLabel} hide={hideLabelForm}/>
+          </Suspense>
+        )}
+        {groupFormVisible && (
+          <Suspense fallback={null}>
+            <GroupForm createGroup={createGroup} hide={hideGroupForm} modal/>
           </Suspense>
         )}
       </div>

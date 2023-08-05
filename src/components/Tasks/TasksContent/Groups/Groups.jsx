@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { getRandomString } from "utils";
 import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./groups.css";
+import GroupForm from "../GroupForm";
 
-export default function Groups({ groups, updateGroups, hide }) {
+export default function Groups({ groups, updateGroups, createGroup, hide }) {
   const [removeModal, setRemoveModal] = useState(null);
   const [activeDragId, setActiveDragId] = useState(null);
 
@@ -28,19 +28,6 @@ export default function Groups({ groups, updateGroups, hide }) {
   function confirmGroupRemoval() {
     removeGroup(removeModal.groupIndex);
     hideRemoveModal();
-  }
-
-  function handleGroupFormSubmit(event) {
-    // Insert new group after group that is hidden
-    groups.splice(1, 0, {
-      id: getRandomString(4),
-      name: event.target.elements.name.value.trim(),
-      expanded: true,
-      tasks: []
-    });
-    event.preventDefault();
-    event.target.reset();
-    updateGroups(groups);
   }
 
   function enableGroupRename(group) {
@@ -112,12 +99,7 @@ export default function Groups({ groups, updateGroups, hide }) {
 
   return (
     <div className="tasks-item-container task-transition-target">
-      <form className="tasks-groups-form" onSubmit={handleGroupFormSubmit}>
-        <div className="multi-input-container group-create-input-container">
-          <input type="text" className="input multi-input-left" name="name" placeholder="Group name" autoComplete="off" required/>
-          <button className="btn text-btn multi-input-right">Create</button>
-        </div>
-      </form>
+      <GroupForm createGroup={createGroup}/>
       {groups.length > 1 ? (
         <ul className="tasks-groups-items" data-dropdown-parent>
           <li className="tasks-groups-item">
