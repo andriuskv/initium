@@ -11,7 +11,7 @@
   &.expanded {
     border-radius: 8px;
     transform: translateX(var(--space-md));
-    transition: 0.2s transform;
+    transition: var(--duration-n) transform;
   }
 }
 

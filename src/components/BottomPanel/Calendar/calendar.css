@@ -44,20 +44,18 @@
 }
 
 .calendar {
-  overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
   width: 380px;
   height: 100%;
-  border-bottom-right-radius: 6px;
   transform-origin: var(--x) var(--y);
-  animation-duration: 0.2s;
+  animation-duration: var(--duration-n);
   animation-fill-mode: both;
   animation-name: opacity-up;
 
   &.transition {
-    animation-duration: 0.16s, 0.6s;
+    animation-duration: calc(0.16s * var(--animation-speed)), calc(0.6s * var(--animation-speed));
     animation-name: opacity-down, calendar-scale-up;
   }
 }
@@ -92,10 +90,6 @@
   border-radius: 4px;
   color: var(--color-white-60);
   cursor: pointer;
-
-  &:last-of-type {
-    border-bottom-right-radius: 6px;
-  }
 
   &.current {
     font-weight: bold;

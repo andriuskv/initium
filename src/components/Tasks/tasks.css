@@ -12,7 +12,7 @@
   &.revealed {
     --height: 510px;
 
-    transition: 0.2s height;
+    transition: var(--duration-n) height;
   }
 
   &.expanded {
@@ -31,8 +31,8 @@
   padding: var(--space-xs) var(--space-sm);
   border: none;
   text-shadow: 0 1px 1px var(--color-black-16), 0 2px 2px var(--color-black-8);
-  transition: 0.2s transform;
-  transition-delay: 0.1s;
+  transition: var(--duration-n) transform;
+  transition-delay: var(--duration-f);
 
   &:hover {
     --background-color: transparent;
@@ -47,7 +47,7 @@
 .tasks-transition-target {
   opacity: 0;
   height: 100%;
-  transition: 0.2s opacity;
+  transition: var(--duration-n) opacity;
 }
 
 .tasks-content {
@@ -61,11 +61,11 @@
   transform-origin: top left;
   transform: scale(0);
   transition:
-    0.2s transform,
-    0.2s opacity,
-    0.2s visibility,
-    0.2s border-bottom-right-radius;
-  transition-delay: 0.1s;
+    var(--duration-n) transform,
+    var(--duration-n) opacity,
+    var(--duration-n) visibility,
+    var(--duration-n) border-bottom-right-radius;
+  transition-delay: var(--duration-f);
 
   &.visible {
     opacity: 1;
@@ -76,7 +76,7 @@
 
     .tasks-transition-target {
       opacity: 1;
-      transition-delay: 0.1s;
+      transition-delay: var(--duration-f);
     }
   }
 }

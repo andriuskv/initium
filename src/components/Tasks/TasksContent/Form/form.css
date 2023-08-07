@@ -65,7 +65,7 @@
 .task-form-label-btn-tick {
   position: absolute;
   animation-name: scale-up;
-  animation-duration: 0.2s;
+  animation-duration: var(--duration-n);
   animation-fill-mode: forwards;
 }
 

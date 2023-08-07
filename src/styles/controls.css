@@ -41,10 +41,10 @@ textarea {
   color: var(--color);
   font-weight: bold;
   transition:
-    0.1s color,
-    0.1s border-color,
-    0.1s background-color,
-    0.1s opacity;
+    var(--duration-f) color,
+    var(--duration-f) border-color,
+    var(--duration-f) background-color,
+    var(--duration-f) opacity;
   cursor: pointer;
 
   &:disabled {
@@ -214,7 +214,7 @@ textarea {
   border-bottom: 2px solid var(--color-primary);
   transform: rotateZ(45deg) scale(0);
   animation-name: scale-tick-up;
-  animation-duration: 0.1s;
+  animation-duration: var(--duration-f);
   animation-fill-mode: forwards;
 }
 
@@ -248,7 +248,7 @@ textarea {
     border-radius: 50%;
     background-color: var(--color-primary);
     transform: scale(0);
-    transition: 0.1s transform;
+    transition: var(--duration-f) transform;
   }
 }
 
@@ -284,7 +284,7 @@ textarea {
     width: calc(50% - var(--space-sm));
     border-radius: 99px;
     background-color: var(--color-primary);
-    transition: 0.1s transform;
+    transition: var(--duration-f) transform;
   }
 }
 

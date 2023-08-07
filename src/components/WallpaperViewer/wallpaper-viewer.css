@@ -11,7 +11,7 @@
   flex-direction: column;
   align-items: center;
   opacity: 1;
-  transition: 0.4s opacity;
+  transition: var(--duration-s) opacity;
 
   &.hidden {
     opacity: 0;

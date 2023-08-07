@@ -88,7 +88,7 @@
 }
 
 .top-site-icon {
-  transition: 0.2s transform;
+  transition: var(--duration-n) transform;
 }
 
 .top-site-add-btn {
@@ -100,7 +100,7 @@
 .top-site-add-btn-icon {
   width: 32px;
   height: 32px;
-  transition: 0.2s transform;
+  transition: var(--duration-n) transform;
 }
 
 .top-site-thumbnail-container {

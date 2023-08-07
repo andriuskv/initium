@@ -8,10 +8,10 @@
   padding-bottom: var(--space-md);
   transform: translateX(-50%);
   transition:
-    0.2s opacity,
-    0.2s visibility,
-    0.2s transform;
-  transition-delay: 0.2s;
+    var(--duration-n) opacity,
+    var(--duration-n) visibility,
+    var(--duration-n) transform;
+  transition-delay: var(--duration-n);
   pointer-events: auto;
 }
 
@@ -72,7 +72,9 @@
   }
 
   &.expanded, &.collapsing {
-    transition: 0.2s top, 0.2s max-height, 0.2s height;
+    transition: var(--duration-n) top,
+                var(--duration-n) max-height,
+                var(--duration-n) height;
   }
 
   &.expanded {

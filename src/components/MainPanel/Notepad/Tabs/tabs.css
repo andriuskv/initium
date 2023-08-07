@@ -93,8 +93,8 @@
   background-color: var(--color-primary);
   transform-origin: left;
   transform: scaleX(var(--used));
-  transition: 0.2s transform;
-  transition-delay: 0.2s;
+  transition: var(--duration-n) transform;
+  transition-delay: var(--duration-n);
 
   &.full {
     background-color: var(--color-negative);

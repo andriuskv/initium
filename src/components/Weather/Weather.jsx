@@ -3,7 +3,6 @@ import { dispatchCustomEvent } from "utils";
 import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
-// import * as focusService from "services/focus";
 import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
 import "./weather.css";
@@ -11,7 +10,7 @@ import "./weather.css";
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ timeFormat }) {
-  const { settings: { weather: settings }, updateSetting } = useSettings();
+  const { settings: { appearance: { animationSpeed }, weather: settings }, updateSetting } = useSettings();
   const [state, setState] = useState({ view: "temp" });
   const [current, setCurrentWeather] = useState(null);
   const [moreWeather, setMoreWeather] = useState(null);
@@ -138,7 +137,7 @@ export default function Weather({ timeFormat }) {
 
     setTimeout(() => {
       setState({ ...state, reveal: false });
-    }, 320);
+    }, 320 * animationSpeed);
   }
 
   function selectView(view) {

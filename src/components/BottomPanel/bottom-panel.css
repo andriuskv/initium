@@ -7,7 +7,7 @@
 
 .bottom-panel-transition-target {
   opacity: 0;
-  transition: 0.2s opacity;
+  transition: var(--duration-n) opacity;
 }
 
 .bottom-panel-item-container {
@@ -17,11 +17,11 @@
   transform-origin: bottom right;
   transform: scale(0);
   transition:
-    0.2s transform,
-    0.2s opacity,
-    0.2s visibility,
-    0.2s border-top-left-radius;
-  transition-delay: 0.1s;
+    var(--duration-n) transform,
+    var(--duration-n) opacity,
+    var(--duration-n) visibility,
+    var(--duration-n) border-top-left-radius;
+  transition-delay: var(--duration-f);
 
   &.visible {
     opacity: 1;
@@ -32,7 +32,7 @@
 
     .bottom-panel-transition-target {
       opacity: 1;
-      transition-delay: 0.1s;
+      transition-delay: var(--duration-f);
     }
   }
 

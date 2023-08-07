@@ -31,7 +31,8 @@
   height: 24px;
   margin-right: var(--space-md);
   margin-left: var(--space-xs);
-  transition: 0.2s transform, 0.2s background-color;
+  transition: var(--duration-n) transform,
+              var(--duration-n) background-color;
 
   &:hover {
     transform: scaleX(2);

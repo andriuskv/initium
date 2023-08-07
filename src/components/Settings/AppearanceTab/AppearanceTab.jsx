@@ -96,6 +96,11 @@ export default function AppearanceTab() {
   });
   const timeoutId = useRef(0);
 
+  function handleAnimationSpeedChangeChange({ target }) {
+    document.body.style.setProperty("--animation-speed", target.value);
+    updateContextSetting("appearance", { animationSpeed: Number(target.value) });
+  }
+
   function handleRangeInputChange({ target }) {
     const { name, value } = target;
 
@@ -181,6 +186,17 @@ export default function AppearanceTab() {
 
   return (
     <div className="setting-tab">
+      <label className="setting">
+        <span>Animation speed</span>
+        <div className="select-container">
+          <select className="input select" onChange={handleAnimationSpeedChangeChange} value={settings.animationSpeed}>
+            <option value="0">Disabled</option>
+            <option value="0.5">Fast</option>
+            <option value="1">Normal</option>
+            <option value="2">Slow</option>
+          </select>
+        </div>
+      </label>
       <div className="settings-group">
         <h4 className="settings-group-title">Accent color</h4>
         {renderAccentColors()}

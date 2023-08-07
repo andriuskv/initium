@@ -81,7 +81,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
     <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}
       style={{ "--order": itemOrder }}>
       <Suspense fallback={null}>
-        {!settings.timers.disabled && topPanel.rendered && <TopPanel initialTab={topPanel.initialTab} forceVisibility={topPanel.forceVisibility} settings={settings.timers} resetTopPanel={resetTopPanel} />}
+        {!settings.timers.disabled && topPanel.rendered && <TopPanel initialTab={topPanel.initialTab} forceVisibility={topPanel.forceVisibility} settings={settings.timers} animationSpeed={settings.appearance.animationSpeed} resetTopPanel={resetTopPanel} />}
       </Suspense>
       <Suspense fallback={null}>
         {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}

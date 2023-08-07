@@ -55,8 +55,8 @@
   stroke: var(--color-primary);
   stroke-dashoffset: 1000;
   animation-name: stroke;
-  animation-delay: 0.4s;
-  animation-duration: 0.4s;
+  animation-delay: var(--duration-s);
+  animation-duration: var(--duration-s);
   animation-fill-mode: forwards;
 
   &.full {
@@ -100,8 +100,8 @@
   transform-origin: left;
   transform: scaleX(0);
   animation-name: scale-h;
-  animation-delay: calc(var(--index) * 0.3s);
-  animation-duration: 0.4s;
+  animation-delay: calc(var(--index) * var(--duration-n));
+  animation-duration: var(--duration-n);
   animation-fill-mode: forwards;
 
   &.full {
@@ -117,6 +117,7 @@
   0% {
     stroke-dashoffset: 1000;
   }
+
   100% {
     stroke-dashoffset: var(--dashoffset);
   }
@@ -126,6 +127,7 @@
   0% {
     transform: scaleX(0);
   }
+
   100% {
     transform: scaleX(var(--scale));
   }

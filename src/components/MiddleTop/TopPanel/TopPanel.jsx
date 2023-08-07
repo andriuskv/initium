@@ -12,7 +12,7 @@ const Stopwatch = lazy(() => import("./Stopwatch"));
 const Pomodoro = lazy(() => import("./Pomodoro"));
 const World = lazy(() => import("./World"));
 
-export default function TopPanel({ settings, initialTab = "", forceVisibility = false, resetTopPanel }) {
+export default function TopPanel({ settings, initialTab = "", forceVisibility = false, animationSpeed, resetTopPanel }) {
   const [visible, setVisible] = useState(false);
   const [minimal, setMinimal] = useState(false);
   const [rerender, setRerender] = useState(false);
@@ -108,7 +108,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       }
       else {
         resetMinimal();
-        return delay(250);
+        return delay(250 * animationSpeed);
       }
     }
   }
@@ -216,7 +216,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       if (shouldShowFull) {
         setVisible(true);
       }
-    }, 250);
+    }, 250 * animationSpeed);
   }
 
   function showMinimalTimer() {
@@ -227,7 +227,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
 
       setTimeout(() => {
         setMinimal(true);
-      }, 250);
+      }, 250 * animationSpeed);
     }
   }
 

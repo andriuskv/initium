@@ -9,7 +9,7 @@ import SelectedDay from "./SelectedDay";
 import WorldClocks from "./WorldClocks";
 
 export default function Calendar({ visible, showIndicator }) {
-  const { settings: { timeDate: settings } } = useSettings();
+  const { settings: { appearance: { animationSpeed }, timeDate: settings } } = useSettings();
   const [calendar, setCalendar] = useState(null);
   const [currentDay, setCurrentDay] = useState(null);
   const [currentYear, setCurrentYear] = useState();
@@ -206,7 +206,7 @@ export default function Calendar({ visible, showIndicator }) {
       setTimeout(() => {
         setTransition({ x: 0, y: 0 });
         resolve();
-      }, 300);
+      }, 300 * animationSpeed);
     });
   }
 

@@ -23,12 +23,12 @@
 
   &:hover {
     .world-clock-time-text {
-      transition-delay: 0.3s;
+      transition-delay: 0.4s;
       opacity: 0.2;
     }
 
     .world-clock-remove-btn {
-      animation: 0s linear 0.4s forwards delayed-reveal;
+      animation: 0s linear 0.5s forwards delayed-reveal;
     }
   }
 }
@@ -61,7 +61,7 @@
 .world-clock-time-text {
   font-size: var(--text-xl);
   white-space: nowrap;
-  transition: 0.1s opacity;
+  transition: var(--duration-f) opacity;
 }
 
 .world-clock-remove-btn {

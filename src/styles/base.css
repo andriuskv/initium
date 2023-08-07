@@ -12,6 +12,12 @@ html, body {
 }
 
 body {
+  --animation-speed: 1;
+
+  --duration-f: calc(0.1s * var(--animation-speed));
+  --duration-n: calc(0.2s * var(--animation-speed));
+  --duration-s: calc(0.4s * var(--animation-speed));
+
   --panel-background-opacity: 50%;
   --panel-background-blur: 12px;
 

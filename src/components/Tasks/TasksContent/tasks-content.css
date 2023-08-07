@@ -107,7 +107,8 @@
   max-height: 2000px;
 
   &.removed {
-    transition: 0.2s opacity, 0.4s max-height;
+    transition: var(--duration-n) opacity,
+                var(--duration-s) max-height;
     opacity: 0;
     max-height: 0;
   }
@@ -140,7 +141,7 @@
     }
 
     .task-edit-btn {
-      animation: 0s linear 0.4s forwards delayed-reveal;
+      animation: 0s linear 0.5s forwards delayed-reveal;
     }
   }
 }
@@ -290,7 +291,7 @@
   right: var(--space-sm);
   width: 16px;
   height: 16px;
-  transition: 0.2s transform;
+  transition: var(--duration-n) transform;
 }
 
 .task-expiration-indicator-visual {

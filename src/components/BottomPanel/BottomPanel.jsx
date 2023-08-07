@@ -106,7 +106,7 @@ export default function BottomPanel() {
     if (selectedItem.visible && closeButton.current) {
       setTimeout(() => {
         closeButton.current.focus();
-      }, 200);
+      }, 200 * settings.appearance.animationSpeed);
     }
   }, [selectedItem.visible]);
 
@@ -134,7 +134,7 @@ export default function BottomPanel() {
 
     setTimeout(() => {
       setSelectedItem({});
-    }, 400);
+    }, 400 * settings.appearance.animationSpeed);
   }
 
   function toggleIndicator(id, value) {

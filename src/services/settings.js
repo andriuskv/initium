@@ -13,6 +13,8 @@ function initSettings() {
 }
 
 function initAppearanceSettings(settings) {
+  document.body.style.setProperty("--animation-speed", settings.animationSpeed);
+
   document.body.style.setProperty("--accent-hue", settings.accentColor.hue);
   document.body.style.setProperty("--accent-saturation", settings.accentColor.saturation);
   document.body.style.setProperty("--accent-lightness", settings.accentColor.lightness);
@@ -58,6 +60,7 @@ function getDefault() {
       ]
     },
     appearance: {
+      animationSpeed: 1,
       accentColor: { hue: "205deg", saturation: "80%", lightness: "56%" },
       panelBackgroundOpacity: 50,
       panelBackgroundBlur: 12,

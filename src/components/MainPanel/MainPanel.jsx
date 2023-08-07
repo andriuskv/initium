@@ -163,6 +163,8 @@ export default function MainPanel({ settings }) {
       setResizerEnabled(false);
     }
     else {
+      const { animationSpeed } = getSetting("appearance");
+
       setActiveTab({
         ...activeTab,
         expanded: false,
@@ -175,7 +177,7 @@ export default function MainPanel({ settings }) {
           collapsing: false,
           expanded: false
         });
-      }, 200);
+      }, 200 * animationSpeed);
     }
   }
 
