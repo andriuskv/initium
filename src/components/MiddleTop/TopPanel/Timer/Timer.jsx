@@ -4,6 +4,7 @@ import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
 import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
+import * as pipService from "../picture-in-picture";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./timer.css";
@@ -21,9 +22,10 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
   const [activePreset, setActivePreset] = useState(null);
   const [audio, setAudio] = useState({ shouldPlay: true });
   const [label, setLabel] = useState("");
+  const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
   const dirtyInput = useRef(false);
-  const timeoutId = useRef(0);
+  const worker = useRef(null);
 
   useEffect(() => {
     init();
@@ -31,20 +33,61 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
 
   useEffect(() => {
     if (running) {
-      timeoutId.current = setTimeout(() => {
-        update(state.duration, performance.now());
-      }, 1000);
+      initWorker(state.duration);
       toggleIndicator("timer", true);
       addToRunning("timer");
     }
     else {
+      destroyWorker();
       toggleIndicator("timer", false);
       removeFromRunning("timer");
     }
+    pipService.updateActions("timer", { toggle });
+
     return () => {
-      clearTimeout(timeoutId.current);
+      destroyWorker();
     };
   }, [running]);
+
+  useEffect(() => {
+    window.addEventListener("pip-close", handlePipClose);
+
+    return () => {
+      window.removeEventListener("pip-close", handlePipClose);
+    };
+  }, [pipVisible]);
+
+  function initWorker(duration) {
+    if (worker.current) {
+      return;
+    }
+    const controller = new AbortController();
+
+    worker.current = {
+      ref: new Worker(new URL("../worker.js", import.meta.url), { type: "module" }),
+      abortController: controller
+    };
+
+    worker.current.ref.addEventListener("message", handleMessage, { signal: controller.signal });
+    worker.current.ref.postMessage({ action: "start", duration });
+  }
+
+  function handleMessage({ data }) {
+    update(data.duration);
+
+    if (data.duration <= 0 && audio.shouldPlay) {
+      playAudio();
+    }
+  }
+
+  function destroyWorker() {
+    if (!worker.current) {
+      return;
+    }
+    worker.current.abortController.abort();
+    worker.current.ref.terminate();
+    worker.current = null;
+  }
 
   async function init() {
     const timer = await chromeStorage.get("timer");
@@ -142,13 +185,7 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
     return seconds + (minutes * 60) + (hours * 3600);
   }
 
-  function update(duration, elapsed) {
-    const interval = 1000;
-    const diff = performance.now() - elapsed;
-
-    elapsed += interval;
-    duration -= 1;
-
+  function update(duration) {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor(duration / 60 % 60);
     const seconds = duration % 60;
@@ -160,25 +197,17 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
       minutes: paddedMinutes,
       seconds: paddedSeconds
     });
-
     updateTitle("timer", {
-      hours, minutes: hours ||
-      minutes ? paddedMinutes : "",
+      hours,
+      minutes: hours || minutes ? paddedMinutes : "",
       seconds: paddedSeconds,
       isAudioEnabled: audio.shouldPlay
     });
-
-    if (duration > 0) {
-      timeoutId.current = setTimeout(() => {
-        update(duration, elapsed);
-      }, interval - diff);
-    }
-    else if (audio.shouldPlay) {
-      playAudio();
-    }
-    else {
-      setTimeout(reset, interval - diff);
-    }
+    pipService.update("timer", {
+      hours,
+      minutes: paddedMinutes,
+      seconds: paddedSeconds
+    });
   }
 
   async function reset() {
@@ -203,6 +232,7 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
       setRunning(false);
       updateTitle("timer");
     }
+    pipService.close("timer");
   }
 
   function updateInputs(inputs) {
@@ -275,6 +305,17 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
     chromeStorage.set({ timer: presets });
   }
 
+  function togglePip() {
+    setPipVisible(!pipVisible);
+    pipService.toggle({ name: "timer", title: "Timer", data: state, toggle });
+  }
+
+  function handlePipClose({ detail }) {
+    if (detail === "timer") {
+      setPipVisible(false);
+    }
+  }
+
   function handlePresetSelection(id) {
     if (activePreset?.id === id) {
       return;
@@ -306,57 +347,65 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
 
   return (
     <div className={`top-panel-item timer${visible ? " visible" : ""}`}>
-      <div className="top-panel-item-content">
-        {running ? (
-          <>
-            {label ? <h4 className="top-panel-item-content-label">{label}</h4> : null}
-            <div>
-              {state.hours > 0 && (
-                <>
-                  <span className="top-panel-digit">{state.hours}</span>
-                  <span className="top-panel-digit-sep">h</span>
-                </>
-              )}
-              {(state.hours > 0 || state.minutes > 0) && (
-                <>
-                  <span className="top-panel-digit">{state.minutes}</span>
-                  <span className="top-panel-digit-sep">m</span>
-                </>
-              )}
-              <span className="top-panel-digit">{state.seconds}</span>
-              <span className="top-panel-digit-sep">s</span>
-            </div>
-          </>
-        ) : (
-          <>
-            {dirty.current ? label ? <h4 className="top-panel-item-content-label">{label}</h4> : null : (
-              <div className="top-panel-item-content-top">
-                <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
-                <Dropdown
-                  container={{ className: "top-panel-item-content-top-dropdown" }}
-                  toggle={{ isIconTextBtn: true, title: "Presets", iconId: "menu" }}>
-                  <div className="dropdown-group">
-                    {presets.length ? (
-                      presets.map(preset => (
-                        <button className={`btn text-btn dropdown-btn timer-dropdown-presets-item${activePreset?.id === preset.id ? " active" : ""}`} key={preset.id}
-                          onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
-                      ))
-                    ) : (
-                      <p className="timer-dropdown-presets-message">No presets</p>
-                    )}
-                  </div>
-                  <button className="btn text-btn dropdown-btn" onClick={showPresets}>Manage</button>
-                </Dropdown>
+      {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
+        <div className="top-panel-item-content">
+          {running ? (
+            <>
+              {label ? <h4 className="top-panel-item-content-label">{label}</h4> : null}
+              <div>
+                {state.hours > 0 && (
+                  <>
+                    <span className="top-panel-digit">{state.hours}</span>
+                    <span className="top-panel-digit-sep">h</span>
+                  </>
+                )}
+                {(state.hours > 0 || state.minutes > 0) && (
+                  <>
+                    <span className="top-panel-digit">{state.minutes}</span>
+                    <span className="top-panel-digit-sep">m</span>
+                  </>
+                )}
+                <span className="top-panel-digit">{state.seconds}</span>
+                <span className="top-panel-digit-sep">s</span>
               </div>
-            )}
-            <Inputs state={state} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
-          </>
-        )}
-      </div>
+            </>
+          ) : (
+            <>
+              {dirty.current ? label ? <h4 className="top-panel-item-content-label">{label}</h4> : null : (
+                <div className="top-panel-item-content-top">
+                  <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
+                  <Dropdown
+                    container={{ className: "top-panel-item-content-top-dropdown" }}
+                    toggle={{ isIconTextBtn: true, title: "Presets", iconId: "menu" }}>
+                    <div className="dropdown-group">
+                      {presets.length ? (
+                        presets.map(preset => (
+                          <button className={`btn text-btn dropdown-btn timer-dropdown-presets-item${activePreset?.id === preset.id ? " active" : ""}`} key={preset.id}
+                            onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
+                        ))
+                      ) : (
+                        <p className="timer-dropdown-presets-message">No presets</p>
+                      )}
+                    </div>
+                    <button className="btn text-btn dropdown-btn" onClick={showPresets}>Manage</button>
+                  </Dropdown>
+                </div>
+              )}
+              <Inputs state={state} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
+            </>
+          )}
+        </div>
+      )}
       <div className="top-panel-hide-target top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
         {running || !dirtyInput.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
         <div className="top-panel-secondary-actions">
+          {dirty.current && pipService.isSupported() && (
+            <button className={`btn icon-btn player-bar-tertiary-btn${pipVisible ? " active" : ""}`}
+              onClick={togglePip} title="Toggle picture-in-picture">
+              <Icon id="pip" className="player-bar-tertiary-btn-icon"/>
+            </button>
+          )}
           {running ? (
             <button className="btn icon-btn" onClick={expand} title="Expand">
               <Icon id="expand"/>

@@ -3,6 +3,7 @@ import { delay, setPageTitle } from "utils";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
 import { removeFromRunning, getLastRunningTimer, isLastRunningTimer } from "./running-timers";
+import * as pipService from "./picture-in-picture";
 import Icon from "components/Icon";
 import "./top-panel.css";
 import Countdown from "./Countdown";
@@ -220,6 +221,9 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }
 
   function showMinimalTimer() {
+    if (pipService.isActive()) {
+      return;
+    }
     const { showMinimal } = getSetting("timers");
 
     if (showMinimal && getLastRunningTimer()) {
@@ -260,6 +264,10 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   function expand() {
     setFullscreenTextScale();
     setExpanded(true);
+
+    if (pipService.isActive()) {
+      pipService.close();
+    }
   }
 
   function collapse(event) {

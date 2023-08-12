@@ -258,20 +258,12 @@
 
 .top-panel-secondary-actions {
   display: flex;
+  gap: var(--space-sm);
   margin-left: auto;
-
-  & > .icon-btn {
-    margin-left: var(--space-sm);
-  }
 }
 
 .top-panel-collapse-btn {
   position: absolute;
   top: var(--space-sm);
   right: var(--space-sm);
-}
-
-.stopwatch-milliseconds {
-  width: 2ch;
-  font-size: calc(var(--text-xxxl) * var(--size-multiplier));
 }

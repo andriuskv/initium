@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { padTime } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
+import * as pipService from "../picture-in-picture";
 import Icon from "components/Icon";
 import "./pomodoro.css";
 
@@ -21,35 +22,80 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
   const [stage, setStage] = useState("focus");
   const [label, setLabel] = useState("");
   const [audio, setAudio] = useState({ shouldPlay: true });
+  const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
   const currentStageIndex = useRef(0);
-  const timeoutId = useRef(0);
+  const worker = useRef(null);
 
   useEffect(() => {
     if (running) {
-      timeoutId.current = setTimeout(() => {
-        update(state.duration, performance.now());
-      }, 1000);
+      initWorker(state.duration);
       toggleIndicator("pomodoro", true);
       addToRunning("pomodoro");
     }
     else {
+      destroyWorker();
       toggleIndicator("pomodoro", false);
       removeFromRunning("pomodoro");
     }
+    pipService.updateActions("pomodoro", { toggle });
+
     return () => {
-      clearTimeout(timeoutId.current);
+      destroyWorker();
     };
   }, [running]);
 
   useEffect(() => {
     if (running) {
-      update(state.duration + 1, performance.now());
+      initWorker(state.duration);
     }
     return () => {
-      clearTimeout(timeoutId.current);
+      destroyWorker();
     };
   }, [stage]);
+
+  useEffect(() => {
+    window.addEventListener("pip-close", handlePipClose);
+
+    return () => {
+      window.removeEventListener("pip-close", handlePipClose);
+    };
+  }, [pipVisible]);
+
+  function initWorker(duration) {
+    if (worker.current) {
+      return;
+    }
+    const controller = new AbortController();
+
+    worker.current = {
+      ref: new Worker(new URL("../worker.js", import.meta.url), { type: "module" }),
+      abortController: controller
+    };
+
+    worker.current.ref.addEventListener("message", handleMessage, { signal: controller.signal });
+    worker.current.ref.postMessage({ action: "start", duration });
+  }
+
+  function handleMessage({ data }) {
+    update(data.duration);
+
+    if (data.duration <= 0) {
+      if (audio.shouldPlay) {
+        playAudio();
+      }
+      setNextStage();
+    }
+  }
+
+  function destroyWorker() {
+    if (!worker.current) {
+      return;
+    }
+    worker.current.abortController.abort();
+    worker.current.ref.terminate();
+    worker.current = null;
+  }
 
   function toggle() {
     if (running) {
@@ -75,29 +121,16 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
     updateTitle("pomodoro");
   }
 
-  function update(duration, elapsed) {
-    const interval = 1000;
-    const diff = performance.now() - elapsed;
-
-    elapsed += interval;
-    duration -= 1;
-
+  function update(duration) {
     const state = parseDuration(duration);
 
     setState(state);
     updateTitle("pomodoro", { ...state, isAudioEnabled: audio.shouldPlay });
-
-    timeoutId.current = setTimeout(() => {
-      if (duration > 0) {
-        update(duration, elapsed);
-      }
-      else {
-        if (audio.shouldPlay) {
-          playAudio();
-        }
-        setNextStage();
-      }
-    }, interval - diff);
+    pipService.update("pomodoro", {
+      hours: state.hours,
+      minutes: state.minutes,
+      seconds: state.seconds
+    });
   }
 
   async function reset() {
@@ -112,6 +145,7 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
       setRunning(false);
       updateTitle("pomodoro");
     }
+    pipService.close("pomodoro");
   }
 
   function setNextStage() {
@@ -125,8 +159,11 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
     else {
       nextStage = stagesOrder[currentStageIndex.current];
     }
-    setStage(nextStage);
-    resetTimer(nextStage);
+
+    setTimeout(() => {
+      setStage(nextStage);
+      resetTimer(nextStage);
+    }, 1000);
   }
 
   function resetTimer(stage) {
@@ -160,6 +197,25 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
     audio.element.play();
   }
 
+  function togglePip() {
+    setPipVisible(!pipVisible);
+    pipService.toggle({
+      name: "pomodoro",
+      title: "Pomodoro",
+      data: {
+        hours: state.hours,
+        minutes: state.minutes,
+        seconds: state.seconds
+      }, toggle
+    });
+  }
+
+  function handlePipClose({ detail }) {
+    if (detail === "pomodoro") {
+      setPipVisible(false);
+    }
+  }
+
   function handleLabelInputChange(event) {
     setLabel(event.target.value);
   }
@@ -185,31 +241,39 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
 
   return (
     <div className={`top-panel-item pomodoro${visible ? " visible" : ""}`}>
-      <div className="top-panel-item-content pomodoro-content">
-        <div className="pomodoro">
-          {renderTop()}
-          <div>
-            {state.hours > 0 && (
-              <>
-                <span className="top-panel-digit">{state.hours}</span>
-                <span className="top-panel-digit-sep">h</span>
-              </>
-            )}
-            {(state.hours > 0 || state.minutes > 0) && (
-              <>
-                <span className="top-panel-digit">{state.minutes}</span>
-                <span className="top-panel-digit-sep">m</span>
-              </>
-            )}
-            <span className="top-panel-digit">{state.seconds}</span>
-            <span className="top-panel-digit-sep">s</span>
+      {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
+        <div className="top-panel-item-content pomodoro-content">
+          <div className="pomodoro">
+            {renderTop()}
+            <div>
+              {state.hours > 0 && (
+                <>
+                  <span className="top-panel-digit">{state.hours}</span>
+                  <span className="top-panel-digit-sep">h</span>
+                </>
+              )}
+              {(state.hours > 0 || state.minutes > 0) && (
+                <>
+                  <span className="top-panel-digit">{state.minutes}</span>
+                  <span className="top-panel-digit-sep">m</span>
+                </>
+              )}
+              <span className="top-panel-digit">{state.seconds}</span>
+              <span className="top-panel-digit-sep">s</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <div className="top-panel-hide-target top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
         {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
         <div className="top-panel-secondary-actions">
+          {dirty.current && pipService.isSupported() && (
+            <button className={`btn icon-btn player-bar-tertiary-btn${pipVisible ? " active" : ""}`}
+              onClick={togglePip} title="Toggle picture-in-picture">
+              <Icon id="pip" className="player-bar-tertiary-btn-icon"/>
+            </button>
+          )}
           {running ? (
             <button className="btn icon-btn" onClick={expand} title="Expand">
               <Icon id="expand"/>

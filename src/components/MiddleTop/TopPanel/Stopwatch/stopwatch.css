@@ -8,6 +8,11 @@
   }
 }
 
+.stopwatch-milliseconds {
+  width: 2ch;
+  font-size: calc(var(--text-xxxl) * var(--size-multiplier));
+}
+
 .stopwatch-splits {
   position: absolute;
   top: 0;

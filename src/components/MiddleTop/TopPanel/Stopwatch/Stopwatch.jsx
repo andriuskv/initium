@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { padTime } from "services/timeDate";
 import { addToRunning, removeFromRunning } from "../running-timers";
+import * as pipService from "../picture-in-picture";
 import Icon from "components/Icon";
 import "./stopwatch.css";
 
@@ -9,25 +10,63 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
   const [state, setState] = useState(() => getInitialState());
   const [splits, setSplits] = useState([]);
   const [label, setLabel] = useState("");
+  const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
-  const animationId = useRef(0);
+  const worker = useRef(null);
 
   useEffect(() => {
     if (running) {
-      animationId.current = requestAnimationFrame(() => {
-        update(performance.now());
-      });
+      initWorker();
       toggleIndicator("stopwatch", true);
       addToRunning("stopwatch");
     }
     else {
+      destroyWorker();
       toggleIndicator("stopwatch", false);
       removeFromRunning("stopwatch");
     }
+    pipService.updateActions("stopwatch", { toggle });
+
     return () => {
-      cancelAnimationFrame(animationId.current);
+      destroyWorker();
     };
   }, [running]);
+
+  useEffect(() => {
+    window.addEventListener("pip-close", handlePipClose);
+
+    return () => {
+      window.removeEventListener("pip-close", handlePipClose);
+    };
+  }, [pipVisible]);
+
+  function initWorker() {
+    if (worker.current) {
+      return;
+    }
+    const controller = new AbortController();
+
+    worker.current = {
+      ref: new Worker(new URL("../worker.js", import.meta.url), { type: "module" }),
+      abortController: controller
+    };
+
+    worker.current.ref.addEventListener("message", handleMessage, { signal: controller.signal });
+    worker.current.ref.postMessage({ action: "start" });
+  }
+
+  function handleMessage(event) {
+    update(event.data);
+  }
+
+  function destroyWorker() {
+    if (!worker.current) {
+      return;
+    }
+    worker.current.abortController.abort();
+    worker.current.ref.terminate();
+    worker.current = null;
+  }
 
   function toggle() {
     if (running) {
@@ -45,14 +84,12 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
   }
 
   function stop() {
-    cancelAnimationFrame(animationId.current);
     setRunning(false);
     updateTitle("stopwatch");
   }
 
-  function update(elapsed) {
-    const diff = performance.now() - elapsed;
-    state.elapsed = state.elapsed + diff;
+  function update({ elapsed, diff }) {
+    state.elapsed = elapsed;
     state.milliseconds += diff;
 
     if (state.milliseconds >= 1000) {
@@ -77,8 +114,11 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
     state.millisecondsDisplay = state.milliseconds < 100 ? `0${millisecondString[0]}` : millisecondString.slice(0, 2);
 
     setState({ ...state });
-    animationId.current = requestAnimationFrame(() => {
-      update(elapsed + diff);
+    pipService.update("stopwatch", {
+      hours: state.hours,
+      minutes: state.minutesDisplay,
+      seconds: state.secondsDisplay,
+      milliseconds: state.millisecondsDisplay
     });
   }
 
@@ -86,6 +126,7 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
     dirty.current = false;
     setState(getInitialState());
     setSplits([]);
+    pipService.close("stopwatch");
 
     if (running) {
       stop();
@@ -143,6 +184,27 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
     };
   }
 
+  function togglePip() {
+    setPipVisible(!pipVisible);
+    pipService.toggle({
+      name: "stopwatch",
+      title: "Stopwatch",
+      data: {
+        hours: state.hours,
+        minutes: state.minutesDisplay,
+        seconds: state.secondsDisplay,
+        milliseconds: state.millisecondsDisplay
+      },
+      toggle
+    });
+  }
+
+  function handlePipClose({ detail }) {
+    if (detail === "stopwatch") {
+      setPipVisible(false);
+    }
+  }
+
   function handleLabelInputChange(event) {
     setLabel(event.target.value);
   }
@@ -163,42 +225,50 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
 
   return (
     <div className={`top-panel-item stopwatch${visible ? " visible" : ""}${splits.length ? " with-splits" : ""}`}>
-      <div className="top-panel-item-content">
-        {renderTop()}
-        <div>
-          {state.hours > 0 && (
-            <>
-              <span className="top-panel-digit">{state.hours}</span>
-              <span className="top-panel-digit-sep">h</span>
-            </>
-          )}
-          {(state.hours > 0 || state.minutes > 0) && (
-            <>
-              <span className="top-panel-digit">{state.minutesDisplay}</span>
-              <span className="top-panel-digit-sep">m</span>
-            </>
-          )}
-          <span className="top-panel-digit">{state.secondsDisplay}</span>
-          <span className="top-panel-digit-sep">s</span>
-          <span className="stopwatch-milliseconds">{state.millisecondsDisplay}</span>
+      {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
+        <div className="top-panel-item-content">
+          {renderTop()}
+          <div>
+            {state.hours > 0 && (
+              <>
+                <span className="top-panel-digit">{state.hours}</span>
+                <span className="top-panel-digit-sep">h</span>
+              </>
+            )}
+            {(state.hours > 0 || state.minutes > 0) && (
+              <>
+                <span className="top-panel-digit">{state.minutesDisplay}</span>
+                <span className="top-panel-digit-sep">m</span>
+              </>
+            )}
+            <span className="top-panel-digit">{state.secondsDisplay}</span>
+            <span className="top-panel-digit-sep">s</span>
+            <span className="stopwatch-milliseconds">{state.millisecondsDisplay}</span>
+          </div>
+          {splits.length ? (
+            <ul className="stopwatch-splits">
+              {splits.map((split, index) => (
+                <li className="stopwatch-split" key={index}>
+                  <span>#{splits.length - index}</span>
+                  <span>{split.elapsedString}</span>
+                  {split.diffString ? <span>{split.diffString}</span> : null}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
-        {splits.length ? (
-          <ul className="stopwatch-splits">
-            {splits.map((split, index) => (
-              <li className="stopwatch-split" key={index}>
-                <span>#{splits.length - index}</span>
-                <span>{split.elapsedString}</span>
-                {split.diffString ? <span>{split.diffString}</span> : null}
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </div>
+      )}
       <div className="top-panel-hide-target top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
         {running ? <button className="btn text-btn top-panel-item-action-btn" onClick={makeSplit}>Split</button> : null}
         {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
         <div className="top-panel-secondary-actions">
+          {dirty.current && pipService.isSupported() && (
+            <button className={`btn icon-btn player-bar-tertiary-btn${pipVisible ? " active" : ""}`}
+              onClick={togglePip} title="Toggle picture-in-picture">
+              <Icon id="pip" className="player-bar-tertiary-btn-icon"/>
+            </button>
+          )}
           {running && (
             <button className="btn icon-btn" onClick={expand} title="Expand">
               <Icon id="expand"/>
