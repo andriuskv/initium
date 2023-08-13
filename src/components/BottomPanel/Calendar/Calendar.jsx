@@ -707,7 +707,7 @@ export default function Calendar({ visible, showIndicator }) {
           <SelectedDay calendar={calendar} selectedDay={selectedDay} reminders={reminders}
             updateCalendar={updateCalendar} createReminder={createReminder} resetSelectedDay={resetSelectedDay} hide={hideSelectedDay}/>
         ) : viewingYear ? (
-          <div className={`calendar${transition.active ? " transition" : ""}`}>
+          <div className={`calendar${transition.active ? " transition" : ""}${settings.worldClocksHidden ? "" : " world-clocks-visible"}`}>
             <div className="calendar-header">
               <button className="btn icon-btn" onClick={() => setVisibleYear(-1)} title="Previous year">
                 <Icon id="chevron-left"/>

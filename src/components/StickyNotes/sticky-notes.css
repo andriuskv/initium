@@ -19,19 +19,25 @@
 .sticky-note-title {
   @mixin text-truncate;
 
+  margin-bottom: var(--space-md);
+  color: var(--color-black-60);
   font-size: var(--text-xxl);
   font-family: "Caveat";
   line-height: 1;
-  color: black;
+
+  & + .sticky-note-content {
+    -webkit-line-clamp: 6;
+  }
 }
 
 .sticky-note-content {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 8;
+  color: var(--color-black-60);
   white-space: pre-wrap;
   font-size: var(--text-xl);
   font-family: "Caveat";
-  color: black;
+  line-height: 1;
 }

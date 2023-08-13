@@ -187,7 +187,7 @@ export default function AppearanceTab() {
   return (
     <div className="setting-tab">
       <label className="setting">
-        <span>Animation speed</span>
+        <span>Animation</span>
         <div className="select-container">
           <select className="input select" onChange={handleAnimationSpeedChangeChange} value={settings.animationSpeed}>
             <option value="0">Disabled</option>

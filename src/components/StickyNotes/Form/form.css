@@ -36,7 +36,7 @@
   width: 100%;
   height: auto;
   background-color: transparent;
-  color: black;
+  color: var(--color-black-60);
 
   &:focus-visible {
     box-shadow: none;
@@ -45,9 +45,10 @@
 }
 
 .sticky-note-content-input {
+  height: 100%;
   font-size: var(--text-xl);
   font-family: "Caveat";
-  height: 100%;
+  line-height: 1;
 }
 
 .sticky-note-btns {

@@ -129,7 +129,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
 
   function toggleTopPanel({ detail }) {
     if (detail) {
-      if (!visible || activeTab !== detail.tab) {
+      if (activeTab !== detail.tab) {
         if (minimal) {
           resetMinimal(true);
         }
@@ -142,6 +142,9 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
           tabs[detail.tab].rendered = true;
           setTabs({ ...tabs });
         }
+      }
+      else {
+        setVisible(!visible);
       }
       return;
     }
@@ -277,7 +280,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }
 
   return (
-    <div className={`top-panel${minimal ? ` minimal visible` : " container"}${visible ? " visible" : ""}${expanded ? " expanded" : ""}`}
+    <div className={`top-panel${minimal ? ` minimal visible` : expanded ? " fullscreen-mask expanded" : " container"}${visible ? " visible" : ""}`}
       onClick={event => handleZIndex(event, "top-panel")} ref={containerRef}>
       <div className="top-panel-content">
         <ul className="top-panel-hide-target top-panel-header">

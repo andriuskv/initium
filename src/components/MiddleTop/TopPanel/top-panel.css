@@ -115,10 +115,7 @@
     display: flex;
     width: 100vw;
     height: 100vh;
-    padding: 0;
-    border: none;
     border-radius: 0;
-    box-shadow: none;
 
     .top-panel-hide-target {
       display: none;

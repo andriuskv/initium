@@ -21,9 +21,9 @@ export default function StickyNotes() {
       setForm(detail);
     }
     else if (detail.action === "edit") {
-      const note = notes.find(note => note.id === detail.id);
+      const index = notes.findIndex(note => note.id === detail.id);
 
-      setForm({ ...note, action: detail.action });
+      setForm({ ...notes[index], index, action: detail.action });
     }
   }
 

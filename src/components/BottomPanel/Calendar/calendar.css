@@ -44,6 +44,8 @@
 }
 
 .calendar {
+  --corner-border-radius: 5px;
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -57,6 +59,10 @@
   &.transition {
     animation-duration: calc(0.16s * var(--animation-speed)), calc(0.6s * var(--animation-speed));
     animation-name: opacity-down, calendar-scale-up;
+  }
+
+  &.world-clocks-visible {
+    --corner-border-radius: 0;
   }
 }
 
@@ -142,7 +148,11 @@
   cursor: pointer;
 
   &:last-of-type .calendar-month-inner {
-    border-bottom-right-radius: 5px;
+    border-bottom-right-radius: var(--corner-border-radius);
+  }
+
+  &:nth-last-of-type(4) .calendar-month-inner {
+    border-bottom-left-radius: var(--corner-border-radius);
   }
 
   &.current {

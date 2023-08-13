@@ -401,9 +401,8 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
         {running || !dirtyInput.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
         <div className="top-panel-secondary-actions">
           {dirty.current && pipService.isSupported() && (
-            <button className={`btn icon-btn player-bar-tertiary-btn${pipVisible ? " active" : ""}`}
-              onClick={togglePip} title="Toggle picture-in-picture">
-              <Icon id="pip" className="player-bar-tertiary-btn-icon"/>
+            <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
+              <Icon id="pip"/>
             </button>
           )}
           {running ? (

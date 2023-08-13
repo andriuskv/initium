@@ -22,13 +22,19 @@
 }
 
 .sticky-notes-list-item-title {
-  font-size: var(--text-xl);
-  color: black;
+  margin-bottom: var(--space-md);
+  color: var(--color-black-60);
+  font-size: var(--text-xxl);
+  font-family: "Caveat";
+  line-height: 1;
 }
 
 .sticky-notes-list-item-content {
-  color: black;
+  color: var(--color-black-60);
+  font-size: var(--text-xl);
   white-space: pre-wrap;
+  font-family: "Caveat";
+  line-height: 1;
 }
 
 .sticky-notes-list-message {
