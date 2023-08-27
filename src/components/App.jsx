@@ -1,4 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
+import { timeout } from "utils";
 import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings";
 import Wallpaper from "components/Wallpaper";
@@ -19,16 +20,17 @@ export default function App() {
   const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const [fullscreenModal, setFullscreenModal] = useState(null);
   const weatherTimeoutId = useRef(0);
+  const modalTimeoutId = useRef(0);
 
   useLayoutEffect(() => {
     initAppearanceSettings(settings.appearance);
   }, []);
 
   useEffect(() => {
-    window.addEventListener("fullscreen-modal", showFullscreenModal);
+    window.addEventListener("fullscreen-modal", handleFullscreenModal);
 
     return () => {
-      window.removeEventListener("fullscreen-modal", showFullscreenModal);
+      window.removeEventListener("fullscreen-modal", handleFullscreenModal);
     };
   }, [fullscreenModal]);
 
@@ -57,31 +59,60 @@ export default function App() {
     return !settings.weather.disabled && (settings.weather.cityName || settings.weather.useGeo);
   }
 
-  function showFullscreenModal({ detail }) {
+  function handleFullscreenModal({ detail }) {
     if (detail.shouldToggle && detail.id === fullscreenModal?.id) {
-      hideFullscreenModal();
+      if (fullscreenModal.hiding) {
+        clearTimeout(modalTimeoutId.current);
+        setFullscreenModal(detail);
+      }
+      else {
+        hideFullscreenModal();
+      }
     }
     else {
-      setFullscreenModal(detail);
+      if (fullscreenModal) {
+        if (detail.id === fullscreenModal.id) {
+          setFullscreenModal(detail);
+        }
+        else {
+          hideFullscreenModal();
+
+          modalTimeoutId.current = timeout(() => {
+            setFullscreenModal(detail);
+          }, 200 * settings.appearance.animationSpeed, modalTimeoutId.current);
+
+        }
+      }
+      else {
+        setFullscreenModal(detail);
+      }
     }
   }
 
   function hideFullscreenModal() {
-    setFullscreenModal(null);
+    if (fullscreenModal.id === "wallpaper") {
+      setFullscreenModal(null);
+      return;
+    }
+    setFullscreenModal({ ...fullscreenModal, hiding: true });
+
+    modalTimeoutId.current = timeout(() => {
+      setFullscreenModal(null);
+    }, 200 * settings.appearance.animationSpeed, modalTimeoutId.current);
   }
 
   function renderFullscreenModal() {
     if (fullscreenModal.id === "greeting") {
       return (
         <Suspense fallback={null}>
-          <GreetingEditor hide={hideFullscreenModal}/>
+          <GreetingEditor hiding={fullscreenModal.hiding} hide={hideFullscreenModal}/>
         </Suspense>
       );
     }
     else if (fullscreenModal.id === "settings") {
       return (
         <Suspense fallback={null}>
-          {<Settings hide={hideFullscreenModal}/>}
+          {<Settings hiding={fullscreenModal.hiding} hide={hideFullscreenModal}/>}
         </Suspense>
       );
     }
@@ -94,7 +125,7 @@ export default function App() {
     }
     return (
       <Suspense fallback={null}>
-        <FullscreenModal hide={hideFullscreenModal}>
+        <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
           <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
         </FullscreenModal>
       </Suspense>

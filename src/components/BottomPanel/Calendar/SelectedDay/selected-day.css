@@ -10,7 +10,6 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: var(--text-lg);
-  font-weight: normal;
 }
 
 .selected-day-remainders {

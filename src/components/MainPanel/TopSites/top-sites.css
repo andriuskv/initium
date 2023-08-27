@@ -35,8 +35,14 @@
   opacity: 0;
   pointer-events: auto;
 
-  &.visible, &:hover, &:focus-within {
+  &.visible, &:hover, &:has(:focus-visible) {
     opacity: 1;
+  }
+
+  & > .icon-btn {
+    --color: var(--color-white);
+
+    filter: drop-shadow(0 1px 1px var(--color-black-16)) drop-shadow(0 2px 2px var(--color-black-8));
   }
 }
 
@@ -53,7 +59,7 @@
   display: block;
   padding: var(--space-sm);
   border-radius: 12px;
-  border: 1px solid transparent;
+  user-select: none;
 
   &:hover, &:focus-visible {
     .top-site-icon,
@@ -68,9 +74,9 @@
   border: none;
   box-shadow:
     inset 0 1px 1px 0 var(--color-white-10),
-    1px 2px 2px 0 var(--color-black-8),
-    2px 4px 4px 0 var(--color-black-4),
-    4px 8px 8px 0 var(--color-black-2);
+    inset 1px 2px 2px 0 var(--color-white-4),
+    inset 2px 4px 4px 0 var(--color-white-2),
+    var(--highligh-shadow);
 }
 
 .top-site-title {
@@ -88,6 +94,7 @@
 }
 
 .top-site-icon {
+  will-change: transform;
   transition: var(--duration-n) transform;
 }
 
@@ -100,6 +107,7 @@
 .top-site-add-btn-icon {
   width: 32px;
   height: 32px;
+  will-change: transform;
   transition: var(--duration-n) transform;
 }
 

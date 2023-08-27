@@ -120,6 +120,9 @@ export default function WallpaperViewer({ hide }) {
   }
 
   function handlePointerDown(event) {
+    if (event.buttons === 2) {
+      return;
+    }
     startingPointerPosition.current = getPointerPosition(event, event.currentTarget);
     pointerMoveHandler.current = handlePointerMove;
 
@@ -186,7 +189,7 @@ export default function WallpaperViewer({ hide }) {
   }
 
   return (
-    <FullscreenModal hide={hide} transparent>
+    <FullscreenModal transparent mask noAnim hide={hide}>
       {loading && <Spinner className="wallpaper-viewer-spinner"/>}
       <div className={`wallpaper-viewer-image-content${loading ? " hidden" : ""}`}>
         <div className="container wallpaper-viewer-image-container" ref={containerRef}>

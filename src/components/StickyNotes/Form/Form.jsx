@@ -21,6 +21,7 @@ export default function Form({ initialForm, noteCount, createNote, discardNote }
         color: colors[Math.floor(Math.random() * colors.length)],
         tilt: getTilt()
       });
+      setEditable(false);
       setMovable(true);
     }
     else if (initialForm.action === "edit") {
@@ -102,7 +103,7 @@ export default function Form({ initialForm, noteCount, createNote, discardNote }
     return null;
   }
   return (
-    <div className={`sticky-note sticky-note-form${movable ? " movable" : ""} ${editable ? " editable" : ""}`}
+    <div className={`sticky-note sticky-note-form${movable ? " movable" : ""} ${editable ? " editable" : ""}`} key={form.id}
       style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--background-color": form.color }}>
       <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} title="move"></div>
       <input className="input sticky-note-title sticky-note-input" name="title" onChange={handleInputChange}

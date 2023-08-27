@@ -1,5 +1,6 @@
 .sticky-note-form {
   z-index: 1000;
+  overflow: initial;
   display: flex;
   flex-direction: column;
   padding: var(--space-sm);
@@ -9,11 +10,23 @@
   }
 
   &.editable {
-    transform: translate(-50%, -4px);
+    animation-name: rotate-straight;
+    animation-duration: var(--duration-n);
+    animation-fill-mode: both;
   }
 
   .input::placeholder {
     color: var(--color-black-40);
+  }
+}
+
+@keyframes rotate-straight {
+  from {
+    transform: translate(-50%, -4px) rotate(calc(var(--tilt) * 1deg));
+  }
+
+  to {
+    transform: translate(-50%, -4px);
   }
 }
 
@@ -37,9 +50,9 @@
   height: auto;
   background-color: transparent;
   color: var(--color-black-60);
+  box-shadow: none;
 
   &:focus-visible {
-    box-shadow: none;
     background-color: var(--color-white-20);
   }
 }

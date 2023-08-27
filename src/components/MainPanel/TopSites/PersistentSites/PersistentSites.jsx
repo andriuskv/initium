@@ -142,7 +142,7 @@ export default function PersistentSites({ settings, getFaviconURL }) {
                     <Icon id="edit" className="persistent-site-edit-icon"/>
                   </button>
                   <button className="btn icon-btn persistent-site-remove-btn" onClick={() => removeSite(i)} title="Remove">
-                    <Icon id="trash" className="btn-icon"/>
+                    <Icon id="trash"/>
                   </button>
                 </SortableItem>
               ))}
@@ -160,7 +160,7 @@ export default function PersistentSites({ settings, getFaviconURL }) {
           </ul>
           <button className="btn icon-text-btn container top-site-container persistent-sites-cancel-edit-btn"
             onClick={disableSiteEdit}>
-            <Icon id="cross" className="btn-icon"/>
+            <Icon id="cross"/>
             <span>Cancel</span>
           </button>
         </>

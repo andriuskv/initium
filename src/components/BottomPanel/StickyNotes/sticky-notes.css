@@ -16,9 +16,10 @@
 
 .sticky-notes-list-item {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   padding: var(--space-md);
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .sticky-notes-list-item-title {

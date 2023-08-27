@@ -98,28 +98,31 @@ export default function Groups({ groups, updateGroups, createGroup, hide }) {
   }
 
   return (
-    <div className="tasks-item-container task-transition-target">
-      <GroupForm createGroup={createGroup}/>
-      {groups.length > 1 ? (
-        <ul className="tasks-groups-items" data-dropdown-parent>
-          <li className="tasks-groups-item">
-            {renderGroupContent(groups[0], 0, false)}
-          </li>
-          <SortableList
-            items={groups}
-            handleSort={handleSort}
-            handleDragStart={handleDragStart}>
-            {groups.slice(1).map((group, index) => (
-              <SortableItem className={`tasks-groups-item${group.id === activeDragId ? " dragging" : ""}`} id={group.id} key={group.id}>
-                {renderGroupContent(group, index)}
-              </SortableItem>
-            ))}
-          </SortableList>
-        </ul>
-      ) : (
-        <p className="tasks-groups-message">No groups</p>
-      )}
-      <div className="tasks-item-container-footer">
+    <>
+      <div className="container-header tasks-header"></div>
+      <div className="container-body tasks-body">
+        <GroupForm createGroup={createGroup}/>
+        {groups.length > 1 ? (
+          <ul className="tasks-groups-items" data-dropdown-parent>
+            <li className="tasks-groups-item">
+              {renderGroupContent(groups[0], 0, false)}
+            </li>
+            <SortableList
+              items={groups}
+              handleSort={handleSort}
+              handleDragStart={handleDragStart}>
+              {groups.slice(1).map((group, index) => (
+                <SortableItem className={`tasks-groups-item${group.id === activeDragId ? " dragging" : ""}`} id={group.id} key={group.id}>
+                  {renderGroupContent(group, index)}
+                </SortableItem>
+              ))}
+            </SortableList>
+          </ul>
+        ) : (
+          <p className="tasks-groups-message">No groups</p>
+        )}
+      </div>
+      <div className="container-footer">
         <button className="btn text-btn" onClick={hide}>Done</button>
       </div>
       {removeModal && (
@@ -134,6 +137,6 @@ export default function Groups({ groups, updateGroups, createGroup, hide }) {
           </div>
         </Modal>
       )}
-    </div>
+    </>
   );
 }

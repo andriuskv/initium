@@ -25,8 +25,8 @@ export default function GroupForm({ createGroup, modal = false, hide }) {
     return (
       <Modal hide={hide}>
         <form onSubmit={handleGroupFormSubmit}>
-          <h4 className="modal-title modal-title-center">New Group</h4>
-          <input type="text" className="input tasks-groups-form-input" name="name" placeholder="Group name" autoComplete="off" required/>
+          <h4 className="modal-title modal-title-center">New group</h4>
+          <input type="text" className="input tasks-groups-form-input tasks-groups-form-modal-input" name="name" placeholder="Group name" autoComplete="off" required/>
           <div className="modal-actions">
             <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
             <button className="btn">Create</button>

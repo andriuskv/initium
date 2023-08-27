@@ -44,8 +44,8 @@ export default function Tasks({ settings }) {
   return (
     <div className={`tasks${expanded ? " expanded" : ""}`} onClick={event => handleZIndex(event, "tasks")} ref={containerRef}>
       <button className={`btn tasks-toggle-btn${visible ? " shifted" : ""}`} onClick={toggle}>Tasks</button>
-      <div className={`container tasks-content${visible ? " visible" : ""}`}>
-        <div className="tasks-transition-target">
+      <div className={`container tasks-container${visible ? " visible" : ""}`}>
+        <div className="tasks-transition-target tasks-content">
           <Suspense fallback={null}>
             {rendered && <TasksContent settings={settings} expanded={expanded} toggleSize={toggleSize}/>}
           </Suspense>

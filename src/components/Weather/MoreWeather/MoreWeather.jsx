@@ -155,8 +155,10 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
 
   return (
     <div className="weather-transition-target weather-more-info" ref={container}>
-      <div className="weather-more-current">
-        <img src={current.icon} className="weather-more-current-icon" alt="" width="100px" height="100px" loading="lazy"/>
+      <div className="container-header weather-more-current">
+        <div className="weather-more-current-icon-container">
+          <img src={current.icon} className="weather-more-current-icon" alt="" width="100px" height="100px" loading="lazy"/>
+        </div>
         <div className="weather-more-current-main">
           <div className="weather-more-current-city">{current.city}</div>
           <div className="weather-more-current-main-info">
@@ -191,7 +193,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
       </div>
       {ready ? (
         <>
-          <div className="weather-more-hourly-view-container">
+          <div className="container-body weather-more-hourly-view-container">
             <ul className="weather-more-hourly-view-top">
               <li>
                 <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "temp" ? " active" : ""}`}
@@ -213,7 +215,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
               ))}
             </div>
           </div>
-          <div className="weather-more-daily">
+          <div className="container-footer weather-more-daily">
             {more.daily.map(item => (
               <div className="weather-more-daily-weekday" key={item.id}>
                 <div className="weather-more-daily-weekday-name">{item.weekday}</div>
@@ -228,7 +230,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
         </>
       ) : <Spinner className="weather-more-spinner"/>}
       <Dropdown container={{ className: "weather-more-settings" }} toggle={{ iconId: "settings" }}>
-        <label className="weather-more-setting">
+        <label className="dropdown-group weather-more-setting">
           <div>Temperature units</div>
           <input type="checkbox" className="sr-only toggle-input"
             checked={units === "F"}
@@ -238,7 +240,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
             <div className="toggle-item">°F</div>
           </div>
         </label>
-        <label className="weather-more-setting">
+        <label className="dropdown-group weather-more-setting">
           <div>Wind speed units</div>
           <input type="checkbox" className="sr-only toggle-input"
             checked={speedUnits === "ft/s"}
@@ -249,7 +251,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
           </div>
         </label>
       </Dropdown>
-      <button className="btn icon-btn weather-more-hide-btn" onClick={hide} title="Hide">
+      <button className="btn icon-btn weather-more-close-btn" onClick={hide} title="Close">
         <Icon id="cross"/>
       </button>
     </div>

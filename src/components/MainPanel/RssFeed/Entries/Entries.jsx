@@ -24,7 +24,7 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
 
   return (
     <div className="rss-feed">
-      <div className="main-panel-item-header">
+      <div className="container-header main-panel-item-header">
         {feeds.active.length > VISIBLE_ITEM_COUNT && (
           <button className={`btn icon-btn main-panel-item-header-btn feed-shift-btn${animateLeft ? " active": ""}`}
             onClick={previousShift} disabled={shift <= 0}>
@@ -57,7 +57,7 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
           <Icon id="menu"/>
         </button>
       </div>
-      <ul className="feed-entries" ref={containerRef}>
+      <ul className="container-body feed-entries" ref={containerRef}>
         {feeds.active[activeIndex].entries.map(entry => (
           <li className="feed-entry" onClick={() => markEntryAsRead(entry)} key={entry.id}>
             <div className="feed-entry-title">

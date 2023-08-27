@@ -65,7 +65,7 @@ export default function MainPanelTab() {
   }
 
   return (
-    <div className="setting-tab">
+    <div className="container-body setting-tab">
       <label className="setting">
         <span>Hide item bar</span>
         <input type="checkbox" className="sr-only checkbox-input"
@@ -173,7 +173,7 @@ export default function MainPanelTab() {
         <div className="settings-group-top">
           <h4 className="settings-group-title">Notepad</h4>
         </div>
-        <div className={`setting${settings.components.notepad.disabled ? " disabled" : ""}`}>
+        <div className={`setting last-setting-tab-item ${settings.components.notepad.disabled ? " disabled" : ""}`}>
           <span>Reset notepad text size</span>
           <button className="btn" onClick={resetNotepadTextSize}>Reset</button>
         </div>

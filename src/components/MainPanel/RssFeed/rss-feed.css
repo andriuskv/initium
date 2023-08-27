@@ -3,8 +3,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: var(--container-inset-radius);
+  border-bottom-right-radius: var(--container-inset-radius);
 }
 
 .feed-new-entry-count-container {
@@ -13,12 +13,11 @@
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  width: 20px;
+  min-width: 20px;
   height: 20px;
-  margin-right: var(--space-md);
+  padding: 0 var(--space-sm);
   font-size: 10px;
   font-weight: bold;
-  line-height: 1;
 
   &::before {
     position: absolute;
@@ -26,22 +25,19 @@
     display: block;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
+    border-radius: 99px;
     box-shadow:
-      0 1px 2px 0 var(--color-black-8),
-      0 2px 4px 0 var(--color-black-4);
+      inset 0 1px 1px 0 var(--color-white-4),
+      inset 1px 2px 2px 0 var(--color-white-2),
+      var(--fg-shadow);
     background-color: var(--color-white-10);
     transition: var(--duration-f) transform,
                 var(--duration-f) box-shadow,
                 var(--duration-f) background-color;
   }
 
-  &:hover {
-    cursor: pointer;
-
-    &::before {
-      transform: scale(1.2);
-    }
+  &:hover::before {
+    transform: scale(1.2);
   }
 }
 
@@ -57,7 +53,7 @@
 .feed-entry-thumbnail {
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  margin-top: var(--space-xs);
+  margin-top: var(--space-sm);
   margin-right: var(--space-md);
   border-radius: 8px;
 

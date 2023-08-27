@@ -2,6 +2,7 @@
   --text-size-scale: 1;
 
   grid-area: greeting;
+  align-self: var(--greeting-alignment);
   max-width: 572px;
   font-size: calc(var(--text-size-scale) * var(--text-lg));
   line-height: 1.25;

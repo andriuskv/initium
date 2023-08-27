@@ -11,8 +11,6 @@
   flex-direction: column;
   min-width: 160px;
   padding: var(--space-md) 1px;
-  background-color: hsl(var(--accent-hue) 7% 12%);
-  backdrop-filter: none;
   transform: translateY(var(--space-sm));
   white-space: nowrap;
 
@@ -36,19 +34,31 @@
 .dropdown-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--color-white-10);
+
+  &:has(+ :where(.dropdown-group, .dropdown-btn)) {
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-white-10);
+  }
 }
 
 .dropdown-btn {
   justify-content: flex-start;
-  height: auto;
   padding: var(--space-md);
   border-radius: 0;
 
   &:hover {
     border-left-color: transparent;
     border-right-color: transparent;
+  }
+
+  &.active {
+    box-shadow: inset 2px 0 0 0 var(--color-primary);
+
+    &:focus-visible {
+      box-shadow:
+        inset 4px 0 0 0 var(--color-primary),
+        inset var(--focus-shadow);
+    }
   }
 }

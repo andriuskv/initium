@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { timeout } from "utils";
 import { useSettings } from "contexts/settings";
 
 export default function TimeDateTab() {
@@ -12,10 +13,9 @@ export default function TimeDateTab() {
   }
 
   function updateRangeSetting(name, value) {
-    clearTimeout(timeoutId.current);
-    timeoutId.current = setTimeout(() => {
+    timeoutId.current = timeout(() => {
       updateSetting("timeDate", { [name]: Number(value) });
-    }, 1000);
+    }, 1000, timeoutId.current);
   }
 
   function handleClockScaleChange({ target }) {
@@ -53,7 +53,7 @@ export default function TimeDateTab() {
   }
 
   return (
-    <div className="setting-tab">
+    <div className="container-body setting-tab">
       <label className="setting">
         <span>Time display format</span>
         <input type="checkbox" className="sr-only toggle-input"
@@ -65,7 +65,9 @@ export default function TimeDateTab() {
         </div>
       </label>
       <div className="settings-group">
-        <h4 className="settings-group-title">Clock</h4>
+        <div className="settings-group-top">
+          <h4 className="settings-group-title">Clock</h4>
+        </div>
         <label className="setting">
           <span>Disable clock</span>
           <input type="checkbox" className="sr-only checkbox-input"
@@ -103,7 +105,9 @@ export default function TimeDateTab() {
         </label>
       </div>
       <div className="settings-group">
-        <h4 className="settings-group-title">Date</h4>
+        <div className="settings-group-top">
+          <h4 className="settings-group-title">Date</h4>
+        </div>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
           <span>Hide date</span>
           <input type="checkbox" className="sr-only checkbox-input"
@@ -191,7 +195,9 @@ export default function TimeDateTab() {
         </label>
       </div>
       <div className="settings-group">
-        <h4 className="settings-group-title">Calendar</h4>
+        <div className="settings-group-top">
+          <h4 className="settings-group-title">Calendar</h4>
+        </div>
         <label className="setting">
           <span>First day of the week</span>
           <div className="select-container">
@@ -202,7 +208,7 @@ export default function TimeDateTab() {
             </select>
           </div>
         </label>
-        <label className="setting">
+        <label className="setting last-setting-tab-item">
           <span>Hide world clocks</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.worldClocksHidden}

@@ -141,7 +141,7 @@ export default function StorageTab() {
     return null;
   }
   return (
-    <div className="setting-tab">
+    <div className="container-body setting-tab">
       <div className="storage-usage">
         <div className="storage-usage-numerical">
           <div className="storage-usage-current-numerical">

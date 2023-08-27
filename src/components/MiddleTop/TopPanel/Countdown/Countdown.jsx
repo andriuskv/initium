@@ -239,7 +239,7 @@ export default function Countdown({ visible, toggleIndicator }) {
   }
 
   return (
-    <div className={`top-panel-item countdown${visible ? " visible" : ""}`}>
+    <div className={`container-body top-panel-item countdown${visible ? " visible" : ""}`}>
       <CreateButton onClick={showForm}></CreateButton>
       {renderCountdowns()}
     </div>

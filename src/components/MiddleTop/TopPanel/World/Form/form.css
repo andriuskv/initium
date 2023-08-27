@@ -10,22 +10,18 @@
 
 .world-form-header {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: var(--space-sm);
 }
 
 .world-form-title {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
+  font-weight: bold;
 }
 
 .world-form-top {
-  padding: var(--space-sm);
-  border-top: 1px solid var(--color-white-10);
+  padding: var(--space-md);
   border-bottom: 1px solid var(--color-white-10);
 }
 

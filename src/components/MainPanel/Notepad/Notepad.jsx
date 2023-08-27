@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { getRandomString, formatBytes } from "utils";
+import { getRandomString, formatBytes, timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting, updateMainPanelComponentSetting } from "services/settings";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
+import Toast from "components/Toast";
 import "./notepad.css";
 
 const Tabs = lazy(() => import("./Tabs"));
@@ -184,14 +185,13 @@ export default function Notepad() {
 
   function handleTextareaChange({ target }) {
     const tab = tabs[activeIndex];
-    const { value } = target;
-    tab.content = value;
 
-    clearTimeout(saveTimeoutId.current);
-    saveTimeoutId.current = setTimeout(() => {
+    tab.content = target.value;
+
+    saveTimeoutId.current = timeout(() => {
       tab.sizeString = getTabSize(tab).sizeString;
       updateTabs(tabs);
-    }, 400);
+    }, 400, saveTimeoutId.current);
   }
 
   function handleTextareaKeyDown(event) {
@@ -244,36 +244,29 @@ export default function Notepad() {
   }
 
   function saveTextSize(value) {
-    delaySave(() => {
+    saveTimeoutId.current = timeout(() => {
       updateMainPanelComponentSetting("notepad", { textSize: value });
-    });
+    }, 1000, saveTimeoutId.current);
   }
 
   function saveTabTextSize(tabs) {
-    delaySave(() => {
+    saveTimeoutId.current = timeout(() => {
       updateMainPanelComponentSetting("notepad", {
         tabs: tabs.filter(tab => tab.textSize).map(tab => ({
           id: tab.id,
           textSize: tab.textSize
         }))
       });
-    });
-  }
-
-  function delaySave(callback) {
-    clearTimeout(saveTimeoutId.current);
-    saveTimeoutId.current = setTimeout(callback, 1000);
+    }, 1000, saveTimeoutId.current);
   }
 
   function showTextSizeLabel() {
-    clearTimeout(labelTimeoutId.current);
-
     if (!textSizeLabelVisible) {
       setTextSizeLabelVisible(true);
     }
-    labelTimeoutId.current = setTimeout(() => {
+    labelTimeoutId.current = timeout(() => {
       setTextSizeLabelVisible(false);
-    }, 1000);
+    }, 1000, labelTimeoutId.current);
   }
 
   function selectListTab(index) {
@@ -305,7 +298,7 @@ export default function Notepad() {
   }
 
   function saveTabs(tabs) {
-    delaySave(() => {
+    saveTimeoutId.current = timeout(() => {
       saveTabTextSize(tabs);
       chromeStorage.set({ notepad: tabs.map(tab => ({
         id: tab.id,
@@ -314,7 +307,7 @@ export default function Notepad() {
       })) }, () => {
         checkStorageSize();
       });
-    });
+    }, 1000, saveTimeoutId.current);
   }
 
   function renderWarning() {
@@ -322,14 +315,7 @@ export default function Notepad() {
       return null;
     }
     else if (storageWarning.full) {
-      return (
-        <div className="container notepad-warning">
-          <p>{storageWarning.message}</p>
-          <button className="btn icon-btn" onClick={dismissWarning} title="Dismiss">
-            <Icon id="cross"/>
-          </button>
-        </div>
-      );
+      return <Toast message={storageWarning.message} position="bottom" dismiss={dismissWarning}/>;
     }
     return (
       <Dropdown
@@ -357,7 +343,7 @@ export default function Notepad() {
 
   return (
     <div className="notepad">
-      <div className="main-panel-item-header">
+      <div className="container-header main-panel-item-header">
         {tabs.length > VISIBLE_ITEM_COUNT && (
           <button className="btn icon-btn main-panel-item-header-btn" onClick={previousShift} disabled={shift <= 0}>
             <Icon id="chevron-left"/>
@@ -384,7 +370,7 @@ export default function Notepad() {
         </button>
       </div>
       {storageWarning && renderWarning()}
-      <textarea className="notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` }}
+      <textarea className="container-body notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` }}
         onChange={handleTextareaChange}
         onKeyDown={handleTextareaKeyDown}
         defaultValue={activeTab.content}

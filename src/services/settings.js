@@ -13,14 +13,14 @@ function initSettings() {
 }
 
 function initAppearanceSettings(settings) {
-  document.body.style.setProperty("--animation-speed", settings.animationSpeed);
+  document.documentElement.style.setProperty("--animation-speed", settings.animationSpeed);
 
-  document.body.style.setProperty("--accent-hue", settings.accentColor.hue);
-  document.body.style.setProperty("--accent-saturation", settings.accentColor.saturation);
-  document.body.style.setProperty("--accent-lightness", settings.accentColor.lightness);
+  document.documentElement.style.setProperty("--accent-hue", settings.accentColor.hue);
+  document.documentElement.style.setProperty("--accent-saturation", settings.accentColor.saturation);
+  document.documentElement.style.setProperty("--accent-lightness", settings.accentColor.lightness);
 
-  document.body.style.setProperty("--panel-background-opacity", `${settings.panelBackgroundOpacity}%`);
-  document.body.style.setProperty("--panel-background-blur", `${settings.panelBackgroundBlur}px`);
+  document.documentElement.style.setProperty("--panel-background-opacity", `${settings.panelBackgroundOpacity}%`);
+  document.documentElement.style.setProperty("--panel-background-blur", `${settings.panelBackgroundBlur}px`);
 
   const noise = localStorage.getItem("noise");
 
@@ -44,7 +44,7 @@ function getDefault() {
         disabled: false,
         textSize: 1
       },
-      middleTopItemOrder: [
+      middleTopOrder: [
         {
           id: "timers",
           name: "Mini timer"
@@ -66,7 +66,7 @@ function getDefault() {
       panelBackgroundBlur: 12,
       panelBackgroundNoiseAmount: 0.12,
       panelBackgroundNoiseOpacity: 0.02,
-      wallpaper: { url: "" }
+      wallpaper: { provider: "unsplash", url: "" }
     },
     timeDate: {
       format: 24,
@@ -205,6 +205,7 @@ function removePanelNoise() {
 export {
   initAppearanceSettings,
   resetSettings,
+  getDefault,
   getSettings,
   getSetting,
   setSetting,

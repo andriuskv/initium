@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import * as focusService from "services/focus";
 import "./fullscreen-modal.css";
 
-export default function FullscreenModal({ children, transparent, hide }) {
+export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, hide }) {
   const container = useRef(null);
   let pointerInside = false;
 
@@ -24,8 +24,8 @@ export default function FullscreenModal({ children, transparent, hide }) {
     };
   }, []);
 
-  function handlePointerDown(event) {
-    if (event.target.closest(".fullscreen-modal")) {
+  function handlePointerDown({ target }) {
+    if (target.closest(".fullscreen-modal")) {
       pointerInside = true;
     }
   }
@@ -39,11 +39,16 @@ export default function FullscreenModal({ children, transparent, hide }) {
     }
   }
 
-  function handleKeydown(event) {
-    if (event.key === "Escape") {
+  function handleKeydown({ key }) {
+    if (key === "Escape") {
       hide();
     }
   }
 
-  return <div className={`fullscreen-modal${transparent ? "" : " container"}`} ref={container}>{children}</div>;
+  const modal = <div className={`fullscreen-modal${hiding ? " hiding" : ""}${noAnim ? " static" : ""}${transparent ? "" : " container"}`} ref={container}>{children}</div>;
+
+  if (mask) {
+    return <div className="fullscreen-modal-mask">{modal}</div>;
+  }
+  return modal;
 }

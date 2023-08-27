@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import Icon from "components/Icon";
 import "./create-button.css";
 
-export default function CreateButton({ children, className, style = {}, onClick, trackScroll = false }) {
+export default function CreateButton({ children, className, attrs = {}, style = {}, onClick, trackScroll = false }) {
   const ref = useRef(null);
   const scrolling = useRef(false);
 
@@ -30,7 +30,7 @@ export default function CreateButton({ children, className, style = {}, onClick,
   }
 
   return (
-    <button className={`btn icon-text-btn create-btn${className ? ` ${className}` : ""}`} style={{...style}} ref={ref} onClick={onClick}>
+    <button className={`btn icon-text-btn create-btn${className ? ` ${className}` : ""}`} { ...attrs } style={{ ...style }} ref={ref} onClick={onClick}>
       <Icon id="plus"/>
       <span>{children || "Create"}</span>
     </button>

@@ -1,15 +1,25 @@
 .countdown-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
   width: 332px;
   height: 280px;
-  padding: var(--space-md);
+}
+
+.countdown-form-header {
+  justify-content: center;
+  min-height: 39px;
 }
 
 .countdown-form-title {
-  margin-bottom: var(--space-md);
-  text-align: center;
+  font-weight: bold;
+  font-size: var(--text-md);
+}
+
+.countdown-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
 }
 
 .countdown-form-fields {
@@ -23,6 +33,7 @@
 
 .countdown-form-date-fields {
   .countdown-form-field-title {
+    margin-left: 0;
     text-align: center;
   }
 
@@ -34,14 +45,12 @@
 
 .countdown-form-field-title {
   margin-bottom: var(--space-sm);
+  margin-left: var(--space-sm);
   font-size: var(--text-sm);
   font-weight: bold;
 }
 
 .countdown-form-bottom {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
   gap: var(--space-md);
   margin-top: auto;
 }
@@ -51,7 +60,6 @@
   padding-top: var(--space-md);
   padding-bottom: var(--space-md);
   transform: translate(-50%, var(--space-sm));
-  background-color: var(--color-grey-90);
 
   &.months {
     width: 100px;
@@ -66,7 +74,7 @@
       padding: var(--space-md);
 
       &:hover {
-        border-radius: var(--space-md);
+        border-radius: 8px;
       }
     }
   }
@@ -82,15 +90,16 @@
       padding: var(--space-sm) var(--space-md);
 
       &:hover {
-        border-radius: var(--space-md);
+        border-radius: 8px;
       }
     }
   }
 }
 
 .countdown-form-field-datalist-item {
-  padding: var(--space-sm) var(--space-xl);
+  padding: var(--space-md) var(--space-xl);
   text-align: center;
+  line-height: 1;
   cursor: pointer;
 
   &:hover {

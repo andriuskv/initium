@@ -10,7 +10,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
   const [greeting, setGreeting] = useState(null);
   const [topPanel, setTopPanel] = useState({ rendered: false, forceVisibility: false });
-  const [itemOrder, setItemOrder] = useState("");
+  const [itemOrder, setItemOrder] = useState({});
   const topPanelTimeoutId = useRef(0);
 
   useEffect(() => {
@@ -27,8 +27,16 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   }, [settings]);
 
   useLayoutEffect(() => {
-    setItemOrder(getOrderString(settings.general.middleTopItemOrder));
-  }, [settings.general]);
+    const alignment = {};
+
+    for (const item of settings.general.middleTopOrder) {
+      alignment[`--${item.id}-alignment`] = item.alignment || "center";
+    }
+    setItemOrder({
+      alignment,
+      orderString: getOrderString(settings.general.middleTopOrder)
+    });
+  }, [settings.general.middleTopOrder]);
 
   useLayoutEffect(() => {
     setShouldCenterClock(getClockCenterState());
@@ -79,7 +87,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
 
   return (
     <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}
-      style={{ "--order": itemOrder }}>
+      style={{ "--order": itemOrder.orderString, ...itemOrder.alignment }}>
       <Suspense fallback={null}>
         {!settings.timers.disabled && topPanel.rendered && <TopPanel initialTab={topPanel.initialTab} forceVisibility={topPanel.forceVisibility} settings={settings.timers} animationSpeed={settings.appearance.animationSpeed} resetTopPanel={resetTopPanel} />}
       </Suspense>

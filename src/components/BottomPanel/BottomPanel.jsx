@@ -15,7 +15,7 @@ export default function BottomPanel() {
   const [items, setItems] = useState(() => ({
     "stickyNotes": {
       id: "stickyNotes",
-      title: "Sticky notes",
+      title: "Sticky Notes",
       iconId: "sticky-notes",
       attrs: {
         "data-focus-id": "stickyNotes"
@@ -164,7 +164,6 @@ export default function BottomPanel() {
   function renderSelectedItem() {
     const props = {};
     let Component = null;
-    let placeholder = null;
 
     if (selectedItem.id === "stickyNotes") {
       props.hide = hideItem;
@@ -172,13 +171,12 @@ export default function BottomPanel() {
     }
     else if (selectedItem.id === "shortcuts") {
       Component = Shortcuts;
-      placeholder = <div className="shortcuts-placeholder"></div>;
     }
 
     if (Component) {
       return (
-        <div className={`bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}>
-          <Suspense fallback={placeholder}><Component {...props}/></Suspense>
+        <div className={`container-body bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}>
+          <Suspense fallback={null}><Component {...props}/></Suspense>
         </div>
       );
     }
@@ -188,7 +186,7 @@ export default function BottomPanel() {
     if (items.calendar.rendered) {
       return (
         <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}>
-          <Suspense fallback={<div className="calendar-placeholder"></div>}>
+          <Suspense fallback={null}>
             <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} showIndicator={toggleIndicator}/>
           </Suspense>
         </div>
@@ -201,8 +199,8 @@ export default function BottomPanel() {
     <div className="bottom-panel" onClick={event => handleZIndex(event, "bottom-panel")}>
       {selectedItem.id ? null : renderItems()}
       <div className={`container bottom-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""}`}>
-        <div className="bottom-panel-item-header bottom-panel-transition-target">
-          <Icon id={selectedItem.iconId} className="bottom-panel-item-icon"/>
+        <div className="container-header bottom-panel-item-header bottom-panel-transition-target">
+          <Icon id={selectedItem.iconId}/>
           <h3 className="bottom-panel-item-title">{selectedItem.title}</h3>
           <button className="btn icon-btn" onClick={hideItem} ref={closeButton} title="Close">
             <Icon id="cross"/>

@@ -40,6 +40,7 @@ export default function Modal({ children, className, transparent, hide }) {
       hide();
     }
   }
+
   return (
     <div className={`modal-mask${transparent ? " transparent" : ""}`} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
       <div className={`container modal${className ? ` ${className}` : ""}`} ref={container}>{children}</div>

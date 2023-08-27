@@ -42,8 +42,8 @@ export default function Form({ form, updateSite, hide }) {
               name="url" autoComplete="off" required/>
           </label>
         </div>
-        <div className="top-sites-form-buttons">
-          <button type="button" className="btn text-btn top-sites-form-cancel-btn" onClick={hide}>Cancel</button>
+        <div className="modal-actions">
+          <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
           <button className="btn">{form.updating ? "Edit" : "Add"}</button>
         </div>
       </form>

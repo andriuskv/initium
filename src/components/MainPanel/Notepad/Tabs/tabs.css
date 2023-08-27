@@ -1,21 +1,6 @@
 .notepad-tabs-header {
   position: relative;
-  display: flex;
-  justify-content: flex-end;
-  padding: var(--space-sm);
-  border-bottom: 1px solid var(--color-white-10);
-
-  .dropdown-container {
-    margin-right: var(--space-sm);
-  }
-}
-
-.notepad-tabs-header-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: var(--text-lg);
+  gap: var(--space-sm);
 }
 
 .notepad-tabs-dropdown-setting-group {
@@ -69,13 +54,14 @@
 }
 
 .notepad-storage {
+  flex-direction: column;
   padding: var(--space-md);
-  border-top: 1px solid var(--color-white-10);
 }
 
 .notepad-storage-text {
   display: flex;
   justify-content: space-between;
+  width: 100%;
   margin-bottom: var(--space-sm);
   font-size: var(--text-sm);
   font-weight: bold;
@@ -83,6 +69,7 @@
 
 .notepad-storage-bar {
   overflow: hidden;
+  width: 100%;
   height: 4px;
   border-radius: 2px;
   background-color: var(--color-white-10);

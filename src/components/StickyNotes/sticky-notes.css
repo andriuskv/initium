@@ -4,7 +4,7 @@
   position: absolute;
   top: calc(var(--y) * 1%);
   left: calc(var(--x) * 1%);
-  transform: translate(-50%, -4px) rotate(calc(var(--tilt) * 1deg));
+  overflow: hidden;
   width: 168px;
   height: 168px;
   padding: var(--space-md);
@@ -14,6 +14,19 @@
     2px 4px 4px 0 var(--color-black-8),
     4px 8px 8px 0 var(--color-black-4),
     8px 16px 16px 0 var(--color-black-2);
+  animation-name: rotate-tilt;
+  animation-duration: var(--duration-n);
+  animation-fill-mode: both;
+}
+
+@keyframes rotate-tilt {
+  from {
+    transform: translate(-50%, -4px);
+  }
+
+  to {
+    transform: translate(-50%, -4px) rotate(calc(var(--tilt) * 1deg));
+  }
 }
 
 .sticky-note-title {

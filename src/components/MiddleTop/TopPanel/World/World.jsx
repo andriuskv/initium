@@ -81,6 +81,8 @@ export default function World({ visible, parentVisible }) {
 
   function showForm() {
     dispatchCustomEvent("fullscreen-modal", {
+      id: "world",
+      shouldToggle: true,
       component: Form,
       params: { addClock }
     });
@@ -99,7 +101,7 @@ export default function World({ visible, parentVisible }) {
   }
 
   return (
-    <div className={`top-panel-item world${visible ? " visible" : ""}`}>
+    <div className={`container-body top-panel-item world${visible ? " visible" : ""}`}>
       {clocks.length ? (
         <ul className="world-clocks">
           {clocks.map(clock => (
@@ -118,7 +120,7 @@ export default function World({ visible, parentVisible }) {
           ))}
         </ul>
       ) : <p className="world-clocks-message">No clocks added</p>}
-      <CreateButton onClick={showForm}></CreateButton>
+      <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": true }}></CreateButton>
     </div>
   );
 }

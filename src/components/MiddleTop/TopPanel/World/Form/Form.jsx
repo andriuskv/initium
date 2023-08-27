@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { getRandomString } from "utils";
+import { getRandomString, timeout } from "utils";
 import { getHoursOffset } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import * as focusService from "services/focus";
@@ -71,9 +71,7 @@ export default function Form({ addClock, hide }) {
   async function handleKeyUp(event) {
     const { value } = event.currentTarget;
 
-    clearTimeout(timeoutId.current);
-
-    timeoutId.current = setTimeout(() => {
+    timeoutId.current = timeout(() => {
       if (value.length > 2) {
         searchLocation(value);
       }
@@ -83,7 +81,7 @@ export default function Form({ addClock, hide }) {
       else {
         setSearchResults(null);
       }
-    }, 200);
+    }, 200, timeoutId.current);
   }
 
   function clearInput() {
@@ -101,7 +99,7 @@ export default function Form({ addClock, hide }) {
 
   return (
     <div className="world-form">
-      <div className="world-form-header">
+      <div className="container-header world-form-header">
         <h3 className="world-form-title">Add a new world clock</h3>
         <button className="btn icon-btn" onClick={hide} title="Close">
           <Icon id="cross"/>

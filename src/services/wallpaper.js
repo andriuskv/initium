@@ -120,7 +120,7 @@ function resetIDBWallpaper() {
   setSetting({
     appearance: {
       ...getSetting("appearance"),
-      wallpaper: { url: "" }
+      wallpaper: { provider: "unsplash", url: "" }
     }
   });
   resetIDBStore();

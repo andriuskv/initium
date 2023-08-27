@@ -283,7 +283,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     <div className={`top-panel${minimal ? ` minimal visible` : expanded ? " fullscreen-mask expanded" : " container"}${visible ? " visible" : ""}`}
       onClick={event => handleZIndex(event, "top-panel")} ref={containerRef}>
       <div className="top-panel-content">
-        <ul className="top-panel-hide-target top-panel-header">
+        <ul className="top-panel-hide-target container-header top-panel-header">
           {Object.keys(tabs).map(item => (
             <li className={`top-panel-header-item${activeTab === item ? " active" : ""}`} key={item}>
               <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab(item)}>

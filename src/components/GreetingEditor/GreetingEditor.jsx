@@ -1,15 +1,16 @@
 /* global chrome */
 
-import { useState, useEffect, useRef } from "react";
-import { useSettings } from "contexts/settings";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import FullscreenModal from "components/FullscreenModal";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./greeting-editor.css";
 
-export default function Editor({ hide }) {
-  const { settings: { general: { greeting: settings } }, updateSetting } = useSettings();
+const Toast = lazy(() => import("components/Toast"));
+
+export default function GreetingEditor({ hiding, hide }) {
   const [textArea, setTextArea] = useState("");
   const [bytes, setBytes] = useState(null);
   const saveTimeoutId = useRef(0);
@@ -43,29 +44,16 @@ export default function Editor({ hide }) {
     return `${value} kB`;
   }
 
-  function hideMessage() {
+  function dismissMessage() {
     delete bytes.message;
     setBytes({ ...bytes });
   }
 
   function handleTextareaChange(event) {
     setTextArea(event.target.value);
-    clearTimeout(saveTimeoutId.current);
-    saveTimeoutId.current = setTimeout(() => {
+    saveTimeoutId.current = timeout(() => {
       saveGreetings(event.target.value);
-    }, 400);
-  }
-
-  function handleRangeInputChange({ target }) {
-    clearTimeout(saveTimeoutId.current);
-    saveTimeoutId.current = setTimeout(() => {
-      updateSetting("general", {
-        greeting: {
-          ...settings,
-          textSize: Number(target.value)
-        }
-      });
-    }, 1000);
+    }, 400, saveTimeoutId.current);
   }
 
   function saveGreetings(text) {
@@ -83,9 +71,9 @@ export default function Editor({ hide }) {
   }
 
   return (
-    <FullscreenModal hide={hide}>
+    <FullscreenModal hiding={hiding} hide={hide}>
       <div className="greeting-editor">
-        <div className="greeting-editor-header">
+        <div className="container-header greeting-editor-header">
           <Dropdown
             toggle={{ title: "Info", iconId: "info" }}
             body={{ className: "greeting-editor-dropdown" }}>
@@ -98,26 +86,16 @@ export default function Editor({ hide }) {
             <span className="greeting-editor-space-usage">{bytes.current} / {bytes.max}</span>
           )}
           <h3 className="greeting-editor-header-title">Greeting Editor</h3>
-          <button className="btn icon-btn greeting-editor-hide-btn" onClick={hide} title="Close">
+          <button className="btn icon-btn" onClick={hide} title="Close">
             <Icon id="cross"/>
           </button>
         </div>
-        <div className="greeting-settings">
-          <label className="greeting-setting">
-            <span className="label-left">Text size</span>
-            <input type="range" className="range-input" min="0.75" max="3" step="0.125"
-              defaultValue={settings.textSize} onChange={handleRangeInputChange}/>
-          </label>
-        </div>
         {bytes?.message && (
-          <div className="greeting-editor-message-container">
-            <p className="greeting-editor-message">{bytes.message}</p>
-            <button className="btn icon-btn" onClick={hideMessage}>
-              <Icon id="cross"/>
-            </button>
-          </div>
+          <Suspense fallback={null}>
+            <Toast message={bytes.message} position="bottom" dismiss={dismissMessage}/>
+          </Suspense>
         )}
-        <textarea className="greeting-editor-textarea" value={textArea} onChange={handleTextareaChange}></textarea>
+        <textarea className="container-body greeting-editor-textarea" value={textArea} onChange={handleTextareaChange}></textarea>
       </div>
     </FullscreenModal>
   );

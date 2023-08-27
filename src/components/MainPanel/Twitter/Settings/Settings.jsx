@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { timeout } from "utils";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./settings.css";
@@ -22,10 +23,9 @@ export default function Settings({ settings, user, updateSetting, hide }) {
   }
 
   function handleVideoVolumeChange(event) {
-    clearTimeout(timeoutId.current);
-    timeoutId.current = setTimeout(() => {
+    timeoutId.current = timeout(() => {
       updateSetting("videoVolume", event.target.valueAsNumber);
-    }, 1000);
+    }, 1000, timeoutId.current);
   }
 
   function selectColor(color) {

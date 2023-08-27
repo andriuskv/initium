@@ -1,17 +1,15 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { getRandomHslColor } from "utils";
+import { useState, useEffect, useRef } from "react";
+import { dispatchCustomEvent, getRandomHslColor, timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getDate, padTime } from "services/timeDate";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
 import "./selected-day.css";
-
-const Form = lazy(() => import("./Form"));
+import Form from "./Form";
 
 export default function SelectedDay({ selectedDay, calendar, reminders, updateCalendar, createReminder, resetSelectedDay, hide }) {
   const [day, setDay] = useState(null);
-  const [form, setForm] = useState(null);
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -32,10 +30,9 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
 
     updateCalendar();
 
-    clearTimeout(timeoutId.current);
-    timeoutId.current = setTimeout(() => {
+    timeoutId.current = timeout(() => {
       saveReminders(reminders);
-    }, 1000);
+    }, 1000, timeoutId.current);
   }
 
   function filterReminders(reminders, id) {
@@ -96,7 +93,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
         form.repeat.weekdays.static[form.repeat.currentWeekday] = true;
       }
     }
-    setForm(form);
+    showForm(form);
   }
 
   function removeReminder(id, i) {
@@ -111,17 +108,13 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
     saveReminders(reminders);
   }
 
-  function backToCalendar() {
-    if (form) {
-      setForm(null);
-    }
-    else {
-      hide();
-    }
-  }
-
-  function showForm() {
-    setForm({});
+  function showForm(form = {}) {
+    dispatchCustomEvent("fullscreen-modal", {
+      id: "reminder",
+      shouldToggle: true,
+      component: Form,
+      params: { form, day, updateReminder }
+    });
   }
 
   function updateReminder(reminder, form) {
@@ -138,7 +131,6 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
     else {
       reminders.push(reminder);
     }
-    setForm(null);
     saveReminders(reminders);
   }
 
@@ -174,47 +166,39 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
   return (
     <div className="calendar">
       <div className="calendar-header selected-day-header">
-        <button className="btn icon-btn" onClick={backToCalendar} title="Back to calendar">
+        <button className="btn icon-btn" onClick={hide} title="Back to calendar">
           <Icon id="chevron-left"/>
         </button>
         <span className="selected-day-title">{day.dateString}</span>
       </div>
-      {form ? (
-        <Suspense fallback={null}>
-          <Form form={form} day={day} updateReminder={updateReminder} hide={backToCalendar}/>
-        </Suspense>
-      ) : (
-        <>
-          {day.reminders.length > 0 ? (
-            <ul className="selected-day-remainders" data-dropdown-parent>
-              {day.reminders.map((reminder, index) => (
-                <li className="selected-day-remainder" key={reminder.id}>
-                  <div className="selected-day-reminder-color" style={{ "backgroundColor": reminder.color }}
-                    onClick={() => changeReminderColor(reminder)}></div>
-                  {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
-                  <div>
-                    <div>{reminder.text}</div>
-                    <div className="selected-day-reminder-range">{reminder.range.text}</div>
-                  </div>
-                  <Dropdown container={{ className: "selected-day-remainder-dropdown" }}>
-                    <button className="btn icon-text-btn dropdown-btn"
-                      onClick={() => editReminder(reminder.id, index)}>
-                      <Icon id="edit"/>
-                      <span>Edit</span>
-                    </button>
-                    <button className="btn icon-text-btn dropdown-btn"
-                      onClick={() => removeReminder(reminder.id, index)}>
-                      <Icon id="trash"/>
-                      <span>Remove</span>
-                    </button>
-                  </Dropdown>
-                </li>
-              ))}
-            </ul>
-          ) : <p className="empty-reminder-list-message">No reminders</p>}
-          <CreateButton onClick={showForm} trackScroll></CreateButton>
-        </>
-      )}
+      {day.reminders.length > 0 ? (
+        <ul className="selected-day-remainders" data-dropdown-parent>
+          {day.reminders.map((reminder, index) => (
+            <li className="selected-day-remainder" key={reminder.id}>
+              <div className="selected-day-reminder-color" style={{ "backgroundColor": reminder.color }}
+                onClick={() => changeReminderColor(reminder)}></div>
+              {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
+              <div>
+                <div>{reminder.text}</div>
+                <div className="selected-day-reminder-range">{reminder.range.text}</div>
+              </div>
+              <Dropdown container={{ className: "selected-day-remainder-dropdown" }}>
+                <button className="btn icon-text-btn dropdown-btn"
+                  onClick={() => editReminder(reminder.id, index)}>
+                  <Icon id="edit"/>
+                  <span>Edit</span>
+                </button>
+                <button className="btn icon-text-btn dropdown-btn"
+                  onClick={() => removeReminder(reminder.id, index)}>
+                  <Icon id="trash"/>
+                  <span>Remove</span>
+                </button>
+              </Dropdown>
+            </li>
+          ))}
+        </ul>
+      ) : <p className="empty-reminder-list-message">No reminders</p>}
+      <CreateButton onClick={() => showForm()} attrs={{ "data-modal-initiator": true }} trackScroll></CreateButton>
     </div>
   );
 }

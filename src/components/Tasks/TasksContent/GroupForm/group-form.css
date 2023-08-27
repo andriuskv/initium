@@ -5,5 +5,10 @@
 }
 
 .tasks-groups-form-input {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.tasks-groups-form-modal-input {
   width: 100%;
 }

@@ -169,6 +169,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
       }
     }
     updateReminder(reminder, form);
+    hide();
   }
 
   function preventFormSubmit(event) {
@@ -280,116 +281,121 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
 
   return (
     <form className="reminder-form" onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
-      <input type="text" className="input reminder-form-input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
-      <div className="reminder-form-row reminder-form-setting">
-        <label className="checkbox-container reminder-form-checkbox-container">
-          <input type="checkbox" className="sr-only checkbox-input" name="range"
-            onChange={toggleFormCheckbox} checked={!form.range.enabled}/>
-          <div className="checkbox">
-            <div className="checkbox-tick"></div>
-          </div>
-          <span className="label-right">All day</span>
-        </label>
-        <label className="checkbox-container reminder-form-checkbox-container">
-          <input type="checkbox" className="sr-only checkbox-input" name="repeat"
-            onChange={toggleFormCheckbox} checked={form.repeat.enabled}/>
-          <div className="checkbox">
-            <div className="checkbox-tick"></div>
-          </div>
-          <span className="label-right">Repeat</span>
-        </label>
-        {form.repeat.enabled && (
-          <div className="select-container reminder-form-repeat-type-selection">
-            <select className="input select" onChange={handleRepeatTypeChange} value={form.repeat.type}>
-              <option value="custom">Custom</option>
-              <option value="weekday">Every weekday</option>
-              <option value="week">Every week</option>
-              <option value="month">Every month</option>
-            </select>
-          </div>
-        )}
+      <div className="container-header reminder-form-header">
+        <h3 className="bottom-panel-item-title">Reminder Form</h3>
       </div>
-      {form.range.enabled && (
-        <div className="reminder-form-setting" onFocus={handleFormFocus} onBlur={handleRangeInputBlur}>
-          <div>
-            <span>From</span>
-            <span className="reminder-range-input-container">
-              <input type="text" className="input reminder-range-input" autoComplete="off" name="from"
-                onChange={handleRangeInputChange} value={form.range.from.text} required/>
-            </span>
-            <span>To</span>
-            <span className="reminder-range-input-container">
-              <input type="text" className="input reminder-range-input" autoComplete="off" name="to"
-                onChange={handleRangeInputChange} value={form.range.to.text}/>
-            </span>
-          </div>
-          {form.range.dataList.visible && (
-            <div className="container range-data-list-panel" style={{ top: form.range.dataList.y, left: form.range.dataList.x }}>
-              <div className="range-data-list">
-                <ul className="range-data-list-items">
-                  {form.range.dataList.items.map((item, i) => <li className="range-data-list-item" key={i}>{item}</li>)}
-                </ul>
-              </div>
+      <div className="container-body reminder-form-body">
+        <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
+        <div className="reminder-form-row reminder-form-setting">
+          <label className="checkbox-container">
+            <input type="checkbox" className="sr-only checkbox-input" name="range"
+              onChange={toggleFormCheckbox} checked={!form.range.enabled}/>
+            <div className="checkbox">
+              <div className="checkbox-tick"></div>
+            </div>
+            <span className="label-right">All day</span>
+          </label>
+          <label className="checkbox-container">
+            <input type="checkbox" className="sr-only checkbox-input" name="repeat"
+              onChange={toggleFormCheckbox} checked={form.repeat.enabled}/>
+            <div className="checkbox">
+              <div className="checkbox-tick"></div>
+            </div>
+            <span className="label-right">Repeat</span>
+          </label>
+          {form.repeat.enabled && (
+            <div className="select-container reminder-form-repeat-type-selection">
+              <select className="input select" onChange={handleRepeatTypeChange} value={form.repeat.type}>
+                <option value="custom">Custom</option>
+                <option value="weekday">Every weekday</option>
+                <option value="week">Every week</option>
+                <option value="month">Every month</option>
+              </select>
             </div>
           )}
-          {form.range.message && <div className="reminder-form-message">{form.range.message}</div>}
         </div>
-      )}
-      {form.repeat.enabled && (
-        <>
-          {form.repeat.type === "custom" ? (
-            <div className="reminder-form-setting">
-              <div>
-                <span>Repeat every</span>
-                <span className="multi-input-container repeat-input-container">
-                  <input type="text" className="input multi-input-left repeat-input" name="gap" autoComplete="off"
-                    value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
-                  <select className="input select multi-input-right" onChange={handleCustomTypeGapNameChange} value={form.repeat.customTypeGapName}>
-                    <option value="days">day(s)</option>
-                    <option value="weeks">week(s)</option>
-                    <option value="months">month(s)</option>
-                  </select>
-                </span>
+        {form.range.enabled && (
+          <div>
+            <div className="reminder-form-setting" onFocus={handleFormFocus} onBlur={handleRangeInputBlur}>
+              <label>
+                <span className="label-left">From</span>
+                <input type="text" className="input reminder-range-input" autoComplete="off" name="from"
+                  onChange={handleRangeInputChange} value={form.range.from.text} required/>
+              </label>
+              <label>
+                <span className="label-left">To</span>
+                <input type="text" className="input reminder-range-input" autoComplete="off" name="to"
+                  onChange={handleRangeInputChange} value={form.range.to.text}/>
+              </label>
+            </div>
+            {form.range.dataList.visible && (
+              <div className="container range-data-list-panel" style={{ top: form.range.dataList.y, left: form.range.dataList.x }}>
+                <div className="range-data-list">
+                  <ul className="range-data-list-items">
+                    {form.range.dataList.items.map((item, i) => <li className="range-data-list-item" key={i}>{item}</li>)}
+                  </ul>
+                </div>
               </div>
-              {form.repeat.gapError && <div className="reminder-form-message">Please insert a whole number</div>}
-            </div>
-          ) : form.repeat.type === "weekday" ? (
-            <div className="reminder-form-setting reminder-form-weeekdays">
-              {form.repeat.weekdays.static.map((selected, index) => (
-                <label className="checkbox-container reminder-form-weekday" key={index}>
-                  <input type="checkbox" className="sr-only checkbox-input" name={index}
-                    onChange={handleWeekdaySelection} checked={selected || index === form.repeat.currentWeekday}
-                    disabled={index === form.repeat.currentWeekday}/>
-                  <div className="reminder-form-weekday-content">{getWeekdayName(index, true)}</div>
-                </label>
-              ))}
-            </div>
-          ) : null}
-          <div className="reminder-form-setting" onChange={handleRadioInputChange}>
-            <div>Ends</div>
-            <label className="reminder-form-row">
-              <input type="radio" className="sr-only radio-input" name="ends"
-                value="never" defaultChecked={form.repeat.ends === "never"}/>
-              <div className="radio"></div>
-              <span className="label-right">Never</span>
-            </label>
-            <label className="reminder-form-row">
-              <input type="radio" className="sr-only radio-input" name="ends"
-                value="occurrences" defaultChecked={form.repeat.ends === "occurrences"}/>
-              <div className="radio"></div>
-              <span className="label-right">After</span>
-              <input type="text" className="input repeat-input" name="count" autoComplete="off"
-                value={form.repeat.count} onChange={handleRepeatInputChange}
-                disabled={form.repeat.ends === "never"} required={form.repeat.ends === "occurrences"}/>
-              <span>occurrences</span>
-            </label>
-            {form.repeat.ends === "occurrences" && form.repeat.countError && (
-              <div className="reminder-form-message">Please insert a whole number</div>
             )}
+            {form.range.message && <div className="reminder-form-message">{form.range.message}</div>}
           </div>
-        </>
-      )}
-      <div className="reminder-form-btns">
+        )}
+        {form.repeat.enabled && (
+          <>
+            {form.repeat.type === "custom" ? (
+              <div>
+                <label className="reminder-form-setting">
+                  <span className="label-left">Repeat every</span>
+                  <span className="multi-input-container repeat-input-container">
+                    <input type="text" className="input multi-input-left repeat-input" name="gap" autoComplete="off"
+                      value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
+                    <select className="input select multi-input-right" onChange={handleCustomTypeGapNameChange} value={form.repeat.customTypeGapName}>
+                      <option value="days">day(s)</option>
+                      <option value="weeks">week(s)</option>
+                      <option value="months">month(s)</option>
+                    </select>
+                  </span>
+                </label>
+                {form.repeat.gapError && <div className="reminder-form-message">Please insert a whole number.</div>}
+              </div>
+            ) : form.repeat.type === "weekday" ? (
+              <div className="reminder-form-setting reminder-form-weeekdays">
+                {form.repeat.weekdays.static.map((selected, index) => (
+                  <label className="checkbox-container reminder-form-weekday" key={index}>
+                    <input type="checkbox" className="sr-only checkbox-input" name={index}
+                      onChange={handleWeekdaySelection} checked={selected || index === form.repeat.currentWeekday}
+                      disabled={index === form.repeat.currentWeekday}/>
+                    <div className="reminder-form-weekday-content">{getWeekdayName(index, true)}</div>
+                  </label>
+                ))}
+              </div>
+            ) : null}
+            <div className="reminder-form-setting reminder-form-column" onChange={handleRadioInputChange}>
+              <div>Ends</div>
+              <label className="reminder-form-row">
+                <input type="radio" className="sr-only radio-input" name="ends"
+                  value="never" defaultChecked={form.repeat.ends === "never"}/>
+                <div className="radio"></div>
+                <span className="label-right">Never</span>
+              </label>
+              <label className="reminder-form-row">
+                <input type="radio" className="sr-only radio-input" name="ends"
+                  value="occurrences" defaultChecked={form.repeat.ends === "occurrences"}/>
+                <div className="radio"></div>
+                <span className="label-right">After</span>
+                <input type="text" className="input repeat-input" name="count" autoComplete="off"
+                  value={form.repeat.count} onChange={handleRepeatInputChange}
+                  disabled={form.repeat.ends === "never"} required={form.repeat.ends === "occurrences"}/>
+                <span>occurrences</span>
+              </label>
+              {form.repeat.ends === "occurrences" && form.repeat.countError && (
+                <div className="reminder-form-message">Please insert a whole number.</div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+      <div className="container-footer reminder-form-btns">
         <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
         <button className="btn">{form.updating ? "Update" : "Create"}</button>
       </div>

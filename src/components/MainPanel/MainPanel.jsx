@@ -234,7 +234,7 @@ export default function MainPanel({ settings }) {
       <ul className="main-panel-nav">
         {Object.values(tabs).map(tab => (
           tab.disabled ? null : (
-            <li className="main-panel-nav-item" key={tab.id}>
+            <li key={tab.id}>
               <button className={`btn icon-btn panel-item-btn${tab.indicatorVisible ? " indicator" : ""}`}
                 onClick={() => selectTab(tab.id)} title={tab.title}>
                 <Icon id={tab.iconId} className="panel-item-btn-icon"/>

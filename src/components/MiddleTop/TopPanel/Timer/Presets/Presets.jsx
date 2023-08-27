@@ -93,7 +93,7 @@ export default function Presets({ presets, updatePresets, resetActivePreset, hid
 
   return (
     <div className="timer-presets">
-      <form onSubmit={createPreset}>
+      <form className="container-header" onSubmit={createPreset}>
         <div className="timer-presets-form-body">
           <input type="text" className="input timer-presets-form-name-input" name="name" placeholder="Preset name"
             value={form.name} onChange={handlePresetNameChange} autoComplete="off" required/>
@@ -129,7 +129,7 @@ export default function Presets({ presets, updatePresets, resetActivePreset, hid
       ) : (
         <p className="top-panel-item-content timer-presets-message">No presets</p>
       )}
-      <div className="top-panel-item-actions timer-presets-footer">
+      <div className="container-footer">
         <button className="btn text-btn" onClick={hide}>Done</button>
       </div>
     </div>

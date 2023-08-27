@@ -4,7 +4,7 @@ export default function Tasks() {
   const { settings: { tasks: settings }, toggleSetting } = useSettings();
 
   return (
-    <div className="setting-tab">
+    <div className="container-body setting-tab">
       <label className="setting">
         <span>Disable tasks</span>
         <input type="checkbox" className="sr-only checkbox-input"
@@ -15,7 +15,7 @@ export default function Tasks() {
         </div>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Show default group header</span>
+        <span>Show default group's header</span>
         <input type="checkbox" className="sr-only checkbox-input"
           disabled={settings.disabled}
           checked={settings.defaultGroupVisible}

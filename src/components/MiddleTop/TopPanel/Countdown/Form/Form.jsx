@@ -199,50 +199,54 @@ export default function Presets({ createCountdown, hide }) {
   return (
     <form className="countdown-form" onSubmit={handleFormSubmit} onFocus={handleFormFocus} onBlur={handleFormBlur}
       onKeyDown={handleFormKeydown} autoComplete="off">
-      <h3 className="countdown-form-title">Countdown form</h3>
-      <label>
-        <div className="countdown-form-field-title">Title</div>
-        <input type="text" className="input countdown-form-field" name="title"/>
-      </label>
-      <div className="countdown-form-fields countdown-form-date-fields">
-        <label>
-          <div className="countdown-form-field-title">Years</div>
-          <input type="text" className="input countdown-form-field" name="years"
-            onChange={handleInputChange} value={form.years} required/>
-        </label>
-        <label>
-          <div className="countdown-form-field-title">Months</div>
-          <input type="text" className="input countdown-form-field" name="months"
-            onChange={handleInputChange} value={form.months} required/>
-        </label>
-        <label>
-          <div className="countdown-form-field-title">Days</div>
-          <input type="text" className="input countdown-form-field" name="days"
-            onChange={handleInputChange} value={form.days} required/>
-        </label>
+      <div className="container-header countdown-form-header">
+        <h3 className="countdown-form-title">Countdown form</h3>
       </div>
-      <div className="countdown-form-fields countdown-form-date-fields">
+      <div className="container-body countdown-form-body">
         <label>
-          <div className="countdown-form-field-title">Hours</div>
-          <input type="text" className="input countdown-form-field" name="hours"
-            onChange={handleInputChange} value={form.hours}/>
+          <div className="countdown-form-field-title">Title</div>
+          <input type="text" className="input countdown-form-field" name="title"/>
         </label>
-        <label>
-          <div className="countdown-form-field-title">Minutes</div>
-          <input type="text" className="input countdown-form-field" name="minutes"
-            onChange={handleInputChange} value={form.minutes}/>
-        </label>
+        <div className="countdown-form-fields countdown-form-date-fields">
+          <label>
+            <div className="countdown-form-field-title">Years</div>
+            <input type="text" className="input countdown-form-field" name="years"
+              onChange={handleInputChange} value={form.years} required/>
+          </label>
+          <label>
+            <div className="countdown-form-field-title">Months</div>
+            <input type="text" className="input countdown-form-field" name="months"
+              onChange={handleInputChange} value={form.months} required/>
+          </label>
+          <label>
+            <div className="countdown-form-field-title">Days</div>
+            <input type="text" className="input countdown-form-field" name="days"
+              onChange={handleInputChange} value={form.days} required/>
+          </label>
+        </div>
+        <div className="countdown-form-fields countdown-form-date-fields">
+          <label>
+            <div className="countdown-form-field-title">Hours</div>
+            <input type="text" className="input countdown-form-field" name="hours"
+              onChange={handleInputChange} value={form.hours}/>
+          </label>
+          <label>
+            <div className="countdown-form-field-title">Minutes</div>
+            <input type="text" className="input countdown-form-field" name="minutes"
+              onChange={handleInputChange} value={form.minutes}/>
+          </label>
+        </div>
+        {form.dataList ? (
+          <ul className={`container container-opaque countdown-form-field-datalist ${form.dataList.name}`}
+            onPointerDown={handleDataListPointerDown} onPointerUp={selectValue}
+            style={{ top: form.dataList.y, left:  form.dataList.x }}>
+            {form.dataList.items.map(item => (
+              <li className="countdown-form-field-datalist-item" key={item.value} data-item={item.value}>{item.displayValue}</li>
+            ))}
+          </ul>
+        ) : null}
       </div>
-      {form.dataList ? (
-        <ul className={`container countdown-form-field-datalist ${form.dataList.name}`}
-          onPointerDown={handleDataListPointerDown} onPointerUp={selectValue}
-          style={{ top: form.dataList.y, left:  form.dataList.x }}>
-          {form.dataList.items.map(item => (
-            <li className="countdown-form-field-datalist-item" key={item.value} data-item={item.value}>{item.displayValue}</li>
-          ))}
-        </ul>
-      ) : null}
-      <div className="countdown-form-bottom">
+      <div className="container-footer countdown-form-bottom">
         {form.message && <div className="countdown-form-bottom-message">{form.message}</div>}
         <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
         <button className="btn">Create</button>

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { generateNoise } from "utils";
+import { generateNoise, timeout } from "utils";
 import { useSettings } from "contexts/settings";
 import { updateSetting, addPanelNoise, removePanelNoise } from "services/settings";
 import Icon from "components/Icon";
@@ -96,8 +96,8 @@ export default function AppearanceTab() {
   });
   const timeoutId = useRef(0);
 
-  function handleAnimationSpeedChangeChange({ target }) {
-    document.body.style.setProperty("--animation-speed", target.value);
+  function handleAnimationSpeedChange({ target }) {
+    document.documentElement.style.setProperty("--animation-speed", target.value);
     updateContextSetting("appearance", { animationSpeed: Number(target.value) });
   }
 
@@ -105,16 +105,15 @@ export default function AppearanceTab() {
     const { name, value } = target;
 
     if (name === "panelBackgroundOpacity") {
-      document.body.style.setProperty("--panel-background-opacity", `${value}%`);
+      document.documentElement.style.setProperty("--panel-background-opacity", `${value}%`);
     }
     else if (name === "panelBackgroundBlur") {
-      document.body.style.setProperty("--panel-background-blur", `${value}px`);
+      document.documentElement.style.setProperty("--panel-background-blur", `${value}px`);
     }
 
-    clearTimeout(timeoutId.current);
-    timeoutId.current = setTimeout(() => {
+    timeoutId.current = timeout(() => {
       updateSetting({ appearance: { [name]: Number(value) } });
-    }, 1000);
+    }, 1000, timeoutId.current);
   }
 
   function handleNoiseChange({ target }) {
@@ -131,8 +130,8 @@ export default function AppearanceTab() {
       amount = num;
       opacity = settings.panelBackgroundNoiseOpacity;
     }
-    clearTimeout(timeoutId.current);
-    timeoutId.current = setTimeout(() => {
+
+    timeoutId.current = timeout(() => {
       // Disable noise if either amount or opacity is 0
       if (num === 0) {
         removePanelNoise();
@@ -148,7 +147,7 @@ export default function AppearanceTab() {
         panelBackgroundNoiseOpacity: opacity,
         panelBackgroundNoiseAmount: amount
       });
-    }, 1000);
+    }, 1000, timeoutId.current);
   }
 
   function selectColor(index) {
@@ -157,14 +156,13 @@ export default function AppearanceTab() {
 
       setColorIndex(index);
 
-      document.body.style.setProperty("--accent-hue", color.hue);
-      document.body.style.setProperty("--accent-saturation", color.saturation);
-      document.body.style.setProperty("--accent-lightness", color.lightness);
+      document.documentElement.style.setProperty("--accent-hue", color.hue);
+      document.documentElement.style.setProperty("--accent-saturation", color.saturation);
+      document.documentElement.style.setProperty("--accent-lightness", color.lightness);
 
-      clearTimeout(timeoutId.current);
-      timeoutId.current = setTimeout(() => {
+      timeoutId.current = timeout(() => {
         updateSetting({ appearance: { accentColor: color } });
-      }, 1000);
+      }, 1000, timeoutId.current);
     }
   }
 
@@ -174,7 +172,7 @@ export default function AppearanceTab() {
         {colors.map((color, index) => (
           <li key={index}>
             <button className={`btn setting-appearance-tab-accent-color-btn${colorIndex === index ? " selected" : ""}`}
-              style={{ backgroundColor: `hsl(${color.hue}, ${color.saturation}, ${color.lightness})` }}
+              style={{ backgroundColor: `hsl(${color.hue} ${color.saturation} ${color.lightness})` }}
               onClick={() => selectColor(index)}>
               {colorIndex === index ? <Icon id="check"/> : null}
             </button>
@@ -185,11 +183,11 @@ export default function AppearanceTab() {
   }
 
   return (
-    <div className="setting-tab">
+    <div className="container-body setting-tab">
       <label className="setting">
-        <span>Animation</span>
+        <span>Animations</span>
         <div className="select-container">
-          <select className="input select" onChange={handleAnimationSpeedChangeChange} value={settings.animationSpeed}>
+          <select className="input select" onChange={handleAnimationSpeedChange} value={settings.animationSpeed}>
             <option value="0">Disabled</option>
             <option value="0.5">Fast</option>
             <option value="1">Normal</option>
@@ -198,11 +196,15 @@ export default function AppearanceTab() {
         </div>
       </label>
       <div className="settings-group">
-        <h4 className="settings-group-title">Accent color</h4>
+        <div className="settings-group-top">
+          <h4 className="settings-group-title">Accent color</h4>
+        </div>
         {renderAccentColors()}
       </div>
       <div className="settings-group">
-        <h4 className="settings-group-title">Panel</h4>
+        <div className="settings-group-top">
+          <h4 className="settings-group-title">Panel</h4>
+        </div>
         <label className="setting">
           <span>Background opacity</span>
           <input type="range" className="range-input" min="0" max="100" step="5"

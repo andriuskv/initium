@@ -69,7 +69,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
 
         data = {
           top: container.offsetTop,
-          bottom: container.offsetTop + container.offsetHeight,
+          bottom: container.offsetTop + currentTarget.offsetHeight,
           height: element.scrollTop + element.clientHeight
         };
 
@@ -138,7 +138,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
           <Icon id={toggle.iconId || "vertical-dots"}/>
         </button>
       )}
-      <div ref={drop} className={`container dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}`}>{children}</div>
+      <div ref={drop} className={`container container-opaque dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}`}>{children}</div>
     </div>
   );
 }

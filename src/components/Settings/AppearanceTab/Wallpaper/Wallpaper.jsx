@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { dispatchCustomEvent } from "utils";
+import { dispatchCustomEvent, timeout } from "utils";
 import { getWallpaperInfo, resetWallpaperInfo, setUrlWallpaper, setIDBWallpaper } from "services/wallpaper";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
@@ -8,7 +8,6 @@ import "./wallpaper.css";
 export default function Wallpaper({ settings, updateContextSetting }) {
   const [wallpaperInfo, setWallpaperInfo] = useState(() => getWallpaperInfo());
   const [wallpaperForm, setWallpaperForm] = useState(null);
-  const [wallpaperProvider, setWallpaperProvider] = useState(settings.wallpaper.provider);
   const [wallpaperSettingsDirty, setWallpaperSettingsDirty] = useState(() => {
     const keys = Object.keys(settings.wallpaper);
 
@@ -19,6 +18,7 @@ export default function Wallpaper({ settings, updateContextSetting }) {
   });
   const [messages, setMessages] = useState({});
   const timeoutId = useRef(0);
+  const wallpaperProvider = settings.wallpaper.provider;
 
   useEffect(() => {
     window.addEventListener("wallpaper-info-update", handleWallpaperInfoUpdate);
@@ -33,8 +33,7 @@ export default function Wallpaper({ settings, updateContextSetting }) {
   }
 
   function resetWallpaper() {
-    setWallpaperProvider("");
-    updateContextSetting("appearance", { wallpaper: { url: "" } });
+    updateContextSetting("appearance", { wallpaper: { url: "", provider: "unsplash" } });
     resetWallpaperInfo();
     setWallpaperSettingsDirty(false);
   }
@@ -119,7 +118,7 @@ export default function Wallpaper({ settings, updateContextSetting }) {
       params.videoPlaybackSpeed = settings.wallpaper.videoPlaybackSpeed ?? 1;
     }
     setWallpaperForm(null);
-    updateContextSetting("appearance", { wallpaper: { ...params, type: "url", url, mimeType } });
+    updateContextSetting("appearance", { wallpaper: { ...params, type: "url", url, mimeType, provider: "self" } });
     setUrlWallpaper(url, mimeType);
     setWallpaperSettingsDirty(true);
   }
@@ -141,7 +140,7 @@ export default function Wallpaper({ settings, updateContextSetting }) {
     if (file.type.startsWith("video")) {
       params.videoPlaybackSpeed = settings.wallpaper.videoPlaybackSpeed ?? 1;
     }
-    updateContextSetting("appearance", { wallpaper: { ...params, type: "blob", id: file.name, mimeType: file.type } });
+    updateContextSetting("appearance", { wallpaper: { ...params, type: "blob", id: file.name, mimeType: file.type, provider: "self" } });
     setWallpaperSettingsDirty(true);
   }
 
@@ -163,17 +162,15 @@ export default function Wallpaper({ settings, updateContextSetting }) {
   function handleVideoPlaybackSpeedChange({ target }) {
     const { name, value } = target;
 
-    clearTimeout(timeoutId.current);
-    timeoutId.current = setTimeout(() => {
+    timeoutId.current = timeout(() => {
       updateContextSetting("appearance", { wallpaper: { ...settings.wallpaper, [name]: Number(value) } });
-    }, 1000);
+    }, 1000, timeoutId.current);
   }
 
   function handleWallpaperProviderClick(provider) {
     if (provider === settings.wallpaper.provider) {
       return;
     }
-    setWallpaperProvider(provider);
     setWallpaperSettingsDirty(provider === "bing");
     resetWallpaperInfo();
     updateContextSetting("appearance", { wallpaper: { url: "", provider } });
@@ -212,10 +209,6 @@ export default function Wallpaper({ settings, updateContextSetting }) {
     <div className="settings-group">
       <div className="settings-group-top">
         <h4 className="settings-group-title">Wallpaper</h4>
-        {wallpaperSettingsDirty && <button className="btn outline-btn settings-group-top-btn" onClick={resetWallpaper} title="Reset to default">Reset</button>}
-      </div>
-      <div className="setting setting-wallpaper">
-        <div className="setting-wallpaper-title">Set wallpaper from...</div>
         {settings.wallpaper.mimeType?.startsWith("image") && (settings.wallpaper.url || settings.wallpaper.id) ? (
           <button className="btn icon-btn setting-wallpaper-viewer-btn"
             onClick={showWallpaperViewer}
@@ -223,13 +216,13 @@ export default function Wallpaper({ settings, updateContextSetting }) {
             <Icon id="image"/>
           </button>
         ) : null}
+        {wallpaperSettingsDirty && <button className="btn outline-btn settings-group-top-btn" onClick={resetWallpaper} title="Reset to default">Reset</button>}
+      </div>
+      <div className="setting">
+        <span>Set wallpaper from...</span>
         <div className="setting-wallpaper-items">
-          <div className="setting-wallpaper-item">
-            <button className="btn text-btn setting-wallpaper-item-btn" onClick={showWallpaperForm}>URL</button>
-          </div>
-          <div className="setting-wallpaper-item">
-            <button className="btn text-btn setting-wallpaper-item-btn" onClick={selectFile}>Device</button>
-          </div>
+          <button className="btn text-btn" onClick={showWallpaperForm}>URL</button>
+          <button className="btn text-btn" onClick={selectFile}>Device</button>
         </div>
       </div>
       {messages.wallpaper ? (
@@ -242,17 +235,19 @@ export default function Wallpaper({ settings, updateContextSetting }) {
             defaultValue={settings.wallpaper.videoPlaybackSpeed} onChange={handleVideoPlaybackSpeedChange} name="videoPlaybackSpeed"/>
         </label>
       ) : null}
-      <div className="setting setting-wallpaper">
-        <div className="setting-wallpaper-title">Daily wallpaper provider</div>
-        <div className="setting-wallpaper-items">
-          <div className="setting-wallpaper-item">
-            <button className={`btn text-btn setting-wallpaper-item-btn${!settings.wallpaper.type && !wallpaperProvider || wallpaperProvider === "unsplash" ? " active" : ""}`}
-              onClick={() => handleWallpaperProviderClick("unsplash")}>Unsplash</button>
-          </div>
-          <div className="setting-wallpaper-item">
-            <button className={`btn text-btn setting-wallpaper-item-btn${wallpaperProvider === "bing" ? " active" : ""}`}
-              onClick={() => handleWallpaperProviderClick("bing")}>Bing</button>
-          </div>
+      <div className="setting last-setting-tab-item">
+        <span>Daily wallpaper provider</span>
+        <div className="setting-wallpaper-providers">
+          <button className="btn text-btn setting-wallpaper-provider" disabled={wallpaperProvider === "unsplash"}
+            onClick={() => handleWallpaperProviderClick("unsplash")}>
+            <span>Unsplash</span>
+            {wallpaperProvider === "unsplash" ? <Icon id="check"/> : null}
+          </button>
+          <button className="btn text-btn setting-wallpaper-provider" disabled={wallpaperProvider === "bing"}
+            onClick={() => handleWallpaperProviderClick("bing")}>
+            <span>Bing</span>
+            {wallpaperProvider === "bing" ? <Icon id="check"/> : null}
+          </button>
         </div>
       </div>
       {wallpaperInfo && renderWallpaperInfo()}

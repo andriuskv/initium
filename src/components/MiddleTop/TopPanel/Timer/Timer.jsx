@@ -232,6 +232,7 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
       setRunning(false);
       updateTitle("timer");
     }
+    setPipVisible(false);
     pipService.close("timer");
   }
 
@@ -347,8 +348,8 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
 
   return (
     <div className={`top-panel-item timer${visible ? " visible" : ""}`}>
-      {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
-        <div className="top-panel-item-content">
+      {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
+        <div className="container-body top-panel-item-content">
           {running ? (
             <>
               {label ? <h4 className="top-panel-item-content-label">{label}</h4> : null}
@@ -377,10 +378,10 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
                   <Dropdown
                     container={{ className: "top-panel-item-content-top-dropdown" }}
                     toggle={{ isIconTextBtn: true, title: "Presets", iconId: "menu" }}>
-                    <div className="dropdown-group">
+                    <div className="dropdown-group timer-dropdown-presets">
                       {presets.length ? (
                         presets.map(preset => (
-                          <button className={`btn text-btn dropdown-btn timer-dropdown-presets-item${activePreset?.id === preset.id ? " active" : ""}`} key={preset.id}
+                          <button className={`btn text-btn dropdown-btn${activePreset?.id === preset.id ? " active" : ""}`} key={preset.id}
                             onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
                         ))
                       ) : (
@@ -396,7 +397,7 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
           )}
         </div>
       )}
-      <div className="top-panel-hide-target top-panel-item-actions">
+      <div className="top-panel-hide-target container-footer top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
         {running || !dirtyInput.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
         <div className="top-panel-secondary-actions">

@@ -81,15 +81,15 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
 
   return (
     <div className="rss-feed">
-      <div className="feed-list-header">
-        <h2 className="feed-list-title">RSS Feeds</h2>
+      <div className="container-header feed-list-header">
+        <h2 className="main-panel-item-header-title">RSS Feeds</h2>
         {feeds.active.length > 0 && (
           <button className="btn icon-btn" onClick={hide} title="Hide feeds">
             <Icon id="cross"/>
           </button>
         )}
       </div>
-      <ul className="feed-list-items" data-dropdown-parent>
+      <ul className="container-body feed-list-items" data-dropdown-parent>
         <SortableList
           items={feeds.active}
           handleSort={handleSort}

@@ -30,7 +30,7 @@ export default function WeatherTab() {
   }
 
   return (
-    <div className="setting-tab">
+    <div className="container-body setting-tab">
       {error?.type === "general" && <div className="weather-setting-message weather-settings-message">{error.message}</div>}
       <label className="checkbox-container setting">
         <span>Disable weather</span>

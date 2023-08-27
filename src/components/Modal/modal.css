@@ -1,15 +1,18 @@
 .modal-mask {
   z-index: 1;
   position: absolute;
-  inset: 1px;
+  inset: -1px;
   display: flex;
-  border-radius: 8px;
 
   &:not(.transparent) {
-    background-color: hsl(var(--accent-hue) 7% 12% / 50%);
+    border-radius: var(--container-border-radius);
+    background-color: var(--color-grey-90-50);
+    animation-duration: var(--duration-f);
+    animation-fill-mode: both;
+    animation-name: opacity-up;
 
     .modal {
-      background-color: hsl(var(--accent-hue) 7% 12%);
+      background-color: var(--color-grey-90);
       backdrop-filter: none;
     }
   }
@@ -17,14 +20,18 @@
 
 .modal {
   min-width: 280px;
-  padding: var(--space-xl) var(--space-md) var(--space-md) var(--space-md);
+  padding: var(--space-xl);
   margin: auto;
+  animation-duration: var(--duration-n);
+  animation-fill-mode: both;
+  animation-name: reveal-modal;
 }
 
 .modal-title {
   margin-left: var(--space-md);
   margin-bottom: var(--space-xl);
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
+  font-weight: bold;
 }
 
 .modal-title-center {
@@ -40,9 +47,18 @@
 .modal-actions {
   display: flex;
   justify-content: flex-end;
+  gap: var(--space-md);
   margin-top: var(--space-xl);
+}
 
-  .btn:last-of-type {
-    margin-left: var(--space-md);
+@keyframes reveal-modal {
+  from {
+    transform: translateY(calc(-1 * var(--space-md)));
+    opacity: 0;
+  }
+
+  to {
+    transform: none;
+    opacity: 1;
   }
 }

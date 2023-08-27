@@ -30,21 +30,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: var(--space-md);
   padding: var(--space-sm);
 }
 
 .calendar-title {
   min-width: 140px;
   padding: var(--space-xs) var(--space-md);
-  margin-left: var(--space-md);
-  margin-right: var(--space-md);
   font-size: var(--text-lg);
   font-weight: normal;
   text-align: center;
 }
 
 .calendar {
-  --corner-border-radius: 5px;
+  --corner-border-radius: var(--container-inset-radius);
 
   position: relative;
   display: flex;
@@ -60,10 +59,6 @@
     animation-duration: calc(0.16s * var(--animation-speed)), calc(0.6s * var(--animation-speed));
     animation-name: opacity-down, calendar-scale-up;
   }
-
-  &.world-clocks-visible {
-    --corner-border-radius: 0;
-  }
 }
 
 .calendar-cell {
@@ -75,7 +70,7 @@
 .calendar-week-days {
   display: flex;
   height: 32px;
-  padding: 2px;
+  padding: var(--space-xs);
 
   .calendar-cell {
     flex: 1;
@@ -85,9 +80,13 @@
 .calendar-days {
   display: grid;
   grid-template: repeat(6, 1fr) / repeat(7, 1fr);
-  gap: 2px;
+  gap: var(--space-xs);
   flex-grow: 1;
-  padding: 2px;
+  padding: var(--space-xs);
+
+  &.world-clocks-visible {
+    --corner-border-radius: 4px;
+  }
 }
 
 .calendar-day {
@@ -96,6 +95,14 @@
   border-radius: 4px;
   color: var(--color-white-60);
   cursor: pointer;
+
+  &:last-of-type {
+    border-bottom-right-radius: var(--corner-border-radius);
+  }
+
+  &:nth-last-of-type(7) {
+    border-bottom-left-radius: var(--corner-border-radius);
+  }
 
   &.current {
     font-weight: bold;
@@ -133,6 +140,10 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   flex-grow: 1;
+
+  &.world-clocks-visible {
+    --corner-border-radius: 0;
+  }
 }
 
 .calendar-month-inner {
@@ -169,7 +180,7 @@
   }
 
   &:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--color-primary);
+    box-shadow: inset var(--focus-shadow);
   }
 }
 

@@ -19,10 +19,10 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: var(--space-md);
 }
 
 .feed-message {
-  margin-right: var(--space-md);
   font-size: var(--text-sm);
   font-weight: bold;
   color: var(--color-negative);

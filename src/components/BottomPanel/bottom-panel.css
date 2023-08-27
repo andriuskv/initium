@@ -22,11 +22,12 @@
     var(--duration-n) visibility,
     var(--duration-n) border-top-left-radius;
   transition-delay: var(--duration-f);
+  will-change: transform;
 
   &.visible {
     opacity: 1;
     visibility: inherit;
-    border-top-left-radius: 8px;
+    border-top-left-radius: var(--container-border-radius);
     transform: scale(1);
     transition-delay: 0s;
 
@@ -47,33 +48,15 @@
 }
 
 .bottom-panel-item-header {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
-  border-bottom: 1px solid var(--color-white-10);
-}
-
-.bottom-panel-item-icon {
-  width: 24px;
-  height: 24px;
+  padding-left: var(--space-md);
 }
 
 .bottom-panel-item-title {
-  font-size: var(--text-lg);
-  text-transform: capitalize;
+  font-size: var(--text-md);
+  font-weight: bold;
 }
 
 .bottom-panel-item-content.hidden {
   display: none;
-}
-
-.shortcuts-placeholder {
-  width: 360px;
-  height: 272px;
-}
-
-.calendar-placeholder {
-  width: 600px;
-  height: 328px;
 }

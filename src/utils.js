@@ -76,6 +76,15 @@ function generateNoise(amount, opacity) {
   return canvas.toDataURL("image/png");
 }
 
+function timeout(callback, duration, id) {
+  if (id) {
+    clearTimeout(id);
+  }
+  id = setTimeout(callback, duration);
+
+  return id;
+}
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -86,5 +95,6 @@ export {
   findFocusableElements,
   findRelativeFocusableElement,
   formatBytes,
-  generateNoise
+  generateNoise,
+  timeout
 };

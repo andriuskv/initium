@@ -1,8 +1,9 @@
 import { useState, useRef, lazy, Suspense } from "react";
-import { getRandomString } from "utils";
+import { getRandomString, timeout } from "utils";
 import Icon from "components/Icon";
 import "./form.css";
 
+const Toast = lazy(() => import("components/Toast"));
 const GroupForm = lazy(() => import("../GroupForm"));
 const LabelForm = lazy(() => import("./LabelForm"));
 
@@ -292,144 +293,138 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
 
   function showMessage(message) {
     setMessage(message);
-    clearTimeout(messageTimeoutId.current);
 
-    messageTimeoutId.current = setTimeout(() => {
+    messageTimeoutId.current = timeout(() => {
       setMessage("");
-    }, 4000);
+    }, 4000, messageTimeoutId.current);
   }
 
-  function hideMessage() {
+  function dismissMessage() {
     clearTimeout(messageTimeoutId.current);
     setMessage("");
   }
 
   return (
     <>
-      <div className="tasks-header">
+      <div className="container-header tasks-header">
         <button className="btn icon-btn" onClick={toggleMoreOptions} title="More options">
           <Icon id="show-more"/>
         </button>
       </div>
-      <div className="tasks-item-container task-form-container task-transition-target">
-        <form className="task-form" onSubmit={handleTaskFormSubmit} onKeyDown={handleFormKeydown}>
-          <div className="task-form-body">
-            {state.moreOptionsVisible ? (
-              <div className="task-form-more-options">
-                <div className="task-form-item-container">
-                  <h4 className="task-form-item-title">Expiration Date</h4>
-                  <input name="datetime" type="datetime-local" className="input task-form-datetime-input"
-                    min={getDateTimeString()}
-                    defaultValue={state.task.expirationDateTimeString}
-                  />
-                </div>
-                <div className="task-form-item-container task-form-repeat-options-container">
-                  <h4 className="task-form-item-title">Repeat</h4>
-                  <div className="task-form-repeat-options">
-                    <div>
-                      <div className="multi-input-container task-form-repeat-gap-unit-container">
-                        <input type="text" className="input multi-input-left task-form-repeat-input"
-                          defaultValue={state.task.repeat?.gap} name="repeatGap" placeholder="1" autoComplete="off"/>
-                        <select className="input select multi-input-right"
-                          defaultValue={state.task.repeat?.unit} name="repeatUnit">
-                          <option value="day">day(s)</option>
-                          <option value="week">week(s)</option>
-                          <option value="month">month(s)</option>
-                        </select>
-                      </div>
+      <form className="task-form" onSubmit={handleTaskFormSubmit} onKeyDown={handleFormKeydown}>
+        <div className="container-body task-form-body">
+          {state.moreOptionsVisible ? (
+            <div className="task-form-more-options">
+              <div className="task-form-item-container">
+                <h4 className="task-form-item-title">Expiration Date</h4>
+                <input name="datetime" type="datetime-local" className="input task-form-datetime-input"
+                  min={getDateTimeString()}
+                  defaultValue={state.task.expirationDateTimeString}
+                />
+              </div>
+              <div className="task-form-item-container task-form-repeat-options-container">
+                <h4 className="task-form-item-title">Repeat</h4>
+                <div className="task-form-repeat-options">
+                  <div>
+                    <div className="multi-input-container task-form-repeat-gap-unit-container">
+                      <input type="text" className="input multi-input-left task-form-repeat-input"
+                        defaultValue={state.task.repeat?.gap} name="repeatGap" placeholder="1" autoComplete="off"/>
+                      <select className="input select multi-input-right"
+                        defaultValue={state.task.repeat?.unit} name="repeatUnit">
+                        <option value="day">day(s)</option>
+                        <option value="week">week(s)</option>
+                        <option value="month">month(s)</option>
+                      </select>
                     </div>
-                    <label>
-                      <span className="label-left">Limit</span>
-                      <input type="text" className="input task-form-repeat-input"
-                        defaultValue={state.task.repeat?.limit} name="repeatLimit" autoComplete="off"/>
-                    </label>
                   </div>
+                  <label>
+                    <span className="label-left">Limit</span>
+                    <input type="text" className="input task-form-repeat-input"
+                      defaultValue={state.task.repeat?.limit} name="repeatLimit" autoComplete="off"/>
+                  </label>
                 </div>
               </div>
-            ) : null}
-            <div className="task-form-item-container">
-              <h4 className="task-form-item-title">Labels</h4>
-              <button type="button" className="btn icon-btn subtask-add-btn" onClick={showLabelForm} title="Create new label">
-                <Icon id="plus"/>
-              </button>
             </div>
-            {state.labels.length > 0 && (
-              <ul className="task-form-labels">
-                {state.labels.map((label, i) => (
-                  <li className="task-form-label" key={i}>
-                    <button type="button" className={`btn icon-text-btn task-form-label-btn${label.flagged ? " flagged" : ""}`}
-                      onClick={() => flagLabel(i)}
-                      title={label.flagged ? "Deselect label" : "Select label"}>
-                      <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
-                      <div className="task-label-title">{label.name}</div>
-                      {label.flagged && <Icon id="check" className="task-form-label-btn-tick"/>}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="task-form-item-container">
-              <h4 className="task-form-item-title">Group</h4>
-              <div className="select-container">
-                <select className="input select" onChange={handleGroupSelection} value={state.selectedGroupId}>
-                  {groups.map(group => (
-                    <option value={group.id} key={group.id}>{group.id === "default" ? "" : group.name}</option>
-                  ))}
-                </select>
-              </div>
-              <button type="button" className="btn icon-btn subtask-add-btn" onClick={showGroupForm} title="Create group">
-                <Icon id="plus"/>
-              </button>
-            </div>
-            <div className="task-form-textarea-container">
-              <textarea className="input task-form-textarea" name="text" defaultValue={state.task.rawText}
-                placeholder="Details" required></textarea>
-            </div>
-            <div className="task-form-item-container">
-              <h4 className="task-form-item-title">Subtasks</h4>
-              <button type="button" className="btn icon-btn subtask-add-btn" onClick={addFormSubtask} title="Add a subtask">
-                <Icon id="plus"/>
-              </button>
-            </div>
-            {state.task.subtasks.length > 0 && (
-              <ul className="task-form-subtasks">
-                {state.task.subtasks.map((subtask, i) => (
-                  <li className="task-form-subtask" key={subtask.id}>
-                    <input type="text" name="subtask" className="input task-form-subtask-input"
-                      defaultValue={subtask.rawText} autoComplete="off"/>
-                    <button type="button" className="btn icon-btn alt-icon-btn" onClick={() => removeFormSubtask(i)} title="Remove">
-                      <Icon id="trash"/>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div className="tasks-item-container-footer">
-            {state.updating ? <button type="button" className="btn text-btn text-negative-btn task-form-delete-btn" onClick={removeTask}>Delete</button> : null}
-            <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
-            <button type="submit" className="btn task-form-submit-btn">{state.updating ? "Update" : "Create"}</button>
-          </div>
-        </form>
-        {message ? (
-          <div className="container task-form-message-container">
-            <p className="task-form-message">{message}</p>
-            <button className="btn icon-btn" onClick={hideMessage}>
-              <Icon id="cross"/>
+          ) : null}
+          <div className="task-form-item-container">
+            <h4 className="task-form-item-title">Labels</h4>
+            <button type="button" className="btn icon-btn" onClick={showLabelForm} title="Create label">
+              <Icon id="plus"/>
             </button>
           </div>
-        ) : null}
-        {labelFormVisible && (
-          <Suspense fallback={null}>
-            <LabelForm addUniqueLabel={addUniqueLabel} hide={hideLabelForm}/>
-          </Suspense>
-        )}
-        {groupFormVisible && (
-          <Suspense fallback={null}>
-            <GroupForm createGroup={createGroup} hide={hideGroupForm} modal/>
-          </Suspense>
-        )}
-      </div>
+          {state.labels.length > 0 && (
+            <ul className="task-form-labels">
+              {state.labels.map((label, i) => (
+                <li className="task-form-label" key={i}>
+                  <button type="button" className={`btn icon-text-btn task-form-label-btn${label.flagged ? " flagged" : ""}`}
+                    onClick={() => flagLabel(i)}
+                    title={label.flagged ? "Deselect label" : "Select label"}>
+                    <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
+                    <div className="task-label-title">{label.name}</div>
+                    {label.flagged && <Icon id="check" className="task-form-label-btn-tick"/>}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="task-form-item-container">
+            <h4 className="task-form-item-title">Group</h4>
+            <div className="select-container">
+              <select className="input select" onChange={handleGroupSelection} value={state.selectedGroupId}>
+                {groups.map(group => (
+                  <option value={group.id} key={group.id}>{group.id === "default" ? "" : group.name}</option>
+                ))}
+              </select>
+            </div>
+            <button type="button" className="btn icon-btn" onClick={showGroupForm} title="Create group">
+              <Icon id="plus"/>
+            </button>
+          </div>
+          <div className="task-form-textarea-container">
+            <textarea className="input task-form-textarea" name="text" defaultValue={state.task.rawText}
+              placeholder="Details" required></textarea>
+          </div>
+          <div className="task-form-item-container">
+            <h4 className="task-form-item-title">Subtasks</h4>
+            <button type="button" className="btn icon-btn" onClick={addFormSubtask} title="Add a subtask">
+              <Icon id="plus"/>
+            </button>
+          </div>
+          {state.task.subtasks.length > 0 && (
+            <ul className="task-form-subtasks">
+              {state.task.subtasks.map((subtask, i) => (
+                <li className="task-form-subtask" key={subtask.id}>
+                  <input type="text" name="subtask" className="input task-form-subtask-input"
+                    defaultValue={subtask.rawText} autoComplete="off"/>
+                  <button type="button" className="btn icon-btn alt-icon-btn" onClick={() => removeFormSubtask(i)} title="Remove">
+                    <Icon id="trash"/>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div className="container-footer">
+          {state.updating ? <button type="button" className="btn text-btn text-negative-btn task-form-delete-btn" onClick={removeTask}>Delete</button> : null}
+          <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
+          <button type="submit" className="btn task-form-submit-btn">{state.updating ? "Update" : "Create"}</button>
+        </div>
+      </form>
+      {message ? (
+        <Suspense fallback={null}>
+          <Toast message={message} position="bottom" offset="40px" dismiss={dismissMessage}/>
+        </Suspense>
+      ) : null}
+      {labelFormVisible && (
+        <Suspense fallback={null}>
+          <LabelForm addUniqueLabel={addUniqueLabel} hide={hideLabelForm}/>
+        </Suspense>
+      )}
+      {groupFormVisible && (
+        <Suspense fallback={null}>
+          <GroupForm createGroup={createGroup} hide={hideGroupForm} modal/>
+        </Suspense>
+      )}
     </>
   );
 }

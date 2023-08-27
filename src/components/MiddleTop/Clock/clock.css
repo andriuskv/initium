@@ -1,13 +1,14 @@
 .clock {
   --scale: 1;
-  --date-offset: 12;
   --font-family: "Inter";
   --date-above: 0;
 
   grid-area: clock;
+  align-self: var(--clock-alignment);
   display: grid;
   grid-template-rows: 1fr min-content;
   grid-template-columns: 1fr min-content;
+  grid-row-gap: var(--space-lg);
   align-items: baseline;
   text-shadow:
     0 1px 1px var(--color-black-8),
@@ -20,17 +21,9 @@
     --date-above: 1;
   }
 
-  &.date-bottom, &.date-top {
-    grid-row-gap: calc(var(--date-offset) * 1px);
-
-    .clock-date {
-      text-align: var(--date-alignment);
-    }
-  }
-
   @media (height <= 720px) {
     .clock-time {
-      --size: 6rem;
+      --size: 5.6rem;
     }
 
     .clock-time-period {
@@ -38,7 +31,7 @@
     }
 
     .clock-date {
-      --size: var(--text-sm);
+      --size: var(--text-lg);
     }
   }
 }
@@ -51,7 +44,7 @@
 }
 
 .clock-time {
-  --size: 7.2rem;
+  --size: 6.5rem;
 
   font-size: calc(var(--size) * var(--scale));
   font-variant-numeric: tabular-nums;
@@ -75,12 +68,12 @@
 
 .clock-date {
   --date-scale: 1;
-  --size: var(--text-md);
+  --size: var(--text-xl);
 
   grid-row: calc(2 - var(--date-above));
   grid-column: 1 / 3;
   font-size: calc(var(--size) * var(--scale) * var(--date-scale));
   letter-spacing: 1px;
   line-height: 1;
-  text-align: right;
+  text-align: var(--date-alignment);
 }

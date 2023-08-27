@@ -68,7 +68,7 @@ export default function WorldClocks({ parentVisible }) {
   }
 
   return (
-    <div className="calendar-world-clocks">
+    <div className="container-footer calendar-world-clocks">
       <h4 className="calendar-world-clocks-title">
         <button className="btn text-btn calendar-world-clocks-title-btn" onClick={revealClocksPanel}>World clocks</button>
       </h4>

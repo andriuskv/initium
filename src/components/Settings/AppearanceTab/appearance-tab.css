@@ -1,7 +1,5 @@
 .setting-appearance-tab-accent-colors {
-  display: flex;
   justify-content: center;
-  flex-wrap: wrap;
   gap: 1px;
   padding: var(--space-md);
 }
@@ -10,7 +8,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 43px;
+  width: 54px;
+  height: 30px;
   padding: 0;
   border-radius: 0;
 }

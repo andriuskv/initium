@@ -1,27 +1,24 @@
 @import "../../../../styles/mixins.css";
 
 .calendar-world-clocks {
-  overflow: hidden;
-  width: 380px;
-  border-top: 1px solid var(--color-white-10);
-  border-bottom-right-radius: 6px;
+  display: block;
+  padding: 0;
 }
 
 .calendar-world-clocks-title {
-  margin: var(--space-sm);
+  padding: var(--space-sm);
 }
 
 .calendar-world-clocks-title-btn {
-  height: auto;
   padding: var(--space-xs) var(--space-md);
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
 }
 
 .calendar-world-clocks-list {
   overflow: auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-sm) var(--space-md);
+  gap: var(--space-sm) var(--space-xl);
   max-height: 84px;
   padding: var(--space-sm) var(--space-md);
 }

@@ -19,7 +19,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-sm);
+  padding: 0 var(--space-sm);
 
   &:hover {
     .world-clock-time-text {
@@ -50,7 +50,7 @@
   border-radius: 999px;
   background-color: var(--color-white-4);
 
-  &:hover, &:focus-within {
+  &:hover, &:has(:focus-visible) {
     .world-clock-time-text {
       transition: none;
       opacity: 0.2;

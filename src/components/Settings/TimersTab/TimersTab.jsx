@@ -28,7 +28,7 @@ export default function TimersTab() {
   }
 
   return (
-    <div className="setting-tab">
+    <div className="container-body setting-tab">
       <label className="setting">
         <span>Disable timers</span>
         <input type="checkbox" className="sr-only checkbox-input"

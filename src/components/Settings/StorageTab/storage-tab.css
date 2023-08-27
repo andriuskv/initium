@@ -71,12 +71,12 @@
 .storage-item {
   display: flex;
   align-items: center;
+  gap: var(--space-md);
   padding: var(--space-md);
 }
 
 .storage-item-main {
   flex: 1;
-  margin-right: var(--space-md);
 }
 
 .storage-item-info {

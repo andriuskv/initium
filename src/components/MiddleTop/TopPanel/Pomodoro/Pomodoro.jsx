@@ -241,8 +241,8 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
 
   return (
     <div className={`top-panel-item pomodoro${visible ? " visible" : ""}`}>
-      {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
-        <div className="top-panel-item-content pomodoro-content">
+      {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
+        <div className="container-body top-panel-item-content pomodoro-content">
           <div className="pomodoro">
             {renderTop()}
             <div>
@@ -264,7 +264,7 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
           </div>
         </div>
       )}
-      <div className="top-panel-hide-target top-panel-item-actions">
+      <div className="top-panel-hide-target container-footer top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
         {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
         <div className="top-panel-secondary-actions">

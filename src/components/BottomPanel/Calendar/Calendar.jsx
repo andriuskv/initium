@@ -696,18 +696,18 @@ export default function Calendar({ visible, showIndicator }) {
   }
   return (
     <>
-      <div className="calendar-current-date">
+      <div className="container-body calendar-current-date">
         <button className="btn text-btn calendar-current-date-btn" onClick={showCurrentDateView}>
           <div className="calendar-current-date-weekday">{currentDay.weekdayName}</div>
           <div>{currentDay.day} {currentDay.monthName} {currentDay.year}</div>
         </button>
       </div>
-      <div className="calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px` }}>
+      <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px` }}>
         {selectedDay ? (
           <SelectedDay calendar={calendar} selectedDay={selectedDay} reminders={reminders}
             updateCalendar={updateCalendar} createReminder={createReminder} resetSelectedDay={resetSelectedDay} hide={hideSelectedDay}/>
         ) : viewingYear ? (
-          <div className={`calendar${transition.active ? " transition" : ""}${settings.worldClocksHidden ? "" : " world-clocks-visible"}`}>
+          <div className={`calendar${transition.active ? " transition" : ""}`}>
             <div className="calendar-header">
               <button className="btn icon-btn" onClick={() => setVisibleYear(-1)} title="Previous year">
                 <Icon id="chevron-left"/>
@@ -717,7 +717,7 @@ export default function Calendar({ visible, showIndicator }) {
                 <Icon id="chevron-right"/>
               </button>
             </div>
-            <ul className="calendar-months" onKeyDown={handleMonthsKeyDown}>
+            <ul className={`calendar-months${settings.worldClocksHidden ? "" : " world-clocks-visible"}`} onKeyDown={handleMonthsKeyDown}>
               {calendar[currentYear].map((month, index) => (
                 <li className={`calendar-month${month.isCurrentMonth ? " current" : ""}`}
                   onClick={({ target }) => showMonth(target, index)} key={month.name}
@@ -743,7 +743,7 @@ export default function Calendar({ visible, showIndicator }) {
                 <li className="calendar-cell" key={weekday}>{weekday.slice(0, 3)}</li>
               ))}
             </ul>
-            <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
+            <ul className={`calendar-days${settings.worldClocksHidden ? "" : " world-clocks-visible"}`} onKeyDown={handleDaysKeyDown}>
               {visibleMonth.previous.days.map((day, index) => (
                 <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
                   tabIndex="0" aria-label={`${visibleMonth.previous.name} ${day.day}`} data-month="previous" data-index={index}>

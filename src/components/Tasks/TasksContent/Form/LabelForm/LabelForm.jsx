@@ -34,7 +34,7 @@ export default function LabelForm({ addUniqueLabel, hide }) {
   return (
     <Modal hide={hide}>
       <form onSubmit={handleLabelFormSubmit}>
-        <h4 className="modal-title modal-title-center">New Label</h4>
+        <h4 className="modal-title modal-title-center">New label</h4>
         <div className="task-label-form-body">
           <div className="task-form-color-picker-container" style={{ backgroundColor: currentColor }}>
             <input type="color" name="color" className="task-form-color-picker"

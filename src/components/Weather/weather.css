@@ -4,6 +4,19 @@
   top: var(--space-md);
   right: var(--space-md);
   cursor: default;
+
+  &:has(.weather-more-btn):hover {
+    .weather-more-btn {
+      --background-color: var(--color-white-10);
+
+      opacity: 1;
+    }
+
+    .weather-current {
+      scale: 0.5;
+      opacity: 0.4;
+    }
+  }
 }
 
 .weather-current {
@@ -11,27 +24,34 @@
     0 1px 1px var(--color-black-8),
     1px 2px 2px var(--color-black-4),
     2px 4px 4px var(--color-black-2);
-  transition: var(--duration-f) opacity;
+  transition: var(--duration-n) opacity, var(--duration-f) scale;
+  transform-origin: top right;
+  user-select: none;
 }
 
 .weather-more-btn {
   z-index: 1;
   position: absolute;
-  right: -8px;
-  top: -8px;
+  right: calc(-1 * var(--space-md));
+  top: calc(-1 * var(--space-md));
   opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(100% + 32px);
-  height: calc(100% + 16px);
+  width: 96px;
+  height: 56px;
   border-radius: 0;
   border-bottom-left-radius: 999px;
 
-  &:hover, &:focus-visible {
+  .svg-icon {
+    transform: translateX(var(--space-md));
+  }
+
+  &:focus-visible {
     opacity: 1;
 
     & + .weather-current {
+      scale: 0.5;
       opacity: 0.4;
     }
   }
@@ -91,7 +111,7 @@
   &.visible {
     opacity: 1;
     visibility: inherit;
-    border-bottom-left-radius: 8px;
+    border-bottom-left-radius: var(--container-border-radius);
     transform: scale(1);
     transition-delay: 0s;
 

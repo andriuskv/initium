@@ -225,8 +225,8 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
 
   return (
     <div className={`top-panel-item stopwatch${visible ? " visible" : ""}${splits.length ? " with-splits" : ""}`}>
-      {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
-        <div className="top-panel-item-content">
+      {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
+        <div className="container-body top-panel-item-content">
           {renderTop()}
           <div>
             {state.hours > 0 && (
@@ -258,7 +258,7 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
           ) : null}
         </div>
       )}
-      <div className="top-panel-hide-target top-panel-item-actions">
+      <div className="top-panel-hide-target container-footer top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
         {running ? <button className="btn text-btn top-panel-item-action-btn" onClick={makeSplit}>Split</button> : null}
         {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}

@@ -14,7 +14,7 @@ const WeatherTab = lazy(() => import("./WeatherTab"));
 const TimersTab = lazy(() => import("./TimersTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 
-export default function Settings({ hide }) {
+export default function Settings({ hiding, hide }) {
   const [activeTab, setActiveTab] = useState("general");
 
   useEffect(() => {
@@ -60,8 +60,8 @@ export default function Settings({ hide }) {
     return (
       <ul className="settings-nav">
         {tabs.map(tab => (
-          <li key={tab.id}>
-            <button className={`btn text-btn settings-nav-item-btn${activeTab === tab.id ? " active" : ""}`}
+          <li className={`settings-nav-item${activeTab === tab.id ? " active" : ""}`} key={tab.id}>
+            <button className="btn text-btn settings-nav-item-btn"
               onClick={() => setActiveTab(tab.id)}>{tab.name}</button>
           </li>
         ))}
@@ -100,11 +100,11 @@ export default function Settings({ hide }) {
   }
 
   return (
-    <FullscreenModal hide={hide}>
+    <FullscreenModal hiding={hiding} hide={hide}>
       <div className="settings">
-        <div className="settings-header">
+        <div className="container-header settings-header">
           <Icon id="settings"/>
-          <h3>Settings</h3>
+          <h3 className="settings-title">Settings</h3>
           <button className="btn icon-btn" onClick={hide} title="Close">
             <Icon id="cross"/>
           </button>

@@ -1,19 +1,17 @@
 .greeting-editor {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   width: 600px;
   height: 800px;
   max-width: 100%;
   max-height: 100%;
+  border-bottom-left-radius: var(--container-inset-radius);
+  border-bottom-right-radius: var(--container-inset-radius);
 }
 
 .greeting-editor-header {
   position: relative;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: var(--space-sm);
-  border-bottom: 1px solid var(--color-white-10);
 }
 
 .greeting-editor-dropdown {
@@ -29,6 +27,7 @@
 
 .greeting-editor-space-usage {
   margin-left: var(--space-md);
+  margin-right: auto;
   color: var(--color-white-60);
   font-weight: bold;
 }
@@ -38,33 +37,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-.greeting-editor-hide-btn {
-  margin-left: auto;
-}
-
-.greeting-settings {
-  display: flex;
-  padding: var(--space-md);
-  border-bottom: 1px solid var(--color-white-10);
-}
-
-.greeting-setting {
-  display: flex;
-  flex: 1;
-}
-
-.greeting-editor-message-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-lg);
-  border-bottom: 1px solid var(--color-white-10);
-}
-
-.greeting-editor-message {
-  color: var(--color-negative);
+  font-size: var(--text-md);
   font-weight: bold;
 }
 

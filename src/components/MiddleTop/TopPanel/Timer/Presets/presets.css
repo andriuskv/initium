@@ -7,6 +7,10 @@
   height: 400px;
   max-width: 100%;
   max-height: 100%;
+
+  .container-header {
+    flex-direction: column;
+  }
 }
 
 .timer-presets-form-body {
@@ -26,8 +30,7 @@
   justify-content: center;
   gap: var(--space-md);
   padding-top: var(--space-md);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--color-white-10);
+  padding-bottom: var(--space-sm);
 }
 
 .timer-presets-form-message {
@@ -70,11 +73,6 @@
 
 .timer-preset-dropdown {
   margin-left: auto;
-}
-
-.timer-presets-footer {
-  justify-content: flex-end;
-  margin-top: auto;
 }
 
 .timer-presets-message {

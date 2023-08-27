@@ -3,22 +3,28 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-radius: var(--container-inset-radius);
 }
 
 .weather-more-current {
-  display: flex;
   padding: var(--space-xl);
-  border-bottom: 1px solid var(--color-white-10);
 }
 
-.weather-more-current-icon {
+.weather-more-current-icon-container {
   margin: auto var(--space-xl) auto 0;
   border: 1px solid var(--color-white-4);
   border-radius: 50%;
   background-color: var(--color-white-10);
-  mix-blend-mode: plus-lighter;
+  box-shadow:
+    inset 0 1px 1px 0 var(--color-white-10),
+    inset 1px 2px 2px 0 var(--color-white-4),
+    inset 2px 4px 4px 0 var(--color-white-2),
+    var(--highligh-shadow);
+}
+
+.weather-more-current-icon {
+  display: block;
+  filter: url("#weather-icon-ambilight");
 }
 
 .weather-more-current-main {
@@ -104,21 +110,28 @@
 }
 
 .weather-more-hourly-view-top-btn {
-  height: auto;
   padding: var(--space-xs) var(--space-md);
+  border: none;
   border-radius: 0;
   font-size: var(--text-sm);
-  color: var(--color-white-80);
+
+  &:hover, &.active {
+    &:focus-visible {
+      --background-color: var(--color-white-10);
+
+      box-shadow:
+        var(--focus-shadow),
+        inset 0 -2px 0 0 var(--color-primary);
+    }
+  }
 
   &:hover {
     --background-color: transparent;
 
-    border-color: transparent;
-    color: var(--color-white);
+    box-shadow: none;
   }
 
   &.active {
-    color: var(--color-white);
     box-shadow: 0 2px 0 0 var(--color-primary);
   }
 }
@@ -210,9 +223,9 @@
 }
 
 .weather-more-daily {
-  display: flex;
+  justify-content: center;
+  padding: 0;
   margin-top: auto;
-  border-top: 1px solid var(--color-white-10);
 }
 
 .weather-more-daily-weekday {
@@ -229,7 +242,7 @@
 
 .weather-more-daily-weekday-icon {
   margin: var(--space-sm);
-  mix-blend-mode: exclusion;
+  filter: url("#weather-icon-ambilight");
 }
 
 .weather-more-daily-weekday-temp {
@@ -248,28 +261,23 @@
 .weather-more-settings {
   position: absolute;
   top: 6px;
-  right: 40px;
+  right: 42px;
 
   .dropdown {
-    width: 200px;
+    width: 180px;
   }
 }
 
 .weather-more-setting {
-  padding: 0 var(--space-md);
+  gap: var(--space-md);
+  padding: 0 var(--space-md) var(--space-md) var(--space-md);
 
-  & > div {
-    margin-bottom: var(--space-md);
-  }
-
-  &:not(:first-of-type) {
-    padding-top: var(--space-md);
-    margin-top: var(--space-md);
-    border-top: 1px solid var(--color-white-10);
+  &:last-of-type {
+    padding-bottom: 0;
   }
 }
 
-.weather-more-hide-btn {
+.weather-more-close-btn {
   position: absolute;
   top: 6px;
   right: 6px;

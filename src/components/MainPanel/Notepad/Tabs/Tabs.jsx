@@ -123,7 +123,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
       return (
         <Modal className="notepad-modal" hide={hideModal}>
           <form onSubmit={createTab}>
-            <h4 className="modal-title modal-title-center">Create Tab</h4>
+            <h4 className="modal-title modal-title-center">Create tab</h4>
             <input type="text" className="input" name="title"
               autoComplete="off"
               placeholder="Tab title"/>
@@ -176,8 +176,8 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
 
   return (
     <div className="notepad">
-      <div className="notepad-tabs-header">
-        <h2 className="notepad-tabs-header-title">Notepad Tabs</h2>
+      <div className="container-header notepad-tabs-header">
+        <h2 className="main-panel-item-header-title">Notepad Tabs</h2>
         <Dropdown>
           <div className="dropdown-group notepad-tabs-dropdown-setting-group">
             <div className="notepad-tabs-dropdown-setting-title">Text size</div>
@@ -202,7 +202,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
           <Icon id="cross"/>
         </button>
       </div>
-      <ul className="notepad-tabs-items" data-dropdown-parent>
+      <ul className="container-body notepad-tabs-items" data-dropdown-parent>
         <SortableList
           items={tabs}
           axis="xy"
@@ -212,7 +212,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
         </SortableList>
       </ul>
       <CreateButton style={{ "--bottom": "50px" }} onClick={showCreateTabForm} trackScroll></CreateButton>
-      <div className="notepad-storage">
+      <div className="container-footer notepad-storage">
         <div className="notepad-storage-text">
           <div>{storage.current} kB</div>
           <div>8 kB</div>

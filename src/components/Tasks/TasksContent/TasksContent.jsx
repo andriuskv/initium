@@ -105,6 +105,10 @@ export default function Tasks({ settings, expanded, toggleSize }) {
   function initGroups(groups, shouldSave) {
     const modified = checkGroups(groups);
 
+    if (!groups[0].expanded) {
+      groups[0].expanded = !settings.defaultGroupVisible;
+    }
+
     setGroups(groups.map(group => {
       if (group.id === "unorganized") {
         group.id = "default";
@@ -551,7 +555,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
   }
   return (
     <>
-      <div className="tasks-header">
+      <div className="container-header tasks-header">
         <Dropdown>
           <button className="btn icon-text-btn dropdown-btn" onClick={showGroups}>
             <Icon id="menu"/>
@@ -563,20 +567,20 @@ export default function Tasks({ settings, expanded, toggleSize }) {
           </button>
         </Dropdown>
       </div>
-      <div className={`tasks-main${removedItems.length > 0 ? " dialog-visible" : ""}`}>
+      <div className={`container-body tasks-body${removedItems.length > 0 ? " dialog-visible" : ""}`}>
         {taskCount > 0 ? (
           <ul className="tasks-groups-container">
             {groups.map((group, groupIndex) => (group.taskCount === 0 && settings.emptyGroupsHidden ? null : (
               <li key={group.id}>
                 {(groupIndex > 0 || settings.defaultGroupVisible) && (
-                  <button className="btn icon-btn tasks-groups-item tasks-groups-item-toggle-btn"
+                  <button className={`btn icon-btn tasks-groups-item tasks-groups-item-toggle-btn${group.expanded ? " expanded" : ""}`}
                     onClick={() => toggleGroupVisibility(group)}
                     disabled={!group.taskCount}
-                    title={group.taskCount > 0 ? group.expanded ? "Collapse group" : "Expand group" : ""}>
+                    title={group.taskCount > 0 ? group.expanded ? "Collapse" : "Expand" : ""}>
                     <span className="tasks-group-count">{group.taskCount}</span>
                     <span className="tasks-group-title">{group.name}</span>
                     {group.taskCount > 0 && (
-                      <Icon id={`chevron-${group.expanded ? "up" : "down"}`} className="tasks-group-icon"/>
+                      <Icon id="chevron-down" className="tasks-group-icon"/>
                     )}
                   </button>
                 )}
@@ -657,14 +661,14 @@ export default function Tasks({ settings, expanded, toggleSize }) {
         ) : (
           <p className="tasks-message">No tasks</p>
         )}
-        {removedItems.length > 0 && (
-          <div className="tasks-dialog">
-            <span>Removed <span className="tasks-dialog-count">{removedItems.length}</span> task{removedItems.length > 1 ? "s" : ""}</span>
-            <button className="btn text-btn tasks-dialog-btn" onClick={undoRemovedTasks}>UNDO</button>
-          </div>
-        )}
         <CreateButton className="tasks-create-btn" onClick={showForm} trackScroll></CreateButton>
       </div>
+      {removedItems.length > 0 && (
+        <div className="container-footer tasks-dialog">
+          <span>Removed <span className="tasks-dialog-count">{removedItems.length}</span> task{removedItems.length > 1 ? "s" : ""}</span>
+          <button className="btn text-btn" onClick={undoRemovedTasks}>UNDO</button>
+        </div>
+      )}
     </>
   );
 }
