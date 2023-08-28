@@ -64,8 +64,8 @@ function getDefault() {
       accentColor: { hue: "205deg", saturation: "80%", lightness: "56%" },
       panelBackgroundOpacity: 50,
       panelBackgroundBlur: 12,
-      panelBackgroundNoiseAmount: 0.12,
-      panelBackgroundNoiseOpacity: 0.02,
+      panelBackgroundNoiseAmount: 0.2,
+      panelBackgroundNoiseOpacity: 0.0175,
       wallpaper: { provider: "unsplash", url: "" }
     },
     timeDate: {
@@ -75,7 +75,7 @@ function getDefault() {
       clockScale: 1,
       centerClock: false,
       dateHidden: false,
-      dateScale: 1.3,
+      dateScale: 1,
       datePosition: "bottom",
       dateAlignment: "center",
       dateLocale: "en-US",
@@ -117,7 +117,7 @@ function getDefault() {
     timers: {
       disabled: false,
       volume: 0.2,
-      fullscreenTextScale: 1.5,
+      fullscreenTextScale: 2,
       showMinimal: false,
       timer: {
         usePresetNameAsLabel: false

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent, getRandomHslColor, timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getDate, padTime } from "services/timeDate";
@@ -6,7 +6,8 @@ import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
 import "./selected-day.css";
-import Form from "./Form";
+
+const Form = lazy(() => import("./Form"));
 
 export default function SelectedDay({ selectedDay, calendar, reminders, updateCalendar, createReminder, resetSelectedDay, hide }) {
   const [day, setDay] = useState(null);

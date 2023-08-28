@@ -4,7 +4,7 @@
   grid-area: greeting;
   align-self: var(--greeting-alignment);
   max-width: 572px;
-  font-size: calc(var(--text-size-scale) * var(--text-lg));
+  font-size: calc(var(--text-size-scale) * var(--text-xl));
   line-height: 1.25;
   text-align: center;
   text-wrap: balance;

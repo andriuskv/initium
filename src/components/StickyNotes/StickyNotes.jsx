@@ -31,13 +31,17 @@ export default function StickyNotes() {
     setForm(null);
   }
 
+  function showForm() {
+    setForm({ ...form, readyToShow: true });
+  }
+
   function renderNotes() {
     if (!notes.length) {
       return null;
     }
     let notesToRender = notes;
 
-    if (form) {
+    if (form?.readyToShow) {
       notesToRender = notes.filter(note => note.id !== form.id);
     }
     return (
@@ -58,7 +62,7 @@ export default function StickyNotes() {
       {renderNotes()}
       {form ? (
         <Suspense fallback={null}>
-          <Form initialForm={form} noteCount={notes.length} createNote={createNote} discardNote={discardNote}/>
+          <Form initialForm={form} noteCount={notes.length} createNote={createNote} discardNote={discardNote} showForm={showForm}/>
         </Suspense>
       ) : null}
     </>

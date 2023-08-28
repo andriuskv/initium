@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent } from "utils";
 import { getOffsettedCurrentTime, getHoursOffset } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import Icon from "components/Icon";
 import CreateButton from "components/CreateButton";
 import "./world.css";
-import Form from "./Form";
+
+const Form = lazy(() => import("./Form"));
 
 export default function World({ visible, parentVisible }) {
   const [clocks, setClocks] = useState([]);

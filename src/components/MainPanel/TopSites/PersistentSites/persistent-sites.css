@@ -95,20 +95,11 @@
 
 .persistent-sites-cancel-edit-btn {
   align-self: center;
+  gap: var(--space-sm);
   margin-top: var(--space-md);
   padding: var(--space-sm) var(--space-xl) var(--space-sm) var(--space-md);
   border-radius: 999px;
   pointer-events: auto;
-
-  &:hover, &:focus-visible {
-    .svg-icon {
-      transform: scale(1.2);
-    }
-  }
-
-  .svg-icon {
-    transition: var(--duration-n) transform;
-  }
 }
 
 @keyframes reveal-persistent-title {

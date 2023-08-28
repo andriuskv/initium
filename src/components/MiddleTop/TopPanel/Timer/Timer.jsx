@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent } from "utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
@@ -9,7 +9,8 @@ import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./timer.css";
 import Inputs from "./Inputs";
-import Presets from "./Presets";
+
+const Presets = lazy(() => import("./Presets"));
 
 export default function Timer({ visible, toggleIndicator, updateTitle, expand, exitFullscreen, handleReset }) {
   const [running, setRunning] = useState(false);

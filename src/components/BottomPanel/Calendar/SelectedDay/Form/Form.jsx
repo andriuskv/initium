@@ -282,7 +282,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
   return (
     <form className="reminder-form" onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
       <div className="container-header reminder-form-header">
-        <h3 className="bottom-panel-item-title">Reminder Form</h3>
+        <h3 className="bottom-panel-item-title">Reminder form</h3>
       </div>
       <div className="container-body reminder-form-body">
         <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>

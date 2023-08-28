@@ -130,8 +130,8 @@ export default function GeneralTab() {
         </label>
         <label className="setting">
           <span>Text size</span>
-          <input type="range" className="range-input" min="0.75" max="3" step="0.125"
-            defaultValue={settings.textSize} onChange={handleRangeInputChange}/>
+          <input type="range" className="range-input" min="0.75" max="2.5" step="0.125"
+            defaultValue={settings.general.greeting.textSize} onChange={handleRangeInputChange}/>
         </label>
       </div>
       <div className="settings-group last-setting-tab-item">

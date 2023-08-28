@@ -1,13 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import "./form.css";
 
-export default function Form({ initialForm, noteCount, createNote, discardNote }) {
+export default function Form({ initialForm, noteCount, createNote, discardNote, showForm }) {
   const [movable, setMovable] = useState(false);
   const [editable, setEditable] = useState(false);
   const [form, setForm] = useState(null);
   const moving = useRef(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (initialForm.readyToShow) {
+      return;
+    }
+
     if (initialForm.action === "create") {
       const colors = ["#0D99FF", "#9747FF", "#FF24BD", "#F24822", "#FFA629", "#FFCD29", "#14AE5C", "#00A1C2"];
 
@@ -28,6 +32,7 @@ export default function Form({ initialForm, noteCount, createNote, discardNote }
       setForm({ ...initialForm });
       setEditable(true);
     }
+    showForm();
   }, [initialForm]);
 
   useEffect(() => {

@@ -46,7 +46,7 @@ export default function TimersTab() {
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
         <span>Fullscreen text scale</span>
-        <input type="range" className="range-input" min="1" max="5" step="0.5"
+        <input type="range" className="range-input" min="1" max="5" step="0.25"
           disabled={settings.disabled}
           defaultValue={settings.fullscreenTextScale} onChange={handleTextScaleChange}/>
       </label>

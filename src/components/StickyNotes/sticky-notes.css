@@ -9,11 +9,7 @@
   height: 168px;
   padding: var(--space-md);
   background-color: var(--background-color);
-  box-shadow:
-    1px 2px 2px 0 var(--color-black-16),
-    2px 4px 4px 0 var(--color-black-8),
-    4px 8px 8px 0 var(--color-black-4),
-    8px 16px 16px 0 var(--color-black-2);
+  box-shadow: var(--highligh-shadow);
   animation-name: rotate-tilt;
   animation-duration: var(--duration-n);
   animation-fill-mode: both;

@@ -212,17 +212,17 @@ export default function AppearanceTab() {
         </label>
         <label className="setting">
           <span>Background blur</span>
-          <input type="range" className="range-input" min="0" max="24" step="1"
+          <input type="range" className="range-input" min="0" max="32" step="1"
             defaultValue={settings.panelBackgroundBlur} onChange={handleRangeInputChange} name="panelBackgroundBlur"/>
         </label>
         <label className="setting">
           <span>Background noise amount</span>
-          <input type="range" className="range-input" min="0" max="0.25" step="0.01"
+          <input type="range" className="range-input" min="0" max="0.4" step="0.01"
             defaultValue={settings.panelBackgroundNoiseAmount} onChange={handleNoiseChange} name="panelBackgroundNoiseAmount"/>
         </label>
         <label className="setting">
           <span>Background noise opacity</span>
-          <input type="range" className="range-input" min="0" max="0.08" step="0.005"
+          <input type="range" className="range-input" min="0" max="0.05" step="0.0025"
             defaultValue={settings.panelBackgroundNoiseOpacity} onChange={handleNoiseChange} name="panelBackgroundNoiseOpacity"/>
         </label>
       </div>

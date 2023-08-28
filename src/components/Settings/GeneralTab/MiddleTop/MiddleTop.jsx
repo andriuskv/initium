@@ -53,7 +53,7 @@ export default function MiddleTop({ settings, updateSetting, hide }) {
               </button>
             </div>
             <div className="middle-top-order-item-name">{item.name}</div>
-            <Dropdown>
+            <Dropdown toggle={{ title: "Alignment" }}>
               <button className={`btn text-btn dropdown-btn${item.alignment === "top" ? " active" : ""}`}
                 onClick={() => changeAlignment("start", item.id)}>Top</button>
               <button className={`btn text-btn dropdown-btn${!item.alignment || item.alignment === "center" ? " active" : ""}`}
