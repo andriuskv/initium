@@ -41,9 +41,9 @@ function update(elapsed) {
 
   elapsed += interval;
 
-  postMessage({ elapsed, diff: interval });
+  postMessage({ diff: interval });
 
   id = setTimeout(() => {
-    update(elapsed, interval);
+    update(elapsed);
   }, interval - diff);
 }

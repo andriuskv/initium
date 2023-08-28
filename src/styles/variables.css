@@ -55,6 +55,7 @@
   --color-black-30: hsl(0deg 0% 0% / 30%);
   --color-black-40: hsl(0deg 0% 0% / 40%);
   --color-black-60: hsl(0deg 0% 0% / 60%);
+  --color-black-100: hsl(0deg 0% 0% / 100%);
 
   --color-grey-90: hsl(var(--accent-hue) 7% 12%);
   --color-grey-90-50: hsl(var(--accent-hue) 7% 12% / 50%);

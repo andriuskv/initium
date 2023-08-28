@@ -86,7 +86,7 @@
         display: block;
       }
 
-      .stopwatch-splits {
+      .stopwatch-splits-preview {
         display: none;
       }
     }
@@ -137,7 +137,7 @@
       min-height: auto;
     }
 
-    .stopwatch-splits {
+    .stopwatch-splits-preview {
       display: none;
     }
   }

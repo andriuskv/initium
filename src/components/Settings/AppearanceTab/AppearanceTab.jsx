@@ -54,18 +54,18 @@ const colors = [
   },
   {
     hue: "165deg",
-    saturation: "60%",
-    lightness: "50%"
+    saturation: "48%",
+    lightness: "60%"
   },
   {
     hue: "90deg",
-    saturation: "70%",
-    lightness: "66%"
+    saturation: "62%",
+    lightness: "68%"
   },
   {
     hue: "58deg",
-    saturation: "70%",
-    lightness: "66%"
+    saturation: "66%",
+    lightness: "68%"
   },
   {
     hue: "45deg",

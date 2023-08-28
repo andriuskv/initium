@@ -102,9 +102,9 @@ export default function Settings({ hiding, hide }) {
   return (
     <FullscreenModal hiding={hiding} hide={hide}>
       <div className="settings">
-        <div className="container-header settings-header">
+        <div className="container-header fullscreen-modal-header settings-header">
           <Icon id="settings"/>
-          <h3 className="settings-title">Settings</h3>
+          <h3 className="fullscreen-modal-header-title">Settings</h3>
           <button className="btn icon-btn" onClick={hide} title="Close">
             <Icon id="cross"/>
           </button>

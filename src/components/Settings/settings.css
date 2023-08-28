@@ -14,11 +14,6 @@
   padding-left: var(--space-md);
 }
 
-.settings-title {
-  font-size: var(--text-md);
-  font-weight: bold;
-}
-
 .settings-body {
   overflow: hidden;
   display: flex;

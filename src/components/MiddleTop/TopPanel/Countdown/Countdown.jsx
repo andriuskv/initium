@@ -121,6 +121,8 @@ export default function Countdown({ visible, toggleIndicator }) {
 
   function showForm() {
     dispatchCustomEvent("fullscreen-modal", {
+      id: "countdown",
+      shouldToggle: true,
       component: Form,
       params: { createCountdown }
     });
@@ -241,7 +243,7 @@ export default function Countdown({ visible, toggleIndicator }) {
 
   return (
     <div className={`container-body top-panel-item countdown${visible ? " visible" : ""}`}>
-      <CreateButton onClick={showForm}></CreateButton>
+      <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": true }}></CreateButton>
       {renderCountdowns()}
     </div>
   );

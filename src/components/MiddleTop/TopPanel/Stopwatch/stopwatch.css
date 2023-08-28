@@ -13,17 +13,28 @@
   font-size: calc(var(--text-xxxl) * var(--size-multiplier));
 }
 
-.stopwatch-splits {
+.stopwatch-splits-preview {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  overflow: auto;
-  padding: var(--space-md);
-  padding-left: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 120px;
+  padding-top: var(--space-md);
+  padding-right: var(--space-md);
 }
 
-.stopwatch-split {
+.stopwatch-splits-preview-items {
+  flex-grow: 1;
+  -webkit-mask-image: linear-gradient(var(--color-black-100) 50%, hsl(0deg 100% 100% / 0%));
+}
+
+.stopwatch-splits-preview-item {
   display: flex;
   gap: var(--space-md);
+  font-size: var(--text-sm);
 }

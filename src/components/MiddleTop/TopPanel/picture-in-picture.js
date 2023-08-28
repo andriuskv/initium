@@ -6,7 +6,8 @@ let timerActions = {};
 let activeTimer = "";
 
 function isSupported() {
-  return pipSupported;
+  // return pipSupported;
+  return false;
 }
 
 function isActive() {

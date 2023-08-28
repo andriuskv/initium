@@ -5,16 +5,6 @@
   height: 280px;
 }
 
-.countdown-form-header {
-  justify-content: center;
-  min-height: 39px;
-}
-
-.countdown-form-title {
-  font-weight: bold;
-  font-size: var(--text-md);
-}
-
 .countdown-form-body {
   display: flex;
   flex-direction: column;

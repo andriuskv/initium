@@ -10,10 +10,6 @@
   border-bottom-right-radius: var(--container-inset-radius);
 }
 
-.greeting-editor-header {
-  position: relative;
-}
-
 .greeting-editor-dropdown {
   right: auto;
   left: 0;
@@ -29,15 +25,6 @@
   margin-left: var(--space-md);
   margin-right: auto;
   color: var(--color-white-60);
-  font-weight: bold;
-}
-
-.greeting-editor-header-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: var(--text-md);
   font-weight: bold;
 }
 

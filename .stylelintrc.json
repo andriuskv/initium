@@ -11,6 +11,7 @@
     "value-keyword-case": null,
     "comment-empty-line-before": null,
     "selector-list-comma-newline-after": null,
+    "property-no-vendor-prefix": null,
     "value-no-vendor-prefix": null,
     "at-rule-no-unknown": null,
     "no-descending-specificity": null

@@ -7,11 +7,6 @@
   min-height: 0;
 }
 
-.reminder-form-header {
-  justify-content: center;
-  min-height: 39px;
-}
-
 .reminder-form-body {
   overflow-y: auto;
   display: flex;

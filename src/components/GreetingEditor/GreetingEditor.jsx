@@ -73,7 +73,7 @@ export default function GreetingEditor({ hiding, hide }) {
   return (
     <FullscreenModal hiding={hiding} hide={hide}>
       <div className="greeting-editor">
-        <div className="container-header greeting-editor-header">
+        <div className="container-header fullscreen-modal-header">
           <Dropdown
             toggle={{ title: "Info", iconId: "info" }}
             body={{ className: "greeting-editor-dropdown" }}>
@@ -85,7 +85,7 @@ export default function GreetingEditor({ hiding, hide }) {
           {bytes && (
             <span className="greeting-editor-space-usage">{bytes.current} / {bytes.max}</span>
           )}
-          <h3 className="greeting-editor-header-title">Greeting Editor</h3>
+          <h3 className="fullscreen-modal-header-title">Greeting Editor</h3>
           <button className="btn icon-btn" onClick={hide} title="Close">
             <Icon id="cross"/>
           </button>

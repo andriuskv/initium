@@ -37,6 +37,22 @@
   }
 }
 
+.fullscreen-modal-header {
+  position: relative;
+
+  &:not(:has(.btn)) {
+    min-height: 39px;
+  }
+}
+
+.fullscreen-modal-header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--text-md);
+  font-weight: bold;
+}
+
 @keyframes reveal-fullscreen-modal {
   from {
     transform: translate(-50%, calc(-50% + (-1 * var(--space-md))));

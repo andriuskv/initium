@@ -1,9 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy } from "react";
+import { dispatchCustomEvent } from "utils";
 import { padTime } from "services/timeDate";
 import { addToRunning, removeFromRunning } from "../running-timers";
 import * as pipService from "../picture-in-picture";
 import Icon from "components/Icon";
 import "./stopwatch.css";
+
+const Splits = lazy(() => import("./Splits"));
 
 export default function Stopwatch({ visible, toggleIndicator, updateTitle, expand }) {
   const [running, setRunning] = useState(false);
@@ -88,8 +91,8 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
     updateTitle("stopwatch");
   }
 
-  function update({ elapsed, diff }) {
-    state.elapsed = elapsed;
+  function update({ diff }) {
+    state.elapsed += diff;
     state.milliseconds += diff;
 
     if (state.milliseconds >= 1000) {
@@ -209,6 +212,15 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
     setLabel(event.target.value);
   }
 
+  function showSplits() {
+    dispatchCustomEvent("fullscreen-modal", {
+      id: "splits",
+      shouldToggle: true,
+      component: Splits,
+      params: { splits }
+    });
+  }
+
   function renderTop() {
     if (running || dirty.current) {
       if (label) {
@@ -246,15 +258,18 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
             <span className="stopwatch-milliseconds">{state.millisecondsDisplay}</span>
           </div>
           {splits.length ? (
-            <ul className="stopwatch-splits">
-              {splits.map((split, index) => (
-                <li className="stopwatch-split" key={index}>
-                  <span>#{splits.length - index}</span>
-                  <span>{split.elapsedString}</span>
-                  {split.diffString ? <span>{split.diffString}</span> : null}
-                </li>
-              ))}
-            </ul>
+            <div className="stopwatch-splits-preview">
+              <button className="btn text-btn" onClick={showSplits} data-modal-initiator="true">Splits</button>
+              <ul className="stopwatch-splits-preview-items">
+                {splits.slice(0, 6).map((split, index) => (
+                  <li className="stopwatch-splits-preview-item" key={index}>
+                    <span>#{splits.length - index}</span>
+                    <span>{split.elapsedString}</span>
+                    {split.diffString ? <span>{split.diffString}</span> : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : null}
         </div>
       )}
