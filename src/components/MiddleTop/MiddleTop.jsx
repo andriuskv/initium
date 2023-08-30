@@ -8,13 +8,12 @@ const Greeting = lazy(() => import("./Greeting"));
 
 export default function MiddleTop({ settings, greetingEditorVisible }) {
   const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
-  const [greeting, setGreeting] = useState(null);
+  const [greetingVisible, setGreetingVisible] = useState(false);
   const [topPanel, setTopPanel] = useState({ rendered: false, forceVisibility: false });
   const [itemOrder, setItemOrder] = useState({});
   const topPanelTimeoutId = useRef(0);
 
   useEffect(() => {
-    initGreeting();
     initTopPanel();
 
     window.addEventListener("top-panel-visible", renderTopPanel, { once: true });
@@ -25,6 +24,16 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
       setPageTitle();
     }
   }, [settings]);
+
+  useEffect(() => {
+    if (greetingEditorVisible) {
+      setGreetingVisible(false);
+    }
+    else {
+      initGreeting();
+    }
+  }, [greetingEditorVisible]);
+
 
   useLayoutEffect(() => {
     const alignment = {};
@@ -54,11 +63,14 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   }
 
   async function initGreeting() {
+    if (settings.general.greeting.disabled) {
+      return;
+    }
     const chromeStorage = await import("services/chromeStorage");
     const greetings = await chromeStorage.get("greetings");
 
     if (greetings?.length) {
-      setGreeting({ visible: true });
+      setGreetingVisible(true);
     }
   }
 
@@ -95,9 +107,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
         {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.general.greeting.disabled || !greeting || greetingEditorVisible ? null : (
-          <Greeting settings={settings.general.greeting}/>
-        )}
+        {greetingVisible && !settings.general.greeting.disabled ? <Greeting settings={settings.general.greeting}/> : null}
       </Suspense>
     </div>
   );

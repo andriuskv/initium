@@ -32,7 +32,7 @@ export default function GreetingEditor({ hiding, hide }) {
     chrome.storage.sync.getBytesInUse("greetings", bytes => {
       setBytes({
         current: formatBytes(bytes),
-        max: formatBytes(chrome.storage.sync.QUOTA_BYTES_PER_ITEM)
+        max: formatBytes(chrome.storage.sync.QUOTA_BYTES_PER_ITEM || 8192)
       });
     });
   }

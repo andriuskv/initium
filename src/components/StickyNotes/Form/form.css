@@ -53,6 +53,7 @@
   box-shadow: none;
 
   &:focus-visible {
+    box-shadow: none;
     background-color: var(--color-white-10);
   }
 }
@@ -77,7 +78,7 @@
   background-color: var(--background-color);
   transform: translate(-50%, 100%) rotate(3deg);
   box-shadow:
-    0 -2px 2px 0 var(--color-black-4),
-    0 -4px 4px 0 var(--color-black-2),
+    -1px -2px 2px 0 var(--color-black-4),
+    -2px -4px 4px 0 var(--color-black-2),
     var(--highligh-shadow);
 }

@@ -78,7 +78,7 @@ export default function StorageTab() {
       }
     ];
 
-    const maxStoragePerItem = chrome.storage.sync.QUOTA_BYTES_PER_ITEM;
+    const maxStoragePerItem = chrome.storage.sync.QUOTA_BYTES_PER_ITEM || 8192;
     let usedStorage = 0;
 
     for (const item of items) {

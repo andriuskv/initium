@@ -45,7 +45,7 @@ export default function StickyNotes() {
       notesToRender = notes.filter(note => note.id !== form.id);
     }
     return (
-      <ul>
+      <ul className="sticky-notes">
         {notesToRender.map(note => (
           <li className="sticky-note" style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, backgroundColor: note.color }}
             key={note.id}>

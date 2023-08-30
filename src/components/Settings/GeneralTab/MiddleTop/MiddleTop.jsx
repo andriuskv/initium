@@ -16,7 +16,7 @@ export default function MiddleTop({ settings, updateSetting, hide }) {
     ([items[index], items[index + order]] = [items[index + order], items[index]]);
 
     updateSetting("general", {
-      middleTopOrder: items
+      middleTopOrder: [...items]
     });
   }
 
@@ -26,7 +26,7 @@ export default function MiddleTop({ settings, updateSetting, hide }) {
     item.alignment = alignment;
 
     updateSetting("general", {
-      middleTopOrder: items
+      middleTopOrder: [...items]
     });
   }
 

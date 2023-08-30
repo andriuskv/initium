@@ -68,7 +68,7 @@
 
 .clock-date {
   --date-scale: 1;
-  --size: var(--text-xl);
+  --size: var(--text-lg);
 
   grid-row: calc(2 - var(--date-above));
   grid-column: 1 / 3;

@@ -1,5 +1,10 @@
 @import "../../styles/mixins.css";
 
+.sticky-notes {
+  position: absolute;
+  inset: 0;
+}
+
 .sticky-note {
   position: absolute;
   top: calc(var(--y) * 1%);
@@ -28,11 +33,10 @@
 .sticky-note-title {
   @mixin text-truncate;
 
-  margin-bottom: var(--space-md);
   color: var(--color-black-60);
   font-size: var(--text-xxl);
   font-family: "Caveat";
-  line-height: 1;
+  line-height: 1.1;
 
   & + .sticky-note-content {
     -webkit-line-clamp: 6;
@@ -48,5 +52,5 @@
   white-space: pre-wrap;
   font-size: var(--text-xl);
   font-family: "Caveat";
-  line-height: 1;
+  line-height: 1.1;
 }

@@ -230,7 +230,7 @@
       <feColorMatrix
         in="source-copy"
         type="saturate"
-        values="20"
+        values="2"
         result="saturated-copy"/>
       <feColorMatrix
         in="saturated-copy"
@@ -247,7 +247,7 @@
         result="spread"/>
       <feGaussianBlur
         in="spread"
-        stdDeviation="20"
+        stdDeviation="18"
         result="ambilight-light"/>
       <feOffset in="SourceGraphic" result="source"/>
       <feComposite in="source" in2="ambilight-light" operator="over"/>
