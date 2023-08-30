@@ -1,11 +1,7 @@
-.task-form-container {
-  margin-top: 0;
-}
-
 .task-form-item-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--space-sm);
   width: 100%;
   margin-top: var(--space-md);
   padding-left: var(--space-lg);
@@ -13,6 +9,7 @@
 }
 
 .task-form-item-title {
+  margin-right: auto;
   padding-left: var(--space-md);
   box-shadow: -2px 0 0 0 var(--color-primary);
   font-weight: bold;
@@ -28,7 +25,7 @@
 .task-form-repeat-options-container {
   align-items: flex-start;
 
-  & .task-form-item-title {
+  .task-form-item-title {
     margin-top: var(--space-md);
   }
 }
@@ -64,7 +61,7 @@
 .task-form-label-btn-tick {
   position: absolute;
   animation-name: scale-up;
-  animation-duration: 0.2s;
+  animation-duration: var(--duration-n);
   animation-fill-mode: forwards;
 }
 
@@ -76,13 +73,13 @@
   font-weight: normal;
 
   &.flagged {
-    & .task-label-color,
-    & .task-label-title {
+    .task-label-color,
+    .task-label-title {
       opacity: 0.4;
     }
   }
 
-  & .task-form-label-btn-tick {
+  .task-form-label-btn-tick {
     margin-right: 0;
   }
 }
@@ -90,7 +87,6 @@
 .task-form {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   flex-grow: 1;
 }
 
@@ -98,7 +94,6 @@
   overflow-y: auto;
   flex-grow: 1;
   flex-basis: 0;
-  width: 100%;
 }
 
 .task-form-textarea-container {
@@ -107,13 +102,12 @@
   margin: var(--space-md) var(--space-md) 0 var(--space-md);
   border-radius: 8px;
 
-  &:focus-within {
-    box-shadow: 0 0 0 2px var(--color-primary);
+  &:has(:focus-visible) {
+    box-shadow: var(--focus-shadow);
   }
 }
 
 .task-form-textarea {
-  flex-shrink: 0;
   display: block;
   width: 100%;
   height: 76px;
@@ -134,12 +128,12 @@
 .task-form-subtask {
   display: flex;
   align-items: center;
+  gap: var(--space-sm);
   margin-bottom: var(--space-sm);
 }
 
 .task-form-subtask-input {
   flex-grow: 1;
-  margin-right: var(--space-md);
 }
 
 .task-form-delete-btn {
@@ -148,18 +142,4 @@
 
 .task-form-submit-btn {
   margin-left: var(--space-md);
-}
-
-.task-form-message-container {
-  position: absolute;
-  bottom: 42px;
-  left: var(--space-sm);
-  right: var(--space-sm);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-lg);
-  background-color: hsl(var(--accent-hue) 7% 12%);
-  backdrop-filter: none;
-  font-size: var(--text-xs);
 }

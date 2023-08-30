@@ -1,18 +1,15 @@
 .selected-day-header {
-  justify-content: space-between;
+  position: relative;
+  justify-content: flex-start;
   border-bottom: 1px solid var(--color-white-10);
 }
 
-.reminder-form-header {
-  & .selected-day-header-btn {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
 .selected-day-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-size: var(--text-lg);
-  font-weight: normal;
 }
 
 .selected-day-remainders {
@@ -33,11 +30,19 @@
   height: 24px;
   margin-right: var(--space-md);
   margin-left: var(--space-xs);
-  transition: 0.2s transform, 0.2s background-color;
+  transition: var(--duration-n) transform,
+              var(--duration-n) background-color;
 
   &:hover {
     transform: scaleX(2);
   }
+}
+
+.selected-day-reminder-range {
+  margin-top: var(--space-sm);
+  font-size: var(--text-xs);
+  font-weight: bold;
+  color: var(--color-white-60);
 }
 
 .reminder-repeat-icon {

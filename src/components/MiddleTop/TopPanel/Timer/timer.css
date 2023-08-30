@@ -1,20 +1,13 @@
-.timer-content {
-  flex-direction: column;
+.timer-dropdown-presets {
+  max-height: 138px;
+  overflow-y: auto;
 }
 
-.timer-preset-select {
-  margin: var(--space-md) 0;
-}
-
-.timer-selected-preset-name {
+.timer-dropdown-presets-message {
   display: flex;
+  justify-content: center;
   align-items: center;
-  min-height: 44px;
-  font-size: calc(var(--text-lg) * var(--size-multiplier));
-}
-
-.timer-input-container {
-  height: 100%;
+  height: 32px;
 }
 
 .timer-input {
@@ -23,11 +16,6 @@
   padding: 0;
 
   &:focus {
-    outline: none;
-    box-shadow: 0 1px 0 0 var(--color-primary);
+    box-shadow: inset 0 -2px 0 0 var(--color-primary);
   }
-}
-
-.timer-dropdown-setting {
-  padding: var(--space-sm) var(--space-md);
 }

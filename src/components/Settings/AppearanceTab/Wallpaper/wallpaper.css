@@ -1,0 +1,59 @@
+.setting-wallpaper-viewer-btn {
+  margin-left: auto;
+}
+
+.setting-wallpaper-items {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.setting-wallpaper-providers {
+  display: flex;
+  width: 200px;
+  border-radius: 999px;
+  box-shadow: var(--fg-shadow);
+  background-color: var(--color-white-10);
+}
+
+.setting-wallpaper-provider {
+  position: relative;
+  flex: 1;
+
+  .svg-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--color-white);
+  }
+}
+
+.setting-wallpaper-info {
+  padding: var(--space-md);
+  padding-left: var(--space-lg);
+  margin-top: auto;
+}
+
+.setting-wallpaper-info-link {
+  text-decoration: underline;
+}
+
+.setting-wallpaper-form-input {
+  width: 100%;
+}
+
+.setting-wallpaper-form-message {
+  margin-top: var(--space-md);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  color: var(--color-negative);
+  text-align: center;
+}
+
+.setting-wallpaper-info-inline-icon {
+  display: inline;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-left: var(--space-sm);
+}

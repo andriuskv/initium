@@ -1,31 +1,11 @@
 .feed-list-header {
   position: relative;
-  display: flex;
-  flex-shrink: 0;
-  justify-content: flex-end;
-  padding: var(--space-sm);
-  border-bottom: 1px solid var(--color-white-10);
-
-  & .icon-btn {
-    margin-left: var(--space-sm);
-  }
-}
-
-.feed-list-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: var(--text-lg);
+  gap: var(--space-sm);
 }
 
 .feed-list-items {
   overflow-y: auto;
   flex-grow: 1;
-
-  &:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--color-primary);
-  }
 }
 
 .feed-list-item {
@@ -37,14 +17,15 @@
     display: block;
     border-bottom: none;
     background-color: var(--color-white-10);
+
+    .drag-handle {
+      opacity: 1;
+      background-color: var(--color-white-10);
+    }
   }
 
   &.fetching {
     position: relative;
-
-    & .feed-list-item-content {
-      opacity: 0.4;
-    }
 
     &::after {
       content: "";
@@ -55,11 +36,29 @@
       background-repeat: no-repeat;
       background-position: center;
     }
+
+    .feed-list-item-content {
+      opacity: 0.4;
+    }
+  }
+
+  &:hover .drag-handle {
+    animation: 0s linear 0.5s forwards delayed-reveal;
+  }
+
+  &:has(.feed-list-item-title-input) {
+    .drag-handle {
+      display: none;
+    }
   }
 
   &.inactive {
-    & .feed-list-item-title span:hover {
+    .feed-list-item-title span:hover {
       text-decoration: none;
+    }
+
+    .drag-handle {
+      display: none;
     }
   }
 }
@@ -67,11 +66,12 @@
 .feed-list-item-header {
   display: flex;
   align-items: flex-start;
+  gap: var(--space-sm);
   margin-bottom: var(--space-sm);
 }
 
 .feed-list-item-logo {
-  margin-right: var(--space-md);
+  margin-right: var(--space-sm);
   object-fit: scale-down;
 }
 
@@ -79,7 +79,6 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  margin-right: var(--space-sm);
 }
 
 .inactive-feed-icon {
@@ -89,6 +88,8 @@
 }
 
 .feed-list-item-title {
+  --color: var(--color-white);
+
   display: flex;
   align-items: center;
   height: auto;
@@ -97,9 +98,6 @@
   margin-right: auto;
   border: none;
   border-radius: 0;
-  text-align: left;
-  font-size: var(--text-md);
-  font-weight: bold;
 
   & span:hover {
     text-decoration: underline;
@@ -108,7 +106,7 @@
   &:hover, &:focus-visible {
     --background-color: transparent;
 
-    border-color: transparent;
+    box-shadow: none;
   }
 }
 
@@ -132,7 +130,7 @@
   font-weight: bold;
   color: var(--color-negative);
 
-  & .btn {
+  .btn {
     margin-left: var(--space-md);
   }
 }

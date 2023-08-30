@@ -1,13 +1,14 @@
 .clock {
   --scale: 1;
-  --date-offset: 8;
   --font-family: "Inter";
   --date-above: 0;
 
-  grid-row: 2;
+  grid-area: clock;
+  align-self: var(--clock-alignment);
   display: grid;
   grid-template-rows: 1fr min-content;
   grid-template-columns: 1fr min-content;
+  grid-row-gap: var(--space-lg);
   align-items: baseline;
   text-shadow:
     0 1px 1px var(--color-black-8),
@@ -20,70 +21,59 @@
     --date-above: 1;
   }
 
-  &.date-bottom, &.date-top {
-    grid-row-gap: calc(var(--date-offset) * 1px);
-
-    & .clock-date {
-      text-align: var(--date-alignment);
-    }
-  }
-
   @media (height <= 720px) {
-    & .clock-time {
-      --size: 6rem;
+    .clock-time {
+      --size: 5.6rem;
     }
 
-    & .clock-time-period {
+    .clock-time-period {
       --size: var(--text-xxl);
     }
 
-    & .clock-date {
-      --size: var(--text-sm);
+    .clock-date {
+      --size: var(--text-lg);
     }
   }
 }
 
-.clock-time {
-  --size: 7.2rem;
-
+.clock-time-container {
+  position: relative;
   grid-row: calc(1 + var(--date-above));
   grid-column: 1 / 3;
   justify-self: center;
+}
+
+.clock-time {
+  --size: 6.5rem;
+
   font-size: calc(var(--size) * var(--scale));
   font-variant-numeric: tabular-nums;
   line-height: 0.8;
+}
 
-  &.bolded {
-    font-weight: bold;
-  }
+.clock-time-hours {
+  margin-bottom: calc(var(--scale) * var(--space-md));
 }
 
 .clock-time-period {
   --size: var(--text-xxxl);
 
-  grid-row: calc(1 + var(--date-above));
-  grid-column: 2;
+  position: absolute;
+  top: 0;
+  right: 0;
   transform: translateX(100%);
   font-size: calc(var(--size) * var(--scale));
-  line-height: 0.8;
+  line-height: 1;
 }
 
 .clock-date {
   --date-scale: 1;
-  --size: var(--text-md);
+  --size: var(--text-lg);
 
   grid-row: calc(2 - var(--date-above));
   grid-column: 1 / 3;
   font-size: calc(var(--size) * var(--scale) * var(--date-scale));
   letter-spacing: 1px;
   line-height: 1;
-  text-align: right;
-
-  &.bolded {
-    font-weight: bold;
-  }
-
-  &.ignore-style {
-    font-family: "Inter", "Open Sans", sans-serif;
-  }
+  text-align: var(--date-alignment);
 }

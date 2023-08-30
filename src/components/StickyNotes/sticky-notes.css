@@ -1,0 +1,56 @@
+@import "../../styles/mixins.css";
+
+.sticky-notes {
+  position: absolute;
+  inset: 0;
+}
+
+.sticky-note {
+  position: absolute;
+  top: calc(var(--y) * 1%);
+  left: calc(var(--x) * 1%);
+  overflow: hidden;
+  width: 168px;
+  height: 168px;
+  padding: var(--space-md);
+  background-color: var(--background-color);
+  box-shadow: var(--highligh-shadow);
+  animation-name: rotate-tilt;
+  animation-duration: var(--duration-n);
+  animation-fill-mode: both;
+}
+
+@keyframes rotate-tilt {
+  from {
+    transform: translate(-50%, -4px);
+  }
+
+  to {
+    transform: translate(-50%, -4px) rotate(calc(var(--tilt) * 1deg));
+  }
+}
+
+.sticky-note-title {
+  @mixin text-truncate;
+
+  color: var(--color-black-60);
+  font-size: var(--text-xxl);
+  font-family: "Caveat";
+  line-height: 1.1;
+
+  & + .sticky-note-content {
+    -webkit-line-clamp: 6;
+  }
+}
+
+.sticky-note-content {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
+  color: var(--color-black-60);
+  white-space: pre-wrap;
+  font-size: var(--text-xl);
+  font-family: "Caveat";
+  line-height: 1.1;
+}

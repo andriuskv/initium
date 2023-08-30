@@ -4,7 +4,7 @@
   gap: var(--space-md);
   margin-top: var(--space-md);
 
-  & .top-site {
+  .top-site {
     width: auto;
 
     &.dragging {
@@ -13,38 +13,39 @@
       border-radius: 8px;
     }
 
-    & .top-site-dropdown {
+    .top-site-dropdown {
       transform: translate(25%, 25%);
     }
   }
 
-  & .top-site-link {
+  .top-site-link {
     width: 50px;
     height: 50px;
     padding: 0;
 
     &:hover, &:focus-visible {
-      & .top-site-title {
+      .top-site-title {
         animation-delay: 0.5s;
-        animation-duration: 0.2s;
+        animation-duration: var(--duration-n);
         animation-fill-mode: forwards;
         animation-name: reveal-persistent-title;
       }
     }
 
-    & .top-site-add-btn-icon {
+    .top-site-add-btn-icon {
       width: 24px;
       height: 24px;
     }
   }
 
-  & .top-site-thumbnail-container {
+  .top-site-thumbnail-container {
     width: 100%;
     height: 100%;
     margin-bottom: var(--space-md);
   }
 
-  & .top-site-title {
+  .top-site-title {
+    z-index: 1;
     position: relative;
     left: 50%;
     opacity: 0;
@@ -58,7 +59,7 @@
 .persistent-site-edit-btn {
   cursor: pointer;
 
-  & .top-site-icon {
+  .top-site-icon {
     opacity: 0.5;
   }
 }
@@ -86,10 +87,19 @@
     --color: var(--color-white);
   }
 
-  & svg {
+  .svg-icon {
     width: 18px;
     height: 18px;
   }
+}
+
+.persistent-sites-cancel-edit-btn {
+  align-self: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-xl) var(--space-sm) var(--space-md);
+  border-radius: 999px;
+  pointer-events: auto;
 }
 
 @keyframes reveal-persistent-title {

@@ -1,16 +1,76 @@
 .fullscreen-modal-mask {
   z-index: 1000;
-  overflow: hidden;
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: none;
+  background-color: var(--color-grey-90-50);
+
+  &:has(.fullscreen-modal) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .fullscreen-modal {
+      position: static;
+      transform: none;
+    }
+  }
 }
 
-.fullscreen-modal-close-btn {
+.fullscreen-modal {
+  z-index: 1000;
   position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(100% - var(--space-xl));
+  max-height: calc(100% - var(--space-xl));
+
+  &:not(.static) {
+    animation-duration: var(--duration-n);
+    animation-fill-mode: both;
+    animation-name: reveal-fullscreen-modal;
+
+    &.hiding {
+      animation-duration: var(--duration-f), var(--duration-n);
+      animation-name: opacity-down, hide-fullscreen-modal;
+    }
+  }
+}
+
+.fullscreen-modal-header {
+  position: relative;
+
+  &:not(:has(.btn)) {
+    min-height: 39px;
+  }
+}
+
+.fullscreen-modal-header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--text-md);
+  font-weight: bold;
+}
+
+@keyframes reveal-fullscreen-modal {
+  from {
+    transform: translate(-50%, calc(-50% + (-1 * var(--space-md))));
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes hide-fullscreen-modal {
+  from {
+    transform: translate(-50%, -50%);
+  }
+
+  to {
+    transform: translate(-50%, calc(-50% + var(--space-lg))) scale(0.96);
+  }
 }

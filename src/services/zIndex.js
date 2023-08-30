@@ -1,20 +1,29 @@
-let zIndex = 1;
+const components = {};
+let currentActiveComponent = null;
 
-function getIncreasedZIndex() {
-  zIndex += 1;
-  return zIndex;
+function getZIndex(name) {
+  const index = currentActiveComponent ? currentActiveComponent.index + 1 : 2;
+  currentActiveComponent = { name, index };
+  components[name] = index;
+  return index;
 }
 
-function handleZIndex({ currentTarget }) {
-  const currentZIndex = currentTarget.style.getPropertyValue("--z-index");
-
-  if (currentZIndex < zIndex) {
-    zIndex += 1;
-    currentTarget.style.setProperty("--z-index", zIndex);
+function increaseZIndex(name) {
+  if (currentActiveComponent?.name === name) {
+    return components[name];
   }
+  return getZIndex(name);
+}
+
+function handleZIndex({ currentTarget }, name) {
+  if (currentActiveComponent?.name === name) {
+    return;
+  }
+  const index = getZIndex(name);
+  currentTarget.style.setProperty("--z-index", index);
 }
 
 export {
-  getIncreasedZIndex,
+  increaseZIndex,
   handleZIndex
 };

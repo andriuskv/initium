@@ -1,84 +1,97 @@
 .tasks {
-  --height: 448px;
-  --header-height: 38px;
+  --height: 0;
+  --header-height: 39px;
 
   z-index: var(--z-index, 1);
   position: absolute;
   top: var(--space-md);
   left: var(--space-md);
   max-height: calc(100% - var(--space-xl));
-  height: 0;
+  height: var(--height);
 
   &.revealed {
-    height: var(--height);
+    --height: 510px;
+
+    transition: var(--duration-n) height;
   }
 
-  &.resizing {
-    max-height: calc(100% - 24px);
-
-    & .tasks-content {
-      overflow: initial;
-    }
+  &.expanded {
+    --height: 100%;
   }
 }
 
 .tasks-toggle-btn {
   --background-color: transparent;
+   --color: var(--color-white);
 
   z-index: 1;
   position: absolute;
   top: 0;
   left: 0;
-  height: auto;
   padding: var(--space-xs) var(--space-sm);
   border: none;
+  box-shadow: none;
   text-shadow: 0 1px 1px var(--color-black-16), 0 2px 2px var(--color-black-8);
-  transition: 0.2s transform;
-  transition-delay: 0.1s;
+  transition: var(--duration-n) transform;
+  transition-delay: var(--duration-f);
+  user-select: none;
 
   &:hover {
     --background-color: transparent;
+
+    box-shadow: none;
   }
 
   &.shifted {
+    --offset: calc(var(--space-md) + 2px);
+
     transition-delay: 0s;
-    transform: translate(var(--space-md), var(--space-md));
+    transform: translate(var(--offset), var(--offset));
   }
 }
 
 .tasks-transition-target {
   opacity: 0;
   height: 100%;
-  transition: 0.2s opacity;
+  transition: var(--duration-n) opacity;
 }
 
-.tasks-content {
+.tasks-container {
   overflow: hidden;
   opacity: 0;
   visibility: hidden;
   max-height: 100%;
-  width: 320px;
+  width: 332px;
   height: 100%;
   border-bottom-right-radius: 999px;
   transform-origin: top left;
   transform: scale(0);
   transition:
-    0.2s transform,
-    0.2s opacity,
-    0.2s visibility,
-    0.2s border-bottom-right-radius;
-  transition-delay: 0.1s;
+    var(--duration-n) transform,
+    var(--duration-n) opacity,
+    var(--duration-n) visibility,
+    var(--duration-n) border-bottom-right-radius;
+  transition-delay: var(--duration-f);
+  will-change: transform;
 
   &.visible {
     opacity: 1;
     visibility: inherit;
-    border-bottom-right-radius: 8px;
+    border-bottom-right-radius: var(--container-border-radius);
     transform: scale(1);
     transition-delay: 0s;
 
-    & .tasks-transition-target {
+    .tasks-transition-target {
       opacity: 1;
-      transition-delay: 0.1s;
+      transition-delay: var(--duration-f);
     }
   }
+}
+
+.tasks-content {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-bottom-left-radius: var(--container-inset-radius);
+  border-bottom-right-radius: var(--container-inset-radius);
 }

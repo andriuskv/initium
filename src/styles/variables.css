@@ -1,5 +1,5 @@
 :root {
-  --space-unit: 8px;
+  --space-unit: 0.5rem;
   --space-xs: calc(0.25 * var(--space-unit));
   --space-sm: calc(0.5 * var(--space-unit));
   --space-md: calc(1 * var(--space-unit));
@@ -7,7 +7,7 @@
   --space-xl: calc(2 * var(--space-unit));
   --space-xxl: calc(4 * var(--space-unit));
 
-  --text-base-size: 1rem;
+  --text-base-size: 0.875rem;
   --text-xxs: calc(0.785 * var(--text-base-size));
   --text-xs: calc(0.85 * var(--text-base-size));
   --text-sm: calc(0.875 * var(--text-base-size));
@@ -18,22 +18,35 @@
   --text-xxxl: calc(2.225 * var(--text-base-size));
   --text-xxxxl: calc(3 * var(--text-base-size));
 
-  --color-primary: hsl(205deg 80% 56%);
-  --color-primary-0-20: hsl(205deg 80% 56% / 20%);
-  --color-primary-0-40: hsl(205deg 80% 56% / 40%);
-  --color-primary-10: hsl(205deg 84% 64%);
-  --color-primary-20: hsl(205deg 76% 50%);
+  --animation-speed: 1;
 
-  --color-white: hsl(224deg 100% 98%);
-  --color-white-4: hsl(224deg 100% 98% / 4%);
-  --color-white-10: hsl(224deg 100% 98% / 10%);
-  --color-white-20: hsl(224deg 100% 98% / 20%);
-  --color-white-40: hsl(224deg 100% 98% / 40%);
-  --color-white-60: hsl(224deg 100% 98% / 60%);
-  --color-white-80: hsl(224deg 100% 98% / 80%);
+  --duration-f: calc(0.1s * var(--animation-speed));
+  --duration-n: calc(0.2s * var(--animation-speed));
+  --duration-s: calc(0.4s * var(--animation-speed));
 
-  --color-grey-90: hsl(224deg 7% 12%);
-  --color-grey-90-50: hsl(224deg 7% 12% / 50%);
+  --panel-background-opacity: 50%;
+  --panel-background-blur: 12px;
+
+  /* --accent-hue: 224deg; */
+  --accent-hue: 205deg;
+  --accent-saturation: 80%;
+  --accent-lightness: 56%;
+
+  --color-primary: hsl(var(--accent-hue) var(--accent-saturation) var(--accent-lightness));
+  --color-primary-0-20: hsl(var(--accent-hue) var(--accent-saturation) var(--accent-lightness) / 20%);
+  --color-primary-0-40: hsl(var(--accent-hue) var(--accent-saturation) var(--accent-lightness) / 40%);
+  --color-primary-10: hsl(var(--accent-hue) calc(var(--accent-saturation) + 4 * 1%) calc(var(--accent-lightness) + 8 * 1%));
+  --color-primary-20: hsl(var(--accent-hue) calc(var(--accent-saturation) - 4 * 1%) calc(var(--accent-lightness) - 6 * 1%));
+
+  --color-white: hsl(var(--accent-hue) 100% 97%);
+  --color-white-2: hsl(var(--accent-hue) 100% 97% / 2%);
+  --color-white-4: hsl(var(--accent-hue) 100% 97% / 4%);
+  --color-white-10: hsl(var(--accent-hue) 100% 97% / 10%);
+  --color-white-20: hsl(var(--accent-hue) 100% 97% / 20%);
+  --color-white-40: hsl(var(--accent-hue) 100% 97% / 40%);
+  --color-white-60: hsl(var(--accent-hue) 100% 97% / 60%);
+  --color-white-80: hsl(var(--accent-hue) 100% 97% / 80%);
+  --color-white-90: hsl(var(--accent-hue) 100% 97% / 90%);
 
   --color-black-2: hsl(0deg 0% 0% / 2%);
   --color-black-4: hsl(0deg 0% 0% / 4%);
@@ -41,6 +54,11 @@
   --color-black-16: hsl(0deg 0% 0% / 16%);
   --color-black-30: hsl(0deg 0% 0% / 30%);
   --color-black-40: hsl(0deg 0% 0% / 40%);
+  --color-black-60: hsl(0deg 0% 0% / 60%);
+  --color-black-100: hsl(0deg 0% 0% / 100%);
+
+  --color-grey-90: hsl(var(--accent-hue) 7% 12%);
+  --color-grey-90-50: hsl(var(--accent-hue) 7% 12% / 50%);
 
   --color-positive: hsl(108deg 66% 46%);
 
@@ -49,4 +67,13 @@
   --color-negative-10: hsl(0deg 86% 72% / 10%);
 
   --color-neutral: hsl(33deg 80% 56%);
+
+  --focus-shadow: 0 0 0 2px var(--color-primary);
+  --fg-shadow:
+    1px 2px 2px 0 var(--color-black-4),
+    2px 4px 4px 0 var(--color-black-2);
+  --highligh-shadow:
+    1px 2px 2px 0 var(--color-black-8),
+    2px 4px 4px 0 var(--color-black-4),
+    4px 8px 8px 0 var(--color-black-2);
 }

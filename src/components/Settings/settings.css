@@ -1,0 +1,124 @@
+.settings {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 640px;
+  height: 480px;
+  max-width: 100%;
+  max-height: 100%;
+  border-bottom-right-radius: var(--container-inset-radius);
+}
+
+.settings-header {
+  justify-content: space-between;
+  padding-left: var(--space-md);
+}
+
+.settings-body {
+  overflow: hidden;
+  display: flex;
+  flex-grow: 1;
+}
+
+.settings-nav {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spcae-xs);
+  width: 144px;
+  border-right: 1px solid var(--color-white-10);
+  background-color: var(--color-white-2);
+  box-shadow:
+    1px 0 2px 0 var(--color-black-4),
+    2px 0 4px 0 var(--color-black-2);
+}
+
+.settings-nav-item {
+  padding: var(--space-sm);
+
+  &.active {
+    box-shadow: inset 2px 0 0 0 var(--color-primary);
+  }
+}
+
+.settings-nav-item-btn {
+  width: 100%;
+  border-radius: 8px;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.setting-tab {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  &:focus-visible {
+    box-shadow: inset var(--focus-shadow);
+  }
+}
+
+.setting {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: var(--space-md) var(--space-md) var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-white-10);
+  transition: var(--duration-f) opacity;
+
+  &.disabled {
+    opacity: 0.4;
+
+    &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      inset: 0;
+    }
+  }
+}
+
+.last-setting-tab-item {
+  border: none;
+  box-shadow: 0 1px 0 0 var(--color-white-10);
+}
+
+.setting-tab-spinner {
+  margin: auto;
+}
+
+.settings-group {
+  padding-top: var(--space-md);
+}
+
+.settings-group-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.settings-group-title {
+  padding-left: var(--space-md);
+  font-weight: bold;
+  box-shadow: -2px 0 0 0 var(--color-primary);
+}
+
+.settings-group-top-btn {
+  padding: var(--space-xs) var(--space-lg);
+}
+
+.setting-input {
+  width: 120px;
+  text-align: center;
+}
+
+.setting-message {
+  padding: var(--space-ms);
+}

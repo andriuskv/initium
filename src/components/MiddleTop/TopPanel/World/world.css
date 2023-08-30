@@ -19,16 +19,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-sm);
+  padding: 0 var(--space-sm);
 
   &:hover {
     .world-clock-time-text {
-      transition-delay: 0.3s;
+      transition-delay: 0.4s;
       opacity: 0.2;
     }
 
     .world-clock-remove-btn {
-      animation: 0s linear 0.4s forwards delayed-reveal;
+      animation: 0s linear 0.5s forwards delayed-reveal;
     }
   }
 }
@@ -50,7 +50,7 @@
   border-radius: 999px;
   background-color: var(--color-white-4);
 
-  &:hover, &:focus-within {
+  &:hover, &:has(:focus-visible) {
     .world-clock-time-text {
       transition: none;
       opacity: 0.2;
@@ -61,7 +61,7 @@
 .world-clock-time-text {
   font-size: var(--text-xl);
   white-space: nowrap;
-  transition: 0.1s opacity;
+  transition: var(--duration-f) opacity;
 }
 
 .world-clock-remove-btn {
@@ -90,46 +90,4 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: var(--text-lg);
-}
-
-.world-create-btn {
-  --background-color: var(--color-primary);
-
-  z-index: 1;
-  position: fixed;
-  bottom: var(--space-md);
-  right: var(--space-md);
-  height: auto;
-  padding: var(--space-md);
-  box-shadow:
-    1px 2px 2px 0 var(--color-black-8),
-    2px 4px 4px 0 var(--color-black-4),
-    4px 8px 8px 0 var(--color-black-2);
-
-  .world-create-btn-icon {
-    margin-right: 0;
-  }
-
-  &:hover, &:focus-visible {
-    --background-color: var(--color-primary-20);
-
-    .world-create-btn-title {
-      width: 56px;
-    }
-  }
-
-  &:focus-visible {
-    box-shadow:
-      inset 0 0 0 2px var(--color-white)
-      1px 2px 2px 0 var(--color-black-8),
-      2px 4px 4px 0 var(--color-black-4),
-      4px 8px 8px 0 var(--color-black-2);
-  }
-}
-
-.world-create-btn-title {
-  overflow: hidden;
-  width: 0;
-  transition: 0.1s width;
-  transition-delay: 0.1s;
 }

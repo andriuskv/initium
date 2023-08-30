@@ -7,13 +7,13 @@
   padding: var(--space-md);
 
   &.editing  {
-    & .shortcuts-item:hover {
+    .shortcuts-item:hover {
       border-color: var(--color-primary);
       background-color: var(--color-white-10);
       cursor: move;
     }
 
-    & .shortcuts-item-icon {
+    .shortcuts-item-icon {
       opacity: 0.5;
     }
   }
@@ -27,7 +27,6 @@
   align-items: center;
   height: 80px;
   border-radius: 8px;
-  border: 1px solid transparent;
 
   &.dragging {
     border-color: var(--color-primary);
@@ -49,6 +48,6 @@
 
 .shortcuts-edit-toggle-btn {
   position: absolute;
-  top: var(--space-sm);
-  right: 38px;
+  top: 5px;
+  right: 39px;
 }

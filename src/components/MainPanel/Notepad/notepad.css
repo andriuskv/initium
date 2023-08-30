@@ -3,8 +3,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: var(--container-inset-radius);
+  border-bottom-right-radius: var(--container-inset-radius);
 }
 
 .notepad-input {
@@ -29,15 +29,12 @@
   padding: var(--space-xl);
 }
 
-.notepad-warning {
+.notepad-text-size-label {
   position: absolute;
   top: 44px;
-  left: var(--space-md);
   right: var(--space-md);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-md) var(--space-md) var(--space-md) var(--space-xl);
-  background-color: var(--color-grey-90);
-  backdrop-filter: none;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: 99px;
+  font-size: var(--text-sm);
+  font-weight: bold;
 }

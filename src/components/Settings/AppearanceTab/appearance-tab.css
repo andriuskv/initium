@@ -1,0 +1,15 @@
+.setting-appearance-tab-accent-colors {
+  justify-content: center;
+  gap: 1px;
+  padding: var(--space-md);
+}
+
+.setting-appearance-tab-accent-color-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 30px;
+  padding: 0;
+  border-radius: 0;
+}

@@ -1,20 +1,26 @@
 /* global chrome */
 
-const handlers = [];
+const subscribers = [];
 let isLocalChange = false;
 
 (function listenToChanges() {
   chrome.storage.onChanged.addListener(changes => {
-    if (isLocalChange) {
-      isLocalChange = false;
-      return;
+    for (const subscriber of subscribers) {
+      if (isLocalChange) {
+        if (subscriber.listenToLocal) {
+          subscriber.handler(changes);
+        }
+      }
+      else {
+        subscriber.handler(changes);
+      }
     }
-    handlers.forEach(handler => handler(changes));
+    isLocalChange = false;
   });
 })();
 
-function subscribeToChanges(handler) {
-  handlers.push(handler);
+function subscribeToChanges(handler, listenToLocal = false) {
+  subscribers.push({ handler, listenToLocal });
 }
 
 function get(id) {

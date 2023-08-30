@@ -1,0 +1,6 @@
+.setting-reset {
+  margin-top: auto;
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-lg);
+  border-top: 1px solid var(--color-white-10);
+  border-bottom: none;
+}

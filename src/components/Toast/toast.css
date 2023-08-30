@@ -1,0 +1,22 @@
+.toast {
+  --offset: 0;
+
+  position: absolute;
+  left: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-lg);
+  font-size: var(--text-sm);
+  transform: translateY(var(--offset));
+
+  &.top {
+    top: var(--space-md);
+  }
+
+  &.bottom {
+    bottom: var(--space-md);
+    transform: translateY(calc(-1 * var(--offset)));
+  }
+}

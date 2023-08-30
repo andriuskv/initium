@@ -1,41 +1,48 @@
-.countdown-form-fields-group {
-  margin-top: var(--space-md);
+.countdown-form {
+  display: flex;
+  flex-direction: column;
+  width: 332px;
+  height: 280px;
+}
+
+.countdown-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
 }
 
 .countdown-form-fields {
   display: flex;
-  margin-bottom: var(--space-md);
+  gap: var(--space-md);
+}
+
+.countdown-form-field {
+  width: 100%;
 }
 
 .countdown-form-date-fields {
-  & .countdown-form-field-title {
+  .countdown-form-field-title {
+    margin-left: 0;
     text-align: center;
   }
 
-  & .countdown-form-field {
-    width: 68px;
+  .countdown-form-field {
+    width: 100px;
     text-align: center;
   }
-}
-
-.countdown-form-field-container {
-  margin-right: var(--space-md);
 }
 
 .countdown-form-field-title {
   margin-bottom: var(--space-sm);
+  margin-left: var(--space-sm);
   font-size: var(--text-sm);
   font-weight: bold;
 }
 
 .countdown-form-bottom {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.countdown-form-bottom-btn {
-  margin-left: var(--space-md);
+  gap: var(--space-md);
+  margin-top: auto;
 }
 
 .countdown-form-field-datalist {
@@ -43,7 +50,6 @@
   padding-top: var(--space-md);
   padding-bottom: var(--space-md);
   transform: translate(-50%, var(--space-sm));
-  background-color: var(--color-grey-90);
 
   &.months {
     width: 100px;
@@ -54,11 +60,11 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
 
-    & .countdown-form-field-datalist-item {
+    .countdown-form-field-datalist-item {
       padding: var(--space-md);
 
       &:hover {
-        border-radius: var(--space-md);
+        border-radius: 8px;
       }
     }
   }
@@ -69,20 +75,21 @@
     grid-template-rows: repeat(8, 1fr);
     padding: var(--space-md);
 
-    & .countdown-form-field-datalist-item {
+    .countdown-form-field-datalist-item {
       width: 64px;
       padding: var(--space-sm) var(--space-md);
 
       &:hover {
-        border-radius: var(--space-md);
+        border-radius: 8px;
       }
     }
   }
 }
 
 .countdown-form-field-datalist-item {
-  padding: var(--space-sm) var(--space-xl);
+  padding: var(--space-md) var(--space-xl);
   text-align: center;
+  line-height: 1;
   cursor: pointer;
 
   &:hover {

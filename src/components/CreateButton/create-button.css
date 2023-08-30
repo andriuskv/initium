@@ -1,0 +1,36 @@
+.create-btn {
+  --bottom: var(--space-md);
+  --expanded-width: 92px;
+  --background-color: var(--color-primary);
+
+  z-index: 1;
+  position: absolute;
+  bottom: var(--bottom);
+  right: var(--space-md);
+  overflow: hidden;
+  justify-content: flex-start;
+  width: 38px;
+  height: auto;
+  padding: var(--space-md);
+  box-shadow: var(--highligh-shadow);
+  color: var(--color-white);
+  transition: var(--duration-f) width,
+              var(--duration-f) transform;
+  transition-delay: var(--duration-f);
+
+  &.shift-up {
+    transform: translateY(-24px);
+  }
+
+  &:hover, &:focus-visible {
+    --background-color: var(--color-primary-20);
+
+    width: var(--expanded-width);
+  }
+
+  &:focus-visible {
+    box-shadow:
+      inset 0 0 0 2px var(--color-white),
+      var(--highligh-shadow);
+  }
+}

@@ -1,31 +1,32 @@
 .notepad-tabs-header {
   position: relative;
-  display: flex;
-  justify-content: flex-end;
-  padding: var(--space-sm);
-  border-bottom: 1px solid var(--color-white-10);
-
-  & .dropdown-container {
-    margin-right: var(--space-sm);
-  }
+  gap: var(--space-sm);
 }
 
-.notepad-tabs-header-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: var(--text-lg);
-}
-
-.notepad-tabs-dropdown-setting {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.notepad-tabs-dropdown-setting-group {
+  position: relative;
+  padding-bottom: 0;
 }
 
 .notepad-tabs-dropdown-setting-title {
   margin-bottom: var(--space-md);
+  text-align: center;
+}
+
+.notepad-tabs-dropdown-setting {
+  display: flex;
+  align-items: center;
+}
+
+.notepad-tabs-dropdown-setting-btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  border-radius: 0;
+}
+
+.notepad-tabs-dropdown-setting-value {
+  margin: 0 var(--space-md);
 }
 
 .notepad-tabs-items {
@@ -38,60 +39,6 @@
   padding: var(--space-md);
 }
 
-.notepad-tabs-item {
-  display: flex;
-  flex-direction: column;
-  height: 100px;
-  padding-top: var(--space-md);
-  border: 1px solid var(--color-white-10);
-  border-radius: 8px;
-  background-color: var(--color-white-4);
-
-  &.dragging {
-    z-index: 1000;
-    background-color: var(--color-white-10);
-  }
-
-  & .input {
-    margin-left: var(--space-md);
-    margin-right: var(--space-md);
-  }
-}
-
-.notepad-tabs-item-title {
-  align-self: flex-start;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
-  border-radius: 0;
-  text-align: left;
-  font-weight: normal;
-  word-break: break-word;
-
-  &:hover {
-    --background-color: transparent;
-
-    border-color: transparent;
-    text-decoration: underline;
-  }
-}
-
-.notepad-tabs-item-title-text {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  white-space: normal;
-}
-
-.notepad-tabs-item-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
-  margin-top: auto;
-  border-top: 1px solid var(--color-white-4);
-}
-
 .notepad-tab-size-text {
   color: var(--color-white-60);
   font-size: var(--text-sm);
@@ -101,19 +48,20 @@
 .notepad-modal {
   min-width: 320px;
 
-  & .input {
+  .input {
     width: 100%;
   }
 }
 
 .notepad-storage {
+  flex-direction: column;
   padding: var(--space-md);
-  border-top: 1px solid var(--color-white-10);
 }
 
 .notepad-storage-text {
   display: flex;
   justify-content: space-between;
+  width: 100%;
   margin-bottom: var(--space-sm);
   font-size: var(--text-sm);
   font-weight: bold;
@@ -121,6 +69,7 @@
 
 .notepad-storage-bar {
   overflow: hidden;
+  width: 100%;
   height: 4px;
   border-radius: 2px;
   background-color: var(--color-white-10);
@@ -131,8 +80,8 @@
   background-color: var(--color-primary);
   transform-origin: left;
   transform: scaleX(var(--used));
-  transition: 0.2s transform;
-  transition-delay: 0.2s;
+  transition: var(--duration-n) transform;
+  transition-delay: var(--duration-n);
 
   &.full {
     background-color: var(--color-negative);

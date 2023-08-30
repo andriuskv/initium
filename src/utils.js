@@ -32,8 +32,17 @@ function getRandomHexColor() {
   return color;
 }
 
-function findFocusableElement(element, direction) {
-  const elements = [...document.querySelectorAll("button, [tabindex]")];
+function findFocusableElements(container = document, excludeDropdown = false) {
+  const elements = Array.from(container.querySelectorAll("button:not(:disabled), input:not(:disabled), a[href], [tabindex]"));
+
+  if (excludeDropdown) {
+    return elements.filter(element => !element.closest(".dropdown"));
+  }
+  return elements;
+}
+
+function findRelativeFocusableElement(element, direction) {
+  const elements = findFocusableElements();
   const index = elements.indexOf(element);
   return elements[index + direction];
 }
@@ -67,6 +76,15 @@ function generateNoise(amount, opacity) {
   return canvas.toDataURL("image/png");
 }
 
+function timeout(callback, duration, id) {
+  if (id) {
+    clearTimeout(id);
+  }
+  id = setTimeout(callback, duration);
+
+  return id;
+}
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -74,7 +92,9 @@ export {
   getRandomString,
   getRandomHslColor,
   getRandomHexColor,
-  findFocusableElement,
+  findFocusableElements,
+  findRelativeFocusableElement,
   formatBytes,
-  generateNoise
+  generateNoise,
+  timeout
 };
