@@ -16,7 +16,7 @@
   min-width: 20px;
   height: 20px;
   padding: 0 var(--space-sm);
-  font-size: 10px;
+  font-size: var(--text-xxs);
   font-weight: bold;
 
   &::before {

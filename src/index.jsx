@@ -3,6 +3,7 @@ import "./styles/base.css";
 import "components/Dropdown/dropdown.css";
 import "components/Modal/modal.css";
 import "components/FullscreenModal/fullscreen-modal.css";
+import "components/CreateButton/create-button.css";
 
 import { createRoot } from "react-dom/client";
 import { SettingsProvider } from "contexts/settings";

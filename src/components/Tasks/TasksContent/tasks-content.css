@@ -156,7 +156,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm) var(--space-md);
-  margin: 0 20px var(--space-sm) var(--space-sm);
+  margin: 0 20px var(--space-md) var(--space-sm);
 }
 
 .task-label {

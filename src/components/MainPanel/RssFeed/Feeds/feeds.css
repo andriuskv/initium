@@ -51,16 +51,6 @@
       display: none;
     }
   }
-
-  &.inactive {
-    .feed-list-item-title span:hover {
-      text-decoration: none;
-    }
-
-    .drag-handle {
-      display: none;
-    }
-  }
 }
 
 .feed-list-item-header {
@@ -84,29 +74,32 @@
 .inactive-feed-icon {
   width: 16px;
   height: 16px;
-  margin-right: var(--space-sm);
+  margin-left: var(--space-sm);
 }
 
 .feed-list-item-title {
-  --color: var(--color-white);
-
   display: flex;
   align-items: center;
-  height: auto;
+  gap: var(--space-sm);
   min-height: 24px;
   padding: 0;
   margin-right: auto;
-  border: none;
-  border-radius: 0;
+  font-size: var(--text-md);
+  font-weight: bold;
 
-  & span:hover {
-    text-decoration: underline;
+  &:not(.inactive) {
+    &:hover, &:focus-visible {
+      box-shadow: none;
+      cursor: pointer;
+
+      & span {
+        text-decoration: underline;
+      }
+    }
   }
 
-  &:hover, &:focus-visible {
-    --background-color: transparent;
-
-    box-shadow: none;
+  .feed-new-entry-count-container {
+    margin-left: var(--space-sm);
   }
 }
 

@@ -36,7 +36,7 @@ export default function Feed({ children, index, feed, feeds, updateFeeds, select
               onBlur={renameFeed} onKeyDown={e => e.stopPropagation()} onKeyUp={blurFeedTitleInput}
               autoFocus defaultValue={feed.title}/>
           ) : (
-            <button className="btn text-btn feed-list-item-title" onClick={event => selectFeedFromList(event, index)}>
+            <button className="feed-list-item-title" onClick={event => selectFeedFromList(event, index)}>
               {feed.newEntryCount > 0 && (
                 <div className="feed-new-entry-count-container" data-entry-count>
                   <div className="feed-new-entry-count">{feed.newEntryCount}</div>

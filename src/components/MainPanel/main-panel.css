@@ -2,12 +2,11 @@
 
 .main-panel-nav {
   position: absolute;
-  top: calc(-1 * var(--nav-height));
+  top: 0;
   left: 50%;
   display: flex;
   gap: var(--space-md);
-  padding-bottom: var(--space-md);
-  transform: translateX(-50%);
+  transform: translate(-50%, calc(-100% - var(--space-md)));
   transition:
     var(--duration-n) opacity,
     var(--duration-n) visibility,
@@ -32,8 +31,8 @@
 }
 
 .main-panel {
-  --nav-height: 32px;
-  --offset-y: calc(44% + var(--nav-height));
+  --nav-height: 34px;
+  --offset-y: calc(42% + var(--nav-height));
 
   z-index: var(--z-index, 2);
   position: absolute;
@@ -41,6 +40,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: 588px;
+  max-width: calc(100% - var(--space-xl));
   pointer-events: none;
 
   &.hidden {
@@ -136,15 +136,21 @@
   min-width: 0;
   padding: 0 var(--space-sm);
 
-  &.active::after {
-    content: "";
-    position: absolute;
-    bottom: -5px;
-    display: block;
-    width: 100%;
-    height: 1px;
-    background-color: var(--color-primary);
-    pointer-events: none;
+  &.active {
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -5px;
+      display: block;
+      width: 100%;
+      height: 1px;
+      background-color: var(--color-primary);
+      pointer-events: none;
+    }
+
+    .main-panel-item-header-item-select-btn {
+      --color: var(--color-white);
+    }
   }
 
   &.hidden {

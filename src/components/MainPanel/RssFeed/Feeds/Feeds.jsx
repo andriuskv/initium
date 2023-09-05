@@ -116,12 +116,12 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
           </li>
         ))}
         {feeds.inactive.map((feed, index) => (
-          <li className={`feed-list-item${feed.fetching ? " fetching" : ""} inactive`} key={feed.url}>
+          <li className={`feed-list-item${feed.fetching ? " fetching" : ""}`} key={feed.url}>
             <div className="feed-list-item-content">
               <div className="feed-list-item-header">
                 {feed.image ? <img src={feed.image} className="feed-list-item-logo" width="40px" height="40px" alt=""/> : null}
                 <div className="feed-list-item-title-container">
-                  <h3 className="feed-list-item-title">
+                  <h3 className="feed-list-item-title inactive">
                     <Icon id="sleep" className="inactive-feed-icon" title="Inactive"/>
                     <span>{feed.title}</span>
                   </h3>
@@ -143,7 +143,7 @@ export default function Feeds({ feeds, selectFeedFromList, removeFeed, deactivat
           </li>
         ))}
       </ul>
-      <CreateButton style={{ "--expanded-width": "80px" }} onClick={showForm}>Add</CreateButton>
+      <CreateButton style={{ "--expanded-width": "76px" }} onClick={showForm}>Add</CreateButton>
     </div>
   );
 }

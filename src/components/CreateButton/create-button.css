@@ -9,12 +9,14 @@
   right: var(--space-md);
   overflow: hidden;
   justify-content: flex-start;
+  gap: var(--space-md);
   width: 38px;
   height: auto;
-  padding: var(--space-md);
+  padding: var(--space-md) var(--space-lg) var(--space-md) var(--space-md);
   box-shadow: var(--highligh-shadow);
   color: var(--color-white);
   transition: var(--duration-f) width,
+              var(--duration-f) gap,
               var(--duration-f) transform;
   transition-delay: var(--duration-f);
 
@@ -25,6 +27,7 @@
   &:hover, &:focus-visible {
     --background-color: var(--color-primary-20);
 
+    gap: var(--space-sm);
     width: var(--expanded-width);
   }
 
