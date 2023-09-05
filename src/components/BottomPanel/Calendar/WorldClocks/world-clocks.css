@@ -12,6 +12,11 @@
 .calendar-world-clocks-title-btn {
   padding: var(--space-xs) var(--space-md);
   font-size: var(--text-md);
+  translate: calc(-1 * var(--space-sm));
+
+  &:hover, &:focus-visible {
+    translate: 0;
+  }
 }
 
 .calendar-world-clocks-list {
@@ -20,7 +25,7 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--space-sm) var(--space-xl);
   max-height: 84px;
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm) var(--space-md) var(--space-md) var(--space-md);
 }
 
 .calendar-world-clocks-list-item {

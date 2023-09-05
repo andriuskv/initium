@@ -115,6 +115,7 @@
   &.current, &:hover, &:focus-visible {
     border-color: var(--color-white-4);
     background-color: var(--color-white-10);
+    box-shadow: inset 1px 1px 4px 0 var(--color-white-2), var(--fg-shadow);
   }
 
   & div {

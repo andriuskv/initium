@@ -23,7 +23,7 @@
   border-radius: 999px;
   background-color: var(--color-white-10);
 
-  &:has(> .world-form-input:focus-visible) {
+  &:has(.world-form-input:focus-visible) {
     box-shadow: 0 0 0 2px var(--color-primary);
   }
 }
@@ -32,17 +32,19 @@
   position: absolute;
   box-sizing: content-box;
   padding: var(--space-sm);
+  color: var(--color-white-80);
   pointer-events: none;
 }
 
 .world-form-input {
   --background-color: transparent;
 
-  width: 100%;
+  flex-grow: 1;
   height: auto;
   padding-left: 28px;
   border-color: transparent;
   border-radius: 0;
+  box-shadow: none;
 
   &:focus-visible {
     box-shadow: none;

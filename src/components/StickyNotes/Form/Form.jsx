@@ -110,7 +110,7 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
   return (
     <div className={`sticky-note sticky-note-form${movable ? " movable" : ""} ${editable ? " editable" : ""}`} key={form.id}
       style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--background-color": form.color }}>
-      <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} title="move"></div>
+      <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} title={movable ? "" : "Move"}></div>
       <input className="input sticky-note-title sticky-note-input" name="title" onChange={handleInputChange}
         value={form.title} placeholder={`Note #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}/>
       <textarea className="input sticky-note-input sticky-note-content-input" name="content" onChange={handleInputChange}

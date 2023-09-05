@@ -15,15 +15,6 @@
 
   @media (height <= 720px) {
     gap: var(--space-xs);
-
-    .top-site-title {
-      font-size: var(--text-xxs);
-    }
-
-    .top-site-thumbnail-container {
-      width: 72px;
-      height: 72px;
-    }
   }
 }
 
@@ -116,8 +107,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   margin: 0 auto;
   border-radius: 50%;
   pointer-events: auto;
