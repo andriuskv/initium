@@ -32,13 +32,15 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
         title: "",
         content: "",
         color: colors[Math.floor(Math.random() * colors.length)],
+        scale: 1,
+        textScale: 1,
         tilt: getTilt()
       });
       setEditable(false);
       setMovable(true);
     }
     else if (initialForm.action === "edit") {
-      setForm({ ...initialForm });
+      setForm({ ...initialForm, scale: initialForm.scale || 1, textScale: initialForm.textScale || 1 });
       setEditable(true);
     }
     showForm();
@@ -104,6 +106,22 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
     setForm({ ...form, color });
   }
 
+  function decreaseScale() {
+    setForm({ ...form, scale: form.scale - 0.1125 });
+  }
+
+  function increaseScale() {
+    setForm({ ...form, scale: form.scale + 0.1125 });
+  }
+
+  function decreaseTextScale() {
+    setForm({ ...form, textScale: form.textScale - 0.1125 });
+  }
+
+  function increaseTextScale() {
+    setForm({ ...form, textScale: form.textScale + 0.1125 });
+  }
+
   function saveNote() {
     createNote(form);
     discardNote();
@@ -122,7 +140,7 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
   }
   return (
     <div className={`sticky-note sticky-note-form${movable ? " movable" : ""}${editable ? " editable" : ""}`} key={form.id}
-      style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--background-color": form.color }}>
+      style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.color }}>
       <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} title={movable ? "" : "Move"}></div>
       <input className="input sticky-note-title sticky-note-input" name="title" onChange={handleInputChange}
         value={form.title} placeholder={`Note #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}/>
@@ -140,6 +158,30 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
                   </li>
                 ))}
               </ul>
+            </Dropdown>
+            <Dropdown toggle={{ iconId: "scale", title: "Scale" }} body={{ className: "sticky-note-dropdown" }}>
+              <div className="dropdown-group sticky-note-setting">
+                <button className="btn icon-btn"
+                  onClick={decreaseScale} title="Decrease size" disabled={form.scale <= 0.75}>
+                  <Icon id="minus"/>
+                </button>
+                <div className="sticky-note-setting-name">Scale</div>
+                <button className="btn icon-btn"
+                  onClick={increaseScale} title="Increase size" disabled={form.scale >= 2}>
+                  <Icon id="plus"/>
+                </button>
+              </div>
+              <div className="dropdown-group sticky-note-setting">
+                <button className="btn icon-btn"
+                  onClick={decreaseTextScale} title="Decrease text size" disabled={form.textScale <= 0.5}>
+                  <Icon id="minus"/>
+                </button>
+                <div className="sticky-note-setting-name">Text size</div>
+                <button className="btn icon-btn"
+                  onClick={increaseTextScale} title="Increase text size" disabled={form.textScale >= 2}>
+                  <Icon id="plus"/>
+                </button>
+              </div>
             </Dropdown>
           </div>
           <div className="sticky-note-btns">

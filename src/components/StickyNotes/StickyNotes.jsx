@@ -46,8 +46,8 @@ export default function StickyNotes() {
     }
     return (
       <ul className="sticky-notes">
-        {notesToRender.map(note => (
-          <li className="sticky-note" style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, backgroundColor: note.color }}
+        {notesToRender.map((note, i) => (
+          <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.color }} onClick={event => handleNoteClick(i, event)}
             key={note.id}>
             {note.title ? <p className="sticky-note-title">{note.title}</p> : null}
             {note.content ? <p className="sticky-note-content">{note.content}</p> : null}
