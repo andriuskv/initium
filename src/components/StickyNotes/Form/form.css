@@ -4,6 +4,11 @@
   display: flex;
   flex-direction: column;
   padding: var(--space-sm);
+  scrollbar-gutter: auto;
+
+  &:hover {
+    overflow: initial;
+  }
 
   &.movable {
     cursor: move;
@@ -15,18 +20,12 @@
     animation-fill-mode: both;
   }
 
+  &.discarding {
+    animation-name: discard-form;
+  }
+
   .input::placeholder {
     color: var(--color-black-40);
-  }
-}
-
-@keyframes rotate-straight {
-  from {
-    transform: translate(-50%, -4px) rotate(calc(var(--tilt) * 1deg));
-  }
-
-  to {
-    transform: translate(-50%, -4px);
   }
 }
 
@@ -43,26 +42,76 @@
 }
 
 .sticky-note-input {
-  padding: 0 var(--space-sm);
+  padding: var(--space-sm);
   border-radius: 4px;
   border: 0;
   width: 100%;
   height: auto;
   background-color: transparent;
-  color: var(--color-black-60);
   box-shadow: none;
+  flex: 1;
 
   &:focus-visible {
-    box-shadow: none;
+    box-shadow: 0 0 0 1px var(--color-black-2), var(--fg-shadow);
     background-color: var(--color-white-10);
   }
 }
 
-.sticky-note-content-input {
+.sticky-note-sidebar {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  background-color: var(--background-color);
+  transform: translate(75%, 25%) rotate(-2deg);
+  box-shadow:
+    0 0 0 1px var(--color-black-4),
+    var(--highligh-shadow);
+}
+
+.sticky-note-dropdown {
+  left: 50%;
+  right: auto;
+  min-width: 126px;
+  padding: var(--space-md);
+  transform: translate(-50%, var(--space-sm));
+}
+
+.sticky-note-color-picker-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.sticky-note-color-picker-item {
+  width: 24px;
+  padding: 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+
+  &:hover, &:focus-visible {
+    scale: 1.04;
+  }
+
+  &.active {
+    box-shadow: inset 0 0 0 2px var(--color-white);
+  }
+}
+
+.sticky-note-setting {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 128px;
+}
+
+.sticky-note-setting-name {
   flex-grow: 1;
-  font-size: var(--text-xl);
-  font-family: "Caveat";
-  line-height: 1;
+  text-align: center;
 }
 
 .sticky-note-btns {
@@ -78,7 +127,28 @@
   background-color: var(--background-color);
   transform: translate(-50%, 100%) rotate(3deg);
   box-shadow:
-    -1px -2px 2px 0 var(--color-black-4),
-    -2px -4px 4px 0 var(--color-black-2),
+    0 0 0 1px var(--color-black-4),
     var(--highligh-shadow);
+}
+
+@keyframes rotate-straight {
+  from {
+    transform: var(--titled-transform);
+  }
+
+  to {
+    transform: var(--straight-transform);
+  }
+}
+
+@keyframes discard-form {
+  from {
+    transform: var(--straight-transform);
+    opacity: 1;
+  }
+
+  to {
+    transform: var(--titled-transform) scale(0.9);
+    opacity: 0;
+  }
 }

@@ -6,51 +6,68 @@
 }
 
 .sticky-note {
+  --scale: 1;
+  --text-scale: 1;
+  --straight-transform: translateX(-50%);
+  --titled-transform: translateX(-50%) rotate(calc(var(--tilt) * 1deg));
+
   position: absolute;
   top: calc(var(--y) * 1%);
   left: calc(var(--x) * 1%);
   overflow: hidden;
-  width: 168px;
-  height: 168px;
-  padding: var(--space-md);
+  width: calc(168px * var(--scale));
+  height: calc(168px * var(--scale));
+  padding: var(--space-md) 0 var(--space-md) var(--space-md);
   background-color: var(--background-color);
-  box-shadow: var(--highligh-shadow);
+  box-shadow:
+    0 0 0 1px var(--color-black-4),
+    var(--highligh-shadow);
   animation-name: rotate-tilt;
   animation-duration: var(--duration-n);
   animation-fill-mode: both;
-}
+  scrollbar-gutter: stable;
+  transform-origin: top center;
 
-@keyframes rotate-tilt {
-  from {
-    transform: translate(-50%, -4px);
+  &:hover {
+    overflow: auto;
   }
 
-  to {
-    transform: translate(-50%, -4px) rotate(calc(var(--tilt) * 1deg));
-  }
-}
-
-.sticky-note-title {
-  @mixin text-truncate;
-
-  color: var(--color-black-60);
-  font-size: var(--text-xxl);
-  font-family: "Caveat";
-  line-height: 1.1;
-
-  & + .sticky-note-content {
-    -webkit-line-clamp: 6;
+  &.discarding {
+    animation-name: discard;
   }
 }
 
 .sticky-note-content {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 8;
   color: var(--color-black-60);
   white-space: pre-wrap;
-  font-size: var(--text-xl);
+  font-size: calc(var(--text-xl) * var(--scale) * var(--text-scale));
   font-family: "Caveat";
   line-height: 1.1;
+  word-break: break-word;
+}
+
+.sticky-note-title {
+  font-size: calc(var(--text-xxl) * var(--scale) * var(--text-scale));
+}
+
+@keyframes rotate-tilt {
+  from {
+    transform: var(--straight-transform);
+  }
+
+  to {
+    transform: var(--titled-transform);
+  }
+}
+
+@keyframes discard {
+  from {
+    transform: var(--titled-transform);
+    opacity: 1;
+  }
+
+  to {
+    transform: var(--titled-transform) scale(0.9);
+    opacity: 0;
+  }
 }
