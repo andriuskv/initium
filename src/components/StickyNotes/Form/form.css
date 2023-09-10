@@ -4,6 +4,11 @@
   display: flex;
   flex-direction: column;
   padding: var(--space-sm);
+  scrollbar-gutter: auto;
+
+  &:hover {
+    overflow: initial;
+  }
 
   &.movable {
     cursor: move;
@@ -128,7 +133,6 @@
   background-color: var(--background-color);
   transform: translate(-50%, 100%) rotate(3deg);
   box-shadow:
-    -1px -2px 2px 0 var(--color-black-4),
-    -2px -4px 4px 0 var(--color-black-2),
+    0 0 0 1px var(--color-black-4),
     var(--highligh-shadow);
 }

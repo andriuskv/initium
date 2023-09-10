@@ -46,8 +46,10 @@ function StickyNotesProvider({ children }) {
     const { action } = note;
     let newNotes = notes;
 
+    delete note.index;
     delete note.action;
 
+    note.title = note.title.trimEnd();
     note.content = note.content.trimEnd();
 
     if (action === "create") {
