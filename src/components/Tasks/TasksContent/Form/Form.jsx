@@ -118,6 +118,11 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
     setState({ ...state });
   }
 
+  function localCreateGroup(group) {
+    setState({ ...state, selectedGroupId: group.id });
+    createGroup(group);
+  }
+
   function getNewSubtask() {
     return {
       id: getRandomString(4),
@@ -422,7 +427,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
       )}
       {groupFormVisible && (
         <Suspense fallback={null}>
-          <GroupForm createGroup={createGroup} hide={hideGroupForm} modal/>
+          <GroupForm createGroup={localCreateGroup} hide={hideGroupForm} modal/>
         </Suspense>
       )}
     </>
