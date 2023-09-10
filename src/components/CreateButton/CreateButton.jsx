@@ -24,7 +24,12 @@ export default function CreateButton({ children, className, attrs = {}, style = 
     scrolling.current = true;
 
     requestAnimationFrame(() => {
-      ref.current.classList.toggle("shift-up", target.scrollTop + target.offsetHeight >= target.scrollHeight - 32);
+      if (target.scrollTop === 0) {
+        ref.current.classList.remove("shift-up");
+      }
+      else {
+        ref.current.classList.toggle("shift-up", target.scrollTop + target.offsetHeight >= target.scrollHeight - 32);
+      }
       scrolling.current = false;
     });
   }

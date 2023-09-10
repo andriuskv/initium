@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 312px;
-  width: 272px;
+  width: 280px;
 }
 
 .sticky-notes-list {
@@ -10,23 +10,19 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: var(--space-sm);
-  padding: var(--space-sm);
+  gap: var(--space-md);
+  padding: var(--space-md);
 }
 
 .sticky-notes-list-item {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
   padding: var(--space-md);
   border-radius: 8px;
-}
+  box-shadow: var(--fg-shadow);
 
-.sticky-notes-list-item-title {
-  color: var(--color-black-60);
-  font-size: var(--text-xxl);
-  font-family: "Caveat";
-  line-height: 1;
+  .dropdown-container {
+    float: right;
+    margin-left: var(--space-sm);
+  }
 }
 
 .sticky-notes-list-item-content {
@@ -34,7 +30,12 @@
   font-size: var(--text-xl);
   white-space: pre-wrap;
   font-family: "Caveat";
-  line-height: 1;
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+.sticky-notes-list-item-title {
+  font-size: var(--text-xxl);
 }
 
 .sticky-notes-list-message {
