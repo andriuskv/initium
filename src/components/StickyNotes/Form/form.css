@@ -20,18 +20,12 @@
     animation-fill-mode: both;
   }
 
+  &.discarding {
+    animation-name: discard-form;
+  }
+
   .input::placeholder {
     color: var(--color-black-40);
-  }
-}
-
-@keyframes rotate-straight {
-  from {
-    transform: translate(-50%, -4px) rotate(calc(var(--tilt) * 1deg));
-  }
-
-  to {
-    transform: translate(-50%, -4px);
   }
 }
 
@@ -135,4 +129,26 @@
   box-shadow:
     0 0 0 1px var(--color-black-4),
     var(--highligh-shadow);
+}
+
+@keyframes rotate-straight {
+  from {
+    transform: var(--titled-transform);
+  }
+
+  to {
+    transform: var(--straight-transform);
+  }
+}
+
+@keyframes discard-form {
+  from {
+    transform: var(--straight-transform);
+    opacity: 1;
+  }
+
+  to {
+    transform: var(--titled-transform) scale(0.9);
+    opacity: 0;
+  }
 }

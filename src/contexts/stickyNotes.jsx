@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext, useMemo } from "react";
+import { getSetting } from "services/settings";
 import * as chromeStorage from "services/chromeStorage";
 
 const StickyNotesContext = createContext();
@@ -64,10 +65,19 @@ function StickyNotesProvider({ children }) {
   }
 
   function removeNote(id) {
-    const newNotes = notes.filter(note => note.id !== id);
+    const { animationSpeed } = getSetting("appearance");
+    const note = notes.find(note => note.id === id);
 
-    setNotes([...newNotes]);
-    saveNotes(newNotes);
+    note.discarding = true;
+
+    setNotes([...notes]);
+
+    setTimeout(() => {
+      const newNotes = notes.filter(note => note.id !== id);
+
+      setNotes([...newNotes]);
+      saveNotes(newNotes);
+    }, 200 * animationSpeed);
   }
 
   function saveNotes(notes) {

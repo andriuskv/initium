@@ -124,11 +124,14 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
 
   function saveNote() {
     createNote(form);
-    discardNote();
+    discardNote(false);
   }
 
-  function enableNoteDrag() {
-    setMovable(true);
+  function enableNoteDrag(event) {
+    if (event.button === 0) {
+      setEditable(false);
+      setMovable(true);
+    }
   }
 
   function getTilt() {
@@ -139,7 +142,7 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
     return null;
   }
   return (
-    <div className={`sticky-note sticky-note-form${movable ? " movable" : ""}${editable ? " editable" : ""}`} key={form.id}
+    <div className={`sticky-note sticky-note-form${movable ? " movable" : ""}${editable ? " editable" : ""}${initialForm.discarding ? " discarding" : ""}`} key={form.id}
       style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.color }}>
       <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} title={movable ? "" : "Move"}></div>
       <textarea className="input sticky-note-content sticky-note-input sticky-note-title" name="title" onChange={handleInputChange}

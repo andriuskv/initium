@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useNotes } from "contexts/stickyNotes";
+import { getSetting } from "services/settings";
 import "./sticky-notes.css";
 
 const Form = lazy(() => import("./Form"));
@@ -9,6 +10,9 @@ export default function StickyNotes() {
   const [form, setForm] = useState(null);
 
   useEffect(() => {
+    if (form) {
+      discardWithAnimation();
+    }
     window.addEventListener("sticky-note", handleStickyNoteChange);
 
     return () => {
@@ -27,8 +31,23 @@ export default function StickyNotes() {
     }
   }
 
-  function discardNote() {
-    setForm(null);
+  function discardNote(shouldAnimate = true) {
+    if (form.action === "edit" || !shouldAnimate) {
+      setForm(null);
+    }
+    else if (shouldAnimate) {
+      discardWithAnimation();
+    }
+  }
+
+  function discardWithAnimation() {
+    const { animationSpeed } = getSetting("appearance");
+
+    setForm({ ...form, discarding: true });
+
+    setTimeout(() => {
+      setForm(null);
+    }, 200 * animationSpeed);
   }
 
   function showForm() {
@@ -47,7 +66,7 @@ export default function StickyNotes() {
     return (
       <ul className="sticky-notes">
         {notesToRender.map((note, i) => (
-          <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.color }} onClick={event => handleNoteClick(i, event)}
+          <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.color }}
             key={note.id}>
             {note.title ? <p className="sticky-note-content sticky-note-title">{note.title}</p> : null}
             {note.content ? <p className="sticky-note-content">{note.content}</p> : null}
