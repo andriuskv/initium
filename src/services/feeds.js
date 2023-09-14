@@ -1,5 +1,6 @@
 import { getRandomString } from "../utils";
-import { getDate } from "./timeDate";
+import { getSetting } from "./settings";
+import { formatDate } from "./timeDate";
 import * as chromeStorage from "./chromeStorage";
 
 function getStoredFeeds() {
@@ -87,15 +88,10 @@ function parseDate(dateStr) {
   if (!dateStr) {
     return;
   }
+  const { dateLocale } = getSetting("timeDate");
   const date = new Date(dateStr);
 
-  return getDate("month day, year at hours:minutes period", {
-    year: date.getFullYear(),
-    month: date.getMonth(),
-    day: date.getDate(),
-    hours: date.getHours(),
-    minutes: date.getMinutes()
-  });
+  return formatDate(date, { locale: dateLocale });
 }
 
 function parseEntries(entries) {

@@ -99,8 +99,8 @@ export default function Form({ addClock, hide }) {
 
   return (
     <div className="world-form">
-      <div className="container-header fullscreen-modal-header">
-        <h3 className="fullscreen-modal-header-title">Add a new world clock</h3>
+      <div className="container-header">
+        <h3 className="container-header-title">Add a new world clock</h3>
         <button className="btn icon-btn" onClick={hide} title="Close">
           <Icon id="cross"/>
         </button>

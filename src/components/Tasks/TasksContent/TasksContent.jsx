@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
-import { getDate } from "services/timeDate";
+import { getSetting } from "services/settings";
+import { formatDate } from "services/timeDate";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
@@ -281,6 +282,15 @@ export default function Tasks({ settings, expanded, toggleSize }) {
     task.rawText ??= task.text;
     task.rawText = task.rawText.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
     task.text = replaceLink(task.rawText);
+
+    if (task.expirationDate) {
+      const { dateLocale } = getSetting("timeDate");
+
+      task.expirationDateString = formatDate(task.expirationDate, {
+        locale: dateLocale,
+        includeTime: true
+      });
+    }
     return task;
   }
 
@@ -420,6 +430,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
     delete task.id;
     delete task.text;
     delete task.removed;
+    delete task.expirationDateString;
     return task;
   }
 
@@ -514,19 +525,10 @@ export default function Tasks({ settings, expanded, toggleSize }) {
     const full = task.expirationDate - task.creationDate;
     const partial = task.expirationDate - Date.now();
     const dashoffset = 200 - 25 * (1 - partial / full);
-    const expirationDate = new Date(task.expirationDate);
-    const dateTimeString = getDate("hours:minutes period month day, year", {
-      year: expirationDate.getFullYear(),
-      month: expirationDate.getMonth(),
-      day: expirationDate.getDate(),
-      hours: expirationDate.getHours(),
-      minutes: expirationDate.getMinutes(),
-      dayWithSuffix: false
-    });
 
     return (
       <svg className="task-expiration-indicator">
-        <title>Expires on {dateTimeString}</title>
+        <title>Expires on {task.expirationDateString}</title>
         <circle cx="8" cy="8" r="4" strokeDasharray="100"
           className="task-expiration-indicator-visual"
           style={{ "--dashoffset": dashoffset }}/>
@@ -555,7 +557,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
   }
   return (
     <>
-      <div className="container-header tasks-header">
+      <div className="container-header">
         <Dropdown>
           <button className="btn icon-text-btn dropdown-btn" onClick={showGroups}>
             <Icon id="menu"/>

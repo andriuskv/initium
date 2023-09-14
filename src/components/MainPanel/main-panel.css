@@ -96,15 +96,6 @@
   padding: 0;
 }
 
-.main-panel-item-header-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: var(--text-md);
-  font-weight: bold;
-}
-
 .main-panel-item-header-btn {
   margin: var(--space-sm);
 }

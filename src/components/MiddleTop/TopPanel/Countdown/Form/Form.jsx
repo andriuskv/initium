@@ -199,8 +199,8 @@ export default function Presets({ createCountdown, hide }) {
   return (
     <form className="countdown-form" onSubmit={handleFormSubmit} onFocus={handleFormFocus} onBlur={handleFormBlur}
       onKeyDown={handleFormKeydown} autoComplete="off">
-      <div className="container-header fullscreen-modal-header">
-        <h3 className="fullscreen-modal-header-title">Countdown form</h3>
+      <div className="container-header">
+        <h3 className="container-header-title">Countdown form</h3>
       </div>
       <div className="container-body countdown-form-body">
         <label>

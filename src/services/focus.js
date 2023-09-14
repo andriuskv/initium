@@ -47,7 +47,10 @@ function trapFocus(id, container, { excludeDropdown = true } = {}) {
   };
 
   stack.push(id);
-  traps[id].first.focus();
+
+  if (!focusableElements.some(element => element.getAttribute("autofocus"))) {
+    traps[id].first.focus();
+  }
 
   if (stack.length === 1) {
     document.addEventListener("keydown", handleKeyDown);

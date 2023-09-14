@@ -40,7 +40,7 @@ export default function LabelForm({ addUniqueLabel, hide }) {
             <input type="color" name="color" className="task-form-color-picker"
               onInput={handleColorChange} defaultValue={currentColor} title="Change color"/>
           </div>
-          <input type="text" name="name" className="input task-label-form-input" autoComplete="off" required/>
+          <input type="text" name="name" className="input task-label-form-input" autoComplete="off" autoFocus required/>
         </div>
         <div className="modal-actions">
           <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
