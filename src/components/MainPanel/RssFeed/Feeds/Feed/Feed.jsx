@@ -66,7 +66,7 @@ export default function Feed({ children, index, feed, feeds, updateFeeds, select
         )}
       </div>
       <p>{feed.description}</p>
-      {feed.updated ? <div className="feed-date">Updated on: {feed.updated}</div> : null}
+      {feed.updated ? <div className="feed-date">Updated on {feed.updated}</div> : null}
     </>
   );
 }

@@ -99,7 +99,7 @@ export default function Groups({ groups, updateGroups, createGroup, hide }) {
 
   return (
     <>
-      <div className="container-header tasks-header"></div>
+      <div className="container-header"></div>
       <div className="container-body tasks-body">
         <GroupForm createGroup={createGroup}/>
         {groups.length > 1 ? (

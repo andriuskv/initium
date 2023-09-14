@@ -1,12 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { getRandomHslColor } from "utils";
-import { getWeekday, getWeekdayName, getTimeString } from "services/timeDate";
+import { getWeekday, getWeekdays, getTimeString } from "services/timeDate";
 import { getSetting } from "services/settings";
 import "./form.css";
 
 export default function Form({ form: initialForm, day, updateReminder, hide }) {
   const [form, setForm] = useState(() => getInitialForm(initialForm));
   const ignoreFirstClick = useRef(true);
+  const weekdayNames = useMemo(() => {
+    const { dateLocale } = getSetting("timeDate");
+    return getWeekdays(dateLocale, "short");
+  }, []);
 
   useEffect(() => {
     if (!form) {
@@ -281,8 +285,8 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
 
   return (
     <form className="reminder-form" onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
-      <div className="container-header fullscreen-modal-header">
-        <h3 className="fullscreen-modal-header-title">Reminder form</h3>
+      <div className="container-header">
+        <h3 className="container-header-title">Reminder form</h3>
       </div>
       <div className="container-body reminder-form-body">
         <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
@@ -365,7 +369,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
                     <input type="checkbox" className="sr-only checkbox-input" name={index}
                       onChange={handleWeekdaySelection} checked={selected || index === form.repeat.currentWeekday}
                       disabled={index === form.repeat.currentWeekday}/>
-                    <div className="reminder-form-weekday-content">{getWeekdayName(index, true)}</div>
+                    <div className="reminder-form-weekday-content">{weekdayNames[index]}</div>
                   </label>
                 ))}
               </div>

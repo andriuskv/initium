@@ -43,48 +43,71 @@ function formatTime(time) {
   return `${hours ? `${hours}:` : ""}${padTime(minutes, hours)}:${padTime(seconds)}`;
 }
 
-function getWeekdays() {
+function formatDate(date, { locale = "en", includeTime = false, includeWeekday = false, excludeYear = false, excludeDay = false } = {}) {
+  let options = { year: "numeric", month: "long", day: "numeric" };
+
+  if (includeTime) {
+    const { format } = getSetting("timeDate");
+    options = { ...options, hour: "numeric", minute: "numeric", hour12: format === 12 };
+  }
+
+  if (includeWeekday) {
+    options = { ...options, weekday: "long" };
+  }
+
+  if (excludeDay) {
+    delete options.day;
+  }
+
+  if (excludeYear) {
+    delete options.year;
+  }
+
+  if (locale === "system") {
+    locale = navigator.language;
+  }
+
+  try {
+    return new Intl.DateTimeFormat(locale, options).format(date);
+  } catch (e) {
+    console.log(e);
+    return new Intl.DateTimeFormat("en", options).format(date);
+  }
+}
+
+function getWeekdays(locale = "en", format = "long") {
   const { firstWeekday } = getSetting("timeDate");
-  const weekdays = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-  ];
+  const formatter = new Intl.DateTimeFormat(locale, { weekday: format, timeZone: "UTC" });
+  // Start from monday
+  const weekdays = [3, 4, 5, 6, 7, 8, 9].map(day => {
+    const dd = day < 10 ? `0${day}` : day;
+    const date = new Date(`2023-07-${dd}T00:00:00+00:00`);
+    return formatter.format(date);
+  });
 
   if (firstWeekday === 1) {
-    weekdays.unshift("Sunday");
-  }
-  else {
-    weekdays.push("Sunday");
+    weekdays.unshift(weekdays.pop());
   }
   return weekdays;
 }
 
-function getWeekdayName(day, useShortName = false) {
-  const weekdays = getWeekdays();
-  return useShortName ? weekdays[day].slice(0, 3) : weekdays[day];
+function getWeekdayName(day, locale = "en", useShortName = false) {
+  const weekdays = getWeekdays(locale, useShortName ? "short" : "long");
+  return weekdays[day];
 }
 
-function getMonthName(month, useShortName = false) {
-  const months = {
-    0: "January",
-    1: "February",
-    2: "March",
-    3: "April",
-    4: "May",
-    5: "June",
-    6: "July",
-    7: "August",
-    8: "September",
-    9: "October",
-    10: "November",
-    11: "December"
-  };
+function getMonthNames(locale = "en", format = "long") {
+  const formatter = new Intl.DateTimeFormat(locale, { month: format, timeZone: "UTC" });
+  return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => {
+    const mm = month < 10 ? `0${month}` : month;
+    const date = new Date(`2023-${mm}-01T00:00:00+00:00`);
+    return formatter.format(date);
+  });
+}
 
-  return useShortName ? months[month].slice(0, 3) : months[month];
+function getMonthName(month, locale = "en", useShortName = false) {
+  const months = getMonthNames(locale, useShortName ? "short" : "long");
+  return months[month];
 }
 
 function getDay(day, withSuffix = true) {
@@ -216,6 +239,7 @@ export {
   getDate,
   padTime,
   formatTime,
+  formatDate,
   getOffsettedCurrentTime,
   getHoursOffset
 };

@@ -1,9 +1,5 @@
 @import "../../../styles/mixins.css";
 
-.tasks-header:empty {
-  height: var(--header-height);
-}
-
 .tasks-groups-container {
   overflow-y: auto;
   display: flex;
@@ -39,6 +35,10 @@
     border-bottom: none;
     background-color: var(--color-white-10);
   }
+
+  &:focus-visible {
+    box-shadow: inset var(--focus-shadow);
+  }
 }
 
 .tasks-groups-item-toggle-btn {
@@ -60,10 +60,6 @@
   &:hover {
     box-shadow: 0 1px 0 0 var(--color-white-20),
                 0 -1px 0 0 var(--color-white-10);
-  }
-
-  &:focus-visible {
-    box-shadow: inset var(--focus-shadow);
   }
 
   &:disabled {

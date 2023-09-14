@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { getDisplayTime } from "services/timeDate";
+import { getDisplayTime, formatDate } from "services/timeDate";
 import "./clock.css";
 
 export default function Clock({ settings }) {
@@ -23,23 +23,14 @@ export default function Clock({ settings }) {
   }, [settings.dateLocale]);
 
   function updateDate() {
-    let locale = settings.dateLocale;
+    const currentDate = new Date();
+    const date = formatDate(currentDate.getTime(), {
+      locale: settings.dateLocale,
+      includeWeekday: true,
+      excludeYear: true
+    });
 
-    if (locale === "system") {
-      locale = navigator.language;
-    }
-    const options = { weekday: "long", month: "long", day: "numeric" };
-
-    try {
-      const date = new Intl.DateTimeFormat(locale, options).format();
-
-      setDate({ day: new Date().getDate(), string: date });
-    } catch (e) {
-      console.log(e);
-      const date = new Intl.DateTimeFormat("en-US", options).format();
-
-      setDate({ day: new Date().getDate(), string: date });
-    }
+    setDate({ day: currentDate.getDate(), string: date });
   }
 
   function update() {

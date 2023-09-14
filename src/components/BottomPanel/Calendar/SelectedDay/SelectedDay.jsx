@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent, getRandomHslColor, timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
-import { getDate, padTime } from "services/timeDate";
+import { padTime } from "services/timeDate";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
@@ -16,10 +16,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
   useEffect(() => {
     const { year, month, day } = selectedDay;
 
-    setDay({
-      ...calendar[year][month].days[day - 1],
-      dateString: getDate("month day, year", selectedDay)
-    });
+    setDay({ ...calendar[year][month].days[day - 1] });
   }, [selectedDay]);
 
   function changeReminderColor(reminder) {
@@ -170,7 +167,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
         <button className="btn icon-btn" onClick={hide} title="Back to calendar">
           <Icon id="chevron-left"/>
         </button>
-        <span className="selected-day-title">{day.dateString}</span>
+        <span className="calendar-title selected-day-title">{day.dateString}</span>
       </div>
       {day.reminders.length > 0 ? (
         <ul className="selected-day-remainders" data-dropdown-parent>

@@ -306,7 +306,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
 
   return (
     <>
-      <div className="container-header tasks-header">
+      <div className="container-header">
         <button className="btn icon-btn" onClick={toggleMoreOptions} title="More options">
           <Icon id="show-more"/>
         </button>
@@ -382,7 +382,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
           </div>
           <div className="task-form-textarea-container">
             <textarea className="input task-form-textarea" name="text" defaultValue={state.task.rawText}
-              placeholder="Details" required></textarea>
+              placeholder="Details" autoFocus required></textarea>
           </div>
           <div className="task-form-item-container">
             <h4 className="task-form-item-title">Subtasks</h4>

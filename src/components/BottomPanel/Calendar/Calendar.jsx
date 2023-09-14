@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { getRandomString, findFocusableElements, findRelativeFocusableElement } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
@@ -18,7 +18,7 @@ export default function Calendar({ visible, showIndicator }) {
   const [reminders, setReminders] = useState([]);
   const [viewingYear, setViewingYear] = useState(false);
   const [transition, setTransition] = useState({ x: 0, y: 0 });
-  const [weekdays, setWeekdays] = useState(null);
+  const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), []);
   const currentFirstWeekday = useRef(settings.firstWeekday);
 
   useEffect(() => {
@@ -75,7 +75,6 @@ export default function Calendar({ visible, showIndicator }) {
     setCurrentYear(year);
     setCurrentDay(getCurrentDay(calendar, currentDate));
     getVisibleMonth(calendar, currentDate);
-    setWeekdays(timeDateService.getWeekdays());
 
     if (reminders?.length) {
       setReminders(reminders);
@@ -90,19 +89,29 @@ export default function Calendar({ visible, showIndicator }) {
     const months = [];
 
     for (let i = 0; i < 12; i++) {
+      const date = new Date(`${year}-${i + 1}-01`);
       const daysInMonth = timeDateService.getDaysInMonth(year, i);
       const month = {
         firstDayIndex: timeDateService.getFirstDayIndex(year, i),
-        name: timeDateService.getMonthName(i),
+        name: timeDateService.getMonthName(i, settings.dateLocale),
+        dateString: timeDateService.formatDate(date, {
+          locale: settings.dateLocale,
+          excludeDay: true
+        }),
         days: []
       };
 
       for (let j = 0; j < daysInMonth; j++) {
+        const date = new Date(`${year}-${i + 1}-${j + 1}`);
+
         month.days.push({
           id: getRandomString(),
           year,
           month: i,
           day: j + 1,
+          dateString: timeDateService.formatDate(date, {
+            locale: settings.dateLocale
+          }),
           reminders: []
         });
       }
@@ -112,7 +121,7 @@ export default function Calendar({ visible, showIndicator }) {
   }
 
   function getVisibleMonth(calendar, { year, month }) {
-    const { days, firstDayIndex, name } = calendar[year][month];
+    const { days, firstDayIndex, name, dateString } = calendar[year][month];
     let previousMonth = month - 1;
     let nextMonth = month + 1;
     let isNewYear = false;
@@ -142,7 +151,7 @@ export default function Calendar({ visible, showIndicator }) {
         name: nextMonthName,
         days: nextMonthDays.slice(0, 42 - days.length - firstDayIndex)
       },
-      current: { name, month, days }
+      current: { name, month, days, dateString }
     });
 
     if (isNewYear) {
@@ -176,8 +185,7 @@ export default function Calendar({ visible, showIndicator }) {
     const weekday = timeDateService.getWeekday(day.year, day.month, day.day);
 
     day.isCurrentDay = true;
-    day.monthName = timeDateService.getMonthName(day.month);
-    day.weekdayName = timeDateService.getWeekdayName(weekday);
+    day.weekdayName = timeDateService.getWeekdayName(weekday, settings.dateLocale);
 
     return day;
   }
@@ -548,12 +556,11 @@ export default function Calendar({ visible, showIndicator }) {
     }
   }
 
-  function getWeekdayRepeatTooltip(weekdays) {
-    const arr = weekdays.reduce((arr, weekday, index) => {
+  function getWeekdayRepeatTooltip(weekdayStates) {
+    const weekdays = timeDateService.getWeekdays(settings.dateLocale);
+    const arr = weekdayStates.reduce((arr, weekday, index) => {
       if (weekday) {
-        const name = timeDateService.getWeekdayName(index);
-
-        arr.push(name);
+        arr.push(weekdays[index]);
       }
       return arr;
     }, []);
@@ -699,7 +706,7 @@ export default function Calendar({ visible, showIndicator }) {
       <div className="container-body calendar-current-date">
         <button className="btn text-btn calendar-current-date-btn" onClick={showCurrentDateView}>
           <div className="calendar-current-date-weekday">{currentDay.weekdayName}</div>
-          <div>{currentDay.day} {currentDay.monthName} {currentDay.year}</div>
+          <div>{currentDay.dateString}</div>
         </button>
       </div>
       <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px` }}>
@@ -733,27 +740,25 @@ export default function Calendar({ visible, showIndicator }) {
               <button className="btn icon-btn" onClick={() => changeMonth(-1)} title="Previous month">
                 <Icon id="chevron-left"/>
               </button>
-              <button className="btn text-btn calendar-title" onClick={viewYear}>{visibleMonth.current.name} {currentYear}</button>
+              <button className="btn text-btn calendar-title" onClick={viewYear}>{visibleMonth.current.dateString}</button>
               <button className="btn icon-btn" onClick={() => changeMonth(1)} title="Next month">
                 <Icon id="chevron-right"/>
               </button>
             </div>
             <ul className="calendar-week-days">
-              {weekdays.map(weekday => (
-                <li className="calendar-cell" key={weekday}>{weekday.slice(0, 3)}</li>
-              ))}
+              {weekdays.map(weekday => <li className="calendar-cell" key={weekday}>{weekday}</li>)}
             </ul>
             <ul className={`calendar-days${settings.worldClocksHidden ? "" : " world-clocks-visible"}`} onKeyDown={handleDaysKeyDown}>
               {visibleMonth.previous.days.map((day, index) => (
                 <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
-                  tabIndex="0" aria-label={`${visibleMonth.previous.name} ${day.day}`} data-month="previous" data-index={index}>
+                  tabIndex="0" aria-label={day.dateString} data-month="previous" data-index={index}>
                   <div>{day.day}</div>
                 </li>
               ))}
               {visibleMonth.current.days.map((day, index) => (
                 <li className={`calendar-cell calendar-day current-month-day${day.isCurrentDay ? " current" : ""}`}
                   onClick={({ target }) => showDay(target, day)} key={day.id}
-                  tabIndex="0" aria-label={`${visibleMonth.current.name} ${day.day}`} data-month="current" data-index={index}>
+                  tabIndex="0" aria-label={day.dateString} data-month="current" data-index={index}>
                   <div>{day.day}</div>
                   {day.reminders.length > 0 && (
                     <div className="day-reminders">
@@ -766,7 +771,7 @@ export default function Calendar({ visible, showIndicator }) {
               ))}
               {visibleMonth.next.days.map((day, index) => (
                 <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, 1)} key={day.id}
-                  tabIndex="0" aria-label={`${visibleMonth.next.name} ${day.day}`} data-month="next" data-index={index}>
+                  tabIndex="0" aria-label={day.dateString} data-month="next" data-index={index}>
                   <div>{day.day}</div>
                 </li>
               ))}

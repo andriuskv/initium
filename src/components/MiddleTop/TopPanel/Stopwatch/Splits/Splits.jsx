@@ -4,8 +4,8 @@ import "./splits.css";
 export default function Splits({ splits, hide }) {
   return (
     <div className="stopwatch-splits-modal">
-      <div className="container-header fullscreen-modal-header">
-        <h3 className="fullscreen-modal-header-title">Splits</h3>
+      <div className="container-header">
+        <h3 className="container-header-title">Splits</h3>
         <button className="btn icon-btn" onClick={hide} title="Close">
           <Icon id="cross"/>
         </button>

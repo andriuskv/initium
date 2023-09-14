@@ -177,7 +177,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
   return (
     <div className="notepad">
       <div className="container-header notepad-tabs-header">
-        <h2 className="main-panel-item-header-title">Notepad Tabs</h2>
+        <h2 className="container-header-title">Notepad Tabs</h2>
         <Dropdown>
           <div className="dropdown-group notepad-tabs-dropdown-setting-group">
             <div className="notepad-tabs-dropdown-setting-title">Text size</div>

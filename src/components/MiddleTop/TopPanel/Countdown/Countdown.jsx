@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent, getRandomString } from "utils";
-import { getDate, getTimeString } from "services/timeDate";
+import { getSetting } from "services/settings";
+import { formatDate } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import Icon from "components/Icon";
 import CreateButton from "components/CreateButton";
@@ -152,23 +153,12 @@ export default function Countdown({ visible, toggleIndicator }) {
   }
 
   function getCountdownDateString(date) {
-    const dateString = getDate("month day, year", {
-      day: date.getDate(),
-      month: date.getMonth(),
-      year: date.getFullYear(),
-      dayWithSuffix: false
+    const { dateLocale } = getSetting("timeDate");
+
+    return formatDate(date.getTime(), {
+      locale: dateLocale,
+      includeTime : date.getHours() || date.getMinutes()
     });
-    return `${dateString} ${getTime(date)}`;
-  }
-
-  function getTime(date) {
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-
-    if (hours === 0 && minutes === 0) {
-      return "";
-    }
-    return getTimeString({ hours, minutes });
   }
 
   function saveCountdowns(countdowns) {

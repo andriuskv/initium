@@ -52,6 +52,12 @@
     border-right-color: transparent;
   }
 
+  &:focus-visible {
+    box-shadow:
+      inset var(--focus-shadow),
+      var(--fg-shadow);
+  }
+
   &.active {
     box-shadow: inset 2px 0 0 0 var(--color-primary);
 

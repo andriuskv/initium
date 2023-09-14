@@ -73,7 +73,7 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
               ) : null}
             </div>
             <button className="btn text-btn feed-entry-expand-btn" onClick={() => expandEntry(entry)}>Show More</button>
-            {entry.date ? <div className="feed-date">Posted on: {entry.date}</div> : null}
+            {entry.date ? <div className="feed-date">Posted on {entry.date}</div> : null}
           </li>
         ))}
       </ul>
