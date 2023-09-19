@@ -91,7 +91,7 @@ function parseDate(dateStr) {
   const { dateLocale } = getSetting("timeDate");
   const date = new Date(dateStr);
 
-  return formatDate(date, { locale: dateLocale });
+  return formatDate(date, { locale: dateLocale, includeTime: true });
 }
 
 function parseEntries(entries) {
