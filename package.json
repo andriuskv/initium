@@ -21,7 +21,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.20",
+    "@babel/core": "^7.23.0",
     "@babel/eslint-parser": "^7.22.15",
     "@babel/preset-env": "^7.22.20",
     "@babel/preset-react": "^7.22.15",
@@ -30,12 +30,12 @@
     "core-js": "^3.32.2",
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^5.0.1",
-    "eslint": "^8.49.0",
+    "eslint": "^8.50.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
-    "postcss": "^8.4.30",
+    "postcss": "^8.4.31",
     "postcss-import": "^15.1.0",
     "postcss-loader": "^7.3.3",
     "postcss-mixins": "^9.0.4",
