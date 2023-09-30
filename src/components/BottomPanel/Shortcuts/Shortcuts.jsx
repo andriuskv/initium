@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
 import Icon from "components/Icon";
+
+// Minification returns empty object from dynamic import.
+import json from "./shortcuts.json";
 import "./shortcuts.css";
 
 export default function Shortcuts() {
@@ -19,7 +22,6 @@ export default function Shortcuts() {
     let shortcuts = await chromeStorage.get("shortcuts");
 
     if (!shortcuts?.length) {
-      const { default: json } = await import("./shortcuts.json");
       shortcuts = json.shortcuts;
     }
     setItems(shortcuts.map(item => {
