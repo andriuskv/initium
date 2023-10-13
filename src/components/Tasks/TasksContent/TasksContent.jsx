@@ -3,6 +3,7 @@ import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
 import { formatDate } from "services/timeDate";
+import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
@@ -23,6 +24,7 @@ const taskStatusMap = {
 };
 
 export default function Tasks({ settings, expanded, toggleSize }) {
+  const locale = useLocalization();
   const [groups, setGroups] = useState(null);
   const [removedItems, setRemovedItems] = useState([]);
   const [form, setForm] = useState(null);
@@ -563,9 +565,9 @@ export default function Tasks({ settings, expanded, toggleSize }) {
             <Icon id="menu"/>
             <span>Groups</span>
           </button>
-          <button className="btn icon-text-btn dropdown-btn" onClick={toggleSize} title={expanded ? "Shrink" : "Expand"}>
+          <button className="btn icon-text-btn dropdown-btn" onClick={toggleSize}>
             <Icon id={`vertical-${expanded ? "shrink" : "expand"}`}/>
-            <span>{expanded ? "Shrink" : "Expand"}</span>
+            <span>{expanded ? locale.global.shrink : locale.global.expand}</span>
           </button>
         </Dropdown>
       </div>
@@ -578,7 +580,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
                   <button className={`btn icon-btn tasks-groups-item tasks-groups-item-toggle-btn${group.expanded ? " expanded" : ""}`}
                     onClick={() => toggleGroupVisibility(group)}
                     disabled={!group.taskCount}
-                    title={group.taskCount > 0 ? group.expanded ? "Collapse" : "Expand" : ""}>
+                    title={group.taskCount > 0 ? group.expanded ? locale.global.collapse : locale.global.expand : ""}>
                     <span className="tasks-group-count">{group.taskCount}</span>
                     <span className="tasks-group-title">{group.name}</span>
                     {group.taskCount > 0 && (
@@ -607,7 +609,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
                                 <div className="checkbox task-checkbox-btn disabled"></div>
                               ) : (
                                 <button className="checkbox task-checkbox-btn"
-                                  onClick={() => removeTask(groupIndex, taskIndex)} title="Complete">
+                                  onClick={() => removeTask(groupIndex, taskIndex)} title={locale.tasks.complete}>
                                   <div className="checkbox-tick"></div>
                                 </button>
                               )}
@@ -623,7 +625,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
                                           <div className="checkbox task-checkbox-btn disabled"></div>
                                         ) : (
                                           <button className="checkbox task-checkbox-btn"
-                                            onClick={() => removeSubtask(groupIndex, taskIndex, subtaskIndex)} title="Complete">
+                                            onClick={() => removeSubtask(groupIndex, taskIndex, subtaskIndex)} title={locale.tasks.complete}>
                                             <div className="checkbox-tick"></div>
                                           </button>
                                         )}
@@ -635,7 +637,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
                               </ul>
                             )}
                             <button className="btn icon-btn alt-icon-btn task-edit-btn"
-                              onClick={() => editTask(groupIndex, taskIndex)} title="Edit">
+                              onClick={() => editTask(groupIndex, taskIndex)} title={locale.global.edit}>
                               <Icon id="edit"/>
                             </button>
                             {task.expirationDate ? renderExpirationIndicator(task) : null}
@@ -661,14 +663,14 @@ export default function Tasks({ settings, expanded, toggleSize }) {
             )))}
           </ul>
         ) : (
-          <p className="tasks-message">No tasks</p>
+          <p className="tasks-message">{locale.tasks.no_tasks}</p>
         )}
         <CreateButton className="tasks-create-btn" onClick={showForm} trackScroll></CreateButton>
       </div>
       {removedItems.length > 0 && (
         <div className="container-footer tasks-dialog">
           <span>Removed <span className="tasks-dialog-count">{removedItems.length}</span> task{removedItems.length > 1 ? "s" : ""}</span>
-          <button className="btn text-btn" onClick={undoRemovedTasks}>UNDO</button>
+          <button className="btn text-btn" onClick={undoRemovedTasks}>{locale.tasks.undo}</button>
         </div>
       )}
     </>

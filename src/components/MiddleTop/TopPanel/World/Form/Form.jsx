@@ -108,7 +108,7 @@ export default function Form({ addClock, hide }) {
       <div className="world-form-top">
         <div className="world-form-input-container">
           <Icon id="search" className="world-form-input-icon"/>
-          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} placeholder="Paris"/>
+          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} placeholder="Paris" autoFocus/>
           {inputValue.length ? (
             <button className="btn icon-btn world-form-input-clear-btn" onClick={clearInput} title="clear">
               <Icon id="cross"/>

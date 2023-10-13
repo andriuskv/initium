@@ -1,10 +1,12 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { getRandomString } from "utils";
 import * as focusService from "services/focus";
+import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./dropdown.css";
 
 export default function Dropdown({ container, toggle = {}, body, children }) {
+  const locale = useLocalization();
   const [state, setState] = useState({ id: getRandomString() });
   const memoizedWindowClickHandler = useCallback(handleWindowClick, [state.id]);
   const isMounted = useRef(false);
@@ -134,7 +136,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
         </button>
       ) : (
         <button className={`btn icon-btn${toggle.className ? ` ${toggle.className}` : ""}${state.visible ? " active" : ""}`}
-          onClick={toggleDropdown} title={toggle.title || "More"}>
+          onClick={toggleDropdown} title={toggle.title || locale.global.more}>
           <Icon id={toggle.iconId || "vertical-dots"}/>
         </button>
       )}

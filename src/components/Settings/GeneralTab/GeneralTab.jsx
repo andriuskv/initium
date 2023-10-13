@@ -12,6 +12,10 @@ export default function GeneralTab() {
   const { settings, toggleSetting, updateSetting, resetSettings } = useSettings();
   const [modal, setModal] = useState(null);
 
+  // function handleLocaleChange({ target }) {
+  //   updateSetting("general", { locale: target.value });
+  // }
+
   function showGreetingEditor() {
     dispatchCustomEvent("fullscreen-modal", { id: "greeting" });
   }
@@ -87,6 +91,14 @@ export default function GeneralTab() {
 
   return (
     <div className="container-body setting-tab">
+      {/* <label className="setting">
+        <span>Language</span>
+        <div className="select-container">
+          <select className="input select" onChange={handleLocaleChange} value={settings.general.locale}>
+            <option value="en">English</option>
+          </select>
+        </div>
+      </label> */}
       <label className="setting">
         <span>Disable sticky notes</span>
         <input type="checkbox" className="sr-only checkbox-input"

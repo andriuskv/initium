@@ -1,9 +1,11 @@
 import { useState, useRef } from "react";
 import { getRandomHexColor } from "utils";
+import { useLocalization } from "contexts/localization";
 import Modal from "components/Modal";
 import "./label-form.css";
 
 export default function LabelForm({ addUniqueLabel, hide }) {
+  const locale = useLocalization();
   const [currentColor, setCurrentColor] = useState(() => getRandomHexColor());
   const updatingColor = useRef(false);
 
@@ -34,17 +36,17 @@ export default function LabelForm({ addUniqueLabel, hide }) {
   return (
     <Modal hide={hide}>
       <form onSubmit={handleLabelFormSubmit}>
-        <h4 className="modal-title modal-title-center">New label</h4>
+        <h4 className="modal-title modal-title-center">{locale.tasks.label_modal_title}</h4>
         <div className="task-label-form-body">
           <div className="task-form-color-picker-container" style={{ backgroundColor: currentColor }}>
             <input type="color" name="color" className="task-form-color-picker"
-              onInput={handleColorChange} defaultValue={currentColor} title="Change color"/>
+              onInput={handleColorChange} defaultValue={currentColor} title={locale.tasks.color_input_title}/>
           </div>
           <input type="text" name="name" className="input task-label-form-input" autoComplete="off" autoFocus required/>
         </div>
         <div className="modal-actions">
-          <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
-          <button className="btn">Create</button>
+          <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
+          <button className="btn">{locale.global.create}</button>
         </div>
       </form>
     </Modal>

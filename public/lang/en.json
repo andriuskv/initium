@@ -1,0 +1,42 @@
+{
+  "global": {
+    "create": "Create",
+    "update": "Update",
+    "edit": "Edit",
+    "more": "More",
+    "cancel": "Cancel",
+    "remove": "Remove",
+    "delete": "Delete",
+    "rename": "Rename",
+    "done": "Done",
+    "expand": "Expand",
+    "shrink": "Shrink",
+    "collapse": "Collapse",
+    "select": "Select",
+    "deselect": "Deselect"
+  },
+  "tasks": {
+    "tasks": "Tasks",
+    "groups": "Groups",
+    "no_tasks": "No tasks.",
+    "complete": "Complete",
+    "undo": "UNDO",
+    "new_group": "New group",
+    "group_input_placeholder": "Group name",
+    "no_groups": "No groups.",
+    "remove_group_modal_title": "Remove group",
+    "remove_group_modal_message": "Do you want to remove this group?",
+    "label_modal_title": "New label",
+    "color_input_title": "Change color",
+    "more_options_title": "More options",
+    "expiration_date_label": "Expiration date",
+    "repeat_label": "Repeat",
+    "limit_label": "Limit",
+    "label_title": "Labels",
+    "create_label_title": "Create a label",
+    "group_title": "Group",
+    "create_group_title": "Create a group",
+    "subtask_title": "Subtasks",
+    "add_subtask_title": "Add a subtask"
+  }
+}

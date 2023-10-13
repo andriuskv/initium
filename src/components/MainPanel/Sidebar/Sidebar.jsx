@@ -20,7 +20,8 @@ export default function Sidebar({ expanded, expandTab, resizerEnabled, toggleRes
           <button className="btn icon-btn main-panel-sidebar-btn" onClick={hide} title="Hide">
             <Icon id="chevron-left"/>
           </button>
-          <button className="btn icon-btn main-panel-sidebar-btn" onClick={expandTab} title="Toggle size">
+          {/* <button className="btn icon-btn main-panel-sidebar-btn" onClick={expandTab} title="Toggle size"> */}
+          <button className="btn icon-btn main-panel-sidebar-btn" onClick={expandTab} title={expanded ? "Shrink" : "Expand"}>
             <Icon id={`vertical-${expanded ? "shrink" : "expand"}`}/>
           </button>
           <button className="btn icon-btn main-panel-sidebar-btn" onClick={toggleResizer} disabled={expanded}

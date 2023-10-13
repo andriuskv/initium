@@ -1,14 +1,18 @@
 import { useState, useEffect, useRef, lazy, Suspense, useLayoutEffect } from "react";
 import { handleZIndex } from "services/zIndex";
+import { useLocalization } from "contexts/localization";
 import "./tasks.css";
 
 const TasksContent = lazy(() => import("./TasksContent"));
 
 export default function Tasks({ settings }) {
+  const locale = useLocalization();
   const [{ visible, rendered }, setState] = useState({ visible: false, rendered: false });
   const [expanded, setExpanded] = useState(false);
   const containerRef = useRef(null);
   const timeoutId = useRef(0);
+
+  console.log(locale);
 
   useLayoutEffect(() => {
     if (visible) {
@@ -41,9 +45,13 @@ export default function Tasks({ settings }) {
     setExpanded(!expanded);
   }
 
+  if (!locale) {
+    return null;
+  }
+
   return (
     <div className={`tasks${expanded ? " expanded" : ""}`} onClick={event => handleZIndex(event, "tasks")} ref={containerRef}>
-      <button className={`btn tasks-toggle-btn${visible ? " shifted" : ""}`} onClick={toggle}>Tasks</button>
+      <button className={`btn tasks-toggle-btn${visible ? " shifted" : ""}`} onClick={toggle}>{locale.tasks.tasks}</button>
       <div className={`container tasks-container${visible ? " visible" : ""}`}>
         <div className="tasks-transition-target tasks-content">
           <Suspense fallback={null}>

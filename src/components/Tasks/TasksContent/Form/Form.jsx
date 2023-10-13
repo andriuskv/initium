@@ -1,5 +1,6 @@
 import { useState, useRef, lazy, Suspense } from "react";
 import { getRandomString, timeout } from "utils";
+import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./form.css";
 
@@ -8,6 +9,7 @@ const GroupForm = lazy(() => import("../GroupForm"));
 const LabelForm = lazy(() => import("./LabelForm"));
 
 export default function Form({ form, groups, updateGroups, replaceLink, removeTask, createGroup, hide }) {
+  const locale = useLocalization();
   const [state, setState] = useState(() => {
     const defaultForm = {
       moreOptionsVisible: false,
@@ -312,7 +314,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
   return (
     <>
       <div className="container-header">
-        <button className="btn icon-btn" onClick={toggleMoreOptions} title="More options">
+        <button className="btn icon-btn" onClick={toggleMoreOptions} title={locale.tasks.more_options_title}>
           <Icon id="show-more"/>
         </button>
       </div>
@@ -321,14 +323,14 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
           {state.moreOptionsVisible ? (
             <div className="task-form-more-options">
               <div className="task-form-item-container">
-                <h4 className="task-form-item-title">Expiration Date</h4>
+                <h4 className="task-form-item-title">{locale.tasks.expiration_date_label}</h4>
                 <input name="datetime" type="datetime-local" className="input task-form-datetime-input"
                   min={getDateTimeString()}
                   defaultValue={state.task.expirationDateTimeString}
                 />
               </div>
               <div className="task-form-item-container task-form-repeat-options-container">
-                <h4 className="task-form-item-title">Repeat</h4>
+                <h4 className="task-form-item-title">{locale.tasks.repeat_label}</h4>
                 <div className="task-form-repeat-options">
                   <div>
                     <div className="multi-input-container task-form-repeat-gap-unit-container">
@@ -343,7 +345,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
                     </div>
                   </div>
                   <label>
-                    <span className="label-left">Limit</span>
+                    <span className="label-left">{locale.tasks.limit_label}</span>
                     <input type="text" className="input task-form-repeat-input"
                       defaultValue={state.task.repeat?.limit} name="repeatLimit" autoComplete="off"/>
                   </label>
@@ -352,8 +354,8 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
             </div>
           ) : null}
           <div className="task-form-item-container">
-            <h4 className="task-form-item-title">Labels</h4>
-            <button type="button" className="btn icon-btn" onClick={showLabelForm} title="Create label">
+            <h4 className="task-form-item-title">{locale.tasks.label_title}</h4>
+            <button type="button" className="btn icon-btn" onClick={showLabelForm} title={locale.tasks.create_label_title}>
               <Icon id="plus"/>
             </button>
           </div>
@@ -363,7 +365,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
                 <li className="task-form-label" key={i}>
                   <button type="button" className={`btn icon-text-btn task-form-label-btn${label.flagged ? " flagged" : ""}`}
                     onClick={() => flagLabel(i)}
-                    title={label.flagged ? "Deselect label" : "Select label"}>
+                    title={label.flagged ? locale.global.deselect : locale.global.select}>
                     <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
                     <div className="task-label-title">{label.name}</div>
                     {label.flagged && <Icon id="check" className="task-form-label-btn-tick"/>}
@@ -373,7 +375,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
             </ul>
           )}
           <div className="task-form-item-container">
-            <h4 className="task-form-item-title">Group</h4>
+            <h4 className="task-form-item-title">{locale.tasks.group_title}</h4>
             <div className="select-container">
               <select className="input select" onChange={handleGroupSelection} value={state.selectedGroupId}>
                 {groups.map(group => (
@@ -381,7 +383,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
                 ))}
               </select>
             </div>
-            <button type="button" className="btn icon-btn" onClick={showGroupForm} title="Create group">
+            <button type="button" className="btn icon-btn" onClick={showGroupForm} title={locale.tasks.create_group_title}>
               <Icon id="plus"/>
             </button>
           </div>
@@ -390,8 +392,8 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
               placeholder="Details" autoFocus required></textarea>
           </div>
           <div className="task-form-item-container">
-            <h4 className="task-form-item-title">Subtasks</h4>
-            <button type="button" className="btn icon-btn" onClick={addFormSubtask} title="Add a subtask">
+            <h4 className="task-form-item-title">{locale.tasks.subtask_title}</h4>
+            <button type="button" className="btn icon-btn" onClick={addFormSubtask} title={locale.tasks.add_subtask_title}>
               <Icon id="plus"/>
             </button>
           </div>
@@ -401,7 +403,7 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
                 <li className="task-form-subtask" key={subtask.id}>
                   <input type="text" name="subtask" className="input task-form-subtask-input"
                     defaultValue={subtask.rawText} autoComplete="off"/>
-                  <button type="button" className="btn icon-btn alt-icon-btn" onClick={() => removeFormSubtask(i)} title="Remove">
+                  <button type="button" className="btn icon-btn alt-icon-btn" onClick={() => removeFormSubtask(i)} title={locale.global.remove}>
                     <Icon id="trash"/>
                   </button>
                 </li>
@@ -410,9 +412,9 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
           )}
         </div>
         <div className="container-footer">
-          {state.updating ? <button type="button" className="btn text-btn text-negative-btn task-form-delete-btn" onClick={removeTask}>Delete</button> : null}
-          <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
-          <button type="submit" className="btn task-form-submit-btn">{state.updating ? "Update" : "Create"}</button>
+          {state.updating ? <button type="button" className="btn text-btn text-negative-btn task-form-delete-btn" onClick={removeTask}>{locale.global.delete}</button> : null}
+          <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
+          <button type="submit" className="btn task-form-submit-btn">{state.updating ? locale.global.update : locale.global.create}</button>
         </div>
       </form>
       {message ? (
