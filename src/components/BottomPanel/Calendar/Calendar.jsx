@@ -18,7 +18,7 @@ export default function Calendar({ visible, showIndicator }) {
   const [reminders, setReminders] = useState([]);
   const [viewingYear, setViewingYear] = useState(false);
   const [transition, setTransition] = useState({ x: 0, y: 0 });
-  const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), []);
+  const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
 
   useEffect(() => {
@@ -27,15 +27,17 @@ export default function Calendar({ visible, showIndicator }) {
 
   useEffect(() => {
     if (currentFirstWeekday.current !== settings.firstWeekday) {
-      const r = reminders.map(reminder => {
-        delete reminder.nextRepeat;
-        return reminder;
-      });
-
       currentFirstWeekday.current = settings.firstWeekday;
-      initCalendar(r);
+      reinitCalendar();
     }
-  }, [settings]);
+  }, [settings.firstWeekday]);
+
+  useEffect(() => {
+    if (!calendar) {
+      return;
+    }
+    reinitCalendar();
+  }, [settings.dateLocale]);
 
   useEffect(() => {
     if (currentDay) {
@@ -83,6 +85,14 @@ export default function Calendar({ visible, showIndicator }) {
     else {
       setCalendar(calendar);
     }
+  }
+
+  function reinitCalendar() {
+    const r = reminders.map(reminder => {
+      delete reminder.nextRepeat;
+      return reminder;
+    });
+    initCalendar(r);
   }
 
   function generateYear(year) {
