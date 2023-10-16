@@ -2,6 +2,7 @@ import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "re
 import { timeout } from "utils";
 import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings";
+import { useLocalization } from "contexts/localization";
 import Wallpaper from "components/Wallpaper";
 import MiddleTop from "components/MiddleTop";
 import BottomPanel from "components/BottomPanel";
@@ -17,6 +18,7 @@ const StickyNotes = lazy(() => import("./StickyNotes"));
 
 export default function App() {
   const { settings } = useSettings();
+  const locale = useLocalization();
   const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const [fullscreenModal, setFullscreenModal] = useState(null);
   const weatherTimeoutId = useRef(0);
@@ -132,6 +134,9 @@ export default function App() {
     );
   }
 
+  if (!locale) {
+    return null;
+  }
   return (
     <>
       <Wallpaper settings={settings.appearance.wallpaper}/>

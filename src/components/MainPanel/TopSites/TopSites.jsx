@@ -8,7 +8,7 @@ import "./top-sites.css";
 const Form = lazy(() => import("./Form"));
 const PersistentSites = lazy(() => import("./PersistentSites"));
 
-export default function TopSites({ settings }) {
+export default function TopSites({ settings, locale }) {
   const [sites, setSites] = useState(null);
   const [form, setForm] = useState(null);
 
@@ -180,11 +180,11 @@ export default function TopSites({ settings }) {
             <Dropdown container={{ className: "top-site-dropdown" }}>
               <button className="btn icon-text-btn dropdown-btn" onClick={() => editSite(i)}>
                 <Icon id="edit"/>
-                <span>Edit</span>
+                <span>{locale.global.edit}</span>
               </button>
               <button className="btn icon-text-btn dropdown-btn" onClick={() => removeSite(i)}>
                 <Icon id="trash"/>
-                <span>Remove</span>
+                <span>{locale.global.remove}</span>
               </button>
             </Dropdown>
           </li>
@@ -192,7 +192,7 @@ export default function TopSites({ settings }) {
         {visibleSites.length < settings.visibleItemCount && !settings.addSiteButtonHidden && (
           <li className="top-site">
             <button className="top-site-link top-site-add-btn" onClick={() => showForm()}>
-              <div className="container top-site-container top-site-title">Add site</div>
+              <div className="container top-site-container top-site-title">{locale.topSites.add_site_title}</div>
               <div className="container top-site-container top-site-thumbnail-container">
                 <Icon id="plus" className="top-site-add-btn-icon"/>
               </div>
@@ -202,12 +202,12 @@ export default function TopSites({ settings }) {
       </ul>
       {settings.persistentSitesHidden ? null : (
         <Suspense fallback={null}>
-          <PersistentSites settings={settings} getFaviconURL={getFaviconURL}/>
+          <PersistentSites settings={settings} locale={locale} getFaviconURL={getFaviconURL}/>
         </Suspense>
       )}
       {form ? (
         <Suspense fallback={null}>
-          <Form form={form} updateSite={updateSite} hide={hideForm}/>
+          <Form form={form} locale={locale} updateSite={updateSite} hide={hideForm}/>
         </Suspense>
       ) : null}
     </>

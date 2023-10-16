@@ -3,7 +3,7 @@ import ToTop from "components/ToTop";
 import Icon from "components/Icon";
 import "./entries.css";
 
-export default function Entries({ navigation, feeds, selectFeed, previousShift, nextShift, showFeedList, markEntryAsRead, expandEntry }) {
+export default function Entries({ navigation, feeds, locale, selectFeed, previousShift, nextShift, showFeedList, markEntryAsRead, expandEntry }) {
   const containerRef = useRef(0);
   const { activeIndex, shift, animateLeft, animateRight, VISIBLE_ITEM_COUNT } = navigation;
 
@@ -27,7 +27,7 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
       <div className="container-header main-panel-item-header">
         {feeds.active.length > VISIBLE_ITEM_COUNT && (
           <button className={`btn icon-btn main-panel-item-header-btn feed-shift-btn${animateLeft ? " active": ""}`}
-            onClick={previousShift} disabled={shift <= 0}>
+            aria-label={locale.mainPanel.previous_shift_title} onClick={previousShift} disabled={shift <= 0}>
             <Icon id="chevron-left"/>
           </button>
         )}
@@ -48,12 +48,13 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
         </ul>
         {feeds.active.length > VISIBLE_ITEM_COUNT && (
           <button className={`btn icon-btn main-panel-item-header-btn feed-shift-btn${animateRight ? " active": ""}`}
-            onClick={nextShift} disabled={shift + VISIBLE_ITEM_COUNT >= feeds.active.length}>
+            aria-label={locale.mainPanel.next_shift_title} onClick={nextShift} disabled={shift + VISIBLE_ITEM_COUNT >= feeds.active.length}>
             <Icon id="chevron-right"/>
           </button>
         )}
         <div className="main-panel-item-header-separator"></div>
-        <button className={`btn icon-btn main-panel-item-header-btn feed-list-btn${feeds.failed.length ? " indicator" : ""}`} onClick={showFeedList} title="Show feeds">
+        <button className={`btn icon-btn main-panel-item-header-btn feed-list-btn${feeds.failed.length ? " indicator" : ""}`}
+          onClick={showFeedList} title={locale.rssFeed.show_feeds_title}>
           <Icon id="menu"/>
         </button>
       </div>
@@ -61,7 +62,7 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
         {feeds.active[activeIndex].entries.map(entry => (
           <li className="feed-entry" onClick={() => markEntryAsRead(entry)} key={entry.id}>
             <div className="feed-entry-title">
-              {entry.newEntry && <span className="new-entry-indicator">New</span>}
+              {entry.newEntry && <span className="new-entry-indicator">{locale.rssFeed.new_entry}</span>}
               <span>
                 <a href={entry.link} className="feed-entry-link" target="_blank" rel="noreferrer">{entry.title}</a>
               </span>
@@ -72,7 +73,7 @@ export default function Entries({ navigation, feeds, selectFeed, previousShift, 
                 <p className="feed-entry-description" dangerouslySetInnerHTML={{ __html: getEntryDescription(entry.description) }}></p>
               ) : null}
             </div>
-            <button className="btn text-btn feed-entry-expand-btn" onClick={() => expandEntry(entry)}>Show More</button>
+            <button className="btn text-btn feed-entry-expand-btn" onClick={() => expandEntry(entry)}>{locale.rssFeed.show_more}</button>
             {entry.date ? <div className="feed-date">Posted on {entry.date}</div> : null}
           </li>
         ))}

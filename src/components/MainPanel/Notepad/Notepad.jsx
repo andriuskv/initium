@@ -9,7 +9,7 @@ import "./notepad.css";
 
 const Tabs = lazy(() => import("./Tabs"));
 
-export default function Notepad() {
+export default function Notepad({ locale }) {
   const [tabs, setTabs] = useState(null);
   const [{ activeIndex, shift }, setNavigation] = useState(() => ({ activeIndex: 0, shift: 0 }));
   const [tabListVisible, setTabListVisible] = useState(false);
@@ -333,8 +333,9 @@ export default function Notepad() {
   else if (tabListVisible) {
     return (
       <Suspense fallback={null}>
-        <Tabs tabs={tabs} textSize={textSize} selectListTab={selectListTab} updateTabs={updateTabs} updateTabPosition={updateTabPosition}
-          getTabSize={getTabSize} setTextSize={setTextSize} decreaseTextSize={decreaseTextSize} increaseTextSize={increaseTextSize} hide={hideTabList}/>
+        <Tabs tabs={tabs} textSize={textSize} locale={locale} selectListTab={selectListTab}
+          updateTabs={updateTabs} updateTabPosition={updateTabPosition} getTabSize={getTabSize} setTextSize={setTextSize}
+          decreaseTextSize={decreaseTextSize} increaseTextSize={increaseTextSize} hide={hideTabList}/>
       </Suspense>
     );
   }
@@ -345,7 +346,8 @@ export default function Notepad() {
     <div className="notepad">
       <div className="container-header main-panel-item-header">
         {tabs.length > VISIBLE_ITEM_COUNT && (
-          <button className="btn icon-btn main-panel-item-header-btn" onClick={previousShift} disabled={shift <= 0}>
+          <button className="btn icon-btn main-panel-item-header-btn" onClick={previousShift}
+            aria-label={locale.mainPanel.previous_shift_title} disabled={shift <= 0}>
             <Icon id="chevron-left"/>
           </button>
         )}
@@ -360,12 +362,12 @@ export default function Notepad() {
         </ul>
         {tabs.length > VISIBLE_ITEM_COUNT && (
           <button className="btn icon-btn main-panel-item-header-btn" onClick={nextShift}
-            disabled={shift + VISIBLE_ITEM_COUNT >= tabs.length}>
+            aria-label={locale.mainPanel.next_shift_title} disabled={shift + VISIBLE_ITEM_COUNT >= tabs.length}>
             <Icon id="chevron-right"/>
           </button>
         )}
         <div className="main-panel-item-header-separator"></div>
-        <button className="btn icon-btn main-panel-item-header-btn" onClick={showTabList} title="Show tabs">
+        <button className="btn icon-btn main-panel-item-header-btn" onClick={showTabList} title={locale.notepad.show_tabs_title}>
           <Icon id="menu"/>
         </button>
       </div>

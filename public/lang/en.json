@@ -2,8 +2,11 @@
   "global": {
     "create": "Create",
     "update": "Update",
+    "add": "Add",
+    "hide": "Hide",
     "edit": "Edit",
     "more": "More",
+    "close": "Close",
     "cancel": "Cancel",
     "remove": "Remove",
     "delete": "Delete",
@@ -13,7 +16,9 @@
     "shrink": "Shrink",
     "collapse": "Collapse",
     "select": "Select",
-    "deselect": "Deselect"
+    "deselect": "Deselect",
+    "download": "Download",
+    "drag": "Drag"
   },
   "tasks": {
     "tasks": "Tasks",
@@ -38,5 +43,40 @@
     "create_group_title": "Create a group",
     "subtask_title": "Subtasks",
     "add_subtask_title": "Add a subtask"
+  },
+  "mainPanel": {
+    "show_sidebar_title": "Show sidebar",
+    "enable_resizer_title": "Enable resizer",
+    "disable_resizer_title": "Disable resizer",
+    "previous_shift_title": "Shift left",
+    "next_shift_title": "Shift right",
+    "form_title_input_label": "Title",
+    "form_url_input_label": "URL"
+  },
+  "topSites": {
+    "add_site_title": "Add site"
+  },
+  "notepad": {
+    "tabs_title": "Notepad Tabs",
+    "show_tabs_title": "Show tabs",
+    "download_all_button": "Download all",
+    "text_size_title": "Text size",
+    "decrease_text_size_title": "Decrease text size",
+    "increase_text_size_title": "Increase text size",
+    "create_modal_title": "Create tab",
+    "remove_modal_title": "Remove tab",
+    "remove_modal_text": "Do you want to remove this tab?"
+  },
+  "rssFeed": {
+    "feeds_title": "RSS Feeds",
+    "show_feeds_title": "Show feeds",
+    "form_title": "Add feed",
+    "new_entry": "New",
+    "show_more": "Show More",
+    "activate": "Activate",
+    "deactive": "Deactive",
+    "inactive": "Inactive",
+    "fetch_error": "Failed to fetch.",
+    "retry": "Try Again"
   }
 }

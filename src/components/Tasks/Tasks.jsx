@@ -12,8 +12,6 @@ export default function Tasks({ settings }) {
   const containerRef = useRef(null);
   const timeoutId = useRef(0);
 
-  console.log(locale);
-
   useLayoutEffect(() => {
     if (visible) {
       clearTimeout(timeoutId.current);
@@ -43,10 +41,6 @@ export default function Tasks({ settings }) {
 
   function toggleSize() {
     setExpanded(!expanded);
-  }
-
-  if (!locale) {
-    return null;
   }
 
   return (

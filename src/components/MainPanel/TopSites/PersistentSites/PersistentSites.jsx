@@ -6,7 +6,7 @@ import "./persistent-sites.css";
 
 const Form = lazy(() => import("../Form"));
 
-export default function PersistentSites({ settings, getFaviconURL }) {
+export default function PersistentSites({ settings, locale, getFaviconURL }) {
   const [sites, setSites] = useState(null);
   const [siteEditEnabled, setSiteEditEnabled] = useState(false);
   const [form, setForm] = useState(null);
@@ -134,14 +134,14 @@ export default function PersistentSites({ settings, getFaviconURL }) {
               handleDragStart={handleDragStart}>
               {sites.map((site, i) => (
                 <SortableItem className={`top-site${site.id === activeDragId ? " dragging" : ""}`} id={site.id} key={site.id}>
-                  <button className="top-site-link persistent-site-edit-btn" onClick={() => editSite(i)} title="Edit">
+                  <button className="top-site-link persistent-site-edit-btn" onClick={() => editSite(i)} title={locale.global.edit}>
                     <div className="container top-site-container top-site-thumbnail-container">
                       <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt=""/>
                     </div>
                     <div className="container top-site-container top-site-title">{site.title}</div>
                     <Icon id="edit" className="persistent-site-edit-icon"/>
                   </button>
-                  <button className="btn icon-btn persistent-site-remove-btn" onClick={() => removeSite(i)} title="Remove">
+                  <button className="btn icon-btn persistent-site-remove-btn" onClick={() => removeSite(i)} title={locale.global.remove}>
                     <Icon id="trash"/>
                   </button>
                 </SortableItem>
@@ -153,7 +153,7 @@ export default function PersistentSites({ settings, getFaviconURL }) {
                   <div className="container top-site-container top-site-thumbnail-container">
                     <Icon id="plus" className="top-site-add-btn-icon"/>
                   </div>
-                  <div className="container top-site-container top-site-title">Add site</div>
+                  <div className="container top-site-container top-site-title">{locale.topSites.add_site_title}</div>
                 </button>
               </li>
             )}
@@ -161,7 +161,7 @@ export default function PersistentSites({ settings, getFaviconURL }) {
           <button className="btn icon-text-btn container top-site-container persistent-sites-cancel-edit-btn"
             onClick={disableSiteEdit}>
             <Icon id="cross"/>
-            <span>Cancel</span>
+            <span>{locale.global.cancel}</span>
           </button>
         </>
       );
@@ -189,7 +189,7 @@ export default function PersistentSites({ settings, getFaviconURL }) {
       {renderSites()}
       {form ? (
         <Suspense fallback={null}>
-          <Form form={form} updateSite={updateSite} hide={hideForm}/>
+          <Form form={form} locale={locale} updateSite={updateSite} hide={hideForm}/>
         </Suspense>
       ) : null}
     </>
