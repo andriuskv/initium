@@ -13,7 +13,7 @@ const stages = {
   long: "Long break"
 };
 
-export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand, handleReset }) {
+export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle, expand, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => {
     const { pomodoro: { focus } } = getSetting("timers");
@@ -234,7 +234,8 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
     }
     return (
       <div className="top-panel-item-content-top">
-        <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
+        <input type="text" className="input" value={label} onChange={handleLabelInputChange}
+          placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
       </div>
     );
   }
@@ -265,8 +266,8 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
         </div>
       )}
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
-        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
-        {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
+        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? locale.topPanel.stop : locale.topPanel.start}</button>
+        {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.topPanel.reset}</button>}
         <div className="top-panel-secondary-actions">
           {dirty.current && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
@@ -274,11 +275,11 @@ export default function Pomodoro({ visible, toggleIndicator, updateTitle, expand
             </button>
           )}
           {running ? (
-            <button className="btn icon-btn" onClick={expand} title="Expand">
+            <button className="btn icon-btn" onClick={expand} title={locale.global.expand}>
               <Icon id="expand"/>
             </button>
           ) : (
-            <button className="btn icon-btn" onClick={toggleAudio} title={`${audio.shouldPlay ? "Disable" : "Enable"} audio`}>
+            <button className="btn icon-btn" onClick={toggleAudio} title={audio.shouldPlay ? locale.topPanel.mute : locale.topPanel.unmute}>
               <Icon id={`bell${audio.shouldPlay ? "" : "-off"}`}/>
             </button>
           )}

@@ -18,7 +18,9 @@
     "select": "Select",
     "deselect": "Deselect",
     "download": "Download",
-    "drag": "Drag"
+    "drag": "Drag",
+    "clear": "Clear",
+    "title_input_label": "Title"
   },
   "tasks": {
     "tasks": "Tasks",
@@ -50,7 +52,6 @@
     "disable_resizer_title": "Disable resizer",
     "previous_shift_title": "Shift left",
     "next_shift_title": "Shift right",
-    "form_title_input_label": "Title",
     "form_url_input_label": "URL"
   },
   "topSites": {
@@ -78,5 +79,48 @@
     "inactive": "Inactive",
     "fetch_error": "Failed to fetch.",
     "retry": "Try Again"
+  },
+  "topPanel": {
+    "timer": "Timer",
+    "stopwatch": "Stopwatch",
+    "pomodoro": "Pomodoro",
+    "countdown": "Countdown",
+    "world": "World",
+    "start": "Start",
+    "stop": "Stop",
+    "reset": "Reset",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "label_input_placeholder": "Label"
+  },
+  "timer": {
+    "presets_button": "Presets",
+    "no_presets_message": "No presets",
+    "manage_presets_button": "Manage",
+    "presets_form_message": "Please enter valid time.",
+    "presets_input_placeholder": "1 hour"
+  },
+  "stopwatch": {
+    "split_button": "Split",
+    "splits_title": "Splits",
+    "split_duration": "DURATION",
+    "split_diff": "DIFFERENCE"
+  },
+  "pomodoro": {},
+  "countdown": {
+    "year": "Year",
+    "month": "Month",
+    "day": "Day",
+    "hour": "Hour",
+    "minute": "Minute",
+    "second": "Second",
+    "no_countdowns_message": "No countdowns",
+    "form_title": "Create countdown"
+  },
+  "world": {
+    "form_title": "Add a new world clock",
+    "no_clocks_message": "No clocks added.",
+    "location_not_found_message": "Location not found.",
+    "search_prompt_message": "Search for a location"
   }
 }

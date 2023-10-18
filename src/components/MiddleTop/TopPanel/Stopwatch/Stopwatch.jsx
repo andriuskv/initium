@@ -8,7 +8,7 @@ import "./stopwatch.css";
 
 const Splits = lazy(() => import("./Splits"));
 
-export default function Stopwatch({ visible, toggleIndicator, updateTitle, expand }) {
+export default function Stopwatch({ visible, locale, toggleIndicator, updateTitle, expand }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
   const [splits, setSplits] = useState([]);
@@ -217,7 +217,7 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
       id: "splits",
       shouldToggle: true,
       component: Splits,
-      params: { splits }
+      params: { splits, locale }
     });
   }
 
@@ -230,7 +230,7 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
     }
     return (
       <div className="top-panel-item-content-top">
-        <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
+        <input type="text" className="input" value={label} onChange={handleLabelInputChange} placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
       </div>
     );
   }
@@ -259,7 +259,7 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
           </div>
           {splits.length ? (
             <div className="stopwatch-splits-preview">
-              <button className="btn text-btn" onClick={showSplits} data-modal-initiator="true">Splits</button>
+              <button className="btn text-btn" onClick={showSplits} data-modal-initiator="true">{locale.stopwatch.splits_title}</button>
               <ul className="stopwatch-splits-preview-items">
                 {splits.slice(0, 6).map((split, index) => (
                   <li className="stopwatch-splits-preview-item" key={index}>
@@ -274,9 +274,9 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
         </div>
       )}
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
-        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
-        {running ? <button className="btn text-btn top-panel-item-action-btn" onClick={makeSplit}>Split</button> : null}
-        {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
+        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? locale.topPanel.stop : locale.topPanel.start}</button>
+        {running ? <button className="btn text-btn top-panel-item-action-btn" onClick={makeSplit}>{locale.stopwatch.split_button}</button> : null}
+        {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.topPanel.reset}</button>}
         <div className="top-panel-secondary-actions">
           {dirty.current && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
@@ -284,7 +284,7 @@ export default function Stopwatch({ visible, toggleIndicator, updateTitle, expan
             </button>
           )}
           {running && (
-            <button className="btn icon-btn" onClick={expand} title="Expand">
+            <button className="btn icon-btn" onClick={expand} title={locale.global.expand}>
               <Icon id="expand"/>
             </button>
           )}

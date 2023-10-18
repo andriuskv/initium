@@ -12,7 +12,7 @@ import Inputs from "./Inputs";
 
 const Presets = lazy(() => import("./Presets"));
 
-export default function Timer({ visible, toggleIndicator, updateTitle, expand, exitFullscreen, handleReset }) {
+export default function Timer({ visible, locale, toggleIndicator, updateTitle, expand, exitFullscreen, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState({
     hours: "00",
@@ -261,7 +261,7 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
   function updatePresetsModal(presets) {
     dispatchCustomEvent("fullscreen-modal", {
       component: Presets,
-      params: { presets, updatePresets, resetActivePreset }
+      params: { presets, locale, updatePresets, resetActivePreset }
     });
   }
 
@@ -375,10 +375,11 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
             <>
               {dirty.current ? label ? <h4 className="top-panel-item-content-label">{label}</h4> : null : (
                 <div className="top-panel-item-content-top">
-                  <input type="text" className="input" placeholder="Label" autoComplete="off" value={label} onChange={handleLabelInputChange}/>
+                  <input type="text" className="input" value={label} onChange={handleLabelInputChange}
+                    placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
                   <Dropdown
                     container={{ className: "top-panel-item-content-top-dropdown" }}
-                    toggle={{ isIconTextBtn: true, title: "Presets", iconId: "menu" }}>
+                    toggle={{ isIconTextBtn: true, title: locale.timer.presets_button, iconId: "menu" }}>
                     <div className="dropdown-group timer-dropdown-presets">
                       {presets.length ? (
                         presets.map(preset => (
@@ -386,10 +387,10 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
                             onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
                         ))
                       ) : (
-                        <p className="timer-dropdown-presets-message">No presets</p>
+                        <p className="timer-dropdown-presets-message">{locale.timer.no_presets_message}</p>
                       )}
                     </div>
-                    <button className="btn text-btn dropdown-btn" onClick={showPresets}>Manage</button>
+                    <button className="btn text-btn dropdown-btn" onClick={showPresets}>{locale.timer.manage_presets_button}</button>
                   </Dropdown>
                 </div>
               )}
@@ -399,8 +400,8 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
         </div>
       )}
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
-        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? "Stop": "Start"}</button>
-        {running || !dirtyInput.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>Reset</button>}
+        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? locale.topPanel.stop : locale.topPanel.start}</button>
+        {running || !dirtyInput.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.topPanel.reset}</button>}
         <div className="top-panel-secondary-actions">
           {dirty.current && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
@@ -408,11 +409,11 @@ export default function Timer({ visible, toggleIndicator, updateTitle, expand, e
             </button>
           )}
           {running ? (
-            <button className="btn icon-btn" onClick={expand} title="Expand">
+            <button className="btn icon-btn" onClick={expand} title={locale.global.expand}>
               <Icon id="expand"/>
             </button>
           ) : (
-            <button className="btn icon-btn" onClick={toggleAudio} title={`${audio.shouldPlay ? "Disable" : "Enable"} audio`}>
+            <button className="btn icon-btn" onClick={toggleAudio} title={audio.shouldPlay ? locale.topPanel.mute : locale.topPanel.unmute}>
               <Icon id={`bell${audio.shouldPlay ? "" : "-off"}`}/>
             </button>
           )}

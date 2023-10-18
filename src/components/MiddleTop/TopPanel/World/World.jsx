@@ -8,7 +8,7 @@ import "./world.css";
 
 const Form = lazy(() => import("./Form"));
 
-export default function World({ visible, parentVisible }) {
+export default function World({ visible, locale, parentVisible }) {
   const [clocks, setClocks] = useState([]);
   const timeoutId = useRef(0);
 
@@ -85,7 +85,7 @@ export default function World({ visible, parentVisible }) {
       id: "world",
       shouldToggle: true,
       component: Form,
-      params: { addClock }
+      params: { locale, addClock }
     });
   }
 
@@ -113,14 +113,14 @@ export default function World({ visible, parentVisible }) {
               </div>
               <div className="world-clock-time">
                 <span className="world-clock-time-text">{clock.time}</span>
-                <button className="btn icon-btn world-clock-remove-btn" onClick={() => removeClock(clock)} title="Remove">
+                <button className="btn icon-btn world-clock-remove-btn" onClick={() => removeClock(clock)} title={locale.global.remove}>
                   <Icon id="trash"/>
                 </button>
               </div>
             </li>
           ))}
         </ul>
-      ) : <p className="world-clocks-message">No clocks added</p>}
+      ) : <p className="world-clocks-message">{locale.world.no_clocks_meesage}</p>}
       <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": true }}></CreateButton>
     </div>
   );

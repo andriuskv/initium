@@ -42,7 +42,7 @@ export default function Form({ feeds, locale, addFeed, hide }) {
     <form className="feed-form" onSubmit={handleFormSubmit}>
       <Icon id="rss" className="main-panel-item-splash-icon"/>
       <h3 className="feed-form-title">{locale.rssFeed.form_title}</h3>
-      <input type="text" className="input feed-form-input" name="title" placeholder={locale.mainPanel.form_title_input_label} autoComplete="off"/>
+      <input type="text" className="input feed-form-input" name="title" placeholder={locale.global.title_input_label} autoComplete="off"/>
       <input type="text" className="input feed-form-input" name="url" placeholder={locale.mainPanel.form_url_input_label} required/>
       <div className="feed-add-btn-container">
         {form.message && <div className="feed-message">{form.message}</div>}

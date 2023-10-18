@@ -2,9 +2,10 @@ import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "re
 import { delay, setPageTitle } from "utils";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
+import { useLocalization } from "contexts/localization";
+import Icon from "components/Icon";
 import { removeFromRunning, getLastRunningTimer, isLastRunningTimer } from "./running-timers";
 import * as pipService from "./picture-in-picture";
-import Icon from "components/Icon";
 import "./top-panel.css";
 import Countdown from "./Countdown";
 
@@ -14,17 +15,18 @@ const Pomodoro = lazy(() => import("./Pomodoro"));
 const World = lazy(() => import("./World"));
 
 export default function TopPanel({ settings, initialTab = "", forceVisibility = false, animationSpeed, resetTopPanel }) {
+  const locale = useLocalization();
   const [visible, setVisible] = useState(false);
   const [minimal, setMinimal] = useState(false);
   const [rerender, setRerender] = useState(false);
   const [activeTab, setActiveTab] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [tabs, setTabs] = useState(() => ({
-    timer: { name: "Timer" },
-    stopwatch: { name: "Stopwatch" },
-    pomodoro: { name: "Pomodoro" },
-    countdown: { name: "Countdown" },
-    world: { name: "World" }
+    timer: { name: locale.topPanel.timer },
+    stopwatch: { name: locale.topPanel.stopwatch },
+    pomodoro: { name: locale.topPanel.pomodoro },
+    countdown: { name: locale.topPanel.countdown },
+    world: { name: locale.topPanel.world }
   }));
   const containerRef = useRef(null);
   const minimalVisible = useRef(false);
@@ -295,27 +297,27 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
             </li>
           ))}
           <li className="top-panel-close-btn">
-            <button className="btn icon-btn" onClick={hideTopPanel} title="Close">
+            <button className="btn icon-btn" onClick={hideTopPanel} title={locale.global.close}>
               <Icon id="cross"/>
             </button>
           </li>
         </ul>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
           {tabs.timer.rendered ? (
-            <Timer visible={activeTab === "timer"} toggleIndicator={toggleIndicator} updateTitle={updateTitle}
+            <Timer visible={activeTab === "timer"} locale={locale} toggleIndicator={toggleIndicator} updateTitle={updateTitle}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
-          {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} toggleIndicator={toggleIndicator}
+          {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} locale={locale} toggleIndicator={toggleIndicator}
             updateTitle={updateTitle} expand={expand}/> : null}
           {tabs.pomodoro.rendered ? (
-            <Pomodoro visible={activeTab === "pomodoro"} toggleIndicator={toggleIndicator} updateTitle={updateTitle}
+            <Pomodoro visible={activeTab === "pomodoro"} locale={locale} toggleIndicator={toggleIndicator} updateTitle={updateTitle}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
-          {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible}/> : null}
+          {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible} locale={locale}/> : null}
         </Suspense>
-        <Countdown visible={activeTab === "countdown"} toggleIndicator={toggleIndicator}/>
+        <Countdown visible={activeTab === "countdown"} locale={locale} toggleIndicator={toggleIndicator}/>
         {expanded && (
-          <button className="btn icon-btn top-panel-collapse-btn" onClick={hideTopPanel} title="Close">
+          <button className="btn icon-btn top-panel-collapse-btn" onClick={hideTopPanel} title={locale.global.close}>
             <Icon id="cross"/>
           </button>
         )}

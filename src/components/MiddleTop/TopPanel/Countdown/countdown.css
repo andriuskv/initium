@@ -63,6 +63,10 @@
   align-items: center;
   padding-left: var(--space-sm);
   padding-right: var(--space-sm);
+
+  &.seconds {
+    min-width: 64px;
+  }
 }
 
 .countdown-item-timer-digit {

@@ -30,7 +30,7 @@ export default function Form({ form, locale, updateSite, hide }) {
         <h3 className="modal-title modal-title-center">{form.updating ? locale.global.edit : locale.global.add} site</h3>
         <div className="top-sites-form-content">
           <label className="top-sites-form-label">
-            <div className="top-sites-form-input-title">{locale.mainPanel.form_title_input_label}</div>
+            <div className="top-sites-form-input-title">{locale.global.title_input_label}</div>
             <input type="text" className="input top-sites-form-input"
               defaultValue={form.title} placeholder="Google"
               name="title" autoComplete="off"/>
