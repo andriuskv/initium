@@ -20,6 +20,7 @@
     "download": "Download",
     "drag": "Drag",
     "clear": "Clear",
+    "settings": "Settings",
     "title_input_label": "Title"
   },
   "tasks": {
@@ -122,5 +123,13 @@
     "no_clocks_message": "No clocks added.",
     "location_not_found_message": "Location not found.",
     "search_prompt_message": "Search for a location"
+  },
+  "weather": {
+    "temperature": "Temperature",
+    "precipitation": "Precipitation",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "temp_setting_label": "Temperature units",
+    "wind_setting_label": "Wind speed units"
   }
 }

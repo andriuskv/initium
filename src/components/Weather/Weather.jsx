@@ -4,12 +4,14 @@ import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } 
 import { getTimeString } from "services/timeDate";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { useSettings } from "contexts/settings";
+import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./weather.css";
 
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ timeFormat }) {
+  const locale = useLocalization();
   const { settings: { appearance: { animationSpeed }, weather: settings }, updateSetting } = useSettings();
   const [state, setState] = useState({ view: "temp" });
   const [current, setCurrentWeather] = useState(null);
@@ -200,7 +202,7 @@ export default function Weather({ timeFormat }) {
         <div className={`container weather-more${state.visible ? " visible" : ""}`}>
           <Suspense fallback={null}>
             <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits} view={state.view}
-              selectView={selectView} toggleUnits={toggleUnits} hide={hideMoreWeather}/>
+              locale={locale} selectView={selectView} toggleUnits={toggleUnits} hide={hideMoreWeather}/>
           </Suspense>
         </div>
       </div>
@@ -208,7 +210,7 @@ export default function Weather({ timeFormat }) {
   }
   return (
     <div className="weather">
-      <button className="btn icon-btn weather-more-btn" onClick={showMoreWeather} ref={moreButton} title="More">
+      <button className="btn icon-btn weather-more-btn" onClick={showMoreWeather} ref={moreButton} title={locale.global.more}>
         <Icon id="expand"/>
       </button>
       <div className="weather-current">
