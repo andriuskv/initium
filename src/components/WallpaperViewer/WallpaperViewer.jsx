@@ -5,7 +5,7 @@ import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
 import "./wallpaper-viewer.css";
 
-export default function WallpaperViewer({ hide }) {
+export default function WallpaperViewer({ locale, hide }) {
   const { settings: { appearance: { wallpaper: settings } }, updateSetting } = useSettings();
   const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState("");
@@ -201,9 +201,9 @@ export default function WallpaperViewer({ hide }) {
           }} onPointerDown={handlePointerDown}></div>}
         </div>
         <div className="container wallpaper-viewer-bar">
-          <button className="btn text-btn" onClick={resetArea}>Reset</button>
-          <button className="btn text-btn" onClick={hide}>Cancel</button>
-          <button className="btn text-btn" onClick={saveWallpaperPosition}>Save</button>
+          <button className="btn text-btn" onClick={resetArea}>{locale.global.reset}</button>
+          <button className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
+          <button className="btn text-btn" onClick={saveWallpaperPosition}>{locale.global.save}</button>
         </div>
       </div>
     </FullscreenModal>

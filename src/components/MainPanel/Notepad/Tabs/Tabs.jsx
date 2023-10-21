@@ -9,7 +9,7 @@ import CreateButton from "components/CreateButton";
 import "./tabs.css";
 import Tab from "./Tab";
 
-export default function Tabs({ tabs, textSize, selectListTab, updateTabs, updateTabPosition, getTabSize, decreaseTextSize, increaseTextSize, hide }) {
+export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs, updateTabPosition, getTabSize, decreaseTextSize, increaseTextSize, hide }) {
   const [modal, setModal] = useState(null);
   const [storage, setStorage] = useState({ current: 0, used: 0 });
   const [activeDragId, setActiveDragId] = useState(null);
@@ -123,13 +123,13 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
       return (
         <Modal className="notepad-modal" hide={hideModal}>
           <form onSubmit={createTab}>
-            <h4 className="modal-title modal-title-center">Create tab</h4>
+            <h4 className="modal-title modal-title-center">{locale.notepad.create_modal_title}</h4>
             <input type="text" className="input" name="title"
               autoComplete="off"
               placeholder="Tab title"/>
             <div className="modal-actions">
-              <button type="button" className="btn text-btn" onClick={hideModal}>Cancel</button>
-              <button className="btn">Create</button>
+              <button type="button" className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
+              <button className="btn">{locale.global.create}</button>
             </div>
           </form>
         </Modal>
@@ -138,13 +138,13 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
     else if (modal.type === "remove") {
       return (
         <Modal className="notepad-modal" hide={hideModal}>
-          <h4 className="modal-title">Remove tab</h4>
+          <h4 className="modal-title">{locale.notepad.remove_modal_title}</h4>
           <div className="modal-text-body">
-            <p>Do you want to remove this tab?</p>
+            <p>{locale.notepad.remove_modal_text}</p>
           </div>
           <div className="modal-actions">
-            <button className="btn text-btn" onClick={hideModal}>Cancel</button>
-            <button className="btn" onClick={confirmTabRemoval}>Remove</button>
+            <button className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
+            <button className="btn" onClick={confirmTabRemoval}>{locale.global.remove}</button>
           </div>
         </Modal>
       );
@@ -160,6 +160,7 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
         tab,
         tabs,
         textSize,
+        locale,
         updateTabs,
         decreaseTextSize,
         increaseTextSize,
@@ -170,35 +171,35 @@ export default function Tabs({ tabs, textSize, selectListTab, updateTabs, update
 
     return (
       <SortableItem className={`notepad-tabs-item${tab.id === activeDragId ? " dragging" : ""}`}
-        component={component} id={tab.id} key={tab.id}/>
+        component={component} id={tab.id} key={tab.id} handleTitle={locale.global.drag}/>
     );
   }
 
   return (
     <div className="notepad">
       <div className="container-header notepad-tabs-header">
-        <h2 className="container-header-title">Notepad Tabs</h2>
+        <h2 className="container-header-title">{locale.notepad.tabs_title}</h2>
         <Dropdown>
           <div className="dropdown-group notepad-tabs-dropdown-setting-group">
-            <div className="notepad-tabs-dropdown-setting-title">Text size</div>
+            <div className="notepad-tabs-dropdown-setting-title">{locale.global.text_size_title}</div>
             <div className="notepad-tabs-dropdown-setting">
               <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-                onClick={() => decreaseTextSize(textSize)} title="Decrease text size" disabled={textSize <= 10}>
+                onClick={() => decreaseTextSize(textSize)} title={locale.global.decrease_text_size_title} disabled={textSize <= 10}>
                 <Icon id="minus"/>
               </button>
               <span className="notepad-tabs-dropdown-setting-value">{textSize}px</span>
               <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-                onClick={() => increaseTextSize(textSize)} title="Increase text size" disabled={textSize >= 32}>
+                onClick={() => increaseTextSize(textSize)} title={locale.global.increase_text_size_title} disabled={textSize >= 32}>
                 <Icon id="plus"/>
               </button>
             </div>
           </div>
           <button className="btn icon-text-btn dropdown-btn" onClick={downloadTabs}>
             <Icon id="download"/>
-            <span>Download all</span>
+            <span>{locale.notepad.download_all_button}</span>
           </button>
         </Dropdown>
-        <button className="btn icon-btn" onClick={hide} title="Close">
+        <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
           <Icon id="cross"/>
         </button>
       </div>

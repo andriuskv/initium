@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { timeout } from "utils";
 import { useSettings } from "contexts/settings";
 
-export default function TimeDateTab() {
+export default function TimeDateTab({ locale }) {
   const { settings: { timeDate: settings }, updateSetting, toggleSetting } = useSettings();
   const timeoutId = useRef(0);
 
@@ -55,7 +55,7 @@ export default function TimeDateTab() {
   return (
     <div className="container-body setting-tab">
       <label className="setting">
-        <span>Time display format</span>
+        <span>{locale.settings.time_date.time_format_label}</span>
         <input type="checkbox" className="sr-only toggle-input"
           checked={settings.format === 24}
           onChange={toggleTimeFormat}/>
@@ -66,10 +66,10 @@ export default function TimeDateTab() {
       </label>
       <div className="settings-group">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Clock</h4>
+          <h4 className="settings-group-title">{locale.settings.time_date.clock_group_title}</h4>
         </div>
         <label className="setting">
-          <span>Disable clock</span>
+          <span>{locale.settings.time_date.disable_clock_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.clockDisabled}
             onChange={() => toggleSetting("timeDate", "clockDisabled")}/>
@@ -78,23 +78,23 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-          <span>Clock style</span>
+          <span>{locale.settings.time_date.clock_style_label}</span>
           <div className="select-container">
             <select className="input select" onChange={handleClockStyleChange} value={settings.clockStyle}
               disabled={settings.clockDisabled}>
-              <option value="default">Default</option>
-              <option value="vertical">Vertical</option>
+              <option value="default">{locale.settings.time_date.clock_style_default}</option>
+              <option value="vertical">{locale.settings.time_date.clock_style_vertical}</option>
             </select>
           </div>
         </label>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-          <span>Clock scale</span>
+          <span>{locale.settings.time_date.clock_scale_label}</span>
           <input type="range" className="range-input" min="0.5" max="3" step="0.1"
             defaultValue={settings.clockScale} name="clockScale"
             onChange={handleClockScaleChange} disabled={settings.clockDisabled}/>
         </label>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-          <span>Center clock when main panel is hidden</span>
+          <span>{locale.settings.time_date.center_clock_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.centerClock}
             onChange={() => toggleSetting("timeDate", "centerClock")}
@@ -106,10 +106,10 @@ export default function TimeDateTab() {
       </div>
       <div className="settings-group">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Date</h4>
+          <h4 className="settings-group-title">{locale.settings.time_date.date_group_title}</h4>
         </div>
         <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-          <span>Hide date</span>
+          <span>{locale.settings.time_date.hide_date_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.dateHidden}
             onChange={() => toggleSetting("timeDate", "dateHidden")}
@@ -119,7 +119,7 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-          <span>Date language</span>
+          <span>{locale.settings.time_date.date_lang_label}</span>
           <div className="select-container">
             <select className="input select" onChange={handleDateLocaleChange} value={settings.dateLocale}
               disabled={settings.clockDisabled || settings.dateHidden}>
@@ -167,28 +167,28 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-          <span>Date position</span>
+          <span>{locale.settings.time_date.date_postion_label}</span>
           <div className="select-container">
             <select className="input select" onChange={handleDatePositionChange} value={settings.datePosition}
               disabled={settings.clockDisabled || settings.dateHidden}>
-              <option value="top">Top</option>
-              <option value="bottom">Bottom</option>
+              <option value="top">{locale.settings.time_date.date_postion_top}</option>
+              <option value="bottom">{locale.settings.time_date.date_postion_bottom}</option>
             </select>
           </div>
         </label>
         <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-          <span>Date alignment</span>
+          <span>{locale.settings.time_date.date_align_label}</span>
           <div className="select-container">
             <select className="input select" onChange={handleDateAlignmentChange} value={settings.dateAlignment}
               disabled={settings.clockDisabled || settings.dateHidden}>
-              <option value="start">Start</option>
-              <option value="center">Center</option>
-              <option value="end">End</option>
+              <option value="start">{locale.settings.time_date.date_align_start}</option>
+              <option value="center">{locale.settings.time_date.date_align_center}</option>
+              <option value="end">{locale.settings.time_date.date_align_end}</option>
             </select>
           </div>
         </label>
         <label className={`setting${settings.clockDisabled || settings.dateHidden ? " disabled" : ""}`}>
-          <span>Date scale</span>
+          <span>{locale.settings.time_date.date_scale_label}</span>
           <input type="range" className="range-input" min="0.8" max="2" step="0.1"
             defaultValue={settings.dateScale} name="dateScale"
             onChange={handleDateScaleChange} disabled={settings.clockDisabled || settings.dateHidden}/>
@@ -196,10 +196,10 @@ export default function TimeDateTab() {
       </div>
       <div className="settings-group">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Calendar</h4>
+          <h4 className="settings-group-title">{locale.settings.time_date.calendar_group_title}</h4>
         </div>
         <label className="setting">
-          <span>First day of the week</span>
+          <span>{locale.settings.time_date.first_weekday_label}</span>
           <div className="select-container">
             <select className="input select" onChange={handleWeekdayChange} value={settings.firstWeekday}
               disabled={settings.clockDisabled}>
@@ -209,7 +209,7 @@ export default function TimeDateTab() {
           </div>
         </label>
         <label className="setting last-setting-tab-item">
-          <span>Hide world clocks</span>
+          <span>{locale.settings.time_date.hide_clocks_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.worldClocksHidden}
             onChange={() => toggleSetting("timeDate", "worldClocksHidden")}/>

@@ -1,8 +1,10 @@
 import { useLayoutEffect, useRef } from "react";
+import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./create-button.css";
 
 export default function CreateButton({ children, className, attrs = {}, style = {}, onClick, trackScroll = false }) {
+  const locale = useLocalization();
   const ref = useRef(null);
   const scrolling = useRef(false);
 
@@ -37,7 +39,7 @@ export default function CreateButton({ children, className, attrs = {}, style = 
   return (
     <button className={`btn icon-text-btn create-btn${className ? ` ${className}` : ""}`} { ...attrs } style={{ ...style }} ref={ref} onClick={onClick}>
       <Icon id="plus"/>
-      <span>{children || "Create"}</span>
+      <span>{children || locale.global.create}</span>
     </button>
   );
 }

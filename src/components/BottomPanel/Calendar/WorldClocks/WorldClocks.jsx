@@ -4,7 +4,7 @@ import { getOffsettedCurrentTime, getHoursOffset } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import "./world-clocks.css";
 
-export default function WorldClocks({ parentVisible }) {
+export default function WorldClocks({ parentVisible, locale }) {
   const [clocks, setClocks] = useState(null);
   const timeoutId = useRef(0);
 
@@ -70,7 +70,7 @@ export default function WorldClocks({ parentVisible }) {
   return (
     <div className="container-footer calendar-world-clocks">
       <h4 className="calendar-world-clocks-title">
-        <button className="btn text-btn calendar-world-clocks-title-btn" onClick={revealClocksPanel}>World clocks</button>
+        <button className="btn text-btn calendar-world-clocks-title-btn" onClick={revealClocksPanel}>{locale.calendar.world_clocks_title}</button>
       </h4>
       {clocks?.length ? (
         <ul className="calendar-world-clocks-list">

@@ -8,7 +8,7 @@ import "./calendar.css";
 import SelectedDay from "./SelectedDay";
 import WorldClocks from "./WorldClocks";
 
-export default function Calendar({ visible, showIndicator }) {
+export default function Calendar({ visible, locale, showIndicator }) {
   const { settings: { appearance: { animationSpeed }, timeDate: settings } } = useSettings();
   const [calendar, setCalendar] = useState(null);
   const [currentDay, setCurrentDay] = useState(null);
@@ -721,16 +721,16 @@ export default function Calendar({ visible, showIndicator }) {
       </div>
       <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px` }}>
         {selectedDay ? (
-          <SelectedDay calendar={calendar} selectedDay={selectedDay} reminders={reminders}
+          <SelectedDay calendar={calendar} selectedDay={selectedDay} reminders={reminders} locale={locale}
             updateCalendar={updateCalendar} createReminder={createReminder} resetSelectedDay={resetSelectedDay} hide={hideSelectedDay}/>
         ) : viewingYear ? (
           <div className={`calendar${transition.active ? " transition" : ""}`}>
             <div className="calendar-header">
-              <button className="btn icon-btn" onClick={() => setVisibleYear(-1)} title="Previous year">
+              <button className="btn icon-btn" onClick={() => setVisibleYear(-1)} title={locale.calendar.prevoius_year_title}>
                 <Icon id="chevron-left"/>
               </button>
               <span className="calendar-title">{currentYear}</span>
-              <button className="btn icon-btn" onClick={() => setVisibleYear(1)} title="Next year">
+              <button className="btn icon-btn" onClick={() => setVisibleYear(1)} title={locale.calendar.next_year_title}>
                 <Icon id="chevron-right"/>
               </button>
             </div>
@@ -747,11 +747,11 @@ export default function Calendar({ visible, showIndicator }) {
         ) : (
           <div className={`calendar${transition.active ? " transition" : ""}`}>
             <div className="calendar-header">
-              <button className="btn icon-btn" onClick={() => changeMonth(-1)} title="Previous month">
+              <button className="btn icon-btn" onClick={() => changeMonth(-1)} title={locale.calendar.prevoius_month_title}>
                 <Icon id="chevron-left"/>
               </button>
               <button className="btn text-btn calendar-title" onClick={viewYear}>{visibleMonth.current.dateString}</button>
-              <button className="btn icon-btn" onClick={() => changeMonth(1)} title="Next month">
+              <button className="btn icon-btn" onClick={() => changeMonth(1)} title={locale.calendar.next_month_title}>
                 <Icon id="chevron-right"/>
               </button>
             </div>
@@ -789,7 +789,7 @@ export default function Calendar({ visible, showIndicator }) {
           </div>
         )}
       </div>
-      {settings.worldClocksHidden ? null : <WorldClocks parentVisible={visible}/>}
+      {settings.worldClocksHidden ? null : <WorldClocks parentVisible={visible} locale={locale}/>}
     </>
   );
 }

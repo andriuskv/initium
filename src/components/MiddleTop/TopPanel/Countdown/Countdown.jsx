@@ -9,7 +9,7 @@ import "./countdown.css";
 
 const Form = lazy(() => import("./Form"));
 
-export default function Countdown({ visible, toggleIndicator }) {
+export default function Countdown({ visible, locale, toggleIndicator }) {
   const [countdowns, setCountdowns] = useState([]);
   const timeoutId = useRef(0);
 
@@ -125,7 +125,7 @@ export default function Countdown({ visible, toggleIndicator }) {
       id: "countdown",
       shouldToggle: true,
       component: Form,
-      params: { createCountdown }
+      params: { locale, createCountdown }
     });
   }
 
@@ -187,40 +187,41 @@ export default function Countdown({ visible, toggleIndicator }) {
                 {countdown.years > 0 && (
                   <div className="countdown-item-timer-part">
                     <span className="countdown-item-timer-digit">{countdown.years}</span>
-                    <span>Year{countdown.years === 1 ? "" : "s"}</span>
+                    <span>{locale.countdown.year}{countdown.years === 1 ? "" : "s"}</span>
                   </div>
                 )}
                 {countdown.months > 0 && (
                   <div className="countdown-item-timer-part">
                     <span className="countdown-item-timer-digit">{countdown.months}</span>
-                    <span>Month{countdown.months === 1 ? "" : "s"}</span>
+                    <span>{locale.countdown.month}{countdown.months === 1 ? "" : "s"}</span>
                   </div>
                 )}
                 {countdown.days > 0 && (
                   <div className="countdown-item-timer-part">
                     <span className="countdown-item-timer-digit">{countdown.days}</span>
-                    <span>Day{countdown.days === 1 ? "" : "s"}</span>
+                    <span>{locale.countdown.day}{countdown.days === 1 ? "" : "s"}</span>
                   </div>
                 )}
                 {countdown.hours > 0 && (
                   <div className="countdown-item-timer-part">
                     <span className="countdown-item-timer-digit">{countdown.hours}</span>
-                    <span>Hour{countdown.hours === 1 ? "" : "s"}</span>
+                    <span>{locale.countdown.hour}{countdown.hours === 1 ? "" : "s"}</span>
                   </div>
                 )}
                 {countdown.minutes > 0 && (
                   <div className="countdown-item-timer-part">
                     <span className="countdown-item-timer-digit">{countdown.minutes}</span>
-                    <span>Minute{countdown.minutes === 1 ? "" : "s"}</span>
+                    <span>{locale.countdown.minute}{countdown.minutes === 1 ? "" : "s"}</span>
                   </div>
                 )}
-                <div className="countdown-item-timer-part">
+                <div className="countdown-item-timer-part seconds">
                   <span className="countdown-item-timer-digit">{countdown.seconds}</span>
-                  <span>Second{countdown.seconds === 1 ? "" : "s"}</span>
+                  <span>{locale.countdown.second}{countdown.seconds === 1 ? "" : "s"}</span>
                 </div>
               </div>
               <div className="countdown-item-date">{countdown.date}</div>
-              <button className="btn icon-btn alt-icon-btn countdown-item-remove-btn" onClick={() => removeCountdown(i)} title="Remove">
+              <button className="btn icon-btn alt-icon-btn countdown-item-remove-btn" onClick={() => removeCountdown(i)}
+                title={locale.global.remove}>
                 <Icon id="trash"/>
               </button>
             </li>
@@ -228,7 +229,7 @@ export default function Countdown({ visible, toggleIndicator }) {
         </ul>
       );
     }
-    return <p className="countdowns-message">No countdowns</p>;
+    return <p className="countdowns-message">{locale.countdown.no_countdowns_message}</p>;
   }
 
   return (

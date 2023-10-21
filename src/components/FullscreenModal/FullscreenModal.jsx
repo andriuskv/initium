@@ -34,7 +34,7 @@ export default function FullscreenModal({ children, hiding, transparent = false,
     if (pointerInside) {
       pointerInside = false;
     }
-    // Selecting option element with a enter key triggers only pointerup/click event
+    // Selecting an option element with the enter key triggers only a pointerup/click event
     else if (!target.closest("[data-modal-initiator]") && target.nodeName !== "SELECT") {
       hide();
     }

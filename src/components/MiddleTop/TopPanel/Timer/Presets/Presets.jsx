@@ -5,7 +5,7 @@ import Icon from "components/Icon";
 import "./presets.css";
 import Inputs from "../Inputs";
 
-export default function Presets({ presets, updatePresets, resetActivePreset, hide }) {
+export default function Presets({ presets, locale, updatePresets, resetActivePreset, hide }) {
   const [state, setState] = useState({
     hours: "00",
     minutes: "00",
@@ -95,14 +95,15 @@ export default function Presets({ presets, updatePresets, resetActivePreset, hid
     <div className="timer-presets">
       <form className="container-header" onSubmit={createPreset}>
         <div className="timer-presets-form-body">
-          <input type="text" className="input timer-presets-form-name-input" name="name" placeholder="Preset name"
-            value={form.name} onChange={handlePresetNameChange} autoComplete="off" required/>
+          <input type="text" className="input timer-presets-form-name-input" name="name"
+            value={form.name} placeholder={locale.timer.presets_input_placeholder}
+            onChange={handlePresetNameChange} autoComplete="off" required/>
           <Inputs state={state} updateInputs={updateInputs} handleKeyDown={resetFormError}/>
         </div>
-        {form.error && <p className="timer-presets-form-message">Please enter valid time.</p>}
+        {form.error && <p className="timer-presets-form-message">{locale.timers.presets_form_message}</p>}
         <div className="timer-presets-form-footer">
-          {form.updating && <button type="button" className="btn text-btn" onClick={resetForm}>Cancel</button>}
-          <button className="btn">{form.updating ? "Update" : "Create"}</button>
+          {form.updating && <button type="button" className="btn text-btn" onClick={resetForm}>{locale.global.cancel}</button>}
+          <button className="btn">{form.updating ? locale.global.update : locale.global.create}</button>
         </div>
       </form>
       {presets.length ? (
@@ -116,21 +117,21 @@ export default function Presets({ presets, updatePresets, resetActivePreset, hid
               <Dropdown>
                 <button className="btn icon-text-btn dropdown-btn" onClick={() => editPreset(i)}>
                   <Icon id="edit"/>
-                  <span>Edit</span>
+                  <span>{locale.global.edit}</span>
                 </button>
                 <button className="btn icon-text-btn dropdown-btn" onClick={() => removePreset(i)}>
                   <Icon id="trash"/>
-                  <span>Remove</span>
+                  <span>{locale.global.remove}</span>
                 </button>
               </Dropdown>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="top-panel-item-content timer-presets-message">No presets</p>
+        <p className="top-panel-item-content timer-presets-message">{locale.timer.no_presets_message}</p>
       )}
       <div className="container-footer">
-        <button className="btn text-btn" onClick={hide}>Done</button>
+        <button className="btn text-btn" onClick={hide}>{locale.global.done}</button>
       </div>
     </div>
   );

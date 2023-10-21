@@ -1,10 +1,10 @@
 import { useState, useRef } from "react";
 import { getRandomString } from "utils";
 import { padTime, getMonthName, getTimeString } from "services/timeDate";
-import "./form.css";
 import { getSetting } from "services/settings";
+import "./form.css";
 
-export default function Presets({ createCountdown, hide }) {
+export default function Presets({ locale, createCountdown, hide }) {
   const [form, setForm] = useState({
     years: "",
     months: "",
@@ -125,12 +125,13 @@ export default function Presets({ createCountdown, hide }) {
       }
     }
     else if (name === "months") {
+      const { dateLocale } = getSetting("timeDate");
       let month = 0;
 
       while (month < 12) {
         dataList.items.push({
           value: month + 1,
-          displayValue: `${padTime(month + 1)} - ${getMonthName(month, true)}`
+          displayValue: `${padTime(month + 1)} - ${getMonthName(month, dateLocale, true)}`
         });
         month += 1;
       }
@@ -200,38 +201,38 @@ export default function Presets({ createCountdown, hide }) {
     <form className="countdown-form" onSubmit={handleFormSubmit} onFocus={handleFormFocus} onBlur={handleFormBlur}
       onKeyDown={handleFormKeydown} autoComplete="off">
       <div className="container-header">
-        <h3 className="container-header-title">Countdown form</h3>
+        <h3 className="container-header-title">{locale.countdown.form_title}</h3>
       </div>
       <div className="container-body countdown-form-body">
         <label>
-          <div className="countdown-form-field-title">Title</div>
+          <div className="countdown-form-field-title">{locale.global.title_input_label}</div>
           <input type="text" className="input countdown-form-field" name="title"/>
         </label>
         <div className="countdown-form-fields countdown-form-date-fields">
           <label>
-            <div className="countdown-form-field-title">Years</div>
+            <div className="countdown-form-field-title">{locale.countdown.year}</div>
             <input type="text" className="input countdown-form-field" name="years"
               onChange={handleInputChange} value={form.years} required/>
           </label>
           <label>
-            <div className="countdown-form-field-title">Months</div>
+            <div className="countdown-form-field-title">{locale.countdown.month}</div>
             <input type="text" className="input countdown-form-field" name="months"
               onChange={handleInputChange} value={form.months} required/>
           </label>
           <label>
-            <div className="countdown-form-field-title">Days</div>
+            <div className="countdown-form-field-title">{locale.countdown.day}</div>
             <input type="text" className="input countdown-form-field" name="days"
               onChange={handleInputChange} value={form.days} required/>
           </label>
         </div>
         <div className="countdown-form-fields countdown-form-date-fields">
           <label>
-            <div className="countdown-form-field-title">Hours</div>
+            <div className="countdown-form-field-title">{locale.countdown.hour}</div>
             <input type="text" className="input countdown-form-field" name="hours"
               onChange={handleInputChange} value={form.hours}/>
           </label>
           <label>
-            <div className="countdown-form-field-title">Minutes</div>
+            <div className="countdown-form-field-title">{locale.countdown.minute}s</div>
             <input type="text" className="input countdown-form-field" name="minutes"
               onChange={handleInputChange} value={form.minutes}/>
           </label>

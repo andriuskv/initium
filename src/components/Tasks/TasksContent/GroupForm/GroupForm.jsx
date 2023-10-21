@@ -2,7 +2,7 @@ import { getRandomString } from "utils";
 import Modal from "components/Modal";
 import "./group-form.css";
 
-export default function GroupForm({ createGroup, modal = false, hide }) {
+export default function GroupForm({ locale, createGroup, modal = false, hide }) {
   function handleGroupFormSubmit(event) {
     event.preventDefault();
 
@@ -25,11 +25,12 @@ export default function GroupForm({ createGroup, modal = false, hide }) {
     return (
       <Modal hide={hide}>
         <form onSubmit={handleGroupFormSubmit}>
-          <h4 className="modal-title modal-title-center">New group</h4>
-          <input type="text" className="input tasks-groups-form-input tasks-groups-form-modal-input" name="name" placeholder="Group name" autoComplete="off" required/>
+          <h4 className="modal-title modal-title-center">{locale.tasks.new_group}</h4>
+          <input type="text" className="input tasks-groups-form-input tasks-groups-form-modal-input" name="name"
+            placeholder={locale.tasks.group_input_placeholder} autoComplete="off" required/>
           <div className="modal-actions">
-            <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
-            <button className="btn">Create</button>
+            <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
+            <button className="btn">{locale.global.create}</button>
           </div>
         </form>
       </Modal>
@@ -39,8 +40,9 @@ export default function GroupForm({ createGroup, modal = false, hide }) {
   return (
     <form className="tasks-groups-form" onSubmit={handleGroupFormSubmit}>
       <div className="multi-input-container tasks-groups-form-input">
-        <input type="text" className="input multi-input-left" name="name" placeholder="Group name" autoComplete="off" required/>
-        <button className="btn text-btn multi-input-right">Create</button>
+        <input type="text" className="input multi-input-left" name="name"
+          placeholder={locale.tasks.group_input_placeholder} autoComplete="off" required/>
+        <button className="btn text-btn multi-input-right">{locale.global.create}</button>
       </div>
     </form>
   );

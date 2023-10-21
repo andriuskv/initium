@@ -9,13 +9,13 @@ const StickyNotes = lazy(() => import("./StickyNotes"));
 const Shortcuts = lazy(() => import("./Shortcuts"));
 const Calendar = lazy(() => import("./Calendar"));
 
-export default function BottomPanel() {
+export default function BottomPanel({ locale }) {
   const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState({});
   const [items, setItems] = useState(() => ({
     "stickyNotes": {
       id: "stickyNotes",
-      title: "Sticky Notes",
+      title: locale.bottomPanel.stickyNotes,
       iconId: "sticky-notes",
       attrs: {
         "data-focus-id": "stickyNotes"
@@ -23,7 +23,7 @@ export default function BottomPanel() {
     },
     "shortcuts": {
       id: "shortcuts",
-      title: "Shortcuts",
+      title: locale.bottomPanel.shortcuts,
       iconId: "grid",
       attrs: {
         "data-focus-id": "shortcuts"
@@ -31,12 +31,12 @@ export default function BottomPanel() {
     },
     "timers": {
       id: "timers",
-      title: "Timers",
+      title: locale.bottomPanel.timers,
       iconId: "clock"
     },
     "calendar": {
       id: "calendar",
-      title: "Calendar",
+      title: locale.bottomPanel.calendar,
       iconId: "calendar",
       attrs: {
         "data-focus-id": "calendar"
@@ -44,7 +44,7 @@ export default function BottomPanel() {
     },
     "settings": {
       id: "settings",
-      title: "Settings",
+      title: locale.global.settings,
       iconId: "settings",
       attrs: {
         "data-modal-initiator": true
@@ -162,7 +162,7 @@ export default function BottomPanel() {
   }
 
   function renderSelectedItem() {
-    const props = {};
+    const props = { locale };
     let Component = null;
 
     if (selectedItem.id === "stickyNotes") {
@@ -187,7 +187,7 @@ export default function BottomPanel() {
       return (
         <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}>
           <Suspense fallback={null}>
-            <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} showIndicator={toggleIndicator}/>
+            <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} locale={locale} showIndicator={toggleIndicator}/>
           </Suspense>
         </div>
       );
@@ -202,7 +202,7 @@ export default function BottomPanel() {
         <div className="container-header bottom-panel-item-header bottom-panel-transition-target">
           <Icon id={selectedItem.iconId}/>
           <h3 className="bottom-panel-item-title">{selectedItem.title}</h3>
-          <button className="btn icon-btn" onClick={hideItem} ref={closeButton} title="Close">
+          <button className="btn icon-btn" onClick={hideItem} ref={closeButton} title={locale.global.close}>
             <Icon id="cross"/>
           </button>
         </div>

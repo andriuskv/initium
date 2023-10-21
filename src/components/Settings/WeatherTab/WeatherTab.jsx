@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSettings } from "contexts/settings";
 import "./weather-tab.css";
 
-export default function WeatherTab() {
+export default function WeatherTab({ locale }) {
   const { settings: { weather: settings }, updateSetting, toggleSetting } = useSettings();
   const [error, setError] = useState(null);
 
@@ -33,7 +33,7 @@ export default function WeatherTab() {
     <div className="container-body setting-tab">
       {error?.type === "general" && <div className="weather-setting-message weather-settings-message">{error.message}</div>}
       <label className="checkbox-container setting">
-        <span>Disable weather</span>
+        <span>{locale.settings.weather.disable_weather_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.disabled}
           onChange={() => toggleSetting("weather", "disabled")}/>
@@ -43,7 +43,7 @@ export default function WeatherTab() {
       </label>
       <div className={`setting${settings.disabled ? " disabled" : ""}`}>
         <label className="checkbox-container setting-weather-item">
-          <span>Use geolocation</span>
+          <span>{locale.settings.weather.use_geo_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             disabled={settings.disabled}
             checked={settings.useGeo}
@@ -55,7 +55,7 @@ export default function WeatherTab() {
         {error?.type === "geo" && <div className="weather-setting-message">{error.message}</div>}
       </div>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Temperature units</span>
+        <span>{locale.settings.weather.temp_units_label}</span>
         <input type="checkbox" className="sr-only toggle-input"
           disabled={settings.disabled}
           checked={settings.units === "F"}
@@ -67,7 +67,7 @@ export default function WeatherTab() {
       </label>
       <form className={`setting${settings.disabled || settings.useGeo ? " disabled" : ""}`}
         onSubmit={handleCityNameChange}>
-        <span>City name (and country code)</span>
+        <span>{locale.settings.weather.location_label}</span>
         <input type="text" className="input setting-input" placeholder="Paris,FR" name="cityName"
           autoComplete="off" disabled={settings.disabled || settings.useGeo} defaultValue={settings.cityName}/>
         {error?.type === "target" && <div className="setting-message">{error.message}</div>}

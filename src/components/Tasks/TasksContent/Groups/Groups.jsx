@@ -6,7 +6,8 @@ import Icon from "components/Icon";
 import "./groups.css";
 import GroupForm from "../GroupForm";
 
-export default function Groups({ groups, updateGroups, createGroup, hide }) {
+export default function Groups({ groups, locale, updateGroups, createGroup, hide }) {
+  console.log(locale);
   const [removeModal, setRemoveModal] = useState(null);
   const [activeDragId, setActiveDragId] = useState(null);
 
@@ -74,7 +75,7 @@ export default function Groups({ groups, updateGroups, createGroup, hide }) {
     if (group.renameEnabled) {
       return (
         <input type="text" className="input tasks-group-input" autoFocus defaultValue={group.name}
-          onBlur={(event) => renameGroup(event, group)} onKeyPress={blurGroupNameInput}/>
+          onBlur={(event) => renameGroup(event, group)} onKeyUp={blurGroupNameInput}/>
       );
     }
     return (
@@ -84,12 +85,12 @@ export default function Groups({ groups, updateGroups, createGroup, hide }) {
         <Dropdown>
           <button className="btn icon-text-btn dropdown-btn" onClick={() => enableGroupRename(group)}>
             <Icon id="edit"/>
-            <span>Rename</span>
+            <span>{locale.global.rename}</span>
           </button>
           {allowRemoval && (
             <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
               <Icon id="trash"/>
-              <span>Remove</span>
+              <span>{locale.global.remove}</span>
             </button>
           )}
         </Dropdown>
@@ -101,7 +102,7 @@ export default function Groups({ groups, updateGroups, createGroup, hide }) {
     <>
       <div className="container-header"></div>
       <div className="container-body tasks-body">
-        <GroupForm createGroup={createGroup}/>
+        <GroupForm locale={locale} createGroup={createGroup}/>
         {groups.length > 1 ? (
           <ul className="tasks-groups-items" data-dropdown-parent>
             <li className="tasks-groups-item">
@@ -119,21 +120,21 @@ export default function Groups({ groups, updateGroups, createGroup, hide }) {
             </SortableList>
           </ul>
         ) : (
-          <p className="tasks-groups-message">No groups</p>
+          <p className="tasks-groups-message">{locale.tasks.no_groups}</p>
         )}
       </div>
       <div className="container-footer">
-        <button className="btn text-btn" onClick={hide}>Done</button>
+        <button className="btn text-btn" onClick={hide}>{locale.global.done}</button>
       </div>
       {removeModal && (
         <Modal hide={hideRemoveModal}>
-          <h4 className="modal-title">Remove group</h4>
+          <h4 className="modal-title">{locale.tasks.remove_group_modal_title}</h4>
           <div className="modal-text-body">
-            <p>Do you want to remove this group?</p>
+            <p>{locale.tasks.remove_group_modal_message}</p>
           </div>
           <div className="modal-actions">
-            <button className="btn text-btn" onClick={hideRemoveModal}>Cancel</button>
-            <button className="btn" onClick={confirmGroupRemoval}>Remove</button>
+            <button className="btn text-btn" onClick={hideRemoveModal}>{locale.global.cancel}</button>
+            <button className="btn" onClick={confirmGroupRemoval}>{locale.global.remove}</button>
           </div>
         </Modal>
       )}

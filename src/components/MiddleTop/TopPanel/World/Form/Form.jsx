@@ -6,7 +6,7 @@ import * as focusService from "services/focus";
 import "./form.css";
 import Icon from "components/Icon";
 
-export default function Form({ addClock, hide }) {
+export default function Form({ locale, addClock, hide }) {
   const [currentClocks, setCurrentClocks] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [searchResults, setSearchResults] = useState(null);
@@ -100,17 +100,17 @@ export default function Form({ addClock, hide }) {
   return (
     <div className="world-form">
       <div className="container-header">
-        <h3 className="container-header-title">Add a new world clock</h3>
-        <button className="btn icon-btn" onClick={hide} title="Close">
+        <h3 className="container-header-title">{locale.world.form_title}</h3>
+        <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
           <Icon id="cross"/>
         </button>
       </div>
       <div className="world-form-top">
         <div className="world-form-input-container">
           <Icon id="search" className="world-form-input-icon"/>
-          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} placeholder="Paris"/>
+          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} placeholder="Paris" autoFocus/>
           {inputValue.length ? (
-            <button className="btn icon-btn world-form-input-clear-btn" onClick={clearInput} title="clear">
+            <button className="btn icon-btn world-form-input-clear-btn" onClick={clearInput} title={locale.global.clear}>
               <Icon id="cross"/>
             </button>
           ) : null}
@@ -131,8 +131,8 @@ export default function Form({ addClock, hide }) {
           ))}
         </ul>
       ) : (
-        <p className="world-form-message">Location not found</p>
-      ) : <p className="world-form-message">Search for a location</p>}
+        <p className="world-form-message">{locale.world.location_not_found_message}</p>
+      ) : <p className="world-form-message">{locale.world.search_prompt_message}</p>}
     </div>
   );
 }

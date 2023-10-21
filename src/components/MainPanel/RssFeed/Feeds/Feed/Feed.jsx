@@ -1,7 +1,7 @@
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 
-export default function Feed({ children, index, feed, feeds, updateFeeds, selectFeedFromList, deactivateFeed, removeFeed }) {
+export default function Feed({ children, index, feed, feeds, locale, updateFeeds, selectFeedFromList, deactivateFeed, removeFeed }) {
   function enableTitleEdit() {
     feed.updatingTitle = true;
     updateFeeds(feeds, false);
@@ -52,15 +52,15 @@ export default function Feed({ children, index, feed, feeds, updateFeeds, select
           <Dropdown>
             <button className="btn icon-text-btn dropdown-btn" onClick={enableTitleEdit}>
               <Icon id="edit"/>
-              <span>Rename</span>
+              <span>{locale.global.rename}</span>
             </button>
             <button className="btn icon-text-btn dropdown-btn" onClick={() => deactivateFeed(index)}>
               <Icon id="sleep"/>
-              <span>Deactivate</span>
+              <span>{locale.rssFeed.deactive}</span>
             </button>
             <button className="btn icon-text-btn dropdown-btn" onClick={() => removeFeed(index, "active")}>
               <Icon id="trash"/>
-              <span>Remove</span>
+              <span>{locale.global.remove}</span>
             </button>
           </Dropdown>
         )}

@@ -2,7 +2,7 @@ import { useState, useLayoutEffect, useRef } from "react";
 import Icon from "components/Icon";
 import "./to-top.css";
 
-export default function ToTop() {
+export default function ToTop({ locale }) {
   const [visible, setVisible] = useState(false);
   const ref = useRef(null);
   const rafId = useRef(0);
@@ -28,7 +28,8 @@ export default function ToTop() {
   }
 
   return (
-    <button className={`btn icon-btn to-top-button${visible ? " visible" : ""}`} ref={ref} onClick={handleClick} title="To top">
+    <button className={`btn icon-btn to-top-button${visible ? " visible" : ""}`} ref={ref} onClick={handleClick}
+      title={locale.toTop.title}>
       <Icon id="chevron-up"/>
     </button>
   );

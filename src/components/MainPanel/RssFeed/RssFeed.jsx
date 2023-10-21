@@ -8,7 +8,7 @@ const Form = lazy(() => import("./Form"));
 const Feeds = lazy(() => import("./Feeds"));
 const Entries = lazy(() => import("./Entries"));
 
-export default function RssFeed({ showIndicator }) {
+export default function RssFeed({ locale, showIndicator }) {
   const [loading, setLoading] = useState(true);
   const [activeComponent, setActiveComponent] = useState(null);
   const [feeds, setFeeds] = useState(() => getDefaultFeeds());
@@ -447,18 +447,18 @@ export default function RssFeed({ showIndicator }) {
     return (
       <Suspense fallback={null}>
         {activeComponent === "feeds" && (
-          <Feeds feeds={feeds} selectFeedFromList={selectFeedFromList}
+          <Feeds feeds={feeds} locale={locale} selectFeedFromList={selectFeedFromList}
             removeFeed={removeFeed} deactivateFeed={deactivateFeed}
             updateFeeds={updateFeeds} showForm={showForm} hide={hideFeedList}/>
         )}
-        {activeComponent === "form" && <Form feeds={feeds} addFeed={addFeed} hide={hideForm}/>}
+        {activeComponent === "form" && <Form feeds={feeds} locale={locale} addFeed={addFeed} hide={hideForm}/>}
       </Suspense>
     );
   }
   return (
     <Suspense fallback={null}>
       <Entries navigation={navigation} feeds={feeds}
-        selectFeed={selectFeed} previousShift={previousShift} nextShift={nextShift}
+        locale={locale} selectFeed={selectFeed} previousShift={previousShift} nextShift={nextShift}
         showFeedList={showFeedList} markEntryAsRead={markEntryAsRead} expandEntry={expandEntry}/>
     </Suspense>
   );

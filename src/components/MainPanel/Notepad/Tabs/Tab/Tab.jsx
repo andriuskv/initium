@@ -2,7 +2,7 @@ import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./tab.css";
 
-export default function Tab({ children, index, tab, tabs, textSize, updateTabs, selectListTab, showRemoveModal, decreaseTextSize, increaseTextSize }) {
+export default function Tab({ children, index, tab, tabs, textSize, locale, updateTabs, selectListTab, showRemoveModal, decreaseTextSize, increaseTextSize }) {
   function enableTabRename() {
     tab.renameEnabled = true;
     updateTabs(tabs, false);
@@ -48,15 +48,15 @@ export default function Tab({ children, index, tab, tabs, textSize, updateTabs, 
 
     return (
       <div className="dropdown-group notepad-tabs-dropdown-setting-group">
-        <div className="notepad-tabs-dropdown-setting-title">Text size</div>
+        <div className="notepad-tabs-dropdown-setting-title">{locale.global.text_size_title}</div>
         <div className="notepad-tabs-dropdown-setting">
           <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-            onClick={() => decreaseTextSize(size, tab)} title="Decrease text size" disabled={size <= 10}>
+            onClick={() => decreaseTextSize(size, tab)} title={locale.global.decreate_text_size_title} disabled={size <= 10}>
             <Icon id="minus"/>
           </button>
           <span className="notepad-tabs-dropdown-setting-value">{size}px</span>
           <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-            onClick={() => increaseTextSize(size, tab)} title="Increase text size" disabled={size >= 32}>
+            onClick={() => increaseTextSize(size, tab)} title={locale.global.increase_text_size_title} disabled={size >= 32}>
             <Icon id="plus"/>
           </button>
         </div>
@@ -83,17 +83,17 @@ export default function Tab({ children, index, tab, tabs, textSize, updateTabs, 
           {renderTextSizeSetting()}
           <button className="btn icon-text-btn dropdown-btn" onClick={enableTabRename}>
             <Icon id="edit"/>
-            <span>Rename</span>
+            <span>{locale.global.rename}</span>
           </button>
           <a href="" download={`${tab.title}.txt`} className="btn icon-text-btn dropdown-btn"
             onClick={downloadTab}>
             <Icon id="download"/>
-            <span>Download</span>
+            <span>{locale.global.download}</span>
           </a>
           {tabs.length > 1 && (
             <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
               <Icon id="trash"/>
-              <span>Remove</span>
+              <span>{locale.global.remove}</span>
             </button>
           )}
         </Dropdown>

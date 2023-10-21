@@ -1,12 +1,12 @@
 import { useSettings } from "contexts/settings";
 
-export default function Tasks() {
+export default function Tasks({ locale }) {
   const { settings: { tasks: settings }, toggleSetting } = useSettings();
 
   return (
     <div className="container-body setting-tab">
       <label className="setting">
-        <span>Disable tasks</span>
+        <span>{locale.settings.tasks.disable_tasks_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.disabled}
           onChange={() => toggleSetting("tasks", "disabled")}/>
@@ -15,7 +15,7 @@ export default function Tasks() {
         </div>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Show default group's header</span>
+        <span>{locale.settings.tasks.show_default_group_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           disabled={settings.disabled}
           checked={settings.defaultGroupVisible}
@@ -25,7 +25,7 @@ export default function Tasks() {
         </div>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Hide empty groups</span>
+        <span>{locale.settings.tasks.hide_empty_groups_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           disabled={settings.disabled}
           checked={settings.emptyGroupsHidden}
@@ -35,7 +35,7 @@ export default function Tasks() {
         </div>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Include subtasks in task count</span>
+        <span>{locale.settings.tasks.count_subtasks_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           disabled={settings.disabled}
           checked={settings.countSubtasks}
@@ -45,7 +45,7 @@ export default function Tasks() {
         </div>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Show completed repeating tasks</span>
+        <span>{locale.settings.tasks.show_completed_reateating_tasks_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           disabled={settings.disabled}
           checked={settings.showCompletedRepeatingTasks}
@@ -55,7 +55,7 @@ export default function Tasks() {
         </div>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Hide task repeat history</span>
+        <span>{locale.settings.tasks.hide_repeat_history_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           disabled={settings.disabled}
           checked={settings.repeatHistoryHidden}

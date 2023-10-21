@@ -5,7 +5,7 @@ import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./wallpaper.css";
 
-export default function Wallpaper({ settings, updateContextSetting }) {
+export default function Wallpaper({ settings, locale, updateContextSetting }) {
   const [wallpaperInfo, setWallpaperInfo] = useState(() => getWallpaperInfo());
   const [wallpaperForm, setWallpaperForm] = useState(null);
   const [wallpaperSettingsDirty, setWallpaperSettingsDirty] = useState(() => {
@@ -180,12 +180,12 @@ export default function Wallpaper({ settings, updateContextSetting }) {
     return (
       <Modal hide={hideWallpaperForm}>
         <form onSubmit={handleWallpaperFormSubmit}>
-          <h4 className="modal-title modal-title-center">Set wallpaper from URL</h4>
-          <input type="text" className="input setting-wallpaper-form-input" name="input"placeholder="URL" autoComplete="off"/>
+          <h4 className="modal-title modal-title-center">{locale.settings.appearance.wallpaper_url_form_title}</h4>
+          <input type="text" className="input setting-wallpaper-form-input" name="input" placeholder={locale.global.url_input_label} autoComplete="off"/>
           {wallpaperForm.message ? <div className="setting-wallpaper-form-message">{wallpaperForm.message}</div> : null}
           <div className="modal-actions">
-            <button type="button" className="btn text-btn" onClick={hideWallpaperForm}>Cancel</button>
-            <button className="btn">Set</button>
+            <button type="button" className="btn text-btn" onClick={hideWallpaperForm}>{locale.global.cancel}</button>
+            <button className="btn">{locale.global.set}</button>
           </div>
         </form>
       </Modal>
@@ -208,7 +208,7 @@ export default function Wallpaper({ settings, updateContextSetting }) {
   return (
     <div className="settings-group">
       <div className="settings-group-top">
-        <h4 className="settings-group-title">Wallpaper</h4>
+        <h4 className="settings-group-title">{locale.settings.appearance.wallpaper_group_title}</h4>
         {settings.wallpaper.mimeType?.startsWith("image") && (settings.wallpaper.url || settings.wallpaper.id) ? (
           <button className="btn icon-btn setting-wallpaper-viewer-btn"
             onClick={showWallpaperViewer}
@@ -216,13 +216,13 @@ export default function Wallpaper({ settings, updateContextSetting }) {
             <Icon id="image"/>
           </button>
         ) : null}
-        {wallpaperSettingsDirty && <button className="btn outline-btn settings-group-top-btn" onClick={resetWallpaper} title="Reset to default">Reset</button>}
+        {wallpaperSettingsDirty && <button className="btn outline-btn settings-group-top-btn" onClick={resetWallpaper}>{locale.global.reset}</button>}
       </div>
       <div className="setting">
-        <span>Set wallpaper from...</span>
+        <span>{locale.settings.appearance.set_wallpaper_title}</span>
         <div className="setting-wallpaper-items">
-          <button className="btn text-btn" onClick={showWallpaperForm}>URL</button>
-          <button className="btn text-btn" onClick={selectFile}>Device</button>
+          <button className="btn text-btn" onClick={showWallpaperForm}>{locale.global.url_input_label}</button>
+          <button className="btn text-btn" onClick={selectFile}>{locale.settings.appearance.set_wallpaper_device_title}</button>
         </div>
       </div>
       {messages.wallpaper ? (
@@ -230,13 +230,13 @@ export default function Wallpaper({ settings, updateContextSetting }) {
       ): null}
       {settings.wallpaper.mimeType?.startsWith("video") ? (
         <label className="setting">
-          <span>Playback speed</span>
+          <span>{locale.settings.appearance.wallpaper_playback_speed_label}</span>
           <input type="range" className="range-input" min="0" max="1" step="0.1"
             defaultValue={settings.wallpaper.videoPlaybackSpeed} onChange={handleVideoPlaybackSpeedChange} name="videoPlaybackSpeed"/>
         </label>
       ) : null}
       <div className="setting last-setting-tab-item">
-        <span>Daily wallpaper provider</span>
+        <span>{locale.settings.appearance.daily_wallpaper_provider_title}</span>
         <div className="setting-wallpaper-providers">
           <button className="btn text-btn setting-wallpaper-provider" disabled={wallpaperProvider === "unsplash"}
             onClick={() => handleWallpaperProviderClick("unsplash")}>

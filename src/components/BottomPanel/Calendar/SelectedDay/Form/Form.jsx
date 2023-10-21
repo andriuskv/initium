@@ -4,7 +4,7 @@ import { getWeekday, getWeekdays, getTimeString } from "services/timeDate";
 import { getSetting } from "services/settings";
 import "./form.css";
 
-export default function Form({ form: initialForm, day, updateReminder, hide }) {
+export default function Form({ form: initialForm, day, locale, updateReminder, hide }) {
   const [form, setForm] = useState(() => getInitialForm(initialForm));
   const ignoreFirstClick = useRef(true);
   const weekdayNames = useMemo(() => {
@@ -121,7 +121,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
 
       if (to) {
         if (!from || to.hours < from.hours || (to.hours === from.hours && to.minutes <= from.minutes)) {
-          form.range.message = "Please provide valid range.";
+          form.range.message = locale.calendar.form.invalid_range_message;
           setForm({ ...form });
           return;
         }
@@ -230,7 +230,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
       delete form.range.message;
     }
     else if (value) {
-      form.range.message = "Please provide valid time format.";
+      form.range.message = locale.calendar.form.invalid_time_format_message;
     }
     form.range[name].text = value;
     setForm({ ...form });
@@ -286,7 +286,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
   return (
     <form className="reminder-form" onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
       <div className="container-header">
-        <h3 className="container-header-title">Reminder form</h3>
+        <h3 className="container-header-title">{locale.calendar.form.title}</h3>
       </div>
       <div className="container-body reminder-form-body">
         <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
@@ -297,7 +297,7 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
             <div className="checkbox">
               <div className="checkbox-tick"></div>
             </div>
-            <span className="label-right">All day</span>
+            <span className="label-right">{locale.calendar.form.range_label}</span>
           </label>
           <label className="checkbox-container">
             <input type="checkbox" className="sr-only checkbox-input" name="repeat"
@@ -305,15 +305,15 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
             <div className="checkbox">
               <div className="checkbox-tick"></div>
             </div>
-            <span className="label-right">Repeat</span>
+            <span className="label-right">{locale.calendar.form.repeat_label}</span>
           </label>
           {form.repeat.enabled && (
             <div className="select-container reminder-form-repeat-type-selection">
               <select className="input select" onChange={handleRepeatTypeChange} value={form.repeat.type}>
-                <option value="custom">Custom</option>
-                <option value="weekday">Every weekday</option>
-                <option value="week">Every week</option>
-                <option value="month">Every month</option>
+                <option value="custom">{locale.calendar.form.repeat_option_custom}</option>
+                <option value="weekday">{locale.calendar.form.repeat_option_weekday}</option>
+                <option value="week">{locale.calendar.form.repeat_option_week}</option>
+                <option value="month">{locale.calendar.form.repeat_option_month}</option>
               </select>
             </div>
           )}
@@ -322,12 +322,12 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
           <div>
             <div className="reminder-form-setting" onFocus={handleFormFocus} onBlur={handleRangeInputBlur}>
               <label>
-                <span className="label-left">From</span>
+                <span className="label-left">{locale.calendar.form.range_from_label}</span>
                 <input type="text" className="input reminder-range-input" autoComplete="off" name="from"
                   onChange={handleRangeInputChange} value={form.range.from.text} required/>
               </label>
               <label>
-                <span className="label-left">To</span>
+                <span className="label-left">{locale.calendar.form.range_to_label}</span>
                 <input type="text" className="input reminder-range-input" autoComplete="off" name="to"
                   onChange={handleRangeInputChange} value={form.range.to.text}/>
               </label>
@@ -349,18 +349,18 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
             {form.repeat.type === "custom" ? (
               <div>
                 <label className="reminder-form-setting">
-                  <span className="label-left">Repeat every</span>
+                  <span className="label-left">{locale.calendar.form.repeat_custom_label}</span>
                   <span className="multi-input-container repeat-input-container">
                     <input type="text" className="input multi-input-left repeat-input" name="gap" autoComplete="off"
                       value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
                     <select className="input select multi-input-right" onChange={handleCustomTypeGapNameChange} value={form.repeat.customTypeGapName}>
-                      <option value="days">day(s)</option>
-                      <option value="weeks">week(s)</option>
-                      <option value="months">month(s)</option>
+                      <option value="days">{locale.calendar.form.repeat_custom_option_days}</option>
+                      <option value="weeks">{locale.calendar.form.repeat_custom_option_weeks}</option>
+                      <option value="months">{locale.calendar.form.repeat_custom_option_months}</option>
                     </select>
                   </span>
                 </label>
-                {form.repeat.gapError && <div className="reminder-form-message">Please insert a whole number.</div>}
+                {form.repeat.gapError && <div className="reminder-form-message">{locale.calendar.form.invalid_number_message}</div>}
               </div>
             ) : form.repeat.type === "weekday" ? (
               <div className="reminder-form-setting reminder-form-weeekdays">
@@ -375,12 +375,12 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
               </div>
             ) : null}
             <div className="reminder-form-setting reminder-form-column" onChange={handleRadioInputChange}>
-              <div>Ends</div>
+              <div>{locale.calendar.form.repeat_end_setting_label}</div>
               <label className="reminder-form-row">
                 <input type="radio" className="sr-only radio-input" name="ends"
                   value="never" defaultChecked={form.repeat.ends === "never"}/>
                 <div className="radio"></div>
-                <span className="label-right">Never</span>
+                <span className="label-right">{locale.calendar.form.repeat_end_setting_never_label}</span>
               </label>
               <label className="reminder-form-row">
                 <input type="radio" className="sr-only radio-input" name="ends"
@@ -393,15 +393,15 @@ export default function Form({ form: initialForm, day, updateReminder, hide }) {
                 <span>occurrences</span>
               </label>
               {form.repeat.ends === "occurrences" && form.repeat.countError && (
-                <div className="reminder-form-message">Please insert a whole number.</div>
+                <div className="reminder-form-message">{locale.calendar.form.invalid_number_message}</div>
               )}
             </div>
           </>
         )}
       </div>
       <div className="container-footer reminder-form-btns">
-        <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
-        <button className="btn">{form.updating ? "Update" : "Create"}</button>
+        <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
+        <button className="btn">{form.updating ? locale.global.update : locale.global.create}</button>
       </div>
     </form>
   );

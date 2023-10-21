@@ -2,6 +2,7 @@ import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "re
 import { timeout } from "utils";
 import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings";
+import { useLocalization } from "contexts/localization";
 import Wallpaper from "components/Wallpaper";
 import MiddleTop from "components/MiddleTop";
 import BottomPanel from "components/BottomPanel";
@@ -17,6 +18,7 @@ const StickyNotes = lazy(() => import("./StickyNotes"));
 
 export default function App() {
   const { settings } = useSettings();
+  const locale = useLocalization();
   const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const [fullscreenModal, setFullscreenModal] = useState(null);
   const weatherTimeoutId = useRef(0);
@@ -105,21 +107,21 @@ export default function App() {
     if (fullscreenModal.id === "greeting") {
       return (
         <Suspense fallback={null}>
-          <GreetingEditor hiding={fullscreenModal.hiding} hide={hideFullscreenModal}/>
+          <GreetingEditor hiding={fullscreenModal.hiding} locale={locale} hide={hideFullscreenModal}/>
         </Suspense>
       );
     }
     else if (fullscreenModal.id === "settings") {
       return (
         <Suspense fallback={null}>
-          {<Settings hiding={fullscreenModal.hiding} hide={hideFullscreenModal}/>}
+          {<Settings hiding={fullscreenModal.hiding} locale={locale} hide={hideFullscreenModal}/>}
         </Suspense>
       );
     }
     else if (fullscreenModal.id === "wallpaper") {
       return (
         <Suspense fallback={null}>
-          <WallpaperViewer hide={hideFullscreenModal}/>
+          <WallpaperViewer locale={locale} hide={hideFullscreenModal}/>
         </Suspense>
       );
     }
@@ -132,23 +134,26 @@ export default function App() {
     );
   }
 
+  if (!locale) {
+    return null;
+  }
   return (
     <>
       <Wallpaper settings={settings.appearance.wallpaper}/>
       <MiddleTop settings={settings} greetingEditorVisible={fullscreenModal?.id === "greeting"}/>
       <Suspense fallback={null}>
-        {settings.general.stickyNotesDisabled ? null : <StickyNotes/>}
+        {settings.general.stickyNotesDisabled ? null : <StickyNotes locale={locale}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
+        {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel} locale={locale}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.tasks.disabled ? null : <Tasks settings={settings.tasks}/>}
+        {settings.tasks.disabled ? null : <Tasks settings={settings.tasks} locale={locale}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {weather.rendered && <Weather timeFormat={settings.timeDate.format}/>}
+        {weather.rendered && <Weather timeFormat={settings.timeDate.format} locale={locale}/>}
       </Suspense>
-      <BottomPanel/>
+      <BottomPanel locale={locale}/>
       {fullscreenModal ? renderFullscreenModal() : null}
     </>
   );

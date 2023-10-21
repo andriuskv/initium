@@ -10,7 +10,7 @@ import "./greeting-editor.css";
 
 const Toast = lazy(() => import("components/Toast"));
 
-export default function GreetingEditor({ hiding, hide }) {
+export default function GreetingEditor({ hiding, locale, hide }) {
   const [textArea, setTextArea] = useState("");
   const [bytes, setBytes] = useState(null);
   const saveTimeoutId = useRef(0);
@@ -85,8 +85,8 @@ export default function GreetingEditor({ hiding, hide }) {
           {bytes && (
             <span className="greeting-editor-space-usage">{bytes.current} / {bytes.max}</span>
           )}
-          <h3 className="container-header-title">Greeting Editor</h3>
-          <button className="btn icon-btn" onClick={hide} title="Close">
+          <h3 className="container-header-title">{locale.greetingEditor.title}</h3>
+          <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
             <Icon id="cross"/>
           </button>
         </div>

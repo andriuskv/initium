@@ -76,8 +76,8 @@
     padding: var(--space-md);
 
     .countdown-form-field-datalist-item {
-      width: 64px;
-      padding: var(--space-sm) var(--space-md);
+      width: 60px;
+      padding: var(--space-md);
 
       &:hover {
         border-radius: 8px;

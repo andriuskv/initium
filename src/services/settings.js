@@ -37,6 +37,7 @@ function initAppearanceSettings(settings) {
 function getDefault() {
   return {
     general: {
+      locale: "en",
       stickyNotesDisabled: false,
       shortcutsDisabled: false,
       calendarDisabled: false,

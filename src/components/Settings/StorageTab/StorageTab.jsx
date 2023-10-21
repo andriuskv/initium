@@ -7,7 +7,7 @@ import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./storage-tab.css";
 
-export default function StorageTab() {
+export default function StorageTab({ locale }) {
   const [items, setItems] = useState(null);
   const [stats, setStats] = useState(() => ({
     usedStorageFormatted: 0,
@@ -34,47 +34,47 @@ export default function StorageTab() {
     const items = [
       {
         name: "tasks",
-        fullName: "Tasks"
+        fullName: locale.tasks.title
       },
       {
         name: "notepad",
-        fullName: "Notepad"
+        fullName: locale.notepad.title
       },
       {
         name: "feeds",
-        fullName: "RSS feed"
+        fullName: locale.settings.storage.rss_feeds
       },
       {
         name: "reminders",
-        fullName: "Calendar reminders"
+        fullName: locale.settings.storage.calendar_reminders
       },
       {
         name: "timer",
-        fullName: "Timer presets"
+        fullName: locale.settings.storage.timer_presets
       },
       {
         name: "countdowns",
-        fullName: "Countdowns"
+        fullName: locale.settings.storage.countdowns
       },
       {
         name: "greetings",
-        fullName: "Greetings"
+        fullName: locale.settings.storage.greetings
       },
       {
         name: "persistentSites",
-        fullName: "Persistent sites"
+        fullName: locale.settings.storage.persistent_sites
       },
       {
         name: "shortcuts",
-        fullName: "Shortcuts"
+        fullName: locale.bottomPanel.shortcuts
       },
       {
         name: "clocks",
-        fullName: "World clocks"
+        fullName: locale.settings.storage.world_clocks
       },
       {
         name: "stickyNotes",
-        fullName: "Sticky notes"
+        fullName: locale.settings.storage.sticky_notes
       }
     ];
 
@@ -158,7 +158,7 @@ export default function StorageTab() {
               style={{ "--dashoffset": stats.dashoffset }}/>
           </svg>
           <div className="storage-usage-current-percental">{stats.usedStorageInPercent}%</div>
-          <div>Used</div>
+          <div>{locale.settings.storage.used_label}</div>
         </div>
       </div>
       <ul>
@@ -175,7 +175,7 @@ export default function StorageTab() {
                 </div>
               </div>
             </div>
-            <button className="btn icon-btn alt-icon-btn" onClick={() => setModal(item)} title="Delete">
+            <button className="btn icon-btn alt-icon-btn" onClick={() => setModal(item)} title={locale.global.delete}>
               <Icon id="trash"/>
             </button>
           </li>
@@ -189,8 +189,8 @@ export default function StorageTab() {
             <p>All associated data will be removed.</p>
           </div>
           <div className="modal-actions">
-            <button className="btn text-btn" onClick={hideModal}>Cancel</button>
-            <button className="btn" onClick={confirmModalAction}>Delete</button>
+            <button className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
+            <button className="btn" onClick={confirmModalAction}>{locale.global.delete}</button>
           </div>
         </Modal>
       )}

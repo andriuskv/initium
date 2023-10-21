@@ -55,6 +55,7 @@
 }
 
 .weather-more-current-temperature-units {
+  margin-top: -2px;
   margin-left: var(--space-sm);
   font-size: var(--text-xxl);
 }

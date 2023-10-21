@@ -3,7 +3,7 @@ import * as feedService from "services/feeds";
 import Icon from "components/Icon";
 import "./form.css";
 
-export default function Form({ feeds, addFeed, hide }) {
+export default function Form({ feeds, locale, addFeed, hide }) {
   const [form, setForm] = useState({
     backButtonVisible: feeds.active.length > 0 || feeds.inactive.length > 0 || feeds.failed.length > 0
   });
@@ -41,15 +41,15 @@ export default function Form({ feeds, addFeed, hide }) {
   return (
     <form className="feed-form" onSubmit={handleFormSubmit}>
       <Icon id="rss" className="main-panel-item-splash-icon"/>
-      <h3 className="feed-form-title">Add new feed</h3>
-      <input type="text" className="input feed-form-input" name="title" placeholder="Title" autoComplete="off"/>
-      <input type="text" className="input feed-form-input" name="url" placeholder="URL" required/>
+      <h3 className="feed-form-title">{locale.rssFeed.form_title}</h3>
+      <input type="text" className="input feed-form-input" name="title" placeholder={locale.global.title_input_label} autoComplete="off"/>
+      <input type="text" className="input feed-form-input" name="url" placeholder={locale.global.url_input_label} required/>
       <div className="feed-add-btn-container">
         {form.message && <div className="feed-message">{form.message}</div>}
-        <button className="btn" disabled={form.fetching}>{form.fetching ? "Adding..." : "Add"}</button>
+        <button className="btn" disabled={form.fetching}>{form.fetching ? "Adding..." : locale.global.add}</button>
       </div>
       {form.backButtonVisible && (
-        <button type="button" className="btn icon-btn feed-form-hide-btn" onClick={hide} title="Back to feeds">
+        <button type="button" className="btn icon-btn feed-form-hide-btn" onClick={hide} title={locale.global.close}>
           <Icon id="cross"/>
         </button>
       )}

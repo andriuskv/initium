@@ -6,7 +6,7 @@ import Spinner from "components/Spinner";
 import Dropdown from "components/Dropdown";
 import "./more-weather.css";
 
-export default function MoreWeather({ current, more, units, speedUnits, view, selectView, toggleUnits, hide }) {
+export default function MoreWeather({ current, more, units, speedUnits, view, locale, selectView, toggleUnits, hide }) {
   const [ready, setReady] = useState(false);
   const [tempRange, setTempRange] = useState();
   const container = useRef(null);
@@ -168,15 +168,15 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
             </div>
             <div className="weather-more-current-secondary">
               <div className="weather-more-current-secondary-item">
-                <span className="weather-more-current-secondary-name">Precipitation:</span>
+                <span className="weather-more-current-secondary-name">{locale.weather.precipitation}:</span>
                 <span>{current.precipitation ?? 0}%</span>
               </div>
               <div className="weather-more-current-secondary-item">
-                <span className="weather-more-current-secondary-name">Humidity:</span>
+                <span className="weather-more-current-secondary-name">{locale.weather.humidity}:</span>
                 <span>{current.humidity}%</span>
               </div>
               <div className="weather-more-current-secondary-item">
-                <span className="weather-more-current-secondary-name">Wind:</span>
+                <span className="weather-more-current-secondary-name">{locale.weather.wind}:</span>
                 <span className="weather-more-current-wind">
                   <span>{Math.round(current.wind.speed)} {speedUnits}</span>
                   <svg viewBox="0 0 24 24" className="weather-more-current-wind-icon"
@@ -197,15 +197,15 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
             <ul className="weather-more-hourly-view-top">
               <li>
                 <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "temp" ? " active" : ""}`}
-                  onClick={() => selectView("temp")}>Temperature</button>
+                  onClick={() => selectView("temp")}>{locale.weather.temperature}</button>
               </li>
               <li>
                 <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "prec" ? " active" : ""}`}
-                  onClick={() => selectView("prec")}>Precipitation</button>
+                  onClick={() => selectView("prec")}>{locale.weather.precipitation}</button>
               </li>
               <li>
                 <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "wind" ? " active" : ""}`}
-                  onClick={() => selectView("wind")}>Wind</button>
+                  onClick={() => selectView("wind")}>{locale.weather.wind}</button>
               </li>
             </ul>
             {renderHourlyView()}
@@ -229,9 +229,9 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
           </div>
         </>
       ) : <Spinner className="weather-more-spinner"/>}
-      <Dropdown container={{ className: "weather-more-settings" }} toggle={{ iconId: "settings" }}>
+      <Dropdown container={{ className: "weather-more-settings" }} toggle={{ iconId: "settings", title: locale.global.settings }}>
         <label className="dropdown-group weather-more-setting">
-          <div>Temperature units</div>
+          <div>{locale.weather.temp_setting_label}</div>
           <input type="checkbox" className="sr-only toggle-input"
             checked={units === "F"}
             onChange={() => toggleUnits("temp")}/>
@@ -241,7 +241,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
           </div>
         </label>
         <label className="dropdown-group weather-more-setting">
-          <div>Wind speed units</div>
+          <div>{locale.weather.wind_setting_label}</div>
           <input type="checkbox" className="sr-only toggle-input"
             checked={speedUnits === "ft/s"}
             onChange={() => toggleUnits("wind")}/>
@@ -251,7 +251,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, se
           </div>
         </label>
       </Dropdown>
-      <button className="btn icon-btn weather-more-close-btn" onClick={hide} title="Close">
+      <button className="btn icon-btn weather-more-close-btn" onClick={hide} title={locale.global.close}>
         <Icon id="cross"/>
       </button>
     </div>

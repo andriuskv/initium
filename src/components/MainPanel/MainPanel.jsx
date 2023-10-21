@@ -13,7 +13,7 @@ const Notepad = lazy(() => import("./Notepad"));
 const RssFeed = lazy(() => import("./RssFeed"));
 const Resizer = lazy(() => import("components/Resizer"));
 
-export default function MainPanel({ settings }) {
+export default function MainPanel({ settings, locale }) {
   const [activeTab, setActiveTab] = useState(() => {
     return { id: localStorage.getItem("mainPanelTab") ?? "topSites" };
   });
@@ -205,7 +205,7 @@ export default function MainPanel({ settings }) {
     return (
       <div className={`main-panel-item top-sites-container${activeTab.id === tab.id ? "" : " hidden"}`}>
         <Suspense fallback={null}>
-          <TopSites settings={settings.components.topSites}/>
+          <TopSites settings={settings.components.topSites} locale={locale}/>
         </Suspense>
       </div>
     );
@@ -251,12 +251,12 @@ export default function MainPanel({ settings }) {
       onClick={event => handleZIndex(event, "main-panel")} ref={containerRef}>
       {renderNavigation()}
       {tabExpandable && (
-        <Sidebar expanded={activeTab.expanded} expandTab={expandTab} resizerEnabled={resizerEnabled} toggleResizer={toggleResizer}/>
+        <Sidebar expanded={activeTab.expanded} locale={locale} expandTab={expandTab} resizerEnabled={resizerEnabled} toggleResizer={toggleResizer}/>
       )}
       {renderTopSites()}
-      {renderComponent("notepad", <Notepad/>, true)}
+      {renderComponent("notepad", <Notepad locale={locale}/>, true)}
       {/* {renderComponent("twitter", <Twitter showIndicator={showIndicator}/>)} */}
-      {renderComponent("rssFeed", <RssFeed showIndicator={showIndicator}/>)}
+      {renderComponent("rssFeed", <RssFeed locale={locale} showIndicator={showIndicator}/>)}
       <Suspense fallback={null}>
         {resizerEnabled && <Resizer saveHeight={saveHeight}/>}
       </Suspense>
