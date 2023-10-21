@@ -5,7 +5,7 @@ import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
 import "./sticky-notes.css";
 
-export default function StickyNotes({ hide }) {
+export default function StickyNotes({ locale, hide }) {
   const { notes, removeNote } = useNotes();
 
   function createNote(event) {
@@ -30,11 +30,11 @@ export default function StickyNotes({ hide }) {
               <Dropdown>
                 <button className="btn icon-text-btn dropdown-btn" onClick={() => editNote(note.id)}>
                   <Icon id="edit"/>
-                  <span>Edit</span>
+                  <span>{locale.global.edit}</span>
                 </button>
                 <button className="btn icon-text-btn dropdown-btn" onClick={() => removeNote(note.id)}>
                   <Icon id="trash"/>
-                  <span>Remove</span>
+                  <span>{locale.global.remove}</span>
                 </button>
               </Dropdown>
               {note.title ? <p className="sticky-notes-list-item-content sticky-notes-list-item-title">{note.title}</p> : null}
@@ -43,7 +43,7 @@ export default function StickyNotes({ hide }) {
           ))}
         </ul>
       ) : (
-        <p className="sticky-notes-list-message">No notes</p>
+        <p className="sticky-notes-list-message">{locale.stickyNotes.no_notes_message}</p>
       )}
       <CreateButton onClick={createNote} trackScroll></CreateButton>
     </div>

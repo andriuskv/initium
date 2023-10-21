@@ -9,7 +9,7 @@ import "./selected-day.css";
 
 const Form = lazy(() => import("./Form"));
 
-export default function SelectedDay({ selectedDay, calendar, reminders, updateCalendar, createReminder, resetSelectedDay, hide }) {
+export default function SelectedDay({ selectedDay, calendar, reminders, locale, updateCalendar, createReminder, resetSelectedDay, hide }) {
   const [day, setDay] = useState(null);
   const timeoutId = useRef(0);
 
@@ -111,7 +111,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
       id: "reminder",
       shouldToggle: true,
       component: Form,
-      params: { form, day, updateReminder }
+      params: { form, day, locale, updateReminder }
     });
   }
 
@@ -164,7 +164,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
   return (
     <div className="calendar">
       <div className="calendar-header selected-day-header">
-        <button className="btn icon-btn" onClick={hide} title="Back to calendar">
+        <button className="btn icon-btn" onClick={hide} title={locale.global.back}>
           <Icon id="chevron-left"/>
         </button>
         <span className="calendar-title selected-day-title">{day.dateString}</span>
@@ -184,18 +184,18 @@ export default function SelectedDay({ selectedDay, calendar, reminders, updateCa
                 <button className="btn icon-text-btn dropdown-btn"
                   onClick={() => editReminder(reminder.id, index)}>
                   <Icon id="edit"/>
-                  <span>Edit</span>
+                  <span>{locale.global.edit}</span>
                 </button>
                 <button className="btn icon-text-btn dropdown-btn"
                   onClick={() => removeReminder(reminder.id, index)}>
                   <Icon id="trash"/>
-                  <span>Remove</span>
+                  <span>{locale.global.remove}</span>
                 </button>
               </Dropdown>
             </li>
           ))}
         </ul>
-      ) : <p className="empty-reminder-list-message">No reminders</p>}
+      ) : <p className="empty-reminder-list-message">{locale.calendar.no_reminders_message}</p>}
       <CreateButton onClick={() => showForm()} attrs={{ "data-modal-initiator": true }} trackScroll></CreateButton>
     </div>
   );

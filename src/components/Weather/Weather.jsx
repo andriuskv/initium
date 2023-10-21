@@ -4,14 +4,12 @@ import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } 
 import { getTimeString } from "services/timeDate";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { useSettings } from "contexts/settings";
-import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./weather.css";
 
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
-export default function Weather({ timeFormat }) {
-  const locale = useLocalization();
+export default function Weather({ timeFormat, locale }) {
   const { settings: { appearance: { animationSpeed }, weather: settings }, updateSetting } = useSettings();
   const [state, setState] = useState({ view: "temp" });
   const [current, setCurrentWeather] = useState(null);

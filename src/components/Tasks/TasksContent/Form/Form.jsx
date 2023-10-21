@@ -1,6 +1,5 @@
 import { useState, useRef, lazy, Suspense } from "react";
 import { getRandomString, timeout } from "utils";
-import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./form.css";
 
@@ -8,8 +7,7 @@ const Toast = lazy(() => import("components/Toast"));
 const GroupForm = lazy(() => import("../GroupForm"));
 const LabelForm = lazy(() => import("./LabelForm"));
 
-export default function Form({ form, groups, updateGroups, replaceLink, removeTask, createGroup, hide }) {
-  const locale = useLocalization();
+export default function Form({ form, groups, locale, updateGroups, replaceLink, removeTask, createGroup, hide }) {
   const [state, setState] = useState(() => {
     const defaultForm = {
       moreOptionsVisible: false,
@@ -419,17 +417,17 @@ export default function Form({ form, groups, updateGroups, replaceLink, removeTa
       </form>
       {message ? (
         <Suspense fallback={null}>
-          <Toast message={message} position="bottom" offset="40px" dismiss={dismissMessage}/>
+          <Toast message={message} position="bottom" offset="40px" locale={locale} dismiss={dismissMessage}/>
         </Suspense>
       ) : null}
       {labelFormVisible && (
         <Suspense fallback={null}>
-          <LabelForm addUniqueLabel={addUniqueLabel} hide={hideLabelForm}/>
+          <LabelForm locale={locale} addUniqueLabel={addUniqueLabel} hide={hideLabelForm}/>
         </Suspense>
       )}
       {groupFormVisible && (
         <Suspense fallback={null}>
-          <GroupForm createGroup={localCreateGroup} hide={hideGroupForm} modal/>
+          <GroupForm locale={locale} createGroup={localCreateGroup} hide={hideGroupForm} modal/>
         </Suspense>
       )}
     </>

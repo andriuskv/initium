@@ -1,11 +1,8 @@
 import { getRandomString } from "utils";
-import { useLocalization } from "contexts/localization";
 import Modal from "components/Modal";
 import "./group-form.css";
 
-export default function GroupForm({ createGroup, modal = false, hide }) {
-  const locale = useLocalization();
-
+export default function GroupForm({ locale, createGroup, modal = false, hide }) {
   function handleGroupFormSubmit(event) {
     event.preventDefault();
 

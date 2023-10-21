@@ -89,7 +89,7 @@ const colors = [
   }
 ];
 
-export default function AppearanceTab() {
+export default function AppearanceTab({ locale }) {
   const { settings: { appearance: settings }, updateSetting: updateContextSetting } = useSettings();
   const [colorIndex, setColorIndex] = useState(() => {
     return colors.findIndex(color => settings.accentColor.hue === color.hue && settings.accentColor.saturation === color.saturation);
@@ -185,48 +185,48 @@ export default function AppearanceTab() {
   return (
     <div className="container-body setting-tab">
       <label className="setting">
-        <span>Animations</span>
+        <span>{locale.settings.appearance.animations_label}</span>
         <div className="select-container">
           <select className="input select" onChange={handleAnimationSpeedChange} value={settings.animationSpeed}>
-            <option value="0">Disabled</option>
-            <option value="0.5">Fast</option>
-            <option value="1">Normal</option>
-            <option value="2">Slow</option>
+            <option value="0">{locale.settings.appearance.animation_speed_disabled}</option>
+            <option value="0.5">{locale.settings.appearance.animation_speed_fast}</option>
+            <option value="1">{locale.settings.appearance.animation_speed_normal}</option>
+            <option value="2">{locale.settings.appearance.animation_speed_slow}</option>
           </select>
         </div>
       </label>
       <div className="settings-group">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Accent color</h4>
+          <h4 className="settings-group-title">{locale.settings.appearance.accent_color_group_title}</h4>
         </div>
         {renderAccentColors()}
       </div>
       <div className="settings-group">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Panel</h4>
+          <h4 className="settings-group-title">{locale.settings.appearance.panel_group_title}</h4>
         </div>
         <label className="setting">
-          <span>Background opacity</span>
+          <span>{locale.settings.appearance.bg_opacity_label}</span>
           <input type="range" className="range-input" min="0" max="100" step="5"
             defaultValue={settings.panelBackgroundOpacity} onChange={handleRangeInputChange} name="panelBackgroundOpacity"/>
         </label>
         <label className="setting">
-          <span>Background blur</span>
+          <span>{locale.settings.appearance.bg_blur_label}</span>
           <input type="range" className="range-input" min="0" max="32" step="1"
             defaultValue={settings.panelBackgroundBlur} onChange={handleRangeInputChange} name="panelBackgroundBlur"/>
         </label>
         <label className="setting">
-          <span>Background noise amount</span>
+          <span>{locale.settings.appearance.bg_noise_amount_label}</span>
           <input type="range" className="range-input" min="0" max="0.4" step="0.01"
             defaultValue={settings.panelBackgroundNoiseAmount} onChange={handleNoiseChange} name="panelBackgroundNoiseAmount"/>
         </label>
         <label className="setting">
-          <span>Background noise opacity</span>
+          <span>{locale.settings.appearance.bg_noise_opacity_label}</span>
           <input type="range" className="range-input" min="0" max="0.05" step="0.0025"
             defaultValue={settings.panelBackgroundNoiseOpacity} onChange={handleNoiseChange} name="panelBackgroundNoiseOpacity"/>
         </label>
       </div>
-      <Wallpaper settings={settings} updateContextSetting={updateContextSetting}/>
+      <Wallpaper settings={settings} locale={locale} updateContextSetting={updateContextSetting}/>
     </div>
   );
 }

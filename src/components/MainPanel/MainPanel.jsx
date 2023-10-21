@@ -3,7 +3,6 @@ import { getSetting, updateSetting } from "services/settings";
 import { handleZIndex } from "services/zIndex";
 // import { hasUsers } from "services/twitter";
 import { hasStoredFeeds } from "services/feeds";
-import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./main-panel.css";
 import Sidebar from "./Sidebar";
@@ -14,8 +13,7 @@ const Notepad = lazy(() => import("./Notepad"));
 const RssFeed = lazy(() => import("./RssFeed"));
 const Resizer = lazy(() => import("components/Resizer"));
 
-export default function MainPanel({ settings }) {
-  const locale = useLocalization();
+export default function MainPanel({ settings, locale }) {
   const [activeTab, setActiveTab] = useState(() => {
     return { id: localStorage.getItem("mainPanelTab") ?? "topSites" };
   });

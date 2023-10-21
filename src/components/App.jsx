@@ -107,21 +107,21 @@ export default function App() {
     if (fullscreenModal.id === "greeting") {
       return (
         <Suspense fallback={null}>
-          <GreetingEditor hiding={fullscreenModal.hiding} hide={hideFullscreenModal}/>
+          <GreetingEditor hiding={fullscreenModal.hiding} locale={locale} hide={hideFullscreenModal}/>
         </Suspense>
       );
     }
     else if (fullscreenModal.id === "settings") {
       return (
         <Suspense fallback={null}>
-          {<Settings hiding={fullscreenModal.hiding} hide={hideFullscreenModal}/>}
+          {<Settings hiding={fullscreenModal.hiding} locale={locale} hide={hideFullscreenModal}/>}
         </Suspense>
       );
     }
     else if (fullscreenModal.id === "wallpaper") {
       return (
         <Suspense fallback={null}>
-          <WallpaperViewer hide={hideFullscreenModal}/>
+          <WallpaperViewer locale={locale} hide={hideFullscreenModal}/>
         </Suspense>
       );
     }
@@ -142,18 +142,18 @@ export default function App() {
       <Wallpaper settings={settings.appearance.wallpaper}/>
       <MiddleTop settings={settings} greetingEditorVisible={fullscreenModal?.id === "greeting"}/>
       <Suspense fallback={null}>
-        {settings.general.stickyNotesDisabled ? null : <StickyNotes/>}
+        {settings.general.stickyNotesDisabled ? null : <StickyNotes locale={locale}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
+        {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel} locale={locale}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.tasks.disabled ? null : <Tasks settings={settings.tasks}/>}
+        {settings.tasks.disabled ? null : <Tasks settings={settings.tasks} locale={locale}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {weather.rendered && <Weather timeFormat={settings.timeDate.format}/>}
+        {weather.rendered && <Weather timeFormat={settings.timeDate.format} locale={locale}/>}
       </Suspense>
-      <BottomPanel/>
+      <BottomPanel locale={locale}/>
       {fullscreenModal ? renderFullscreenModal() : null}
     </>
   );

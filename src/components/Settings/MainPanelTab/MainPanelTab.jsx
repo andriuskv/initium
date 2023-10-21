@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSettings } from "contexts/settings";
 import { dispatchCustomEvent } from "utils";
 
-export default function MainPanelTab() {
+export default function MainPanelTab({ locale }) {
   const { settings: { mainPanel: settings }, updateSetting, updateMainPanelComponentSetting, toggleSetting } = useSettings();
   const [persistentSitesEditEnabled, setPersistentSiteEditEnabled] = useState(false);
   const [topSitesDirty, setTopSitesDirty] = useState(() => !!localStorage.getItem("top sites"));
@@ -67,7 +67,7 @@ export default function MainPanelTab() {
   return (
     <div className="container-body setting-tab">
       <label className="setting">
-        <span>Hide item bar</span>
+        <span>{locale.settings.main_panel.hide_item_bar_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.navHidden}
           onChange={() => toggleSetting("mainPanel", "navHidden")}/>
@@ -76,7 +76,7 @@ export default function MainPanelTab() {
         </div>
       </label>
       <label className="setting">
-        <span>Disable top sites</span>
+        <span>{locale.settings.main_panel.disable_top_sites_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.components.topSites.disabled}
           onChange={() => toggleComponent("topSites")}/>
@@ -85,7 +85,7 @@ export default function MainPanelTab() {
         </div>
       </label>
       <label className="setting">
-        <span>Disable notepad</span>
+        <span>{locale.settings.main_panel.disable_notepad_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.components.notepad.disabled}
           onChange={() => toggleComponent("notepad")}/>
@@ -103,7 +103,7 @@ export default function MainPanelTab() {
         </div>
       </label> */}
       <label className="setting">
-        <span>Disable RSS feed</span>
+        <span>{locale.settings.main_panel.disable_rss_feed_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.components.rssFeed.disabled}
           onChange={() => toggleComponent("rssFeed")}/>
@@ -113,12 +113,12 @@ export default function MainPanelTab() {
       </label>
       <div className="settings-group">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Top Sites</h4>
+          <h4 className="settings-group-title">{locale.settings.main_panel.top_sites_group_title}</h4>
           {topSitesDirty && <button className="btn outline-btn settings-group-top-btn" onClick={resetTopSites}
-            disabled={settings.components.topSites.disabled} title="Reset to default">Reset</button>}
+            disabled={settings.components.topSites.disabled} title="Reset to default">{locale.global.reset}</button>}
         </div>
         <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
-          <span>Show one row of top sites</span>
+          <span>{locale.settings.main_panel.one_top_sites_row_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             disabled={settings.components.topSites.disabled}
             checked={settings.components.topSites.visibleItemCount === 4}
@@ -128,7 +128,7 @@ export default function MainPanelTab() {
           </div>
         </label>
         <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
-          <span>Always open page in a new tab</span>
+          <span>{locale.settings.main_panel.new_tab_top_sites_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             disabled={settings.components.topSites.disabled}
             checked={settings.components.topSites.openInNewTab}
@@ -138,7 +138,7 @@ export default function MainPanelTab() {
           </div>
         </label>
         <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
-          <span>Hide add site button</span>
+          <span>{locale.settings.main_panel.hide_add_button_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             disabled={settings.components.topSites.disabled}
             checked={settings.components.topSites.addSiteButtonHidden}
@@ -148,7 +148,7 @@ export default function MainPanelTab() {
           </div>
         </label>
         <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
-          <span>Hide persistent sites</span>
+          <span>{locale.settings.main_panel.hide_persistent_sites_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             disabled={settings.components.topSites.disabled}
             checked={settings.components.topSites.persistentSitesHidden}
@@ -158,7 +158,7 @@ export default function MainPanelTab() {
           </div>
         </label>
         <label className={`setting${settings.components.topSites.disabled || settings.components.topSites.persistentSitesHidden ? " disabled" : ""}`}>
-          <span>Toggle persistent site edit mode</span>
+          <span>{locale.settings.main_panel.toggle_persistent_site_edit_label}</span>
           <input type="checkbox" className="sr-only toggle-input"
             disabled={settings.components.topSites.disabled || settings.components.topSites.persistentSitesHidden}
             checked={persistentSitesEditEnabled}
@@ -171,11 +171,11 @@ export default function MainPanelTab() {
       </div>
       <div className="settings-group">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Notepad</h4>
+          <h4 className="settings-group-title">{locale.settings.main_panel.notepad_group_title}</h4>
         </div>
         <div className={`setting last-setting-tab-item ${settings.components.notepad.disabled ? " disabled" : ""}`}>
-          <span>Reset notepad text size</span>
-          <button className="btn" onClick={resetNotepadTextSize}>Reset</button>
+          <span>{locale.settings.main_panel.reset_notepad_label}</span>
+          <button className="btn" onClick={resetNotepadTextSize}>{locale.global.reset}</button>
         </div>
       </div>
     </div>

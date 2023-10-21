@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useLocalization } from "contexts/localization";
 import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
@@ -7,8 +6,8 @@ import Icon from "components/Icon";
 import "./groups.css";
 import GroupForm from "../GroupForm";
 
-export default function Groups({ groups, updateGroups, createGroup, hide }) {
-  const locale = useLocalization();
+export default function Groups({ groups, locale, updateGroups, createGroup, hide }) {
+  console.log(locale);
   const [removeModal, setRemoveModal] = useState(null);
   const [activeDragId, setActiveDragId] = useState(null);
 
@@ -103,7 +102,7 @@ export default function Groups({ groups, updateGroups, createGroup, hide }) {
     <>
       <div className="container-header"></div>
       <div className="container-body tasks-body">
-        <GroupForm createGroup={createGroup}/>
+        <GroupForm locale={locale} createGroup={createGroup}/>
         {groups.length > 1 ? (
           <ul className="tasks-groups-items" data-dropdown-parent>
             <li className="tasks-groups-item">

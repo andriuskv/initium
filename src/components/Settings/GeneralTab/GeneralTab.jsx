@@ -8,7 +8,7 @@ import "./general-tab.css";
 
 const MiddleTop = lazy(() => import("./MiddleTop"));
 
-export default function GeneralTab() {
+export default function GeneralTab({ locale }) {
   const { settings, toggleSetting, updateSetting, resetSettings } = useSettings();
   const [modal, setModal] = useState(null);
 
@@ -70,11 +70,11 @@ export default function GeneralTab() {
     if (modal.type === "reset") {
       return (
         <Modal hide={hideModal}>
-          <h4 className="modal-title">Reset settings</h4>
-          <p className="modal-text-body">Are you sure you want to reset settings to default?</p>
+          <h4 className="modal-title">{locale.settings.general.reset_settings_title}</h4>
+          <p className="modal-text-body">{locale.settings.general.reset_settings_message}</p>
           <div className="modal-actions">
-            <button className="btn text-btn" onClick={hideModal}>Cancel</button>
-            <button className="btn" onClick={reset}>Reset</button>
+            <button className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
+            <button className="btn" onClick={reset}>{locale.global.reset}</button>
           </div>
         </Modal>
       );
@@ -82,7 +82,7 @@ export default function GeneralTab() {
     else if (modal.type === "order") {
       return (
         <Suspense fallback={null}>
-          <MiddleTop settings={settings} updateSetting={updateSetting} hide={hideModal}/>
+          <MiddleTop settings={settings} locale={locale} updateSetting={updateSetting} hide={hideModal}/>
         </Suspense>
       );
     }
@@ -100,7 +100,7 @@ export default function GeneralTab() {
         </div>
       </label> */}
       <label className="setting">
-        <span>Disable sticky notes</span>
+        <span>{locale.settings.general.disable_sticky_notes_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.stickyNotesDisabled}
           onChange={() => toggleSetting("general", "stickyNotesDisabled")}/>
@@ -109,7 +109,7 @@ export default function GeneralTab() {
         </div>
       </label>
       <label className="setting">
-        <span>Disable shortcuts</span>
+        <span>{locale.settings.general.disable_shortcuts_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.shortcutsDisabled}
           onChange={() => toggleSetting("general", "shortcutsDisabled")}/>
@@ -118,7 +118,7 @@ export default function GeneralTab() {
         </div>
       </label>
       <label className="setting">
-        <span>Disable calendar</span>
+        <span>{locale.settings.general.disable_calendar_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.calendarDisabled}
           onChange={() => toggleSetting("general", "calendarDisabled")}/>
@@ -128,11 +128,11 @@ export default function GeneralTab() {
       </label>
       <div className="settings-group">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Greeting</h4>
-          <button className="btn outline-btn settings-group-top-btn" onClick={showGreetingEditor}>Editor</button>
+          <h4 className="settings-group-title">{locale.settings.general.greeting_group_title}</h4>
+          <button className="btn outline-btn settings-group-top-btn" onClick={showGreetingEditor}>{locale.settings.general.show_greeting_editor_title}</button>
         </div>
         <label className="setting">
-          <span>Disable greeting</span>
+          <span>{locale.settings.general.disable_greeting_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.general.greeting.disabled}
             onChange={toggleGreetingSetting}/>
@@ -141,20 +141,20 @@ export default function GeneralTab() {
           </div>
         </label>
         <label className="setting">
-          <span>Text size</span>
+          <span>{locale.global.text_size_title}</span>
           <input type="range" className="range-input" min="0.75" max="2.5" step="0.05"
             defaultValue={settings.general.greeting.textSize} onChange={handleRangeInputChange}/>
         </label>
       </div>
       <div className="settings-group last-setting-tab-item">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Middle top</h4>
-          <button className="btn outline-btn settings-group-top-btn" onClick={showMiddleTopModal}>Order</button>
+          <h4 className="settings-group-title">{locale.settings.general.middle_top_group_title}</h4>
+          <button className="btn outline-btn settings-group-top-btn" onClick={showMiddleTopModal}>{locale.settings.general.show_middle_top_title}</button>
         </div>
       </div>
       <div className="setting setting-reset">
-        <span>Reset settings</span>
-        <button className="btn text-btn text-negative-btn" onClick={showResetModal}>Reset</button>
+        <span>{locale.settings.general.reset_settings_title}</span>
+        <button className="btn text-btn text-negative-btn" onClick={showResetModal}>{locale.global.reset}</button>
       </div>
       {modal && renderModal()}
     </div>

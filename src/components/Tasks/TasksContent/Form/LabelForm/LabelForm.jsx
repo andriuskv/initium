@@ -1,11 +1,9 @@
 import { useState, useRef } from "react";
 import { getRandomHexColor } from "utils";
-import { useLocalization } from "contexts/localization";
 import Modal from "components/Modal";
 import "./label-form.css";
 
-export default function LabelForm({ addUniqueLabel, hide }) {
-  const locale = useLocalization();
+export default function LabelForm({ locale, addUniqueLabel, hide }) {
   const [currentColor, setCurrentColor] = useState(() => getRandomHexColor());
   const updatingColor = useRef(false);
 

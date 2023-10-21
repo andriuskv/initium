@@ -12,7 +12,7 @@ const colors = [
   "#e3bb82", "#e0755c", "#e278da", "#ad7edd"
 ];
 
-export default function Form({ initialForm, noteCount, createNote, discardNote, showForm }) {
+export default function Form({ initialForm, noteCount, locale, createNote, discardNote, showForm }) {
   const [movable, setMovable] = useState(false);
   const [editable, setEditable] = useState(false);
   const [form, setForm] = useState(null);
@@ -144,7 +144,7 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
   return (
     <div className={`sticky-note sticky-note-form${movable ? " movable" : ""}${editable ? " editable" : ""}${initialForm.discarding ? " discarding" : ""}`} key={form.id}
       style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.color }}>
-      <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} title={movable ? "" : "Move"}></div>
+      <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} title={movable ? "" : locale.global.move}></div>
       <textarea className="input sticky-note-content sticky-note-input sticky-note-title" name="title" onChange={handleInputChange}
         value={form.title} placeholder={`Note #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
       <textarea className="input sticky-note-content sticky-note-input" name="content" onChange={handleInputChange}
@@ -152,7 +152,7 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
       {editable ? (
         <>
           <div className="sticky-note-sidebar">
-            <Dropdown toggle={{ iconId: "color-picker", title: "Color picker" }} body={{ className: "sticky-note-dropdown" }}>
+            <Dropdown toggle={{ iconId: "color-picker", title: locale.stickyNotes.color_picker }} body={{ className: "sticky-note-dropdown" }}>
               <ul className="sticky-note-color-picker-items">
                 {colors.map(color => (
                   <li key={color}>
@@ -162,13 +162,13 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
                 ))}
               </ul>
             </Dropdown>
-            <Dropdown toggle={{ iconId: "scale", title: "Scale" }} body={{ className: "sticky-note-dropdown" }}>
+            <Dropdown toggle={{ iconId: "scale", title: locale.stickyNotes.scale }} body={{ className: "sticky-note-dropdown" }}>
               <div className="dropdown-group sticky-note-setting">
                 <button className="btn icon-btn"
                   onClick={decreaseScale} title="Decrease size" disabled={form.scale <= 0.75}>
                   <Icon id="minus"/>
                 </button>
-                <div className="sticky-note-setting-name">Scale</div>
+                <div className="sticky-note-setting-name">{locale.stickyNotes.scale}</div>
                 <button className="btn icon-btn"
                   onClick={increaseScale} title="Increase size" disabled={form.scale >= 2}>
                   <Icon id="plus"/>
@@ -176,20 +176,20 @@ export default function Form({ initialForm, noteCount, createNote, discardNote, 
               </div>
               <div className="dropdown-group sticky-note-setting">
                 <button className="btn icon-btn"
-                  onClick={decreaseTextScale} title="Decrease text size" disabled={form.textScale <= 0.5}>
+                  onClick={decreaseTextScale} title={locale.global.decrease_text_size_title} disabled={form.textScale <= 0.5}>
                   <Icon id="minus"/>
                 </button>
-                <div className="sticky-note-setting-name">Text size</div>
+                <div className="sticky-note-setting-name">{locale.global.text_size_title}</div>
                 <button className="btn icon-btn"
-                  onClick={increaseTextScale} title="Increase text size" disabled={form.textScale >= 2}>
+                  onClick={increaseTextScale} title={locale.global.increase_text_size_title} disabled={form.textScale >= 2}>
                   <Icon id="plus"/>
                 </button>
               </div>
             </Dropdown>
           </div>
           <div className="sticky-note-btns">
-            <button className="btn" onClick={discardNote}>Discard</button>
-            <button className="btn" onClick={saveNote}>Save</button>
+            <button className="btn" onClick={discardNote}>{locale.global.discard}</button>
+            <button className="btn" onClick={saveNote}>{locale.global.save}</button>
           </div>
         </>
       ) : null}

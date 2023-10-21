@@ -3,7 +3,6 @@ import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
 import { formatDate } from "services/timeDate";
-import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
@@ -23,8 +22,7 @@ const taskStatusMap = {
   "3": "completed"
 };
 
-export default function Tasks({ settings, expanded, toggleSize }) {
-  const locale = useLocalization();
+export default function Tasks({ settings, locale, expanded, toggleSize }) {
   const [groups, setGroups] = useState(null);
   const [removedItems, setRemovedItems] = useState([]);
   const [form, setForm] = useState(null);
@@ -545,7 +543,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
   if (activeComponent === "form") {
     return (
       <Suspense fallback={null}>
-        <Form form={form} groups={groups} updateGroups={updateGroups} replaceLink={replaceLink} removeTask={removeFormTask}
+        <Form form={form} groups={groups} locale={locale} updateGroups={updateGroups} replaceLink={replaceLink} removeTask={removeFormTask}
           createGroup={createGroup} hide={hideForm}/>
       </Suspense>
     );
@@ -553,7 +551,7 @@ export default function Tasks({ settings, expanded, toggleSize }) {
   else if (activeComponent === "groups") {
     return (
       <Suspense fallback={null}>
-        <Groups groups={groups} updateGroups={updateGroups} createGroup={createGroup} hide={hideActiveComponent}/>
+        <Groups groups={groups} locale={locale} updateGroups={updateGroups} createGroup={createGroup} hide={hideActiveComponent}/>
       </Suspense>
     );
   }

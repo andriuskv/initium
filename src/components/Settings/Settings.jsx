@@ -14,7 +14,7 @@ const WeatherTab = lazy(() => import("./WeatherTab"));
 const TimersTab = lazy(() => import("./TimersTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 
-export default function Settings({ hiding, hide }) {
+export default function Settings({ hiding, locale, hide }) {
   const [activeTab, setActiveTab] = useState("general");
 
   useEffect(() => {
@@ -25,35 +25,35 @@ export default function Settings({ hiding, hide }) {
     const tabs = [
       {
         id: "general",
-        name: "General"
+        name: locale.settings.general.title
       },
       {
         id: "appearance",
-        name: "Appearance"
+        name: locale.settings.appearance.title
       },
       {
         id: "timeDate",
-        name: "Time & Date"
+        name: locale.settings.time_date.title
       },
       {
         id: "mainPanel",
-        name: "Main Panel"
+        name: locale.settings.main_panel.title
       },
       {
         id: "tasks",
-        name: "Tasks"
+        name: locale.tasks.title
       },
       {
         id: "weather",
-        name: "Weather"
+        name: locale.settings.weather.title
       },
       {
         id: "timers",
-        name: "Timers"
+        name: locale.settings.timers.title
       },
       {
         id: "storage",
-        name: "Storage"
+        name: locale.settings.storage.title
       }
     ];
 
@@ -71,7 +71,7 @@ export default function Settings({ hiding, hide }) {
 
   function renderTab() {
     if (activeTab === "general") {
-      return <GeneralTab/>;
+      return <GeneralTab locale={locale}/>;
     }
     let Component = null;
 
@@ -96,7 +96,11 @@ export default function Settings({ hiding, hide }) {
     else if (activeTab === "storage") {
       Component = StorageTab;
     }
-    return <Suspense fallback={<Spinner className="setting-tab-spinner"/>}><Component/></Suspense>;
+    return (
+      <Suspense fallback={<Spinner className="setting-tab-spinner"/>}>
+        <Component locale={locale}/>
+      </Suspense>
+    );
   }
 
   return (
@@ -104,8 +108,8 @@ export default function Settings({ hiding, hide }) {
       <div className="settings">
         <div className="container-header settings-header">
           <Icon id="settings"/>
-          <h3 className="container-header-title">Settings</h3>
-          <button className="btn icon-btn" onClick={hide} title="Close">
+          <h3 className="container-header-title">{locale.settings.title}</h3>
+          <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
             <Icon id="cross"/>
           </button>
         </div>

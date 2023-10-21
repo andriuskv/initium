@@ -78,7 +78,7 @@ export default function Entries({ navigation, feeds, locale, selectFeed, previou
           </li>
         ))}
       </ul>
-      <ToTop/>
+      <ToTop locale={locale}/>
     </div>
   );
 }

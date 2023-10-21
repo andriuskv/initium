@@ -36,7 +36,7 @@ export default function Form({ form, locale, updateSite, hide }) {
               name="title" autoComplete="off"/>
           </label>
           <label className="top-sites-form-label">
-            <div className="top-sites-form-input-title">{locale.mainPanel.form_url_input_label}</div>
+            <div className="top-sites-form-input-title">{locale.global.url_input_label}</div>
             <input type="text" className="input top-sites-form-input"
               defaultValue={form.url} placeholder="https://google.com"
               name="url" autoComplete="off" required/>

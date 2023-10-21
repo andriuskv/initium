@@ -276,7 +276,7 @@ export default function Stopwatch({ visible, locale, toggleIndicator, updateTitl
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? locale.topPanel.stop : locale.topPanel.start}</button>
         {running ? <button className="btn text-btn top-panel-item-action-btn" onClick={makeSplit}>{locale.stopwatch.split_button}</button> : null}
-        {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.topPanel.reset}</button>}
+        {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.global.reset}</button>}
         <div className="top-panel-secondary-actions">
           {dirty.current && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">

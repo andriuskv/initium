@@ -315,7 +315,7 @@ export default function Notepad({ locale }) {
       return null;
     }
     else if (storageWarning.full) {
-      return <Toast message={storageWarning.message} position="bottom" dismiss={dismissWarning}/>;
+      return <Toast message={storageWarning.message} position="bottom" locale={locale} dismiss={dismissWarning}/>;
     }
     return (
       <Dropdown

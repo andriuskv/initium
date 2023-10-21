@@ -9,7 +9,7 @@ import Icon from "components/Icon";
 import json from "./shortcuts.json";
 import "./shortcuts.css";
 
-export default function Shortcuts() {
+export default function Shortcuts({ locale }) {
   const [items, setItems] = useState(null);
   const [editEnabled, setEditEnabled] = useState(false);
   const [activeDragId, setActiveDragId] = useState(null);
@@ -84,7 +84,7 @@ export default function Shortcuts() {
             handleDragStart={handleDragStart}>
             {items.map(item => (
               <SortableItem className={`shortcuts-item${item.hidden ? " hidden" : ""}${item.id === activeDragId ? " dragging" : ""}`} key={item.url} id={item.id}>
-                <button className="btn icon-btn shortcuts-item-toggle-btn" title={item.hidden ? "Show" : "Hide"}
+                <button className="btn icon-btn shortcuts-item-toggle-btn" title={item.hidden ? locale.global.show : locale.global.hide}
                   onClick={() => toggleItemVisibility(item)}>
                   <Icon id={item.hidden ? "eye" : "eye-off"}/>
                 </button>
@@ -94,7 +94,7 @@ export default function Shortcuts() {
             ))}
           </SortableList>
         </ul>
-        <button className="btn icon-btn shortcuts-edit-toggle-btn" onClick={toggleEditMode}>
+        <button className="btn icon-btn shortcuts-edit-toggle-btn" onClick={toggleEditMode} title={locale.global.edit}>
           <Icon id="edit"/>
         </button>
       </>
@@ -112,7 +112,7 @@ export default function Shortcuts() {
           </li>
         ))}
       </ul>
-      <button className="btn icon-btn shortcuts-edit-toggle-btn" onClick={toggleEditMode} title="Reorder">
+      <button className="btn icon-btn shortcuts-edit-toggle-btn" onClick={toggleEditMode} title={locale.global.edit}>
         <Icon id="edit"/>
       </button>
     </>
