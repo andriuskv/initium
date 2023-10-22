@@ -7,7 +7,6 @@ import "./groups.css";
 import GroupForm from "../GroupForm";
 
 export default function Groups({ groups, locale, updateGroups, createGroup, hide }) {
-  console.log(locale);
   const [removeModal, setRemoveModal] = useState(null);
   const [activeDragId, setActiveDragId] = useState(null);
 

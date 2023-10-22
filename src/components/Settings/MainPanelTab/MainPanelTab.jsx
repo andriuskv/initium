@@ -2,9 +2,8 @@ import { useState } from "react";
 import { useSettings } from "contexts/settings";
 import { dispatchCustomEvent } from "utils";
 
-export default function MainPanelTab({ locale }) {
+export default function MainPanelTab({ locale, hide }) {
   const { settings: { mainPanel: settings }, updateSetting, updateMainPanelComponentSetting, toggleSetting } = useSettings();
-  const [persistentSitesEditEnabled, setPersistentSiteEditEnabled] = useState(false);
   const [topSitesDirty, setTopSitesDirty] = useState(() => !!localStorage.getItem("top sites"));
 
   function toggleComponent(item) {
@@ -45,16 +44,15 @@ export default function MainPanelTab({ locale }) {
     updateMainPanelComponentSetting("topSites", setting);
   }
 
-  function togglePersistentSiteEditMode({ target }) {
-    setPersistentSiteEditEnabled(target.checked);
-    dispatchCustomEvent("enable-persistent-site-edit", target.checked);
+  function togglePersistentSiteEditMode() {
+    hide();
+    dispatchCustomEvent("enable-persistent-site-edit");
   }
 
   function togglePersistentSitesVisibility({ target }) {
     toggleTopSiteSetting({ persistentSitesHidden: target.checked });
 
     if (target.checked) {
-      setPersistentSiteEditEnabled(false);
       dispatchCustomEvent("enable-persistent-site-edit", false);
     }
   }
@@ -115,7 +113,7 @@ export default function MainPanelTab({ locale }) {
         <div className="settings-group-top">
           <h4 className="settings-group-title">{locale.settings.main_panel.top_sites_group_title}</h4>
           {topSitesDirty && <button className="btn outline-btn settings-group-top-btn" onClick={resetTopSites}
-            disabled={settings.components.topSites.disabled} title="Reset to default">{locale.global.reset}</button>}
+            disabled={settings.components.topSites.disabled}>{locale.global.reset}</button>}
         </div>
         <label className={`setting${settings.components.topSites.disabled ? " disabled" : ""}`}>
           <span>{locale.settings.main_panel.one_top_sites_row_label}</span>
@@ -157,17 +155,11 @@ export default function MainPanelTab({ locale }) {
             <div className="checkbox-tick"></div>
           </div>
         </label>
-        <label className={`setting${settings.components.topSites.disabled || settings.components.topSites.persistentSitesHidden ? " disabled" : ""}`}>
-          <span>{locale.settings.main_panel.toggle_persistent_site_edit_label}</span>
-          <input type="checkbox" className="sr-only toggle-input"
-            disabled={settings.components.topSites.disabled || settings.components.topSites.persistentSitesHidden}
-            checked={persistentSitesEditEnabled}
-            onChange={togglePersistentSiteEditMode}/>
-          <div className="toggle">
-            <div className="toggle-item">Off</div>
-            <div className="toggle-item">On</div>
-          </div>
-        </label>
+        <div className={`setting${settings.components.topSites.disabled || settings.components.topSites.persistentSitesHidden ? " disabled" : ""}`}>
+          <span>{locale.settings.main_panel.persistent_site_edit_label}</span>
+          <button className="btn" onClick={togglePersistentSiteEditMode}
+            disabled={settings.components.topSites.disabled || settings.components.topSites.persistentSitesHidden}>{locale.global.enable}</button>
+        </div>
       </div>
       <div className="settings-group">
         <div className="settings-group-top">
