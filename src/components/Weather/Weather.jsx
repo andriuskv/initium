@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
-import { fetchWeather, fetchMoreWeather, convertTemperature, convertWindSpeed } from "services/weather";
+import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { useSettings } from "contexts/settings";
@@ -10,7 +10,7 @@ import "./weather.css";
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ timeFormat, locale }) {
-  const { settings: { appearance: { animationSpeed }, weather: settings }, updateSetting } = useSettings();
+  const { settings: { appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings }, updateSetting } = useSettings();
   const [state, setState] = useState({ view: "temp" });
   const [current, setCurrentWeather] = useState(null);
   const [moreWeather, setMoreWeather] = useState(null);
@@ -82,6 +82,13 @@ export default function Weather({ timeFormat, locale }) {
       }
     }
   }, [settings.speedUnits]);
+
+  useEffect(() => {
+    if (!moreWeather) {
+      return;
+    }
+    setMoreWeather({ ...moreWeather, daily: updateWeekdayLocale(moreWeather.daily, dateLocale) });
+  }, [dateLocale]);
 
   useEffect(() => {
     if (moreWeather) {
