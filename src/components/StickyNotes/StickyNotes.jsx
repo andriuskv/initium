@@ -41,6 +41,12 @@ export default function StickyNotes({ locale }) {
     }
   }
 
+  function handleNoteMouseDown(event) {
+    if (event.detail === 2) {
+      event.currentTarget.style.userSelect = "none";
+    }
+  }
+
   function discardNote(shouldAnimate = true) {
     resetTextSelection();
 
@@ -84,6 +90,7 @@ export default function StickyNotes({ locale }) {
       <ul className="sticky-notes">
         {notesToRender.map((note, i) => (
           <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.color }} onClick={event => handleNoteClick(i, event)}
+            onMouseDown={handleNoteMouseDown}
             key={note.id}>
             {note.title ? <p className="sticky-note-content sticky-note-title">{note.title}</p> : null}
             {note.content ? <p className="sticky-note-content">{note.content}</p> : null}

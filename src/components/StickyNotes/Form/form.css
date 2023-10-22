@@ -84,6 +84,7 @@
   min-width: 126px;
   padding: var(--space-md);
   transform: translate(-50%, var(--space-sm));
+  user-select: none;
 }
 
 .sticky-note-color-picker-items {
@@ -135,6 +136,7 @@
     0 0 0 1px var(--color-black-4),
     var(--highligh-shadow);
   transition: inherit;
+  user-select: none;
 }
 
 @keyframes rotate-straight {
