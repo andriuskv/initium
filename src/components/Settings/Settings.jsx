@@ -98,7 +98,7 @@ export default function Settings({ hiding, locale, hide }) {
     }
     return (
       <Suspense fallback={<Spinner className="setting-tab-spinner"/>}>
-        <Component locale={locale}/>
+        <Component locale={locale} hide={hide}/>
       </Suspense>
     );
   }

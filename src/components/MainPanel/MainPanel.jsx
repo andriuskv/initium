@@ -29,6 +29,12 @@ export default function MainPanel({ settings, locale }) {
     if (height) {
       containerRef.current.style.setProperty("--height", `${height}px`);
     }
+
+    window.addEventListener("enable-persistent-site-edit", selectTopSitesTab);
+
+    return () => {
+      window.removeEventListener("enable-persistent-site-edit", selectTopSitesTab);
+    };
   }, []);
 
   useEffect(() => {
@@ -150,6 +156,11 @@ export default function MainPanel({ settings, locale }) {
     }
     setActiveTab({ id: newId });
     localStorage.setItem("mainPanelTab", newId);
+  }
+
+  function selectTopSitesTab() {
+    setActiveTab({ id: "topSites" });
+    localStorage.setItem("mainPanelTab", "topSites");
   }
 
   function expandTab() {

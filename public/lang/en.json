@@ -28,6 +28,7 @@
     "back": "Back",
     "reset": "Reset",
     "set": "Set",
+    "enable": "Enable",
     "settings": "Settings",
     "title_input_label": "Title",
     "url_input_label": "URL",
@@ -258,7 +259,7 @@
       "new_tab_top_sites_label": "Always open page in a new tab",
       "hide_add_button_label": "Hide add site button",
       "hide_persistent_sites_label": "Hide persistent sites",
-      "toggle_persistent_site_edit_label": "Toggle persistent site edit mode",
+      "persistent_site_edit_label": "Enable persistent site edit",
       "notepad_group_title": "Notepad",
       "reset_notepad_label": "Reset notepad text size"
     },

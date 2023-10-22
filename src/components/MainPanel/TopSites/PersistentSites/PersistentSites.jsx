@@ -50,8 +50,8 @@ export default function PersistentSites({ settings, locale, getFaviconURL }) {
     });
   }
 
-  function enableSiteEdit(event) {
-    setSiteEditEnabled(event.detail);
+  function enableSiteEdit() {
+    setSiteEditEnabled(true);
   }
 
   function disableSiteEdit() {
