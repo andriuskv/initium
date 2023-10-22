@@ -214,7 +214,7 @@ function getHoursOffset(milliseconds, useNumerical = false) {
     }
     return "0";
   }
-  const suffix = hours === 1 ? "" : "s";
+  const suffix = Math.abs(hours) === 1 ? "" : "s";
 
   if (hours > 0) {
     return `${hours} hour${suffix} ahead`;

@@ -1,6 +1,6 @@
 import { getRandomString } from "../utils";
 import { getSetting } from "./settings";
-import { getTimeString } from "./timeDate";
+import { getTimeString, getCurrentDate } from "./timeDate";
 
 async function fetchWeatherWithCityName(name) {
   return fetchWeatherData(`q=${name}`);
@@ -28,17 +28,7 @@ async function fetchWeather() {
 
 async function fetchMoreWeather({ lat, lon }) {
   const data = await fetchWeatherData(`type=more&lat=${lat}&lon=${lon}`);
-  const hourly = data.hourly.map(item => ({
-    ...item,
-    id: getRandomString(),
-    time: getTimeString({ hours: item.hour })
-  }));
-  const daily = data.daily.map(item => ({
-    ...item,
-    id: getRandomString()
-  }));
-
-  return { hourly, daily };
+  return parseWeather(data);
 }
 
 function fetchCoords() {
@@ -56,6 +46,34 @@ function fetchCoords() {
       { enableHighAccuracy: true }
     );
   });
+}
+
+function parseWeather(data) {
+  const { dateLocale } = getSetting("timeDate");
+  const hourly = data.hourly.map(item => ({
+    ...item,
+    id: getRandomString(),
+    time: getTimeString({ hours: item.hour })
+  }));
+  const daily = data.daily.map(item => ({
+    ...item,
+    id: getRandomString()
+  }));
+
+  return { hourly, daily: updateWeekdayLocale(daily, dateLocale) };
+}
+
+function updateWeekdayLocale(weekdays, locale = "en") {
+  const formatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
+  const date = getCurrentDate();
+
+  for (const day of weekdays) {
+    const dayDate = new Date(date.year, date.month, date.day);
+    day.weekday = formatter.format(dayDate);
+    date.day += 1;
+  }
+
+  return weekdays;
 }
 
 function convertTemperature(value, units) {
@@ -86,6 +104,7 @@ function fetchWeatherData(params) {
 export {
   fetchWeather,
   fetchMoreWeather,
+  updateWeekdayLocale,
   convertTemperature,
   convertWindSpeed
 };
