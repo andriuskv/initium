@@ -123,7 +123,7 @@ export default function Form({ locale, addClock, hide }) {
               <button className="btn world-form-result-btn" onClick={() => handleClick(result)} disabled={result.alreadyAdded}>
                 <div>
                   <div className="world-clock-city">{result.city}, <span className="world-form-result-country">{result.country}</span></div>
-                  <div className="world-clock-diff">{result.timeZone} {result.diffString}</div>
+                  <div className="world-clock-diff">{result.timeZone} ᛫ {result.diffString}</div>
                 </div>
                 {result.alreadyAdded && <Icon id="check"/>}
               </button>

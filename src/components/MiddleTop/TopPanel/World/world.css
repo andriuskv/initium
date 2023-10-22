@@ -12,7 +12,6 @@
   gap: var(--space-md);
   height: 100%;
   padding: var(--space-md);
-  border-bottom-right-radius: 6px;
 }
 
 .world-clock {
@@ -59,7 +58,7 @@
 }
 
 .world-clock-time-text {
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   white-space: nowrap;
   transition: var(--duration-f) opacity;
 }

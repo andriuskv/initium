@@ -208,7 +208,7 @@ export default function Presets({ locale, createCountdown, hide }) {
           <div className="countdown-form-field-title">{locale.global.title_input_label}</div>
           <input type="text" className="input countdown-form-field" name="title"/>
         </label>
-        <div className="countdown-form-fields countdown-form-date-fields">
+        <div className="countdown-form-fields">
           <label>
             <div className="countdown-form-field-title">{locale.countdown.year}</div>
             <input type="text" className="input countdown-form-field" name="years"
@@ -224,8 +224,6 @@ export default function Presets({ locale, createCountdown, hide }) {
             <input type="text" className="input countdown-form-field" name="days"
               onChange={handleInputChange} value={form.days} required/>
           </label>
-        </div>
-        <div className="countdown-form-fields countdown-form-date-fields">
           <label>
             <div className="countdown-form-field-title">{locale.countdown.hour}</div>
             <input type="text" className="input countdown-form-field" name="hours"
