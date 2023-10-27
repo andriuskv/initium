@@ -12,13 +12,13 @@ function LocalizationProvider({ children }) {
   }, [settings.general.locale]);
 
   async function init() {
-    const module = await import(`../../public/lang/${settings.general.locale}.json`, { assert: { type: "json" } });
+    const module = await import(`../lang/${settings.general.locale}.json`, { assert: { type: "json" } });
 
     if (module) {
       setLocale(module.default);
     }
     else {
-      const module = await import("../../public/lang/en.json", { assert: { type: "json" } });
+      const module = await import("../lang/en.json", { assert: { type: "json" } });
 
       setLocale(module.default);
     }

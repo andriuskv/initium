@@ -49,7 +49,6 @@ function fetchCoords() {
 }
 
 function parseWeather(data) {
-  const { dateLocale } = getSetting("timeDate");
   const hourly = data.hourly.map(item => ({
     ...item,
     id: getRandomString(),
@@ -60,7 +59,7 @@ function parseWeather(data) {
     id: getRandomString()
   }));
 
-  return { hourly, daily: updateWeekdayLocale(daily, dateLocale) };
+  return { hourly, daily };
 }
 
 function updateWeekdayLocale(weekdays, locale = "en") {
@@ -97,8 +96,9 @@ function convertWindSpeed(value, units) {
 }
 
 function fetchWeatherData(params) {
+  const { dateLocale } = getSetting("timeDate");
   const { units, speedUnits } = getSetting("weather");
-  return fetch(`${process.env.SERVER_URL}/owm?${params}&units=${units},${speedUnits}`).then(res => res.json());
+  return fetch(`${process.env.SERVER_URL}/owm?${params}&lang=en,${dateLocale}&units=${units},${speedUnits}`).then(res => res.json());
 }
 
 export {
