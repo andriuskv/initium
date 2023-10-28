@@ -1,5 +1,7 @@
 import { useState, useRef, lazy, Suspense } from "react";
 import { getRandomString, timeout } from "utils";
+import { getSetting } from "services/settings";
+import { formatDate } from "services/timeDate";
 import Icon from "components/Icon";
 import "./form.css";
 
@@ -189,6 +191,11 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
             showMessage("Expiration date can't be in the past.");
             return;
           }
+          const { dateLocale } = getSetting("timeDate");
+          task.expirationDateString = formatDate(task.expirationDate, {
+            locale: dateLocale,
+            includeTime: true
+          });
         }
       }
       else if (state.task.expirationDate) {
@@ -218,6 +225,11 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
           showMessage("Expiration date can't be in the past.");
           return;
         }
+        const { dateLocale } = getSetting("timeDate");
+        task.expirationDateString = formatDate(task.expirationDate, {
+          locale: dateLocale,
+          includeTime: true
+        });
       }
       tasks.unshift(task);
     }
