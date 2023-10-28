@@ -16,7 +16,7 @@
     "file-saver": "^2.0.5",
     "idb-keyval": "^6.2.1",
     "jszip": "^3.10.1",
-    "marked": "^9.1.2",
+    "marked": "^9.1.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
