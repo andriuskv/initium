@@ -8,7 +8,6 @@
   padding: var(--space-md);
   box-shadow: var(--highligh-shadow);
   background-color: var(--color-white-10);
-  animation: show-button var(--duration-n) both;
 
   &:hover {
     background-color: var(--color-white-20);
@@ -22,15 +21,34 @@
 
   &.visible {
     display: block;
+    animation: show-button var(--duration-n) both;
+  }
+
+  &.hiding {
+    animation: hide-button var(--duration-n) both;
   }
 }
 
 @keyframes show-button {
   from {
-    transform: translateY(100%);
+    opacity: 0;
+    transform: translateY(100%) scale(0.9);
   }
 
   to {
-    transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hide-button {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(100%) scale(0.9);
   }
 }
