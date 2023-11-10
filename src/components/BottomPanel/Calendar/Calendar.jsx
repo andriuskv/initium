@@ -568,27 +568,17 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
   function getWeekdayRepeatTooltip(weekdayStates) {
     const weekdays = timeDateService.getWeekdays(settings.dateLocale);
+    const formatter = new Intl.ListFormat(settings.dateLocale, {
+      style: "long",
+      type: "conjunction"
+    });
     const arr = weekdayStates.reduce((arr, weekday, index) => {
       if (weekday) {
         arr.push(weekdays[index]);
       }
       return arr;
     }, []);
-    let str = "";
-
-    if (arr.length === 1) {
-      str = arr[0];
-    }
-    else {
-      const ending = arr.slice(-2).join(" and ");
-
-      if (arr.length > 2) {
-        str = `${arr.slice(0, -2).join(", ")}, ${ending}`;
-      }
-      else {
-        str = ending;
-      }
-    }
+    const str = formatter.format(arr);
     return `Repeating every ${str}`;
   }
 
