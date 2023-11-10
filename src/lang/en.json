@@ -33,8 +33,8 @@
     "title_input_label": "Title",
     "url_input_label": "URL",
     "text_size_title": "Text size",
-    "decrease_text_size_title": "Decrease text size",
-    "increase_text_size_title": "Increase text size"
+    "decrease_size_title": "Decrease size",
+    "increase_size_title": "Increase size"
   },
   "toTop": {
     "title": "To top"
@@ -153,6 +153,8 @@
   "stickyNotes": {
     "no_notes_message": "No notes yet.",
     "color_picker": "Color picker",
+    "text_opacity": "Opacity",
+    "text_color": "Text color",
     "scale": "Scale"
   },
   "shortcuts": {

@@ -26,7 +26,7 @@
 }
 
 .sticky-notes-list-item-content {
-  color: var(--color-black-60);
+  color: var(--text-color);
   font-size: var(--text-xl);
   white-space: pre-wrap;
   font-family: "Caveat";
