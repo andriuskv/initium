@@ -3,7 +3,7 @@ import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./form.css";
 
-const colors = [
+const backgroundColors = [
   "#0d99ff", "#14b88f", "#8fe935", "#ffcd29",
   "#359ee9", "#14ae5c", "#66ca02", "#fcf403",
   "#6cb2e5", "#68cab1", "#ade07b", "#e3e078",
@@ -11,6 +11,8 @@ const colors = [
   "#e9bc35", "#d24b2d", "#c20ab3", "#8f35e9",
   "#e3bb82", "#e0755c", "#e278da", "#ad7edd"
 ];
+
+const textColors = [[0, 0, 0], [1, 0, 0]];
 
 export default function Form({ initialForm, noteCount, locale, createNote, discardNote, showForm }) {
   const [movable, setMovable] = useState(false);
@@ -31,7 +33,13 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
         y: initialForm.y,
         title: "",
         content: "",
-        color: colors[Math.floor(Math.random() * colors.length)],
+        textStyle: {
+          index: 0,
+          color: textColors[0],
+          opacity: 60,
+          string: getTextColor(textColors[0], 60)
+        },
+        backgroundColor: backgroundColors[Math.floor(Math.random() * backgroundColors.length)],
         scale: 1,
         textScale: 1,
         tilt: getTilt()
@@ -102,8 +110,33 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
     setForm({ ...form, [event.target.name]: event.target.value });
   }
 
-  function updateColor(color) {
-    setForm({ ...form, color });
+  function updateBackgroundColor(color) {
+    setForm({ ...form, backgroundColor: color });
+  }
+
+  function getTextColor(textColor, opacity = 60) {
+    return `oklch(${textColor.join(" ")} / ${opacity}%)`;
+  }
+
+  function updateTextColor(index) {
+    const color = textColors[index];
+    const string = getTextColor(color, form.textStyle.opacity);
+
+    setForm({ ...form, textStyle: { ...form.textStyle, color, string, index } });
+  }
+
+  function decreaseTextOpacity() {
+    const opacity = form.textStyle.opacity - 10;
+    const string = getTextColor(form.textStyle.color, opacity);
+
+    setForm({ ...form, textStyle: { ...form.textStyle, opacity, string } });
+  }
+
+  function increaseTextOpacity() {
+    const opacity = form.textStyle.opacity + 10;
+    const string = getTextColor(form.textStyle.color, opacity);
+
+    setForm({ ...form, textStyle: { ...form.textStyle, opacity, string } });
   }
 
   function decreaseScale() {
@@ -143,7 +176,7 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
   }
   return (
     <div className={`sticky-note sticky-note-form${movable ? " movable" : ""}${editable ? " editable" : ""}${initialForm.discarding ? " discarding" : ""}`} key={form.id}
-      style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.color }}>
+      style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.backgroundColor, "--text-color": form.textStyle.string }}>
       <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} title={movable ? "" : locale.global.move}></div>
       <textarea className="input sticky-note-content sticky-note-input sticky-note-title" name="title" onChange={handleInputChange}
         value={form.title} placeholder={`Note #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
@@ -154,34 +187,55 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
           <div className="sticky-note-sidebar">
             <Dropdown toggle={{ iconId: "color-picker", title: locale.stickyNotes.color_picker }} body={{ className: "sticky-note-dropdown" }}>
               <ul className="sticky-note-color-picker-items">
-                {colors.map(color => (
+                {backgroundColors.map(color => (
                   <li key={color}>
-                    <button className={`btn sticky-note-color-picker-item${form.color === color ? " active" : ""}`}
-                      onClick={() => updateColor(color)} style={{ backgroundColor: color }}></button>
+                    <button className={`btn sticky-note-color-picker-item${form.backgroundColor === color ? " active" : ""}`}
+                      onClick={() => updateBackgroundColor(color)} style={{ backgroundColor: color }}></button>
                   </li>
                 ))}
               </ul>
             </Dropdown>
+            <Dropdown toggle={{ iconId: "text-color", title: locale.stickyNotes.text_color }} body={{ className: "sticky-note-dropdown" }}>
+              <ul className="sticky-note-text-colors">
+                {textColors.map((color, index) => (
+                  <li key={color}>
+                    <button className={`btn sticky-note-color-picker-item${form.textStyle.index === index ? " active" : ""}${index === 1 ? " black": ""}`}
+                      onClick={() => updateTextColor(index)} style={{ backgroundColor: getTextColor(textColors[index], 100) }}></button>
+                  </li>
+                ))}
+              </ul>
+              <div className="dropdown-group sticky-note-setting">
+                <button className="btn icon-btn"
+                  onClick={decreaseTextOpacity} title={locale.global.decrease_size_title} disabled={form.textStyle.opacity <= 10}>
+                  <Icon id="minus"/>
+                </button>
+                <div className="sticky-note-setting-name">{locale.stickyNotes.text_opacity}</div>
+                <button className="btn icon-btn"
+                  onClick={increaseTextOpacity} title={locale.global.increase_size_title} disabled={form.textStyle.opacity >= 100}>
+                  <Icon id="plus"/>
+                </button>
+              </div>
+            </Dropdown>
             <Dropdown toggle={{ iconId: "scale", title: locale.stickyNotes.scale }} body={{ className: "sticky-note-dropdown" }}>
               <div className="dropdown-group sticky-note-setting">
                 <button className="btn icon-btn"
-                  onClick={decreaseScale} title="Decrease size" disabled={form.scale <= 0.75}>
+                  onClick={decreaseScale} title={locale.global.decrease_size_title} disabled={form.scale <= 0.75}>
                   <Icon id="minus"/>
                 </button>
                 <div className="sticky-note-setting-name">{locale.stickyNotes.scale}</div>
                 <button className="btn icon-btn"
-                  onClick={increaseScale} title="Increase size" disabled={form.scale >= 2}>
+                  onClick={increaseScale} title={locale.global.increase_size_title} disabled={form.scale >= 2}>
                   <Icon id="plus"/>
                 </button>
               </div>
               <div className="dropdown-group sticky-note-setting">
                 <button className="btn icon-btn"
-                  onClick={decreaseTextScale} title={locale.global.decrease_text_size_title} disabled={form.textScale <= 0.5}>
+                  onClick={decreaseTextScale} title={locale.global.decrease_size_title} disabled={form.textScale <= 0.5}>
                   <Icon id="minus"/>
                 </button>
                 <div className="sticky-note-setting-name">{locale.global.text_size_title}</div>
                 <button className="btn icon-btn"
-                  onClick={increaseTextScale} title={locale.global.increase_text_size_title} disabled={form.textScale >= 2}>
+                  onClick={increaseTextScale} title={locale.global.increase_size_title} disabled={form.textScale >= 2}>
                   <Icon id="plus"/>
                 </button>
               </div>

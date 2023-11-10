@@ -184,12 +184,12 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
             <div className="notepad-tabs-dropdown-setting-title">{locale.global.text_size_title}</div>
             <div className="notepad-tabs-dropdown-setting">
               <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-                onClick={() => decreaseTextSize(textSize)} title={locale.global.decrease_text_size_title} disabled={textSize <= 10}>
+                onClick={() => decreaseTextSize(textSize)} title={locale.global.decrease_size_title} disabled={textSize <= 10}>
                 <Icon id="minus"/>
               </button>
               <span className="notepad-tabs-dropdown-setting-value">{textSize}px</span>
               <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-                onClick={() => increaseTextSize(textSize)} title={locale.global.increase_text_size_title} disabled={textSize >= 32}>
+                onClick={() => increaseTextSize(textSize)} title={locale.global.increase_size_title} disabled={textSize >= 32}>
                 <Icon id="plus"/>
               </button>
             </div>

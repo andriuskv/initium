@@ -38,7 +38,7 @@
 }
 
 .sticky-note-content {
-  color: var(--color-black-60);
+  color: var(--text-color);
   white-space: pre-wrap;
   font-size: calc(var(--text-xl) * var(--scale) * var(--text-scale));
   font-family: "Caveat";

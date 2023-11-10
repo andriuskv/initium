@@ -15,7 +15,7 @@ export default function BottomPanel({ locale }) {
   const [items, setItems] = useState(() => ({
     "stickyNotes": {
       id: "stickyNotes",
-      title: locale.bottomPanel.stickyNotes,
+      title: locale.bottomPanel.sticky_notes,
       iconId: "sticky-notes",
       attrs: {
         "data-focus-id": "stickyNotes"

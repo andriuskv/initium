@@ -22,6 +22,19 @@ function StickyNotesProvider({ children }) {
     const notes = await chromeStorage.get("stickyNotes") ?? [];
 
     setNotes(notes.map(note => {
+      if (note.color) {
+        note.backgroundColor = note.color;
+        delete note.color;
+      }
+
+      if (!note.textStyle) {
+        note.textStyle = {
+          index: 0,
+          color: [0, 0, 0],
+          opacity: 60,
+          string: "oklch(0 0 0 / 60%)"
+        };
+      }
       note.id = crypto.randomUUID();
       return note;
     }));

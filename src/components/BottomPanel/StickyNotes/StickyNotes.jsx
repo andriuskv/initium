@@ -26,7 +26,7 @@ export default function StickyNotes({ locale, hide }) {
       {notes.length ? (
         <ul className="sticky-notes-list" data-dropdown-parent>
           {notes.toReversed().map(note => (
-            <li className="sticky-notes-list-item" style={{ backgroundColor: note.color }} key={note.id}>
+            <li className="sticky-notes-list-item" style={{ backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string }} key={note.id}>
               <Dropdown>
                 <button className="btn icon-text-btn dropdown-btn" onClick={() => editNote(note.id)}>
                   <Icon id="edit"/>
