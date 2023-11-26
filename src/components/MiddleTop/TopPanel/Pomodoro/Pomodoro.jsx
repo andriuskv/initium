@@ -78,13 +78,15 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
   }
 
   function handleMessage({ data }) {
-    update(data.duration);
+    if (data.duration < 0) {
+      setNextStage();
+    }
+    else {
+      update(data.duration);
 
-    if (data.duration <= 0) {
-      if (audio.shouldPlay) {
+      if (data.duration === 0 && audio.shouldPlay) {
         playAudio();
       }
-      setNextStage();
     }
   }
 
@@ -139,7 +141,9 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
     }
     dirty.current = false;
     currentStageIndex.current = 0;
-    resetTimer(stage);
+
+    setStage("focus");
+    resetTimer("focus");
 
     if (running) {
       setRunning(false);
@@ -159,11 +163,8 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
     else {
       nextStage = stagesOrder[currentStageIndex.current];
     }
-
-    setTimeout(() => {
-      setStage(nextStage);
-      resetTimer(nextStage);
-    }, 1000);
+    setStage(nextStage);
+    resetTimer(nextStage);
   }
 
   function resetTimer(stage) {

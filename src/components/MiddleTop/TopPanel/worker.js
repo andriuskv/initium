@@ -29,7 +29,7 @@ function countdown(elapsed, duration = 0) {
   id = setTimeout(() => {
     postMessage({ elapsed, diff: interval, duration });
 
-    if (duration > 0) {
+    if (duration >= 0) {
       countdown(elapsed, duration);
     }
   }, interval - diff);

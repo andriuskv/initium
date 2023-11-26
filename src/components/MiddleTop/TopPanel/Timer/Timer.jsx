@@ -27,6 +27,7 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
   const dirty = useRef(false);
   const dirtyInput = useRef(false);
   const worker = useRef(null);
+  const audioTimeoutId = useRef(null);
 
   useEffect(() => {
     init();
@@ -74,10 +75,15 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
   }
 
   function handleMessage({ data }) {
-    update(data.duration);
+    if (data.duration >= 0) {
+      update(data.duration);
 
-    if (data.duration <= 0 && audio.shouldPlay) {
-      playAudio();
+      if (data.duration === 0 && audio.shouldPlay) {
+        playAudio();
+      }
+    }
+    else if (!audio.shouldPlay) {
+      reset();
     }
   }
 
@@ -212,6 +218,8 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
   }
 
   async function reset() {
+    exitFullscreen();
+
     if (isLastRunningTimer("timer")) {
       await handleReset("timer");
     }
