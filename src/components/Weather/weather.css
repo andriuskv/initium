@@ -1,4 +1,10 @@
 .weather {
+  --icon-filter:
+      drop-shadow(0 1px 1px var(--color-black-16))
+      drop-shadow(1px 2px 2px var(--color-black-8))
+      drop-shadow(2px 4px 4px var(--color-black-4))
+      url("#weather-icon-ambilight");
+
   z-index: var(--z-index, 1);
   position: absolute;
   top: var(--space-md);
@@ -78,6 +84,14 @@
     drop-shadow(0 1px 1px var(--color-black-8))
     drop-shadow(1px 2px 2px var(--color-black-4))
     drop-shadow(2px 4px 4px var(--color-black-2));
+
+  &.icon-13d, &.icon-13n {
+    filter:
+      brightness(2)
+      drop-shadow(0 1px 1px var(--color-black-8))
+      drop-shadow(1px 2px 2px var(--color-black-4))
+      drop-shadow(2px 4px 4px var(--color-black-2));
+  }
 }
 
 .weather-city {

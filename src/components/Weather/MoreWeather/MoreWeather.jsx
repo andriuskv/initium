@@ -157,7 +157,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
     <div className="weather-transition-target weather-more-info" ref={container}>
       <div className="container-header weather-more-current">
         <div className="weather-more-current-icon-container">
-          <img src={current.icon} className="weather-more-current-icon" alt="" width="100px" height="100px" loading="lazy"/>
+          <img src={current.icon} className={`weather-more-current-icon icon-${current.iconId}`} alt="" width="100px" height="100px" loading="lazy"/>
         </div>
         <div className="weather-more-current-main">
           <div className="weather-more-current-city">{current.city}</div>
@@ -219,7 +219,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
             {more.daily.map(item => (
               <div className="weather-more-daily-weekday" key={item.id}>
                 <div className="weather-more-daily-weekday-name">{item.weekday}</div>
-                <img src={item.icon} alt={item.description} className="weather-more-daily-weekday-icon" width="56px" height="56px" loading="lazy"/>
+                <img src={item.icon} alt={item.description} className={`weather-more-daily-weekday-icon icon-${item.iconId}`} width="56px" height="56px" loading="lazy"/>
                 <div className="weather-more-daily-weekday-temp">
                   <div>{Math.round(item.temperature.min)}°</div>
                   <div>{Math.round(item.temperature.max)}°</div>

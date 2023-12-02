@@ -24,7 +24,13 @@
 
 .weather-more-current-icon {
   display: block;
-  filter: url("#weather-icon-ambilight");
+  filter: var(--icon-filter);
+
+  &.icon-13d, &.icon-13n {
+    filter:
+      brightness(2)
+      var(--icon-filter);
+  }
 }
 
 .weather-more-current-main {
@@ -245,7 +251,13 @@
 
 .weather-more-daily-weekday-icon {
   margin: var(--space-sm);
-  filter: url("#weather-icon-ambilight");
+  filter: var(--icon-filter);
+
+  &.icon-13d, &.icon-13n {
+    filter:
+      brightness(2)
+      var(--icon-filter);
+  }
 }
 
 .weather-more-daily-weekday-temp {
