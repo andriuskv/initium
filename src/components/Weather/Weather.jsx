@@ -224,7 +224,7 @@ export default function Weather({ timeFormat, locale }) {
             <span className="weather-temperature-value">{Math.round(current.temperature)}</span>
             <span className="weather-temperature-units">°{settings.units}</span>
           </div>
-          <img src={current.icon} className="weather-icon" width="80px" height="80px" alt=""/>
+          <img src={current.icon} className={`weather-icon icon-${current.iconId}`} width="80px" height="80px" alt=""/>
         </div>
         <div className="weather-city">{current.city}</div>
       </div>
