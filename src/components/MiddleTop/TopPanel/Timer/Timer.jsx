@@ -164,6 +164,16 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
     });
     setRunning(false);
     updateTitle("timer");
+
+    if (audioTimeoutId.current) {
+      clearTimeout(audioTimeoutId.current);
+
+      audioTimeoutId.current = 0;
+      audio.element.currentTime = 0;
+      audio.element.pause();
+
+      reset();
+    }
   }
 
   function normalizeValues() {
@@ -260,8 +270,7 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
     audio.element.volume = volume;
     audio.element.play();
 
-    setTimeout(() => {
-      exitFullscreen();
+    audioTimeoutId.current = setTimeout(() => {
       reset();
     }, 3000);
   }
