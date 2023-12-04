@@ -294,8 +294,11 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
     return task;
   }
 
-  function removeTask(groupIndex, taskIndex) {
-    groups[groupIndex].tasks[taskIndex].removed = true;
+  function removeTask(groupIndex, taskIndex, removedThroughForm = false) {
+    const task = groups[groupIndex].tasks[taskIndex];
+
+    task.removed = true;
+    task.removedThroughForm = removedThroughForm;
 
     setGroups([...groups]);
     setRemovedItems([...removedItems, { groupIndex, taskIndex }]);
@@ -335,7 +338,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
         return task;
       }).filter(task => {
         if (task.repeat) {
-          return true;
+          return !task.removedThroughForm;
         }
         task.subtasks = task.subtasks.filter(subtask => !subtask.removed);
         return !task.removed;
@@ -357,6 +360,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
       }
       else {
         delete task.removed;
+        delete task.removedThroughForm;
       }
     }
     setGroups([...groups]);
@@ -386,7 +390,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
   }
 
   function removeFormTask() {
-    removeTask(form.groupIndex, form.taskIndex);
+    removeTask(form.groupIndex, form.taskIndex, true);
     hideForm();
   }
 
