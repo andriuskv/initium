@@ -91,12 +91,18 @@ async function updateFocusTrap(id) {
 }
 
 function focusFirstElement(container, { excludeDropdown = true } = {}) {
+  focusNthElement(container, 0, { excludeDropdown });
+}
+
+function focusNthElement(container, index, { excludeDropdown = true } = {}) {
   const focusableElements = findFocusableElements(container, excludeDropdown);
 
-  if (!focusableElements.length) {
+  if (!focusableElements.length || !focusableElements[index]) {
     return;
   }
-  focusableElements[0].focus();
+  setTimeout(() => {
+    focusableElements[index].focus();
+  }, 100);
 }
 
 function handleKeyDown(event) {
@@ -130,6 +136,7 @@ export {
   setInitiator,
   focusInitiator,
   focusFirstElement,
+  focusNthElement,
   trapFocus,
   clearFocusTrap,
   updateFocusTrap

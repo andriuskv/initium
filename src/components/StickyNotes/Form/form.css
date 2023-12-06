@@ -46,6 +46,12 @@
   transform: translate(-50%, -50%) rotate(-3deg);
   transition: inherit;
   cursor: move;
+
+  &:focus {
+    @supports (color: rgb(from black r g b)) {
+      background-color: hsl(from var(--background-color) h s calc(l - 0.04));
+    }
+  }
 }
 
 .sticky-note-input {

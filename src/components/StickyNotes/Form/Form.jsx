@@ -1,4 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import * as focusService from "services/focus";
+import { getSetting } from "services/settings";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./form.css";
@@ -16,12 +18,29 @@ const textColors = [[0, 0, 0], [1, 0, 0]];
 
 export default function Form({ initialForm, noteCount, locale, createNote, discardNote, showForm }) {
   const [movable, setMovable] = useState(false);
-  const [editable, setEditable] = useState(false);
   const [form, setForm] = useState(null);
+  const containerRef = useRef(null);
   const moving = useRef(false);
 
   useLayoutEffect(() => {
-    if (initialForm.readyToShow) {
+    if (initialForm.discarding) {
+      return () => {
+        const element = document.querySelector("[data-focus-id=stickyNotes]");
+
+        if (element) {
+          element.focus();
+        }
+      };
+    }
+    else if (initialForm.readyToShow) {
+      if (containerRef.current) {
+        const settings = getSetting("appearance");
+
+        // Wait of the bottom panel animation to finish
+        setTimeout(() => {
+          focusService.focusNthElement(containerRef.current, 1);
+        }, 400 * settings.animationSpeed);
+      }
       return;
     }
 
@@ -44,12 +63,9 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
         textScale: 1,
         tilt: getTilt()
       });
-      setEditable(false);
-      setMovable(true);
     }
     else if (initialForm.action === "edit") {
       setForm({ ...initialForm, scale: initialForm.scale || 1, textScale: initialForm.textScale || 1 });
-      setEditable(true);
     }
     showForm();
   }, [initialForm]);
@@ -62,23 +78,17 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
     }
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
       document.documentElement.style.userSelect = "";
       document.documentElement.style.cursor = "";
 
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
-    };
-  }, [movable]);
-
-  useEffect(() => {
-    if (movable || editable) {
-      window.addEventListener("keydown", handleKeyDown);
-    }
-    return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [movable, editable]);
+  }, [movable]);
 
   function handlePointerMove(event) {
     if (moving.current) {
@@ -97,7 +107,6 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
 
   function handlePointerUp() {
     setMovable(false);
-    setEditable(true);
   }
 
   function handleKeyDown(event) {
@@ -108,6 +117,26 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
 
   function handleInputChange(event) {
     setForm({ ...form, [event.target.name]: event.target.value });
+  }
+
+  function moveNote(event) {
+    const amount = event.ctrlKey ? 10 : 1;
+    const noteSize = 228;
+    const noteHeight = Math.floor(noteSize / document.documentElement.clientHeight * 100);
+    const noteWidth = Math.floor(noteSize / 2 / document.documentElement.clientWidth * 100);
+
+    if (event.key === "ArrowUp") {
+      setForm({ ...form, y: Math.max(form.y - amount, 1) });
+    }
+    else if (event.key === "ArrowDown") {
+      setForm({ ...form, y: Math.min(form.y + amount, 100 - noteHeight) });
+    }
+    else if (event.key === "ArrowLeft") {
+      setForm({ ...form, x: Math.max(form.x - amount, noteWidth) });
+    }
+    else if (event.key === "ArrowRight") {
+      setForm({ ...form, x: Math.min(form.x + amount, 100 - noteWidth) });
+    }
   }
 
   function updateBackgroundColor(color) {
@@ -162,7 +191,6 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
 
   function enableNoteDrag(event) {
     if (event.button === 0) {
-      setEditable(false);
       setMovable(true);
     }
   }
@@ -175,14 +203,15 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
     return null;
   }
   return (
-    <div className={`sticky-note sticky-note-form${movable ? " movable" : ""}${editable ? " editable" : ""}${initialForm.discarding ? " discarding" : ""}`} key={form.id}
+    <div className={`sticky-note sticky-note-form${movable ? " movable" : " editable"}${initialForm.discarding ? " discarding" : ""}`} key={form.id} ref={containerRef}
       style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.backgroundColor, "--text-color": form.textStyle.string }}>
-      <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} title={movable ? "" : locale.global.move}></div>
-      <textarea className="input sticky-note-content sticky-note-input sticky-note-title" name="title" onChange={handleInputChange}
-        value={form.title} placeholder={`Note #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
+      <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} onKeyDown={moveNote} title={movable ? "" : locale.global.move} tabIndex="0"></div>
+      <textarea className="input sticky-note-content sticky-note-input sticky-note-title" name="title"
+        onChange={handleInputChange} value={form.title}
+        placeholder={`Note #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
       <textarea className="input sticky-note-content sticky-note-input" name="content" onChange={handleInputChange}
         value={form.content} placeholder={`Content #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
-      {editable ? (
+      {movable ? null : (
         <>
           <div className="sticky-note-sidebar">
             <Dropdown toggle={{ iconId: "color-picker", title: locale.stickyNotes.color_picker }} body={{ className: "sticky-note-dropdown" }}>
@@ -246,7 +275,7 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
             <button className="btn" onClick={saveNote}>{locale.global.save}</button>
           </div>
         </>
-      ) : null}
+      )}
     </div>
   );
 }

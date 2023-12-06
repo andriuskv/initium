@@ -33,7 +33,7 @@ function getRandomHexColor() {
 }
 
 function findFocusableElements(container = document, excludeDropdown = false) {
-  const elements = Array.from(container.querySelectorAll("button:not(:disabled), input:not(:disabled), a[href], [tabindex]"));
+  const elements = Array.from(container.querySelectorAll("button:not(:disabled), input:not(:disabled), a[href], textarea, [tabindex]"));
 
   if (excludeDropdown) {
     return elements.filter(element => !element.closest(".dropdown"));
@@ -85,6 +85,10 @@ function timeout(callback, duration, id) {
   return id;
 }
 
+function getRandomValueBetweenTwoNumbers(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -96,5 +100,6 @@ export {
   findRelativeFocusableElement,
   formatBytes,
   generateNoise,
-  timeout
+  timeout,
+  getRandomValueBetweenTwoNumbers
 };
