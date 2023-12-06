@@ -51,6 +51,11 @@ export default function StickyNotes({ locale }) {
     resetTextSelection();
 
     if (form.action === "edit" || !shouldAnimate) {
+      const element = document.querySelector("[data-focus-id=stickyNotes]");
+
+      if (element) {
+        element.focus();
+      }
       setForm(null);
     }
     else if (shouldAnimate) {
