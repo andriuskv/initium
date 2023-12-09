@@ -48,7 +48,7 @@ function formatDate(date, { locale = "en", includeTime = false, includeWeekday =
 
   if (includeTime) {
     const { format } = getSetting("timeDate");
-    options = { ...options, hour: "numeric", minute: "numeric", hour12: format === 12 };
+    options = { ...options, hour: "numeric", minute: "numeric", hourCycle: format === 12 ? "h12": "h23" };
   }
 
   if (includeWeekday) {

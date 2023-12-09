@@ -165,6 +165,7 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
       const repeatLimit = Number(elements.repeatLimit.value);
 
       task.repeat = {
+        start: Date.now(),
         status: 0,
         number: 0,
         gap: repeatGap,

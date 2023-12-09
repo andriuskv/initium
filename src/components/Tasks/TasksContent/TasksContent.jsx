@@ -154,69 +154,36 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
     };
   }
 
-  function getTaskRepeatGap(task) {
-    let gapInMs = 0;
+  function updateTaskRepeatProgress(task, prev, current, next) {
+    const elapsed = current - prev;
+    const total = next - prev;
+    const ratio = elapsed / total;
+    const { dateLocale } = getSetting("timeDate");
+    const dateString = formatDate(next, {
+      locale: dateLocale,
+      includeTime: true
+    });
+    const historyItem = task.repeat.history.at(-1);
 
-    if (task.repeat.unit === "day") {
-      gapInMs = 24 * 60 * 60 * 1000 * task.repeat.gap;
-    }
-    else if (task.repeat.unit === "week") {
-      gapInMs = 7 * 24 * 60 * 60 * 1000 * task.repeat.gap;
-    }
-    else if (task.repeat.unit === "month") {
-      const creationDate = new Date(task.creationDate);
-      let year = creationDate.getFullYear();
-      let month = creationDate.getMonth();
-
-      for (let i = 0; i < task.repeat.gap; i += 1) {
-        month += 1;
-
-        if (month > 12) {
-          year += 1;
-          month = 1;
-        }
-      }
-      const day = creationDate.getDate();
-      const hours = creationDate.getHours();
-      const minutes = creationDate.getMinutes();
-
-      const endMonthDays = new Date(year, month + 1, 0).getDate();
-      const nextRepeatDay = Math.min(endMonthDays, day);
-      const nextRepeatDate = new Date(year, month, nextRepeatDay, hours, minutes);
-
-      gapInMs = nextRepeatDate - creationDate;
-    }
-    return gapInMs;
-  }
-
-  function updateTaskRepeatProgress(task, diff, gapInMs) {
-    let ratio = diff / gapInMs;
-
-    if (ratio < 0) {
-      ratio += 1;
-    }
-    task.repeat.history[task.repeat.history.length - 1].elapsed = ratio * 100;
+    historyItem.dateString = `Resets on ${dateString}`;
+    historyItem.elapsed = ratio * 100;
   }
 
   function updateTaskRepeatHistory(task, missedCount) {
-    task.repeat.number += 1;
+    const lastItem = task.repeat.history.at(-1);
 
+    task.repeat.number += missedCount;
     task.repeat.history[task.repeat.history.length - 1] = {
       id: getRandomString(4),
-      status: task.repeat.status !== COMPLETED_STATUS ? FAILED_STATUS : task.repeat.status
+      status: lastItem.status !== COMPLETED_STATUS ? FAILED_STATUS : lastItem.status
     };
 
-    task.repeat.status = FAILED_STATUS;
-
     for (let i = 1; i < missedCount; i += 1) {
-      task.repeat.number += 1;
-
       task.repeat.history.push({
         id: getRandomString(4),
-        status: task.repeat.status
+        status: FAILED_STATUS
       });
     }
-    task.repeat.status = IN_PROGRESS_STATUS;
     task.repeat.history.push({
       id: getRandomString(4),
       status: IN_PROGRESS_STATUS,
@@ -228,6 +195,75 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
     }
   }
 
+  function getMonthGap(task, start) {
+    const startDate = new Date(start);
+    let year = startDate.getFullYear();
+    let month = startDate.getMonth();
+    const day = startDate.getDate();
+    const hours = startDate.getHours();
+    const minutes = startDate.getMinutes();
+
+    for (let i = 0; i < task.repeat.gap; i += 1) {
+      month += 1;
+
+      if (month > 11) {
+        year += 1;
+        month = 0;
+      }
+    }
+    const endDate = new Date(year, month, day, hours, minutes);
+    const endMonthDays = new Date(year, month + 1, 0).getDate();
+    const endDateDays = Math.min(endMonthDays, day);
+
+    return new Date(endDate.getFullYear(), endDate.getMonth(), endDateDays).getTime() - start;
+  }
+
+  function getRepeatStatus(task, current) {
+    const { start } = task.repeat;
+
+    if (task.repeat.unit === "day" || task.repeat.unit === "week") {
+      let gap = 24 * 60 * 60 * 1000 * task.repeat.gap;
+
+      if (task.repeat.unit === "week") {
+        gap *= 7;
+      }
+      const nextDateFull = new Date(start + gap);
+      let next = new Date(nextDateFull.getFullYear(), nextDateFull.getMonth(), nextDateFull.getDate()).getTime();
+      let prev = start;
+      let missed = 0;
+
+      while (next < current) {
+        prev = next;
+        missed += 1;
+        next += gap;
+      }
+
+      return {
+        missed,
+        prevDate: prev,
+        nextDate: next
+      };
+    }
+    else if (task.repeat.unit === "month") {
+      let next = start + getMonthGap(task, start);
+      let prev = start;
+      let missed = 0;
+
+      while (next < current) {
+        prev = next;
+        missed += 1;
+        next += getMonthGap(task, next);
+      }
+
+      return {
+        missed,
+        prevDate: prev,
+        nextDate: next
+      };
+    }
+    throw new Error("Invalid task repeat unit.");
+  }
+
   function checkGroups(groups) {
     const currentDate = Date.now();
     let modified = false;
@@ -237,27 +273,22 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
 
       group.tasks = group.tasks.map(task => {
         if (task.repeat) {
-          const elapsed = currentDate - task.creationDate;
-          const gapInMs = getTaskRepeatGap(task);
-          const number = Math.floor(elapsed / gapInMs);
-          const totalMs = number > 1 ? gapInMs * number : gapInMs;
+          task.repeat.start ??= task.creationDate;
+          const { missed, prevDate, nextDate } = getRepeatStatus(task, currentDate);
 
-          if (elapsed > totalMs) {
-            const missedCount = number - task.repeat.number;
+          if (missed > 0) {
+            updateTaskRepeatHistory(task, missed);
 
-            if (missedCount > 0) {
-              updateTaskRepeatHistory(task, missedCount);
-
+            delete task.hidden;
+            task.subtasks = task.subtasks.map(task => {
               delete task.hidden;
-              task.subtasks = task.subtasks.map(task => {
-                delete task.hidden;
-                return task;
-              });
+              return task;
+            });
 
-              modified = true;
-            }
+            task.repeat.start = prevDate;
+            modified = true;
           }
-          updateTaskRepeatProgress(task, elapsed - totalMs, gapInMs);
+          updateTaskRepeatProgress(task, prevDate, currentDate, nextDate);
         }
         return task;
       }).filter(task => {
@@ -312,7 +343,6 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
   }
 
   function setRepeatingTaskStatus(task, status) {
-    task.repeat.status = status;
     task.repeat.history[task.repeat.history.length - 1].status = status;
   }
 
@@ -448,6 +478,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
           task.repeat.history = task.repeat.history.map(item => {
             delete item.id;
             delete item.elapsed;
+            delete item.dateString;
             return item;
           });
         }
@@ -647,7 +678,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
                               <div className="task-repeat-history">
                                 {task.repeat.history.map(item => (
                                   <div className={`task-repeat-history-item${item.status > 0 ? ` ${taskStatusMap[item.status]}` : ""}`}
-                                    key={item.id}>
+                                    title={item.dateString} key={item.id}>
                                     {item.elapsed > 0 ? (
                                       <div className="task-repeat-history-item-inner" style={{ "--elapsed" : item.elapsed }}></div>
                                     ) : null}
