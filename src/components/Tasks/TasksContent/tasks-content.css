@@ -133,7 +133,7 @@
   position: relative;
   box-shadow: 0 1px 0 0 var(--color-white-10);
 
-  &:hover {
+  &:hover, &:has(.task-edit-btn:focus-visible) {
     .task-expiration-indicator {
       transform: translateX(-30px);
     }

@@ -120,16 +120,19 @@
 }
 
 .task-form-subtasks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
   width: 100%;
   padding: var(--space-sm) var(--space-md) 0 var(--space-md);
   margin-top: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
 .task-form-subtask {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
 }
 
 .task-form-subtask-input {
