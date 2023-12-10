@@ -66,7 +66,7 @@ function getDefault() {
       panelBackgroundOpacity: 50,
       panelBackgroundBlur: 12,
       panelBackgroundNoiseAmount: 0.2,
-      panelBackgroundNoiseOpacity: 0.0175,
+      panelBackgroundNoiseOpacity: 0.02,
       wallpaper: { provider: "unsplash", url: "" }
     },
     timeDate: {
@@ -76,7 +76,7 @@ function getDefault() {
       clockScale: 1,
       centerClock: false,
       dateHidden: false,
-      dateScale: 1,
+      dateScale: 1.1,
       datePosition: "bottom",
       dateAlignment: "center",
       dateLocale: "en-US",
