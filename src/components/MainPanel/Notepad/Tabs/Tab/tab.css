@@ -23,8 +23,8 @@
   }
 
   .input {
-    margin-left: var(--space-md);
-    margin-right: var(--space-md);
+    flex-grow: 1;
+    margin-left: var(--space-sm);
 
     & ~ .drag-handle {
       display: none;
