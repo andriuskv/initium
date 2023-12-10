@@ -54,11 +54,11 @@ export default function MiddleTop({ settings, locale, updateSetting, hide }) {
             </div>
             <div className="middle-top-order-item-name">{item.name}</div>
             <Dropdown toggle={{ title: locale.middleTop.dropdown_title }}>
-              <button className={`btn text-btn dropdown-btn${item.alignment === "top" ? " active" : ""}`}
+              <button className={`btn text-btn dropdown-btn${item.alignment === "start" ? " active" : ""}`}
                 onClick={() => changeAlignment("start", item.id)}>{locale.middleTop.align_top}</button>
               <button className={`btn text-btn dropdown-btn${!item.alignment || item.alignment === "center" ? " active" : ""}`}
                 onClick={() => changeAlignment("center", item.id)}>{locale.middleTop.align_center}</button>
-              <button className={`btn text-btn dropdown-btn${item.alignment === "bottom" ? " active" : ""}`}
+              <button className={`btn text-btn dropdown-btn${item.alignment === "end" ? " active" : ""}`}
                 onClick={() => changeAlignment("end", item.id)}>{locale.middleTop.align_bottom}</button>
             </Dropdown>
           </li>
