@@ -3,6 +3,7 @@ import { delay, setPageTitle } from "utils";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
 import { useLocalization } from "contexts/localization";
+import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
 import { removeFromRunning, getLastRunningTimer, isLastRunningTimer } from "./running-timers";
 import * as pipService from "./picture-in-picture";
@@ -19,17 +20,25 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const [visible, setVisible] = useState(false);
   const [minimal, setMinimal] = useState(false);
   const [rerender, setRerender] = useState(false);
-  const [activeTab, setActiveTab] = useState("");
+  const [activeTab, setActiveTab] = useState(initialTab || "timer");
   const [expanded, setExpanded] = useState(false);
-  const [tabs, setTabs] = useState(() => ({
-    timer: { name: locale.topPanel.timer },
-    stopwatch: { name: locale.topPanel.stopwatch },
-    pomodoro: { name: locale.topPanel.pomodoro },
-    countdown: { name: locale.topPanel.countdown },
-    world: { name: locale.topPanel.world }
-  }));
+  const [tabs, setTabs] = useState(() => {
+    const tabs = {
+      timer: { name: locale.topPanel.timer },
+      stopwatch: { name: locale.topPanel.stopwatch },
+      pomodoro: { name: locale.topPanel.pomodoro },
+      countdown: { name: locale.topPanel.countdown },
+      world: { name: locale.topPanel.world }
+    };
+
+    if (activeTab) {
+      tabs[activeTab].rendered = true;
+    }
+    return tabs;
+  });
   const containerRef = useRef(null);
   const minimalVisible = useRef(false);
+  const activeTabIndex = findTabIndex(activeTab);
 
   useEffect(() => {
     if (settings.showMinimal && visible) {
@@ -62,13 +71,6 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }, [rerender]);
 
   useEffect(() => {
-    if (visible && !activeTab) {
-      const tab = initialTab || "timer";
-      tabs[tab].rendered = true;
-
-      setActiveTab(tab);
-      setTabs({ ...tabs });
-    }
     window.addEventListener("top-panel-visible", toggleTopPanel);
 
     return () => {
@@ -102,6 +104,12 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     }
   }, [minimal]);
 
+  function findTabIndex(name) {
+    const index = Object.keys(tabs).findIndex(tab => tab === name);
+
+    return index < 0 ? 0 : index;
+  }
+
   function handleReset(name) {
     if (minimalVisible.current) {
       removeFromRunning(name);
@@ -130,23 +138,18 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }
 
   function toggleTopPanel({ detail }) {
-    if (detail) {
-      if (activeTab !== detail.tab) {
-        if (minimal) {
-          resetMinimal(true);
-        }
-        else {
-          setVisible(true);
-        }
-        setActiveTab(detail.tab);
-
-        if (!tabs[detail.tab].rendered) {
-          tabs[detail.tab].rendered = true;
-          setTabs({ ...tabs });
-        }
+    if (detail && activeTab !== detail.tab) {
+      if (minimal) {
+        resetMinimal(true);
       }
       else {
-        setVisible(!visible);
+        setVisible(true);
+      }
+      setActiveTab(detail.tab);
+
+      if (!tabs[detail.tab].rendered) {
+        tabs[detail.tab].rendered = true;
+        setTabs({ ...tabs });
       }
       return;
     }
@@ -214,6 +217,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   function resetMinimal(shouldShowFull = false) {
     minimalVisible.current = false;
 
+    containerRef.current.classList.add("no-delay");
     containerRef.current.classList.remove("visible");
 
     setTimeout(() => {
@@ -222,7 +226,8 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       if (shouldShowFull) {
         setVisible(true);
       }
-    }, 250 * animationSpeed);
+      containerRef.current.classList.remove("no-delay");
+    }, 200 * animationSpeed);
   }
 
   function showMinimalTimer() {
@@ -285,23 +290,25 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     <div className={`top-panel${minimal ? ` minimal visible` : expanded ? " fullscreen-mask expanded" : " container"}${visible ? " visible" : ""}`}
       onClick={event => handleZIndex(event, "top-panel")} ref={containerRef}>
       <div className="top-panel-content">
-        <ul className="top-panel-hide-target container-header top-panel-header">
-          {Object.keys(tabs).map(item => (
-            <li className={`top-panel-header-item${activeTab === item ? " active" : ""}`} key={item}>
-              <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab(item)}>
-                <span className={tabs[item].indicatorVisible ? "indicator" : ""}>
-                  <Icon id={item}/>
-                </span>
-                <span>{tabs[item].name}</span>
+        <TabsContainer className="top-panel-hide-target" current={activeTabIndex}>
+          <ul className="container-header top-panel-header">
+            {Object.keys(tabs).map(item => (
+              <li className={`top-panel-header-item${activeTab === item ? " active" : ""}`} key={item}>
+                <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab(item)}>
+                  <span className={tabs[item].indicatorVisible ? "indicator" : ""}>
+                    <Icon id={item}/>
+                  </span>
+                  <span>{tabs[item].name}</span>
+                </button>
+              </li>
+            ))}
+            <li className="top-panel-close-btn">
+              <button className="btn icon-btn" onClick={hideTopPanel} title={locale.global.close}>
+                <Icon id="cross"/>
               </button>
             </li>
-          ))}
-          <li className="top-panel-close-btn">
-            <button className="btn icon-btn" onClick={hideTopPanel} title={locale.global.close}>
-              <Icon id="cross"/>
-            </button>
-          </li>
-        </ul>
+          </ul>
+        </TabsContainer>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
           {tabs.timer.rendered ? (
             <Timer visible={activeTab === "timer"} locale={locale} toggleIndicator={toggleIndicator} updateTitle={updateTitle}

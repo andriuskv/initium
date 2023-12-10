@@ -128,17 +128,6 @@
   padding: 0 var(--space-sm);
 
   &.active {
-    &::after {
-      content: "";
-      position: absolute;
-      bottom: -5px;
-      display: block;
-      width: 100%;
-      height: 1px;
-      background-color: var(--color-primary);
-      pointer-events: none;
-    }
-
     .main-panel-item-header-item-select-btn {
       --color: var(--color-white);
     }

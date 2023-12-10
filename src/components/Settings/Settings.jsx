@@ -1,5 +1,6 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense, useMemo } from "react";
 import * as focusService from "services/focus";
+import TabsContainer from "components/TabsContainer";
 import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";
@@ -15,57 +16,59 @@ const TimersTab = lazy(() => import("./TimersTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 
 export default function Settings({ hiding, locale, hide }) {
+  const tabs = useMemo(() => [
+    {
+      id: "general",
+      name: locale.settings.general.title
+    },
+    {
+      id: "appearance",
+      name: locale.settings.appearance.title
+    },
+    {
+      id: "timeDate",
+      name: locale.settings.time_date.title
+    },
+    {
+      id: "mainPanel",
+      name: locale.settings.main_panel.title
+    },
+    {
+      id: "tasks",
+      name: locale.tasks.title
+    },
+    {
+      id: "weather",
+      name: locale.settings.weather.title
+    },
+    {
+      id: "timers",
+      name: locale.settings.timers.title
+    },
+    {
+      id: "storage",
+      name: locale.settings.storage.title
+    }
+  ], [locale]);
   const [activeTab, setActiveTab] = useState("general");
+  const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
 
   useEffect(() => {
     focusService.updateFocusTrap("fullscreen-modal");
   }, [activeTab]);
 
   function renderNavigation() {
-    const tabs = [
-      {
-        id: "general",
-        name: locale.settings.general.title
-      },
-      {
-        id: "appearance",
-        name: locale.settings.appearance.title
-      },
-      {
-        id: "timeDate",
-        name: locale.settings.time_date.title
-      },
-      {
-        id: "mainPanel",
-        name: locale.settings.main_panel.title
-      },
-      {
-        id: "tasks",
-        name: locale.tasks.title
-      },
-      {
-        id: "weather",
-        name: locale.settings.weather.title
-      },
-      {
-        id: "timers",
-        name: locale.settings.timers.title
-      },
-      {
-        id: "storage",
-        name: locale.settings.storage.title
-      }
-    ];
-
     return (
-      <ul className="settings-nav">
-        {tabs.map(tab => (
-          <li className={`settings-nav-item${activeTab === tab.id ? " active" : ""}`} key={tab.id}>
-            <button className="btn text-btn settings-nav-item-btn"
-              onClick={() => setActiveTab(tab.id)}>{tab.name}</button>
-          </li>
-        ))}
-      </ul>
+      <TabsContainer className="setting-nav-container" current={activeTabIndex} orientation="v">
+        <ul className="settings-nav">
+          {tabs.map(tab => (
+            <li className={`settings-nav-item${activeTab === tab.id ? " active" : ""}`} key={tab.id}>
+              <button className="btn text-btn settings-nav-item-btn"
+                onClick={() => setActiveTab(tab.id)}>{tab.name}</button>
+            </li>
+          ))}
+        </ul>
+      </TabsContainer>
     );
   }
 

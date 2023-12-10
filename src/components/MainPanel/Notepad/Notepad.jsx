@@ -2,12 +2,15 @@ import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString, formatBytes, timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting, updateMainPanelComponentSetting } from "services/settings";
+import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import Toast from "components/Toast";
 import "./notepad.css";
 
 const Tabs = lazy(() => import("./Tabs"));
+
+const VISIBLE_ITEM_COUNT = 3;
 
 export default function Notepad({ locale }) {
   const [tabs, setTabs] = useState(null);
@@ -23,7 +26,7 @@ export default function Notepad({ locale }) {
   const labelTimeoutId = useRef(0);
   const saveTimeoutId = useRef(0);
   const textareaRef = useRef(0);
-  const VISIBLE_ITEM_COUNT = 3;
+  const activeTab = tabs ? tabs[activeIndex] : null;
 
   useEffect(() => {
     init();
@@ -184,12 +187,10 @@ export default function Notepad({ locale }) {
   }
 
   function handleTextareaChange({ target }) {
-    const tab = tabs[activeIndex];
-
-    tab.content = target.value;
+    activeTab.content = target.value;
 
     saveTimeoutId.current = timeout(() => {
-      tab.sizeString = getTabSize(tab).sizeString;
+      activeTab.sizeString = getTabSize(activeTab).sizeString;
       updateTabs(tabs);
     }, 400, saveTimeoutId.current);
   }
@@ -200,7 +201,6 @@ export default function Notepad({ locale }) {
     }
 
     if (event.key === "=") {
-      const activeTab = tabs[activeIndex];
       const size = activeTab.textSize || textSize;
 
       event.preventDefault();
@@ -209,7 +209,6 @@ export default function Notepad({ locale }) {
       showTextSizeLabel();
     }
     else if (event.key === "-") {
-      const activeTab = tabs[activeIndex];
       const size = activeTab.textSize || textSize;
 
       event.preventDefault();
@@ -340,8 +339,6 @@ export default function Notepad({ locale }) {
     );
   }
 
-  const activeTab = tabs[activeIndex];
-
   return (
     <div className="notepad">
       <div className="container-header main-panel-item-header">
@@ -351,15 +348,17 @@ export default function Notepad({ locale }) {
             <Icon id="chevron-left"/>
           </button>
         )}
-        <ul className="main-panel-item-header-items">
-          {tabs.map((tab, i) => (
-            <li className={`main-panel-item-header-item${activeIndex === i ? " active" : ""}${i < shift || i >= shift + VISIBLE_ITEM_COUNT ? " hidden" : ""}`} key={tab.id}>
-              <button className="btn text-btn main-panel-item-header-item-select-btn" onClick={() => selectTab(i)}>
-                <span className="main-panel-item-header-item-title">{tab.title}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
+        <TabsContainer current={activeIndex} offset={shift}>
+          <ul className="main-panel-item-header-items">
+            {tabs.map((tab, i) => (
+              <li className={`main-panel-item-header-item${activeIndex === i ? " active" : ""}${i < shift || i >= shift + VISIBLE_ITEM_COUNT ? " hidden" : ""}`} key={tab.id}>
+                <button className="btn text-btn main-panel-item-header-item-select-btn" onClick={() => selectTab(i)}>
+                  <span className="main-panel-item-header-item-title">{tab.title}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </TabsContainer>
         {tabs.length > VISIBLE_ITEM_COUNT && (
           <button className="btn icon-btn main-panel-item-header-btn" onClick={nextShift}
             aria-label={locale.mainPanel.next_shift_title} disabled={shift + VISIBLE_ITEM_COUNT >= tabs.length}>

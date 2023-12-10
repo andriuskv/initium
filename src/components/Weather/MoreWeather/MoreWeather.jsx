@@ -1,15 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { convertTemperature } from "services/weather";
 import * as focusService from "services/focus";
+import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
 import Spinner from "components/Spinner";
 import Dropdown from "components/Dropdown";
 import "./more-weather.css";
 
+const views = ["temp", "prec", "wind"];
+
 export default function MoreWeather({ current, more, units, speedUnits, view, locale, selectView, toggleUnits, hide }) {
   const [ready, setReady] = useState(false);
   const [tempRange, setTempRange] = useState();
   const container = useRef(null);
+  const activeTabIndex = views.indexOf(view);
 
   useEffect(() => {
     if (ready) {
@@ -194,20 +198,22 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
       {ready ? (
         <>
           <div className="container-body weather-more-hourly-view-container">
-            <ul className="weather-more-hourly-view-top">
-              <li>
-                <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "temp" ? " active" : ""}`}
-                  onClick={() => selectView("temp")}>{locale.weather.temperature}</button>
-              </li>
-              <li>
-                <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "prec" ? " active" : ""}`}
-                  onClick={() => selectView("prec")}>{locale.weather.precipitation}</button>
-              </li>
-              <li>
-                <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "wind" ? " active" : ""}`}
-                  onClick={() => selectView("wind")}>{locale.weather.wind}</button>
-              </li>
-            </ul>
+            <TabsContainer className="weather-more-hourly-view-top" current={activeTabIndex}>
+              <ul className="weather-more-hourly-view-top-items">
+                <li>
+                  <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "temp" ? " active" : ""}`}
+                    onClick={() => selectView("temp")}>{locale.weather.temperature}</button>
+                </li>
+                <li>
+                  <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "prec" ? " active" : ""}`}
+                    onClick={() => selectView("prec")}>{locale.weather.precipitation}</button>
+                </li>
+                <li>
+                  <button className={`btn text-btn weather-more-hourly-view-top-btn${view === "wind" ? " active" : ""}`}
+                    onClick={() => selectView("wind")}>{locale.weather.wind}</button>
+                </li>
+              </ul>
+            </TabsContainer>
             {renderHourlyView()}
             <div className="weather-more-hourly-view-time">
               {more.hourly.filter((_, index) => index % 3 === 1).map(item => (
