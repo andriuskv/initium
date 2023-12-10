@@ -102,18 +102,25 @@
   font-size: var(--text-lg);
 }
 
-.weather-more-hourly-hourly-container {
+.weather-more-hourly-view-container {
   display: flex;
-  flex-grow: 1;
   flex-direction: column;
+  flex-grow: 1;
 }
 
 .weather-more-hourly-view-top {
   display: flex;
   justify-content: center;
+  flex-grow: 0;
+  padding-bottom: var(--space-sm);
+  margin-bottom: auto;
+}
+
+.weather-more-hourly-view-top-items {
+  display: flex;
+  justify-content: center;
   gap: var(--space-sm);
   padding-top: var(--space-sm);
-  padding-bottom: var(--space-sm);
 }
 
 .weather-more-hourly-view-top-btn {
@@ -140,8 +147,6 @@
 
   &.active {
      --color: var(--color-white);
-
-     box-shadow: 0 2px 0 0 var(--color-primary);
   }
 }
 
@@ -153,7 +158,6 @@
 
 .weather-more-hourly-temp-view {
   width: 576px;
-  height: 100px;
 }
 
 .weather-more-hourly-temp-view-text {
