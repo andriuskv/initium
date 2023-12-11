@@ -67,8 +67,10 @@ export default function Tab({ children, index, tab, tabs, textSize, locale, upda
   return (
     <>
       {tab.renameEnabled ? (
-        <input type="text" className="input" autoFocus defaultValue={tab.title}
-          onBlur={renameTab} onKeyDown={e => e.stopPropagation()} onKeyUp={blurTabTitleInput}/>
+        <div className="notepad-tabs-item-top">
+          <input type="text" className="input" autoFocus defaultValue={tab.title}
+            onBlur={renameTab} onKeyDown={e => e.stopPropagation()} onKeyUp={blurTabTitleInput}/>
+        </div>
       ) : (
         <div className="notepad-tabs-item-top">
           <button className="btn text-btn notepad-tabs-item-select-btn" onClick={() => selectListTab(index)}>

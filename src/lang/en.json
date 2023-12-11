@@ -127,7 +127,7 @@
     "hour": "Hour",
     "minute": "Minute",
     "second": "Second",
-    "no_countdowns_message": "No countdowns",
+    "no_countdowns_message": "No countdowns.",
     "form_title": "Create countdown"
   },
   "world": {

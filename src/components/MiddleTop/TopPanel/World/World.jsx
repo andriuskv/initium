@@ -120,7 +120,7 @@ export default function World({ visible, locale, parentVisible }) {
             </li>
           ))}
         </ul>
-      ) : <p className="world-clocks-message">{locale.world.no_clocks_meesage}</p>}
+      ) : <p className="world-clocks-message">{locale.world.no_clocks_message}</p>}
       <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": true }}></CreateButton>
     </div>
   );
