@@ -93,8 +93,14 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   }
 
   function renderTopPanel({ detail }) {
+    const initialTab = detail ? detail.tab : "";
+
     clearTimeout(topPanelTimeoutId.current);
-    setTopPanel({ rendered: true, initialTab: detail ? detail.tab : "", forceVisibility: true });
+    setTopPanel({ rendered: true, initialTab, forceVisibility: true });
+
+    if (initialTab) {
+      localStorage.setItem("active-timer-tab", initialTab);
+    }
   }
 
   return (

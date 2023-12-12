@@ -25,6 +25,7 @@ export default function Notepad({ locale }) {
   const [resetTextSize, setResetTextSize] = useState(false);
   const labelTimeoutId = useRef(0);
   const saveTimeoutId = useRef(0);
+  const saveTabTimeoutId = useRef(0);
   const textareaRef = useRef(0);
   const activeTab = tabs ? tabs[activeIndex] : null;
 
@@ -59,6 +60,7 @@ export default function Notepad({ locale }) {
   }, [tabListVisible]);
 
   async function init() {
+    const saved = JSON.parse(localStorage.getItem("active-notepad-tab")) || { activeIndex: 0, shift: 0 };
     let notepad = await chromeStorage.get("notepad");
 
     if (notepad?.length) {
@@ -67,6 +69,10 @@ export default function Notepad({ locale }) {
     else {
       notepad = [getDefaultTab()];
     }
+
+    if (saved.activeIndex < notepad.length) {
+      setNavigation(saved);
+    }
     setTabs(notepad);
     checkStorageSize();
 
@@ -74,12 +80,12 @@ export default function Notepad({ locale }) {
       if (!notepad) {
         return;
       }
+      setNavigation({ activeIndex: 0, shift: 0 });
 
       if (notepad.newValue) {
         setTabs(initTabs(notepad.newValue));
       }
       else {
-        setNavigation({ activeIndex: 0, shift: 0 });
         setTabs([getDefaultTab()]);
       }
     });
@@ -121,7 +127,7 @@ export default function Notepad({ locale }) {
   function previousShift() {
     const newShift = shift - 1;
 
-    setNavigation({
+    selectView({
       activeIndex: activeIndex >= newShift + VISIBLE_ITEM_COUNT ? activeIndex - 1 : activeIndex,
       shift: newShift
     });
@@ -130,17 +136,14 @@ export default function Notepad({ locale }) {
   function nextShift() {
     const newShift = shift + 1;
 
-    setNavigation({
+    selectView({
       activeIndex: activeIndex < newShift ? activeIndex + 1 : activeIndex,
       shift: newShift
     });
   }
 
   function selectTab(index) {
-    setNavigation({
-      activeIndex: index,
-      shift
-    });
+    selectView({ activeIndex: index, shift });
   }
 
   function showTabList() {
@@ -274,10 +277,7 @@ export default function Notepad({ locale }) {
     if (index < shift || index >= shift + VISIBLE_ITEM_COUNT) {
       newShift = index > tabs.length - VISIBLE_ITEM_COUNT ? tabs.length - VISIBLE_ITEM_COUNT : index;
     }
-    setNavigation({
-      activeIndex: index,
-      shift: newShift
-    });
+    selectView({ activeIndex: index, shift: newShift });
     hideTabList();
   }
 
@@ -290,10 +290,18 @@ export default function Notepad({ locale }) {
   }
 
   function updateTabPosition(index) {
-    setNavigation({
+    selectView({
       activeIndex: index,
       shift: index + 1 - VISIBLE_ITEM_COUNT < 0 ? 0 : index + 1 - VISIBLE_ITEM_COUNT
     });
+  }
+
+  function selectView(navigation) {
+    setNavigation(navigation);
+
+    saveTabTimeoutId.current = timeout(() => {
+      localStorage.setItem("active-notepad-tab", JSON.stringify(navigation));
+    }, 400, saveTabTimeoutId.current);
   }
 
   function saveTabs(tabs) {
