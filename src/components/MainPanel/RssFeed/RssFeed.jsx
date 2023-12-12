@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as feedService from "services/feeds";
 import Icon from "components/Icon";
@@ -8,12 +9,13 @@ const Form = lazy(() => import("./Form"));
 const Feeds = lazy(() => import("./Feeds"));
 const Entries = lazy(() => import("./Entries"));
 
+const VISIBLE_ITEM_COUNT = 3;
+
 export default function RssFeed({ locale, showIndicator }) {
   const [loading, setLoading] = useState(true);
   const [activeComponent, setActiveComponent] = useState(null);
   const [feeds, setFeeds] = useState(() => getDefaultFeeds());
   const [navigation, setNavigation] = useState(() => ({
-    VISIBLE_ITEM_COUNT : 3,
     activeIndex: 0,
     shift: 0,
     animateLeft: false,
@@ -22,6 +24,7 @@ export default function RssFeed({ locale, showIndicator }) {
   const updatedFeeds = useRef([]);
   const lastUpdate = useRef(0);
   const timeoutId = useRef(0);
+  const saveTabTimeoutId = useRef(0);
 
   useEffect(() => {
     init();
@@ -65,7 +68,7 @@ export default function RssFeed({ locale, showIndicator }) {
         updatedFeeds.current.length = 0;
 
         showForm();
-        setNavigation({ VISIBLE_ITEM_COUNT : 3, activeIndex: 0, shift: 0 });
+        setNavigation({ activeIndex: 0, shift: 0 });
         setFeeds(getDefaultFeeds());
       }
     });
@@ -114,6 +117,7 @@ export default function RssFeed({ locale, showIndicator }) {
         removeFeed(i, "active", false);
       }
     }
+    setNavigation({ activeIndex: 0, shift: 0 });
     setFeeds({ ...feeds });
   }
 
@@ -144,6 +148,11 @@ export default function RssFeed({ locale, showIndicator }) {
         else {
           showForm();
         }
+      }
+      const saved = JSON.parse(localStorage.getItem("active-feed-tab")) || { activeIndex: 0, shift: 0 };
+
+      if (saved.activeIndex < feeds.active.length) {
+        setNavigation({ ...navigation, ...saved });
       }
       setFeeds(feeds);
     }
@@ -246,9 +255,9 @@ export default function RssFeed({ locale, showIndicator }) {
     if (animateLeft) {
       animateLeft = feeds.active.slice(0, shift).some(({ newEntryCount }) => newEntryCount > 0);
     }
-    setNavigation({
+    selectView({
       ...navigation,
-      activeIndex: index >= shift + navigation.VISIBLE_ITEM_COUNT ? index - 1 : index,
+      activeIndex: index >= shift + VISIBLE_ITEM_COUNT ? index - 1 : index,
       shift,
       animateLeft
     });
@@ -260,9 +269,9 @@ export default function RssFeed({ locale, showIndicator }) {
     let animateRight = navigation.animateRight;
 
     if (animateRight) {
-      animateRight = feeds.active.slice(shift + navigation.VISIBLE_ITEM_COUNT).some(({ newEntryCount }) => newEntryCount > 0);
+      animateRight = feeds.active.slice(shift + VISIBLE_ITEM_COUNT).some(({ newEntryCount }) => newEntryCount > 0);
     }
-    setNavigation({
+    selectView({
       ...navigation,
       activeIndex: index < shift ? index + 1 : index,
       shift,
@@ -277,7 +286,7 @@ export default function RssFeed({ locale, showIndicator }) {
     else {
       container.scrollTop = 0;
 
-      setNavigation({
+      selectView({
         ...navigation,
         activeIndex: index
       });
@@ -291,10 +300,10 @@ export default function RssFeed({ locale, showIndicator }) {
     }
     let { shift } = navigation;
 
-    if (index < shift || index >= shift + navigation.VISIBLE_ITEM_COUNT) {
-      shift = index > feeds.active.length - navigation.VISIBLE_ITEM_COUNT ? feeds.active.length - navigation.VISIBLE_ITEM_COUNT : index;
+    if (index < shift || index >= shift + VISIBLE_ITEM_COUNT) {
+      shift = index > feeds.active.length - VISIBLE_ITEM_COUNT ? feeds.active.length - VISIBLE_ITEM_COUNT : index;
     }
-    setNavigation({
+    selectView({
       ...navigation,
       activeIndex: index,
       shift
@@ -311,7 +320,7 @@ export default function RssFeed({ locale, showIndicator }) {
         animateLeft = true;
       }
 
-      if (index >= navigation.shift + navigation.VISIBLE_ITEM_COUNT) {
+      if (index >= navigation.shift + VISIBLE_ITEM_COUNT) {
         animateRight = true;
       }
     }
@@ -360,11 +369,7 @@ export default function RssFeed({ locale, showIndicator }) {
     feeds[type].splice(index, 1);
 
     if (type === "active" && feeds.active.length) {
-      setNavigation({
-        ...navigation,
-        activeIndex: 0,
-        shift: 0
-      });
+      selectView({ activeIndex: 0, shift: 0 });
     }
 
     if (!feeds.active.length) {
@@ -380,10 +385,10 @@ export default function RssFeed({ locale, showIndicator }) {
 
   function addFeed(feed) {
     feeds.active.push(feed);
-    setNavigation({
+    selectView({
       ...navigation,
       activeIndex: feeds.active.length - 1,
-      shift: feeds.active.length - navigation.VISIBLE_ITEM_COUNT < 0 ? 0 : feeds.active.length - navigation.VISIBLE_ITEM_COUNT
+      shift: feeds.active.length - VISIBLE_ITEM_COUNT < 0 ? 0 : feeds.active.length - VISIBLE_ITEM_COUNT
     });
     setActiveComponent(null);
     updateFeeds(feeds);
@@ -395,11 +400,7 @@ export default function RssFeed({ locale, showIndicator }) {
     feeds.inactive.push(feed);
 
     if (feeds.active.length) {
-      setNavigation({
-        ...navigation,
-        activeIndex: 0,
-        shift: 0
-      });
+      selectView({ activeIndex: 0, shift: 0 });
     }
     updateFeeds(feeds);
   }
@@ -424,6 +425,17 @@ export default function RssFeed({ locale, showIndicator }) {
 
   function hideFeedList() {
     setActiveComponent(null);
+  }
+
+  function selectView(navigation) {
+    setNavigation(navigation);
+
+    saveTabTimeoutId.current = timeout(() => {
+      localStorage.setItem("active-feed-tab", JSON.stringify({
+        activeIndex: navigation.activeIndex,
+        shift: navigation.shift
+      }));
+    }, 400, saveTabTimeoutId.current);
   }
 
   function saveFeeds(feeds) {

@@ -1,12 +1,13 @@
-import { useState, useEffect, lazy, Suspense, useMemo } from "react";
+import { useState, useEffect, useRef, lazy, Suspense, useMemo } from "react";
+import { timeout } from "utils";
 import * as focusService from "services/focus";
 import TabsContainer from "components/TabsContainer";
 import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";
 import "./settings.css";
-import GeneralTab from "./GeneralTab";
 
+const GeneralTab = lazy(() => import("./GeneralTab"));
 const AppearanceTab = lazy(() => import("./AppearanceTab"));
 const TimeDateTab = lazy(() => import("./TimeDateTab"));
 const MainPanelTab = lazy(() => import("./MainPanelTab"));
@@ -19,38 +20,49 @@ export default function Settings({ hiding, locale, hide }) {
   const tabs = useMemo(() => [
     {
       id: "general",
-      name: locale.settings.general.title
+      name: locale.settings.general.title,
+      component: GeneralTab
     },
     {
       id: "appearance",
-      name: locale.settings.appearance.title
+      name: locale.settings.appearance.title,
+      component: AppearanceTab
     },
     {
       id: "timeDate",
-      name: locale.settings.time_date.title
+      name: locale.settings.time_date.title,
+      component: TimeDateTab
     },
     {
       id: "mainPanel",
-      name: locale.settings.main_panel.title
+      name: locale.settings.main_panel.title,
+      component: MainPanelTab
     },
     {
       id: "tasks",
-      name: locale.tasks.title
+      name: locale.tasks.title,
+      component: TasksTab
     },
     {
       id: "weather",
-      name: locale.settings.weather.title
+      name: locale.settings.weather.title,
+      component: WeatherTab
     },
     {
       id: "timers",
-      name: locale.settings.timers.title
+      name: locale.settings.timers.title,
+      component: TimersTab
     },
     {
       id: "storage",
-      name: locale.settings.storage.title
+      name: locale.settings.storage.title,
+      component: StorageTab
     }
   ], [locale]);
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem("active-settings-tab") || "general";
+  });
+  const saveTabTimeoutId = useRef(0);
   const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
 
   useEffect(() => {
@@ -64,7 +76,7 @@ export default function Settings({ hiding, locale, hide }) {
           {tabs.map(tab => (
             <li className={`settings-nav-item${activeTab === tab.id ? " active" : ""}`} key={tab.id}>
               <button className="btn text-btn settings-nav-item-btn"
-                onClick={() => setActiveTab(tab.id)}>{tab.name}</button>
+                onClick={() => selectTab(tab.id)}>{tab.name}</button>
             </li>
           ))}
         </ul>
@@ -72,33 +84,17 @@ export default function Settings({ hiding, locale, hide }) {
     );
   }
 
-  function renderTab() {
-    if (activeTab === "general") {
-      return <GeneralTab locale={locale}/>;
-    }
-    let Component = null;
+  function selectTab(id) {
+    setActiveTab(id);
 
-    if (activeTab === "appearance") {
-      Component = AppearanceTab;
-    }
-    else if (activeTab === "timeDate") {
-      Component = TimeDateTab;
-    }
-    else if (activeTab === "mainPanel") {
-      Component = MainPanelTab;
-    }
-    else if (activeTab === "tasks") {
-      Component = TasksTab;
-    }
-    else if (activeTab === "weather") {
-      Component = WeatherTab;
-    }
-    else if (activeTab === "timers") {
-      Component = TimersTab;
-    }
-    else if (activeTab === "storage") {
-      Component = StorageTab;
-    }
+    saveTabTimeoutId.current = timeout(() => {
+      localStorage.setItem("active-settings-tab", id);
+    }, 400, saveTabTimeoutId.current);
+  }
+
+  function renderTab() {
+    const Component = tabs[activeTabIndex].component;
+
     return (
       <Suspense fallback={<Spinner className="setting-tab-spinner"/>}>
         <Component locale={locale} hide={hide}/>

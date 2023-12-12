@@ -4,9 +4,11 @@ import ToTop from "components/ToTop";
 import Icon from "components/Icon";
 import "./entries.css";
 
+const VISIBLE_ITEM_COUNT = 3;
+
 export default function Entries({ navigation, feeds, locale, selectFeed, previousShift, nextShift, showFeedList, markEntryAsRead, expandEntry }) {
   const containerRef = useRef(0);
-  const { activeIndex, shift, animateLeft, animateRight, VISIBLE_ITEM_COUNT } = navigation;
+  const { activeIndex, shift, animateLeft, animateRight } = navigation;
 
   function handleFeedSelection(event, index) {
     selectFeed(event.target, index, containerRef.current);

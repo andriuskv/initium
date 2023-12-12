@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
-import { dispatchCustomEvent } from "utils";
+import { dispatchCustomEvent, timeout } from "utils";
 import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
@@ -11,12 +11,16 @@ const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ timeFormat, locale }) {
   const { settings: { appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings }, updateSetting } = useSettings();
-  const [state, setState] = useState({ view: "temp" });
+  const [state, setState] = useState(() => {
+    const view = localStorage.getItem("active-weather-tab") || "temp";
+    return { view };
+  });
   const [current, setCurrentWeather] = useState(null);
   const [moreWeather, setMoreWeather] = useState(null);
   const firstRender = useRef(true);
   const lastMoreWeatherUpdate = useRef(0);
   const timeoutId = useRef(0);
+  const saveTabTimeoutId = useRef(0);
   const moreButton = useRef(null);
 
   useEffect(() => {
@@ -149,6 +153,10 @@ export default function Weather({ timeFormat, locale }) {
 
   function selectView(view) {
     setState({ ...state, view });
+
+    saveTabTimeoutId.current = timeout(() => {
+      localStorage.setItem("active-weather-tab", view);
+    }, 400, saveTabTimeoutId.current);
   }
 
   async function updateWeather(forceMoreWeatherUpdate = false) {

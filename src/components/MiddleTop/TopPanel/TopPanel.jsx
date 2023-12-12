@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
-import { delay, setPageTitle } from "utils";
+import { delay, setPageTitle, timeout } from "utils";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
 import { useLocalization } from "contexts/localization";
@@ -20,7 +20,9 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const [visible, setVisible] = useState(false);
   const [minimal, setMinimal] = useState(false);
   const [rerender, setRerender] = useState(false);
-  const [activeTab, setActiveTab] = useState(initialTab || "timer");
+  const [activeTab, setActiveTab] = useState(() => {
+    return initialTab || (localStorage.getItem("active-timer-tab") || "timer");
+  });
   const [expanded, setExpanded] = useState(false);
   const [tabs, setTabs] = useState(() => {
     const tabs = {
@@ -38,6 +40,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   });
   const containerRef = useRef(null);
   const minimalVisible = useRef(false);
+  const saveTabTimeoutId = useRef(0);
   const activeTabIndex = findTabIndex(activeTab);
 
   useEffect(() => {
@@ -145,12 +148,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       else {
         setVisible(true);
       }
-      setActiveTab(detail.tab);
-
-      if (!tabs[detail.tab].rendered) {
-        tabs[detail.tab].rendered = true;
-        setTabs({ ...tabs });
-      }
+      selectTab(detail.tab);
       return;
     }
     const nextVisible = !visible;
@@ -251,6 +249,10 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       setTabs({ ...tabs });
     }
     setActiveTab(name);
+
+    saveTabTimeoutId.current = timeout(() => {
+      localStorage.setItem("active-timer-tab", name);
+    }, 400, saveTabTimeoutId.current);
   }
 
   function setFullscreenTextScale() {

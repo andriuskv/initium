@@ -40,6 +40,7 @@ export default function TabsContainer({ className, children, current, offset = 0
     }
     const { animationSpeed } = getSetting("appearance");
     const tabElements = tabsContainerRef.current.children[1].children;
+    prev.current = prev.current > tabElements.length - 1 ? current : prev.current;
     const prevActiveItemRect = tabElements[prev.current].getBoundingClientRect();
     const activeItemRect = tabElements[current].getBoundingClientRect();
     let props = {
