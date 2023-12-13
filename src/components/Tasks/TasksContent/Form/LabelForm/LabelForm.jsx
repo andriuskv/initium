@@ -3,7 +3,7 @@ import { getRandomHexColor } from "utils";
 import Modal from "components/Modal";
 import "./label-form.css";
 
-export default function LabelForm({ locale, addUniqueLabel, hide }) {
+export default function LabelForm({ locale, addUniqueLabel, hiding, hide }) {
   const [currentColor, setCurrentColor] = useState(() => getRandomHexColor());
   const updatingColor = useRef(false);
 
@@ -32,7 +32,7 @@ export default function LabelForm({ locale, addUniqueLabel, hide }) {
   }
 
   return (
-    <Modal hide={hide}>
+    <Modal hiding={hiding} hide={hide}>
       <form onSubmit={handleLabelFormSubmit}>
         <h4 className="modal-title modal-title-center">{locale.tasks.label_modal_title}</h4>
         <div className="task-label-form-body">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useModal } from "hooks";
 import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
@@ -7,7 +8,7 @@ import "./groups.css";
 import GroupForm from "../GroupForm";
 
 export default function Groups({ groups, locale, updateGroups, createGroup, hide }) {
-  const [removeModal, setRemoveModal] = useState(null);
+  const [removeModal, setRemoveModal, hideModal] = useModal(null);
   const [activeDragId, setActiveDragId] = useState(null);
 
   function showRemoveModal(index) {
@@ -21,13 +22,9 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
     }
   }
 
-  function hideRemoveModal() {
-    setRemoveModal(null);
-  }
-
   function confirmGroupRemoval() {
     removeGroup(removeModal.groupIndex);
-    hideRemoveModal();
+    hideModal();
   }
 
   function enableGroupRename(group) {
@@ -126,13 +123,13 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
         <button className="btn text-btn" onClick={hide}>{locale.global.done}</button>
       </div>
       {removeModal && (
-        <Modal hide={hideRemoveModal}>
+        <Modal hiding={removeModal.hiding} hide={hideModal}>
           <h4 className="modal-title">{locale.tasks.remove_group_modal_title}</h4>
           <div className="modal-text-body">
             <p>{locale.tasks.remove_group_modal_message}</p>
           </div>
           <div className="modal-actions">
-            <button className="btn text-btn" onClick={hideRemoveModal}>{locale.global.cancel}</button>
+            <button className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
             <button className="btn" onClick={confirmGroupRemoval}>{locale.global.remove}</button>
           </div>
         </Modal>

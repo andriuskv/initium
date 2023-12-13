@@ -4,7 +4,7 @@ import Modal from "components/Modal";
 import * as settingsService from "services/settings";
 import "./middle-top.css";
 
-export default function MiddleTop({ settings, locale, updateSetting, hide }) {
+export default function MiddleTop({ settings, locale, updateSetting, hiding, hide }) {
   const items = settings.general.middleTopOrder;
 
   function changeOrder(order, id) {
@@ -37,7 +37,7 @@ export default function MiddleTop({ settings, locale, updateSetting, hide }) {
   }
 
   return (
-    <Modal hide={hide}>
+    <Modal hiding={hiding} hide={hide}>
       <h3 className="modal-title modal-title-center">{locale.middleTop.title}</h3>
       <ul className="middle-top-order-items">
         {items.map((item, index) => (

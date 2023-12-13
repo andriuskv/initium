@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { dispatchCustomEvent, timeout } from "utils";
+import { useModal } from "hooks";
 import { getWallpaperInfo, resetWallpaperInfo, setUrlWallpaper, setIDBWallpaper } from "services/wallpaper";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
@@ -7,7 +8,7 @@ import "./wallpaper.css";
 
 export default function Wallpaper({ settings, locale, updateContextSetting }) {
   const [wallpaperInfo, setWallpaperInfo] = useState(() => getWallpaperInfo());
-  const [wallpaperForm, setWallpaperForm] = useState(null);
+  const [wallpaperForm, setWallpaperForm, hideWallpaperForm] = useModal(null);
   const [wallpaperSettingsDirty, setWallpaperSettingsDirty] = useState(() => {
     const keys = Object.keys(settings.wallpaper);
 
@@ -44,10 +45,6 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
 
   function showWallpaperForm() {
     setWallpaperForm({ visible: true });
-  }
-
-  function hideWallpaperForm() {
-    setWallpaperForm(null);
   }
 
   function handleWallpaperFormSubmit(event) {
@@ -178,7 +175,7 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
 
   function renderWallpaperForm() {
     return (
-      <Modal hide={hideWallpaperForm}>
+      <Modal hiding={wallpaperForm.hiding} hide={hideWallpaperForm}>
         <form onSubmit={handleWallpaperFormSubmit}>
           <h4 className="modal-title modal-title-center">{locale.settings.appearance.wallpaper_url_form_title}</h4>
           <input type="text" className="input setting-wallpaper-form-input" name="input" placeholder={locale.global.url_input_label} autoComplete="off"/>

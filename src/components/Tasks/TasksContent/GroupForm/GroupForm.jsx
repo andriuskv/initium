@@ -2,7 +2,7 @@ import { getRandomString } from "utils";
 import Modal from "components/Modal";
 import "./group-form.css";
 
-export default function GroupForm({ locale, createGroup, modal = false, hide }) {
+export default function GroupForm({ locale, createGroup, modal = false, hiding, hide }) {
   function handleGroupFormSubmit(event) {
     event.preventDefault();
 
@@ -23,7 +23,7 @@ export default function GroupForm({ locale, createGroup, modal = false, hide }) 
 
   if (modal) {
     return (
-      <Modal hide={hide}>
+      <Modal hiding={hiding} hide={hide}>
         <form onSubmit={handleGroupFormSubmit}>
           <h4 className="modal-title modal-title-center">{locale.tasks.new_group}</h4>
           <input type="text" className="input tasks-groups-form-input tasks-groups-form-modal-input" name="name"

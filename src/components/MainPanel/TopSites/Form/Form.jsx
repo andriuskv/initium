@@ -1,7 +1,7 @@
 import Modal from "components/Modal";
 import "./form.css";
 
-export default function Form({ form, locale, updateSite, hide }) {
+export default function Form({ form, locale, updateSite, hiding, hide }) {
   function handleFormSubmit(event) {
     const { elements } = event.target;
     const url = /^https?:\/\//.test(elements.url.value) ? elements.url.value : `https://${elements.url.value}`;
@@ -25,7 +25,7 @@ export default function Form({ form, locale, updateSite, hide }) {
   }
 
   return (
-    <Modal className="top-sites-form" transparent hide={hide}>
+    <Modal className="top-sites-form" transparent hiding={hiding} hide={hide}>
       <form onSubmit={handleFormSubmit}>
         <h3 className="modal-title modal-title-center">{form.updating ? locale.global.edit : locale.global.add} site</h3>
         <div className="top-sites-form-content">
