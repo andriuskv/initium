@@ -16,6 +16,16 @@
       backdrop-filter: none;
     }
   }
+
+  &.hiding {
+    animation-duration: var(--duration-n);
+    animation-name: opacity-down;
+
+    .modal {
+      animation-duration: var(--duration-n), var(--duration-f);
+      animation-name: opacity-down, slide-down;
+    }
+  }
 }
 
 .modal {
@@ -60,5 +70,15 @@
   to {
     transform: none;
     opacity: 1;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: none;
+  }
+
+  to {
+    transform: translateY(calc(1 * var(--space-md)));
   }
 }

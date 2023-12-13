@@ -1,5 +1,6 @@
 import { useState, useRef, lazy, Suspense } from "react";
 import { getRandomString, timeout } from "utils";
+import { useModal } from "hooks";
 import { getSetting } from "services/settings";
 import { formatDate } from "services/timeDate";
 import Icon from "components/Icon";
@@ -54,8 +55,7 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
     }
     return defaultForm;
   });
-  const [labelFormVisible, setLabelFormVisible] = useState(false);
-  const [groupFormVisible, setGroupFormVisible] = useState(false);
+  const [modal, setModal, hideModal] = useModal(null);
   const [message, setMessage] = useState("");
   const messageTimeoutId = useRef();
 
@@ -285,19 +285,11 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
   }
 
   function showLabelForm() {
-    setLabelFormVisible(true);
-  }
-
-  function hideLabelForm() {
-    setLabelFormVisible(false);
+    setModal({ type: "label" });
   }
 
   function showGroupForm() {
-    setGroupFormVisible(true);
-  }
-
-  function hideGroupForm() {
-    setGroupFormVisible(false);
+    setModal({ type: "group" });
   }
 
   function getDateTimeString(time) {
@@ -320,6 +312,27 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
   function dismissMessage() {
     clearTimeout(messageTimeoutId.current);
     setMessage("");
+  }
+
+  function renderModal() {
+    if (!modal) {
+      return;
+    }
+
+    if (modal.type === "label") {
+      return (
+        <Suspense fallback={null}>
+          <LabelForm locale={locale} addUniqueLabel={addUniqueLabel} hiding={modal.hiding} hide={hideModal}/>
+        </Suspense>
+      );
+    }
+    else if (modal.type === "group") {
+      return (
+        <Suspense fallback={null}>
+          <GroupForm locale={locale} createGroup={localCreateGroup} hiding={modal.hiding} hide={hideModal} modal/>
+        </Suspense>
+      );
+    }
   }
 
   return (
@@ -433,16 +446,7 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
           <Toast message={message} position="bottom" offset="40px" locale={locale} dismiss={dismissMessage}/>
         </Suspense>
       ) : null}
-      {labelFormVisible && (
-        <Suspense fallback={null}>
-          <LabelForm locale={locale} addUniqueLabel={addUniqueLabel} hide={hideLabelForm}/>
-        </Suspense>
-      )}
-      {groupFormVisible && (
-        <Suspense fallback={null}>
-          <GroupForm locale={locale} createGroup={localCreateGroup} hide={hideGroupForm} modal/>
-        </Suspense>
-      )}
+      {renderModal()}
     </>
   );
 }

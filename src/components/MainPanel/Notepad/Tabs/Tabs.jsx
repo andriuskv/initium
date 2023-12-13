@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getRandomString, formatBytes } from "utils";
+import { useModal } from "hooks";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
@@ -10,7 +11,7 @@ import "./tabs.css";
 import Tab from "./Tab";
 
 export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs, updateTabPosition, getTabSize, decreaseTextSize, increaseTextSize, hide }) {
-  const [modal, setModal] = useState(null);
+  const [modal, setModal, hideModal] = useModal(null);
   const [storage, setStorage] = useState({ current: 0, used: 0 });
   const [activeDragId, setActiveDragId] = useState(null);
 
@@ -30,10 +31,6 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     }
     const archive = await zip.generateAsync({ type: "blob" });
     saveAs(archive, "notepad.zip");
-  }
-
-  function hideModal() {
-    setModal(null);
   }
 
   function showCreateTabForm() {
@@ -121,7 +118,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
   function renderModal() {
     if (modal.type === "create") {
       return (
-        <Modal className="notepad-modal" hide={hideModal}>
+        <Modal className="notepad-modal" hiding={modal.hiding} hide={hideModal}>
           <form onSubmit={createTab}>
             <h4 className="modal-title modal-title-center">{locale.notepad.create_modal_title}</h4>
             <input type="text" className="input" name="title"
@@ -137,7 +134,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     }
     else if (modal.type === "remove") {
       return (
-        <Modal className="notepad-modal" hide={hideModal}>
+        <Modal className="notepad-modal" hiding={modal.hiding} hide={hideModal}>
           <h4 className="modal-title">{locale.notepad.remove_modal_title}</h4>
           <div className="modal-text-body">
             <p>{locale.notepad.remove_modal_text}</p>

@@ -1,6 +1,7 @@
 /* global chrome */
 
 import { useState, useEffect, lazy, Suspense } from "react";
+import { useModal } from "hooks";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./top-sites.css";
@@ -10,7 +11,7 @@ const PersistentSites = lazy(() => import("./PersistentSites"));
 
 export default function TopSites({ settings, locale }) {
   const [sites, setSites] = useState(null);
-  const [form, setForm] = useState(null);
+  const [form, setForm, hideForm] = useModal(null);
 
   useEffect(() => {
     init();
@@ -70,10 +71,6 @@ export default function TopSites({ settings, locale }) {
 
   function showForm() {
     setForm({});
-  }
-
-  function hideForm() {
-    setForm(null);
   }
 
   function editSite(index) {
@@ -207,7 +204,7 @@ export default function TopSites({ settings, locale }) {
       )}
       {form ? (
         <Suspense fallback={null}>
-          <Form form={form} locale={locale} updateSite={updateSite} hide={hideForm}/>
+          <Form form={form} locale={locale} updateSite={updateSite} hiding={form.hiding} hide={hideForm}/>
         </Suspense>
       ) : null}
     </>

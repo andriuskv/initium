@@ -1,5 +1,6 @@
-import { useState, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import { dispatchCustomEvent } from "utils";
+import { useModal } from "hooks";
 import { initAppearanceSettings } from "services/settings";
 import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
 import { useSettings } from "contexts/settings";
@@ -10,7 +11,7 @@ const MiddleTop = lazy(() => import("./MiddleTop"));
 
 export default function GeneralTab({ locale }) {
   const { settings, toggleSetting, updateSetting, resetSettings } = useSettings();
-  const [modal, setModal] = useState(null);
+  const [modal, setModal, hideModal] = useModal(null);
 
   // function handleLocaleChange({ target }) {
   //   updateSetting("general", { locale: target.value });
@@ -62,14 +63,10 @@ export default function GeneralTab({ locale }) {
     hideModal();
   }
 
-  function hideModal() {
-    setModal(null);
-  }
-
   function renderModal() {
     if (modal.type === "reset") {
       return (
-        <Modal hide={hideModal}>
+        <Modal hiding={modal.hiding} hide={hideModal}>
           <h4 className="modal-title">{locale.settings.general.reset_settings_title}</h4>
           <p className="modal-text-body">{locale.settings.general.reset_settings_message}</p>
           <div className="modal-actions">
@@ -82,7 +79,7 @@ export default function GeneralTab({ locale }) {
     else if (modal.type === "order") {
       return (
         <Suspense fallback={null}>
-          <MiddleTop settings={settings} locale={locale} updateSetting={updateSetting} hide={hideModal}/>
+          <MiddleTop settings={settings} locale={locale} updateSetting={updateSetting} hiding={modal.hiding} hide={hideModal}/>
         </Suspense>
       );
     }

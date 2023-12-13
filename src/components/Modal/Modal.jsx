@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import * as focusService from "services/focus";
 import "./modal.css";
 
-export default function Modal({ children, className, transparent, hide }) {
+export default function Modal({ children, className, transparent, hiding, hide }) {
   const container = useRef(null);
   const isMounted = useRef(false);
   let element = null;
@@ -42,7 +42,7 @@ export default function Modal({ children, className, transparent, hide }) {
   }
 
   return (
-    <div className={`modal-mask${transparent ? " transparent" : ""}`} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
+    <div className={`modal-mask${transparent ? " transparent" : ""}${hiding ? " hiding" : ""}`} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
       <div className={`container modal${className ? ` ${className}` : ""}`} ref={container}>{children}</div>
     </div>
   );

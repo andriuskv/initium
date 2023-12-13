@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { formatBytes } from "utils";
+import { useModal } from "hooks";
 import { getBytesInUse } from "services/chromeStorage";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
@@ -15,7 +16,7 @@ export default function StorageTab({ locale }) {
     usedStorageInPercent: 0,
     dashoffset: 1000
   }));
-  const [modal, setModal] = useState(null);
+  const [modal, setModal, hideModal] = useModal(null);
   const memoizedChangeHandler = useCallback(handleStorageChange, [items, stats]);
 
   useEffect(() => {
@@ -133,10 +134,6 @@ export default function StorageTab({ locale }) {
     chrome.storage.sync.remove(modal.name);
   }
 
-  function hideModal() {
-    setModal(null);
-  }
-
   if (!items) {
     return null;
   }
@@ -182,7 +179,7 @@ export default function StorageTab({ locale }) {
         ))}
       </ul>
       {modal && (
-        <Modal hide={hideModal}>
+        <Modal hiding={modal.hiding} hide={hideModal}>
           <h4 className="modal-title">Delete {modal.fullName} data?</h4>
           <div className="modal-text-body">
             <p>Do you really want to delete {modal.fullName} data?</p>
