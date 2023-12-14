@@ -35,9 +35,10 @@ export default function StickyNotes({ locale }) {
     }
   }
 
-  function handleNoteClick(index, event) {
+  function handleNoteClick(note, event) {
     if (event.detail === 2) {
-      setForm({ ...notes[index], index, action: "edit" });
+      const index = notes.findIndex(({ id }) => note.id === id);
+      setForm({ ...note, index, action: "edit" });
     }
   }
 
@@ -93,8 +94,8 @@ export default function StickyNotes({ locale }) {
     }
     return (
       <ul className="sticky-notes">
-        {notesToRender.map((note, i) => (
-          <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string }} onClick={event => handleNoteClick(i, event)}
+        {notesToRender.map(note => (
+          <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string }} onClick={event => handleNoteClick(note, event)}
             onMouseDown={handleNoteMouseDown}
             key={note.id}>
             {note.title ? <p className="sticky-note-content sticky-note-title">{note.title}</p> : null}
