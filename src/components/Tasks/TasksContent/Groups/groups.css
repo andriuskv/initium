@@ -6,11 +6,3 @@
 .tasks-group-input {
   width: 100%;
 }
-
-.tasks-groups-message {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-lg);
-}

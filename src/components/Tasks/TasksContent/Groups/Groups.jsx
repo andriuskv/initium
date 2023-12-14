@@ -99,25 +99,21 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
       <div className="container-header"></div>
       <div className="container-body tasks-body">
         <GroupForm locale={locale} createGroup={createGroup}/>
-        {groups.length > 1 ? (
-          <ul className="tasks-groups-items" data-dropdown-parent>
-            <li className="tasks-groups-item">
-              {renderGroupContent(groups[0], 0, false)}
-            </li>
-            <SortableList
-              items={groups}
-              handleSort={handleSort}
-              handleDragStart={handleDragStart}>
-              {groups.slice(1).map((group, index) => (
-                <SortableItem className={`tasks-groups-item${group.id === activeDragId ? " dragging" : ""}`} id={group.id} key={group.id}>
-                  {renderGroupContent(group, index)}
-                </SortableItem>
-              ))}
-            </SortableList>
-          </ul>
-        ) : (
-          <p className="tasks-groups-message">{locale.tasks.no_groups}</p>
-        )}
+        <ul className="tasks-groups-items" data-dropdown-parent>
+          <li className="tasks-groups-item">
+            {renderGroupContent(groups[0], 0, false)}
+          </li>
+          <SortableList
+            items={groups}
+            handleSort={handleSort}
+            handleDragStart={handleDragStart}>
+            {groups.slice(1).map((group, index) => (
+              <SortableItem className={`tasks-groups-item${group.id === activeDragId ? " dragging" : ""}`} id={group.id} key={group.id}>
+                {renderGroupContent(group, index)}
+              </SortableItem>
+            ))}
+          </SortableList>
+        </ul>
       </div>
       <div className="container-footer">
         <button className="btn text-btn" onClick={hide}>{locale.global.done}</button>
