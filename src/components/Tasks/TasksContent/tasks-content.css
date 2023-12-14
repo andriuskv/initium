@@ -1,13 +1,5 @@
 @import "../../../styles/mixins.css";
 
-.tasks-groups-container {
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  height: 100%;
-}
-
 .tasks-body {
   display: flex;
   flex-direction: column;
@@ -17,6 +9,14 @@
   &.dialog-visible .tasks-create-btn {
     --bottom: 47px;
   }
+}
+
+.tasks-groups-container {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  height: 100%;
 }
 
 .tasks-groups-item {
@@ -66,6 +66,42 @@
     --color: var(--color-white);
 
     pointer-events: none;
+  }
+}
+
+.tasks-group-items {
+  &.expanding {
+    animation-fill-mode: both;
+    animation-duration: var(--duration-n);
+    animation-name: expanding-group;
+  }
+
+  &.collapsing {
+    animation-fill-mode: both;
+    animation-duration: var(--duration-n), var(--duration-f);
+    animation-name: opacity-down, collapsing-group;
+  }
+}
+
+@keyframes expanding-group {
+  from {
+    transform: translateY(calc(-1 * var(--space-md)));
+    opacity: 0;
+  }
+
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes collapsing-group {
+  from {
+    transform: none;
+  }
+
+  to {
+    transform: translateY(calc(-1 * var(--space-sm)));
   }
 }
 

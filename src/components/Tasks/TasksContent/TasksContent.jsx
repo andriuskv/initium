@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { getRandomString } from "utils";
+import { getRandomString, timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
 import { formatDate } from "services/timeDate";
@@ -31,6 +31,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
   const taskRemoveTimeoutId = useRef(0);
   const ignoreUpdate = useRef(false);
   const checkIntervalId = useRef(0);
+  const groupToggleTimeoutId = useRef(0);
 
   useEffect(() => {
     init();
@@ -430,10 +431,27 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
   }
 
   function toggleGroupVisibility(group) {
-    group.expanded = !group.expanded;
+    const { animationSpeed } = getSetting("appearance");
+
+    if (group.expanded) {
+      group.state = "collapsing";
+    }
+    else {
+      group.state = "expanding";
+      group.expanded = true;
+    }
+
+    groupToggleTimeoutId.current = timeout(() => {
+      if (group.state === "collapsing") {
+        group.expanded = false;
+      }
+      delete group.state;
+
+      setGroups([ ...groups ]);
+      saveTasks(groups);
+    }, 200 * animationSpeed, groupToggleTimeoutId.current);
 
     setGroups([ ...groups ]);
-    saveTasks(groups);
   }
 
   function showForm() {
@@ -470,6 +488,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
 
   async function saveTasks(groups) {
     chromeStorage.set({ tasks: structuredClone(groups).map(group => {
+      delete group.state;
       group.tasks = group.tasks.map(task => {
         task = cleanupTask(task);
         task.subtasks = task.subtasks.map(cleanupTask);
@@ -622,7 +641,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
                   </button>
                 )}
                 {group.expanded && (
-                  <ul>
+                  <ul className={`tasks-group-items${group.state ? ` ${group.state}` : ""}`}>
                     {group.tasks.map((task, taskIndex) => (
                       !settings.showCompletedRepeatingTasks && task.hidden ? null : (
                         <li className={`task${task.removed ? " removed" : ""}`} key={task.id}>
