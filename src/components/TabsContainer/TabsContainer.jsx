@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import { getSetting } from "services/settings";
 import "./tabs-container.css";
 
-export default function TabsContainer({ className, children, current, offset = 0, orientation = "h" }) {
+export default function TabsContainer({ className, children, current, offset = 0, itemCount, visible = true, orientation = "h" }) {
   const tabsContainerRef = useRef(null);
   const indicatorRef = useRef(null);
   const prev = useRef(current);
@@ -24,7 +24,7 @@ export default function TabsContainer({ className, children, current, offset = 0
     }
     isStatic.current = true;
     updateIndicator();
-  }, [offset]);
+  }, [offset, visible, itemCount]);
 
   function updateIndicator() {
     if (current < 0) {
@@ -35,7 +35,10 @@ export default function TabsContainer({ className, children, current, offset = 0
     // Element is not visible yet
     if (containerRect.width === 0 && containerRect.height === 0) {
       isStatic.current = true;
-      requestAnimationFrame(updateIndicator);
+
+      if (visible) {
+        requestAnimationFrame(updateIndicator);
+      }
       return;
     }
     const { animationSpeed } = getSetting("appearance");

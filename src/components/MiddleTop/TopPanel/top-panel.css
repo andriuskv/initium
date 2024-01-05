@@ -1,7 +1,5 @@
 .top-panel-content {
-  overflow: hidden;
   opacity: 0;
-  border-bottom-right-radius: var(--container-inset-radius);
   transition: var(--duration-n) opacity;
 }
 

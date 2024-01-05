@@ -3,6 +3,7 @@
 .sticky-notes {
   position: absolute;
   inset: 0;
+  pointer-events: none;
 }
 
 .sticky-note {
@@ -27,6 +28,7 @@
   animation-fill-mode: both;
   scrollbar-gutter: stable;
   transform-origin: top center;
+  pointer-events: auto;
 
   &:hover {
     overflow: auto;

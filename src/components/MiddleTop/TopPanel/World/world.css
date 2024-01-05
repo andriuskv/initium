@@ -2,6 +2,7 @@
   overflow: hidden;
   position: relative;
   height: 174px;
+  border-bottom-right-radius: var(--container-inset-radius);
 }
 
 .world-clocks {

@@ -34,7 +34,7 @@ export default function Entries({ navigation, feeds, locale, selectFeed, previou
             <Icon id="chevron-left"/>
           </button>
         )}
-        <TabsContainer current={activeIndex} offset={shift}>
+        <TabsContainer current={activeIndex} offset={shift} itemCount={feeds.active.length}>
           <ul className="main-panel-item-header-items">
             {feeds.active.map((feed, i) => (
               <li className={`main-panel-item-header-item${activeIndex === i ? " active" : ""}${i < shift || i >= shift + VISIBLE_ITEM_COUNT ? " hidden" : ""}`} key={feed.url}>
