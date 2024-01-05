@@ -31,9 +31,9 @@ function get(id) {
   });
 }
 
-function set(value, cb) {
-  isLocalChange = true;
-  chrome.storage.sync.set(value, cb);
+function set(value, updateLocally = false) {
+  isLocalChange = !updateLocally;
+  chrome.storage.sync.set(value);
 }
 
 function getBytesInUse(name) {
