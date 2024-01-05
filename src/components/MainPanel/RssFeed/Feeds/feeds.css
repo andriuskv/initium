@@ -107,6 +107,7 @@
   font-size: var(--text-sm);
   font-weight: bold;
   color: var(--color-white-60);
+  word-break: break-word;
 
   &:hover {
     text-decoration: underline;

@@ -100,7 +100,7 @@ export default function Presets({ presets, locale, updatePresets, resetActivePre
             onChange={handlePresetNameChange} autoComplete="off" required/>
           <Inputs state={state} updateInputs={updateInputs} handleKeyDown={resetFormError}/>
         </div>
-        {form.error && <p className="timer-presets-form-message">{locale.timers.presets_form_message}</p>}
+        {form.error && <p className="timer-presets-form-message">{locale.timer.presets_form_message}</p>}
         <div className="timer-presets-form-footer">
           {form.updating && <button type="button" className="btn text-btn" onClick={resetForm}>{locale.global.cancel}</button>}
           <button className="btn">{form.updating ? locale.global.update : locale.global.create}</button>
