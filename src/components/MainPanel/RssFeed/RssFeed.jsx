@@ -119,6 +119,16 @@ export default function RssFeed({ locale, showIndicator }) {
     }
     setNavigation({ activeIndex: 0, shift: 0 });
     setFeeds({ ...feeds });
+
+    if (feeds.active.length) {
+      setActiveComponent(null);
+    }
+    else if (feeds.inactive.length || feeds.failed.length) {
+      setActiveComponent("feeds");
+    }
+    else {
+      setActiveComponent("form");
+    }
   }
 
   async function initFeeds() {

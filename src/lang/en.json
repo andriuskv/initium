@@ -29,6 +29,8 @@
     "reset": "Reset",
     "set": "Set",
     "enable": "Enable",
+    "restore": "Restore",
+    "confirm": "Confirm",
     "settings": "Settings",
     "title_input_label": "Title",
     "url_input_label": "URL",
