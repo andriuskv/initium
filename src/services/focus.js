@@ -4,6 +4,7 @@ const traps = {};
 let stack = [];
 let activeTrapId = "";
 let initiator = null;
+let ignoreNext = false;
 
 function setInitiator(element) {
   if (stack.at(-1) === "dropdown") {
@@ -22,11 +23,11 @@ function focusInitiator(id) {
   if (trap) {
     if (trap.isDropdown) {
       if (trap.container.contains(document.activeElement)) {
-        trap.initiator.focus();
+        focusElement(trap.initiator);
       }
     }
     else {
-      trap.initiator.focus();
+      focusElement(trap.initiator);
     }
   }
 }
@@ -49,7 +50,7 @@ function trapFocus(id, container, { excludeDropdown = true } = {}) {
   stack.push(id);
 
   if (!focusableElements.some(element => element.getAttribute("autofocus"))) {
-    traps[id].first.focus();
+    focusElement(traps[id].first);
   }
 
   if (stack.length === 1) {
@@ -90,19 +91,40 @@ async function updateFocusTrap(id) {
   currentTrap.last = elements.at(-1);
 }
 
+function focusElement(element) {
+  if (ignoreNext) {
+    ignoreNext = false;
+    return;
+  }
+  element.focus();
+}
+
 function focusFirstElement(container, { excludeDropdown = true } = {}) {
   focusNthElement(container, 0, { excludeDropdown });
 }
 
-function focusNthElement(container, index, { excludeDropdown = true } = {}) {
-  const focusableElements = findFocusableElements(container, excludeDropdown);
+function focusNthElement(container, index, options = { excludeDropdown: true }) {
+  const focusableElements = findFocusableElements(container, options);
 
   if (!focusableElements.length || !focusableElements[index]) {
     return;
   }
   setTimeout(() => {
-    focusableElements[index].focus();
+    focusElement(focusableElements[index]);
+    ignoreNext = options.ignoreNext;
   }, 100);
+}
+
+function focusSelector(selector) {
+  const element = document.querySelector(selector);
+
+  if (element) {
+    focusElement(element);
+  }
+}
+
+function resetIgnore() {
+  ignoreNext = false;
 }
 
 function handleKeyDown(event) {
@@ -116,7 +138,7 @@ function handleKeyDown(event) {
         }
         else {
           event.preventDefault();
-          trap.last.focus();
+          focusElement(trap.last);
         }
       }
     }
@@ -126,7 +148,7 @@ function handleKeyDown(event) {
       }
       else {
         event.preventDefault();
-        trap.first.focus();
+        focusElement(trap.first);
       }
     }
   }
@@ -137,6 +159,8 @@ export {
   focusInitiator,
   focusFirstElement,
   focusNthElement,
+  focusSelector,
+  resetIgnore,
   trapFocus,
   clearFocusTrap,
   updateFocusTrap

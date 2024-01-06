@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useNotes } from "contexts/stickyNotes";
 import { getSetting } from "services/settings";
+import * as focusService from "services/focus";
 import "./sticky-notes.css";
 
 const Form = lazy(() => import("./Form"));
@@ -52,11 +53,7 @@ export default function StickyNotes({ locale }) {
     resetTextSelection();
 
     if (form.action === "edit" || !shouldAnimate) {
-      const element = document.querySelector("[data-focus-id=stickyNotes]");
-
-      if (element) {
-        element.focus();
-      }
+      focusService.focusSelector("[data-focus-id=stickyNotes]");
       setForm(null);
     }
     else if (shouldAnimate) {
