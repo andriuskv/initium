@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext, useMemo } from "react";
+import { replaceLink } from "utils";
 import { getSetting } from "services/settings";
 import * as chromeStorage from "services/chromeStorage";
 
@@ -21,7 +22,28 @@ function StickyNotesProvider({ children }) {
   async function init() {
     const notes = await chromeStorage.get("stickyNotes") ?? [];
 
-    setNotes(notes.map(note => {
+    setNotes(parseNotes(notes));
+
+    chromeStorage.subscribeToChanges(({ stickyNotes }) => {
+      if (!stickyNotes) {
+        return;
+      }
+
+      if (stickyNotes.newValue) {
+        setNotes(parseNotes(stickyNotes.newValue));
+      }
+      else {
+        setNotes([]);
+      }
+    });
+  }
+
+  function parseNotes(notes) {
+    return notes.map(note => {
+      note.id = crypto.randomUUID();
+      note.titleDisplayString = parseNoteField(note.title);
+      note.contentDisplayString = parseNoteField(note.content);
+
       if (note.color) {
         note.backgroundColor = note.color;
         delete note.color;
@@ -35,25 +57,13 @@ function StickyNotesProvider({ children }) {
           string: "oklch(0 0 0 / 60%)"
         };
       }
-      note.id = crypto.randomUUID();
       return note;
-    }));
-
-    chromeStorage.subscribeToChanges(({ stickyNotes }) => {
-      if (!stickyNotes) {
-        return;
-      }
-
-      if (stickyNotes.newValue) {
-        setNotes(stickyNotes.newValue.map(note => {
-          note.id = crypto.randomUUID();
-          return note;
-        }));
-      }
-      else {
-        setNotes([]);
-      }
     });
+  }
+
+  function parseNoteField(value) {
+    const displayValue = value.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
+    return replaceLink(displayValue, "sticky-note-link");
   }
 
   function createNote(note) {
@@ -65,6 +75,9 @@ function StickyNotesProvider({ children }) {
 
     note.title = note.title.trimEnd();
     note.content = note.content.trimEnd();
+
+    note.titleDisplayString = parseNoteField(note.title);
+    note.contentDisplayString = parseNoteField(note.content);
 
     if (action === "create") {
       newNotes = [...notes, note];
@@ -96,6 +109,8 @@ function StickyNotesProvider({ children }) {
   function saveNotes(notes) {
     chromeStorage.set({ stickyNotes: structuredClone(notes).map(note => {
       delete note.id;
+      delete note.titleDisplayString;
+      delete note.contentDisplayString;
       return note;
     }) });
   }

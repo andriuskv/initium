@@ -95,8 +95,10 @@ export default function StickyNotes({ locale }) {
           <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string }} onClick={event => handleNoteClick(note, event)}
             onMouseDown={handleNoteMouseDown}
             key={note.id}>
-            {note.title ? <p className="sticky-note-content sticky-note-title">{note.title}</p> : null}
-            {note.content ? <p className="sticky-note-content">{note.content}</p> : null}
+            {note.title ?
+              <p className="sticky-note-content sticky-note-title" dangerouslySetInnerHTML={{ __html: note.titleDisplayString }}></p> : null}
+            {note.content ?
+              <p className="sticky-note-content" dangerouslySetInnerHTML={{ __html: note.contentDisplayString }}></p> : null}
           </li>
         ))}
       </ul>

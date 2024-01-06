@@ -1,5 +1,5 @@
 import { useState, useRef, lazy, Suspense } from "react";
-import { getRandomString, timeout } from "utils";
+import { getRandomString, timeout, replaceLink } from "utils";
 import { useModal } from "hooks";
 import { getSetting } from "services/settings";
 import { formatDate } from "services/timeDate";
@@ -10,7 +10,7 @@ const Toast = lazy(() => import("components/Toast"));
 const GroupForm = lazy(() => import("../GroupForm"));
 const LabelForm = lazy(() => import("./LabelForm"));
 
-export default function Form({ form, groups, locale, updateGroups, replaceLink, removeTask, createGroup, hide }) {
+export default function Form({ form, groups, locale, updateGroups, removeTask, createGroup, hide }) {
   const [state, setState] = useState(() => {
     const defaultForm = {
       moreOptionsVisible: false,
@@ -153,7 +153,7 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
       creationDate: Date.now(),
       rawText: text,
       id: getRandomString(4),
-      text: replaceLink(text),
+      text: replaceLink(text, "task-link"),
       subtasks: getFormSubtasks(elements.subtask),
       labels: getFlaggedFormLabels()
     };
@@ -254,7 +254,7 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
       return [{
         id: getRandomString(4),
         rawText: text,
-        text: replaceLink(text)
+        text: replaceLink(text, "task-link")
       }];
     }
     else if (elements.length) {
@@ -265,7 +265,7 @@ export default function Form({ form, groups, locale, updateGroups, replaceLink, 
           tasks.push({
             id: getRandomString(4),
             rawText: text,
-            text: replaceLink(text)
+            text: replaceLink(text, "task-link")
           });
         }
         return tasks;

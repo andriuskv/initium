@@ -65,8 +65,10 @@ export default function StickyNotes({ locale, hide }) {
                   <span>{locale.global.remove}</span>
                 </button>
               </Dropdown>
-              {note.title ? <p className="sticky-notes-list-item-content sticky-notes-list-item-title">{note.title}</p> : null}
-              {note.content ? <p className="sticky-notes-list-item-content">{note.content}</p> : null}
+              {note.title ?
+                <p className="sticky-notes-list-item-content sticky-notes-list-item-title" dangerouslySetInnerHTML={{ __html: note.titleDisplayString }}></p> : null}
+              {note.content ?
+                <p className="sticky-notes-list-item-content" dangerouslySetInnerHTML={{ __html: note.contentDisplayString }}></p> : null}
             </li>
           ))}
         </ul>

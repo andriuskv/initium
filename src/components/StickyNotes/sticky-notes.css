@@ -52,6 +52,12 @@
   font-size: calc(var(--text-xxl) * var(--scale) * var(--text-scale));
 }
 
+.sticky-note-link {
+  &:hover, &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
 @keyframes rotate-tilt {
   from {
     transform: var(--straight-transform);
