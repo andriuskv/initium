@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings";
 import { handleZIndex } from "services/zIndex";
+import * as focusService from "services/focus";
 import Icon from "components/Icon";
 import "./bottom-panel.css";
 
@@ -82,11 +83,7 @@ export default function BottomPanel({ locale }) {
   useEffect(() => {
     if (!selectedItem.id) {
       if (lastItemId.current) {
-        const element = document.querySelector(`[data-focus-id=${lastItemId.current}]`);
-
-        if (element) {
-          element.focus();
-        }
+        focusService.focusSelector(`[data-focus-id=${lastItemId.current}]`);
         lastItemId.current = "";
       }
       return;

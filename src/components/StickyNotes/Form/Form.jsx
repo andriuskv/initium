@@ -1,6 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import * as focusService from "services/focus";
-import { getSetting } from "services/settings";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./form.css";
@@ -25,21 +24,13 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
   useLayoutEffect(() => {
     if (initialForm.discarding) {
       return () => {
-        const element = document.querySelector("[data-focus-id=stickyNotes]");
-
-        if (element) {
-          element.focus();
-        }
+        focusService.focusSelector("[data-focus-id=stickyNotes]");
       };
     }
     else if (initialForm.readyToShow) {
       if (containerRef.current) {
-        const settings = getSetting("appearance");
-
-        // Wait of the bottom panel animation to finish
-        setTimeout(() => {
-          focusService.focusNthElement(containerRef.current, 1);
-        }, 400 * settings.animationSpeed);
+        focusService.resetIgnore();
+        focusService.focusNthElement(containerRef.current, 1, { ignoreNext: true });
       }
       return;
     }
