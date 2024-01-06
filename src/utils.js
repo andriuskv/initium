@@ -89,6 +89,11 @@ function getRandomValueBetweenTwoNumbers(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function replaceLink(text, className) {
+  const regex = /(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?/g;
+  return text.replace(regex, href => `<a href="${href}" class="${className}" target="_blank">${href}</a>`);
+}
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -101,5 +106,6 @@ export {
   formatBytes,
   generateNoise,
   timeout,
-  getRandomValueBetweenTwoNumbers
+  getRandomValueBetweenTwoNumbers,
+  replaceLink
 };

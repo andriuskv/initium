@@ -48,9 +48,7 @@
   cursor: move;
 
   &:focus {
-    @supports (color: rgb(from black r g b)) {
-      background-color: hsl(from var(--background-color) h s calc(l - 0.04));
-    }
+    filter: brightness(0.95);
   }
 }
 

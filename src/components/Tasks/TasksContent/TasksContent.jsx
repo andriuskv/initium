@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { getRandomString, timeout } from "utils";
+import { getRandomString, timeout, replaceLink } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
 import { formatDate } from "services/timeDate";
@@ -313,7 +313,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
     task.id = getRandomString();
     task.rawText ??= task.text;
     task.rawText = task.rawText.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
-    task.text = replaceLink(task.rawText);
+    task.text = replaceLink(task.rawText, "task-link");
 
     if (task.expirationDate) {
       const { dateLocale } = getSetting("timeDate");
@@ -423,11 +423,6 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
   function removeFormTask() {
     removeTask(form.groupIndex, form.taskIndex, true);
     hideForm();
-  }
-
-  function replaceLink(text) {
-    const regex = /(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?/g;
-    return text.replace(regex, href => `<a href="${href}" class="task-link" target="_blank">${href}</a>`);
   }
 
   function toggleGroupVisibility(group) {
@@ -597,7 +592,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
   if (activeComponent === "form") {
     return (
       <Suspense fallback={null}>
-        <Form form={form} groups={groups} locale={locale} updateGroups={updateGroups} replaceLink={replaceLink} removeTask={removeFormTask}
+        <Form form={form} groups={groups} locale={locale} updateGroups={updateGroups} removeTask={removeFormTask}
           createGroup={createGroup} hide={hideForm}/>
       </Suspense>
     );
