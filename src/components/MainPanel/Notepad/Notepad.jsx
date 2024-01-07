@@ -191,6 +191,7 @@ export default function Notepad({ locale }) {
 
   function handleTextareaChange({ target }) {
     activeTab.content = target.value;
+    updateTabs(tabs, false);
 
     saveTimeoutId.current = timeout(() => {
       activeTab.sizeString = getTabSize(activeTab).sizeString;
@@ -382,7 +383,7 @@ export default function Notepad({ locale }) {
       <textarea className="container-body notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` }}
         onChange={handleTextareaChange}
         onKeyDown={handleTextareaKeyDown}
-        defaultValue={activeTab.content}
+        value={activeTab.content}
         key={activeTab.id}>
       </textarea>
       {textSizeLabelVisible && <div className="container notepad-text-size-label">{activeTab.textSize}px</div>}
