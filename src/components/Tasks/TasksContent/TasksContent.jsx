@@ -337,7 +337,25 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
   }
 
   function removeSubtask(groupIndex, taskIndex, subtaskIndex) {
-    groups[groupIndex].tasks[taskIndex].subtasks[subtaskIndex].removed = true;
+    const task = groups[groupIndex].tasks[taskIndex];
+
+    task.subtasks[subtaskIndex].removed = true;
+
+    if (settings.completeWithSubtasks) {
+      let requiredSubtaskCount = 0;
+
+      for (const subtask of task.subtasks) {
+        if (!subtask.optional && !subtask.removed) {
+          requiredSubtaskCount += 1;
+        }
+      }
+
+      if (requiredSubtaskCount === 0) {
+        task.subtasks[subtaskIndex].removed = false;
+        removeTask(groupIndex, taskIndex);
+        return;
+      }
+    }
 
     setGroups([...groups]);
     setRemovedItems([...removedItems, { groupIndex, taskIndex, subtaskIndex }]);
@@ -354,6 +372,11 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
           if (task.removed) {
             delete task.removed;
             task.hidden = true;
+            task.subtasks = task.subtasks.map(subtask => {
+              delete subtask.removed;
+              subtask.hidden = true;
+              return subtask;
+            });
             setRepeatingTaskStatus(task, COMPLETED_STATUS);
             return task;
           }
@@ -592,7 +615,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
   if (activeComponent === "form") {
     return (
       <Suspense fallback={null}>
-        <Form form={form} groups={groups} locale={locale} updateGroups={updateGroups} removeTask={removeFormTask}
+        <Form form={form} groups={groups} locale={locale} settings={settings} updateGroups={updateGroups} removeTask={removeFormTask}
           createGroup={createGroup} hide={hideForm}/>
       </Suspense>
     );
@@ -677,6 +700,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
                                           </button>
                                         )}
                                         <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text }}></span>
+                                        {settings.completeWithSubtasks && subtask.optional ? <span className="task-text">*</span> : null}
                                       </div>
                                     </li>
                                   )

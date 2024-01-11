@@ -135,6 +135,13 @@
   gap: var(--space-sm);
 }
 
+.task-form-subtask-index {
+  min-width: 24px;
+  padding-inline: var(--space-sm);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
 .task-form-subtask-input {
   flex-grow: 1;
 }

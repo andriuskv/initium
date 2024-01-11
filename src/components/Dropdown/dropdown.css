@@ -67,4 +67,8 @@
         inset var(--focus-shadow);
     }
   }
+
+  &.icon-placeholder {
+    padding-left: 36px;
+  }
 }
