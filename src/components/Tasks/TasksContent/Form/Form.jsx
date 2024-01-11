@@ -294,11 +294,13 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
 
   function getDateTimeString(time) {
     const date = time ? new Date(time) : new Date();
+    const years = date.getFullYear();
+    const months = date.getMonth() + 1;
+    const days = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
 
-    // Split date/time string to display date, hours, and minutes
-    const items = date.toISOString().split(":");
-
-    return `${items[0]}:${items[1]}`;
+    return `${years}-${padTime(months)}-${padTime(days)}T${padTime(hours)}:${padTime(minutes)}`;
   }
 
   function showMessage(message) {

@@ -26,16 +26,6 @@
   &.fetching {
     position: relative;
 
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      display: block;
-      background-image: url("./assets/ring.svg");
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-
     .feed-list-item-content {
       opacity: 0.4;
     }
@@ -126,4 +116,12 @@
   .btn {
     margin-left: var(--space-md);
   }
+}
+
+.feed-list-item-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
