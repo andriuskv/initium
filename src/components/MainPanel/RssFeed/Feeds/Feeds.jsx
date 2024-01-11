@@ -3,6 +3,7 @@ import * as feedService from "services/feeds";
 import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
+import Spinner from "components/Spinner";
 import CreateButton from "components/CreateButton";
 import "./feeds.css";
 import Feed from "./Feed";
@@ -114,6 +115,11 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
                 <button className="btn" onClick={() => refetchFeed(feed, "failed")} disabled={feed.fetching}>{locale.rssFeed.retry}</button>
               </div>
             </div>
+            {feed.fetching ? (
+              <div className="feed-list-item-mask">
+                <Spinner size="32px"/>
+              </div>
+            ) : null}
           </li>
         ))}
         {feeds.inactive.map((feed, index) => (
