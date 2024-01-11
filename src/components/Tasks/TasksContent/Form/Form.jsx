@@ -1,16 +1,17 @@
-import { useState, useRef, lazy, Suspense } from "react";
+import { useState, useRef, lazy, Suspense, useEffect } from "react";
 import { getRandomString, timeout, replaceLink } from "utils";
 import { useModal } from "hooks";
 import { getSetting } from "services/settings";
-import { formatDate } from "services/timeDate";
+import { formatDate, padTime } from "services/timeDate";
 import Icon from "components/Icon";
+import Dropdown from "components/Dropdown";
 import "./form.css";
 
 const Toast = lazy(() => import("components/Toast"));
 const GroupForm = lazy(() => import("../GroupForm"));
 const LabelForm = lazy(() => import("./LabelForm"));
 
-export default function Form({ form, groups, locale, updateGroups, removeTask, createGroup, hide }) {
+export default function Form({ form, groups, locale, settings, updateGroups, removeTask, createGroup, hide }) {
   const [state, setState] = useState(() => {
     const defaultForm = {
       moreOptionsVisible: false,
@@ -58,6 +59,15 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
   const [modal, setModal, hideModal] = useModal(null);
   const [message, setMessage] = useState("");
   const messageTimeoutId = useRef();
+
+  useEffect(() => {
+    if (state && !settings.completeWithSubtasks) {
+      for (const subtask of state.task.subtasks) {
+        delete subtask.optional;
+      }
+      setState({...state });
+    }
+  }, [settings.completeWithSubtasks]);
 
   function toggleMoreOptions() {
     setState({
@@ -254,22 +264,26 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
       return [{
         id: getRandomString(4),
         rawText: text,
+        optional: state.task.subtasks[0].optional,
         text: replaceLink(text, "task-link")
       }];
     }
     else if (elements.length) {
-      return Array.from(elements).reduce((tasks, { value }) => {
-        const text = value.trim();
+      const subtasks = [];
+
+      for (let i = 0; i < elements.length; i += 1) {
+        const text = elements[i].value.trim();
 
         if (text) {
-          tasks.push({
+          subtasks.push({
             id: getRandomString(4),
             rawText: text,
+            optional: state.task.subtasks[i].optional,
             text: replaceLink(text, "task-link")
           });
         }
-        return tasks;
-      }, []);
+      }
+      return subtasks;
     }
     return [];
   }
@@ -314,6 +328,11 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
   function dismissMessage() {
     clearTimeout(messageTimeoutId.current);
     setMessage("");
+  }
+
+  function toggleSubtaskReq(index) {
+    state.task.subtasks[index].optional = !state.task.subtasks[index].optional;
+    setState({...state });
   }
 
   function renderModal() {
@@ -427,11 +446,25 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
             <ul className="task-form-subtasks">
               {state.task.subtasks.map((subtask, i) => (
                 <li className="task-form-subtask" key={subtask.id}>
+                  <span className="task-form-subtask-index">{i + 1}{subtask.optional ? "*" : ""}</span>
                   <input type="text" name="subtask" className="input task-form-subtask-input"
                     defaultValue={subtask.rawText} autoComplete="off"/>
-                  <button type="button" className="btn icon-btn alt-icon-btn" onClick={() => removeFormSubtask(i)} title={locale.global.remove}>
-                    <Icon id="trash"/>
-                  </button>
+                  {settings.completeWithSubtasks ? (
+                    <Dropdown>
+                      <button type="button" className="btn icon-text-btn dropdown-btn icon-placeholder" onClick={() => toggleSubtaskReq(i)}>
+                        <span>{subtask.optional ? "Make required" : "Make optional"}</span>
+                      </button>
+                      <button type="button" className="btn icon-text-btn dropdown-btn" onClick={() => removeFormSubtask(i)}>
+                        <Icon id="trash"/>
+                        <span>{locale.global.remove}</span>
+                      </button>
+                    </Dropdown>
+                  ) : (
+                    <button type="button" className="btn icon-btn alt-icon-btn"
+                      onClick={() => removeFormSubtask(i)} title={locale.global.remove}>
+                      <Icon id="trash"/>
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
