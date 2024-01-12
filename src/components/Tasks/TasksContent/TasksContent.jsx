@@ -338,8 +338,9 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
 
   function removeSubtask(groupIndex, taskIndex, subtaskIndex) {
     const task = groups[groupIndex].tasks[taskIndex];
+    const subtask = task.subtasks[subtaskIndex];
 
-    task.subtasks[subtaskIndex].removed = true;
+    subtask.removed = true;
 
     if (settings.completeWithSubtasks) {
       let requiredSubtaskCount = 0;
@@ -350,8 +351,8 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
         }
       }
 
-      if (requiredSubtaskCount === 0) {
-        task.subtasks[subtaskIndex].removed = false;
+      if (!subtask.optional && requiredSubtaskCount === 0) {
+        subtask.removed = false;
         removeTask(groupIndex, taskIndex);
         return;
       }

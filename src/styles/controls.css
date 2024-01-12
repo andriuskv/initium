@@ -428,8 +428,9 @@ textarea {
 .drag-handle {
   opacity: 0;
   cursor: move;
+  transition: var(--duration-f) opacity;
 
-  &:hover, &:focus-visible {
+  &:hover, &:focus-visible, &:active {
     opacity: 1;
   }
 }
