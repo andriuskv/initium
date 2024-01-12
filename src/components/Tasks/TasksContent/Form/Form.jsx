@@ -3,9 +3,10 @@ import { getRandomString, timeout, replaceLink } from "utils";
 import { useModal } from "hooks";
 import { getSetting } from "services/settings";
 import { formatDate, padTime } from "services/timeDate";
+import { SortableItem, SortableList } from "components/Sortable";
 import Icon from "components/Icon";
-import Dropdown from "components/Dropdown";
 import "./form.css";
+import Subtask from "./Subtask";
 
 const Toast = lazy(() => import("components/Toast"));
 const GroupForm = lazy(() => import("../GroupForm"));
@@ -57,6 +58,7 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
     return defaultForm;
   });
   const [modal, setModal, hideModal] = useModal(null);
+  const [activeDragId, setActiveDragId] = useState(null);
   const [message, setMessage] = useState("");
   const messageTimeoutId = useRef();
 
@@ -143,13 +145,13 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
   }
 
   function addFormSubtask() {
-    state.task.subtasks.push(getNewSubtask());
-    setState({ ...state });
+    setState({ ...state, task: { ...state.task, subtasks: [...state.task.subtasks, getNewSubtask()] } });
   }
 
   function removeFormSubtask(index) {
-    state.task.subtasks.splice(index, 1);
-    setState({ ...state });
+    const subtasks = state.task.subtasks.toSpliced(index, 1);
+
+    setState({ ...state, task: { ...state.task, subtasks} });
   }
 
   function handleTaskFormSubmit(event) {
@@ -332,7 +334,37 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
 
   function toggleSubtaskReq(index) {
     state.task.subtasks[index].optional = !state.task.subtasks[index].optional;
-    setState({...state });
+    setState({ ...state });
+  }
+
+  function handleSort(items) {
+    if (items) {
+      setState({...state, task: { ...state.task, subtasks: items } });
+    }
+    setActiveDragId(null);
+  }
+
+  function handleDragStart(event) {
+    setActiveDragId(event.active.id);
+  }
+
+  function renderSubtasks(subtask, index) {
+    const component = {
+      Component: Subtask,
+      params: {
+        index,
+        subtask,
+        locale,
+        settings,
+        toggleSubtaskReq,
+        removeFormSubtask
+      }
+    };
+
+    return (
+      <SortableItem className={`task-form-subtask${subtask.id === activeDragId ? " dragging" : ""}`}
+        component={component} id={subtask.id} key={subtask.id} handleTitle={locale.global.drag}/>
+    );
   }
 
   function renderModal() {
@@ -364,7 +396,7 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
         </button>
       </div>
       <form className="task-form" onSubmit={handleTaskFormSubmit} onKeyDown={handleFormKeydown}>
-        <div className="container-body task-form-body">
+        <div className="container-body task-form-body" data-dropdown-parent>
           {state.moreOptionsVisible ? (
             <div className="task-form-more-options">
               <div className="task-form-item-container">
@@ -443,30 +475,13 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
             </button>
           </div>
           {state.task.subtasks.length > 0 && (
-            <ul className="task-form-subtasks">
-              {state.task.subtasks.map((subtask, i) => (
-                <li className="task-form-subtask" key={subtask.id}>
-                  <span className="task-form-subtask-index">{i + 1}{subtask.optional ? "*" : ""}</span>
-                  <input type="text" name="subtask" className="input task-form-subtask-input"
-                    defaultValue={subtask.rawText} autoComplete="off"/>
-                  {settings.completeWithSubtasks ? (
-                    <Dropdown>
-                      <button type="button" className="btn icon-text-btn dropdown-btn icon-placeholder" onClick={() => toggleSubtaskReq(i)}>
-                        <span>{subtask.optional ? "Make required" : "Make optional"}</span>
-                      </button>
-                      <button type="button" className="btn icon-text-btn dropdown-btn" onClick={() => removeFormSubtask(i)}>
-                        <Icon id="trash"/>
-                        <span>{locale.global.remove}</span>
-                      </button>
-                    </Dropdown>
-                  ) : (
-                    <button type="button" className="btn icon-btn alt-icon-btn"
-                      onClick={() => removeFormSubtask(i)} title={locale.global.remove}>
-                      <Icon id="trash"/>
-                    </button>
-                  )}
-                </li>
-              ))}
+            <ul className={`task-form-subtasks${activeDragId ? " dragging" : ""}`}>
+              <SortableList
+                items={state.task.subtasks}
+                handleSort={handleSort}
+                handleDragStart={handleDragStart}>
+                {state.task.subtasks.map((subtask, index) => renderSubtasks(subtask, index))}
+              </SortableList>
             </ul>
           )}
         </div>

@@ -73,13 +73,18 @@ function SortableList({ children, items, axis, handleDragStart, handleSort }) {
     handleSort(newItems);
   }
 
+  function handleDragCancel() {
+    handleSort();
+  }
+
   return (
     <DndContext
       sensors={sensors}
       modifiers={modifiers}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}>
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}>
       <SortableContext items={items} strategy={sortingStrategy}>
         {children}
       </SortableContext>
@@ -105,7 +110,7 @@ function SortableItem({ children, id, className, component, handleTitle }) {
     return (
       <li ref={setNodeRef} style={style} className={className}>
         <component.Component {...component.params}>
-          <button className="btn icon-btn drag-handle" {...attributes} {...listeners} title={handleTitle || "Drag"}>
+          <button type="button" className="btn icon-btn drag-handle" {...attributes} {...listeners} title={handleTitle || "Drag"}>
             <Icon id="drag"/>
           </button>
         </component.Component>

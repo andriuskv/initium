@@ -127,23 +127,12 @@
   padding: var(--space-sm) var(--space-md) 0 var(--space-md);
   margin-top: var(--space-sm);
   margin-bottom: var(--space-sm);
-}
 
-.task-form-subtask {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.task-form-subtask-index {
-  min-width: 24px;
-  padding-inline: var(--space-sm);
-  font-size: var(--text-sm);
-  text-align: center;
-}
-
-.task-form-subtask-input {
-  flex-grow: 1;
+  &.dragging {
+    .task-form-subtask:not(.dragging) {
+      opacity: 0.4;
+    }
+  }
 }
 
 .task-form-delete-btn {

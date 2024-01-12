@@ -1,0 +1,38 @@
+.task-form-subtask {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  &.dragging {
+    z-index: 1000;
+  }
+}
+
+.task-form-subtask-index-container {
+  position: relative;
+  min-width: 24px;
+  padding-inline: var(--space-sm);
+  text-align: center;
+
+  & .drag-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &:has(:focus-visible, :hover, :active) {
+    .task-form-subtask-index {
+      opacity: 0;
+    }
+  }
+}
+
+.task-form-subtask-index {
+  font-size: var(--text-sm);
+  transition: var(--duration-f) opacity;
+}
+
+.task-form-subtask-input {
+  flex-grow: 1;
+}
