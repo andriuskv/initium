@@ -208,11 +208,20 @@ export default function TimeDateTab({ locale }) {
             </select>
           </div>
         </label>
-        <label className="setting last-setting-tab-item">
+        <label className="setting">
           <span>{locale.settings.time_date.hide_clocks_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.worldClocksHidden}
             onChange={() => toggleSetting("timeDate", "worldClocksHidden")}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
+        <label className="setting last-setting-tab-item">
+          <span>Hide current day reminder preview</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            checked={settings.reminderPreviewHidden}
+            onChange={() => toggleSetting("timeDate", "reminderPreviewHidden")}/>
           <div className="checkbox">
             <div className="checkbox-tick"></div>
           </div>

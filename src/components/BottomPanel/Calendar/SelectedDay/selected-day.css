@@ -21,6 +21,7 @@
   align-items: flex-start;
   padding: var(--space-sm);
   border-bottom: 1px solid var(--color-white-10);
+  word-break: break-word;
 }
 
 .selected-day-reminder-color {

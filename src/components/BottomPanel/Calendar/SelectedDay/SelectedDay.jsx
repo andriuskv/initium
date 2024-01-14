@@ -159,10 +159,10 @@ export default function SelectedDay({ selectedDay, calendar, reminders, locale, 
   }
 
   if (!day) {
-    return <div className="calendar"></div>;
+    return <div className="calendar day-selected"></div>;
   }
   return (
-    <div className="calendar">
+    <div className="calendar day-selected">
       <div className="calendar-header selected-day-header">
         <button className="btn icon-btn" onClick={hide} title={locale.global.back}>
           <Icon id="chevron-left"/>

@@ -20,6 +20,8 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const [transition, setTransition] = useState({ x: 0, y: 0 });
   const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
+  const currReminderPreviewRef = useRef(null);
+  const currReminderPreviewHeight = useRef(0);
 
   useEffect(() => {
     init();
@@ -229,6 +231,12 @@ export default function Calendar({ visible, locale, showIndicator }) {
   }
 
   async function showDay(element, day, direction = 0) {
+    if (currReminderPreviewRef.current) {
+      const { height } = currReminderPreviewRef.current.getBoundingClientRect();
+
+      currReminderPreviewHeight.current = height;
+      currReminderPreviewRef.current.style.display = "none";
+    }
     await transitionElement(element);
 
     setSelectedDay({
@@ -271,6 +279,11 @@ export default function Calendar({ visible, locale, showIndicator }) {
   }
 
   function hideSelectedDay() {
+    currReminderPreviewHeight.current = 0;
+
+    if (currReminderPreviewRef.current) {
+      currReminderPreviewRef.current.style.display = "";
+    }
     setSelectedDay(null);
   }
 
@@ -709,7 +722,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
           <div>{currentDay.dateString}</div>
         </button>
       </div>
-      <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px` }}>
+      <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${currReminderPreviewHeight.current}px` }}>
         {selectedDay ? (
           <SelectedDay calendar={calendar} selectedDay={selectedDay} reminders={reminders} locale={locale}
             updateCalendar={updateCalendar} createReminder={createReminder} resetSelectedDay={resetSelectedDay} hide={hideSelectedDay}/>
@@ -724,7 +737,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
                 <Icon id="chevron-right"/>
               </button>
             </div>
-            <ul className={`calendar-months${settings.worldClocksHidden ? "" : " world-clocks-visible"}`} onKeyDown={handleMonthsKeyDown}>
+            <ul className="calendar-months" onKeyDown={handleMonthsKeyDown}>
               {calendar[currentYear].map((month, index) => (
                 <li className={`calendar-month${month.isCurrentMonth ? " current" : ""}`}
                   onClick={({ target }) => showMonth(target, index)} key={month.name}
@@ -748,7 +761,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
             <ul className="calendar-week-days">
               {weekdays.map(weekday => <li className="calendar-cell" key={weekday}>{weekday}</li>)}
             </ul>
-            <ul className={`calendar-days${settings.worldClocksHidden ? "" : " world-clocks-visible"}`} onKeyDown={handleDaysKeyDown}>
+            <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
               {visibleMonth.previous.days.map((day, index) => (
                 <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
                   tabIndex="0" aria-label={day.dateString} data-month="previous" data-index={index}>
@@ -779,6 +792,20 @@ export default function Calendar({ visible, locale, showIndicator }) {
           </div>
         )}
       </div>
+      {!settings.reminderPreviewHidden && currentDay.reminders.length ? (
+        <div className={`container-body calendar-current-day-preview${selectedDay ? " hidden" : ""}`} ref={currReminderPreviewRef}>
+          <h4 className="calendar-current-day-preview-title">Today</h4>
+          <ul className="calendar-current-day-reminders">
+            {currentDay.reminders.map(reminder => (
+              <li className="calendar-current-day-reminder" key={reminder.id}>
+                <div className="calendar-current-day-reminder-color" style={{ backgroundColor: reminder.color }}></div>
+                <p>{reminder.text}</p>
+                {reminder.range.from ? <p className="calendar-current-day-reminder-range-text">{reminder.range.text}</p> : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       {settings.worldClocksHidden ? null : <WorldClocks parentVisible={visible} locale={locale}/>}
     </>
   );
