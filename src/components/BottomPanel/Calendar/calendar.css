@@ -24,8 +24,21 @@
 }
 
 .calendar-wrapper {
+  --calendar-height: 328px;
+  --additional-height: 0px;
+
   overflow: hidden;
-  height: 328px;
+  height: calc(var(--calendar-height) + var(--additional-height));
+
+  &:has(+ .calendar-current-day-preview, + .calendar-world-clocks) {
+    .calendar-days {
+      --corner-border-radius: 4px;
+    }
+
+    .calendar-months {
+      --corner-border-radius: 0;
+    }
+  }
 }
 
 .calendar-header {
@@ -53,11 +66,15 @@
   display: flex;
   flex-direction: column;
   width: 380px;
-  height: 100%;
+  height: var(--calendar-height);
   transform-origin: var(--x) var(--y);
   animation-duration: var(--duration-n);
   animation-fill-mode: both;
   animation-name: opacity-up;
+
+  &.day-selected {
+    height: 100%;
+  }
 
   &.transition {
     animation-duration: calc(0.16s * var(--animation-speed)), calc(0.6s * var(--animation-speed));
@@ -88,10 +105,6 @@
   gap: var(--space-xs);
   flex-grow: 1;
   padding: var(--space-xs);
-
-  &.world-clocks-visible {
-    --corner-border-radius: 4px;
-  }
 }
 
 .calendar-day {
@@ -146,10 +159,6 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   flex-grow: 1;
-
-  &.world-clocks-visible {
-    --corner-border-radius: 0;
-  }
 }
 
 .calendar-month-inner {
@@ -190,6 +199,61 @@
   &:focus-visible {
     box-shadow: inset var(--focus-shadow);
   }
+}
+
+.calendar-current-day-preview {
+  width: 380px;
+  padding-top: var(--space-sm);
+  padding-left: var(--space-md);
+  border-top: 1px solid var(--color-white-10);
+
+  &.hidden {
+    display: none;
+  }
+
+  &:not(:has(+ .calendar-world-clocks)) {
+    overflow: hidden;
+    border-bottom-right-radius: var(--container-inset-radius);
+  }
+}
+
+.calendar-current-day-preview-title {
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-md);
+  font-size: var(--text-md);
+  font-weight: bold;
+  color: var(--color-white-80);
+}
+
+.calendar-current-day-reminders {
+  overflow-y: auto;
+  max-height: 110px;
+  padding-bottom: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.calendar-current-day-reminder {
+  display: flex;
+  gap: var(--space-sm);
+  font-size: var(--text-sm);
+  word-break: break-word;
+
+  &:not(:last-of-type) {
+    margin-bottom: var(--space-md);
+  }
+}
+
+.calendar-current-day-reminder-color {
+  flex-shrink: 0;
+  width: 2px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.calendar-current-day-reminder-range-text {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--color-white-60);
 }
 
 @keyframes calendar-scale-up {

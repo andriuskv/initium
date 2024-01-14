@@ -81,7 +81,8 @@ function getDefault() {
       dateAlignment: "center",
       dateLocale: "en-US",
       firstWeekday: 0,
-      worldClocksHidden: false
+      worldClocksHidden: false,
+      reminderPreviewHidden: false
     },
     mainPanel: {
       navHidden: false,
