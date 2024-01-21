@@ -20,12 +20,16 @@
 }
 
 .tasks-group {
-  &:has(.tasks-groups-item-toggle-btn.expanded) + & .tasks-groups-item-toggle-btn {
-    box-shadow: 0 1px 0 0 var(--color-white-10),
-                0 -1px 0 0 var(--color-white-10);
+  &:not(:first-of-type) {
+    box-shadow: 0 -1px 0 0 var(--color-white-10);
   }
 
   &:last-of-type {
+    &:not(:has(.tasks-groups-item-toggle-btn:where(.expanded, :hover))) {
+      box-shadow: 0 -1px 0 0 var(--color-white-10),
+                  0 1px 0 0 var(--color-white-10);
+    }
+
     .task:last-of-type {
       box-shadow: 0 1px 0 0 var(--color-white-10);
     }
@@ -60,19 +64,15 @@
   width: 100%;
   border-radius: 0;
   border: none;
-  box-shadow: 0 1px 0 0 var(--color-white-10);
 
   &.expanded {
     --color: var(--color-white);
 
+    box-shadow: var(--fg-shadow);
+
     .tasks-group-icon {
       transform: rotateZ(180deg);
     }
-  }
-
-  &:hover {
-    box-shadow: 0 1px 0 0 var(--color-white-20),
-                0 -1px 0 0 var(--color-white-10);
   }
 
   &:disabled {
