@@ -209,7 +209,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
           {tabs.map((tab, index) => renderTab(tab, index))}
         </SortableList>
       </ul>
-      <CreateButton style={{ "--bottom": "50px" }} onClick={showCreateTabForm} trackScroll></CreateButton>
+      <CreateButton style={{ "--bottom": "50px" }} onClick={showCreateTabForm} shiftTarget=".js-notepad-tab-dropdown-toggle-btn" trackScroll></CreateButton>
       <div className="container-footer notepad-storage">
         <div className="notepad-storage-text">
           <div>{storage.current} kB</div>

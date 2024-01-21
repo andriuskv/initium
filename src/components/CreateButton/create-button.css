@@ -2,6 +2,7 @@
   --bottom: var(--space-md);
   --expanded-width: 92px;
   --background-color: var(--color-primary);
+  --shift: 0px;
 
   z-index: 1;
   position: absolute;
@@ -19,9 +20,10 @@
               var(--duration-f) gap,
               var(--duration-f) transform;
   transition-delay: var(--duration-f);
+  transform: translateY(var(--shift));
 
   &.shift-up {
-    transform: translateY(-24px);
+    --shift: -24px;
   }
 
   &:hover, &:focus-visible {
