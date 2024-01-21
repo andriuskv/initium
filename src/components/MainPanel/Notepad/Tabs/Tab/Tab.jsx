@@ -81,7 +81,7 @@ export default function Tab({ children, index, tab, tabs, textSize, locale, upda
       )}
       <div className="notepad-tabs-item-bottom">
         <span className="notepad-tab-size-text">Size: {tab.sizeString} kB</span>
-        <Dropdown>
+        <Dropdown toggle={{ className: "js-notepad-tab-dropdown-toggle-btn" }}>
           {renderTextSizeSetting()}
           <button className="btn icon-text-btn dropdown-btn" onClick={enableTabRename}>
             <Icon id="edit"/>

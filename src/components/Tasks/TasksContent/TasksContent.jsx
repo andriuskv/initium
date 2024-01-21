@@ -737,7 +737,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
         ) : (
           <p className="tasks-message">{locale.tasks.no_tasks}</p>
         )}
-        <CreateButton className="tasks-create-btn" onClick={showForm} trackScroll></CreateButton>
+        <CreateButton className="tasks-create-btn" onClick={showForm} shiftTarget=".task-edit-btn" trackScroll></CreateButton>
       </div>
       {removedItems.length > 0 && (
         <div className="container-footer tasks-dialog">
