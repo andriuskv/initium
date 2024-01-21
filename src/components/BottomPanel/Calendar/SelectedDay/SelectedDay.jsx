@@ -173,8 +173,8 @@ export default function SelectedDay({ selectedDay, calendar, reminders, locale, 
         <ul className="selected-day-remainders" data-dropdown-parent>
           {day.reminders.map((reminder, index) => (
             <li className="selected-day-remainder" key={reminder.id}>
-              <div className="selected-day-reminder-color" style={{ "backgroundColor": reminder.color }}
-                onClick={() => changeReminderColor(reminder)}></div>
+              <button className="btn selected-day-reminder-color" style={{ "backgroundColor": reminder.color }} title="Change color"
+                onClick={() => changeReminderColor(reminder)}></button>
               {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
               <div>
                 <div>{reminder.text}</div>

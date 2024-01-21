@@ -28,13 +28,15 @@
   flex-shrink: 0;
   width: 4px;
   height: 24px;
+  padding: 0;
   margin-right: var(--space-md);
   margin-left: var(--space-xs);
   transition: var(--duration-n) transform,
               var(--duration-n) background-color;
 
-  &:hover {
+  &:hover, &:focus-visible {
     transform: scaleX(2);
+    box-shadow: none;
   }
 }
 
