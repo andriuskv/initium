@@ -346,12 +346,12 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
       let requiredSubtaskCount = 0;
 
       for (const subtask of task.subtasks) {
-        if (!subtask.optional && !subtask.removed) {
+        if (!subtask.optional && !(subtask.removed || subtask.hidden)) {
           requiredSubtaskCount += 1;
         }
       }
 
-      if (!subtask.optional && requiredSubtaskCount === 0) {
+      if (requiredSubtaskCount === 0) {
         subtask.removed = false;
         removeTask(groupIndex, taskIndex);
         return;
@@ -502,6 +502,10 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
     delete task.text;
     delete task.removed;
     delete task.expirationDateString;
+
+    if (typeof task.optional === "undefined") {
+      delete task.optional;
+    }
     return task;
   }
 
