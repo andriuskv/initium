@@ -1,7 +1,25 @@
 @import "../../../styles/mixins.css";
 
+.calendar-google-user-dropdown {
+  position: absolute;
+  top: 5px;
+  right: 39px;
+}
+
+.calendar-message-container {
+  position: absolute;
+  top: 48px;
+  left: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-xl);
+  border-radius: 999px;
+  color: var(--color-white-80);
+}
+
 .calendar-current-date {
-  position: relative;
   display: flex;
   padding: var(--space-sm);
   border-bottom: 1px solid var(--color-white-10);
@@ -234,6 +252,7 @@
 
 .calendar-current-day-reminder {
   display: flex;
+  align-items: center;
   gap: var(--space-sm);
   font-size: var(--text-sm);
   word-break: break-word;
@@ -252,6 +271,19 @@
 
 .calendar-current-day-reminder-range-text {
   flex-shrink: 0;
+  margin-left: auto;
+  color: var(--color-white-60);
+
+  &:has(+ .google-reminder-icon) {
+    margin-right: var(--space-sm);
+
+    & + .google-reminder-icon {
+      margin-left: 0;
+    }
+  }
+}
+
+.google-reminder-icon {
   margin-left: auto;
   color: var(--color-white-60);
 }

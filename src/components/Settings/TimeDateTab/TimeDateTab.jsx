@@ -1,9 +1,18 @@
-import { useRef } from "react";
-import { timeout } from "utils";
+import { useState, useRef } from "react";
+import { dispatchCustomEvent, timeout } from "utils";
 import { useSettings } from "contexts/settings";
+import * as calendarService from "services/calendar";
+import GoogleUserDropdown from "components/GoogleUserDropdown";
+import "./time-date-tab.css";
 
 export default function TimeDateTab({ locale }) {
   const { settings: { timeDate: settings }, updateSetting, toggleSetting } = useSettings();
+  const [googleUser, setGoogleUser] = useState(() => {
+    if (localStorage.getItem("oauth_token")) {
+      return { user: JSON.parse(localStorage.getItem("google-user")) || null };
+    }
+    return {};
+  });
   const timeoutId = useRef(0);
 
   function toggleTimeFormat() {
@@ -52,8 +61,32 @@ export default function TimeDateTab({ locale }) {
     updateSetting("timeDate", { firstWeekday: Number(target.value) });
   }
 
+  async function handleGoogleCalendarConnect() {
+    setGoogleUser({ message: "", connecting: true });
+
+    try {
+      const data = await calendarService.authGoogleUser();
+
+      if (data.message) {
+        setGoogleUser({ message: data.message, connecting: false });
+      }
+      else {
+        setGoogleUser({ user: data.user, connecting: false });
+        dispatchCustomEvent("google-user-change", data.user);
+      }
+    } catch (e) {
+      console.log(e);
+      setGoogleUser({ message: "Something went wrong. Try again later.", connecting: false });
+    }
+  }
+
+  async function handleGoogleCalendarDisconnect() {
+    setGoogleUser({});
+    dispatchCustomEvent("google-user-change");
+  }
+
   return (
-    <div className="container-body setting-tab">
+    <div className="container-body setting-tab" data-dropdown-parent>
       <label className="setting">
         <span>{locale.settings.time_date.time_format_label}</span>
         <input type="checkbox" className="sr-only toggle-input"
@@ -217,7 +250,7 @@ export default function TimeDateTab({ locale }) {
             <div className="checkbox-tick"></div>
           </div>
         </label>
-        <label className="setting last-setting-tab-item">
+        <label className="setting">
           <span>Hide current day reminder preview</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.reminderPreviewHidden}
@@ -226,6 +259,15 @@ export default function TimeDateTab({ locale }) {
             <div className="checkbox-tick"></div>
           </div>
         </label>
+        <div className="setting last-setting-tab-item google-calendar-integration-setting">
+          <div className="google-calendar-integration-setting-main">
+            <span>Google Calendar</span>
+            {googleUser.user ? <GoogleUserDropdown user={googleUser.user} handleSignOut={handleGoogleCalendarDisconnect}/> : (
+              <button className="btn" onClick={handleGoogleCalendarConnect} disabled={googleUser.connecting}>Connect{googleUser.connecting ? "ing..." : ""}</button>
+            )}
+          </div>
+          {googleUser.message ? <p className="google-calendar-integration-setting-message">{googleUser.message}</p> : null}
+        </div>
       </div>
     </div>
   );

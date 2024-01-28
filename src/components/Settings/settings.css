@@ -67,7 +67,6 @@
 }
 
 .setting {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -77,6 +76,7 @@
   transition: var(--duration-f) opacity;
 
   &.disabled {
+    position: relative;
     opacity: 0.4;
 
     &::after {

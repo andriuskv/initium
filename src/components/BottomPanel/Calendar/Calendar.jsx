@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { getRandomString, findFocusableElements, findRelativeFocusableElement } from "utils";
+import { timeout, getRandomString, findFocusableElements, findRelativeFocusableElement } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
+import * as calendarService from "services/calendar";
 import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
+import GoogleUserDropdown from "components/GoogleUserDropdown";
 import "./calendar.css";
 import SelectedDay from "./SelectedDay";
 import WorldClocks from "./WorldClocks";
@@ -16,12 +18,17 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const [visibleMonth, setVisibleMonth] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [reminders, setReminders] = useState([]);
+  const [googleReminders, setGoogleReminders] = useState([]);
+  const [googleUser, setGoogleUser] = useState(() => JSON.parse(localStorage.getItem("google-user")) || null);
   const [viewingYear, setViewingYear] = useState(false);
   const [transition, setTransition] = useState({ x: 0, y: 0 });
+  const [message, setMessage] = useState("");
   const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
   const currReminderPreviewRef = useRef(null);
   const currReminderPreviewHeight = useRef(0);
+  const messageTimeoutId = useRef(0);
+  const first = useRef(true);
 
   useEffect(() => {
     init();
@@ -47,89 +54,107 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }
   }, [currentDay]);
 
+  useEffect(() => {
+    if (calendar) {
+      if (first.current) {
+        first.current = false;
+        initGoogleReminders();
+      }
+      window.addEventListener("google-user-change", handleGoogleUserChange);
+      chromeStorage.subscribeToChanges(({ reminders }) => {
+        if (!reminders) {
+          return;
+        }
+
+        if (reminders.newValue) {
+          const gr = resetRepeatableReminders(googleReminders);
+          initCalendar(reminders.newValue, gr);
+          hideSelectedDay();
+        }
+        else {
+          hideSelectedDay();
+          setViewingYear(false);
+          initCalendar();
+        }
+      }, { id: "calendar" });
+    }
+    return () => {
+      window.removeEventListener("google-user-change", handleGoogleUserChange);
+    };
+  }, [calendar]);
+
   async function init() {
     const reminders = await chromeStorage.get("reminders");
 
     initCalendar(reminders);
-
-    chromeStorage.subscribeToChanges(({ reminders }) => {
-      if (!reminders) {
-        return;
-      }
-
-      if (reminders.newValue) {
-        initCalendar(reminders.newValue);
-      }
-      else {
-        setSelectedDay(null);
-        setViewingYear(false);
-        initCalendar();
-      }
-    });
   }
 
-  function initCalendar(reminders) {
+  function initCalendar(reminders = [], googleReminders = []) {
     const currentDate = timeDateService.getCurrentDate();
     const { year, month } = currentDate;
     const calendar = {
-      [year] : generateYear(year)
+      [year] : calendarService.generateYear(year)
     };
     calendar[year][month].isCurrentMonth = true;
 
     setCurrentYear(year);
     setCurrentDay(getCurrentDay(calendar, currentDate));
     getVisibleMonth(calendar, currentDate);
-
-    if (reminders?.length) {
-      setReminders(reminders);
-      createReminders(reminders, calendar);
-    }
-    else {
-      setCalendar(calendar);
-    }
+    setCalendar(calendar);
+    setReminders(reminders);
+    createReminders(reminders.concat(googleReminders), calendar);
   }
 
   function reinitCalendar() {
-    const r = reminders.map(reminder => {
+    const r = resetRepeatableReminders(reminders);
+    const gr = resetRepeatableReminders(googleReminders);
+
+    initCalendar(r, gr);
+  }
+
+  async function initGoogleReminders() {
+    const data = await calendarService.fetchReminders();
+
+    if (data.reminders?.length) {
+      setGoogleReminders(data.reminders);
+      createReminders(data.reminders, calendar);
+    }
+    else if (data.message) {
+      setMessage(data.message);
+
+      messageTimeoutId.current = timeout(() => {
+        setMessage("");
+      }, 4000, messageTimeoutId.current);
+    }
+  }
+
+  function resetRepeatableReminders(reminders) {
+    return reminders.map(reminder => {
       delete reminder.nextRepeat;
       return reminder;
     });
-    initCalendar(r);
   }
 
-  function generateYear(year) {
-    const months = [];
-
-    for (let i = 0; i < 12; i++) {
-      const date = new Date(`${year}-${i + 1}-01`);
-      const daysInMonth = timeDateService.getDaysInMonth(year, i);
-      const month = {
-        firstDayIndex: timeDateService.getFirstDayIndex(year, i),
-        name: timeDateService.getMonthName(i, settings.dateLocale),
-        dateString: timeDateService.formatDate(date, {
-          locale: settings.dateLocale,
-          excludeDay: true
-        }),
-        days: []
-      };
-
-      for (let j = 0; j < daysInMonth; j++) {
-        const date = new Date(`${year}-${i + 1}-${j + 1}`);
-
-        month.days.push({
-          id: getRandomString(),
-          year,
-          month: i,
-          day: j + 1,
-          dateString: timeDateService.formatDate(date, {
-            locale: settings.dateLocale
-          }),
-          reminders: []
-        });
-      }
-      months.push(month);
+  async function handleGoogleUserChange({ detail: user }) {
+    if (user) {
+      await initGoogleReminders();
+      setGoogleUser(user);
     }
-    return months;
+    else {
+      handleSignOut();
+    }
+  }
+
+  async function handleSignOut() {
+    if (googleReminders.length) {
+      const r = resetRepeatableReminders(reminders);
+
+      setGoogleReminders([]);
+      initCalendar(r, []);
+      hideSelectedDay();
+    }
+    setGoogleUser(null);
+    calendarService.clearUser();
   }
 
   function getVisibleMonth(calendar, { year, month }) {
@@ -149,7 +174,8 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
     if (!calendar[year]) {
       isNewYear = true;
-      calendar[year] = generateYear(year);
+      calendar[year] = calendarService.generateYear(year);
+
     }
     const { days: previousMonthDays, name: previousMonthName } = calendar[year][previousMonth];
     const { days: nextMonthDays, name: nextMonthName } = calendar[year][nextMonth];
@@ -258,7 +284,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     const year = currentYear + direction;
 
     if (!calendar[year]) {
-      calendar[year] = generateYear(year);
+      calendar[year] = calendarService.generateYear(year);
 
       if (direction === 1) {
         repeatFutureReminders(calendar);
@@ -287,87 +313,11 @@ export default function Calendar({ visible, locale, showIndicator }) {
     setSelectedDay(null);
   }
 
-  function getDayCountFromMonthCount(monthCount, repeatAtDay, nextRepeat) {
-    let dayCount = 0;
-
-    nextRepeat.leftoverDays ??= 0;
-
-    for (let i = 1; i <= monthCount; i += 1) {
-      const year = nextRepeat.year;
-      const month = nextRepeat.month + i;
-      const nextMonthDays = getDaysInMonth(year, month);
-
-      if (repeatAtDay > nextMonthDays) {
-        nextRepeat.leftoverDays = repeatAtDay - nextMonthDays;
-        dayCount += nextMonthDays;
-      }
-      else {
-        const days = timeDateService.getDaysInMonth(year, month - 1);
-        dayCount += days + nextRepeat.leftoverDays;
-        nextRepeat.leftoverDays = 0;
-      }
-    }
-    return dayCount;
-  }
-
-  function getWeekdayRepeatGaps(reminder) {
-    const { weekdays } = reminder.repeat;
-    const gaps = [];
-    let weekday = timeDateService.getWeekday(reminder.year, reminder.month, reminder.day);
-    let gap = 1;
-    let i = 0;
-
-    while (i < 7) {
-      if (weekday === 6) {
-        weekday = 0;
-      }
-      else {
-        weekday += 1;
-      }
-
-      if (weekdays.dynamic[weekday]) {
-        gaps.push(gap);
-        gap = 1;
-      }
-      else {
-        gap += 1;
-      }
-      i += 1;
-    }
-    return gaps;
-  }
-
-  function getNextReminderDate(calendar, { year, month: monthIndex, day: dayIndex }) {
-    let months = calendar[year];
-    let month = months[monthIndex];
-
-    while (dayIndex > month.days.length - 1) {
-      monthIndex += 1;
-      dayIndex -= month.days.length;
-
-      if (monthIndex > 11) {
-        year += 1;
-        monthIndex = 0;
-        months = calendar[year];
-
-        if (!months) {
-          break;
-        }
-      }
-      month = months[monthIndex];
-    }
-    return {
-      day: dayIndex,
-      month: monthIndex,
-      year
-    };
-  }
-
-  function repeatReminder(calendar, reminder, shouldReplace) {
+  function repeatReminder(reminder, calendar, shouldReplace) {
     reminder.nextRepeat ??= {
       repeats: reminder.repeat.count,
       gapIndex: 0,
-      gaps: reminder.repeat.type === "weekday" ? getWeekdayRepeatGaps(reminder) : null,
+      gaps: reminder.repeat.type === "weekday" ? calendarService.getWeekdayRepeatGaps(reminder) : null,
       year: reminder.year,
       month: reminder.month,
       day:  reminder.day - 1
@@ -382,13 +332,13 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
     while (true) {
       if (!day) {
-        const date = getNextReminderDate(calendar, reminder.nextRepeat);
+        const date = calendarService.getNextReminderDate(calendar, reminder.nextRepeat);
 
         if (date.year > reminder.nextRepeat.year) {
           reminder.nextRepeat = { ...reminder.nextRepeat, ...date };
 
           if (calendar[date.year]) {
-            repeatReminder(calendar, reminder);
+            repeatReminder(reminder, calendar);
           }
           return;
         }
@@ -433,7 +383,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
           reminder.nextRepeat.day += reminder.repeat.gap * 7;
         }
         else if (reminder.repeat.customTypeGapName === "months") {
-          reminder.nextRepeat.day += getDayCountFromMonthCount(reminder.repeat.gap, reminder.day, reminder.nextRepeat);
+          reminder.nextRepeat.day += calendarService.getDayCountFromMonthCount(reminder.repeat.gap, reminder.day, reminder.nextRepeat);
         }
       }
       else if (reminder.repeat.type === "weekday") {
@@ -448,7 +398,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
         reminder.nextRepeat.day += 7;
       }
       else if (reminder.repeat.type === "month") {
-        const nextDays = getDaysInMonth(reminder.nextRepeat.year, reminder.nextRepeat.month + 1);
+        const nextDays = calendarService.getDaysInMonth(reminder.nextRepeat.year, reminder.nextRepeat.month + 1);
 
         reminder.nextRepeat.leftoverDays ??= 0;
 
@@ -466,25 +416,21 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }
   }
 
-  function getDaysInMonth(year, month) {
-    if (month > 11) {
-      month = 0;
-      year += 1;
+  function repeatFutureReminders(calendar) {
+    const r = getRepeatableReminders(reminders.concat(googleReminders), calendar);
+
+    for (const reminder of r) {
+      repeatReminder(reminder, calendar);
     }
-    return timeDateService.getDaysInMonth(year, month);
   }
 
-  function repeatFutureReminders(calendar) {
-    const repeatableReminders = reminders.reduce((reminders, reminder) => {
+  function getRepeatableReminders(reminders, calendar) {
+    return reminders.reduce((reminders, reminder) => {
       if (reminder.repeat && calendar[reminder.nextRepeat.year] && !reminder.nextRepeat.done) {
         reminders.push(reminder);
       }
       return reminders;
     }, []);
-
-    for (const reminder of repeatableReminders) {
-      repeatReminder(calendar, reminder);
-    }
   }
 
   function updateCalendar() {
@@ -501,11 +447,12 @@ export default function Calendar({ visible, locale, showIndicator }) {
     const { year } = reminder;
 
     if (!calendar[year]) {
-      calendar[year] = generateYear(year);
+      calendar[year] = calendarService.generateYear(year);
+      repeatFutureReminders(calendar);
     }
     reminder.id ??= getRandomString();
     reminder.range ??= {};
-    reminder.range.text = getReminderRangeString(reminder.range);
+    reminder.range.text = calendarService.getReminderRangeString(reminder.range);
 
     if (reminder.repeat) {
       if (reminder.repeat.type === "weekday") {
@@ -523,8 +470,8 @@ export default function Calendar({ visible, locale, showIndicator }) {
           }
         }
       }
-      reminder.repeat.tooltip = getReminderRepeatTooltip(reminder.repeat);
-      repeatReminder(calendar, reminder, shouldReplace);
+      reminder.repeat.tooltip = calendarService.getReminderRepeatTooltip(reminder.repeat);
+      repeatReminder(reminder, calendar, shouldReplace);
     }
     else {
       const day = getCalendarDay(calendar, reminder);
@@ -541,58 +488,6 @@ export default function Calendar({ visible, locale, showIndicator }) {
       }
     }
     setCalendar({ ...calendar });
-  }
-
-  function getReminderRangeString({ from, to }) {
-    if (!from) {
-      return "All day";
-    }
-
-    if (to) {
-      const fromString = timeDateService.getTimeString(from);
-      const toString = timeDateService.getTimeString(to);
-
-      return `${fromString} - ${toString}`;
-    }
-    return timeDateService.getTimeString(from);
-  }
-
-  function getReminderRepeatTooltip({ type, gap, count, weekdays, customTypeGapName }) {
-    if (type === "custom") {
-      return `Repeating ${count > 1 ? `${count} times ` : ""}every ${gap === 1 ? customTypeGapName.slice(0, -1) : `${gap} ${customTypeGapName}`}`;
-    }
-    else if (type === "week") {
-      return "Repeating every week";
-    }
-    else if (type === "month") {
-      return "Repeating every month";
-    }
-    else if (type === "weekday") {
-      const fullySelected = weekdays.dynamic.every(weekday => weekday);
-
-      if (fullySelected) {
-        return "Repeating every weekday";
-      }
-      else {
-        return getWeekdayRepeatTooltip(weekdays.dynamic);
-      }
-    }
-  }
-
-  function getWeekdayRepeatTooltip(weekdayStates) {
-    const weekdays = timeDateService.getWeekdays(settings.dateLocale);
-    const formatter = new Intl.ListFormat(settings.dateLocale, {
-      style: "long",
-      type: "conjunction"
-    });
-    const arr = weekdayStates.reduce((arr, weekday, index) => {
-      if (weekday) {
-        arr.push(weekdays[index]);
-      }
-      return arr;
-    }, []);
-    const str = formatter.format(arr);
-    return `Repeating every ${str}`;
   }
 
   function resetSelectedDay() {
@@ -711,11 +606,25 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }
   }
 
+  function dismissMessage() {
+    clearTimeout(messageTimeoutId.current);
+    setMessage("");
+  }
+
   if (!calendar) {
     return null;
   }
   return (
     <>
+      {googleUser ? <GoogleUserDropdown className="calendar-google-user-dropdown" user={googleUser} handleSignOut={handleSignOut} showCalendarLink/> : null}
+      {message ? (
+        <div className="container container-opaque calendar-message-container">
+          <p className="calendar-message">{message}</p>
+          <button className="btn icon-btn" onClick={dismissMessage} title="Dismiss">
+            <Icon id="cross"/>
+          </button>
+        </div>
+      ) : null}
       <div className="container-body calendar-current-date">
         <button className="btn text-btn calendar-current-date-btn" onClick={showCurrentDateView}>
           <div className="calendar-current-date-weekday">{currentDay.weekdayName}</div>
@@ -801,6 +710,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
                 <div className="calendar-current-day-reminder-color" style={{ backgroundColor: reminder.color }}></div>
                 <p>{reminder.text}</p>
                 {reminder.range.from ? <p className="calendar-current-day-reminder-range-text">{reminder.range.text}</p> : null}
+                {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
               </li>
             ))}
           </ul>

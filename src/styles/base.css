@@ -76,7 +76,7 @@ p {
     2px 4px 4px 0 var(--color-black-8),
     4px 8px 8px 0 var(--color-black-4),
     8px 16px 16px 0 var(--color-black-2);
-  background-color: hsl(var(--accent-hue) 12% 16% / var(--panel-background-opacity));;
+  background-color: hsl(var(--accent-hue) 12% 16% / var(--panel-background-opacity));
   backdrop-filter: blur(var(--panel-background-blur));
   background-image: var(--panel-background-noise);
 }
