@@ -165,7 +165,7 @@ export default function MainPanelTab({ locale, hide }) {
         <div className="settings-group-top">
           <h4 className="settings-group-title">{locale.settings.main_panel.notepad_group_title}</h4>
         </div>
-        <div className={`setting last-setting-tab-item ${settings.components.notepad.disabled ? " disabled" : ""}`}>
+        <div className={`setting last-setting-tab-item${settings.components.notepad.disabled ? " disabled" : ""}`}>
           <span>{locale.settings.main_panel.reset_notepad_label}</span>
           <button className="btn" onClick={resetNotepadTextSize}>{locale.global.reset}</button>
         </div>

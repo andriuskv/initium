@@ -126,20 +126,29 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
     return element;
   }
 
-  return (
-    <div id={state.id} className={`dropdown-container${container ? ` ${container.className}` : ""}${state.visible ? " visible" : ""}`}>
-      {toggle.isIconTextBtn ? (
-        <button type="button" className={`btn icon-text-btn${toggle.className ? ` ${toggle.className}` : ""}${state.visible ? " active" : ""}`}
+  function renderToggleButton() {
+    const className = `${toggle.className ? ` ${toggle.className}` : ""}${state.visible ? " active" : ""}`;
+
+    if (toggle.isIconTextBtn) {
+      return (
+        <button type="button" className={`btn icon-text-btn${className}`}
           onClick={toggleDropdown}>
           <Icon id={toggle.iconId || "vertical-dots"}/>
           <span>{toggle.title}</span>
         </button>
-      ) : (
-        <button type="button" className={`btn icon-btn${toggle.className ? ` ${toggle.className}` : ""}${state.visible ? " active" : ""}`}
-          onClick={toggleDropdown} title={toggle.title || locale.global.more}>
-          <Icon id={toggle.iconId || "vertical-dots"}/>
-        </button>
-      )}
+      );
+    }
+    return (
+      <button type="button" className={`btn icon-btn${className}`}
+        onClick={toggleDropdown} title={toggle.title || locale.global.more}>
+        {toggle.body ? toggle.body : <Icon id={toggle.iconId || "vertical-dots"}/>}
+      </button>
+    );
+  }
+
+  return (
+    <div id={state.id} className={`dropdown-container${container ? ` ${container.className}` : ""}${state.visible ? " visible" : ""}`}>
+      {renderToggleButton()}
       <div ref={drop} className={`container container-opaque dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}`}>{children}</div>
     </div>
   );

@@ -19,8 +19,18 @@ let isLocalChange = false;
   });
 })();
 
-function subscribeToChanges(handler, listenToLocal = false) {
-  subscribers.push({ handler, listenToLocal });
+function subscribeToChanges(handler, { id, listenToLocal = false } = {}) {
+  if (id) {
+    const index = subscribers.findIndex(subscriber => subscriber.id === id);
+
+    if (index >= 0) {
+      const subscriber = subscribers[index];
+
+      chrome.storage.onChanged.removeListener(subscriber.hanlder);
+      subscribers.splice(index, 1);
+    }
+  }
+  subscribers.push({ id, handler, listenToLocal });
 }
 
 function get(id) {

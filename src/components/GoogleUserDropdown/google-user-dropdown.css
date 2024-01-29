@@ -1,0 +1,54 @@
+.google-user-dropdown-toggle-btn {
+  padding: 0;
+
+  &:hover, &:focus-visible {
+    .google-user-dropdown-toggle-image {
+      opacity: 0.9;
+    }
+  }
+}
+
+.google-user-dropdown-toggle-image {
+  display: block;
+  width: 28px;
+  border-radius: 50%;
+}
+
+.google-user-dropdown {
+  padding: var(--space-md);
+}
+
+.google-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.google-user-image {
+  border-radius: 50%;
+}
+
+.google-user-name {
+  font-weight: bold;
+}
+
+.google-user-email {
+  font-size: var(--text-sm);
+  font-weight: bold;
+  color: var(--color-white-60);
+}
+
+.google-user-dropdown-bottom {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.google-user-calendar-link {
+  margin-right: auto;
+}
+
+.google-user-calendar-logo {
+  display: block;
+  border-radius: 50%;
+}

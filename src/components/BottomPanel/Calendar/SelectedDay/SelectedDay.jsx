@@ -173,25 +173,34 @@ export default function SelectedDay({ selectedDay, calendar, reminders, locale, 
         <ul className="selected-day-remainders" data-dropdown-parent>
           {day.reminders.map((reminder, index) => (
             <li className="selected-day-remainder" key={reminder.id}>
-              <button className="btn selected-day-reminder-color" style={{ "backgroundColor": reminder.color }} title="Change color"
-                onClick={() => changeReminderColor(reminder)}></button>
-              {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
+              {reminder.type === "google" ? (
+                <div className="selected-day-reminder-color inert" style={{ "backgroundColor": reminder.color }}></div>
+              ) : (
+                <button className="btn selected-day-reminder-color" style={{ "backgroundColor": reminder.color }} title="Change color"
+                  onClick={() => changeReminderColor(reminder)}></button>
+              )}
+              <div>
+                {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
+                {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
+              </div>
               <div>
                 <div>{reminder.text}</div>
                 <div className="selected-day-reminder-range">{reminder.range.text}</div>
               </div>
-              <Dropdown container={{ className: "selected-day-remainder-dropdown" }}>
-                <button className="btn icon-text-btn dropdown-btn"
-                  onClick={() => editReminder(reminder.id, index)}>
-                  <Icon id="edit"/>
-                  <span>{locale.global.edit}</span>
-                </button>
-                <button className="btn icon-text-btn dropdown-btn"
-                  onClick={() => removeReminder(reminder.id, index)}>
-                  <Icon id="trash"/>
-                  <span>{locale.global.remove}</span>
-                </button>
-              </Dropdown>
+              {reminder.type === "google" ? null : (
+                <Dropdown container={{ className: "selected-day-remainder-dropdown" }}>
+                  <button className="btn icon-text-btn dropdown-btn"
+                    onClick={() => editReminder(reminder.id, index)}>
+                    <Icon id="edit"/>
+                    <span>{locale.global.edit}</span>
+                  </button>
+                  <button className="btn icon-text-btn dropdown-btn"
+                    onClick={() => removeReminder(reminder.id, index)}>
+                    <Icon id="trash"/>
+                    <span>{locale.global.remove}</span>
+                  </button>
+                </Dropdown>
+              )}
             </li>
           ))}
         </ul>

@@ -19,6 +19,7 @@
 .selected-day-remainder {
   display: flex;
   align-items: flex-start;
+  gap: var(--space-sm);
   padding: var(--space-sm);
   border-bottom: 1px solid var(--color-white-10);
   word-break: break-word;
@@ -29,14 +30,18 @@
   width: 4px;
   height: 24px;
   padding: 0;
-  margin-right: var(--space-md);
+  margin-right: var(--space-sm);
   margin-left: var(--space-xs);
+  border-radius: 8px;
   transition: var(--duration-n) transform,
               var(--duration-n) background-color;
 
-  &:hover, &:focus-visible {
-    transform: scaleX(2);
-    box-shadow: none;
+  &:not(.inert) {
+    &:hover, &:focus-visible {
+      transform: scaleX(2);
+      box-shadow: none;
+
+    }
   }
 }
 
@@ -49,7 +54,6 @@
 
 .reminder-repeat-icon {
   flex-shrink: 0;
-  margin-right: var(--space-sm);
   color: var(--color-white-60);
 }
 

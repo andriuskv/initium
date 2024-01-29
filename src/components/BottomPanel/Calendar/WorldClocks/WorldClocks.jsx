@@ -43,7 +43,7 @@ export default function WorldClocks({ parentVisible, locale }) {
       else {
         setClocks([]);
       }
-    }, true);
+    }, { listenToLocal: true });
   }
 
   function initClocks(clocks) {
