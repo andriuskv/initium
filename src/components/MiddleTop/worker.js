@@ -1,9 +1,12 @@
 let id = 0;
 
 onmessage = function({ data }) {
-  const { action, duration } = data;
+  const { type, action, duration } = data;
 
-  if (action === "start") {
+  if (type === "clock") {
+    updateClock();
+  }
+  else if (action === "start") {
     clearTimeout(id);
 
     if (duration) {
@@ -45,5 +48,17 @@ function update(elapsed) {
 
   id = setTimeout(() => {
     update(elapsed);
+  }, interval - diff);
+}
+
+function updateClock(elapsed = 0) {
+  const interval = 1000;
+  const diff = performance.now() - elapsed;
+
+  elapsed += interval;
+  postMessage(null);
+
+  id = setTimeout(() => {
+    updateClock(elapsed);
   }, interval - diff);
 }

@@ -5,6 +5,7 @@ import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-
 import * as pipService from "../picture-in-picture";
 import Icon from "components/Icon";
 import "./pomodoro.css";
+import useWorker from "../../useWorker";
 
 const stagesOrder = ["focus", "short", "focus", "long"];
 const stages = {
@@ -25,11 +26,11 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
   const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
   const currentStageIndex = useRef(0);
-  const worker = useRef(null);
+  const [initWorker, destroyWorker] = useWorker(handleMessage);
 
   useEffect(() => {
     if (running) {
-      initWorker(state.duration);
+      initWorker({ duration: state.duration });
       toggleIndicator("pomodoro", true);
       addToRunning("pomodoro");
     }
@@ -62,21 +63,6 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
     };
   }, [pipVisible]);
 
-  function initWorker(duration) {
-    if (worker.current) {
-      return;
-    }
-    const controller = new AbortController();
-
-    worker.current = {
-      ref: new Worker(new URL("../worker.js", import.meta.url), { type: "module" }),
-      abortController: controller
-    };
-
-    worker.current.ref.addEventListener("message", handleMessage, { signal: controller.signal });
-    worker.current.ref.postMessage({ action: "start", duration });
-  }
-
   function handleMessage({ data }) {
     if (data.duration < 0) {
       setNextStage();
@@ -88,15 +74,6 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
         playAudio();
       }
     }
-  }
-
-  function destroyWorker() {
-    if (!worker.current) {
-      return;
-    }
-    worker.current.abortController.abort();
-    worker.current.ref.terminate();
-    worker.current = null;
   }
 
   function toggle() {

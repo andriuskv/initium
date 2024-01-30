@@ -5,6 +5,7 @@ import { addToRunning, removeFromRunning } from "../running-timers";
 import * as pipService from "../picture-in-picture";
 import Icon from "components/Icon";
 import "./stopwatch.css";
+import useWorker from "../../useWorker";
 
 const Splits = lazy(() => import("./Splits"));
 
@@ -15,7 +16,7 @@ export default function Stopwatch({ visible, locale, toggleIndicator, updateTitl
   const [label, setLabel] = useState("");
   const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
-  const worker = useRef(null);
+  const [initWorker, destroyWorker] = useWorker(handleMessage);
 
   useEffect(() => {
     if (running) {
@@ -43,32 +44,8 @@ export default function Stopwatch({ visible, locale, toggleIndicator, updateTitl
     };
   }, [pipVisible]);
 
-  function initWorker() {
-    if (worker.current) {
-      return;
-    }
-    const controller = new AbortController();
-
-    worker.current = {
-      ref: new Worker(new URL("../worker.js", import.meta.url), { type: "module" }),
-      abortController: controller
-    };
-
-    worker.current.ref.addEventListener("message", handleMessage, { signal: controller.signal });
-    worker.current.ref.postMessage({ action: "start" });
-  }
-
   function handleMessage(event) {
     update(event.data);
-  }
-
-  function destroyWorker() {
-    if (!worker.current) {
-      return;
-    }
-    worker.current.abortController.abort();
-    worker.current.ref.terminate();
-    worker.current = null;
   }
 
   function toggle() {
