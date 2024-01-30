@@ -1,26 +1,35 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { getDisplayTime, formatDate } from "services/timeDate";
 import "./clock.css";
+import useWorker from "../useWorker";
 
 export default function Clock({ settings }) {
   const [clock, setClock] = useState(() => ({ ...getDisplayTime(settings.clockStyle === "vertical") }));
   const [date, setDate] = useState(() => ({ day: new Date().getDate() }));
-  const timeoutId = useRef(0);
+  const [initWorker, destroyWorker] = useWorker(handleMessage);
 
   useEffect(() => {
     if (settings.clockDisabled) {
       return;
     }
-    update();
+    initWorker({ type: "clock" });
 
     return () => {
-      clearTimeout(timeoutId.current);
+      destroyWorker();
     };
   }, [settings, date]);
 
   useEffect(() => {
     updateDate();
   }, [settings.dateLocale]);
+
+  function handleMessage() {
+    setClock({ ...getDisplayTime(settings.clockStyle === "vertical") });
+
+    if (new Date().getDate() !== date.day) {
+      updateDate();
+    }
+  }
 
   function updateDate() {
     const currentDate = new Date();
@@ -31,15 +40,6 @@ export default function Clock({ settings }) {
     });
 
     setDate({ day: currentDate.getDate(), string: date });
-  }
-
-  function update() {
-    setClock({ ...getDisplayTime(settings.clockStyle === "vertical") });
-
-    if (new Date().getDate() !== date.day) {
-      updateDate();
-    }
-    timeoutId.current = setTimeout(update, 1000);
   }
 
   function renderClock() {

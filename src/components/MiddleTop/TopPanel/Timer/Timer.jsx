@@ -9,6 +9,7 @@ import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./timer.css";
 import Inputs from "./Inputs";
+import useWorker from "../../useWorker";
 
 const Presets = lazy(() => import("./Presets"));
 
@@ -26,8 +27,8 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
   const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
   const dirtyInput = useRef(false);
-  const worker = useRef(null);
   const audioTimeoutId = useRef(null);
+  const [initWorker, destroyWorker] = useWorker(handleMessage);
 
   useEffect(() => {
     init();
@@ -35,7 +36,7 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
 
   useEffect(() => {
     if (running) {
-      initWorker(state.duration);
+      initWorker({ duration: state.duration });
       toggleIndicator("timer", true);
       addToRunning("timer");
     }
@@ -59,21 +60,6 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
     };
   }, [pipVisible]);
 
-  function initWorker(duration) {
-    if (worker.current) {
-      return;
-    }
-    const controller = new AbortController();
-
-    worker.current = {
-      ref: new Worker(new URL("../worker.js", import.meta.url), { type: "module" }),
-      abortController: controller
-    };
-
-    worker.current.ref.addEventListener("message", handleMessage, { signal: controller.signal });
-    worker.current.ref.postMessage({ action: "start", duration });
-  }
-
   function handleMessage({ data }) {
     if (data.duration >= 0) {
       update(data.duration);
@@ -85,15 +71,6 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
     else if (!audio.shouldPlay) {
       reset();
     }
-  }
-
-  function destroyWorker() {
-    if (!worker.current) {
-      return;
-    }
-    worker.current.abortController.abort();
-    worker.current.ref.terminate();
-    worker.current = null;
   }
 
   async function init() {
