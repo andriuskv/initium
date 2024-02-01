@@ -9,7 +9,7 @@ import "./selected-day.css";
 
 const Form = lazy(() => import("./Form"));
 
-export default function SelectedDay({ selectedDay, calendar, reminders, locale, updateCalendar, createReminder, resetSelectedDay, hide }) {
+export default function SelectedDay({ selectedDay, calendar, reminders, locale, updateCalendar, sortDayReminders, createReminder, resetSelectedDay, hide }) {
   const [day, setDay] = useState(null);
   const timeoutId = useRef(0);
 
@@ -117,6 +117,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, locale, 
 
   function updateReminder(reminder, form) {
     createReminder(reminder, calendar, form.updating);
+    sortDayReminders(selectedDay);
 
     if (form.updating) {
       reminders.splice(form.reminderIndex, 1, reminder);
@@ -124,11 +125,11 @@ export default function SelectedDay({ selectedDay, calendar, reminders, locale, 
       if (form.repeat.wasEnabled) {
         removeRepeatedReminder(form.id);
       }
-      resetSelectedDay();
     }
     else {
       reminders.push(reminder);
     }
+    resetSelectedDay();
     saveReminders(reminders);
   }
 
@@ -147,6 +148,7 @@ export default function SelectedDay({ selectedDay, calendar, reminders, locale, 
       }
 
       return {
+        creationDate: reminder.creationDate,
         day: reminder.day,
         month: reminder.month,
         year: reminder.year,

@@ -100,9 +100,9 @@ export default function Calendar({ visible, locale, showIndicator }) {
     setCurrentYear(year);
     setCurrentDay(getCurrentDay(calendar, currentDate));
     getVisibleMonth(calendar, currentDate);
+    createReminders(reminders.concat(googleReminders), calendar);
     setCalendar(calendar);
     setReminders(reminders);
-    createReminders(reminders.concat(googleReminders), calendar);
   }
 
   function reinitCalendar() {
@@ -118,6 +118,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     if (data.reminders?.length) {
       setGoogleReminders(data.reminders);
       createReminders(data.reminders, calendar);
+      setCalendar({ ...calendar });
     }
     else if (data.message) {
       setMessage(data.message);
@@ -441,6 +442,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
   function createReminders(reminders, calendar) {
     reminders.forEach(reminder => createReminder(reminder, calendar));
+    sortCalendarReminders(calendar);
   }
 
   function createReminder(reminder, calendar, shouldReplace) {
@@ -487,6 +489,22 @@ export default function Calendar({ visible, locale, showIndicator }) {
         setCurrentDay({ ...day });
       }
     }
+  }
+
+  function sortCalendarReminders(calendar) {
+    for (const year of Object.keys(calendar)) {
+      for (const month of calendar[year]) {
+        for (const day of month.days) {
+          day.reminders = day.reminders.toSorted((a, b) => a.creationDate - b.creationDate);
+        }
+      }
+    }
+  }
+
+  function sortDayReminders(date) {
+    const { year, month, day } = date;
+    calendar[year][month].days[day - 1].reminders.sort((a, b) => a.creationDate - b.creationDate);
+
     setCalendar({ ...calendar });
   }
 
@@ -634,7 +652,8 @@ export default function Calendar({ visible, locale, showIndicator }) {
       <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${currReminderPreviewHeight.current}px` }}>
         {selectedDay ? (
           <SelectedDay calendar={calendar} selectedDay={selectedDay} reminders={reminders} locale={locale}
-            updateCalendar={updateCalendar} createReminder={createReminder} resetSelectedDay={resetSelectedDay} hide={hideSelectedDay}/>
+            sortDayReminders={sortDayReminders} updateCalendar={updateCalendar} createReminder={createReminder}
+            resetSelectedDay={resetSelectedDay} hide={hideSelectedDay}/>
         ) : viewingYear ? (
           <div className={`calendar${transition.active ? " transition" : ""}`}>
             <div className="calendar-header">
