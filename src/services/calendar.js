@@ -272,6 +272,7 @@ function parseItems(items, defaultColorId, colors) {
     }
 
     const reminder = {
+      creationDate: new Date(item.updated ?? item.created).getTime(),
       id: item.id,
       type: "google",
       color: item.colorId ? colors.event[item.colorId].background : defaultColor,

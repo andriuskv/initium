@@ -104,6 +104,7 @@ export default function Form({ form: initialForm, day, locale, updateReminder, h
     event.preventDefault();
 
     const reminder = {
+      creationDate: Date.now(),
       oldId: form.id,
       index: form.reminderDayIndex,
       text: event.target.elements.reminder.value,
