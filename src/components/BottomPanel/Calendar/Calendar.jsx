@@ -1,14 +1,17 @@
-import { useState, useEffect, useRef, useMemo } from "react";
-import { timeout, getRandomString, findFocusableElements, findRelativeFocusableElement } from "utils";
+import { useState, useEffect, useRef, useMemo, Suspense, lazy } from "react";
+import { dispatchCustomEvent, timeout, getRandomString, getRandomHslColor, findFocusableElements, findRelativeFocusableElement } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import * as calendarService from "services/calendar";
 import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
-import GoogleUserDropdown from "components/GoogleUserDropdown";
 import "./calendar.css";
-import SelectedDay from "./SelectedDay";
-import WorldClocks from "./WorldClocks";
+import HeaderDropdown from "./HeaderDropdown";
+
+const SelectedDay = lazy(() => import("./SelectedDay"));
+const ReminderList = lazy(() => import("./ReminderList"));
+const WorldClocks = lazy(() => import("./WorldClocks"));
+const Form = lazy(() => import("./Form"));
 
 export default function Calendar({ visible, locale, showIndicator }) {
   const { settings: { appearance: { animationSpeed }, timeDate: settings } } = useSettings();
@@ -16,11 +19,10 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const [currentDay, setCurrentDay] = useState(null);
   const [currentYear, setCurrentYear] = useState();
   const [visibleMonth, setVisibleMonth] = useState(null);
-  const [selectedDay, setSelectedDay] = useState(null);
   const [reminders, setReminders] = useState([]);
   const [googleReminders, setGoogleReminders] = useState([]);
   const [googleUser, setGoogleUser] = useState(() => JSON.parse(localStorage.getItem("google-user")) || null);
-  const [viewingYear, setViewingYear] = useState(false);
+  const [view, setView] = useState({ name: "default" });
   const [transition, setTransition] = useState({ x: 0, y: 0 });
   const [message, setMessage] = useState("");
   const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [settings.dateLocale, settings.firstWeekday]);
@@ -28,6 +30,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const currReminderPreviewRef = useRef(null);
   const currReminderPreviewHeight = useRef(0);
   const messageTimeoutId = useRef(0);
+  const saveTimeoutId = useRef(0);
   const first = useRef(true);
 
   useEffect(() => {
@@ -69,13 +72,11 @@ export default function Calendar({ visible, locale, showIndicator }) {
         if (reminders.newValue) {
           const gr = resetRepeatableReminders(googleReminders);
           initCalendar(reminders.newValue, gr);
-          hideSelectedDay();
         }
         else {
-          hideSelectedDay();
-          setViewingYear(false);
           initCalendar();
         }
+        showCalendar();
       }, { id: "calendar" });
     }
     return () => {
@@ -142,17 +143,17 @@ export default function Calendar({ visible, locale, showIndicator }) {
       setGoogleUser(user);
     }
     else {
-      handleSignOut();
+      handleUserSignOut();
     }
   }
 
-  async function handleSignOut() {
+  async function handleUserSignOut() {
     if (googleReminders.length) {
       const r = resetRepeatableReminders(reminders);
 
       setGoogleReminders([]);
       initCalendar(r, []);
-      hideSelectedDay();
+      showCalendar();
     }
     setGoogleUser(null);
     calendarService.clearUser();
@@ -176,7 +177,6 @@ export default function Calendar({ visible, locale, showIndicator }) {
     if (!calendar[year]) {
       isNewYear = true;
       calendar[year] = calendarService.generateYear(year);
-
     }
     const { days: previousMonthDays, name: previousMonthName } = calendar[year][previousMonth];
     const { days: nextMonthDays, name: nextMonthName } = calendar[year][nextMonth];
@@ -230,6 +230,9 @@ export default function Calendar({ visible, locale, showIndicator }) {
   }
 
   function resetCurrentDay() {
+    if (!currentDay) {
+      return;
+    }
     const currentDate = timeDateService.getCurrentDate();
 
     setCurrentDay({
@@ -258,19 +261,10 @@ export default function Calendar({ visible, locale, showIndicator }) {
   }
 
   async function showDay(element, day, direction = 0) {
-    if (currReminderPreviewRef.current) {
-      const { height } = currReminderPreviewRef.current.getBoundingClientRect();
-
-      currReminderPreviewHeight.current = height;
-      currReminderPreviewRef.current.style.display = "none";
-    }
+    keepHeight();
     await transitionElement(element);
 
-    setSelectedDay({
-      year: day.year,
-      month: day.month,
-      day: day.day
-    });
+    setView({ name: "day", data: { ...calendar[day.year][day.month].days[day.day - 1] } });
 
     if (direction) {
       changeMonth(direction);
@@ -278,7 +272,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
   }
 
   function viewYear() {
-    setViewingYear(true);
+    setView({ name: "year" });
   }
 
   function setVisibleYear(direction) {
@@ -302,16 +296,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
       year: currentYear,
       month: index
     });
-    setViewingYear(false);
-  }
-
-  function hideSelectedDay() {
-    currReminderPreviewHeight.current = 0;
-
-    if (currReminderPreviewRef.current) {
-      currReminderPreviewRef.current.style.display = "";
-    }
-    setSelectedDay(null);
+    showDefaultView();
   }
 
   function repeatReminder(reminder, calendar, shouldReplace) {
@@ -418,9 +403,9 @@ export default function Calendar({ visible, locale, showIndicator }) {
   }
 
   function repeatFutureReminders(calendar) {
-    const r = getRepeatableReminders(reminders.concat(googleReminders), calendar);
+    const repeatableReminders = getRepeatableReminders(reminders.concat(googleReminders), calendar);
 
-    for (const reminder of r) {
+    for (const reminder of repeatableReminders) {
       repeatReminder(reminder, calendar);
     }
   }
@@ -434,14 +419,49 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }, []);
   }
 
+  function removeReminder(id) {
+    const index = reminders.findIndex(reminder => reminder.id === id);
+
+    reminders.splice(index, 1);
+    removeRepeatedReminder(id);
+    updateCalendar();
+    calendarService.saveReminders(reminders);
+  }
+
   function updateCalendar() {
     setReminders([...reminders]);
     setCalendar({ ...calendar });
     resetCurrentDay(calendar);
   }
 
+  function removeRepeatedReminder(id) {
+    for (const year of Object.keys(calendar)) {
+      for (const month of calendar[year]) {
+        for (const day of month.days) {
+          if (day.reminders.length) {
+            day.reminders = day.reminders.filter(reminder => reminder.id !== id);
+          }
+        }
+      }
+    }
+  }
+
+  function changeReminderColor(id) {
+    const color = getRandomHslColor();
+    const reminder = reminders.find(reminder => reminder.id === id);
+
+    reminder.color = color;
+
+    updateCalendar();
+
+    saveTimeoutId.current = timeout(() => {
+      calendarService.saveReminders(reminders);
+    }, 1000, saveTimeoutId.current);
+  }
+
   function createReminders(reminders, calendar) {
     reminders.forEach(reminder => createReminder(reminder, calendar));
+    repeatFutureReminders(calendar);
     sortCalendarReminders(calendar);
   }
 
@@ -450,7 +470,6 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
     if (!calendar[year]) {
       calendar[year] = calendarService.generateYear(year);
-      repeatFutureReminders(calendar);
     }
     reminder.id ??= getRandomString();
     reminder.range ??= {};
@@ -508,22 +527,75 @@ export default function Calendar({ visible, locale, showIndicator }) {
     setCalendar({ ...calendar });
   }
 
-  function resetSelectedDay() {
-    setSelectedDay({ ...selectedDay });
-  }
-
   function showCurrentDateView() {
     const currentDate = timeDateService.getCurrentDate();
 
     setCurrentYear(currentDate.year);
     getVisibleMonth(calendar, currentDate);
+    showCalendar();
+  }
 
-    if (selectedDay) {
-      hideSelectedDay();
+  function showReminderList() {
+    keepHeight();
+    setView({ name: "reminders" });
+  }
+
+  function keepHeight() {
+    if (view.name === "day" || view.name === "reminders") {
+      return;
     }
-    else if (viewingYear) {
-      setViewingYear(false);
+
+    if (currReminderPreviewRef.current) {
+      const { height } = currReminderPreviewRef.current.getBoundingClientRect();
+
+      currReminderPreviewHeight.current = height;
+      currReminderPreviewRef.current.style.display = "none";
     }
+  }
+
+  function showCalendar() {
+    currReminderPreviewHeight.current = 0;
+
+    if (currReminderPreviewRef.current) {
+      currReminderPreviewRef.current.style.display = "";
+    }
+    showDefaultView();
+  }
+
+  function showForm(form = {}) {
+    dispatchCustomEvent("fullscreen-modal", {
+      id: "reminder",
+      shouldToggle: true,
+      component: Form,
+      params: { form, locale, updateReminder }
+    });
+  }
+
+  function updateReminder(reminder, form) {
+    createReminder(reminder, calendar, form.updating);
+    sortDayReminders(form);
+
+    if (form.updating) {
+      const index = reminders.findIndex(({ id }) => reminder.oldId === id);
+
+      reminders.splice(index, 1, reminder);
+
+      if (form.repeat.wasEnabled) {
+        removeRepeatedReminder(form.id);
+      }
+    }
+    else {
+      reminders.push(reminder);
+    }
+
+    if (view === "day") {
+      setView({ ...view });
+    }
+    calendarService.saveReminders(reminders);
+  }
+
+  function showDefaultView() {
+    setView({ name: "default" });
   }
 
   function findNextFocusableElement(element, shiftKey) {
@@ -629,12 +701,101 @@ export default function Calendar({ visible, locale, showIndicator }) {
     setMessage("");
   }
 
+  function renderView() {
+    if (view.name === "day") {
+      return (
+        <Suspense fallback={null}>
+          <SelectedDay calendar={calendar} day={view.data} reminders={reminders} locale={locale}
+            showForm={showForm} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
+            hide={showCalendar}/>
+        </Suspense>
+      );
+    }
+    else if (view.name === "year") {
+      return (
+        <div className={`calendar${transition.active ? " transition" : ""}`}>
+          <div className="calendar-header">
+            <button className="btn icon-btn" onClick={() => setVisibleYear(-1)} title={locale.calendar.prevoius_year_title}>
+              <Icon id="chevron-left"/>
+            </button>
+            <span className="calendar-title">{currentYear}</span>
+            <button className="btn icon-btn" onClick={() => setVisibleYear(1)} title={locale.calendar.next_year_title}>
+              <Icon id="chevron-right"/>
+            </button>
+          </div>
+          <ul className="calendar-months" onKeyDown={handleMonthsKeyDown}>
+            {calendar[currentYear].map((month, index) => (
+              <li className={`calendar-month${month.isCurrentMonth ? " current" : ""}`}
+                onClick={({ target }) => showMonth(target, index)} key={month.name}
+                tabIndex="0" data-index={index}>
+                <div className="calendar-month-inner">{month.name}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+    else if (view.name === "reminders") {
+      return (
+        <Suspense fallback={null}>
+          <ReminderList reminders={reminders.concat(googleReminders)} locale={locale}
+            showForm={showForm} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
+            hide={showCalendar}/>
+        </Suspense>
+      );
+    }
+    return (
+      <div className={`calendar${transition.active ? " transition" : ""}`}>
+        <div className="calendar-header">
+          <button className="btn icon-btn" onClick={() => changeMonth(-1)} title={locale.calendar.prevoius_month_title}>
+            <Icon id="chevron-left"/>
+          </button>
+          <button className="btn text-btn calendar-title" onClick={viewYear}>{visibleMonth.current.dateString}</button>
+          <button className="btn icon-btn" onClick={() => changeMonth(1)} title={locale.calendar.next_month_title}>
+            <Icon id="chevron-right"/>
+          </button>
+        </div>
+        <ul className="calendar-week-days">
+          {weekdays.map(weekday => <li className="calendar-cell" key={weekday}>{weekday}</li>)}
+        </ul>
+        <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
+          {visibleMonth.previous.days.map((day, index) => (
+            <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
+              tabIndex="0" aria-label={day.dateString} data-month="previous" data-index={index}>
+              <div>{day.day}</div>
+            </li>
+          ))}
+          {visibleMonth.current.days.map((day, index) => (
+            <li className={`calendar-cell calendar-day current-month-day${day.isCurrentDay ? " current" : ""}`}
+              onClick={({ target }) => showDay(target, day)} key={day.id}
+              tabIndex="0" aria-label={day.dateString} data-month="current" data-index={index}>
+              <div>{day.day}</div>
+              {day.reminders.length > 0 && (
+                <div className="day-reminders">
+                  {day.reminders.map(reminder => (
+                    <div className="day-reminder" style={{ "backgroundColor": reminder.color }} key={reminder.id}></div>
+                  ))}
+                </div>
+              )}
+            </li>
+          ))}
+          {visibleMonth.next.days.map((day, index) => (
+            <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, 1)} key={day.id}
+              tabIndex="0" aria-label={day.dateString} data-month="next" data-index={index}>
+              <div>{day.day}</div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
   if (!calendar) {
     return null;
   }
   return (
     <>
-      {googleUser ? <GoogleUserDropdown className="calendar-google-user-dropdown" user={googleUser} handleSignOut={handleSignOut} showCalendarLink/> : null}
+      <HeaderDropdown user={googleUser} showReminderList={showReminderList} handleUserSignOut={handleUserSignOut}/>
       {message ? (
         <div className="container container-opaque calendar-message-container">
           <p className="calendar-message">{message}</p>
@@ -649,79 +810,9 @@ export default function Calendar({ visible, locale, showIndicator }) {
           <div>{currentDay.dateString}</div>
         </button>
       </div>
-      <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${currReminderPreviewHeight.current}px` }}>
-        {selectedDay ? (
-          <SelectedDay calendar={calendar} selectedDay={selectedDay} reminders={reminders} locale={locale}
-            sortDayReminders={sortDayReminders} updateCalendar={updateCalendar} createReminder={createReminder}
-            resetSelectedDay={resetSelectedDay} hide={hideSelectedDay}/>
-        ) : viewingYear ? (
-          <div className={`calendar${transition.active ? " transition" : ""}`}>
-            <div className="calendar-header">
-              <button className="btn icon-btn" onClick={() => setVisibleYear(-1)} title={locale.calendar.prevoius_year_title}>
-                <Icon id="chevron-left"/>
-              </button>
-              <span className="calendar-title">{currentYear}</span>
-              <button className="btn icon-btn" onClick={() => setVisibleYear(1)} title={locale.calendar.next_year_title}>
-                <Icon id="chevron-right"/>
-              </button>
-            </div>
-            <ul className="calendar-months" onKeyDown={handleMonthsKeyDown}>
-              {calendar[currentYear].map((month, index) => (
-                <li className={`calendar-month${month.isCurrentMonth ? " current" : ""}`}
-                  onClick={({ target }) => showMonth(target, index)} key={month.name}
-                  tabIndex="0" data-index={index}>
-                  <div className="calendar-month-inner">{month.name}</div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <div className={`calendar${transition.active ? " transition" : ""}`}>
-            <div className="calendar-header">
-              <button className="btn icon-btn" onClick={() => changeMonth(-1)} title={locale.calendar.prevoius_month_title}>
-                <Icon id="chevron-left"/>
-              </button>
-              <button className="btn text-btn calendar-title" onClick={viewYear}>{visibleMonth.current.dateString}</button>
-              <button className="btn icon-btn" onClick={() => changeMonth(1)} title={locale.calendar.next_month_title}>
-                <Icon id="chevron-right"/>
-              </button>
-            </div>
-            <ul className="calendar-week-days">
-              {weekdays.map(weekday => <li className="calendar-cell" key={weekday}>{weekday}</li>)}
-            </ul>
-            <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
-              {visibleMonth.previous.days.map((day, index) => (
-                <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
-                  tabIndex="0" aria-label={day.dateString} data-month="previous" data-index={index}>
-                  <div>{day.day}</div>
-                </li>
-              ))}
-              {visibleMonth.current.days.map((day, index) => (
-                <li className={`calendar-cell calendar-day current-month-day${day.isCurrentDay ? " current" : ""}`}
-                  onClick={({ target }) => showDay(target, day)} key={day.id}
-                  tabIndex="0" aria-label={day.dateString} data-month="current" data-index={index}>
-                  <div>{day.day}</div>
-                  {day.reminders.length > 0 && (
-                    <div className="day-reminders">
-                      {day.reminders.map(reminder => (
-                        <div className="day-reminder" style={{ "backgroundColor": reminder.color }} key={reminder.id}></div>
-                      ))}
-                    </div>
-                  )}
-                </li>
-              ))}
-              {visibleMonth.next.days.map((day, index) => (
-                <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, 1)} key={day.id}
-                  tabIndex="0" aria-label={day.dateString} data-month="next" data-index={index}>
-                  <div>{day.day}</div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-      {!settings.reminderPreviewHidden && currentDay.reminders.length ? (
-        <div className={`container-body calendar-current-day-preview${selectedDay ? " hidden" : ""}`} ref={currReminderPreviewRef}>
+      <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${currReminderPreviewHeight.current}px` }}>{renderView()}</div>
+      {!settings.reminderPreviewHidden && currentDay.reminders.length && view.name !== "reminders" ? (
+        <div className={`container-body calendar-current-day-preview${view.name === "day" ? " hidden" : ""}`} ref={currReminderPreviewRef}>
           <h4 className="calendar-current-day-preview-title">Today</h4>
           <ul className="calendar-current-day-reminders">
             {currentDay.reminders.map(reminder => (
@@ -735,7 +826,11 @@ export default function Calendar({ visible, locale, showIndicator }) {
           </ul>
         </div>
       ) : null}
-      {settings.worldClocksHidden ? null : <WorldClocks parentVisible={visible} locale={locale}/>}
+      {settings.worldClocksHidden ? null : (
+        <Suspense fallback={null}>
+          <WorldClocks parentVisible={visible} locale={locale}/>
+        </Suspense>
+      )}
     </>
   );
 }

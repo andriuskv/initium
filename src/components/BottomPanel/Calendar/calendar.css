@@ -1,11 +1,5 @@
 @import "../../../styles/mixins.css";
 
-.calendar-google-user-dropdown {
-  position: absolute;
-  top: 5px;
-  right: 39px;
-}
-
 .calendar-message-container {
   position: absolute;
   top: 48px;
@@ -46,6 +40,7 @@
   --additional-height: 0px;
 
   overflow: hidden;
+  width: 380px;
   height: calc(var(--calendar-height) + var(--additional-height));
 
   &:has(+ .calendar-current-day-preview, + .calendar-world-clocks) {
@@ -83,14 +78,13 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 380px;
   height: var(--calendar-height);
   transform-origin: var(--x) var(--y);
   animation-duration: var(--duration-n);
   animation-fill-mode: both;
   animation-name: opacity-up;
 
-  &.day-selected {
+  &.full-height {
     height: 100%;
   }
 
@@ -219,8 +213,79 @@
   }
 }
 
+.reminder-list-header {
+  position: relative;
+  justify-content: flex-start;
+}
+
+.reminder-list-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.remainder-list-items {
+  overflow-y: auto;
+  flex-grow: 1;
+  border-top: 1px solid var(--color-white-10);
+}
+
+.remainder-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--color-white-10);
+  word-break: break-word;
+
+  &:last-of-type {
+    border-bottom: none;
+    box-shadow: 0 1px 0 0 var(--color-white-10);
+  }
+}
+
+.remainder-list-item-color {
+  flex-shrink: 0;
+  width: 4px;
+  height: 24px;
+  padding: 0;
+  margin-right: var(--space-sm);
+  margin-left: var(--space-xs);
+  border-radius: 8px;
+  transition: var(--duration-n) transform,
+              var(--duration-n) background-color;
+
+  &:not(.inert) {
+    &:hover, &:focus-visible {
+      transform: scaleX(2);
+      box-shadow: none;
+    }
+  }
+}
+
+.remainder-list-item-range {
+  margin-top: var(--space-sm);
+  font-size: var(--text-xs);
+  font-weight: bold;
+  color: var(--color-white-60);
+}
+
+.reminder-repeat-icon {
+  flex-shrink: 0;
+  color: var(--color-white-60);
+}
+
+.remainder-list-item-dropdown {
+  margin-left: auto;
+}
+
+.empty-reminder-list-message {
+  margin: auto;
+  font-size: var(--text-lg);
+}
+
 .calendar-current-day-preview {
-  width: 380px;
   padding-top: var(--space-sm);
   padding-left: var(--space-md);
   border-top: 1px solid var(--color-white-10);

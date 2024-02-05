@@ -1,8 +1,20 @@
+import { formatDate } from "services/timeDate";
+import { getSetting } from "services/settings";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
-import CreateButton from "components/CreateButton";
+import "./reminder-list.css";
 
-export default function SelectedDay({ day, reminders, locale, removeReminder, changeReminderColor, showForm, hide }) {
+export default function ReminderList({ reminders, locale, showForm, removeReminder, changeReminderColor, hide }) {
+  const { dateLocale } = getSetting("timeDate");
+  const sortedReminders = reminders.toSorted((a, b) => {
+    return new Date(a.year, a.month, a.day) - new Date(b.year, b.month, b.day);
+  }).map(reminder => {
+    reminder.dateString = formatDate(new Date(reminder.year, reminder.month, reminder.day), {
+      locale: dateLocale
+    });
+    return reminder;
+  });
+
   function editReminder(id) {
     const reminder = reminders.find(reminder => reminder.id === id);
 
@@ -18,12 +30,13 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
         <button className="btn icon-btn" onClick={hide} title={locale.global.back}>
           <Icon id="chevron-left"/>
         </button>
-        <span className="calendar-title reminder-list-title">{day.dateString}</span>
+        <span className="calendar-title reminder-list-title">Reminders</span>
       </div>
-      {day.reminders.length > 0 ? (
-        <ul className="remainder-list-items" data-dropdown-parent>
-          {day.reminders.map(reminder => (
-            <li className="remainder-list-item" key={reminder.id}>
+      <ul className="remainder-list-items" data-dropdown-parent>
+        {sortedReminders.map(reminder => (
+          <li key={reminder.id}>
+            <div className="remainder-list-item-date">{reminder.dateString}</div>
+            <div className="remainder-list-item">
               {reminder.type === "google" ? (
                 <div className="remainder-list-item-color inert" style={{ "backgroundColor": reminder.color }}></div>
               ) : (
@@ -35,7 +48,7 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
                 {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
               </div>
               <div>
-                <div>{reminder.text}</div>
+                <p>{reminder.text}</p>
                 <div className="remainder-list-item-range">{reminder.range.text}</div>
               </div>
               {reminder.type === "google" ? null : (
@@ -52,11 +65,10 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
                   </button>
                 </Dropdown>
               )}
-            </li>
-          ))}
-        </ul>
-      ) : <p className="empty-reminder-list-message">{locale.calendar.no_reminders_message}</p>}
-      <CreateButton onClick={() => showForm(day)} attrs={{ "data-modal-initiator": true }} shiftTarget=".icon-btn" trackScroll></CreateButton>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

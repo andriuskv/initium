@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { getRandomHslColor } from "utils";
-import { getWeekday, getWeekdays, getTimeString } from "services/timeDate";
+import { padTime, getWeekday, getWeekdays, getTimeString } from "services/timeDate";
 import { getSetting } from "services/settings";
 import "./form.css";
 
-export default function Form({ form: initialForm, day, locale, updateReminder, hide }) {
+export default function Form({ form: initialForm, locale, updateReminder, hide }) {
   const [form, setForm] = useState(() => getInitialForm(initialForm));
   const ignoreFirstClick = useRef(true);
   const weekdayNames = useMemo(() => {
@@ -29,10 +29,44 @@ export default function Form({ form: initialForm, day, locale, updateReminder, h
   }, [form]);
 
   function getInitialForm(form) {
-    const weekday = getWeekday(day.year, day.month, day.day);
+    const weekday = getWeekday(form.year, form.month, form.day);
     const weekdays = { static: [false, false, false, false, false, false, false] };
 
     weekdays.static[weekday] = true;
+
+    if (form.updating) {
+      if (form.range) {
+        form.range.enabled = form.range.text !== "All day";
+
+        if (form.range.from) {
+          form.range.from = { text: `${form.range.from.hours}:${padTime(form.range.from.minutes)}`};
+        }
+
+        if (form.range.to) {
+          form.range.to = { text: `${form.range.to.hours}:${padTime(form.range.to.minutes)}`};
+        }
+      }
+
+      if (form.repeat) {
+        form.repeat = {
+          ...form.repeat,
+          wasEnabled: true,
+          enabled: true,
+          type: form.repeat.type || "custom",
+          ends: form.repeat.count > 0 ? "occurrences" : "never",
+          gap: form.repeat.gap,
+          count: form.repeat.count,
+          year: form.year,
+          month: form.month,
+          day: form.day
+        };
+
+        if (form.repeat.type === "weekday") {
+          form.repeat.weekdays = { static: [...form.repeat.weekdays.dynamic] };
+          form.repeat.weekdays.static[form.repeat.currentWeekday] = true;
+        }
+      }
+    }
 
     const range = {
       enabled: false,
@@ -106,12 +140,11 @@ export default function Form({ form: initialForm, day, locale, updateReminder, h
     const reminder = {
       creationDate: Date.now(),
       oldId: form.id,
-      index: form.reminderDayIndex,
       text: event.target.elements.reminder.value,
       color: form.color || getRandomHslColor(),
-      year: day.year,
-      month: day.month,
-      day: day.day
+      year: form.year,
+      month: form.month,
+      day: form.day
     };
 
     if (form.range.enabled) {

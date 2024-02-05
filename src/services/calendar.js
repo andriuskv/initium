@@ -1,6 +1,7 @@
 /* global chrome */
 
 import { getRandomString } from "utils";
+import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import { getSetting } from "services/settings";
 
@@ -180,6 +181,33 @@ function getWeekdayRepeatTooltip(weekdayStates, countString) {
   }, []);
   const str = formatter.format(arr);
   return `Repeating ${countString}every ${str}`;
+}
+
+async function saveReminders(reminders) {
+  chromeStorage.set({ reminders: structuredClone(reminders).map(reminder => {
+    if (!reminder.range.from) {
+      delete reminder.range;
+    }
+
+    if (reminder.repeat) {
+      delete reminder.repeat.tooltip;
+
+      if (reminder.repeat.type === "weekday") {
+        delete reminder.repeat.weekdays.dynamic;
+      }
+    }
+
+    return {
+      creationDate: reminder.creationDate,
+      day: reminder.day,
+      month: reminder.month,
+      year: reminder.year,
+      range: reminder.range,
+      repeat: reminder.repeat,
+      color: reminder.color,
+      text: reminder.text
+    };
+  })});
 }
 
 async function authGoogleUser() {
@@ -473,6 +501,7 @@ export {
   getDaysInMonth,
   getReminderRangeString,
   getReminderRepeatTooltip,
+  saveReminders,
   authGoogleUser,
   fetchReminders,
   clearUser
