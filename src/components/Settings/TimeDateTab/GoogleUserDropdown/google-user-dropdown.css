@@ -43,12 +43,3 @@
   display: flex;
   justify-content: flex-end;
 }
-
-.google-user-calendar-link {
-  margin-right: auto;
-}
-
-.google-user-calendar-logo {
-  display: block;
-  border-radius: 50%;
-}

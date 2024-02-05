@@ -1,7 +1,7 @@
 import Dropdown from "components/Dropdown";
 import "./google-user-dropdown.css";
 
-export default function GoogleUserDropdown({ className, user, showCalendarLink, handleSignOut }) {
+export default function GoogleUserDropdown({ className, user, handleSignOut }) {
   return (
     <Dropdown container={className ? { className } : null} toggle={{
       body: <img src={user.photo} className="google-user-dropdown-toggle-image" alt=""/>,
@@ -15,12 +15,7 @@ export default function GoogleUserDropdown({ className, user, showCalendarLink, 
         </div>
       </div>
       <div className="google-user-dropdown-bottom">
-        {showCalendarLink ? (
-          <a href="https://calendar.google.com" className="btn icon-btn google-user-calendar-link" target="_blank" title="Open Google Calendar">
-            <img src="assets/google-product-logos/calendar.png" className="google-user-calendar-logo" width="24px" height="24px" loading="lazy" alt=""></img>
-          </a>
-        ) : null}
-        <button className="btn text-btn google-user-logout-btn" onClick={handleSignOut}>Disconnect</button>
+        <button className="btn text-btn" onClick={handleSignOut}>Disconnect</button>
       </div>
     </Dropdown>
   );

@@ -2,8 +2,8 @@ import { useState, useRef } from "react";
 import { dispatchCustomEvent, timeout } from "utils";
 import { useSettings } from "contexts/settings";
 import * as calendarService from "services/calendar";
-import GoogleUserDropdown from "components/GoogleUserDropdown";
 import "./time-date-tab.css";
+import GoogleUserDropdown from "./GoogleUserDropdown";
 
 export default function TimeDateTab({ locale }) {
   const { settings: { timeDate: settings }, updateSetting, toggleSetting } = useSettings();
