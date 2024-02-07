@@ -36,13 +36,15 @@
   border-radius: 50%;
 }
 
-.calendar-header-dropdown-user-name {
+.calendar-header-dropdown-user-name,
+.calendar-header-dropdown-user-email {
+  padding-inline: var(--space-md);
+  text-align: center;
   font-weight: bold;
 }
 
 .calendar-header-dropdown-user-email {
   font-size: var(--text-sm);
-  font-weight: bold;
   color: var(--color-white-60);
 }
 

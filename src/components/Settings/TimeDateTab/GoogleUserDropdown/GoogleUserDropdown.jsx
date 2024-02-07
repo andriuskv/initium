@@ -4,6 +4,7 @@ import "./google-user-dropdown.css";
 export default function GoogleUserDropdown({ className, user, handleSignOut }) {
   return (
     <Dropdown container={className ? { className } : null} toggle={{
+      title: user.name,
       body: <img src={user.photo} className="google-user-dropdown-toggle-image" alt=""/>,
       className: "google-user-dropdown-toggle-btn"
     }} body={{ className: "google-user-dropdown" }}>
@@ -15,7 +16,7 @@ export default function GoogleUserDropdown({ className, user, handleSignOut }) {
         </div>
       </div>
       <div className="google-user-dropdown-bottom">
-        <button className="btn text-btn" onClick={handleSignOut}>Disconnect</button>
+        <button className="btn text-btn" onClick={handleSignOut} data-dropdown-close>Disconnect</button>
       </div>
     </Dropdown>
   );
