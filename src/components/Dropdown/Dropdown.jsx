@@ -103,7 +103,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
         shouldHide = false;
       }
       else {
-        shouldHide = target.closest("a") || target.closest(".dropdown-btn");
+        shouldHide = target.closest("a") || target.closest(".dropdown-btn") || target.closest("[data-dropdown-close]");
       }
     }
 

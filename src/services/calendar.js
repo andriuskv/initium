@@ -221,7 +221,7 @@ async function authGoogleUser() {
       }
 
       try {
-        const token = await fetchToken();
+        const token = await fetchToken(true);
         const json = await fetchUser(token);
 
         const user = {
@@ -459,9 +459,9 @@ function parseRecurrence(recurrence) {
   }
 }
 
-function fetchToken() {
+function fetchToken(interactive = false) {
   return new Promise(resolve => {
-    chrome.identity.getAuthToken({ "interactive": true }, token => {
+    chrome.identity.getAuthToken({ interactive }, token => {
       resolve(token);
 
       if (token) {
@@ -475,17 +475,23 @@ function fetchUser(token) {
   return fetch(`https://people.googleapis.com/v1/people/me?personFields=emailAddresses,names,photos&key=${process.env.CALENDAR_API_KEY}&access_token=${token}`).then(res => res.json());
 }
 
-async function clearUser() {
+async function clearUser(retried) {
   const token = localStorage.getItem("oauth_token");
 
   if (token) {
     try {
-      await Promise.all([
-        chrome.identity.removeCachedAuthToken({ token }),
-        fetch(`https://accounts.google.com/o/oauth2/revoke?token=${token}`).then(res => res.json())
+      const [json] = await Promise.all([
+        fetch(`https://accounts.google.com/o/oauth2/revoke?token=${token}`).then(res => res.json()),
+        chrome.identity.removeCachedAuthToken({ token })
       ]);
+
+      if (json?.error === "invalid_token" && !retried) {
+        // If token is not revoked the next auth flow will not be interactive.
+        await fetchToken();
+        return clearUser(true);
+      }
     } catch (e) {
-      console.log (e);
+      console.log(e);
     }
   }
   chrome.identity.clearAllCachedAuthTokens();

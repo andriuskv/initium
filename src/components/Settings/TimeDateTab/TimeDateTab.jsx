@@ -62,25 +62,26 @@ export default function TimeDateTab({ locale }) {
   }
 
   async function handleGoogleCalendarConnect() {
-    setGoogleUser({ message: "", connecting: true });
+    setGoogleUser({ message: "", status: "connecting" });
 
     try {
       const data = await calendarService.authGoogleUser();
 
       if (data.message) {
-        setGoogleUser({ message: data.message, connecting: false });
+        setGoogleUser({ message: data.message });
       }
       else {
-        setGoogleUser({ user: data.user, connecting: false });
+        setGoogleUser({ user: data.user });
         dispatchCustomEvent("google-user-change", data.user);
       }
     } catch (e) {
       console.log(e);
-      setGoogleUser({ message: "Something went wrong. Try again later.", connecting: false });
+      setGoogleUser({ message: "Something went wrong. Try again later." });
     }
   }
 
   async function handleGoogleCalendarDisconnect() {
+    calendarService.clearUser();
     setGoogleUser({});
     dispatchCustomEvent("google-user-change");
   }
@@ -263,7 +264,7 @@ export default function TimeDateTab({ locale }) {
           <div className="google-calendar-integration-setting-main">
             <span>Google Calendar</span>
             {googleUser.user ? <GoogleUserDropdown user={googleUser.user} handleSignOut={handleGoogleCalendarDisconnect}/> : (
-              <button className="btn" onClick={handleGoogleCalendarConnect} disabled={googleUser.connecting}>Connect{googleUser.connecting ? "ing..." : ""}</button>
+              <button className="btn" onClick={handleGoogleCalendarConnect} disabled={googleUser.status}>{googleUser.status === "connecting" ? "Connecting" : "Connect"}</button>
             )}
           </div>
           {googleUser.message ? <p className="google-calendar-integration-setting-message">{googleUser.message}</p> : null}

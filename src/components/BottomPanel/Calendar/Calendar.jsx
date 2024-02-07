@@ -156,7 +156,6 @@ export default function Calendar({ visible, locale, showIndicator }) {
       showCalendar();
     }
     setGoogleUser(null);
-    calendarService.clearUser();
   }
 
   function getVisibleMonth(calendar, { year, month }) {
