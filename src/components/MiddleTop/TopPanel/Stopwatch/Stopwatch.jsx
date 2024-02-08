@@ -16,7 +16,11 @@ export default function Stopwatch({ visible, locale, toggleIndicator, updateTitl
   const [label, setLabel] = useState("");
   const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
-  const [initWorker, destroyWorker] = useWorker(handleMessage);
+  const [initWorker, destroyWorker] = useWorker(handleMessage, [splits.length]);
+
+  useEffect(() => {
+    init();
+  }, []);
 
   useEffect(() => {
     if (running) {
@@ -46,6 +50,24 @@ export default function Stopwatch({ visible, locale, toggleIndicator, updateTitl
 
   function handleMessage(event) {
     update(event.data);
+  }
+
+  function init() {
+    const data = JSON.parse(localStorage.getItem("stopwatch"));
+
+    if (data) {
+      dirty.current = true;
+
+      setSplits(data.splits);
+      setLabel(data.label);
+
+      delete data.splits;
+      delete data.label;
+
+      data.millisecondsDisplay = "00";
+
+      setState(data);
+    }
   }
 
   function toggle() {
@@ -89,6 +111,7 @@ export default function Stopwatch({ visible, locale, toggleIndicator, updateTitl
       state.secondsDisplay = padTime(state.seconds, state.minutes);
 
       updateTitle("stopwatch", { hours: state.hours, minutes: state.minutesDisplay, seconds: state.secondsDisplay });
+      localStorage.setItem("stopwatch", JSON.stringify({ ...state, label, splits: splits.slice(0, 100) }));
     }
     const millisecondString = Math.floor(state.milliseconds).toString();
     state.millisecondsDisplay = state.milliseconds < 100 ? `0${millisecondString[0]}` : millisecondString.slice(0, 2);
@@ -107,6 +130,7 @@ export default function Stopwatch({ visible, locale, toggleIndicator, updateTitl
     setState(getInitialState());
     setSplits([]);
     pipService.close("stopwatch");
+    localStorage.removeItem("stopwatch");
 
     if (running) {
       stop();

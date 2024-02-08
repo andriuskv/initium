@@ -1,13 +1,12 @@
 import { dispatchCustomEvent } from "utils";
 
-const pipSupported = "documentPictureInPicture" in window;
+const pipSupported = "documentPictureInPicture" in window && localStorage.getItem("timer-pip-enabled");
 let pipWindow = null;
 let timerActions = {};
 let activeTimer = "";
 
 function isSupported() {
-  // return pipSupported;
-  return false;
+  return pipSupported;
 }
 
 function isActive() {
