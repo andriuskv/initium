@@ -1,7 +1,16 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
-export default function useWorker(handleMessage) {
+export default function useWorker(handleMessage, deps = []) {
   const worker = useRef(null);
+
+  useEffect(() => {
+    if (worker.current) {
+      const controller = new AbortController();
+
+      worker.current.abortController.abort();
+      worker.current.ref.addEventListener("message", handleMessage, { signal: controller.signal });
+    }
+  }, deps);
 
   function initWorker(params = {}) {
     if (worker.current) {

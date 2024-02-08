@@ -29,6 +29,10 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
   const [initWorker, destroyWorker] = useWorker(handleMessage);
 
   useEffect(() => {
+    init();
+  }, []);
+
+  useEffect(() => {
     if (running) {
       initWorker({ duration: state.duration });
       toggleIndicator("pomodoro", true);
@@ -48,7 +52,7 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
 
   useEffect(() => {
     if (running) {
-      initWorker(state.duration);
+      initWorker({ duration: state.duration });
     }
     return () => {
       destroyWorker();
@@ -73,6 +77,20 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
       if (data.duration === 0 && audio.shouldPlay) {
         playAudio();
       }
+    }
+  }
+
+  function init() {
+    const data = JSON.parse(localStorage.getItem("pomodoro"));
+
+    if (data) {
+      dirty.current = true;
+      currentStageIndex.current = data.stageIndex;
+
+      setStage(data.stage);
+      setAudio({ shouldPlay: data.isAudioEnabled });
+      setLabel(data.label);
+      setState(parseDuration(data.duration));
     }
   }
 
@@ -110,6 +128,13 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
       minutes: state.minutes,
       seconds: state.seconds
     });
+    localStorage.setItem("pomodoro", JSON.stringify({
+      duration,
+      stage,
+      label,
+      isAudioEnabled: audio.shouldPlay,
+      stageIndex: currentStageIndex.current
+    }));
   }
 
   async function reset() {
@@ -127,6 +152,7 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
       updateTitle("pomodoro");
     }
     pipService.close("pomodoro");
+    localStorage.removeItem("pomodoro");
   }
 
   function setNextStage() {
