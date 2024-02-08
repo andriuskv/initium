@@ -75,8 +75,31 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
 
   async function init() {
     const timer = await chromeStorage.get("timer");
+    const data = JSON.parse(localStorage.getItem("timer"));
+
+    if (data) {
+      const paddedMinutes = padTime(data.minutes, data.hours);
+      const paddedSeconds = padTime(data.seconds, data.hours || data.minutes);
+      dirty.current = true;
+      dirtyInput.current = true;
+
+      setState({
+        hours: padTime(data.hours),
+        minutes: paddedMinutes,
+        seconds: paddedSeconds
+      });
+      setAudio({ shouldPlay: data.isAudioEnabled });
+      setLabel(data.label);
+    }
 
     if (timer?.length) {
+      if (data?.activePresetId) {
+        const preset = timer.find(preset => preset.id === data.activePresetId);
+
+        if (preset) {
+          setActivePreset(preset);
+        }
+      }
       setPresets(timer);
     }
     chromeStorage.subscribeToChanges(({ timer }) => {
@@ -202,6 +225,14 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
       minutes: paddedMinutes,
       seconds: paddedSeconds
     });
+    localStorage.setItem("timer", JSON.stringify({
+      hours,
+      minutes,
+      seconds,
+      label,
+      activePresetId: activePreset?.id || "",
+      isAudioEnabled: audio.shouldPlay
+    }));
   }
 
   async function reset() {
@@ -230,6 +261,7 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
     }
     setPipVisible(false);
     pipService.close("timer");
+    localStorage.removeItem("timer");
   }
 
   function updateInputs(inputs) {
