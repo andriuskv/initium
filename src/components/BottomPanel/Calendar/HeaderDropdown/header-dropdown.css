@@ -1,3 +1,5 @@
+@import "../../../../styles/mixins.css";
+
 .calendar-header-dropdown-container {
   position: absolute;
   top: 5px;
@@ -7,6 +9,7 @@
 .calendar-header-dropdown {
   &:has(.calendar-header-dropdown-user) {
     min-width: 180px;
+    max-width: 240px;
   }
 }
 
@@ -28,7 +31,8 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  padding-top: var(--space-md);
+  margin-bottom: var(--space-md);
 }
 
 .calendar-header-dropdown-user-image {
@@ -48,7 +52,7 @@
   color: var(--color-white-60);
 }
 
-.calendar-header-dropdown-bottom {
+.calendar-header-dropdown-user-bottom {
   display: flex;
   justify-content: flex-end;
   padding-inline: var(--space-md);
@@ -61,4 +65,44 @@
 .calendar-header-dropdown-calendar-logo {
   display: block;
   border-radius: 50%;
+}
+
+.calendar-list-toggle-btn {
+  position: relative;
+  padding: var(--space-md);
+  border-radius: 0;
+}
+
+.calendar-list-state-icon {
+  position: absolute;
+  top: 50%;
+  right: var(--space-md);
+  transform: translateY(-50%);
+  transition: var(--duration-n) transform;
+
+  &.expanded {
+    transform: translateY(-50%) rotateZ(180deg);
+  }
+}
+
+.calendar-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  overflow-y: auto;
+  max-height: 128px;
+  padding: var(--space-md) var(--space-md) 0 var(--space-md);
+}
+
+.calendar-list-item {
+  display: flex;
+  gap: var(--space-md);
+
+  & .checkbox {
+    flex-shrink: 0;
+  }
+}
+
+.calendar-list-item-title {
+  @mixin text-truncate;
 }

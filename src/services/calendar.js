@@ -5,6 +5,8 @@ import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import { getSetting } from "services/settings";
 
+let cachedCalendars = {};
+
 function generateYear(year) {
   const { dateLocale } = getSetting("timeDate");
   const months = [];
@@ -241,11 +243,11 @@ async function authGoogleUser() {
   });
 }
 
-async function fetchReminders(retried = false) {
+async function initGoogleCalendar(retried = false) {
   const token = localStorage.getItem("oauth_token");
 
   if (!token) {
-    return [];
+    return { calendars: [], reminders: [] };
   }
   const baseURL = "https://www.googleapis.com/calendar/v3";
   const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
@@ -263,29 +265,135 @@ async function fetchReminders(retried = false) {
         }
         // Most likely the auth token has expired, fetch new one and try again.
         await fetchToken();
-        return fetchReminders(true);
+        return initGoogleCalendar(true);
       }
       else if (calendarListJson.error.code === 403 && calendarListJson.error.status === "PERMISSION_DENIED") {
         return { message: "Permission to access calendar was not granted." };
       }
       return { message: "Something went wrong. Try again later." };
     }
+    const calendars = parseCalendars(calendarListJson.items);
+    const selectedCalendars = calendars.filter(calendar => calendar.selected);
+    const selectedCalendarsPromises = selectedCalendars.map(calendar => (
+      fetch(`${baseURL}/calendars/${encodeURIComponent(calendar.id)}/events?${params}`).then(res => res.json())
+    ));
+    const settledItems = await Promise.allSettled(selectedCalendarsPromises);
+    let reminders = [];
 
-    for (const item of calendarListJson.items) {
-      if (item.primary) {
-        const json = await fetch(`${baseURL}/calendars/${item.id}/events?${params}`).then(res => res.json());
-        return { reminders: parseItems(json.items, item.colorId, colorsJson) };
+    for (let i = 0; i < selectedCalendars.length; i += 1) {
+      const calendar = selectedCalendars[i];
+      const { status, value } = settledItems[i];
+
+      if (status === "fulfilled") {
+        const calendarItems = parseItems(value.items, {
+          colorId: calendar.colorId,
+          calendarId: calendar.id,
+          includeDesc: !calendar.id.includes("#holiday@group")
+        }, colorsJson);
+
+        reminders = reminders.concat(calendarItems);
+        cachedCalendars[calendar.id] = calendarItems;
       }
     }
+    localStorage.setItem("google-calendars", JSON.stringify(calendars));
+    return { calendars, reminders };
   } catch (e) {
     console.log(e);
     return { message: "Something went wrong. Try again later." };
   }
-  return [];
 }
 
-function parseItems(items, defaultColorId, colors) {
-  const defaultColor = colors.calendar[defaultColorId].background;
+async function fetchCalendarItems(calendar, retried = false) {
+  if (cachedCalendars[calendar.id]) {
+    return { reminders: cachedCalendars[calendar.id] };
+  }
+  const token = localStorage.getItem("oauth_token");
+
+  if (!token) {
+    return [];
+  }
+  const baseURL = "https://www.googleapis.com/calendar/v3";
+  const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
+
+  try {
+    const [colorsJson, json] = await Promise.all([
+      fetch(`${baseURL}/colors?${params}`).then(res => res.json()),
+      fetch(`${baseURL}/calendars/${encodeURIComponent(calendar.id)}/events?${params}`).then(res => res.json())
+    ]);
+
+    if (colorsJson.error) {
+      if (colorsJson.error.code === 401) {
+        if (retried) {
+          return { message: "Something went wrong. Try again later." };
+        }
+        // Most likely the auth token has expired, fetch new one and try again.
+        await fetchToken();
+        return fetchCalendarItems(calendar, true);
+      }
+      return { message: "Something went wrong. Try again later." };
+    }
+    const calendarItems = parseItems(json.items, {
+      colorId: calendar.colorId,
+      calendarId: calendar.id,
+      includeDesc: !calendar.id.includes("#holiday@group")
+    }, colorsJson);
+
+    cachedCalendars[calendar.id] = calendarItems;
+    return { reminders: calendarItems };
+  } catch (e) {
+    console.log(e);
+    return { message: "Something went wrong. Try again later." };
+  }
+}
+
+function parseCalendars(items) {
+  const user = JSON.parse(localStorage.getItem("google-user")) || {};
+  const oldCalendars = JSON.parse(localStorage.getItem("google-calendars")) || [];
+  const calendars = [];
+
+  if (oldCalendars.length) {
+    for (const item of items) {
+      const calendar = oldCalendars.find(calendar => calendar.id === item.id);
+      let selected = false;
+
+      if (calendar) {
+        selected = calendar.selected;
+      }
+      calendars.push({
+        id: item.id,
+        title: item.summary,
+        colorId: item.colorId,
+        selected,
+        ...(item.primary ? { primary: true, title: user.name } : {})
+      });
+    }
+  }
+  else {
+    // Select only primary calendar to be fetched by default
+    for (const item of items) {
+      calendars.push({
+        id: item.id,
+        title: item.summary,
+        colorId: item.colorId,
+        selected: !!item.primary,
+        ...(item.primary ? { primary: true, title: user.name } : {})
+      });
+    }
+  }
+
+  // Make sure primary calendar is first
+  for (let i = 0; i < calendars.length; i += 1) {
+    if (calendars[i].primary) {
+      ([calendars[0], calendars[i]] = [calendars[i], calendars[0]]);
+      break;
+    }
+  }
+
+  return calendars;
+}
+
+function parseItems(items, { calendarId, colorId, includeDesc }, colors) {
+  const defaultColor = colors.calendar[colorId].background;
   const reminders = [];
 
   for (const item of items) {
@@ -303,8 +411,9 @@ function parseItems(items, defaultColorId, colors) {
       creationDate: new Date(item.updated ?? item.created).getTime(),
       id: item.id,
       type: "google",
+      calendarId,
       color: item.colorId ? colors.event[item.colorId].background : defaultColor,
-      text: getReminderText(item),
+      text: getReminderText(item, includeDesc),
       range: getRange(item.start, item.end),
       ...getStartDate(item.start),
       ...optionalParams
@@ -316,14 +425,14 @@ function parseItems(items, defaultColorId, colors) {
   return reminders;
 }
 
-function getReminderText(item) {
+function getReminderText(item, includeDesc) {
   let text = "";
 
   if (item.summary) {
     text = item.summary;
   }
 
-  if (item.description) {
+  if (includeDesc && item.description) {
     text = `${text}${text ? "\n" : ""}${item.description}`;
   }
 
@@ -494,9 +603,11 @@ async function clearUser(retried) {
       console.log(e);
     }
   }
+  cachedCalendars = {};
   chrome.identity.clearAllCachedAuthTokens();
   localStorage.removeItem("oauth_token");
   localStorage.removeItem("google-user");
+  localStorage.removeItem("google-calendars");
 }
 
 export {
@@ -509,6 +620,7 @@ export {
   getReminderRepeatTooltip,
   saveReminders,
   authGoogleUser,
-  fetchReminders,
+  initGoogleCalendar,
+  fetchCalendarItems,
   clearUser
 };
