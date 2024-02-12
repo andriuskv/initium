@@ -21,6 +21,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const [visibleMonth, setVisibleMonth] = useState(null);
   const [reminders, setReminders] = useState([]);
   const [googleReminders, setGoogleReminders] = useState([]);
+  const [googleCalendars, setGoogleCalendars] = useState([]);
   const [googleUser, setGoogleUser] = useState(() => JSON.parse(localStorage.getItem("google-user")) || null);
   const [view, setView] = useState({ name: "default" });
   const [transition, setTransition] = useState({ x: 0, y: 0 });
@@ -61,7 +62,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     if (calendar) {
       if (first.current) {
         first.current = false;
-        initGoogleReminders();
+        initGoogleCalendar();
       }
       window.addEventListener("google-user-change", handleGoogleUserChange);
       chromeStorage.subscribeToChanges(({ reminders }) => {
@@ -113,20 +114,67 @@ export default function Calendar({ visible, locale, showIndicator }) {
     initCalendar(r, gr);
   }
 
-  async function initGoogleReminders() {
-    const data = await calendarService.fetchReminders();
+  function showMessage(message) {
+    setMessage(message);
 
-    if (data.reminders?.length) {
+    messageTimeoutId.current = timeout(() => {
+      setMessage("");
+    }, 4000, messageTimeoutId.current);
+  }
+
+  async function initGoogleCalendar() {
+    const data = await calendarService.initGoogleCalendar();
+
+    if (data.message) {
+      showMessage(data.message);
+      return;
+    }
+
+    if (data.reminders.length) {
       setGoogleReminders(data.reminders);
       createReminders(data.reminders, calendar);
       setCalendar({ ...calendar });
     }
-    else if (data.message) {
-      setMessage(data.message);
+    setGoogleCalendars(data.calendars);
+  }
 
-      messageTimeoutId.current = timeout(() => {
-        setMessage("");
-      }, 4000, messageTimeoutId.current);
+  async function toggleCalendarReminders(id, selected) {
+    const calendar = googleCalendars.find(calendar => calendar.id === id);
+
+    if (calendar.fetching) {
+      return;
+    }
+    let gr = resetRepeatableReminders(googleReminders);
+
+    calendar.fetching = true;
+    calendar.selected = selected;
+
+    setGoogleCalendars([...googleCalendars]);
+
+    try {
+      if (selected) {
+        const data = await calendarService.fetchCalendarItems(calendar);
+
+        if (data.message) {
+          showMessage(data.message);
+          return;
+        }
+        gr = gr.concat(data.reminders);
+      }
+      else {
+        gr = gr.filter(reminder => reminder.calendarId !== calendar.id);
+      }
+      const r = resetRepeatableReminders(reminders);
+
+      setGoogleReminders(gr);
+      initCalendar(r, gr);
+      showDefaultView();
+    } catch (e) {
+      console.log(e);
+    } finally {
+      delete calendar.fetching;
+      setGoogleCalendars([...googleCalendars]);
+      localStorage.setItem("google-calendars", JSON.stringify(googleCalendars));
     }
   }
 
@@ -139,7 +187,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
   async function handleGoogleUserChange({ detail: user }) {
     if (user) {
-      await initGoogleReminders();
+      await initGoogleCalendar();
       setGoogleUser(user);
     }
     else {
@@ -147,14 +195,19 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }
   }
 
-  async function handleUserSignOut() {
+  async function handleUserSignOut(shouldCleanup) {
     if (googleReminders.length) {
       const r = resetRepeatableReminders(reminders);
 
       setGoogleReminders([]);
       initCalendar(r, []);
       showCalendar();
+
+      if (shouldCleanup) {
+        calendarService.clearUser();
+      }
     }
+    setGoogleCalendars([]);
     setGoogleUser(null);
   }
 
@@ -411,7 +464,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
   function getRepeatableReminders(reminders, calendar) {
     return reminders.reduce((reminders, reminder) => {
-      if (reminder.repeat && calendar[reminder.nextRepeat.year] && !reminder.nextRepeat.done) {
+      if (reminder.nextRepeat && calendar[reminder.nextRepeat.year] && !reminder.nextRepeat.done) {
         reminders.push(reminder);
       }
       return reminders;
@@ -794,7 +847,8 @@ export default function Calendar({ visible, locale, showIndicator }) {
   }
   return (
     <>
-      <HeaderDropdown user={googleUser} showReminderList={showReminderList} handleUserSignOut={handleUserSignOut}/>
+      <HeaderDropdown user={googleUser} calendars={googleCalendars} toggleCalendarReminders={toggleCalendarReminders}
+        showReminderList={showReminderList} handleUserSignOut={handleUserSignOut}/>
       {message ? (
         <div className="container container-opaque calendar-message-container">
           <p className="calendar-message">{message}</p>
