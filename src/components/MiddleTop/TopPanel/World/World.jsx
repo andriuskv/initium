@@ -8,7 +8,7 @@ import "./world.css";
 
 const Form = lazy(() => import("./Form"));
 
-export default function World({ visible, locale, parentVisible }) {
+export default function World({ visible, first, locale, parentVisible }) {
   const [clocks, setClocks] = useState([]);
   const timeoutId = useRef(0);
 
@@ -102,7 +102,7 @@ export default function World({ visible, locale, parentVisible }) {
   }
 
   return (
-    <div className={`container-body top-panel-item world${visible ? " visible" : ""}`}>
+    <div className={`container-body top-panel-item world${visible ? " visible" : ""}${first ? " first" : ""}`}>
       {clocks.length ? (
         <ul className="world-clocks">
           {clocks.map(clock => (
