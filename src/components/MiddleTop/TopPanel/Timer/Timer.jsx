@@ -13,7 +13,7 @@ import useWorker from "../../useWorker";
 
 const Presets = lazy(() => import("./Presets"));
 
-export default function Timer({ visible, locale, toggleIndicator, updateTitle, expand, exitFullscreen, handleReset }) {
+export default function Timer({ visible, first, locale, toggleIndicator, updateTitle, expand, exitFullscreen, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState({
     hours: "00",
@@ -374,7 +374,7 @@ export default function Timer({ visible, locale, toggleIndicator, updateTitle, e
   }
 
   return (
-    <div className={`top-panel-item timer${visible ? " visible" : ""}`}>
+    <div className={`top-panel-item timer${visible ? " visible" : ""}${first ? " first" : ""}`}>
       {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
         <div className="container-body top-panel-item-content">
           {running ? (

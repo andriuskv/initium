@@ -26,14 +26,15 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const [expanded, setExpanded] = useState(false);
   const [tabs, setTabs] = useState(() => {
     const tabs = {
-      timer: { name: locale.topPanel.timer },
-      stopwatch: { name: locale.topPanel.stopwatch },
-      pomodoro: { name: locale.topPanel.pomodoro },
-      countdown: { name: locale.topPanel.countdown },
-      world: { name: locale.topPanel.world }
+      timer: { first: true, name: locale.topPanel.timer },
+      stopwatch: { first: true, name: locale.topPanel.stopwatch },
+      pomodoro: { first: true, name: locale.topPanel.pomodoro },
+      countdown: { first: true, name: locale.topPanel.countdown },
+      world: { first: true, name: locale.topPanel.world }
     };
 
     if (activeTab) {
+      delete tabs[activeTab].first;
       tabs[activeTab].rendered = true;
     }
     return tabs;
@@ -248,6 +249,13 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       tabs[name].rendered = true;
       setTabs({ ...tabs });
     }
+
+    if (tabs[name].first) {
+      setTimeout(() => {
+        delete tabs[name].first;
+        setTabs({ ...tabs });
+      }, 200 * animationSpeed);
+    }
     setActiveTab(name);
 
     saveTabTimeoutId.current = timeout(() => {
@@ -313,16 +321,20 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
         </TabsContainer>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
           {tabs.timer.rendered ? (
-            <Timer visible={activeTab === "timer"} locale={locale} toggleIndicator={toggleIndicator} updateTitle={updateTitle}
+            <Timer visible={activeTab === "timer"} first={tabs.timer.first} locale={locale}
+              toggleIndicator={toggleIndicator} updateTitle={updateTitle}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
-          {tabs.stopwatch.rendered ? <Stopwatch visible={activeTab === "stopwatch"} locale={locale} toggleIndicator={toggleIndicator}
-            updateTitle={updateTitle} expand={expand}/> : null}
+          {tabs.stopwatch.rendered ? (
+            <Stopwatch visible={activeTab === "stopwatch"} first={tabs.stopwatch.first} locale={locale}
+              toggleIndicator={toggleIndicator} updateTitle={updateTitle} expand={expand}/>
+          ) : null}
           {tabs.pomodoro.rendered ? (
-            <Pomodoro visible={activeTab === "pomodoro"} locale={locale} toggleIndicator={toggleIndicator} updateTitle={updateTitle}
+            <Pomodoro visible={activeTab === "pomodoro"} first={tabs.pomodoro.first} locale={locale}
+              toggleIndicator={toggleIndicator} updateTitle={updateTitle}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
-          {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible} locale={locale}/> : null}
+          {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible} first={tabs.world.first} locale={locale}/> : null}
         </Suspense>
         <Countdown visible={activeTab === "countdown"} locale={locale} toggleIndicator={toggleIndicator}/>
         {expanded && (

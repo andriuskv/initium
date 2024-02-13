@@ -9,7 +9,7 @@ import useWorker from "../../useWorker";
 
 const Splits = lazy(() => import("./Splits"));
 
-export default function Stopwatch({ visible, locale, toggleIndicator, updateTitle, expand }) {
+export default function Stopwatch({ visible, first, locale, toggleIndicator, updateTitle, expand }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
   const [splits, setSplits] = useState([]);
@@ -237,7 +237,7 @@ export default function Stopwatch({ visible, locale, toggleIndicator, updateTitl
   }
 
   return (
-    <div className={`top-panel-item stopwatch${visible ? " visible" : ""}${splits.length ? " with-splits" : ""}`}>
+    <div className={`top-panel-item stopwatch${visible ? " visible" : ""}${splits.length ? " with-splits" : ""}${first ? " first" : ""}`}>
       {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
         <div className="container-body top-panel-item-content">
           {renderTop()}

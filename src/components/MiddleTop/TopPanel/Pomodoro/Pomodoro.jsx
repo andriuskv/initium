@@ -14,7 +14,7 @@ const stages = {
   long: "Long break"
 };
 
-export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle, expand, handleReset }) {
+export default function Pomodoro({ visible, first, locale, toggleIndicator, updateTitle, expand, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => {
     const { pomodoro: { focus } } = getSetting("timers");
@@ -245,7 +245,7 @@ export default function Pomodoro({ visible, locale, toggleIndicator, updateTitle
   }
 
   return (
-    <div className={`top-panel-item pomodoro${visible ? " visible" : ""}`}>
+    <div className={`top-panel-item pomodoro${visible ? " visible" : ""}${first ? " first" : ""}`}>
       {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
         <div className="container-body top-panel-item-content pomodoro-content">
           <div className="pomodoro">

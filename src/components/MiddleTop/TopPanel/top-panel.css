@@ -57,6 +57,7 @@
       0 1px 1px var(--color-black-8),
       1px 2px 2px var(--color-black-4),
       2px 4px 4px var(--color-black-2);
+    user-select: none;
 
     .top-panel-hide-target {
       display: none;
@@ -191,6 +192,12 @@
 
 .top-panel-item {
   display: none;
+
+  &.first {
+    animation-duration: var(--duration-n);
+    animation-fill-mode: both;
+    animation-name: opacity-up;
+  }
 
   &.visible {
     display: block;
