@@ -78,15 +78,13 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
     const data = JSON.parse(localStorage.getItem("timer"));
 
     if (data) {
-      const paddedMinutes = padTime(data.minutes, data.hours);
-      const paddedSeconds = padTime(data.seconds, data.hours || data.minutes);
       dirty.current = true;
       dirtyInput.current = true;
 
       setState({
         hours: padTime(data.hours),
-        minutes: paddedMinutes,
-        seconds: paddedSeconds
+        minutes: padTime(data.minutes),
+        seconds: padTime(data.seconds)
       });
       setAudio({ shouldPlay: data.isAudioEnabled });
       setLabel(data.label);
