@@ -351,6 +351,22 @@ export default function Calendar({ visible, locale, showIndicator }) {
     showDefaultView();
   }
 
+  function addReminder(day, reminder, shouldReplace) {
+    if (shouldReplace) {
+      const index = day.reminders.findIndex(({ id }) => id === reminder.oldId);
+
+      if (index < 0) {
+        day.reminders.push(reminder);
+      }
+      else {
+        day.reminders.splice(index, 1, reminder);
+      }
+    }
+    else {
+      day.reminders.push(reminder);
+    }
+  }
+
   function repeatReminder(reminder, calendar, shouldReplace) {
     reminder.nextRepeat ??= {
       repeats: reminder.repeat.count,
@@ -386,19 +402,20 @@ export default function Calendar({ visible, locale, showIndicator }) {
         day = month.days[reminder.nextRepeat.day];
       }
 
-      if (shouldReplace) {
-        const index = day.reminders.findIndex(({ id }) => id === reminder.oldId);
+      if (reminder.repeat.endDate) {
+        const endDate = new Date(reminder.repeat.endDate.year, reminder.repeat.endDate.month, reminder.repeat.endDate.day).getTime();
+        const reminderDate = new Date(reminder.nextRepeat.year, reminder.nextRepeat.month, reminder.nextRepeat.day + 1).getTime();
 
-        if (index < 0) {
-          day.reminders.push(reminder);
-        }
-        else {
-          day.reminders.splice(index, 1, reminder);
+        if (reminderDate >= endDate) {
+          reminder.nextRepeat.done = true;
+
+          if (reminderDate === endDate) {
+            addReminder(day, reminder, shouldReplace);
+          }
+          return;
         }
       }
-      else {
-        day.reminders.push(reminder);
-      }
+      addReminder(day, reminder, shouldReplace);
 
       if (day.isCurrentDay) {
         setCurrentDay({ ...day });

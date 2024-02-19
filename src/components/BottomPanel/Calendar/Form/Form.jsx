@@ -84,8 +84,22 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
       ends: "never",
       gap: "",
       count: "",
+      endDateString: form.repeat?.endDate ? getRepeatEndDateString({
+        year: form.repeat.endDate.year,
+        month: form.repeat.endDate.month,
+        day: form.repeat.endDate.day
+      }) : undefined,
+      minEndDateString: getRepeatEndDateString({
+        year: form.year,
+        month: form.month,
+        day: form.day
+      }),
       ...form.repeat
     };
+
+    if (repeat.endDateString) {
+      repeat.ends = "date";
+    }
 
     return { ...form, range, repeat };
   }
@@ -171,6 +185,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
       reminder.repeat = {};
       reminder.repeat.type = form.repeat.type;
 
+      delete form.repeat.dateMessage;
       delete form.repeat.gapError;
 
       if (form.repeat.type === "custom") {
@@ -200,6 +215,28 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
           form.repeat.countError = true;
         }
       }
+      else if (form.repeat.ends === "date") {
+        const dateString = event.target.elements.enddate.value;
+
+        if (!dateString) {
+          form.repeat.dateMessage = "Please provide date.";
+          setForm({ ...form });
+          return;
+        }
+        const dateValues = dateString.split("-");
+        const endDate = {
+          year: parseInt(dateValues[0], 10),
+          month: parseInt(dateValues[1], 10) - 1,
+          day: parseInt(dateValues[2], 10)
+        };
+
+        if (new Date(endDate.year, endDate.month, endDate.day) < new Date(form.year, form.month, form.day)) {
+          form.repeat.dateMessage = "Date should be higher that the current selected date.";
+          setForm({ ...form });
+          return;
+        }
+        reminder.repeat.endDate = endDate;
+      }
 
       if (form.repeat.gapError || form.repeat.countError) {
         setForm({ ...form });
@@ -218,6 +255,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
 
   function toggleFormCheckbox(event) {
     form[event.target.name].enabled = !form[event.target.name].enabled;
+    delete form.repeat.dateMessage;
     setForm({ ...form });
   }
 
@@ -317,6 +355,10 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
     }
   }
 
+  function getRepeatEndDateString({ year, month, day }) {
+    return `${year}-${padTime(month + 1)}-${padTime(day)}`;
+  }
+
   return (
     <form className="reminder-form" onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
       <div className="container-header">
@@ -383,7 +425,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
             {form.repeat.type === "custom" ? (
               <div>
                 <label className="reminder-form-setting">
-                  <span className="label-left">{locale.calendar.form.repeat_custom_label}</span>
+                  <span>{locale.calendar.form.repeat_custom_label}</span>
                   <span className="multi-input-container repeat-input-container">
                     <input type="text" className="input multi-input-left repeat-input" name="gap" autoComplete="off"
                       value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
@@ -418,12 +460,24 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
               </label>
               <label className="reminder-form-row">
                 <input type="radio" className="sr-only radio-input" name="ends"
+                  value="date" defaultChecked={form.repeat.ends === "date"}/>
+                <div className="radio"></div>
+                <span className="label-right">On</span>
+                <input type="date" name="enddate" className="input reminder-form-end-date-input"
+                  min={form.repeat.minEndDate} defaultValue={form.repeat.endDateString}
+                  disabled={form.repeat.ends !== "date"} required={form.repeat.ends === "date"}/>
+              </label>
+              {form.repeat.ends === "date" && form.repeat.dateMessage && (
+                <div className="reminder-form-message">{form.repeat.dateMessage}</div>
+              )}
+              <label className="reminder-form-row">
+                <input type="radio" className="sr-only radio-input" name="ends"
                   value="occurrences" defaultChecked={form.repeat.ends === "occurrences"}/>
                 <div className="radio"></div>
                 <span className="label-right">After</span>
                 <input type="text" className="input repeat-input" name="count" autoComplete="off"
                   value={form.repeat.count} onChange={handleRepeatInputChange}
-                  disabled={form.repeat.ends === "never"} required={form.repeat.ends === "occurrences"}/>
+                  disabled={form.repeat.ends !== "occurrences"} required={form.repeat.ends === "occurrences"}/>
                 <span>occurrences</span>
               </label>
               {form.repeat.ends === "occurrences" && form.repeat.countError && (

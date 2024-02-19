@@ -138,14 +138,18 @@
 
 .repeat-input {
   width: calc(3ch + 26px);
-  margin-left: var(--space-md);
-  margin-right: var(--space-md);
+  margin-inline: var(--space-md);
   text-align: center;
 }
 
 .reminder-range-input {
   width: 84px;
   text-align: center;
+}
+
+.reminder-form-end-date-input {
+  width: 140px;
+  margin-left: var(--space-md);
 }
 
 .reminder-form-message {

@@ -141,34 +141,42 @@ function getReminderRangeString({ from, to }) {
   return timeDateService.getTimeString(from);
 }
 
-function getReminderRepeatTooltip({ type, gap, count, weekdays, customTypeGapName }) {
+function getReminderRepeatTooltip({ type, gap, count, weekdays, customTypeGapName, endDate }) {
   const countString = `${count > 1 ? `${count} times ` : ""}`;
+  let endDateString = "";
+
+  if (endDate) {
+    const { dateLocale } = getSetting("timeDate");
+    const date = new Date(endDate.year, endDate.month, endDate.day);
+    const formatedDate = timeDateService.formatDate(date, { locale: dateLocale });
+    endDateString = ` until ${formatedDate}`;
+  }
 
   if (type === "custom") {
     if (customTypeGapName === "months" && gap > 11) {
       const yearCount = Math.floor(gap / 12);
       const monthCount = gap % 12;
-      return `Repeating ${countString}every ${yearCount} year${yearCount > 1 ? "s" : ""}${monthCount > 0 ? ` ${monthCount} month${monthCount > 1 ? "s" : ""}` : ""}`;
+      return `Repeating ${countString}every ${yearCount} year${yearCount > 1 ? "s" : ""}${monthCount > 0 ? ` ${monthCount} month${monthCount > 1 ? "s" : ""}` : ""}${endDateString}`;
     }
-    return `Repeating ${countString}every ${gap === 1 ? customTypeGapName.slice(0, -1) : `${gap} ${customTypeGapName}`}`;
+    return `Repeating ${countString}every ${gap === 1 ? customTypeGapName.slice(0, -1) : `${gap} ${customTypeGapName}`}${endDateString}`;
   }
   else if (type === "week") {
-    return `Repeating ${countString}every week`;
+    return `Repeating ${countString}every week${endDateString}`;
   }
   else if (type === "month") {
-    return `Repeating ${countString}every month`;
+    return `Repeating ${countString}every month${endDateString}`;
   }
   else if (type === "weekday") {
     const fullySelected = weekdays.dynamic.every(weekday => weekday);
 
     if (fullySelected) {
-      return `Repeating ${countString}every weekday`;
+      return `Repeating ${countString}every weekday${endDateString}`;
     }
-    return getWeekdayRepeatTooltip(weekdays.dynamic, countString);
+    return getWeekdayRepeatTooltip(weekdays.dynamic, countString, endDateString);
   }
 }
 
-function getWeekdayRepeatTooltip(weekdayStates, countString) {
+function getWeekdayRepeatTooltip(weekdayStates, countString, endDateString) {
   const { dateLocale } = getSetting("timeDate");
   const weekdays = timeDateService.getWeekdays(dateLocale);
   const formatter = new Intl.ListFormat(dateLocale, {
@@ -182,7 +190,7 @@ function getWeekdayRepeatTooltip(weekdayStates, countString) {
     return arr;
   }, []);
   const str = formatter.format(arr);
-  return `Repeating ${countString}every ${str}`;
+  return `Repeating ${countString}every ${str}${endDateString}`;
 }
 
 async function saveReminders(reminders) {
