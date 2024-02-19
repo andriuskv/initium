@@ -316,7 +316,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     keepHeight();
     await transitionElement(element);
 
-    setView({ name: "day", data: { ...calendar[day.year][day.month].days[day.day - 1] } });
+    showDayView(day);
 
     if (direction) {
       changeMonth(direction);
@@ -488,12 +488,13 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }, []);
   }
 
-  function removeReminder(id) {
+  function removeReminder(id, day) {
     const index = reminders.findIndex(reminder => reminder.id === id);
 
     reminders.splice(index, 1);
     removeRepeatedReminder(id);
     updateCalendar();
+    showDayView(day);
     calendarService.saveReminders(reminders);
   }
 
@@ -629,6 +630,10 @@ export default function Calendar({ visible, locale, showIndicator }) {
       currReminderPreviewRef.current.style.display = "";
     }
     showDefaultView();
+  }
+
+  function showDayView(day) {
+    setView({ name: "day", data: { ...calendar[day.year][day.month].days[day.day - 1] } });
   }
 
   function showForm(form = {}) {

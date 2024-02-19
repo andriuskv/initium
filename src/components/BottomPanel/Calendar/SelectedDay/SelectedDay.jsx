@@ -46,7 +46,7 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
                     <span>{locale.global.edit}</span>
                   </button>
                   <button className="btn icon-text-btn dropdown-btn"
-                    onClick={() => removeReminder(reminder.id)}>
+                    onClick={() => removeReminder(reminder.id, day)}>
                     <Icon id="trash"/>
                     <span>{locale.global.remove}</span>
                   </button>
