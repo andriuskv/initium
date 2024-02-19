@@ -168,7 +168,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
       setGoogleReminders(gr);
       initCalendar(r, gr);
-      showDefaultView();
+      showCalendar();
     } catch (e) {
       console.log(e);
     } finally {
