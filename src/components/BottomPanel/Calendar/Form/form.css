@@ -16,6 +16,23 @@
   padding: var(--space-md);
 }
 
+.reminder-form-display-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reminder-form-display-date-container {
+  position: relative;
+}
+
+.reminder-form-display-date-input {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: 0;
+}
+
 .reminder-form-setting {
   display: flex;
   align-items: center;

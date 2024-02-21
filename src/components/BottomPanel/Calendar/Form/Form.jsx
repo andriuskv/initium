@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { getRandomHslColor } from "utils";
-import { padTime, getWeekday, getWeekdays, getTimeString } from "services/timeDate";
+import { padTime, getWeekday, getWeekdays, getTimeString, formatDate } from "services/timeDate";
 import { getSetting } from "services/settings";
 import "./form.css";
 
 export default function Form({ form: initialForm, locale, updateReminder, hide }) {
-  const [form, setForm] = useState(() => getInitialForm(initialForm));
+  const [form, setForm] = useState(() => getInitialForm(structuredClone(initialForm)));
   const ignoreFirstClick = useRef(true);
   const weekdayNames = useMemo(() => {
     const { dateLocale } = getSetting("timeDate");
@@ -29,6 +29,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
   }, [form]);
 
   function getInitialForm(form) {
+    const { dateLocale } = getSetting("timeDate");
     const weekday = getWeekday(form.year, form.month, form.day);
     const weekdays = { static: [false, false, false, false, false, false, false] };
 
@@ -50,7 +51,6 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
       if (form.repeat) {
         form.repeat = {
           ...form.repeat,
-          wasEnabled: true,
           enabled: true,
           type: form.repeat.type || "custom",
           ends: form.repeat.count > 0 ? "occurrences" : "never",
@@ -84,12 +84,12 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
       ends: "never",
       gap: "",
       count: "",
-      endDateString: form.repeat?.endDate ? getRepeatEndDateString({
+      endDateString: form.repeat?.endDate ? getDateInputString({
         year: form.repeat.endDate.year,
         month: form.repeat.endDate.month,
         day: form.repeat.endDate.day
       }) : undefined,
-      minEndDateString: getRepeatEndDateString({
+      minEndDateString: getDateInputString({
         year: form.year,
         month: form.month,
         day: form.day
@@ -100,6 +100,8 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
     if (repeat.endDateString) {
       repeat.ends = "date";
     }
+    form.dateString = getDateInputString(form);
+    form.displayDateString = formatDate(new Date(form.year, form.month, form.day), { locale: dateLocale });
 
     return { ...form, range, repeat };
   }
@@ -223,12 +225,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
           setForm({ ...form });
           return;
         }
-        const dateValues = dateString.split("-");
-        const endDate = {
-          year: parseInt(dateValues[0], 10),
-          month: parseInt(dateValues[1], 10) - 1,
-          day: parseInt(dateValues[2], 10)
-        };
+        const endDate = parseDateInputValue(dateString);
 
         if (new Date(endDate.year, endDate.month, endDate.day) < new Date(form.year, form.month, form.day)) {
           form.repeat.dateMessage = "Date should be higher that the current selected date.";
@@ -355,8 +352,39 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
     }
   }
 
-  function getRepeatEndDateString({ year, month, day }) {
+  function getDateInputString({ year, month, day }) {
     return `${year}-${padTime(month + 1)}-${padTime(day)}`;
+  }
+
+  function parseDateInputValue(value) {
+    const values = value.split("-");
+    return {
+      year: parseInt(values[0], 10),
+      month: parseInt(values[1], 10) - 1,
+      day: parseInt(values[2], 10)
+    };
+  }
+
+  function showSelectedDayPicker() {
+    const element = document.querySelector("input[name=selecteddate]");
+
+    if (element) {
+      element.showPicker();
+    }
+  }
+
+  function handleSelectedDayInputChange(event) {
+    const { dateLocale } = getSetting("timeDate");
+    const displayDate = parseDateInputValue(event.target.value);
+    const displayDateString = formatDate(new Date(displayDate.year, displayDate.month, displayDate.day), { locale: dateLocale });
+
+    const weekday = getWeekday(displayDate.year, displayDate.month, displayDate.day);
+
+    form.repeat.weekdays.static[form.repeat.currentWeekday] = false;
+    form.repeat.currentWeekday = weekday;
+    form.repeat.weekdays.static[weekday] = true;
+
+    setForm({ ...form, ...displayDate, dateString: event.target.value, displayDateString });
   }
 
   return (
@@ -365,6 +393,14 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
         <h3 className="container-header-title">{locale.calendar.form.title}</h3>
       </div>
       <div className="container-body reminder-form-body">
+        <div className="reminder-form-display-date">
+          <div className="reminder-form-display-date-container">
+            <button type="button" className="btn text-btn reminder-form-display-date-btn" title="Show date picker"
+              onClick={showSelectedDayPicker} data-modal-keep>{form.displayDateString}</button>
+            <input type="date" name="selecteddate" className="input reminder-form-display-date-input" tabIndex="-1"
+              value={form.dateString} onChange={handleSelectedDayInputChange}/>
+          </div>
+        </div>
         <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
         <div className="reminder-form-row reminder-form-setting">
           <label className="checkbox-container">
@@ -463,7 +499,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
                   value="date" defaultChecked={form.repeat.ends === "date"}/>
                 <div className="radio"></div>
                 <span className="label-right">On</span>
-                <input type="date" name="enddate" className="input reminder-form-end-date-input"
+                <input type="date" name="enddate" className="input reminder-form-end-date-input" data-modal-keep
                   min={form.repeat.minEndDate} defaultValue={form.repeat.endDateString}
                   disabled={form.repeat.ends !== "date"} required={form.repeat.ends === "date"}/>
               </label>
