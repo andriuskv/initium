@@ -5,6 +5,7 @@ import "./fullscreen-modal.css";
 export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, hide }) {
   const container = useRef(null);
   let pointerInside = false;
+  let keep = false;
 
   useEffect(() => {
     focusService.setInitiator(document.activeElement);
@@ -25,13 +26,21 @@ export default function FullscreenModal({ children, hiding, transparent = false,
   }, []);
 
   function handlePointerDown({ target }) {
+    keep = false;
+
     if (target.closest(".fullscreen-modal")) {
       pointerInside = true;
+
+      // When date modal is dismissed by clicking outside of it pointer down event is not triggered,
+      // to circumvent around that keep an additional variable to check if it's open.
+      if (target.closest("[data-modal-keep]")) {
+        keep = true;
+      }
     }
   }
 
   function handlePointerUp({ target }) {
-    if (pointerInside) {
+    if (pointerInside || keep) {
       pointerInside = false;
     }
     // Selecting an option element with the enter key triggers only a pointerup/click event

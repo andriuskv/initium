@@ -492,7 +492,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     const index = reminders.findIndex(reminder => reminder.id === id);
 
     reminders.splice(index, 1);
-    removeRepeatedReminder(id);
+    removeCalendarReminder(id);
     updateCalendar();
     showDayView(day);
     calendarService.saveReminders(reminders);
@@ -504,7 +504,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     resetCurrentDay(calendar);
   }
 
-  function removeRepeatedReminder(id) {
+  function removeCalendarReminder(id) {
     for (const year of Object.keys(calendar)) {
       for (const month of calendar[year]) {
         for (const day of month.days) {
@@ -653,17 +653,14 @@ export default function Calendar({ visible, locale, showIndicator }) {
       const index = reminders.findIndex(({ id }) => reminder.oldId === id);
 
       reminders.splice(index, 1, reminder);
-
-      if (form.repeat.wasEnabled) {
-        removeRepeatedReminder(form.id);
-      }
+      removeCalendarReminder(form.id);
     }
     else {
       reminders.push(reminder);
     }
 
-    if (view === "day") {
-      setView({ ...view });
+    if (view.name === "day") {
+      showDayView(view.data);
     }
     calendarService.saveReminders(reminders);
   }
