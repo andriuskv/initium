@@ -384,7 +384,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     let month = months[reminder.nextRepeat.month];
     let day = month.days[reminder.nextRepeat.day];
 
-    while (true) {
+    while (!reminder.nextRepeat.done) {
       if (!day) {
         const date = calendarService.getNextReminderDate(calendar, reminder.nextRepeat);
 
@@ -404,12 +404,19 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
       if (reminder.repeat.endDate) {
         const endDate = new Date(reminder.repeat.endDate.year, reminder.repeat.endDate.month, reminder.repeat.endDate.day).getTime();
-        const reminderDate = new Date(reminder.nextRepeat.year, reminder.nextRepeat.month, reminder.nextRepeat.day + 1).getTime();
+        const reminderDate = new Date(reminder.year, reminder.month, reminder.day).getTime();
 
-        if (reminderDate >= endDate) {
+        if (endDate < reminderDate) {
+          reminder.nextRepeat.done = true;
+          addReminder(day, reminder, shouldReplace);
+          return;
+        }
+        const nextReminderDate = new Date(reminder.nextRepeat.year, reminder.nextRepeat.month, reminder.nextRepeat.day + 1).getTime();
+
+        if (nextReminderDate >= endDate) {
           reminder.nextRepeat.done = true;
 
-          if (reminderDate === endDate) {
+          if (nextReminderDate === endDate) {
             addReminder(day, reminder, shouldReplace);
           }
           return;
@@ -494,7 +501,10 @@ export default function Calendar({ visible, locale, showIndicator }) {
     reminders.splice(index, 1);
     removeCalendarReminder(id);
     updateCalendar();
-    showDayView(day);
+
+    if (view.name === "day") {
+      showDayView(day);
+    }
     calendarService.saveReminders(reminders);
   }
 

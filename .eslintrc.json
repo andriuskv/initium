@@ -77,7 +77,11 @@
     "no-useless-call": 2,
     "no-useless-concat": 2,
     "no-undef": 2,
-    "no-unused-vars": 2,
+    "no-unused-vars": ["error", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_",
+      "caughtErrorsIgnorePattern": "^_"
+    }],
     "no-useless-constructor": 2,
     "no-dupe-class-members": 2,
     "no-unneeded-ternary": 2,
