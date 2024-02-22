@@ -569,11 +569,22 @@ function parseRecurrence(recurrence) {
             repeat.weekdays = weekdays;
           }
         }
+        else if (key === "UNTIL") {
+          const date = parseEndDateString(val);
+          repeat.endDate = date;
+        }
       }
       return Object.keys(repeat).length ? repeat : null;
     }
     return null;
   }
+}
+
+function parseEndDateString(string) {
+  const regex = /(\d{4})(\d{2})(\d{2})/;
+  const [_, year, month, day] = string.match(regex);
+
+  return { year, month: month - 1, day };
 }
 
 function fetchToken(interactive = false) {
