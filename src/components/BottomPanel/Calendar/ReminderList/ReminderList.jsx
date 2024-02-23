@@ -32,43 +32,46 @@ export default function ReminderList({ reminders, locale, showForm, removeRemind
         </button>
         <span className="calendar-title reminder-list-title">Reminders</span>
       </div>
-      <ul className="remainder-list-items" data-dropdown-parent>
-        {sortedReminders.map(reminder => (
-          <li key={reminder.id}>
-            <div className="remainder-list-item-date">{reminder.dateString}</div>
-            <div className="remainder-list-item">
-              {reminder.type === "google" ? (
-                <div className="remainder-list-item-color inert" style={{ "backgroundColor": reminder.color }}></div>
-              ) : (
-                <button className="btn remainder-list-item-color" style={{ "backgroundColor": reminder.color }} title="Change color"
-                  onClick={() => changeReminderColor(reminder.id)}></button>
-              )}
-              <div>
-                {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
-                {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
+      {sortedReminders.length > 0 ? (
+
+        <ul className="remainder-list-items" data-dropdown-parent>
+          {sortedReminders.map(reminder => (
+            <li key={reminder.id}>
+              <div className="remainder-list-item-date">{reminder.dateString}</div>
+              <div className="remainder-list-item">
+                {reminder.type === "google" ? (
+                  <div className="remainder-list-item-color inert" style={{ "backgroundColor": reminder.color }}></div>
+                ) : (
+                  <button className="btn remainder-list-item-color" style={{ "backgroundColor": reminder.color }} title="Change color"
+                    onClick={() => changeReminderColor(reminder.id)}></button>
+                )}
+                <div>
+                  {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
+                  {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
+                </div>
+                <div>
+                  <p>{reminder.text}</p>
+                  <div className="remainder-list-item-range">{reminder.range.text}</div>
+                </div>
+                {reminder.type === "google" ? null : (
+                  <Dropdown container={{ className: "remainder-list-item-dropdown" }}>
+                    <button className="btn icon-text-btn dropdown-btn"
+                      onClick={() => editReminder(reminder.id)}>
+                      <Icon id="edit"/>
+                      <span>{locale.global.edit}</span>
+                    </button>
+                    <button className="btn icon-text-btn dropdown-btn"
+                      onClick={() => removeReminder(reminder.id)}>
+                      <Icon id="trash"/>
+                      <span>{locale.global.remove}</span>
+                    </button>
+                  </Dropdown>
+                )}
               </div>
-              <div>
-                <p>{reminder.text}</p>
-                <div className="remainder-list-item-range">{reminder.range.text}</div>
-              </div>
-              {reminder.type === "google" ? null : (
-                <Dropdown container={{ className: "remainder-list-item-dropdown" }}>
-                  <button className="btn icon-text-btn dropdown-btn"
-                    onClick={() => editReminder(reminder.id)}>
-                    <Icon id="edit"/>
-                    <span>{locale.global.edit}</span>
-                  </button>
-                  <button className="btn icon-text-btn dropdown-btn"
-                    onClick={() => removeReminder(reminder.id)}>
-                    <Icon id="trash"/>
-                    <span>{locale.global.remove}</span>
-                  </button>
-                </Dropdown>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      ) : <p className="empty-reminder-list-message">{locale.calendar.no_reminders_message}</p>}
     </div>
   );
 }

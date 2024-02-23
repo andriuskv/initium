@@ -216,6 +216,10 @@
 .reminder-list-header {
   position: relative;
   justify-content: flex-start;
+
+  &:has(+ .empty-reminder-list-message) {
+    border-bottom: 1px solid var(--color-white-10);
+  }
 }
 
 .reminder-list-title {
