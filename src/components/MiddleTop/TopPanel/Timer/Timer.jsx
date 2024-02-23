@@ -45,12 +45,15 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
       toggleIndicator("timer", false);
       removeFromRunning("timer");
     }
-    pipService.updateActions("timer", { toggle });
 
     return () => {
       destroyWorker();
     };
   }, [running]);
+
+  useEffect(() => {
+    pipService.updateActions("timer", { toggle });
+  }, [running, state]);
 
   useEffect(() => {
     window.addEventListener("pip-close", handlePipClose);
@@ -333,7 +336,15 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
 
   function togglePip() {
     setPipVisible(!pipVisible);
-    pipService.toggle({ name: "timer", title: "Timer", data: state, toggle });
+    pipService.toggle({
+      name: "timer",
+      title: "Timer",
+      data: {
+        hours: state.hours,
+        minutes: state.minutes,
+        seconds: state.seconds
+      }, toggle
+    });
   }
 
   function handlePipClose({ detail }) {

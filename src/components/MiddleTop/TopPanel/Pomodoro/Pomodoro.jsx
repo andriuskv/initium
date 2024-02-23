@@ -210,7 +210,8 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
         hours: state.hours,
         minutes: state.minutes,
         seconds: state.seconds
-      }, toggle
+      },
+      toggle
     });
   }
 
