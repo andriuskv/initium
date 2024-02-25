@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { getRandomHslColor } from "utils";
+import { getRandomHexColor, hslStringToHex } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate } from "services/timeDate";
 import { getSetting } from "services/settings";
 import "./form.css";
@@ -100,6 +100,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
     if (repeat.endDateString) {
       repeat.ends = "date";
     }
+    form.pickerColor = form.color ? form.color.startsWith("hsl") ? hslStringToHex(form.color) : form.color : getRandomHexColor();
     form.dateString = getDateInputString(form);
     form.displayDateString = formatDate(new Date(form.year, form.month, form.day), { locale: dateLocale });
 
@@ -157,7 +158,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
       creationDate: Date.now(),
       oldId: form.id,
       text: event.target.elements.reminder.value,
-      color: form.color || getRandomHslColor(),
+      color: event.target.elements.color.value,
       year: form.year,
       month: form.month,
       day: form.day
@@ -394,6 +395,10 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
       </div>
       <div className="container-body reminder-form-body">
         <div className="reminder-form-display-date">
+          <div className="reminder-form-color-picker-container">
+            <input type="color" name="color" className="reminder-form-color-picker"
+              defaultValue={form.pickerColor} title={locale.global.color_input_title} data-modal-keep/>
+          </div>
           <div className="reminder-form-display-date-container">
             <button type="button" className="btn text-btn reminder-form-display-date-btn" title="Show date picker"
               onClick={showSelectedDayPicker} data-modal-keep>{form.displayDateString}</button>

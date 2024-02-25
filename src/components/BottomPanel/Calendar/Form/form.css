@@ -17,9 +17,31 @@
 }
 
 .reminder-form-display-date {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.reminder-form-color-picker-container {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  overflow: hidden;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+
+  &:has(:focus-visible) {
+    box-shadow: var(--focus-shadow);
+  }
+}
+
+.reminder-form-color-picker {
+  padding: 0;
+  scale: 2;
+  cursor: pointer;
 }
 
 .reminder-form-display-date-container {

@@ -578,7 +578,8 @@ export default function Calendar({ visible, locale, showIndicator }) {
       const day = getCalendarDay(calendar, reminder);
 
       if (shouldReplace) {
-        day.reminders.splice(reminder.index, 1, reminder);
+        const index = day.reminders.findIndex(({ id }) => id === reminder.oldId);
+        day.reminders.splice(index, 1, reminder);
       }
       else {
         day.reminders.push(reminder);
