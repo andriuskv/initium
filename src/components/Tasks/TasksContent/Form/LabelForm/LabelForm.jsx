@@ -38,7 +38,7 @@ export default function LabelForm({ locale, addUniqueLabel, hiding, hide }) {
         <div className="task-label-form-body">
           <div className="task-form-color-picker-container" style={{ backgroundColor: currentColor }}>
             <input type="color" name="color" className="task-form-color-picker"
-              onInput={handleColorChange} defaultValue={currentColor} title={locale.tasks.color_input_title}/>
+              onInput={handleColorChange} defaultValue={currentColor} title={locale.global.color_input_title}/>
           </div>
           <input type="text" name="name" className="input task-label-form-input" autoComplete="off" autoFocus required/>
         </div>
