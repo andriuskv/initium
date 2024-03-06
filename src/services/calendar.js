@@ -5,6 +5,7 @@ import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import { getSetting } from "services/settings";
 
+const baseCalendarURL = "https://www.googleapis.com/calendar/v3";
 let cachedCalendars = {};
 
 function generateYear(year) {
@@ -257,13 +258,12 @@ async function initGoogleCalendar(retried = false) {
   if (!token) {
     return { calendars: [], reminders: [] };
   }
-  const baseURL = "https://www.googleapis.com/calendar/v3";
   const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
 
   try {
     const [calendarListJson, colorsJson] = await Promise.all([
-      fetch(`${baseURL}/users/me/calendarList?${params}`).then(res => res.json()),
-      fetch(`${baseURL}/colors?${params}`).then(res => res.json())
+      fetch(`${baseCalendarURL}/users/me/calendarList?${params}`).then(res => res.json()),
+      fetch(`${baseCalendarURL}/colors?${params}`).then(res => res.json())
     ]);
 
     if (calendarListJson.error) {
@@ -283,7 +283,7 @@ async function initGoogleCalendar(retried = false) {
     const calendars = parseCalendars(calendarListJson.items);
     const selectedCalendars = calendars.filter(calendar => calendar.selected);
     const selectedCalendarsPromises = selectedCalendars.map(calendar => (
-      fetch(`${baseURL}/calendars/${encodeURIComponent(calendar.id)}/events?${params}`).then(res => res.json())
+      fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendar.id)}/events?${params}`).then(res => res.json())
     ));
     const settledItems = await Promise.allSettled(selectedCalendarsPromises);
     let reminders = [];
@@ -320,13 +320,12 @@ async function fetchCalendarItems(calendar, retried = false) {
   if (!token) {
     return [];
   }
-  const baseURL = "https://www.googleapis.com/calendar/v3";
   const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
 
   try {
     const [colorsJson, json] = await Promise.all([
-      fetch(`${baseURL}/colors?${params}`).then(res => res.json()),
-      fetch(`${baseURL}/calendars/${encodeURIComponent(calendar.id)}/events?${params}`).then(res => res.json())
+      fetch(`${baseCalendarURL}/colors?${params}`).then(res => res.json()),
+      fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendar.id)}/events?${params}`).then(res => res.json())
     ]);
 
     if (colorsJson.error) {
@@ -587,6 +586,28 @@ function parseEndDateString(string) {
   return { year, month: month - 1, day };
 }
 
+async function deleteCalendarEvent(calendarId, eventId, retried = false) {
+  const token = localStorage.getItem("oauth_token");
+
+  if (!token) {
+    return;
+  }
+  try {
+    const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
+    const res = await fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendarId)}/events/${eventId}?${params}`, {
+      method: "DELETE"
+    });
+
+    if (res.status === 401 && !retried) {
+      await fetchToken();
+      return deleteCalendarEvent(calendarId, eventId, true);
+    }
+    return res.status === 204;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 function fetchToken(interactive = false) {
   return new Promise(resolve => {
     chrome.identity.getAuthToken({ interactive }, token => {
@@ -641,5 +662,6 @@ export {
   authGoogleUser,
   initGoogleCalendar,
   fetchCalendarItems,
+  deleteCalendarEvent,
   clearUser
 };

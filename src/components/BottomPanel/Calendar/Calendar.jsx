@@ -495,21 +495,35 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }, []);
   }
 
-  function removeReminder(id, day) {
-    const index = reminders.findIndex(reminder => reminder.id === id);
+  async function removeReminder(reminder, day) {
+    if (reminder.type === "google") {
+      const success = await calendarService.deleteCalendarEvent(reminder.calendarId, reminder.id);
 
-    reminders.splice(index, 1);
-    removeCalendarReminder(id);
+      if (!success) {
+        showMessage("Unable to delete an event. Try again later.");
+        return;
+      }
+      const index = googleReminders.findIndex(({ id }) => reminder.id === id);
+
+      googleReminders.splice(index, 1);
+    }
+    else {
+      const index = reminders.findIndex(({ id }) => reminder.id === id);
+
+      reminders.splice(index, 1);
+      calendarService.saveReminders(reminders);
+    }
+    removeCalendarReminder(reminder.id);
     updateCalendar();
 
     if (view.name === "day") {
       showDayView(day);
     }
-    calendarService.saveReminders(reminders);
   }
 
   function updateCalendar() {
     setReminders([...reminders]);
+    setGoogleReminders([...googleReminders]);
     setCalendar({ ...calendar });
     resetCurrentDay(calendar);
   }
