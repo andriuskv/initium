@@ -38,15 +38,17 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
                 <div>{reminder.text}</div>
                 <div className="remainder-list-item-range">{reminder.range.text}</div>
               </div>
-              {reminder.type === "google" ? null : (
+              {reminder.type === "google" && reminder.calendarId.endsWith("calendar.google.com") ? null : (
                 <Dropdown container={{ className: "remainder-list-item-dropdown" }}>
+                  {reminder.type === "google" ? null : (
+                    <button className="btn icon-text-btn dropdown-btn"
+                      onClick={() => editReminder(reminder.id)}>
+                      <Icon id="edit"/>
+                      <span>{locale.global.edit}</span>
+                    </button>
+                  )}
                   <button className="btn icon-text-btn dropdown-btn"
-                    onClick={() => editReminder(reminder.id)}>
-                    <Icon id="edit"/>
-                    <span>{locale.global.edit}</span>
-                  </button>
-                  <button className="btn icon-text-btn dropdown-btn"
-                    onClick={() => removeReminder(reminder.id, day)}>
+                    onClick={() => removeReminder(reminder, day)}>
                     <Icon id="trash"/>
                     <span>{locale.global.remove}</span>
                   </button>
