@@ -268,6 +268,17 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   function updateInputs(inputs) {
     dirtyInput.current = true;
     setState({ ...inputs });
+
+    if (pipVisible) {
+      const hours = Number.parseInt(inputs.hours, 10);
+      const minutes = Number.parseInt(inputs.minutes, 10);
+
+      pipService.update("timer", {
+        hours,
+        minutes: padTime(minutes, hours),
+        seconds: padTime(inputs.seconds, hours || minutes)
+      });
+    }
   }
 
   function toggleAudio() {
@@ -384,7 +395,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
 
   return (
     <div className={`top-panel-item timer${visible ? " visible" : ""}${first ? " first" : ""}`}>
-      {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
+      {pipVisible && running ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
         <div className="container-body top-panel-item-content">
           {running ? (
             <>
