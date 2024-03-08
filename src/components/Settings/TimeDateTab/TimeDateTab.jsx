@@ -137,6 +137,16 @@ export default function TimeDateTab({ locale }) {
             <div className="checkbox-tick"></div>
           </div>
         </label>
+        <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
+          <span>Enable to fullscreen the clock by double clicking on it</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            checked={settings.clockFullscreenEnabled}
+            onChange={() => toggleSetting("timeDate", "clockFullscreenEnabled")}
+            disabled={settings.clockDisabled}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
       </div>
       <div className="settings-group">
         <div className="settings-group-top">

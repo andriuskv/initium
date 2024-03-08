@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
-import { delay, setPageTitle, timeout } from "utils";
+import { delay, setPageTitle, timeout, toggleBehindElements } from "utils";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
 import { useLocalization } from "contexts/localization";
@@ -89,7 +89,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     else {
       window.removeEventListener("keydown", collapse);
     }
-    toggleBehindElements(!expanded);
+    toggleBehindElements(!expanded, "top-panel");
 
     return () => {
       window.removeEventListener("keydown", collapse);
@@ -179,40 +179,6 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     }
   }
 
-  function toggleBehindElements(shouldShow) {
-    const rootElement = document.getElementById("root");
-    const parentElement = containerRef.current.parentElement;
-
-    if (shouldShow) {
-      for (const element of rootElement.children) {
-        element.style.opacity = "";
-        element.style.visibility = "";
-      }
-
-      for (const element of parentElement.children) {
-        element.style.opacity = "";
-        element.style.visibility = "";
-      }
-    }
-    else {
-      const excludes = ["wallpaper", "wallpaper-video", "middle-top"];
-
-      for (const element of rootElement.children) {
-        if (!excludes.some(exclude => element.classList.contains(exclude))) {
-          element.style.opacity = "0";
-          element.style.visibility = "hidden";
-        }
-      }
-
-      for (const element of parentElement.children) {
-        if (element !== containerRef.current) {
-          element.style.opacity = "0";
-          element.style.visibility = "hidden";
-        }
-      }
-    }
-  }
-
   function resetMinimal(shouldShowFull = false) {
     minimalVisible.current = false;
 
@@ -278,12 +244,16 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }
 
   function exitFullscreen() {
-    setExpanded(false);
+    document.startViewTransition(() => {
+      setExpanded(false);
+    });
   }
 
   function expand() {
     setFullscreenTextScale();
-    setExpanded(true);
+    document.startViewTransition(() => {
+      setExpanded(true);
+    });
 
     if (pipService.isActive()) {
       pipService.close();

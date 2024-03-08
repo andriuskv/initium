@@ -75,6 +75,7 @@ function getDefault() {
       clockStyle: "default",
       clockScale: 1,
       centerClock: false,
+      clockFullscreenEnabled: false,
       dateHidden: false,
       dateScale: 1.1,
       datePosition: "bottom",
