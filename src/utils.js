@@ -157,6 +157,40 @@ function replaceLink(text, className) {
   return text.replace(regex, href => `<a href="${href}" class="${className}" target="_blank">${href}</a>`);
 }
 
+function toggleBehindElements(shouldShow, className) {
+  const rootElement = document.getElementById("root");
+  const { parentElement } = document.querySelector(`.${className}`);
+
+  if (shouldShow) {
+    for (const element of rootElement.children) {
+      element.style.opacity = "";
+      element.style.visibility = "";
+    }
+
+    for (const element of parentElement.children) {
+      element.style.opacity = "";
+      element.style.visibility = "";
+    }
+  }
+  else {
+    const excludes = ["wallpaper", "wallpaper-video", "middle-top"];
+
+    for (const element of rootElement.children) {
+      if (!excludes.some(exclude => element.classList.contains(exclude))) {
+        element.style.opacity = "0";
+        element.style.visibility = "hidden";
+      }
+    }
+
+    for (const element of parentElement.children) {
+      if (!element.classList.contains(className)) {
+        element.style.opacity = "0";
+        element.style.visibility = "hidden";
+      }
+    }
+  }
+}
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -171,5 +205,6 @@ export {
   generateNoise,
   timeout,
   getRandomValueBetweenTwoNumbers,
-  replaceLink
+  replaceLink,
+  toggleBehindElements
 };

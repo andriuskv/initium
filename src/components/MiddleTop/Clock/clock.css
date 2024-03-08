@@ -1,14 +1,15 @@
 .clock {
   --scale: 1;
+  --fullscreen-scale-multiplier: 1;
   --font-family: "Inter";
   --date-above: 0;
 
   grid-area: clock;
   align-self: var(--clock-alignment);
   display: grid;
-  grid-template-rows: 1fr min-content;
+  grid-template-rows: min-content min-content;
   grid-template-columns: 1fr min-content;
-  grid-row-gap: var(--space-lg);
+  grid-row-gap: calc(var(--space-lg) * var(--fullscreen-scale-multiplier));
   align-items: baseline;
   text-shadow:
     0 1px 1px var(--color-black-8),
@@ -19,6 +20,15 @@
 
   &.date-top {
     --date-above: 1;
+  }
+
+  &.expanded {
+    --fullscreen-scale-multiplier: 1.5;
+
+    position: fixed;
+    inset: 0;
+    height: 100dvh;
+    align-content: center;
   }
 
   @media (height <= 720px) {
@@ -46,7 +56,7 @@
 .clock-time {
   --size: 6.5rem;
 
-  font-size: calc(var(--size) * var(--scale));
+  font-size: calc(var(--size) * var(--scale) * var(--fullscreen-scale-multiplier));
   font-variant-numeric: tabular-nums;
   line-height: 0.8;
 }
@@ -72,7 +82,7 @@
 
   grid-row: calc(2 - var(--date-above));
   grid-column: 1 / 3;
-  font-size: calc(var(--size) * var(--scale) * var(--date-scale));
+  font-size: calc(var(--size) * var(--scale) * var(--date-scale) * var(--fullscreen-scale-multiplier));
   letter-spacing: 1px;
   line-height: 1;
   text-align: var(--date-alignment);
