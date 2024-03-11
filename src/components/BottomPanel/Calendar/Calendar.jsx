@@ -32,6 +32,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const currReminderPreviewHeight = useRef(0);
   const messageTimeoutId = useRef(0);
   const saveTimeoutId = useRef(0);
+  const dateCheckTimeoutId = useRef(0);
   const first = useRef(true);
 
   useEffect(() => {
@@ -64,6 +65,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
         first.current = false;
         initGoogleCalendar();
       }
+      checkDate();
       window.addEventListener("google-user-change", handleGoogleUserChange);
       chromeStorage.subscribeToChanges(({ reminders }) => {
         if (!reminders) {
@@ -112,6 +114,21 @@ export default function Calendar({ visible, locale, showIndicator }) {
     const gr = resetRepeatableReminders(googleReminders);
 
     initCalendar(r, gr);
+  }
+
+  function checkDate() {
+    dateCheckTimeoutId.current = timeout(() => {
+      const date = timeDateService.getCurrentDate();
+
+      if (currentDay.day !== date.day || currentDay.month !== date.month || currentDay.year !== date.year) {
+        const day = getCalendarDay(calendar, currentDay);
+
+        delete day.isCurrentDay;
+        setCurrentDay(getCurrentDay(calendar, date));
+        setCalendar(calendar);
+      }
+      checkDate();
+    }, 30000, dateCheckTimeoutId.current);
   }
 
   function showMessage(message) {
