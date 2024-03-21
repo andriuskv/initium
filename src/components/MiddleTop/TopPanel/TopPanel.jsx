@@ -116,6 +116,9 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
 
   function handleReset(name) {
     if (minimalVisible.current) {
+      if (isLastRunningTimer(name)) {
+        updateTitle(name);
+      }
       removeFromRunning(name);
 
       if (getLastRunningTimer()) {
