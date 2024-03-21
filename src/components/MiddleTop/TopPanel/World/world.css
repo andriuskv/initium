@@ -37,7 +37,7 @@
   font-weight: bold;
 }
 
-.world-clock-diff {
+.world-clock-secondary {
   color: var(--color-white-60);
   font-weight: bold;
   font-size: var(--text-sm);
