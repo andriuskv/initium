@@ -109,7 +109,8 @@ export default function World({ visible, first, locale, parentVisible }) {
             <li className="world-clock" key={clock.id}>
               <div>
                 <div className="world-clock-city">{clock.city}</div>
-                <div className="world-clock-diff">{clock.diffString}</div>
+                <div className="world-clock-secondary">{clock.country}</div>
+                <div className="world-clock-secondary">{clock.diffString}</div>
               </div>
               <div className="world-clock-time">
                 <span className="world-clock-time-text">{clock.time}</span>
