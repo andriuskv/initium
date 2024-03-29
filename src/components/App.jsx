@@ -148,7 +148,7 @@ export default function App() {
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel} locale={locale}/>}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.tasks.disabled ? null : <Tasks settings={settings.tasks} locale={locale}/>}
+        {settings.tasks.disabled ? null : <Tasks settings={settings.tasks} generalSettings={settings.general} locale={locale}/>}
       </Suspense>
       <Suspense fallback={null}>
         {weather.rendered && <Weather timeFormat={settings.timeDate.format} locale={locale}/>}

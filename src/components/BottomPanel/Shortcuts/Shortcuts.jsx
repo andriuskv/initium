@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
 import Icon from "components/Icon";
+import Link from "components/Link";
 
 // Minification returns empty object from dynamic import.
 import json from "./shortcuts.json";
@@ -105,10 +106,10 @@ export default function Shortcuts({ locale }) {
       <ul className="shortcuts-items">
         {items.map(item => item.hidden ? null : (
           <li key={item.url}>
-            <a href={item.url} className="btn icon-btn shortcuts-item">
+            <Link href={item.url} className="btn icon-btn shortcuts-item">
               <img src={item.iconPath} className="shortcuts-item-icon" width="48px" height="48px" loading="lazy" alt=""/>
               <div className="shortcuts-item-title">{item.title}</div>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

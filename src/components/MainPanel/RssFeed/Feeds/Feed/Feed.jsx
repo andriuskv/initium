@@ -1,5 +1,6 @@
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
+import Link from "components/Link";
 
 export default function Feed({ children, index, feed, feeds, locale, updateFeeds, selectFeedFromList, deactivateFeed, removeFeed }) {
   function enableTitleEdit() {
@@ -45,7 +46,7 @@ export default function Feed({ children, index, feed, feeds, locale, updateFeeds
               <span>{feed.title}</span>
             </button>
           )}
-          <a href={feed.url} className="feed-list-item-url" target="_blank" rel="noreferrer">{feed.url}</a>
+          <Link href={feed.url} className="feed-list-item-url">{feed.url}</Link>
         </div>
         {children}
         {!feed.updatingTitle && (

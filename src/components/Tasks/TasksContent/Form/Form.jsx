@@ -19,7 +19,7 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
       labels: getUniqueTaskLabels(form.groupIndex, form.taskIndex),
       task: {
         rawText: "",
-        subtasks: [getNewSubtask(), getNewSubtask()]
+        subtasks: [getDefaultTask(), getDefaultTask()]
       }
     };
 
@@ -28,7 +28,7 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
       let missingSubtaskCount = 2 - subtasks.length;
 
       while (missingSubtaskCount > 0) {
-        subtasks.push(getNewSubtask());
+        subtasks.push(getDefaultTask());
         missingSubtaskCount -= 1;
       }
       defaultForm.task.rawText = form.task.rawText;
@@ -137,15 +137,19 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
     createGroup(group);
   }
 
-  function getNewSubtask() {
+  function getDefaultTask(text = "", props = {}) {
+    const { openLinkInNewTab } = getSetting("general");
+
     return {
       id: getRandomString(4),
-      rawText: ""
+      rawText: text,
+      text: replaceLink(text, "task-link", openLinkInNewTab),
+      ...props
     };
   }
 
   function addFormSubtask() {
-    setState({ ...state, task: { ...state.task, subtasks: [...state.task.subtasks, getNewSubtask()] } });
+    setState({ ...state, task: { ...state.task, subtasks: [...state.task.subtasks, getDefaultTask()] } });
   }
 
   function removeFormSubtask(index) {
@@ -161,14 +165,11 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
     const repeatGap = state.moreOptionsVisible ? Number(elements.repeatGap.value) : -1;
     const { selectedGroupId = "default" } = state;
     const { tasks } = groups.find(({ id }) => id === selectedGroupId);
-    const task = {
+    const task = getDefaultTask(text, {
       creationDate: Date.now(),
-      rawText: text,
-      id: getRandomString(4),
-      text: replaceLink(text, "task-link"),
       subtasks: getFormSubtasks(elements.subtask),
       labels: getFlaggedFormLabels()
-    };
+    });
 
     event.preventDefault();
 
@@ -263,12 +264,9 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
     else if (elements.value) {
       const text = elements.value.trim();
 
-      return [{
-        id: getRandomString(4),
-        rawText: text,
-        optional: state.task.subtasks[0].optional,
-        text: replaceLink(text, "task-link")
-      }];
+      return [getDefaultTask(text, {
+        optional: state.task.subtasks[0].optional
+      })];
     }
     else if (elements.length) {
       const subtasks = [];
@@ -277,12 +275,9 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
         const text = elements[i].value.trim();
 
         if (text) {
-          subtasks.push({
-            id: getRandomString(4),
-            rawText: text,
-            optional: state.task.subtasks[i].optional,
-            text: replaceLink(text, "task-link")
-          });
+          subtasks.push(getDefaultTask(text, {
+            optional: state.task.subtasks[i].optional
+          }));
         }
       }
       return subtasks;
