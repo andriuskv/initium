@@ -22,7 +22,7 @@ const taskStatusMap = {
   "3": "completed"
 };
 
-export default function Tasks({ settings, locale, expanded, toggleSize }) {
+export default function Tasks({ settings, generalSettings, locale, expanded, toggleSize }) {
   const [groups, setGroups] = useState(null);
   const [removedItems, setRemovedItems] = useState([]);
   const [form, setForm] = useState(null);
@@ -50,6 +50,23 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
     countTasks(groups);
     setGroups([...groups]);
   }, [settings]);
+
+  useEffect(() => {
+    if (!groups) {
+      return;
+    }
+
+    for (const group of groups) {
+      for (const task of group.tasks) {
+        task.text = replaceLink(task.rawText, "task-link", generalSettings.openLinkInNewTab);
+
+        for (const subtask of task.subtasks) {
+          subtask.text = replaceLink(subtask.rawText, "task-link", generalSettings.openLinkInNewTab);
+        }
+      }
+    }
+    setGroups([...groups]);
+  }, [generalSettings.openLinkInNewTab]);
 
   useEffect(() => {
     if (!groups) {
@@ -313,7 +330,7 @@ export default function Tasks({ settings, locale, expanded, toggleSize }) {
     task.id = getRandomString();
     task.rawText ??= task.text;
     task.rawText = task.rawText.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
-    task.text = replaceLink(task.rawText, "task-link");
+    task.text = replaceLink(task.rawText, "task-link", generalSettings.openLinkInNewTab);
 
     if (task.expirationDate) {
       const { dateLocale } = getSetting("timeDate");

@@ -1,11 +1,13 @@
 import { createContext, useState, useEffect, useContext, useMemo } from "react";
 import { replaceLink } from "utils";
+import { useSettings } from "contexts/settings";
 import { getSetting } from "services/settings";
 import * as chromeStorage from "services/chromeStorage";
 
 const StickyNotesContext = createContext();
 
 function StickyNotesProvider({ children }) {
+  const { settings } = useSettings();
   const [notes, setNotes] = useState([]);
   const memoizedValue = useMemo(() => {
     return {
@@ -18,6 +20,14 @@ function StickyNotesProvider({ children }) {
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    for (const note of notes) {
+      note.titleDisplayString = parseNoteField(note.title, settings.general.openLinkInNewTab);
+      note.contentDisplayString = parseNoteField(note.content, settings.general.openLinkInNewTab);
+    }
+    setNotes([...notes]);
+  }, [settings.general.openLinkInNewTab]);
 
   async function init() {
     const notes = await chromeStorage.get("stickyNotes") ?? [];
@@ -61,9 +71,9 @@ function StickyNotesProvider({ children }) {
     });
   }
 
-  function parseNoteField(value) {
+  function parseNoteField(value, openInNewTab) {
     const displayValue = value.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
-    return replaceLink(displayValue, "sticky-note-link");
+    return replaceLink(displayValue, "sticky-note-link", openInNewTab);
   }
 
   function createNote(note) {

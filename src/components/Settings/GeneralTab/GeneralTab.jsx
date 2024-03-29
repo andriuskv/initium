@@ -149,6 +149,15 @@ export default function GeneralTab({ locale }) {
           <button className="btn outline-btn settings-group-top-btn" onClick={showMiddleTopModal}>{locale.settings.general.show_middle_top_title}</button>
         </div>
       </div>
+      <label className="setting">
+        <span>Open links in a new tab</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.general.openLinkInNewTab}
+          onChange={() => toggleSetting("general", "openLinkInNewTab")}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
       <div className="setting setting-reset">
         <span>{locale.settings.general.reset_settings_title}</span>
         <button className="btn text-btn text-negative-btn" onClick={showResetModal}>{locale.global.reset}</button>

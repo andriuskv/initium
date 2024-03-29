@@ -38,6 +38,7 @@ function getDefault() {
   return {
     general: {
       locale: "en",
+      openLinkInNewTab: true,
       stickyNotesDisabled: false,
       shortcutsDisabled: false,
       calendarDisabled: false,

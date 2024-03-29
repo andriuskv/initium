@@ -2,6 +2,7 @@ import { useRef } from "react";
 import TabsContainer from "components/TabsContainer";
 import ToTop from "components/ToTop";
 import Icon from "components/Icon";
+import Link from "components/Link";
 import "./entries.css";
 
 const VISIBLE_ITEM_COUNT = 3;
@@ -69,7 +70,7 @@ export default function Entries({ navigation, feeds, locale, selectFeed, previou
             <div className="feed-entry-title">
               {entry.newEntry && <span className="new-entry-indicator">{locale.rssFeed.new_entry}</span>}
               <span>
-                <a href={entry.link} className="feed-entry-link" target="_blank" rel="noreferrer">{entry.title}</a>
+                <Link href={entry.link} className="feed-entry-link">{entry.title}</Link>
               </span>
             </div>
             <div className={`feed-entry-description-container${entry.truncated ? " truncated" : ""}`}>

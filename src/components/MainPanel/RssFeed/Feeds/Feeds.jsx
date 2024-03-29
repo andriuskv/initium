@@ -4,6 +4,7 @@ import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import Spinner from "components/Spinner";
+import Link from "components/Link";
 import CreateButton from "components/CreateButton";
 import "./feeds.css";
 import Feed from "./Feed";
@@ -104,7 +105,7 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
               <div className="feed-list-item-header">
                 <div className="feed-list-item-title-container">
                   <h3 className="feed-list-item-title">{feed.title}</h3>
-                  <a href={feed.url} className="feed-list-item-url" target="_blank" rel="noreferrer">{feed.url}</a>
+                  <Link href={feed.url} className="feed-list-item-url" target="_blank" rel="noreferrer">{feed.url}</Link>
                 </div>
                 <button className="btn icon-btn" onClick={() => removeFeed(index, "failed")} title={locale.global.remove}>
                   <Icon id="trash"/>
@@ -132,7 +133,7 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
                     <Icon id="sleep" className="inactive-feed-icon" title={locale.rssFeed.inactive}/>
                     <span>{feed.title}</span>
                   </h3>
-                  <a href={feed.url} className="feed-list-item-url" target="_blank" rel="noreferrer">{feed.url}</a>
+                  <Link href={feed.url} className="feed-list-item-url">{feed.url}</Link>
                 </div>
                 <Dropdown>
                   <button className="btn icon-text-btn dropdown-btn" onClick={() => refetchFeed(feed, "inactive")}>

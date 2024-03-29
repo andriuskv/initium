@@ -152,9 +152,9 @@ function getRandomValueBetweenTwoNumbers(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function replaceLink(text, className) {
+function replaceLink(text, className, openInNewTab) {
   const regex = /(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?/g;
-  return text.replace(regex, href => `<a href="${href}" class="${className}" target="_blank">${href}</a>`);
+  return text.replace(regex, href => `<a href="${href}" class="${className}"${openInNewTab ? " target=_blank" : ""}>${href}</a>`);
 }
 
 function toggleBehindElements(shouldShow, className) {
