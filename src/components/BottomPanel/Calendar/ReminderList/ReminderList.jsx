@@ -33,7 +33,6 @@ export default function ReminderList({ reminders, locale, showForm, removeRemind
         <span className="calendar-title reminder-list-title">Reminders</span>
       </div>
       {sortedReminders.length > 0 ? (
-
         <ul className="remainder-list-items" data-dropdown-parent>
           {sortedReminders.map(reminder => (
             <li key={reminder.id}>
@@ -53,15 +52,17 @@ export default function ReminderList({ reminders, locale, showForm, removeRemind
                   <p>{reminder.text}</p>
                   <div className="remainder-list-item-range">{reminder.range.text}</div>
                 </div>
-                {reminder.type === "google" ? null : (
+                {reminder.type === "google" && !reminder.editable ? null : (
                   <Dropdown container={{ className: "remainder-list-item-dropdown" }}>
+                    {reminder.type === "google" ? null : (
+                      <button className="btn icon-text-btn dropdown-btn"
+                        onClick={() => editReminder(reminder.id)}>
+                        <Icon id="edit"/>
+                        <span>{locale.global.edit}</span>
+                      </button>
+                    )}
                     <button className="btn icon-text-btn dropdown-btn"
-                      onClick={() => editReminder(reminder.id)}>
-                      <Icon id="edit"/>
-                      <span>{locale.global.edit}</span>
-                    </button>
-                    <button className="btn icon-text-btn dropdown-btn"
-                      onClick={() => removeReminder(reminder.id)}>
+                      onClick={() => removeReminder(reminder)}>
                       <Icon id="trash"/>
                       <span>{locale.global.remove}</span>
                     </button>
