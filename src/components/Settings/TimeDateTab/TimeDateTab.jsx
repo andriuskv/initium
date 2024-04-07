@@ -270,6 +270,17 @@ export default function TimeDateTab({ locale }) {
             <div className="checkbox-tick"></div>
           </div>
         </label>
+        {/* Use relative here because sr-only class causes the input to move out of screen bounds causing layout shift,
+        even though on other inputs it doesn't, go figure. */}
+        <label className="setting relative">
+          <span>Show tomorrow reminder preview</span>
+          <input type="checkbox" className="sr-only checkbox-input"
+            checked={settings.showTomorrowReminers}
+            onChange={() => toggleSetting("timeDate", "showTomorrowReminers")}/>
+          <div className="checkbox">
+            <div className="checkbox-tick"></div>
+          </div>
+        </label>
         <div className="setting last-setting-tab-item google-calendar-integration-setting">
           <div className="google-calendar-integration-setting-main">
             <span>Google Calendar</span>

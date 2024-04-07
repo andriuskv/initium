@@ -43,7 +43,7 @@
   width: 380px;
   height: calc(var(--calendar-height) + var(--additional-height));
 
-  &:has(+ .calendar-current-day-preview, + .calendar-world-clocks) {
+  &:has(+ .calendar-reminder-preview, + .calendar-world-clocks) {
     .calendar-days {
       --corner-border-radius: 4px;
     }
@@ -287,74 +287,6 @@
 .empty-reminder-list-message {
   margin: auto;
   font-size: var(--text-lg);
-}
-
-.calendar-current-day-preview {
-  padding-top: var(--space-sm);
-  padding-left: var(--space-md);
-  border-top: 1px solid var(--color-white-10);
-
-  &.hidden {
-    display: none;
-  }
-
-  &:not(:has(+ .calendar-world-clocks)) {
-    overflow: hidden;
-    border-bottom-right-radius: var(--container-inset-radius);
-  }
-}
-
-.calendar-current-day-preview-title {
-  margin-top: var(--space-sm);
-  margin-bottom: var(--space-md);
-  font-size: var(--text-md);
-  font-weight: bold;
-  color: var(--color-white-80);
-}
-
-.calendar-current-day-reminders {
-  overflow-y: auto;
-  max-height: 110px;
-  padding-bottom: var(--space-md);
-  padding-right: var(--space-md);
-}
-
-.calendar-current-day-reminder {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-size: var(--text-sm);
-  word-break: break-word;
-
-  &:not(:last-of-type) {
-    margin-bottom: var(--space-md);
-  }
-}
-
-.calendar-current-day-reminder-color {
-  flex-shrink: 0;
-  width: 2px;
-  height: 16px;
-  border-radius: 2px;
-}
-
-.calendar-current-day-reminder-range-text {
-  flex-shrink: 0;
-  margin-left: auto;
-  color: var(--color-white-60);
-
-  &:has(+ .google-reminder-icon) {
-    margin-right: var(--space-sm);
-
-    & + .google-reminder-icon {
-      margin-left: 0;
-    }
-  }
-}
-
-.google-reminder-icon {
-  margin-left: auto;
-  color: var(--color-white-60);
 }
 
 @keyframes calendar-scale-up {

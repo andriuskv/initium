@@ -1,8 +1,10 @@
 @import "../../../../styles/mixins.css";
 
 .calendar-world-clocks {
+  overflow: hidden;
   display: block;
   padding: 0;
+  border-bottom-right-radius: var(--container-inset-radius);
 }
 
 .calendar-world-clocks-title {
