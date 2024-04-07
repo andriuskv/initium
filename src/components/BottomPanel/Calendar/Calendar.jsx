@@ -520,7 +520,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }, []);
   }
 
-  async function removeReminder(reminder, day) {
+  async function removeReminder(reminder, day = null) {
     if (reminder.type === "google") {
       const success = await calendarService.deleteCalendarEvent(reminder.calendarId, reminder.id);
 
@@ -541,7 +541,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     removeCalendarReminder(reminder.id);
     updateCalendar();
 
-    if (view.name === "day") {
+    if (view.name === "day" && day) {
       showDayView(day);
     }
   }

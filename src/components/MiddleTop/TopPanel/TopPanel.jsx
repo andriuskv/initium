@@ -96,6 +96,20 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     };
   }, [expanded]);
 
+  useEffect(() => {
+    function handleClose() {
+      if (!visible) {
+        setVisible(true);
+      }
+    }
+
+    window.addEventListener("pip-close", handleClose);
+
+    return () => {
+      window.removeEventListener("pip-close", handleClose);
+    };
+  }, [visible]);
+
   useLayoutEffect(() => {
     const timer = getLastRunningTimer();
 

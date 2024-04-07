@@ -296,6 +296,7 @@ async function initGoogleCalendar(retried = false) {
         const calendarItems = parseItems(value.items, {
           colorId: calendar.colorId,
           calendarId: calendar.id,
+          editable: calendar.canEdit,
           includeDesc: !calendar.id.includes("#holiday@group")
         }, colorsJson);
 
@@ -342,6 +343,7 @@ async function fetchCalendarItems(calendar, retried = false) {
     const calendarItems = parseItems(json.items, {
       colorId: calendar.colorId,
       calendarId: calendar.id,
+      editable: calendar.canEdit,
       includeDesc: !calendar.id.includes("#holiday@group")
     }, colorsJson);
 
@@ -370,6 +372,7 @@ function parseCalendars(items) {
         id: item.id,
         title: item.summary,
         colorId: item.colorId,
+        canEdit: item.accessRole === "owner",
         selected,
         ...(item.primary ? { primary: true, title: user.name } : {})
       });
@@ -382,6 +385,7 @@ function parseCalendars(items) {
         id: item.id,
         title: item.summary,
         colorId: item.colorId,
+        canEdit: item.accessRole === "owner",
         selected: !!item.primary,
         ...(item.primary ? { primary: true, title: user.name } : {})
       });
@@ -399,7 +403,7 @@ function parseCalendars(items) {
   return calendars;
 }
 
-function parseItems(items, { calendarId, colorId, includeDesc }, colors) {
+function parseItems(items, { calendarId, colorId, includeDesc, editable }, colors) {
   const defaultColor = colors.calendar[colorId].background;
   const reminders = [];
 
@@ -419,6 +423,7 @@ function parseItems(items, { calendarId, colorId, includeDesc }, colors) {
       id: item.id,
       type: "google",
       calendarId,
+      editable,
       color: item.colorId ? colors.event[item.colorId].background : defaultColor,
       text: getReminderText(item, includeDesc),
       range: getRange(item.start, item.end),
