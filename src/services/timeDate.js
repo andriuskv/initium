@@ -160,6 +160,17 @@ function getCurrentDate() {
   };
 }
 
+function getTomorrowDate() {
+  const date = new Date();
+  const tomorrow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+
+  return {
+    year: tomorrow.getFullYear(),
+    month: tomorrow.getMonth(),
+    day: tomorrow.getDate()
+  };
+}
+
 function getTimeObj(milliseconds) {
   const date = milliseconds ? new Date(milliseconds) : new Date();
 
@@ -232,6 +243,7 @@ export {
   getWeekday,
   getFirstDayIndex,
   getCurrentDate,
+  getTomorrowDate,
   getWeekdays,
   getWeekdayName,
   getMonthName,

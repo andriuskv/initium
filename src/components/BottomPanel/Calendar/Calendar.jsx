@@ -7,6 +7,7 @@ import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
 import "./calendar.css";
 import HeaderDropdown from "./HeaderDropdown";
+import ReminderPreview from "./ReminderPreview";
 
 const SelectedDay = lazy(() => import("./SelectedDay"));
 const ReminderList = lazy(() => import("./ReminderList"));
@@ -28,12 +29,19 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const [message, setMessage] = useState("");
   const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
-  const currReminderPreviewRef = useRef(null);
-  const currReminderPreviewHeight = useRef(0);
+  const reminderPreviewRef = useRef(null);
+  const reminderPreviewHeight = useRef(0);
   const messageTimeoutId = useRef(0);
   const saveTimeoutId = useRef(0);
   const dateCheckTimeoutId = useRef(0);
   const first = useRef(true);
+  const tomorrowDay = useMemo(() => {
+    if (!calendar) {
+      return null;
+    }
+    const date = timeDateService.getTomorrowDate();
+    return getCalendarDay(calendar, date);
+  }, [calendar]);
 
   useEffect(() => {
     init();
@@ -125,7 +133,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
         delete day.isCurrentDay;
         setCurrentDay(getCurrentDay(calendar, date));
-        setCalendar(calendar);
+        setCalendar({ ...calendar });
       }
       checkDate();
     }, 30000, dateCheckTimeoutId.current);
@@ -657,19 +665,19 @@ export default function Calendar({ visible, locale, showIndicator }) {
       return;
     }
 
-    if (currReminderPreviewRef.current) {
-      const { height } = currReminderPreviewRef.current.getBoundingClientRect();
+    if (reminderPreviewRef.current) {
+      const { height } = reminderPreviewRef.current.getBoundingClientRect();
 
-      currReminderPreviewHeight.current = height;
-      currReminderPreviewRef.current.style.display = "none";
+      reminderPreviewHeight.current = height;
+      reminderPreviewRef.current.style.display = "none";
     }
   }
 
   function showCalendar() {
-    currReminderPreviewHeight.current = 0;
+    reminderPreviewHeight.current = 0;
 
-    if (currReminderPreviewRef.current) {
-      currReminderPreviewRef.current.style.display = "";
+    if (reminderPreviewRef.current) {
+      reminderPreviewRef.current.style.display = "";
     }
     showDefaultView();
   }
@@ -924,22 +932,10 @@ export default function Calendar({ visible, locale, showIndicator }) {
           <div>{currentDay.dateString}</div>
         </button>
       </div>
-      <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${currReminderPreviewHeight.current}px` }}>{renderView()}</div>
-      {!settings.reminderPreviewHidden && currentDay.reminders.length && view.name !== "reminders" ? (
-        <div className={`container-body calendar-current-day-preview${view.name === "day" ? " hidden" : ""}`} ref={currReminderPreviewRef}>
-          <h4 className="calendar-current-day-preview-title">Today</h4>
-          <ul className="calendar-current-day-reminders">
-            {currentDay.reminders.map(reminder => (
-              <li className="calendar-current-day-reminder" key={reminder.id}>
-                <div className="calendar-current-day-reminder-color" style={{ backgroundColor: reminder.color }}></div>
-                <p>{reminder.text}</p>
-                {reminder.range.from ? <p className="calendar-current-day-reminder-range-text">{reminder.range.text}</p> : null}
-                {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+      <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${reminderPreviewHeight.current}px` }}>{renderView()}</div>
+      {view.name === "reminders" || currentDay.reminders.length === 0 && tomorrowDay.reminders.length === 0 ? null : (
+        <ReminderPreview currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>
+      )}
       {settings.worldClocksHidden ? null : (
         <Suspense fallback={null}>
           <WorldClocks parentVisible={visible} locale={locale}/>
