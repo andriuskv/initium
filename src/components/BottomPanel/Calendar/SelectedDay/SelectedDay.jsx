@@ -38,7 +38,7 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
                 <div>{reminder.text}</div>
                 <div className="remainder-list-item-range">{reminder.range.text}</div>
               </div>
-              {reminder.type === "google" && reminder.calendarId.endsWith("calendar.google.com") ? null : (
+              {reminder.type === "google" && !reminder.editable ? null : (
                 <Dropdown container={{ className: "remainder-list-item-dropdown" }}>
                   {reminder.type === "google" ? null : (
                     <button className="btn icon-text-btn dropdown-btn"

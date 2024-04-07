@@ -6,7 +6,7 @@ import "./reminder-list.css";
 
 export default function ReminderList({ reminders, locale, showForm, removeReminder, changeReminderColor, hide }) {
   const { dateLocale } = getSetting("timeDate");
-  const sortedReminders = reminders.toSorted((a, b) => {
+  const sortedReminders = reminders.filter(reminder => reminder.type === "google" ? reminder.editable : true).toSorted((a, b) => {
     return new Date(a.year, a.month, a.day) - new Date(b.year, b.month, b.day);
   }).map(reminder => {
     reminder.dateString = formatDate(new Date(reminder.year, reminder.month, reminder.day), {
