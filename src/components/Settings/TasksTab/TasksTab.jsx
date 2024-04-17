@@ -15,16 +15,6 @@ export default function Tasks({ locale }) {
         </div>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>Complete the task when all its subtasks are completed</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          disabled={settings.disabled}
-          checked={settings.completeWithSubtasks}
-          onChange={() => toggleSetting("tasks", "completeWithSubtasks")}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
-        </div>
-      </label>
-      <label className={`setting${settings.disabled ? " disabled" : ""}`}>
         <span>{locale.settings.tasks.show_default_group_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           disabled={settings.disabled}

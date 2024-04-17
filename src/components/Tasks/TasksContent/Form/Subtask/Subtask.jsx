@@ -2,7 +2,7 @@ import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./subtask.css";
 
-export default function Subtask({ children, index, subtask, locale, settings, toggleSubtaskReq, removeFormSubtask }) {
+export default function Subtask({ children, index, subtask, locale, completeWithSubtasks, toggleSubtaskReq, removeFormSubtask }) {
   return (
     <>
       <div className="task-form-subtask-index-container">
@@ -11,7 +11,7 @@ export default function Subtask({ children, index, subtask, locale, settings, to
       </div>
       <input type="text" name="subtask" className="input task-form-subtask-input"
         defaultValue={subtask.rawText} autoComplete="off"/>
-      {settings.completeWithSubtasks ? (
+      {completeWithSubtasks ? (
         <Dropdown>
           <button type="button" className="btn icon-text-btn dropdown-btn icon-placeholder"
             onClick={() => toggleSubtaskReq(index)}>
