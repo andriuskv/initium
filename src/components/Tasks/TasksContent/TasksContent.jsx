@@ -359,7 +359,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
     subtask.removed = true;
 
-    if (settings.completeWithSubtasks) {
+    if (task.completeWithSubtasks) {
       let requiredSubtaskCount = 0;
 
       for (const subtask of task.subtasks) {
@@ -441,7 +441,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
   function editTask(groupIndex, taskIndex) {
     const group = groups[groupIndex];
-    const { id, rawText, subtasks, creationDate, expirationDate, repeat } = group.tasks[taskIndex];
+    const { id, rawText, subtasks, creationDate, expirationDate, repeat, completeWithSubtasks } = group.tasks[taskIndex];
 
     setActiveComponent("form");
     setForm({
@@ -450,6 +450,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       taskIndex,
       groupId: group.id,
       selectedGroupId: group.id,
+      completeWithSubtasks,
       task: {
         id,
         rawText,
@@ -637,7 +638,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   if (activeComponent === "form") {
     return (
       <Suspense fallback={null}>
-        <Form form={form} groups={groups} locale={locale} settings={settings} updateGroups={updateGroups} removeTask={removeFormTask}
+        <Form form={form} groups={groups} locale={locale} updateGroups={updateGroups} removeTask={removeFormTask}
           createGroup={createGroup} hide={hideForm}/>
       </Suspense>
     );
@@ -722,7 +723,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
                                           </button>
                                         )}
                                         <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text }}></span>
-                                        {settings.completeWithSubtasks && subtask.optional ? <span className="task-text">*</span> : null}
+                                        {task.completeWithSubtasks && subtask.optional ? <span className="task-text">*</span> : null}
                                       </div>
                                     </li>
                                   )

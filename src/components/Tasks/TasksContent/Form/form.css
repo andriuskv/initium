@@ -122,6 +122,43 @@
   }
 }
 
+.task-form-pref-toggle-btn {
+  .svg-icon {
+    transition: var(--duration-n) transform;
+  }
+
+  &.expanded {
+    .svg-icon {
+      transform: rotateZ(180deg);
+    }
+  }
+}
+
+.task-form-preferences {
+  padding: var(--space-md);
+  margin: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-white-4);
+  border-radius: 8px;
+  background-color: var(--color-black-8);
+  box-shadow: inset 1px 2px 2px 0 var(--color-black-4),
+              inset 2px 4px 4px 0 var(--color-black-2);
+}
+
+.task-form-pref {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  text-wrap: pretty;
+  font-size: var(--text-sm);
+  color: var(--color-white-80);
+
+  .checkbox {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+}
+
 .task-form-subtasks {
   display: flex;
   flex-direction: column;

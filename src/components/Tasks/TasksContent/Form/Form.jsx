@@ -1,4 +1,4 @@
-import { useState, useRef, lazy, Suspense, useEffect } from "react";
+import { useState, useRef, lazy, Suspense } from "react";
 import { getRandomString, timeout, replaceLink } from "utils";
 import { useModal } from "hooks";
 import { getSetting } from "services/settings";
@@ -12,10 +12,11 @@ const Toast = lazy(() => import("components/Toast"));
 const GroupForm = lazy(() => import("../GroupForm"));
 const LabelForm = lazy(() => import("./LabelForm"));
 
-export default function Form({ form, groups, locale, settings, updateGroups, removeTask, createGroup, hide }) {
+export default function Form({ form, groups, locale, updateGroups, removeTask, createGroup, hide }) {
   const [state, setState] = useState(() => {
     const defaultForm = {
       moreOptionsVisible: false,
+      completeWithSubtasks: !!form.completeWithSubtasks,
       labels: getUniqueTaskLabels(form.groupIndex, form.taskIndex),
       task: {
         rawText: "",
@@ -59,17 +60,9 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
   });
   const [modal, setModal, hideModal] = useModal(null);
   const [activeDragId, setActiveDragId] = useState(null);
+  const [prefsVisible, setPrefsVisible] = useState(state.completeWithSubtasks);
   const [message, setMessage] = useState("");
   const messageTimeoutId = useRef();
-
-  useEffect(() => {
-    if (state && !settings.completeWithSubtasks) {
-      for (const subtask of state.task.subtasks) {
-        delete subtask.optional;
-      }
-      setState({...state });
-    }
-  }, [settings.completeWithSubtasks]);
 
   function toggleMoreOptions() {
     setState({
@@ -159,6 +152,8 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
   }
 
   function handleTaskFormSubmit(event) {
+    event.preventDefault();
+
     const { elements } = event.target;
     const text = elements.text.value.trim();
     const dateTime = state.moreOptionsVisible ? elements.datetime.value : "";
@@ -171,7 +166,9 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
       labels: getFlaggedFormLabels()
     });
 
-    event.preventDefault();
+    if (state.completeWithSubtasks) {
+      task.completeWithSubtasks = true;
+    }
 
     if (repeatGap >= 1) {
       const repeatUnit = elements.repeatUnit.value;
@@ -327,6 +324,19 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
     setMessage("");
   }
 
+  function togglePrefsVisibility() {
+    setPrefsVisible(!prefsVisible);
+  }
+
+  function togglePref({ target }) {
+    if (!target.checked) {
+      for (const subtask of state.task.subtasks) {
+        delete subtask.optional;
+      }
+    }
+    setState({ ...state, completeWithSubtasks: target.checked });
+  }
+
   function toggleSubtaskReq(index) {
     state.task.subtasks[index].optional = !state.task.subtasks[index].optional;
     setState({ ...state });
@@ -350,7 +360,7 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
         index,
         subtask,
         locale,
-        settings,
+        completeWithSubtasks: state.completeWithSubtasks,
         toggleSubtaskReq,
         removeFormSubtask
       }
@@ -465,10 +475,26 @@ export default function Form({ form, groups, locale, settings, updateGroups, rem
           </div>
           <div className="task-form-item-container">
             <h4 className="task-form-item-title">{locale.tasks.subtask_title}</h4>
+            <button type="button" className={`btn icon-btn task-form-pref-toggle-btn${prefsVisible ? " expanded" : ""}`}
+              onClick={togglePrefsVisibility} title={prefsVisible ? locale.global.collapse : locale.global.expand}>
+              <Icon id="chevron-down"/>
+            </button>
             <button type="button" className="btn icon-btn" onClick={addFormSubtask} title={locale.tasks.add_subtask_title}>
               <Icon id="plus"/>
             </button>
           </div>
+          {prefsVisible ? (
+            <div className="task-form-preferences">
+              <label className="task-form-pref">
+                <input type="checkbox" className="sr-only checkbox-input" name="completeWithSubtasks"
+                  checked={state.completeWithSubtasks} onChange={togglePref}/>
+                <div className="checkbox">
+                  <div className="checkbox-tick"></div>
+                </div>
+                <span>Complete the task by completing all its subtasks</span>
+              </label>
+            </div>
+          ) : null}
           {state.task.subtasks.length > 0 && (
             <ul className={`task-form-subtasks${activeDragId ? " dragging" : ""}`}>
               <SortableList

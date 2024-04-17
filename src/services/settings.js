@@ -106,7 +106,6 @@ function getDefault() {
     },
     tasks: {
       disabled: false,
-      comepleteWithSubtasks: false,
       defaultGroupVisible: false,
       emptyGroupsHidden: false,
       countSubtasks: false,
