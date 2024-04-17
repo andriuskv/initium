@@ -1,8 +1,20 @@
-.remainder-list-item-date {
+.reminder-list-item-col {
+  flex-direction: column;
+}
+
+.reminder-list-item-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm);
+  word-break: break-word;
+}
+
+.reminder-list-item-date {
   padding-top: var(--space-sm);
-  padding-right: var(--space-md);
+  padding-left: 20px;
   font-size: var(--text-xs);
   font-weight: bold;
   color: var(--color-white-60);
-  text-align: right;
 }
