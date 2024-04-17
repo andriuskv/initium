@@ -21,13 +21,13 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
         <span className="calendar-title reminder-list-title">{day.dateString}</span>
       </div>
       {day.reminders.length > 0 ? (
-        <ul className="remainder-list-items" data-dropdown-parent>
+        <ul className="reminder-list-items" data-dropdown-parent>
           {day.reminders.map(reminder => (
-            <li className="remainder-list-item" key={reminder.id}>
+            <li className="reminder-list-item" key={reminder.id}>
               {reminder.type === "google" ? (
-                <div className="remainder-list-item-color inert" style={{ "backgroundColor": reminder.color }}></div>
+                <div className="reminder-list-item-color inert" style={{ "backgroundColor": reminder.color }}></div>
               ) : (
-                <button className="btn remainder-list-item-color" style={{ "backgroundColor": reminder.color }} title="Change color"
+                <button className="btn reminder-list-item-color" style={{ "backgroundColor": reminder.color }} title="Change color"
                   onClick={() => changeReminderColor(reminder.id)}></button>
               )}
               <div>
@@ -36,10 +36,10 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
               </div>
               <div>
                 <div>{reminder.text}</div>
-                <div className="remainder-list-item-range">{reminder.range.text}</div>
+                <div className="reminder-list-item-range">{reminder.range.text}</div>
               </div>
               {reminder.type === "google" && !reminder.editable ? null : (
-                <Dropdown container={{ className: "remainder-list-item-dropdown" }}>
+                <Dropdown container={{ className: "reminder-list-item-dropdown" }}>
                   {reminder.type === "google" ? null : (
                     <button className="btn icon-text-btn dropdown-btn"
                       onClick={() => editReminder(reminder.id)}>
