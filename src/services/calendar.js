@@ -280,7 +280,7 @@ async function initGoogleCalendar(retried = false) {
       }
       return { message: "Something went wrong. Try again later." };
     }
-    const calendars = parseCalendars(calendarListJson.items);
+    const calendars = parseCalendars(calendarListJson.items, colorsJson);
     const selectedCalendars = calendars.filter(calendar => calendar.selected);
     const selectedCalendarsPromises = selectedCalendars.map(calendar => (
       fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendar.id)}/events?${params}`).then(res => res.json())
@@ -355,7 +355,7 @@ async function fetchCalendarItems(calendar, retried = false) {
   }
 }
 
-function parseCalendars(items) {
+function parseCalendars(items, colors) {
   const user = JSON.parse(localStorage.getItem("google-user")) || {};
   const oldCalendars = JSON.parse(localStorage.getItem("google-calendars")) || [];
   const calendars = [];
@@ -372,6 +372,7 @@ function parseCalendars(items) {
         id: item.id,
         title: item.summary,
         colorId: item.colorId,
+        color: colors.calendar[item.colorId].background,
         canEdit: item.accessRole === "owner",
         selected,
         ...(item.primary ? { primary: true, title: user.name } : {})
@@ -385,6 +386,7 @@ function parseCalendars(items) {
         id: item.id,
         title: item.summary,
         colorId: item.colorId,
+        color: colors.calendar[item.colorId].background,
         canEdit: item.accessRole === "owner",
         selected: !!item.primary,
         ...(item.primary ? { primary: true, title: user.name } : {})
@@ -408,6 +410,9 @@ function parseItems(items, { calendarId, colorId, includeDesc, editable }, color
   const reminders = [];
 
   for (const item of items) {
+    if (item.status === "cancelled") {
+      continue;
+    }
     const optionalParams = {};
 
     if (item.recurrence) {
@@ -588,7 +593,155 @@ function parseEndDateString(string) {
   const regex = /(\d{4})(\d{2})(\d{2})/;
   const [_, year, month, day] = string.match(regex);
 
-  return { year, month: month - 1, day };
+  return { year, month: month - 1, day: Number.parseInt(day, 10) };
+}
+
+function pad(value) {
+  return value.toString().padStart(2, "0");
+}
+
+function getDateString(date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function getDateTimeString(date) {
+  return `${getDateString(date)}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
+}
+
+function convertReminderToEvent(reminder) {
+  const startDate = new Date(reminder.year, reminder.month, reminder.day);
+  const endDate = new Date(reminder.year, reminder.month, reminder.day);
+  const event = {
+    start: {},
+    end: {},
+    summary: reminder.text
+  };
+
+  if (!reminder.range || reminder.range.text === "All day") {
+    endDate.setDate(startDate.getDate() + 1);
+    event.start.date = getDateString(startDate);
+    event.end.date = getDateString(endDate);
+  }
+  else {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    startDate.setHours(reminder.range.from.hours, reminder.range.from.minutes);
+    event.start.dateTime = getDateTimeString(startDate);
+    event.start.timeZone = timeZone;
+
+    if (reminder.range.to) {
+      endDate.setHours(reminder.range.to.hours, reminder.range.to.minutes);
+      event.end.dateTime = getDateTimeString(endDate);
+    }
+    else {
+      event.end.dateTime = event.start.dateTime;
+    }
+    event.end.timeZone = timeZone;
+  }
+
+  // https://datatracker.ietf.org/doc/html/rfc5545
+  if (reminder.repeat) {
+    const { type, customTypeGapName, freq, count, firstWeekday, weekdays, endDate } = reminder.repeat;
+    const weekdayIndexes = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+    let gap = reminder.repeat.gap;
+    let recurenceString = "RRULE:";
+
+    if (type === "custom") {
+      if (customTypeGapName === "days") {
+        recurenceString += `FREQ=DAILY;`;
+      }
+      else if (customTypeGapName === "weeks") {
+        recurenceString += `FREQ=WEEKLY;`;
+      }
+      else if (customTypeGapName === "months") {
+        if (freq === "yearly" || gap % 12 === 0) {
+          gap /= 12;
+          recurenceString += `FREQ=YEARLY;`;
+        }
+        else {
+          recurenceString += `FREQ=MONTHLY;`;
+        }
+      }
+    }
+    else if (type === "week") {
+      const wdIndex = startDate.getDay() - 1;
+
+      recurenceString += `FREQ=WEEKLY;BYDAY=${weekdayIndexes[wdIndex]};`;
+    }
+    else if (type === "weekday") {
+      const wds = weekdays.static.map((w, index) => w ? index : w)
+        .filter(w => typeof w === "number")
+        .map(index => weekdayIndexes[index]).join(",");
+
+      recurenceString += `FREQ=WEEKLY;BYDAY=${wds};`;
+    }
+
+    if (gap > 1) {
+      recurenceString += `INTERVAL=${gap};`;
+    }
+
+    if (count) {
+      recurenceString += `COUNT=${count};`;
+    }
+
+    if (firstWeekday === 1) {
+      recurenceString += "WKST=SU;";
+    }
+    else {
+      recurenceString += "WKST=MO;";
+    }
+
+    if (endDate) {
+      recurenceString += `UNTIL=${endDate}${pad(endDate.month + 1)}${pad(endDate.day)};`;
+    }
+
+    if (recurenceString.at(-1) === ";") {
+      recurenceString = recurenceString.slice(0, -1);
+    }
+    event.recurrence = [recurenceString];
+  }
+
+  return event;
+}
+
+async function createCalendarEvent(reminder, calendarId, retried = false) {
+  const token = localStorage.getItem("oauth_token");
+
+  if (!token) {
+    return;
+  }
+  const event = convertReminderToEvent(reminder);
+  const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
+  const res = await fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendarId)}/events?${params}`, {
+    method: "POST",
+    body: JSON.stringify(event)
+  });
+
+  if (res.status === 401 && !retried) {
+    await fetchToken();
+    return createCalendarEvent(reminder, calendarId, true);
+  }
+  return res.status === 200;
+}
+
+async function updateCalendarEvent(reminder, calendarId, retried = false) {
+  const token = localStorage.getItem("oauth_token");
+
+  if (!token) {
+    return;
+  }
+  const event = convertReminderToEvent(reminder);
+  const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
+  const res = await fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendarId)}/events/${reminder.oldId}?${params}`, {
+    method: "PUT",
+    body: JSON.stringify(event)
+  });
+
+  if (res.status === 401 && !retried) {
+    await fetchToken();
+    return updateCalendarEvent(reminder, calendarId, true);
+  }
+  return res.status === 200;
 }
 
 async function deleteCalendarEvent(calendarId, eventId, retried = false) {
@@ -667,6 +820,8 @@ export {
   authGoogleUser,
   initGoogleCalendar,
   fetchCalendarItems,
+  createCalendarEvent,
+  updateCalendarEvent,
   deleteCalendarEvent,
   clearUser
 };

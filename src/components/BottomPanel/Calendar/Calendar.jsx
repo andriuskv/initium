@@ -691,28 +691,48 @@ export default function Calendar({ visible, locale, showIndicator }) {
       id: "reminder",
       shouldToggle: true,
       component: Form,
-      params: { form, locale, updateReminder }
+      params: { form, locale, user: googleUser, googleCalendars, updateReminder }
     });
   }
 
   function updateReminder(reminder, form) {
+    const reminderArray = reminder.type === "google" ? googleReminders : reminders;
+
     createReminder(reminder, calendar, form.updating);
     sortDayReminders(form);
 
     if (form.updating) {
-      const index = reminders.findIndex(({ id }) => reminder.oldId === id);
+      const index = reminderArray.findIndex(({ id }) => reminder.oldId === id);
 
-      reminders.splice(index, 1, reminder);
+      reminderArray.splice(index, 1, reminder);
       removeCalendarReminder(form.id);
     }
     else {
-      reminders.push(reminder);
+      reminderArray.push(reminder);
     }
 
     if (view.name === "day") {
       showDayView(view.data);
     }
-    calendarService.saveReminders(reminders);
+
+    if (reminder.type !== "google") {
+      calendarService.saveReminders(reminders);
+    }
+  }
+
+  function editReminder(id, type) {
+    let reminder = null;
+
+    if (type === "google") {
+      reminder = googleReminders.find(reminder => reminder.id === id);
+    }
+    else {
+      reminder = reminders.find(reminder => reminder.id === id);
+    }
+    showForm({
+      ...reminder,
+      updating: true
+    });
   }
 
   function showDefaultView() {
@@ -826,7 +846,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     if (view.name === "day") {
       return (
         <Suspense fallback={null}>
-          <SelectedDay calendar={calendar} day={view.data} reminders={reminders} locale={locale}
+          <SelectedDay calendar={calendar} day={view.data} user={googleUser} locale={locale} editReminder={editReminder}
             showForm={showForm} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
             hide={showCalendar}/>
         </Suspense>
@@ -860,7 +880,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
       return (
         <Suspense fallback={null}>
           <ReminderList reminders={reminders.concat(googleReminders)} locale={locale}
-            showForm={showForm} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
+            editReminder={editReminder} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
             hide={showCalendar}/>
         </Suspense>
       );

@@ -7,6 +7,13 @@
   min-height: 0;
 }
 
+.reminder-form-header-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  margin-right: auto;
+}
+
 .reminder-form-body {
   overflow-y: auto;
   display: flex;
@@ -53,6 +60,19 @@
   z-index: -1;
   inset: 0;
   opacity: 0;
+}
+
+.reminder-form-display-date-dropdown {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.reminder-form-display-date-dropdown-title {
+  padding: var(--space-md);
+  text-align: center;
+  font-weight: bold;
 }
 
 .reminder-form-setting {
@@ -191,11 +211,16 @@
   margin-left: var(--space-md);
 }
 
-.reminder-form-message {
+.reminder-form-input-message {
   margin-top: var(--space-sm);
   font-size: var(--text-sm);
   font-weight: bold;
   color: var(--color-negative);
+}
+
+.reminder-form-message {
+  top: auto;
+  bottom: 48px;
 }
 
 .reminder-form-btns {
