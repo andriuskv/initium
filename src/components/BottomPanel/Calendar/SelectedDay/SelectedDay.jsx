@@ -2,16 +2,7 @@ import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
 
-export default function SelectedDay({ day, reminders, locale, removeReminder, changeReminderColor, showForm, hide }) {
-  function editReminder(id) {
-    const reminder = reminders.find(reminder => reminder.id === id);
-
-    showForm({
-      ...reminder,
-      updating: true
-    });
-  }
-
+export default function SelectedDay({ day, locale, removeReminder, changeReminderColor, editReminder, showForm, hide }) {
   return (
     <div className="calendar full-height">
       <div className="calendar-header reminder-list-header">
@@ -32,7 +23,7 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
               )}
               <div>
                 {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
-                {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
+                {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google calendar event"/> : ""}
               </div>
               <div>
                 <div>{reminder.text}</div>
@@ -40,13 +31,11 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
               </div>
               {reminder.type === "google" && !reminder.editable ? null : (
                 <Dropdown container={{ className: "reminder-list-item-dropdown" }}>
-                  {reminder.type === "google" ? null : (
-                    <button className="btn icon-text-btn dropdown-btn"
-                      onClick={() => editReminder(reminder.id)}>
-                      <Icon id="edit"/>
-                      <span>{locale.global.edit}</span>
-                    </button>
-                  )}
+                  <button className="btn icon-text-btn dropdown-btn"
+                    onClick={() => editReminder(reminder.id, reminder.type)}>
+                    <Icon id="edit"/>
+                    <span>{locale.global.edit}</span>
+                  </button>
                   <button className="btn icon-text-btn dropdown-btn"
                     onClick={() => removeReminder(reminder, day)}>
                     <Icon id="trash"/>
@@ -58,7 +47,7 @@ export default function SelectedDay({ day, reminders, locale, removeReminder, ch
           ))}
         </ul>
       ) : <p className="empty-reminder-list-message">{locale.calendar.no_reminders_message}</p>}
-      <CreateButton onClick={() => showForm(day)} attrs={{ "data-modal-initiator": true }} shiftTarget=".icon-btn" trackScroll></CreateButton>
+      <CreateButton onClick={() => showForm(day)} attrs={{ "data-modal-initiator": true }} shiftTarget=".icon-btn" trackScroll/>
     </div>
   );
 }

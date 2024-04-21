@@ -4,7 +4,7 @@ import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./reminder-list.css";
 
-export default function ReminderList({ reminders, locale, showForm, removeReminder, changeReminderColor, hide }) {
+export default function ReminderList({ reminders, locale, editReminder, removeReminder, changeReminderColor, hide }) {
   const { dateLocale } = getSetting("timeDate");
   const sortedReminders = reminders.filter(reminder => reminder.type === "google" ? reminder.editable : true).toSorted((a, b) => {
     return new Date(a.year, a.month, a.day) - new Date(b.year, b.month, b.day);
@@ -14,15 +14,6 @@ export default function ReminderList({ reminders, locale, showForm, removeRemind
     });
     return reminder;
   });
-
-  function editReminder(id) {
-    const reminder = reminders.find(reminder => reminder.id === id);
-
-    showForm({
-      ...reminder,
-      updating: true
-    });
-  }
 
   return (
     <div className="calendar full-height">
@@ -54,13 +45,11 @@ export default function ReminderList({ reminders, locale, showForm, removeRemind
                 </div>
                 {reminder.type === "google" && !reminder.editable ? null : (
                   <Dropdown container={{ className: "reminder-list-item-dropdown" }}>
-                    {reminder.type === "google" ? null : (
-                      <button className="btn icon-text-btn dropdown-btn"
-                        onClick={() => editReminder(reminder.id)}>
-                        <Icon id="edit"/>
-                        <span>{locale.global.edit}</span>
-                      </button>
-                    )}
+                    <button className="btn icon-text-btn dropdown-btn"
+                      onClick={() => editReminder(reminder.id, reminder.type)}>
+                      <Icon id="edit"/>
+                      <span>{locale.global.edit}</span>
+                    </button>
                     <button className="btn icon-text-btn dropdown-btn"
                       onClick={() => removeReminder(reminder)}>
                       <Icon id="trash"/>

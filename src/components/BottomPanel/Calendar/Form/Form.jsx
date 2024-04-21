@@ -1,12 +1,17 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { getRandomHexColor, hslStringToHex } from "utils";
+import { timeout, getRandomHexColor, hslStringToHex } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate } from "services/timeDate";
 import { getSetting } from "services/settings";
+import { createCalendarEvent, updateCalendarEvent } from "services/calendar";
+import Icon from "components/Icon";
 import "./form.css";
+import Dropdown from "../../../Dropdown/Dropdown";
 
-export default function Form({ form: initialForm, locale, updateReminder, hide }) {
+export default function Form({ form: initialForm, locale, user, googleCalendars, updateReminder, hide }) {
   const [form, setForm] = useState(() => getInitialForm(structuredClone(initialForm)));
+  const [message, setMessage] = useState("");
   const ignoreFirstClick = useRef(true);
+  const messageTimeoutId = useRef(0);
   const weekdayNames = useMemo(() => {
     const { dateLocale } = getSetting("timeDate");
     return getWeekdays(dateLocale, "short");
@@ -104,7 +109,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
     form.dateString = getDateInputString(form);
     form.displayDateString = formatDate(new Date(form.year, form.month, form.day), { locale: dateLocale });
 
-    return { ...form, range, repeat };
+    return { type: "normal", ...form, range, repeat };
   }
 
   function generateTimeTable() {
@@ -152,13 +157,15 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
   }
 
   function handleFormSubmit(event) {
+    const elements = event.target.elements;
+
     event.preventDefault();
 
     const reminder = {
       creationDate: Date.now(),
       oldId: form.id,
-      text: event.target.elements.reminder.value,
-      color: event.target.elements.color.value,
+      text: elements.reminder.value,
+      color: elements.color ? elements.color.value : "",
       year: form.year,
       month: form.month,
       day: form.day
@@ -219,7 +226,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
         }
       }
       else if (form.repeat.ends === "date") {
-        const dateString = event.target.elements.enddate.value;
+        const dateString = elements.enddate.value;
 
         if (!dateString) {
           form.repeat.dateMessage = "Please provide date.";
@@ -241,6 +248,31 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
         return;
       }
     }
+
+    if (form.type === "google") {
+      const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
+
+      reminder.type = "google";
+      reminder.color = primaryCalendar.color;
+      reminder.editable = true;
+
+      if (form.updating) {
+        const success = updateCalendarEvent(reminder, primaryCalendar.id);
+
+        if (!success) {
+          showMessage("Unable to update an event. Try again later.");
+          return;
+        }
+      }
+      else {
+        const success = createCalendarEvent(reminder, primaryCalendar.id);
+
+        if (!success) {
+          showMessage("Unable to create an event. Try again later.");
+          return;
+        }
+      }
+    }
     updateReminder(reminder, form);
     hide();
   }
@@ -249,6 +281,10 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
     if (event.key === "Enter" && event.target.nodeName !== "BUTTON") {
       event.preventDefault();
     }
+  }
+
+  function setReminderType(type) {
+    setForm({ ...form, type });
   }
 
   function toggleFormCheckbox(event) {
@@ -388,23 +424,53 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
     setForm({ ...form, ...displayDate, dateString: event.target.value, displayDateString });
   }
 
+  function showMessage(message) {
+    setMessage(message);
+
+    messageTimeoutId.current = timeout(() => {
+      setMessage("");
+    }, 4000, messageTimeoutId.current);
+  }
+
+  function dismissMessage() {
+    clearTimeout(messageTimeoutId.current);
+    setMessage("");
+  }
+
   return (
     <form className="reminder-form" onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
       <div className="container-header">
+        {form.type === "google" ? (
+          <img src="assets/google-product-logos/calendar.png" className="reminder-form-header-icon"
+            width="24px" height="24px" loading="lazy" alt=""></img>
+        ) : <Icon id="calendar" className="reminder-form-header-icon"/>}
         <h3 className="container-header-title">{locale.calendar.form.title}</h3>
       </div>
       <div className="container-body reminder-form-body">
         <div className="reminder-form-display-date">
-          <div className="reminder-form-color-picker-container">
+          {form.type === "google" ? null : <div className="reminder-form-color-picker-container">
             <input type="color" name="color" className="reminder-form-color-picker"
               defaultValue={form.pickerColor} title={locale.global.color_input_title} data-modal-keep/>
-          </div>
+          </div>}
           <div className="reminder-form-display-date-container">
             <button type="button" className="btn text-btn reminder-form-display-date-btn" title="Show date picker"
               onClick={showSelectedDayPicker} data-modal-keep>{form.displayDateString}</button>
             <input type="date" name="selecteddate" className="input reminder-form-display-date-input" tabIndex="-1"
               value={form.dateString} onChange={handleSelectedDayInputChange}/>
           </div>
+          {!form.updating && user ? (
+            <Dropdown container={{ className: "reminder-form-display-date-dropdown" }}>
+              <div className="dropdown-group">
+                <h4 className="reminder-form-display-date-dropdown-title">Reminder type</h4>
+              </div>
+              <div className="dropdown-group">
+                <button type="button" className={`btn text-btn dropdown-btn${form.type === "normal" ? " active" : ""}`}
+                  onClick={() => setReminderType("normal")}>Normal reminder</button>
+                <button type="button" className={`btn text-btn dropdown-btn${form.type === "google" ? " active" : ""}`}
+                  onClick={() => setReminderType("google")}>Google event</button>
+              </div>
+            </Dropdown>
+          ) : null}
         </div>
         <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
         <div className="reminder-form-row reminder-form-setting">
@@ -458,7 +524,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
                 </div>
               </div>
             )}
-            {form.range.message && <div className="reminder-form-message">{form.range.message}</div>}
+            {form.range.message && <div className="reminder-form-input-message">{form.range.message}</div>}
           </div>
         )}
         {form.repeat.enabled && (
@@ -477,7 +543,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
                     </select>
                   </span>
                 </label>
-                {form.repeat.gapError && <div className="reminder-form-message">{locale.calendar.form.invalid_number_message}</div>}
+                {form.repeat.gapError && <div className="reminder-form-input-message">{locale.calendar.form.invalid_number_message}</div>}
               </div>
             ) : form.repeat.type === "weekday" ? (
               <div className="reminder-form-setting reminder-form-weeekdays">
@@ -509,7 +575,7 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
                   disabled={form.repeat.ends !== "date"} required={form.repeat.ends === "date"}/>
               </label>
               {form.repeat.ends === "date" && form.repeat.dateMessage && (
-                <div className="reminder-form-message">{form.repeat.dateMessage}</div>
+                <div className="reminder-form-input-message">{form.repeat.dateMessage}</div>
               )}
               <label className="reminder-form-row">
                 <input type="radio" className="sr-only radio-input" name="ends"
@@ -522,12 +588,20 @@ export default function Form({ form: initialForm, locale, updateReminder, hide }
                 <span>occurrences</span>
               </label>
               {form.repeat.ends === "occurrences" && form.repeat.countError && (
-                <div className="reminder-form-message">{locale.calendar.form.invalid_number_message}</div>
+                <div className="reminder-form-input-message">{locale.calendar.form.invalid_number_message}</div>
               )}
             </div>
           </>
         )}
       </div>
+      {message ? (
+        <div className="container container-opaque calendar-message-container reminder-form-message">
+          <p className="calendar-message">{message}</p>
+          <button className="btn icon-btn" onClick={dismissMessage} title="Dismiss">
+            <Icon id="cross"/>
+          </button>
+        </div>
+      ) : null}
       <div className="container-footer reminder-form-btns">
         <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
         <button className="btn">{form.updating ? locale.global.update : locale.global.create}</button>
