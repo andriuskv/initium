@@ -1,2 +1,7 @@
 import useModal from "./useModal";
-export { useModal };
+import useMessage from "./useMessage";
+
+export {
+  useModal,
+  useMessage
+};

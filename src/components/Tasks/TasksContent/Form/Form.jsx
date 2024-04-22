@@ -1,6 +1,6 @@
-import { useState, useRef, lazy, Suspense } from "react";
-import { getRandomString, timeout, replaceLink } from "utils";
-import { useModal } from "hooks";
+import { useState, lazy, Suspense } from "react";
+import { getRandomString, replaceLink } from "utils";
+import { useModal, useMessage } from "hooks";
 import { getSetting } from "services/settings";
 import { formatDate, padTime } from "services/timeDate";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -61,8 +61,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
   const [modal, setModal, hideModal] = useModal(null);
   const [activeDragId, setActiveDragId] = useState(null);
   const [prefsVisible, setPrefsVisible] = useState(state.completeWithSubtasks);
-  const [message, setMessage] = useState("");
-  const messageTimeoutId = useRef();
+  const [message, showMessage, dismissMessage] = useMessage("");
 
   function toggleMoreOptions() {
     setState({
@@ -309,19 +308,6 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
     const minutes = date.getMinutes();
 
     return `${years}-${padTime(months)}-${padTime(days)}T${padTime(hours)}:${padTime(minutes)}`;
-  }
-
-  function showMessage(message) {
-    setMessage(message);
-
-    messageTimeoutId.current = timeout(() => {
-      setMessage("");
-    }, 4000, messageTimeoutId.current);
-  }
-
-  function dismissMessage() {
-    clearTimeout(messageTimeoutId.current);
-    setMessage("");
   }
 
   function togglePrefsVisibility() {

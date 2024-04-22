@@ -4,6 +4,7 @@ import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import * as calendarService from "services/calendar";
 import { useSettings } from "contexts/settings";
+import { useMessage } from "hooks";
 import Icon from "components/Icon";
 import "./calendar.css";
 import HeaderDropdown from "./HeaderDropdown";
@@ -26,12 +27,11 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const [googleUser, setGoogleUser] = useState(() => JSON.parse(localStorage.getItem("google-user")) || null);
   const [view, setView] = useState({ name: "default" });
   const [transition, setTransition] = useState({ x: 0, y: 0 });
-  const [message, setMessage] = useState("");
+  const [message, showMessage, dismissMessage] = useMessage("");
   const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
   const reminderPreviewRef = useRef(null);
   const reminderPreviewHeight = useRef(0);
-  const messageTimeoutId = useRef(0);
   const saveTimeoutId = useRef(0);
   const dateCheckTimeoutId = useRef(0);
   const first = useRef(true);
@@ -137,14 +137,6 @@ export default function Calendar({ visible, locale, showIndicator }) {
       }
       checkDate();
     }, 30000, dateCheckTimeoutId.current);
-  }
-
-  function showMessage(message) {
-    setMessage(message);
-
-    messageTimeoutId.current = timeout(() => {
-      setMessage("");
-    }, 4000, messageTimeoutId.current);
   }
 
   async function initGoogleCalendar() {
@@ -835,11 +827,6 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
       showMonth(target, index);
     }
-  }
-
-  function dismissMessage() {
-    clearTimeout(messageTimeoutId.current);
-    setMessage("");
   }
 
   function renderView() {
