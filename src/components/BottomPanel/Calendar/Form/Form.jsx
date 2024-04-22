@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { timeout, getRandomHexColor, hslStringToHex } from "utils";
+import { getRandomHexColor, hslStringToHex } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { createCalendarEvent, updateCalendarEvent } from "services/calendar";
+import { useMessage } from "hooks";
 import Icon from "components/Icon";
 import "./form.css";
 import Dropdown from "../../../Dropdown/Dropdown";
 
 export default function Form({ form: initialForm, locale, user, googleCalendars, updateReminder, hide }) {
   const [form, setForm] = useState(() => getInitialForm(structuredClone(initialForm)));
-  const [message, setMessage] = useState("");
+  const [message, showMessage, dismissMessage] = useMessage("");
   const ignoreFirstClick = useRef(true);
-  const messageTimeoutId = useRef(0);
   const weekdayNames = useMemo(() => {
     const { dateLocale } = getSetting("timeDate");
     return getWeekdays(dateLocale, "short");
@@ -422,19 +422,6 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     form.repeat.weekdays.static[weekday] = true;
 
     setForm({ ...form, ...displayDate, dateString: event.target.value, displayDateString });
-  }
-
-  function showMessage(message) {
-    setMessage(message);
-
-    messageTimeoutId.current = timeout(() => {
-      setMessage("");
-    }, 4000, messageTimeoutId.current);
-  }
-
-  function dismissMessage() {
-    clearTimeout(messageTimeoutId.current);
-    setMessage("");
   }
 
   return (
