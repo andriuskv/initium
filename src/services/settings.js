@@ -92,7 +92,7 @@ function getDefault() {
       components: {
         topSites: {
           disabled: false,
-          visibleItemCount: 4,
+          visibleItemCount: 8,
           openInNewTab: false,
           addSiteButtonHidden: false,
           persistentSitesHidden: false
