@@ -3,6 +3,7 @@
 .calendar-world-clocks {
   overflow: hidden;
   display: block;
+  width: 380px;
   padding: 0;
   border-bottom-right-radius: var(--container-inset-radius);
 }
@@ -43,6 +44,7 @@
 }
 
 .calendar-world-clocks-list-item-time {
+  flex-shrink: 0;
   margin-left: var(--space-sm);
   font-weight: bold;
   font-size: var(--text-xs);
@@ -50,7 +52,8 @@
 
 .calendar-world-clocks-list-item-diff {
   flex-shrink: 0;
-  width: 32px;
+  width: 24px;
   text-align: right;
+  font-size: var(--text-xs);
   color: var(--color-white-60);
 }
