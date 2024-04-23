@@ -131,7 +131,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
 
     if (toggle.isIconTextBtn) {
       return (
-        <button type="button" className={`btn icon-text-btn${className}`}
+        <button type="button" className={`btn icon-text-btn dropdown-toggle-btn${className}`}
           onClick={toggleDropdown}>
           <Icon id={toggle.iconId || "vertical-dots"}/>
           <span>{toggle.title}</span>
@@ -139,7 +139,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
       );
     }
     return (
-      <button type="button" className={`btn icon-btn${className}`}
+      <button type="button" className={`btn icon-btn dropdown-toggle-btn${className}`}
         onClick={toggleDropdown} title={toggle.title || locale.global.more}>
         {toggle.body ? toggle.body : <Icon id={toggle.iconId || "vertical-dots"}/>}
       </button>

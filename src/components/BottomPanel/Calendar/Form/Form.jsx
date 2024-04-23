@@ -1,17 +1,16 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getRandomHexColor, hslStringToHex } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { createCalendarEvent, updateCalendarEvent } from "services/calendar";
 import { useMessage } from "hooks";
 import Icon from "components/Icon";
+import Dropdown from "components/Dropdown";
 import "./form.css";
-import Dropdown from "../../../Dropdown/Dropdown";
 
 export default function Form({ form: initialForm, locale, user, googleCalendars, updateReminder, hide }) {
   const [form, setForm] = useState(() => getInitialForm(structuredClone(initialForm)));
   const [message, showMessage, dismissMessage] = useMessage("");
-  const ignoreFirstClick = useRef(true);
   const weekdayNames = useMemo(() => {
     const { dateLocale } = getSetting("timeDate");
     return getWeekdays(dateLocale, "short");
@@ -21,16 +20,6 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     if (!form) {
       return;
     }
-
-    if (form.range.dataList.visible) {
-      window.addEventListener("click", selectDataItem);
-    }
-    else {
-      window.removeEventListener("click", selectDataItem);
-    }
-    return () => {
-      window.removeEventListener("click", selectDataItem);
-    };
   }, [form]);
 
   function getInitialForm(form) {
@@ -118,7 +107,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     let hours = 0;
 
     while (hours < 24) {
-      dataList.items.push(getTimeString({ hours, minutes }));
+      dataList.items.push(getTimeString({ hours, minutes }, { padHours: true }));
       minutes += 30;
 
       if (minutes === 60) {
@@ -313,22 +302,6 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     setForm({ ...form });
   }
 
-  function handleFormFocus({ target }) {
-    form.range.dataList.visible = true;
-    form.range.dataList.name = target.name;
-    form.range.dataList.x = target.offsetLeft + target.offsetWidth / 2;
-    form.range.dataList.y = target.offsetTop + target.offsetHeight;
-
-    setForm({...form });
-  }
-
-  function handleRangeInputBlur(event) {
-    if (event.relatedTarget?.classList.contains("range-data-list-items")) {
-      form.range.dataList.visible = false;
-      setForm({...form });
-    }
-  }
-
   function handleRangeInputChange({ target }) {
     const { name, value } = target;
 
@@ -366,25 +339,9 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     }
   }
 
-  function selectDataItem({ target }) {
-    if (ignoreFirstClick.current) {
-      ignoreFirstClick.current = false;
-      return;
-    }
-    let hide = !target.closest(".reminder-range-input");
-
-    if (target.closest(".range-data-list")) {
-      hide = false;
-
-      if (target.nodeName === "LI") {
-        hide = true;
-        form.range[form.range.dataList.name].text = target.textContent;
-      }
-    }
-
-    if (hide) {
-      ignoreFirstClick.current = true;
-      form.range.dataList.visible = false;
+  function selectDataItem({ target }, listName) {
+    if (target.nodeName === "LI") {
+      form.range[listName].text = target.textContent;
       setForm({...form });
     }
   }
@@ -460,22 +417,22 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           ) : null}
         </div>
         <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
-        <div className="reminder-form-row reminder-form-setting">
-          <label className="checkbox-container">
+        <div className="reminder-form-row">
+          <label className="reminder-form-setting">
             <input type="checkbox" className="sr-only checkbox-input" name="range"
               onChange={toggleFormCheckbox} checked={!form.range.enabled}/>
             <div className="checkbox">
               <div className="checkbox-tick"></div>
             </div>
-            <span className="label-right">{locale.calendar.form.range_label}</span>
+            <span>{locale.calendar.form.range_label}</span>
           </label>
-          <label className="checkbox-container">
+          <label className="reminder-form-setting">
             <input type="checkbox" className="sr-only checkbox-input" name="repeat"
               onChange={toggleFormCheckbox} checked={form.repeat.enabled}/>
             <div className="checkbox">
               <div className="checkbox-tick"></div>
             </div>
-            <span className="label-right">{locale.calendar.form.repeat_label}</span>
+            <span>{locale.calendar.form.repeat_label}</span>
           </label>
           {form.repeat.enabled && (
             <div className="select-container reminder-form-repeat-type-selection">
@@ -489,28 +446,31 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           )}
         </div>
         {form.range.enabled && (
-          <div>
-            <div className="reminder-form-setting" onFocus={handleFormFocus} onBlur={handleRangeInputBlur}>
-              <label>
-                <span className="label-left">{locale.calendar.form.range_from_label}</span>
-                <input type="text" className="input reminder-range-input" autoComplete="off" name="from"
+          <div className="reminder-form-row">
+            <div className="reminder-form-setting">
+              <label htmlFor="range-from">{locale.calendar.form.range_from_label}</label>
+              <div className="input-icon-btn-container">
+                <input type="text" id="range-from" className="input reminder-range-input" autoComplete="off" name="from"
                   onChange={handleRangeInputChange} value={form.range.from.text} required/>
-              </label>
-              <label>
-                <span className="label-left">{locale.calendar.form.range_to_label}</span>
-                <input type="text" className="input reminder-range-input" autoComplete="off" name="to"
-                  onChange={handleRangeInputChange} value={form.range.to.text}/>
-              </label>
-            </div>
-            {form.range.dataList.visible && (
-              <div className="container range-data-list-panel" style={{ top: form.range.dataList.y, left: form.range.dataList.x }}>
-                <div className="range-data-list">
-                  <ul className="range-data-list-items">
-                    {form.range.dataList.items.map((item, i) => <li className="range-data-list-item" key={i}>{item}</li>)}
+                <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-range-data-list-dropdown" }}>
+                  <ul className="range-data-list-items" onClick={event => selectDataItem(event, "from")}>
+                    {form.range.dataList.items.map((item, i) => <li className="range-data-list-item dropdown-btn" key={i}>{item}</li>)}
                   </ul>
-                </div>
+                </Dropdown>
               </div>
-            )}
+            </div>
+            <div className="reminder-form-setting">
+              <label htmlFor="range-to">{locale.calendar.form.range_to_label}</label>
+              <div className="input-icon-btn-container">
+                <input type="text" id="range-to" className="input reminder-range-input" autoComplete="off" name="to"
+                  onChange={handleRangeInputChange} value={form.range.to.text} required/>
+                <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-range-data-list-dropdown" }}>
+                  <ul className="range-data-list-items" onClick={event => selectDataItem(event, "to")}>
+                    {form.range.dataList.items.map((item, i) => <li className="range-data-list-item dropdown-btn" key={i}>{item}</li>)}
+                  </ul>
+                </Dropdown>
+              </div>
+            </div>
             {form.range.message && <div className="reminder-form-input-message">{form.range.message}</div>}
           </div>
         )}
@@ -550,13 +510,13 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                 <input type="radio" className="sr-only radio-input" name="ends"
                   value="never" defaultChecked={form.repeat.ends === "never"}/>
                 <div className="radio"></div>
-                <span className="label-right">{locale.calendar.form.repeat_end_setting_never_label}</span>
+                <span>{locale.calendar.form.repeat_end_setting_never_label}</span>
               </label>
               <label className="reminder-form-row">
                 <input type="radio" className="sr-only radio-input" name="ends"
                   value="date" defaultChecked={form.repeat.ends === "date"}/>
                 <div className="radio"></div>
-                <span className="label-right">On</span>
+                <span>On</span>
                 <input type="date" name="enddate" className="input reminder-form-end-date-input" data-modal-keep
                   min={form.repeat.minEndDate} defaultValue={form.repeat.endDateString}
                   disabled={form.repeat.ends !== "date"} required={form.repeat.ends === "date"}/>
@@ -568,7 +528,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                 <input type="radio" className="sr-only radio-input" name="ends"
                   value="occurrences" defaultChecked={form.repeat.ends === "occurrences"}/>
                 <div className="radio"></div>
-                <span className="label-right">After</span>
+                <span>After</span>
                 <input type="text" className="input repeat-input" name="count" autoComplete="off"
                   value={form.repeat.count} onChange={handleRepeatInputChange}
                   disabled={form.repeat.ends !== "occurrences"} required={form.repeat.ends === "occurrences"}/>

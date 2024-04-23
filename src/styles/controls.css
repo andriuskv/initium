@@ -383,6 +383,25 @@ textarea {
   }
 }
 
+.input-icon-btn-container {
+  position: relative;
+
+  .input {
+    padding-right: 30px;
+  }
+
+  .dropdown-container {
+    position: absolute;
+    right: var(--space-xs);
+    top: 50%;
+    transform: translateY(-50%);
+
+    .dropdown-toggle-btn {
+      padding: var(--space-xs);
+    }
+  }
+}
+
 .multi-input-container {
   display: inline-flex;
   align-items: center;

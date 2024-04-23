@@ -78,13 +78,18 @@
 .reminder-form-setting {
   display: flex;
   align-items: center;
-  gap: var(--space-xl);
-  min-height: 32px;
+  gap: var(--space-md);
 }
 
 .reminder-form-row {
   display: flex;
   align-items: center;
+  gap: var(--space-md);
+  min-height: 32px;
+
+  &:has(.reminder-form-setting) {
+    gap: var(--space-xl);
+  }
 }
 
 .reminder-form-column {
@@ -173,7 +178,6 @@
 
 .range-data-list-items {
   overflow-y: auto;
-  width: 100px;
   height: 152px;
   padding-top: var(--space-md);
   padding-bottom: var(--space-md);
@@ -197,18 +201,21 @@
 
 .repeat-input {
   width: calc(3ch + 26px);
-  margin-inline: var(--space-md);
   text-align: center;
 }
 
 .reminder-range-input {
-  width: 84px;
+  width: 120px;
   text-align: center;
 }
 
 .reminder-form-end-date-input {
   width: 140px;
-  margin-left: var(--space-md);
+}
+
+.reminder-range-data-list-dropdown {
+  min-width: 120px;
+  padding: 0;
 }
 
 .reminder-form-input-message {
