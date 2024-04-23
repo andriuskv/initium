@@ -107,7 +107,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     let hours = 0;
 
     while (hours < 24) {
-      dataList.items.push(getTimeString({ hours, minutes }));
+      dataList.items.push(getTimeString({ hours, minutes }, { padHours: true }));
       minutes += 30;
 
       if (minutes === 60) {
