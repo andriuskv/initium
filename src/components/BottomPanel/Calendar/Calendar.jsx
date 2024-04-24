@@ -465,6 +465,9 @@ export default function Calendar({ visible, locale, showIndicator }) {
           reminder.nextRepeat.day += calendarService.getDayCountFromMonthCount(reminder.repeat.gap, reminder.day, reminder.nextRepeat);
         }
       }
+      else if (reminder.repeat.type === "day") {
+        reminder.nextRepeat.day += 1;
+      }
       else if (reminder.repeat.type === "weekday") {
         reminder.nextRepeat.day += reminder.nextRepeat.gaps[reminder.nextRepeat.gapIndex];
         reminder.nextRepeat.gapIndex += 1;

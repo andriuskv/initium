@@ -175,6 +175,7 @@
       "range_label": "All day",
       "repeat_label": "Repeat",
       "repeat_option_custom": "Custom",
+      "repeat_option_day": "Every day",
       "repeat_option_weekday": "Every weekday",
       "repeat_option_week": "Every week",
       "repeat_option_month": "Every month",
