@@ -438,6 +438,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
             <div className="select-container reminder-form-repeat-type-selection">
               <select className="input select" onChange={handleRepeatTypeChange} value={form.repeat.type}>
                 <option value="custom">{locale.calendar.form.repeat_option_custom}</option>
+                <option value="day">{locale.calendar.form.repeat_option_day}</option>
                 <option value="weekday">{locale.calendar.form.repeat_option_weekday}</option>
                 <option value="week">{locale.calendar.form.repeat_option_week}</option>
                 <option value="month">{locale.calendar.form.repeat_option_month}</option>
