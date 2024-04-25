@@ -455,8 +455,8 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
               <Icon id="plus"/>
             </button>
           </div>
-          <div className="task-form-textarea-container">
-            <textarea className="input task-form-textarea" name="text" defaultValue={state.task.rawText}
+          <div className="textarea-container task-form-textarea-container">
+            <textarea className="input textarea task-form-textarea" name="text" defaultValue={state.task.rawText}
               placeholder="Details" autoFocus required></textarea>
           </div>
           <div className="task-form-item-container">

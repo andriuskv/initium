@@ -380,7 +380,7 @@ export default function Notepad({ locale }) {
         </button>
       </div>
       {storageWarning && renderWarning()}
-      <textarea className="container-body notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` }}
+      <textarea className="container-body textarea notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` }}
         onChange={handleTextareaChange}
         onKeyDown={handleTextareaKeyDown}
         value={activeTab.content}

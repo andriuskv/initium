@@ -95,7 +95,7 @@ export default function GreetingEditor({ hiding, locale, hide }) {
             <Toast message={bytes.message} position="bottom" dismiss={dismissMessage}/>
           </Suspense>
         )}
-        <textarea className="container-body greeting-editor-textarea" value={textArea} onChange={handleTextareaChange}></textarea>
+        <textarea className="container-body textarea greeting-editor-textarea" value={textArea} onChange={handleTextareaChange}></textarea>
       </div>
     </FullscreenModal>
   );

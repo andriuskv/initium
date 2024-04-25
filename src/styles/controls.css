@@ -35,8 +35,7 @@ select {
 }
 
 textarea {
-  height: auto;
-  padding: var(--space-sm) var(--space-md);
+  display: block;
   resize: none;
 }
 
@@ -63,6 +62,26 @@ textarea {
   &::placeholder {
     color: var(--color-white-40);
   }
+}
+
+.textarea-container {
+  overflow: hidden;
+  border-radius: 8px;
+
+  .textarea:focus-visible {
+    box-shadow: none;
+  }
+
+  &:has(:focus-visible) {
+    box-shadow: var(--focus-shadow);
+  }
+}
+
+.textarea {
+  width: 100%;
+  height: auto;
+  padding: var(--space-sm) var(--space-md);
+  field-sizing: content;
 }
 
 .btn {

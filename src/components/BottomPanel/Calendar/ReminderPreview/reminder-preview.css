@@ -21,7 +21,7 @@
 .calendar-reminder-preview-title {
   margin-top: var(--space-sm);
   margin-bottom: var(--space-md);
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: bold;
   color: var(--color-white-80);
 }
