@@ -216,7 +216,8 @@ async function saveReminders(reminders) {
       range: reminder.range,
       repeat: reminder.repeat,
       color: reminder.color,
-      text: reminder.text
+      text: reminder.text,
+      description: reminder.description
     };
   })});
 }
@@ -297,7 +298,7 @@ async function initGoogleCalendar(retried = false) {
           colorId: calendar.colorId,
           calendarId: calendar.id,
           editable: calendar.canEdit,
-          includeDesc: !calendar.id.includes("#holiday@group")
+          includeDesc: !calendar.id.endsWith("v.calendar.google.com")
         }, colorsJson);
 
         reminders = reminders.concat(calendarItems);
@@ -423,6 +424,10 @@ function parseItems(items, { calendarId, colorId, includeDesc, editable }, color
       }
     }
 
+    if (includeDesc && item.description) {
+      optionalParams.description = item.description;
+    }
+
     const reminder = {
       creationDate: new Date(item.updated ?? item.created).getTime(),
       id: item.id,
@@ -430,7 +435,7 @@ function parseItems(items, { calendarId, colorId, includeDesc, editable }, color
       calendarId,
       editable,
       color: item.colorId ? colors.event[item.colorId].background : defaultColor,
-      text: getReminderText(item, includeDesc),
+      text: getReminderText(item),
       range: getRange(item.start, item.end),
       ...getStartDate(item.start),
       ...optionalParams
@@ -442,15 +447,11 @@ function parseItems(items, { calendarId, colorId, includeDesc, editable }, color
   return reminders;
 }
 
-function getReminderText(item, includeDesc) {
+function getReminderText(item) {
   let text = "";
 
   if (item.summary) {
     text = item.summary;
-  }
-
-  if (includeDesc && item.description) {
-    text = `${text}${text ? "\n" : ""}${item.description}`;
   }
 
   if (!text) {
@@ -616,6 +617,10 @@ function convertReminderToEvent(reminder) {
     end: {},
     summary: reminder.text
   };
+
+  if (reminder.description) {
+    event.description = reminder.description;
+  }
 
   if (!reminder.range || reminder.range.text === "All day") {
     endDate.setDate(startDate.getDate() + 1);

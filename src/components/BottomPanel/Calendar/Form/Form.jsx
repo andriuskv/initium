@@ -147,6 +147,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
 
   function handleFormSubmit(event) {
     const elements = event.target.elements;
+    const description = elements.description.value.trim();
 
     event.preventDefault();
 
@@ -159,6 +160,10 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       month: form.month,
       day: form.day
     };
+
+    if (description) {
+      reminder.description = description;
+    }
 
     if (form.range.enabled) {
       const from = parseTimeString(form.range.from.text);
@@ -267,7 +272,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   function preventFormSubmit(event) {
-    if (event.key === "Enter" && event.target.nodeName !== "BUTTON") {
+    if (event.key === "Enter" && event.target.nodeName !== "BUTTON" && event.target.nodeName !== "TEXTAREA") {
       event.preventDefault();
     }
   }
@@ -417,6 +422,10 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           ) : null}
         </div>
         <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
+        <div className="textarea-container">
+          <textarea className="input textarea reminder-form-textarea" name="description" defaultValue={form.description}
+            placeholder="Description"></textarea>
+        </div>
         <div className="reminder-form-row">
           <label className="reminder-form-setting">
             <input type="checkbox" className="sr-only checkbox-input" name="range"
@@ -545,7 +554,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       {message ? (
         <div className="container container-opaque calendar-message-container reminder-form-message">
           <p className="calendar-message">{message}</p>
-          <button className="btn icon-btn" onClick={dismissMessage} title="Dismiss">
+          <button type="button" className="btn icon-btn" onClick={dismissMessage} title="Dismiss">
             <Icon id="cross"/>
           </button>
         </div>

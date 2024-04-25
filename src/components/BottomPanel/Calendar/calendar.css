@@ -270,6 +270,11 @@
   }
 }
 
+.reminder-list-item-description {
+  margin-top: var(--space-xs);
+  font-size: var(--text-xs);
+}
+
 .reminder-list-item-range {
   margin-top: var(--space-sm);
   font-size: var(--text-xs);

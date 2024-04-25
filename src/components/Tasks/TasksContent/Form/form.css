@@ -97,29 +97,14 @@
 }
 
 .task-form-textarea-container {
-  overflow: hidden;
   width: calc(100% - var(--space-xl));
   margin: var(--space-md) var(--space-md) 0 var(--space-md);
-  border-radius: 8px;
-
-  &:has(:focus-visible) {
-    box-shadow: var(--focus-shadow);
-  }
 }
 
 .task-form-textarea {
-  display: block;
-  width: 100%;
-  height: auto;
   min-height: 4lh;
   max-height: 8lh;
-  padding: var(--space-sm) var(--space-md);
   border-radius: 8px;
-  field-sizing: content;
-
-  &:focus-visible {
-    box-shadow: none;
-  }
 }
 
 .task-form-pref-toggle-btn {
