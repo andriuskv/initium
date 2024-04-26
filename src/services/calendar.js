@@ -668,6 +668,9 @@ function convertReminderToEvent(reminder) {
         }
       }
     }
+    else if (type === "day") {
+      recurenceString += `FREQ=DAILY;`;
+    }
     else if (type === "week") {
       const wdIndex = startDate.getDay() - 1;
 
@@ -726,7 +729,10 @@ async function createCalendarEvent(reminder, calendarId, retried = false) {
     await fetchToken();
     return createCalendarEvent(reminder, calendarId, true);
   }
-  return res.status === 200;
+
+  if (res.status === 200) {
+    return res.json();
+  }
 }
 
 async function updateCalendarEvent(reminder, calendarId, retried = false) {
@@ -737,7 +743,7 @@ async function updateCalendarEvent(reminder, calendarId, retried = false) {
   }
   const event = convertReminderToEvent(reminder);
   const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
-  const res = await fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendarId)}/events/${reminder.oldId}?${params}`, {
+  const res = await fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendarId)}/events/${reminder.id}?${params}`, {
     method: "PUT",
     body: JSON.stringify(event)
   });
@@ -746,7 +752,10 @@ async function updateCalendarEvent(reminder, calendarId, retried = false) {
     await fetchToken();
     return updateCalendarEvent(reminder, calendarId, true);
   }
-  return res.status === 200;
+
+  if (res.status === 200) {
+    return res.json();
+  }
 }
 
 async function deleteCalendarEvent(calendarId, eventId, retried = false) {

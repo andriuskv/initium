@@ -368,23 +368,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     showDefaultView();
   }
 
-  function addReminder(day, reminder, shouldReplace) {
-    if (shouldReplace) {
-      const index = day.reminders.findIndex(({ id }) => id === reminder.oldId);
-
-      if (index < 0) {
-        day.reminders.push(reminder);
-      }
-      else {
-        day.reminders.splice(index, 1, reminder);
-      }
-    }
-    else {
-      day.reminders.push(reminder);
-    }
-  }
-
-  function repeatReminder(reminder, calendar, shouldReplace) {
+  function repeatReminder(reminder, calendar) {
     reminder.nextRepeat ??= {
       repeats: reminder.repeat.count,
       gapIndex: 0,
@@ -425,7 +409,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
         if (endDate < reminderDate) {
           reminder.nextRepeat.done = true;
-          addReminder(day, reminder, shouldReplace);
+          day.reminders.push(reminder);
           return;
         }
         const nextReminderDate = new Date(reminder.nextRepeat.year, reminder.nextRepeat.month, reminder.nextRepeat.day + 1).getTime();
@@ -434,12 +418,12 @@ export default function Calendar({ visible, locale, showIndicator }) {
           reminder.nextRepeat.done = true;
 
           if (nextReminderDate === endDate) {
-            addReminder(day, reminder, shouldReplace);
+            day.reminders.push(reminder);
           }
           return;
         }
       }
-      addReminder(day, reminder, shouldReplace);
+      day.reminders.push(reminder);
 
       if (day.isCurrentDay) {
         setCurrentDay({ ...day });
@@ -579,7 +563,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     sortCalendarReminders(calendar);
   }
 
-  function createReminder(reminder, calendar, shouldReplace) {
+  function createReminder(reminder, calendar) {
     const { year } = reminder;
 
     if (!calendar[year]) {
@@ -606,18 +590,12 @@ export default function Calendar({ visible, locale, showIndicator }) {
         }
       }
       reminder.repeat.tooltip = calendarService.getReminderRepeatTooltip(reminder.repeat);
-      repeatReminder(reminder, calendar, shouldReplace);
+      repeatReminder(reminder, calendar);
     }
     else {
       const day = getCalendarDay(calendar, reminder);
 
-      if (shouldReplace) {
-        const index = day.reminders.findIndex(({ id }) => id === reminder.oldId);
-        day.reminders.splice(index, 1, reminder);
-      }
-      else {
-        day.reminders.push(reminder);
-      }
+      day.reminders.push(reminder);
 
       if (day.isCurrentDay) {
         setCurrentDay({ ...day });
@@ -693,18 +671,18 @@ export default function Calendar({ visible, locale, showIndicator }) {
   function updateReminder(reminder, form) {
     const reminderArray = reminder.type === "google" ? googleReminders : reminders;
 
-    createReminder(reminder, calendar, form.updating);
-    sortDayReminders(form);
-
     if (form.updating) {
-      const index = reminderArray.findIndex(({ id }) => reminder.oldId === id);
+      const index = reminderArray.findIndex(({ id }) => form.id === id);
 
       reminderArray.splice(index, 1, reminder);
       removeCalendarReminder(form.id);
+
     }
     else {
       reminderArray.push(reminder);
     }
+    createReminder(reminder, calendar);
+    sortDayReminders(form);
 
     if (view.name === "day") {
       showDayView(view.data);
