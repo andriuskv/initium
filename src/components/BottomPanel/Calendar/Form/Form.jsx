@@ -48,7 +48,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           enabled: true,
           type: form.repeat.type || "custom",
           ends: form.repeat.count > 0 ? "occurrences" : "never",
-          gap: form.repeat.gap,
+          gap: form.repeat.gap ?? "",
           count: form.repeat.count,
           year: form.year,
           month: form.month,
@@ -145,7 +145,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     };
   }
 
-  function handleFormSubmit(event) {
+  async function handleFormSubmit(event) {
     const elements = event.target.elements;
     const description = elements.description.value.trim();
 
@@ -153,7 +153,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
 
     const reminder = {
       creationDate: Date.now(),
-      oldId: form.id,
+      id: form.id,
       text: elements.reminder.value,
       color: elements.color ? elements.color.value : "",
       year: form.year,
@@ -247,24 +247,26 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
 
       reminder.type = "google";
+      reminder.calendarId = primaryCalendar.id;
       reminder.color = primaryCalendar.color;
       reminder.editable = true;
 
       if (form.updating) {
-        const success = updateCalendarEvent(reminder, primaryCalendar.id);
+        const event = await updateCalendarEvent(reminder, primaryCalendar.id);
 
-        if (!success) {
+        if (!event) {
           showMessage("Unable to update an event. Try again later.");
           return;
         }
       }
       else {
-        const success = createCalendarEvent(reminder, primaryCalendar.id);
+        const event = await createCalendarEvent(reminder, primaryCalendar.id);
 
-        if (!success) {
+        if (!event) {
           showMessage("Unable to create an event. Try again later.");
           return;
         }
+        reminder.id = event.id;
       }
     }
     updateReminder(reminder, form);
@@ -408,7 +410,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
               value={form.dateString} onChange={handleSelectedDayInputChange}/>
           </div>
           {!form.updating && user ? (
-            <Dropdown container={{ className: "reminder-form-display-date-dropdown" }}>
+            <Dropdown container={{ className: "reminder-form-display-date-dropdown" }} toggle={{ title: "Reminder type" }}>
               <div className="dropdown-group">
                 <h4 className="reminder-form-display-date-dropdown-title">Reminder type</h4>
               </div>
