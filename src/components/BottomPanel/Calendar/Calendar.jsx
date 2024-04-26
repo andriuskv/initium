@@ -693,7 +693,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }
   }
 
-  function editReminder(id, type) {
+  function editReminder(id, type, day) {
     let reminder = null;
 
     if (type === "google") {
@@ -704,6 +704,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }
     showForm({
       ...reminder,
+      selectedDay: day,
       updating: true
     });
   }

@@ -94,9 +94,10 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     if (repeat.endDateString) {
       repeat.ends = "date";
     }
+    const date = form.selectedDay ? form.selectedDay: form;
+    form.dateString = getDateInputString(date);
+    form.displayDateString = formatDate(new Date(date.year, date.month, date.day), { locale: dateLocale });
     form.pickerColor = form.color ? form.color.startsWith("hsl") ? hslStringToHex(form.color) : form.color : getRandomHexColor();
-    form.dateString = getDateInputString(form);
-    form.displayDateString = formatDate(new Date(form.year, form.month, form.day), { locale: dateLocale });
 
     return { type: "normal", ...form, range, repeat };
   }

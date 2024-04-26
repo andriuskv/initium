@@ -33,7 +33,7 @@ export default function SelectedDay({ day, locale, removeReminder, changeReminde
               {reminder.type === "google" && !reminder.editable ? null : (
                 <Dropdown container={{ className: "reminder-list-item-dropdown" }}>
                   <button className="btn icon-text-btn dropdown-btn"
-                    onClick={() => editReminder(reminder.id, reminder.type)}>
+                    onClick={() => editReminder(reminder.id, reminder.type, day)}>
                     <Icon id="edit"/>
                     <span>{locale.global.edit}</span>
                   </button>
