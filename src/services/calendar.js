@@ -7,6 +7,7 @@ import { getSetting } from "services/settings";
 
 const baseCalendarURL = "https://www.googleapis.com/calendar/v3";
 let cachedCalendars = {};
+let eventColors = null;
 
 function generateYear(year) {
   const { dateLocale } = getSetting("timeDate");
@@ -289,14 +290,18 @@ async function initGoogleCalendar(retried = false) {
     const settledItems = await Promise.allSettled(selectedCalendarsPromises);
     let reminders = [];
 
+    eventColors = Object.keys(colorsJson.event).map(id => {
+      return { id, color: colorsJson.event[id].background };
+    });
+
     for (let i = 0; i < selectedCalendars.length; i += 1) {
       const calendar = selectedCalendars[i];
       const { status, value } = settledItems[i];
 
       if (status === "fulfilled") {
         const calendarItems = parseItems(value.items, {
-          colorId: calendar.colorId,
           calendarId: calendar.id,
+          defaultColor: calendar.color,
           editable: calendar.canEdit,
           includeDesc: !calendar.id.endsWith("v.calendar.google.com")
         }, colorsJson);
@@ -342,7 +347,7 @@ async function fetchCalendarItems(calendar, retried = false) {
       return { message: "Something went wrong. Try again later." };
     }
     const calendarItems = parseItems(json.items, {
-      colorId: calendar.colorId,
+      defaultColor: calendar.color,
       calendarId: calendar.id,
       editable: calendar.canEdit,
       includeDesc: !calendar.id.includes("#holiday@group")
@@ -361,38 +366,24 @@ function parseCalendars(items, colors) {
   const oldCalendars = JSON.parse(localStorage.getItem("google-calendars")) || [];
   const calendars = [];
 
-  if (oldCalendars.length) {
-    for (const item of items) {
-      const calendar = oldCalendars.find(calendar => calendar.id === item.id);
-      let selected = false;
+  for (const item of items) {
+    const calendar = oldCalendars.find(calendar => calendar.id === item.id);
+    let selected = false;
 
-      if (calendar) {
-        selected = calendar.selected;
-      }
-      calendars.push({
-        id: item.id,
-        title: item.summary,
-        colorId: item.colorId,
-        color: colors.calendar[item.colorId].background,
-        canEdit: item.accessRole === "owner",
-        selected,
-        ...(item.primary ? { primary: true, title: user.name } : {})
-      });
+    if (calendar) {
+      selected = calendar.selected;
     }
-  }
-  else {
-    // Select only primary calendar to be fetched by default
-    for (const item of items) {
-      calendars.push({
-        id: item.id,
-        title: item.summary,
-        colorId: item.colorId,
-        color: colors.calendar[item.colorId].background,
-        canEdit: item.accessRole === "owner",
-        selected: !!item.primary,
-        ...(item.primary ? { primary: true, title: user.name } : {})
-      });
+    else {
+      selected = item.primary;
     }
+    calendars.push({
+      id: item.id,
+      title: item.summary,
+      color: item.backgroundColor || colors.calendar[item.colorId].background,
+      canEdit: item.accessRole === "owner",
+      selected,
+      ...(item.primary ? { primary: true, title: user.name } : {})
+    });
   }
 
   // Make sure primary calendar is first
@@ -406,8 +397,21 @@ function parseCalendars(items, colors) {
   return calendars;
 }
 
-function parseItems(items, { calendarId, colorId, includeDesc, editable }, colors) {
-  const defaultColor = colors.calendar[colorId].background;
+function getEventColors(calendarId, calendars) {
+  let calendar = null;
+
+  if (calendarId) {
+    calendar = calendars.find(calendar => calendar.id === calendarId);
+  }
+  else {
+    calendar = calendars.find(calendar => calendar.primary);
+  }
+  const defaultColor = calendar.color;
+
+  return [...eventColors, { color: defaultColor }];
+}
+
+function parseItems(items, { calendarId, defaultColor, includeDesc, editable }, colors) {
   const reminders = [];
 
   for (const item of items) {
@@ -618,6 +622,10 @@ function convertReminderToEvent(reminder) {
     summary: reminder.text
   };
 
+  if (reminder.colorId) {
+    event.colorId = reminder.colorId;
+  }
+
   if (reminder.description) {
     event.description = reminder.description;
   }
@@ -816,6 +824,7 @@ async function clearUser(retried) {
     }
   }
   cachedCalendars = {};
+  eventColors = null;
   chrome.identity.clearAllCachedAuthTokens();
   localStorage.removeItem("oauth_token");
   localStorage.removeItem("google-user");
@@ -837,5 +846,6 @@ export {
   createCalendarEvent,
   updateCalendarEvent,
   deleteCalendarEvent,
-  clearUser
+  clearUser,
+  getEventColors
 };
