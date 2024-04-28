@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { getRandomHexColor, hslStringToHex } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate } from "services/timeDate";
 import { getSetting } from "services/settings";
-import { createCalendarEvent, updateCalendarEvent } from "services/calendar";
+import { createCalendarEvent, updateCalendarEvent, getEventColors } from "services/calendar";
 import { useMessage } from "hooks";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
@@ -16,12 +16,6 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     return getWeekdays(dateLocale, "short");
   }, []);
 
-  useEffect(() => {
-    if (!form) {
-      return;
-    }
-  }, [form]);
-
   function getInitialForm(form) {
     const { dateLocale } = getSetting("timeDate");
     const weekday = getWeekday(form.year, form.month, form.day);
@@ -30,6 +24,19 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     weekdays.static[weekday] = true;
 
     if (form.updating) {
+      if (form.calendarId) {
+        form.eventColors = getEventColors(form.calendarId, googleCalendars);
+        form.eventColorIndex = form.eventColors.length - 1;
+      }
+
+      if (form.color) {
+        const index = form.eventColors.findIndex(({ color }) => form.color === color);
+
+        if (index >= 0) {
+          form.eventColorIndex = index;
+        }
+      }
+
       if (form.range) {
         form.range.enabled = form.range.text !== "All day";
 
@@ -249,7 +256,8 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
 
       reminder.type = "google";
       reminder.calendarId = primaryCalendar.id;
-      reminder.color = primaryCalendar.color;
+      reminder.color = form.eventColors[form.eventColorIndex].color;
+      reminder.colorId = form.colorId;
       reminder.editable = true;
 
       if (form.updating) {
@@ -280,8 +288,23 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     }
   }
 
-  function setReminderType(type) {
+  function changeReminderType(type) {
+    if (type === "google" && !form.eventColors) {
+      form.eventColors = getEventColors(form.calendarId, googleCalendars);
+      form.eventColorIndex = form.eventColors.length - 1;
+    }
     setForm({ ...form, type });
+  }
+
+  function updateEventColor(id, index) {
+    if (id) {
+      form.colorId = id;
+    }
+    else {
+      // Default color doesn't have an id
+      delete form.colorId;
+    }
+    setForm({ ...form, eventColorIndex: index });
   }
 
   function toggleFormCheckbox(event) {
@@ -400,10 +423,25 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       </div>
       <div className="container-body reminder-form-body">
         <div className="reminder-form-display-date">
-          {form.type === "google" ? null : <div className="reminder-form-color-picker-container">
-            <input type="color" name="color" className="reminder-form-color-picker"
-              defaultValue={form.pickerColor} title={locale.global.color_input_title} data-modal-keep/>
-          </div>}
+          {form.type === "google" ? (
+            <Dropdown
+              toggle={{ body: <div className="reminder-form-selecated-event-color" style={{ backgroundColor: form.eventColors[form.eventColorIndex].color }}></div>, title: "Color picker" }}
+              container={{ className: "reminder-form-event-color-dropdown-container" }}>
+              <ul className="reminder-form-event-colors">
+                {form.eventColors.map(({ id, color }, index) => (
+                  <li key={index}>
+                    <button type="button" className={`btn dropdown-btn reminder-form-event-color${form.eventColorIndex === index ? " active" : ""}`}
+                      onClick={() => updateEventColor(id, index)} style={{ backgroundColor: color }}></button>
+                  </li>
+                ))}
+              </ul>
+            </Dropdown>
+          ) : (
+            <div className="reminder-form-color-picker-container">
+              <input type="color" name="color" className="reminder-form-color-picker"
+                defaultValue={form.pickerColor} title={locale.global.color_input_title} data-modal-keep/>
+            </div>
+          )}
           <div className="reminder-form-display-date-container">
             <button type="button" className="btn text-btn reminder-form-display-date-btn" title="Show date picker"
               onClick={showSelectedDayPicker} data-modal-keep>{form.displayDateString}</button>
@@ -417,9 +455,9 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
               </div>
               <div className="dropdown-group">
                 <button type="button" className={`btn text-btn dropdown-btn${form.type === "normal" ? " active" : ""}`}
-                  onClick={() => setReminderType("normal")}>Normal reminder</button>
+                  onClick={() => changeReminderType("normal")}>Normal reminder</button>
                 <button type="button" className={`btn text-btn dropdown-btn${form.type === "google" ? " active" : ""}`}
-                  onClick={() => setReminderType("google")}>Google event</button>
+                  onClick={() => changeReminderType("google")}>Google event</button>
               </div>
             </Dropdown>
           ) : null}
