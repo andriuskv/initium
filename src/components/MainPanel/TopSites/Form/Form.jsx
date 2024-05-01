@@ -2,9 +2,13 @@ import Modal from "components/Modal";
 import "./form.css";
 
 export default function Form({ form, locale, updateSite, hiding, hide }) {
+  function getUrl(value) {
+    return /^https?:\/\//.test(value) ? value : `https://${value}`;
+  }
+
   function handleFormSubmit(event) {
     const { elements } = event.target;
-    const url = /^https?:\/\//.test(elements.url.value) ? elements.url.value : `https://${elements.url.value}`;
+    const url = getUrl(elements.url.value);
     const title = elements.title.value;
 
     event.preventDefault();
