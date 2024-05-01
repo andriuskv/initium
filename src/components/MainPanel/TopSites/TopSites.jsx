@@ -24,27 +24,47 @@ export default function TopSites({ settings, locale }) {
   }, []);
 
   async function init() {
-    let data = getLocalSites();
-
-    if (Array.isArray(data)) {
-      data = { static: data };
-      saveSites(data);
-    }
+    const data = getLocalSites();
+    let sites = [];
 
     if (Array.isArray(data.static)) {
-      const sites = parseSites(data.static, data);
-      setSites(sites);
+      data.sites = parseSites(data.static, data).map(site => {
+        site.local = true;
+        return site;
+      });
+      delete data.static;
+
+      const chromeSites = await fetchTopSites(data);
+
+      for (let i = 0; i < data.sites.length; i += 1) {
+        if (chromeSites.some(site => site.url === data.sites[i].url)) {
+          data.sites[i] = null;
+        }
+      }
+      data.sites = data.sites.filter(site => Boolean(site));
+
+      setSites(data.sites.concat(chromeSites));
+      saveSites(data);
+      return;
     }
-    else {
-      fetchTopSites(data);
+
+    if (Array.isArray(data.sites)) {
+      const localSites = parseSites(data.sites, data);
+      sites = sites.concat(localSites);
     }
+    const chromeSites = await fetchTopSites(data);
+
+    for (const site of chromeSites) {
+      if (!sites.some(({ url }) => site.url === url)) {
+        sites.push(site);
+      }
+    }
+    setSites(sites);
   }
 
-  function fetchTopSites(localSites) {
-    chrome.topSites.get(data => {
-      const sites = parseSites(data, localSites);
-      setSites(sites);
-    });
+  async function fetchTopSites(localData) {
+    const sites = await chrome.topSites.get();
+    return parseSites(sites, localData);
   }
 
   function parseSites(sites, { filtered = [], modified = [] } = {}) {
@@ -59,8 +79,9 @@ export default function TopSites({ settings, locale }) {
     });
   }
 
-  function resetTopSites() {
-    fetchTopSites();
+  async function resetTopSites() {
+    const sites = await fetchTopSites();
+    setSites(sites);
     localStorage.removeItem("top sites");
   }
 
@@ -83,41 +104,78 @@ export default function TopSites({ settings, locale }) {
 
   function removeSite(index) {
     const [site] = sites.splice(index, 1);
+    const data = getLocalSites();
 
     setSites([...sites]);
 
-    const data = getLocalSites();
+    if (site.local) {
+      data.sites = data.sites.filter(item => item.url !== site.url);
+    }
+    else {
+      data.filtered ??= [];
+      data.filtered.push(site.url);
 
-    data.filtered ??= [];
-    data.filtered.push(site.url);
-
-    if (data.modified) {
-      data.modified = data.modified.filter(item => item.url !== site.url);
+      if (data.modified) {
+        data.modified = data.modified.filter(item => item.url !== site.url);
+      }
     }
     saveSites(data);
   }
 
+  function isUniqueSite(site, sites) {
+    return !sites.some(({ url }) => site.url === url);
+  }
+
   function updateSite(site, action) {
     if (action === "add") {
-      if (!sites.some(({ url }) => site.url === url)) {
-        site.iconUrl = getFaviconURL(site.url);
-        sites.push(site);
-        setSites([...sites]);
-        saveSites({ static: sites });
+      if (!isUniqueSite(site, sites)) {
+        return;
       }
+      site.local = true;
+      site.iconUrl = getFaviconURL(site.url);
+      let index = sites.findLastIndex(site => site.local);
+
+      if (index < 0) {
+        index = 0;
+      }
+      else {
+        index += 1;
+      }
+      // Append site after the last local site
+      sites.splice(index, 0, site);
+      setSites([...sites]);
+      saveSite(site);
     }
     else if (action === "update") {
       const oldSite = { ...sites[form.index] };
-
-      sites[form.index] = {
+      const updatedSite = {
         iconUrl: getFaviconURL(site.url),
         ...site
       };
 
       if (site.url !== oldSite.url) {
-        saveSites({ static: sites });
+        if (!isUniqueSite(site, sites)) {
+          return;
+        }
+        const data = getLocalSites();
+
+        if (data.modified) {
+          data.modified = data.modified.filter(item => item.url !== oldSite.url);
+        }
+        updatedSite.local = true;
+
+        data.sites ??= [];
+        data.sites.push(updatedSite);
+        setSites(sites.with(form.index, updatedSite));
+        saveSites(data);
       }
       else if (site.title !== oldSite.title) {
+        if (oldSite.local) {
+          updatedSite.local = true;
+          saveSite(updatedSite);
+          setSites([...sites]);
+          return;
+        }
         const data = getLocalSites();
 
         data.modified ??= [];
@@ -143,15 +201,40 @@ export default function TopSites({ settings, locale }) {
             initialTitle: oldSite.title
           });
         }
-
+        setSites(sites.with(form.index, updatedSite));
         saveSites(data);
       }
-      setSites([...sites]);
     }
   }
 
+  function saveSite(site) {
+    const data = getLocalSites();
+    data.sites ??= [];
+
+    const index = data.sites.findIndex(({ url }) => site.url === url);
+
+    if (index >= 0) {
+      data.sites = data.sites.with(index, site);
+    }
+    else {
+      data.sites.push(site);
+    }
+    saveSites(data);
+  }
+
   function saveSites(data) {
-    localStorage.setItem("top sites", JSON.stringify(data));
+    let sites = undefined;
+
+    if (data.sites) {
+      sites = structuredClone(data.sites).map(site => {
+        delete site.iconUrl;
+        return site;
+      });
+    }
+    localStorage.setItem("top sites", JSON.stringify({
+      ...data,
+      sites
+    }));
   }
 
   function getLocalSites() {
