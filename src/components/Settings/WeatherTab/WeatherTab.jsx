@@ -65,13 +65,14 @@ export default function WeatherTab({ locale }) {
           <div className="toggle-item">°F</div>
         </div>
       </label>
-      <form className={`setting${settings.disabled || settings.useGeo ? " disabled" : ""}`}
-        onSubmit={handleCityNameChange}>
-        <span>{locale.settings.weather.location_label}</span>
-        <input type="text" className="input setting-input" placeholder="Paris,FR" name="cityName"
-          autoComplete="off" disabled={settings.disabled || settings.useGeo} defaultValue={settings.cityName}/>
-        {error?.type === "target" && <div className="setting-message">{error.message}</div>}
-      </form>
+      <div className={`setting weather-location-setting${settings.disabled || settings.useGeo ? " disabled" : ""}`}>
+        <form onSubmit={handleCityNameChange} className="weather-setting-location-form">
+          <span>{locale.settings.weather.location_label}</span>
+          <input type="text" className="input setting-input" placeholder="Paris,FR" name="cityName"
+            autoComplete="off" disabled={settings.disabled || settings.useGeo} defaultValue={settings.cityName}/>
+        </form>
+        {error?.type === "target" && <p className="setting-message weather-setting-message">{error.message}</p>}
+      </div>
     </div>
   );
 }
