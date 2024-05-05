@@ -78,12 +78,12 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
 
   function renderWindView(items) {
     const [minSpeed, maxSpeed] = items.reduce(([minSpeed, maxSpeed], item) => {
-      if (item.wind.speed > maxSpeed) {
-        maxSpeed = item.wind.speed;
+      if (item.wind.speed.raw > maxSpeed) {
+        maxSpeed = item.wind.speed.raw;
       }
 
-      if (item.wind.speed < minSpeed) {
-        minSpeed = item.wind.speed;
+      if (item.wind.speed.raw < minSpeed) {
+        minSpeed = item.wind.speed.raw;
       }
       return [minSpeed, maxSpeed];
     }, [Infinity, -Infinity]);
@@ -94,11 +94,11 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
           let ratio = 1;
 
           if (minSpeed !== maxSpeed) {
-            ratio = (wind.speed - minSpeed) / (maxSpeed - minSpeed);
+            ratio = (wind.speed.raw - minSpeed) / (maxSpeed - minSpeed);
           }
           return (
             <div className="weather-more-hourly-wind-view-item" key={id}>
-              <div className="weather-more-hourly-wind-view-item-speed">{Math.round(wind.speed)} {speedUnits}</div>
+              <div className="weather-more-hourly-wind-view-item-speed">{wind.speed.value} {speedUnits}</div>
               <svg viewBox="0 0 24 24" className="weather-more-hourly-wind-view-item-icon"
                 style={{ "--degrees": wind.direction.degrees, "--ratio": ratio }}>
                 <title>{wind.direction.name}</title>
@@ -164,7 +164,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
           <img src={current.icon} className={`weather-more-current-icon icon-${current.iconId}`} alt="" width="100px" height="100px" loading="lazy"/>
         </div>
         <div className="weather-more-current-main">
-          <div className="weather-more-current-city">{current.city}</div>
+          <div className="weather-more-current-location">{current.location}</div>
           <div className="weather-more-current-main-info">
             <div className="weather-more-current-temperature">
               <div className="weather-more-current-temperature-value">{Math.round(current.temperature)}</div>
@@ -182,7 +182,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
               <div className="weather-more-current-secondary-item">
                 <span className="weather-more-current-secondary-name">{locale.weather.wind}:</span>
                 <span className="weather-more-current-wind">
-                  <span>{Math.round(current.wind.speed)} {speedUnits}</span>
+                  <span>{current.wind.speed.value} {speedUnits}</span>
                   <svg viewBox="0 0 24 24" className="weather-more-current-wind-icon"
                     style={{ "--degrees": current.wind.direction.degrees }}>
                     <title>{current.wind.direction.name}</title>
@@ -225,7 +225,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
             {more.daily.map(item => (
               <div className="weather-more-daily-weekday" key={item.id}>
                 <div className="weather-more-daily-weekday-name">{item.weekday}</div>
-                <img src={item.icon} alt={item.description} className={`weather-more-daily-weekday-icon icon-${item.iconId}`} width="56px" height="56px" loading="lazy"/>
+                <img src={item.icon} alt={item.description} title={item.description} className={`weather-more-daily-weekday-icon icon-${item.iconId}`} width="56px" height="56px" loading="lazy"/>
                 <div className="weather-more-daily-weekday-temp">
                   <div>{Math.round(item.temperature.min)}°</div>
                   <div>{Math.round(item.temperature.max)}°</div>
