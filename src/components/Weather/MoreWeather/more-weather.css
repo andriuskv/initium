@@ -94,7 +94,7 @@
 
 .weather-more-current-wind-icon {
   margin-left: var(--space-sm);
-  transform: rotateZ(calc(var(--degrees) * 1deg));
+  transform: rotateZ(calc((180 + var(--degrees)) * 1deg));
   transition: transform var(--duration-n);
 }
 
@@ -218,7 +218,7 @@
   width: var(--size);
   height: var(--size);
   margin: auto;
-  transform: rotateZ(calc(var(--degrees) * 1deg));
+  transform: rotateZ(calc((180 + var(--degrees)) * 1deg));
   transition: all var(--duration-n);
   color: var(--color-primary-10);
 }
