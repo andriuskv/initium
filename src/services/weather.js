@@ -2,7 +2,7 @@ import { getRandomString } from "../utils";
 import { getSetting } from "./settings";
 import { getTimeString, getCurrentDate } from "./timeDate";
 
-async function fetchWeatherWithCityName(name) {
+function fetchWeatherWithCityName(name) {
   return fetchWeatherData(`q=${name}`);
 }
 
@@ -15,7 +15,7 @@ async function fetchWeatherWithCoords() {
   return fetchWeatherData(`lat=${coords.lat}&lon=${coords.lon}`);
 }
 
-async function fetchWeather() {
+function fetchWeather() {
   const { cityName, useGeo } = getSetting("weather");
 
   if (useGeo) {
@@ -85,20 +85,23 @@ function convertTemperature(value, units) {
   return value;
 }
 
-function convertWindSpeed(value, units) {
+function convertWindSpeed({ value, raw }, units) {
   if (units === "m/s") {
-    value = value * 0.3048;
+    value = raw * 0.3048;
   }
   else {
-    value = value / 0.3048;
+    value = raw / 0.3048;
   }
-  return value;
+  return {
+    value: Math.round(value),
+    raw: value
+  };
 }
 
 function fetchWeatherData(params) {
   const { dateLocale } = getSetting("timeDate");
   const { units, speedUnits } = getSetting("weather");
-  return fetch(`${process.env.SERVER_URL}/owm?${params}&lang=en,${dateLocale}&units=${units},${speedUnits}`).then(res => res.json());
+  return fetch(`${process.env.SERVER_URL}/weather?${params}&lang=en,${dateLocale}&units=${units},${speedUnits}`).then(res => res.json());
 }
 
 export {

@@ -94,7 +94,7 @@
   }
 }
 
-.weather-city {
+.weather-location {
   margin-right: var(--space-md);
   font-weight: bold;
   text-align: right;

@@ -170,7 +170,7 @@ export default function Weather({ timeFormat, locale }) {
       if (json.message) {
         dispatchCustomEvent("weather-error", json);
       }
-      else if (json.city) {
+      else if (json.location) {
         setCurrentWeather(json);
 
         if (forceMoreWeatherUpdate) {
@@ -195,7 +195,6 @@ export default function Weather({ timeFormat, locale }) {
 
       const json = await fetchMoreWeather(coords);
 
-      setCurrentWeather({ ...current, precipitation: json.hourly[0].precipitation });
       setMoreWeather({
         hourly: json.hourly,
         daily: json.daily
@@ -234,7 +233,7 @@ export default function Weather({ timeFormat, locale }) {
           </div>
           <img src={current.icon} className={`weather-icon icon-${current.iconId}`} width="80px" height="80px" alt=""/>
         </div>
-        <div className="weather-city">{current.city}</div>
+        <div className="weather-location">{current.location}</div>
       </div>
     </div>
   );
