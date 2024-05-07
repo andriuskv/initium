@@ -10,16 +10,15 @@ import "./more-weather.css";
 const views = ["temp", "prec", "wind"];
 
 export default function MoreWeather({ current, more, units, speedUnits, view, locale, selectView, toggleUnits, hide }) {
-  const [ready, setReady] = useState(false);
-  const [tempRange, setTempRange] = useState();
+  const [tempRange, setTempRange] = useState(null);
   const container = useRef(null);
   const activeTabIndex = views.indexOf(view);
 
   useEffect(() => {
-    if (ready) {
+    if (tempRange) {
       focusService.focusFirstElement(container.current);
     }
-  }, [ready]);
+  }, [tempRange]);
 
   useEffect(() => {
     if (!more) {
@@ -38,7 +37,6 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
       return range;
     }, { min: Infinity, max: -Infinity });
 
-    setReady(true);
     setTempRange({ min: tempRange.min - 2, max: tempRange.max + 1 });
   }, [more]);
 
@@ -195,7 +193,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
           <div className="weather-more-current-description">{current.description}</div>
         </div>
       </div>
-      {ready ? (
+      {tempRange ? (
         <>
           <div className="container-body weather-more-hourly-view-container">
             <TabsContainer className="weather-more-hourly-view-top" current={activeTabIndex}>

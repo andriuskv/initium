@@ -1,58 +1,28 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { delay } from "../../utils";
 import { fetchWallpaperInfo, getIDBWallpaper, resetIDBWallpaper } from "services/wallpaper";
 import "./wallpaper.css";
 
+const VideoWallpaper = lazy(() => import("./VideoWallpaper"));
+
 export default function Wallpaper({ settings }) {
   const [wallpaper, setWallpaper] = useState(null);
   const firstRender = useRef(true);
-  const videoElementRef = useRef(null);
 
   useEffect(() => {
     init(settings);
   }, [settings]);
 
   useEffect(() => {
-    if (videoElementRef.current && settings.mimeType?.startsWith("video")) {
-      if (!firstRender.current && videoElementRef.current.paused) {
-        videoElementRef.current.play();
-      }
-      videoElementRef.current.playbackRate = settings.videoPlaybackSpeed;
-      document.addEventListener("visibilitychange", handlePageVisibilityChange);
-    }
-    return () => {
-      document.removeEventListener("visibilitychange", handlePageVisibilityChange);
-    };
-  }, [settings, wallpaper]);
-
-  useEffect(() => {
     if (firstRender.current && wallpaper) {
       firstRender.current = false;
-      const start = Date.now();
 
-      if (wallpaper.type === "video") {
-        videoElementRef.current.addEventListener("canplay", async () => {
-          const elapsed = Date.now() - start;
-
-          // Show downscaled wallpaper for at least 200 ms.
-          if (elapsed < 200) {
-            await delay(200 - elapsed);
-          }
-          videoElementRef.current.play();
-          removeDownscaled();
-        });
-      }
-      else {
+      if (wallpaper.type !== "video") {
+        const start = Date.now();
         const image = new Image();
 
-        image.onload = async () => {
-          const elapsed = Date.now() - start;
-
-          // Show downscaled wallpaper for at least 200 ms.
-          if (elapsed < 200) {
-            await delay(200 - elapsed);
-          }
-          removeDownscaled();
+        image.onload = () => {
+          removeDownscaled(start);
         };
         image.src = wallpaper.url;
       }
@@ -111,15 +81,13 @@ export default function Wallpaper({ settings }) {
     }
   }
 
-  function handlePageVisibilityChange() {
-    if (document.hidden) {
-      videoElementRef.current.pause();
-    } else {
-      videoElementRef.current.play();
-    }
-  }
+  async function removeDownscaled(start) {
+    const elapsed = Date.now() - start;
 
-  function removeDownscaled() {
+    // Show downscaled wallpaper for at least 200 ms.
+    if (elapsed < 200) {
+      await delay(200 - elapsed);
+    }
     const element = document.getElementById("downscaled-wallpaper");
 
     if (element) {
@@ -136,7 +104,11 @@ export default function Wallpaper({ settings }) {
   }
 
   if (wallpaper.type === "video") {
-    return <video src={wallpaper.url} className="wallpaper-video" loop muted crossOrigin="anonymous" ref={videoElementRef}></video>;
+    return (
+      <Suspense fallback={null}>
+        <VideoWallpaper url={wallpaper.url} playbackSpeed={settings.videoPlaybackSpeed} removeDownscaled={removeDownscaled}/>
+      </Suspense>
+    );
   }
   return (
     <div className="wallpaper" style={{

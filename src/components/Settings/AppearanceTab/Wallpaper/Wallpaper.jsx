@@ -56,21 +56,16 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
       setWallpaperForm(null);
       return;
     }
-    let url = null;
 
-    try {
-      url = new URL(input.value);
-    } catch {
-      setWallpaperForm({
-        ...wallpaperForm,
-        message: "Invalid URL."
-      });
+    if (!URL.canParse(input.value)) {
+      setWallpaperForm({ ...wallpaperForm, message: "Invalid URL." });
       return;
     }
+    const url = new URL(input.value);
     const splitItems = url.pathname.split(".");
     const ext = splitItems.length > 1 ? splitItems.at(-1) : "";
 
-    if (!ext || ["png", "jpg", "jpeg"].includes(ext)) {
+    if (!ext || ["png", "jpg", "jpeg", "webp", "avif"].includes(ext)) {
       const image = new Image();
 
       image.onload = () => {

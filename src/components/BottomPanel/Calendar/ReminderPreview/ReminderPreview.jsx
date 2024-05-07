@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import Icon from "components/Icon";
 import "./reminder-preview.css";
 
-export default forwardRef(function ReminderPreview({ currentView, currentDay, tomorrowDay, settings }, ref) {
+export default forwardRef(({ currentView, currentDay, tomorrowDay, settings }, ref) => {
   const days = [
     {
       shouldShow: !settings.reminderPreviewHidden,
@@ -29,7 +29,7 @@ export default forwardRef(function ReminderPreview({ currentView, currentDay, to
                     <div className="calendar-reminder-preview-item-color" style={{ backgroundColor: reminder.color }}></div>
                     <p>{reminder.text}</p>
                     {reminder.range.from ? <p className="calendar-reminder-preview-item-range-text">{reminder.range.text}</p> : null}
-                    {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
+                    {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google calendar event"/> : ""}
                   </li>
                 ))}
               </ul>

@@ -22,7 +22,6 @@ export default function Notepad({ locale }) {
     return notepad.textSize;
   });
   const [textSizeLabelVisible, setTextSizeLabelVisible] = useState(false);
-  const [resetTextSize, setResetTextSize] = useState(false);
   const labelTimeoutId = useRef(0);
   const saveTimeoutId = useRef(0);
   const saveTabTimeoutId = useRef(0);
@@ -31,24 +30,15 @@ export default function Notepad({ locale }) {
 
   useEffect(() => {
     init();
+  }, []);
 
+  useEffect(() => {
     window.addEventListener("reset-notepad-text-size", handleTextSizeReset);
 
     return () => {
       window.removeEventListener("reset-notepad-text-size", handleTextSizeReset);
     };
-  }, []);
-
-  useEffect(() => {
-    if (resetTextSize) {
-      setTextSize(14);
-      setTabs(tabs.map(tab => {
-        delete tab.textSize;
-        return tab;
-      }));
-      setResetTextSize(false);
-    }
-  }, [resetTextSize, tabs]);
+  }, [tabs]);
 
   useEffect(() => {
     if (!tabListVisible && tabs) {
@@ -109,7 +99,11 @@ export default function Notepad({ locale }) {
   }
 
   function handleTextSizeReset() {
-    setResetTextSize(true);
+    setTextSize(14);
+    setTabs(tabs.map(tab => {
+      delete tab.textSize;
+      return tab;
+    }));
   }
 
   function getDefaultTab() {
