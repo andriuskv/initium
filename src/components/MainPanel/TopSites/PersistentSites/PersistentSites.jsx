@@ -161,7 +161,7 @@ export default function PersistentSites({ settings, locale, getFaviconURL }) {
           <button className="btn icon-text-btn container top-site-container persistent-sites-cancel-edit-btn"
             onClick={disableSiteEdit}>
             <Icon id="cross"/>
-            <span>{locale.global.cancel}</span>
+            <span>{locale.global.done}</span>
           </button>
         </>
       );

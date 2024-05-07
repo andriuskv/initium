@@ -5,30 +5,41 @@ import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
 import "./wallpaper-viewer.css";
 
+function useUrl({ id, url: imageUrl }) {
+  const [url, setUrl] = useState("");
+
+  useEffect(() => {
+    init();
+
+    return () => {
+      if (id) {
+        URL.revokeObjectURL(url);
+      }
+    };
+  }, []);
+
+  async function init() {
+    if (id) {
+      const image = await getIDBWallpaper(id);
+      setUrl(URL.createObjectURL(image));
+    }
+    else {
+      setUrl(imageUrl);
+    }
+  }
+
+  return url;
+}
+
 export default function WallpaperViewer({ locale, hide }) {
   const { settings: { appearance: { wallpaper: settings } }, updateSetting } = useSettings();
-  const [loading, setLoading] = useState(true);
-  const [url, setUrl] = useState("");
+  const url = useUrl(settings);
   const [area, setArea] = useState(null);
   const [image, setImage] = useState(null);
   const containerRef = useRef(null);
   const startingPointerPosition = useRef(null);
   const pointerMoveHandler = useRef(null);
   const updating = useRef(false);
-
-  useEffect(() => {
-    init();
-  }, []);
-
-  async function init() {
-    if (settings.id) {
-      const image = await getIDBWallpaper(settings.id);
-      setUrl(URL.createObjectURL(image));
-    }
-    else {
-      setUrl(settings.url);
-    }
-  }
 
   function handleLoad({ target }) {
     const { innerWidth, innerHeight } = window;
@@ -44,9 +55,9 @@ export default function WallpaperViewer({ locale, hide }) {
         width,
         height
       };
+
       initArea({ width: innerWidth, height: innerHeight }, image);
       setImage(image);
-      setLoading(false);
     }, 200);
   }
 
@@ -190,8 +201,8 @@ export default function WallpaperViewer({ locale, hide }) {
 
   return (
     <FullscreenModal transparent mask noAnim hide={hide}>
-      {loading && <Spinner className="wallpaper-viewer-spinner"/>}
-      <div className={`wallpaper-viewer-image-content${loading ? " hidden" : ""}`}>
+      {image ? null : <Spinner className="wallpaper-viewer-spinner"/>}
+      <div className={`wallpaper-viewer-image-content${image ? "" : " hidden"}`}>
         <div className="container wallpaper-viewer-image-container" ref={containerRef}>
           <img src={url} className="wallpaper-viewer-image" onLoad={handleLoad}/>
           {area && <div className="wallpaper-viewer-area" style={{

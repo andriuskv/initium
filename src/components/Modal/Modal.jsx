@@ -4,11 +4,9 @@ import "./modal.css";
 
 export default function Modal({ children, className, transparent, hiding, hide }) {
   const container = useRef(null);
-  const isMounted = useRef(false);
   let element = null;
 
   useEffect(() => {
-    isMounted.current = true;
     focusService.setInitiator(document.activeElement);
     focusService.trapFocus("modal", container.current);
 
