@@ -9,7 +9,7 @@ const Greeting = lazy(() => import("./Greeting"));
 export default function MiddleTop({ settings, greetingEditorVisible }) {
   const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
   const [greetingVisible, setGreetingVisible] = useState(false);
-  const [topPanel, setTopPanel] = useState({ rendered: false, forceVisibility: false });
+  const [topPanel, setTopPanel] = useState({ rendered: false });
   const [itemOrder, setItemOrder] = useState({});
   const topPanelTimeoutId = useRef(0);
 
@@ -89,7 +89,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
   }
 
   function resetTopPanel() {
-    setTopPanel({ ...topPanel, rendered: true, forceVisibility: false });
+    setTopPanel({ ...topPanel, rendered: true });
   }
 
   function renderTopPanel({ detail }) {
