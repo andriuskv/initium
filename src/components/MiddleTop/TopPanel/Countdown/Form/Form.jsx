@@ -224,6 +224,8 @@ export default function Presets({ locale, createCountdown, hide }) {
             <input type="text" className="input countdown-form-field" name="days"
               onChange={handleInputChange} value={form.days} required/>
           </label>
+        </div>
+        <div className="countdown-form-fields">
           <label>
             <div className="countdown-form-field-title">{locale.countdown.hour}</div>
             <input type="text" className="input countdown-form-field" name="hours"
@@ -236,13 +238,13 @@ export default function Presets({ locale, createCountdown, hide }) {
           </label>
         </div>
         {form.dataList ? (
-          <ul className={`container container-opaque countdown-form-field-datalist ${form.dataList.name}`}
-            onPointerDown={handleDataListPointerDown} onPointerUp={selectValue}
-            style={{ top: form.dataList.y, left:  form.dataList.x }}>
-            {form.dataList.items.map(item => (
-              <li className="countdown-form-field-datalist-item" key={item.value} data-item={item.value}>{item.displayValue}</li>
-            ))}
-          </ul>
+          <div className="container container-opaque countdown-form-field-datalist-container" style={{ top: form.dataList.y, left:  form.dataList.x }}>
+            <ul className={`countdown-form-field-datalist ${form.dataList.name}`} onPointerDown={selectValue} tabIndex="-1">
+              {form.dataList.items.map(item => (
+                <li className="countdown-form-field-datalist-item" key={item.value} data-item={item.value}>{item.displayValue}</li>
+              ))}
+            </ul>
+          </div>
         ) : null}
       </div>
       <div className="container-footer countdown-form-bottom">

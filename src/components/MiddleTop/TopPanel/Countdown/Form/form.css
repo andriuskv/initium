@@ -23,6 +23,7 @@
   }
 
   .countdown-form-field {
+    width: 68px;
     text-align: center;
   }
 }
@@ -43,11 +44,22 @@
   margin-top: auto;
 }
 
-.countdown-form-field-datalist {
+.countdown-form-field-datalist-container {
   position: absolute;
+  overflow: hidden;
+  border-top-right-radius: var(--container-inset-radius);
+  border-bottom-right-radius: var(--container-inset-radius);
+  transform: translate(-50%, var(--space-sm));
+}
+
+.countdown-form-field-datalist {
   padding-top: var(--space-md);
   padding-bottom: var(--space-md);
-  transform: translate(-50%, var(--space-sm));
+
+  &:where(.years, .months, .minutes) {
+    max-height: 196px;
+    overflow-y: auto;
+  }
 
   &.months {
     min-width: 100px;
