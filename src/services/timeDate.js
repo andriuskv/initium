@@ -236,6 +236,25 @@ function getHoursOffset(milliseconds, useNumerical = false) {
   return "Current timezone";
 }
 
+function parseDateInputValue(value, includeTime = false) {
+  const values = value.split("-");
+  const data = {
+    year: parseInt(values[0], 10),
+    month: parseInt(values[1], 10) - 1,
+    day: parseInt(values[2], 10)
+  };
+
+  if (includeTime) {
+    const time = value.split("T")[1].split(":");
+    const { hours, minutes, period } = adjustTime({ hours: parseInt(time[0], 10), minutes: parseInt(time[1], 10) });
+
+    data.hours = hours;
+    data.minutes = minutes;
+    data.period = period;
+  }
+  return data;
+}
+
 export {
   getTimeString,
   getDisplayTime,
@@ -253,5 +272,6 @@ export {
   formatTime,
   formatDate,
   getOffsettedCurrentTime,
-  getHoursOffset
+  getHoursOffset,
+  parseDateInputValue
 };

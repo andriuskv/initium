@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   width: 400px;
-  height: 260px;
+  height: 282px;
 }
 
 .countdown-form-body {
@@ -10,12 +10,26 @@
   flex-direction: column;
   flex-grow: 1;
   padding: var(--space-md);
+  margin-top: 18px;
+}
+
+.countdown-form-date-btn-container {
+  position: absolute;
+  top: 48px;
+  right: var(--space-md);
+
+  .input {
+    z-index: -1;
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
 }
 
 .countdown-form-fields {
   display: flex;
   gap: var(--space-md);
-  margin: auto 0;
+  margin-top: var(--space-md);
   text-align: center;
 
   .countdown-form-field-title {
@@ -23,6 +37,7 @@
   }
 
   .countdown-form-field {
+    width: 68px;
     text-align: center;
   }
 }
@@ -43,11 +58,22 @@
   margin-top: auto;
 }
 
-.countdown-form-field-datalist {
+.countdown-form-field-datalist-container {
   position: absolute;
+  overflow: hidden;
+  border-top-right-radius: var(--container-inset-radius);
+  border-bottom-right-radius: var(--container-inset-radius);
+  transform: translate(-50%, var(--space-sm));
+}
+
+.countdown-form-field-datalist {
   padding-top: var(--space-md);
   padding-bottom: var(--space-md);
-  transform: translate(-50%, var(--space-sm));
+
+  &:where(.year, .month, .minutes) {
+    max-height: 196px;
+    overflow-y: auto;
+  }
 
   &.months {
     min-width: 100px;

@@ -54,15 +54,20 @@ export default function Countdown({ visible, locale, toggleIndicator }) {
   }
 
   function startCountdowns(countdowns) {
+    const startDate = new Date();
+
     setCountdowns(countdowns.map(countdown => {
       const date = new Date(countdown.dateString);
+      const diff = Math.round(Math.abs(date - startDate) / 1000);
 
       return {
         id: getRandomString(),
         title: countdown.title,
         date: getCountdownDateString(date),
         dateString: countdown.dateString,
-        isInPast: countdown.isInPast
+        isInPast: countdown.isInPast,
+        diff,
+        ...parseDateDiff(diff)
       };
     }));
   }
