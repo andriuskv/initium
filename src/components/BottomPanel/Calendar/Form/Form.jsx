@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { getRandomHexColor, hslStringToHex } from "utils";
-import { padTime, getWeekday, getWeekdays, getTimeString, formatDate } from "services/timeDate";
+import { padTime, getWeekday, getWeekdays, getTimeString, formatDate, parseDateInputValue } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { createCalendarEvent, updateCalendarEvent, getEventColors } from "services/calendar";
 import { useMessage } from "hooks";
@@ -379,15 +379,6 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
 
   function getDateInputString({ year, month, day }) {
     return `${year}-${padTime(month + 1)}-${padTime(day)}`;
-  }
-
-  function parseDateInputValue(value) {
-    const values = value.split("-");
-    return {
-      year: parseInt(values[0], 10),
-      month: parseInt(values[1], 10) - 1,
-      day: parseInt(values[2], 10)
-    };
   }
 
   function showSelectedDayPicker() {
