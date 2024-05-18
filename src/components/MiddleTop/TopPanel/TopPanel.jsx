@@ -19,7 +19,6 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const locale = useLocalization();
   const [visible, setVisible] = useState(false);
   const [minimal, setMinimal] = useState(false);
-  const [rerender, setRerender] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     return initialTab || (localStorage.getItem("active-timer-tab") || "timer");
   });
@@ -45,6 +44,15 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const activeTabIndex = findTabIndex(activeTab);
 
   useEffect(() => {
+    if (!forceVisibility) {
+      return;
+    }
+    increaseContainerZIndex();
+    setVisible(true);
+    resetTopPanel();
+  }, []);
+
+  useEffect(() => {
     if (settings.showMinimal && visible) {
       return;
     }
@@ -56,23 +64,6 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       resetMinimal();
     }
   }, [settings.showMinimal]);
-
-  useEffect(() => {
-    if (forceVisibility) {
-      requestAnimationFrame(() => {
-        setRerender(true);
-      });
-    }
-  }, [forceVisibility]);
-
-  useEffect(() => {
-    if (rerender) {
-      increaseContainerZIndex();
-      setVisible(true);
-      setRerender(false);
-      resetTopPanel();
-    }
-  }, [rerender]);
 
   useEffect(() => {
     window.addEventListener("top-panel-visible", toggleTopPanel);
@@ -283,9 +274,16 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     }
   }
 
+  function handleContainerClick(event) {
+    if (minimal && event.detail === 2) {
+      resetMinimal(true);
+    }
+    handleZIndex(event, "top-panel");
+  }
+
   return (
     <div className={`top-panel${minimal ? ` minimal visible` : expanded ? " fullscreen-mask expanded" : " container"}${visible ? " visible" : ""}`}
-      onClick={event => handleZIndex(event, "top-panel")} ref={containerRef}>
+      onClick={handleContainerClick} ref={containerRef}>
       <div className="top-panel-content">
         <TabsContainer className="top-panel-hide-target" visible={visible} current={activeTabIndex}>
           <ul className="container-header top-panel-header">
