@@ -33,6 +33,16 @@
       color: oklch(from var(--text-color) l c h / 40%);
     }
   }
+
+  &.scaled-down {
+    .sticky-note-sidebar {
+      translate: 50%;
+    }
+
+    .sticky-note-btns {
+      translate: 0 30%;
+    }
+  }
 }
 
 .sticky-note-drag-handle {
@@ -70,14 +80,14 @@
 .sticky-note-sidebar {
   z-index: 1;
   position: absolute;
-  top: 0;
+  top: 50%;
   right: 0;
-  padding: var(--space-md);
+  padding: var(--space-sm);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   background-color: var(--background-color);
-  transform: translate(75%, 25%) rotate(-2deg);
+  transform: translate(75%, -50%) rotate(-4deg);
   box-shadow:
     0 0 0 1px var(--color-black-4),
     var(--highligh-shadow);
@@ -89,7 +99,7 @@
   right: auto;
   min-width: 126px;
   padding: var(--space-md);
-  transform: translate(-50%, var(--space-sm));
+  transform: translate(-50%, var(--space-sm)) rotate(4deg);
   user-select: none;
 }
 
