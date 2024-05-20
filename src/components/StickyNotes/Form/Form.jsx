@@ -1,5 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import * as focusService from "services/focus";
+import { useNotes } from "contexts/stickyNotes";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./form.css";
@@ -15,7 +16,8 @@ const backgroundColors = [
 
 const textColors = [[0, 0, 0], [1, 0, 0]];
 
-export default function Form({ initialForm, noteCount, locale, createNote, discardNote, showForm }) {
+export default function Form({ initialForm, noteCount, locale, discardNote, showForm }) {
+  const { createNote, removeNote } = useNotes();
   const [movable, setMovable] = useState(false);
   const [form, setForm] = useState(null);
   const containerRef = useRef(null);
@@ -248,6 +250,11 @@ export default function Form({ initialForm, noteCount, locale, createNote, disca
                 </button>
               </div>
             </Dropdown>
+            {initialForm.action === "edit" ? (
+              <button className="btn icon-btn" onClick={() => removeNote(initialForm.id)}>
+                <Icon id="trash"/>
+              </button>
+            ) : null}
           </div>
           <div className="sticky-note-btns">
             <button className="btn" onClick={discardNote}>{locale.global.discard}</button>
