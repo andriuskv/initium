@@ -6,12 +6,14 @@ import * as chromeStorage from "services/chromeStorage";
 import Icon from "components/Icon";
 import CreateButton from "components/CreateButton";
 import "./countdown.css";
+import useWorker from "../../useWorker";
 
 const Form = lazy(() => import("./Form"));
 
 export default function Countdown({ visible, locale, toggleIndicator }) {
   const [countdowns, setCountdowns] = useState([]);
-  const timeoutId = useRef(0);
+  const [initWorker, destroyWorker] = useWorker(updateCountdowns, [countdowns.length]);
+  const running = useRef(0);
 
   useEffect(() => {
     init();
@@ -19,15 +21,16 @@ export default function Countdown({ visible, locale, toggleIndicator }) {
 
   useEffect(() => {
     if (!countdowns.length) {
+      running.current = false;
+      destroyWorker();
       return;
     }
-    timeoutId.current = setTimeout(() => {
-      updateCountdowns();
-    }, 1000);
 
-    return () => {
-      clearTimeout(timeoutId.current);
-    };
+    if (running.current) {
+      return;
+    }
+    running.current = true;
+    initWorker({ type: "clock" });
   }, [countdowns]);
 
   async function init() {
