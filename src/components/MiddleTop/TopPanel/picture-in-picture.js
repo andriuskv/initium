@@ -101,7 +101,7 @@ async function init({ name, title, data, toggle }) {
     <div>
       <span class="top-panel-digit${data.hours > 0 ? "" : " hidden"}">${data.hours}</span>
       <span class="top-panel-digit-sep">h</span>
-      <span class="top-panel-digit${data.minutes > 0 ? "" : " hidden"}">${data.minutes}</span>
+      <span class="top-panel-digit${(data.hours > 0 || data.minutes > 0) ? "" : " hidden"}">${data.minutes}</span>
       <span class="top-panel-digit-sep">m</span>
       <span class="top-panel-digit">${data.seconds}</span>
       <span class="top-panel-digit-sep">s</span>
