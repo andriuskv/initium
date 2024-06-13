@@ -79,7 +79,7 @@
     min-width: 100px;
   }
 
-  &.days {
+  &.day {
     padding: var(--space-md);
     display: grid;
     grid-template-columns: repeat(7, 1fr);
