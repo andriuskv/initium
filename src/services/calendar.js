@@ -708,7 +708,7 @@ function convertReminderToEvent(reminder) {
     }
 
     if (endDate) {
-      recurenceString += `UNTIL=${endDate}${pad(endDate.month + 1)}${pad(endDate.day)};`;
+      recurenceString += `UNTIL=${endDate.year}${pad(endDate.month + 1)}${pad(endDate.day)};`;
     }
 
     if (recurenceString.at(-1) === ";") {
