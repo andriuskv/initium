@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { formatBytes, timeout } from "utils";
 import { useModal } from "hooks";
+import { getCurrentDateString } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
@@ -173,8 +174,9 @@ export default function StorageTab({ locale }) {
       }
     }
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const date = getCurrentDateString();
 
-    saveAs(blob, "initium-new-tab-backup.json");
+    saveAs(blob, `initium-new-tab-backup-${date}.json`);
   }
 
   function showRestoreModal() {

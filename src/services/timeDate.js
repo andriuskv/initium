@@ -171,6 +171,30 @@ function getTomorrowDate() {
   };
 }
 
+function getDateString(date, includeTime = false) {
+  let data = date;
+  let timeString = "";
+
+  if (date instanceof Date) {
+    data = {
+      year: date.getFullYear(),
+      month: date.getMonth(),
+      day: date.getDate(),
+      hours: date.getHours(),
+      minutes: date.getMinutes()
+    };
+  }
+
+  if (includeTime) {
+    timeString = `T${padTime(data.hours)}:${padTime(data.minutes)}:00`;
+  }
+  return `${data.year}-${padTime(data.month + 1)}-${padTime(data.day)}${timeString}`;
+}
+
+function getCurrentDateString() {
+  return getDateString(getCurrentDate());
+}
+
 function getTimeObj(milliseconds) {
   const date = milliseconds ? new Date(milliseconds) : new Date();
 
@@ -263,6 +287,8 @@ export {
   getFirstDayIndex,
   getCurrentDate,
   getTomorrowDate,
+  getDateString,
+  getCurrentDateString,
   getWeekdays,
   getWeekdayName,
   getMonthName,
