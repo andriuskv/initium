@@ -605,14 +605,6 @@ function pad(value) {
   return value.toString().padStart(2, "0");
 }
 
-function getDateString(date) {
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-function getDateTimeString(date) {
-  return `${getDateString(date)}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
-}
-
 function convertReminderToEvent(reminder) {
   const startDate = new Date(reminder.year, reminder.month, reminder.day);
   const endDate = new Date(reminder.year, reminder.month, reminder.day);
@@ -632,19 +624,19 @@ function convertReminderToEvent(reminder) {
 
   if (!reminder.range || reminder.range.text === "All day") {
     endDate.setDate(startDate.getDate() + 1);
-    event.start.date = getDateString(startDate);
-    event.end.date = getDateString(endDate);
+    event.start.date = timeDateService.getDateString(startDate);
+    event.end.date = timeDateService.getDateString(endDate);
   }
   else {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     startDate.setHours(reminder.range.from.hours, reminder.range.from.minutes);
-    event.start.dateTime = getDateTimeString(startDate);
+    event.start.dateTime = timeDateService.getDateString(startDate, true);
     event.start.timeZone = timeZone;
 
     if (reminder.range.to) {
       endDate.setHours(reminder.range.to.hours, reminder.range.to.minutes);
-      event.end.dateTime = getDateTimeString(endDate);
+      event.end.dateTime = timeDateService.getDateString(endDate, true);
     }
     else {
       event.end.dateTime = event.start.dateTime;

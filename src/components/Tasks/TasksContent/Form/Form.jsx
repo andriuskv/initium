@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { getRandomString, replaceLink } from "utils";
 import { useModal, useMessage } from "hooks";
 import { getSetting } from "services/settings";
-import { formatDate, padTime } from "services/timeDate";
+import { formatDate, getDateString } from "services/timeDate";
 import { SortableItem, SortableList } from "components/Sortable";
 import Icon from "components/Icon";
 import "./form.css";
@@ -301,13 +301,8 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
 
   function getDateTimeString(time) {
     const date = time ? new Date(time) : new Date();
-    const years = date.getFullYear();
-    const months = date.getMonth() + 1;
-    const days = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
 
-    return `${years}-${padTime(months)}-${padTime(days)}T${padTime(hours)}:${padTime(minutes)}`;
+    return getDateString(date, true);
   }
 
   function togglePrefsVisibility() {

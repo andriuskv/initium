@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { getRandomString } from "utils";
-import { padTime, getMonthName, getTimeString, parseDateInputValue } from "services/timeDate";
+import { padTime, getMonthName, getTimeString, parseDateInputValue, getDateString } from "services/timeDate";
 import { getSetting } from "services/settings";
 import Icon from "components/Icon";
 import "./form.css";
@@ -59,7 +59,14 @@ export default function Form({ locale, createCountdown, hide }) {
       setForm({ ...form, message: "Invalid hour format." });
       return;
     }
-    const dateString = `${year.value}-${padTime(month.value)}-${padTime(day.value)}T${padTime(h)}:${padTime(minutes.value)}:00`;
+    const dateString = getDateString({
+      year: year.value,
+      month: Number.parseInt(month.value, 10) - 1,
+      day: day.value,
+      hours: h,
+      minutes: minutes.value
+    }, true);
+    console.log(dateString);
     const date = new Date(dateString);
 
     if (date.toString() === "Invalid Date") {

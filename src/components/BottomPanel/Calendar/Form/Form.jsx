@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { getRandomHexColor, hslStringToHex } from "utils";
-import { padTime, getWeekday, getWeekdays, getTimeString, formatDate, parseDateInputValue } from "services/timeDate";
+import { padTime, getWeekday, getWeekdays, getTimeString, formatDate, parseDateInputValue, getDateString } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { createCalendarEvent, updateCalendarEvent, getEventColors } from "services/calendar";
 import { useMessage } from "hooks";
@@ -85,12 +85,12 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       ends: "never",
       gap: "",
       count: "",
-      endDateString: form.repeat?.endDate ? getDateInputString({
+      endDateString: form.repeat?.endDate ? getDateString({
         year: form.repeat.endDate.year,
         month: form.repeat.endDate.month,
         day: form.repeat.endDate.day
       }) : undefined,
-      minEndDateString: getDateInputString({
+      minEndDateString: getDateString({
         year: form.year,
         month: form.month,
         day: form.day
@@ -102,7 +102,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       repeat.ends = "date";
     }
     const date = form.selectedDay ? form.selectedDay: form;
-    form.dateString = getDateInputString(date);
+    form.dateString = getDateString(date);
     form.displayDateString = formatDate(new Date(date.year, date.month, date.day), { locale: dateLocale });
     form.pickerColor = form.color ? form.color.startsWith("hsl") ? hslStringToHex(form.color) : form.color : getRandomHexColor();
 
@@ -375,10 +375,6 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       form.range[listName].text = target.textContent;
       setForm({...form });
     }
-  }
-
-  function getDateInputString({ year, month, day }) {
-    return `${year}-${padTime(month + 1)}-${padTime(day)}`;
   }
 
   function showSelectedDayPicker() {
