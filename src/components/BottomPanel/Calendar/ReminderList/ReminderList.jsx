@@ -26,7 +26,7 @@ export default function ReminderList({ reminders, locale, editReminder, removeRe
       {sortedReminders.length > 0 ? (
         <ul className="reminder-list-items" data-dropdown-parent>
           {sortedReminders.map(reminder => (
-            <li className="reminder-list-item reminder-list-item-col" key={reminder.id}>
+            <li className={`reminder-list-item reminder-list-item-col${reminder.removing ? " removing" : ""}`} key={reminder.id}>
               <div className="reminder-list-item-date">{reminder.dateString}</div>
               <div className="reminder-list-item-content">
                 {reminder.type === "google" ? (

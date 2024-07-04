@@ -5,6 +5,11 @@
   width: 420px;
   height: 480px;
   min-height: 0;
+  transition: var(--duration-n) opacity;
+
+  &[inert] {
+    opacity: 0.6;
+  }
 }
 
 .reminder-form-header-icon {

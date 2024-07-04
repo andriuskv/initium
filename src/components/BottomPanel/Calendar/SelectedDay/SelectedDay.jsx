@@ -14,7 +14,7 @@ export default function SelectedDay({ day, locale, removeReminder, changeReminde
       {day.reminders.length > 0 ? (
         <ul className="reminder-list-items" data-dropdown-parent>
           {day.reminders.map(reminder => (
-            <li className="reminder-list-item" key={reminder.id}>
+            <li className={`reminder-list-item${reminder.removing ? " removing" : ""}`} key={reminder.id}>
               {reminder.type === "google" ? (
                 <div className="reminder-list-item-color inert" style={{ "backgroundColor": reminder.color }}></div>
               ) : (
