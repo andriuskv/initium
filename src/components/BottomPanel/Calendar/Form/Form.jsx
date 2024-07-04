@@ -252,6 +252,8 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     }
 
     if (form.type === "google") {
+      setForm({ ...form, submiting: true });
+
       const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
 
       reminder.type = "google";
@@ -264,6 +266,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         const event = await updateCalendarEvent(reminder, primaryCalendar.id);
 
         if (!event) {
+          setForm({ ...form, submiting: false });
           showMessage("Unable to update an event. Try again later.");
           return;
         }
@@ -272,6 +275,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         const event = await createCalendarEvent(reminder, primaryCalendar.id);
 
         if (!event) {
+          setForm({ ...form, submiting: false });
           showMessage("Unable to create an event. Try again later.");
           return;
         }
@@ -400,7 +404,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   return (
-    <form className="reminder-form" onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
+    <form className="reminder-form" inert={form.submiting ? "" : null} onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
       <div className="container-header">
         {form.type === "google" ? (
           <img src="assets/google-product-logos/calendar.png" className="reminder-form-header-icon"

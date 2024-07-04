@@ -501,9 +501,13 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
   async function removeReminder(reminder, day = null) {
     if (reminder.type === "google") {
+      reminder.removing = true;
+      setGoogleReminders([...googleReminders]);
       const success = await calendarService.deleteCalendarEvent(reminder.calendarId, reminder.id);
 
       if (!success) {
+        delete reminder.removing;
+        setGoogleReminders([...googleReminders]);
         showMessage("Unable to delete an event. Try again later.");
         return;
       }

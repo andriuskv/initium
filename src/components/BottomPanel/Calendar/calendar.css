@@ -241,6 +241,7 @@
   gap: var(--space-sm);
   padding: var(--space-sm);
   word-break: break-word;
+  transition: var(--duration-n) opacity;
 
   &:not(:first-of-type) {
     border-top: 1px solid var(--color-white-10);
@@ -248,6 +249,14 @@
 
   &:last-of-type {
     box-shadow: 0 1px 0 0 var(--color-white-10);
+  }
+
+  &.removing {
+    opacity: 0.6;
+
+    .reminder-list-item-dropdown {
+      display: none;
+    }
   }
 }
 
