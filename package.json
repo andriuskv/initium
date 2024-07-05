@@ -6,7 +6,7 @@
     "webpack": "source config/env && webpack --progress",
     "start": "npm run dist && npm run webpack -- --watch",
     "dist": "rm -rf dist && mkdir dist",
-    "build": "npm run dist && npm run webpack -- --env prod && node build.js"
+    "build": "npm run dist && npm run webpack -- --env prod && node --experimental-default-type=module build.js"
   },
   "dependencies": {
     "@dnd-kit/modifiers": "^7.0.0",
