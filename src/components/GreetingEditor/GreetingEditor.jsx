@@ -56,18 +56,18 @@ export default function GreetingEditor({ hiding, locale, hide }) {
     }, 400, saveTimeoutId.current);
   }
 
-  function saveGreetings(text) {
-    chromeStorage.set({ greetings: text.split("\n").filter(line => line).map(line => line.trim()) }, () => {
-      if (chrome.runtime.lastError) {
-        setBytes({
-          ...bytes,
-          message: "Storage usage exceeded."
-        });
-      }
-      else {
-        setByteUsage();
-      }
-    });
+  async function saveGreetings(text) {
+    await chromeStorage.set({ greetings: text.split("\n").filter(line => line).map(line => line.trim()) });
+
+    if (chrome.runtime.lastError) {
+      setBytes({
+        ...bytes,
+        message: "Storage usage exceeded."
+      });
+    }
+    else {
+      setByteUsage();
+    }
   }
 
   return (

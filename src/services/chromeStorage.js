@@ -33,23 +33,18 @@ function subscribeToChanges(handler, { id, listenToLocal = false } = {}) {
   subscribers.push({ id, handler, listenToLocal });
 }
 
-function get(id) {
-  return new Promise(resolve => {
-    chrome.storage.sync.get(id, sync => {
-      resolve(sync[id]);
-    });
-  });
+async function get(id) {
+  const item = await chrome.storage.sync.get(id);
+  return item[id];
 }
 
-function set(value, cb, updateLocally = false) {
+function set(value, updateLocally = false) {
   isLocalChange = !updateLocally;
-  chrome.storage.sync.set(value, cb);
+  return chrome.storage.sync.set(value);
 }
 
-function getBytesInUse(name) {
-  return new Promise(resolve => {
-    chrome.storage.sync.getBytesInUse(name, resolve);
-  });
+function getBytesInUse(id) {
+  return chrome.storage.sync.getBytesInUse(id);
 }
 
 export {

@@ -300,15 +300,14 @@ export default function Notepad({ locale }) {
   }
 
   function saveTabs(tabs) {
-    saveTimeoutId.current = timeout(() => {
+    saveTimeoutId.current = timeout(async () => {
       saveTabTextSize(tabs);
-      chromeStorage.set({ notepad: tabs.map(tab => ({
+      await chromeStorage.set({ notepad: tabs.map(tab => ({
         id: tab.id,
         title: tab.title,
         content: tab.content
-      })) }, () => {
-        checkStorageSize();
-      });
+      })) });
+      checkStorageSize();
     }, 1000, saveTimeoutId.current);
   }
 

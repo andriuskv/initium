@@ -230,7 +230,7 @@ export default function StorageTab({ locale }) {
           const isKeyPresent = items.some(item => item.name === key);
 
           if (isKeyPresent) {
-            chromeStorage.set({ [key]: json[key] }, null, true);
+            chromeStorage.set({ [key]: json[key] }, true);
           }
         }
       } catch (e) {
