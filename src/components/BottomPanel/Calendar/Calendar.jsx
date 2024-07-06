@@ -680,10 +680,15 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
       reminderArray.splice(index, 1, reminder);
       removeCalendarReminder(form.id);
-
     }
     else {
       reminderArray.push(reminder);
+    }
+    const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
+
+    if (reminder.type === "google" && primaryCalendar && !primaryCalendar.selected) {
+      showMessage("Reminder was created on Google calendar only.");
+      return;
     }
     createReminder(reminder, calendar);
     sortDayReminders(form);
