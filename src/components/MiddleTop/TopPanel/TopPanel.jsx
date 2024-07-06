@@ -155,6 +155,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
         resetMinimal(true);
       }
       else {
+        increaseContainerZIndex();
         setVisible(true);
       }
       selectTab(detail.tab);
