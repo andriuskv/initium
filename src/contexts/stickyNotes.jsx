@@ -51,8 +51,8 @@ function StickyNotesProvider({ children }) {
   function parseNotes(notes) {
     return notes.map(note => {
       note.id = crypto.randomUUID();
-      note.titleDisplayString = parseNoteField(note.title);
-      note.contentDisplayString = parseNoteField(note.content);
+      note.titleDisplayString = parseNoteField(note.title, settings.general.openLinkInNewTab);
+      note.contentDisplayString = parseNoteField(note.content, settings.general.openLinkInNewTab);
 
       if (note.color) {
         note.backgroundColor = note.color;

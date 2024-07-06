@@ -397,6 +397,15 @@ export default function Calendar({ visible, locale, showIndicator }) {
           }
           return;
         }
+        const currentDate = timeDateService.getCurrentDate();
+        const nextYear = date.year + 1;
+
+        // Fill missing years between the start of the reminder repetition and the current year
+        if (nextYear < currentDate.year && !calendar[nextYear]) {
+          calendar[nextYear] = calendarService.generateYear(nextYear);
+          repeatReminder(reminder, calendar);
+          return;
+        }
         reminder.nextRepeat.day = date.day;
         reminder.nextRepeat.month = date.month;
         month = months[reminder.nextRepeat.month];
@@ -680,10 +689,15 @@ export default function Calendar({ visible, locale, showIndicator }) {
 
       reminderArray.splice(index, 1, reminder);
       removeCalendarReminder(form.id);
-
     }
     else {
       reminderArray.push(reminder);
+    }
+    const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
+
+    if (reminder.type === "google" && primaryCalendar && !primaryCalendar.selected) {
+      showMessage("Reminder was created on Google calendar only.");
+      return;
     }
     createReminder(reminder, calendar);
     sortDayReminders(form);
