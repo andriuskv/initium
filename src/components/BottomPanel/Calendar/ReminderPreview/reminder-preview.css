@@ -13,6 +13,7 @@
 
 .calendar-reminder-preview-content {
   overflow-y: auto;
+  max-width: 380px;
   max-height: 144px;
   padding-top: var(--space-sm);
   padding-left: var(--space-md);
@@ -33,7 +34,6 @@
 
 .calendar-reminder-preview-item {
   display: flex;
-  align-items: center;
   gap: var(--space-sm);
   font-size: var(--text-sm);
   word-break: break-word;

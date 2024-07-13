@@ -16,7 +16,7 @@
     "file-saver": "^2.0.5",
     "idb-keyval": "^6.2.1",
     "jszip": "^3.10.1",
-    "marked": "^13.0.1",
+    "marked": "^13.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -40,7 +40,7 @@
     "postcss-import": "^16.1.0",
     "postcss-loader": "^8.1.1",
     "postcss-mixins": "^10.0.1",
-    "postcss-preset-env": "^9.5.15",
+    "postcss-preset-env": "^9.6.0",
     "raw-loader": "^4.0.2",
     "stylelint": "^16.6.1",
     "stylelint-config-standard": "^36.0.1",

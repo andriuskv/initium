@@ -13,6 +13,7 @@ module.exports = function(env = {}) {
     new DefinePlugin({
       "process.env": {
         NODE_ENV: JSON.stringify(mode),
+        CALENDAR_API_KEY: JSON.stringify(process.env.CALENDAR_API_KEY),
         SERVER_URL: JSON.stringify(process.env.SERVER_URL),
         DEV_SERVER_URL: JSON.stringify(process.env.DEV_SERVER_URL)
       }

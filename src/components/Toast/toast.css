@@ -1,6 +1,7 @@
 .toast {
   --offset: 0;
 
+  z-index: 1;
   position: absolute;
   left: var(--space-md);
   right: var(--space-md);
@@ -19,4 +20,8 @@
     bottom: var(--space-md);
     transform: translateY(calc(-1 * var(--offset)));
   }
+}
+
+.toast-message {
+  text-wrap: balance;
 }

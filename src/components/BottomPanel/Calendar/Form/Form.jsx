@@ -27,13 +27,13 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       if (form.calendarId) {
         form.eventColors = getEventColors(form.calendarId, googleCalendars);
         form.eventColorIndex = form.eventColors.length - 1;
-      }
 
-      if (form.color) {
-        const index = form.eventColors.findIndex(({ color }) => form.color === color);
+        if (form.color) {
+          const index = form.eventColors.findIndex(({ color }) => form.color === color);
 
-        if (index >= 0) {
-          form.eventColorIndex = index;
+          if (index >= 0) {
+            form.eventColorIndex = index;
+          }
         }
       }
 
@@ -67,6 +67,9 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           form.repeat.weekdays.static[form.repeat.currentWeekday] = true;
         }
       }
+    }
+    else {
+      form.id = getRandomString();
     }
 
     const range = {
@@ -198,10 +201,10 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       reminder.repeat.type = form.repeat.type;
 
       delete form.repeat.dateMessage;
-      delete form.repeat.gapError;
 
       if (form.repeat.type === "custom") {
         if (form.repeat.gap) {
+          delete form.repeat.gapError;
           reminder.repeat.gap = Number(form.repeat.gap);
           reminder.repeat.customTypeGapName = form.repeat.customTypeGapName;
         }
