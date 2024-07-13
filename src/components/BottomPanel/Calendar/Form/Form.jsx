@@ -27,13 +27,13 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       if (form.calendarId) {
         form.eventColors = getEventColors(form.calendarId, googleCalendars);
         form.eventColorIndex = form.eventColors.length - 1;
-      }
 
-      if (form.color) {
-        const index = form.eventColors.findIndex(({ color }) => form.color === color);
+        if (form.color) {
+          const index = form.eventColors.findIndex(({ color }) => form.color === color);
 
-        if (index >= 0) {
-          form.eventColorIndex = index;
+          if (index >= 0) {
+            form.eventColorIndex = index;
+          }
         }
       }
 
