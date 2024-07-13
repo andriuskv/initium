@@ -201,10 +201,10 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       reminder.repeat.type = form.repeat.type;
 
       delete form.repeat.dateMessage;
-      delete form.repeat.gapError;
 
       if (form.repeat.type === "custom") {
         if (form.repeat.gap) {
+          delete form.repeat.gapError;
           reminder.repeat.gap = Number(form.repeat.gap);
           reminder.repeat.customTypeGapName = form.repeat.customTypeGapName;
         }
