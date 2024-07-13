@@ -68,6 +68,9 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         }
       }
     }
+    else {
+      form.id = getRandomString();
+    }
 
     const range = {
       enabled: false,
