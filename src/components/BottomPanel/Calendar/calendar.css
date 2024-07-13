@@ -1,18 +1,5 @@
 @import "../../../styles/mixins.css";
 
-.calendar-message-container {
-  position: absolute;
-  top: 48px;
-  left: var(--space-md);
-  right: var(--space-md);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-xl);
-  border-radius: 999px;
-  color: var(--color-white-80);
-}
-
 .calendar-current-date {
   display: flex;
   padding: var(--space-sm);

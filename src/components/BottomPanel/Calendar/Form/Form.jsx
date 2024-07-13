@@ -6,6 +6,7 @@ import { createCalendarEvent, updateCalendarEvent, getEventColors } from "servic
 import { useMessage } from "hooks";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
+import Toast from "components/Toast";
 import "./form.css";
 
 export default function Form({ form: initialForm, locale, user, googleCalendars, updateReminder, hide }) {
@@ -586,14 +587,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           </>
         )}
       </div>
-      {message ? (
-        <div className="container container-opaque calendar-message-container reminder-form-message">
-          <p className="calendar-message">{message}</p>
-          <button type="button" className="btn icon-btn" onClick={dismissMessage} title="Dismiss">
-            <Icon id="cross"/>
-          </button>
-        </div>
-      ) : null}
+      {message ? <Toast message={message} position="bottom" offset="40px" locale={locale} dismiss={dismissMessage}/> : null}
       <div className="container-footer reminder-form-btns">
         <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
         <button className="btn">{form.updating ? locale.global.update : locale.global.create}</button>
