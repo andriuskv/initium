@@ -492,29 +492,31 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           )}
         </div>
         {form.range.enabled && (
-          <div className="reminder-form-row">
-            <div className="reminder-form-setting">
-              <label htmlFor="range-from">{locale.calendar.form.range_from_label}</label>
-              <div className="input-icon-btn-container">
-                <input type="text" id="range-from" className="input reminder-range-input" autoComplete="off" name="from"
-                  onChange={handleRangeInputChange} value={form.range.from.text} required/>
-                <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-range-data-list-dropdown" }}>
-                  <ul className="range-data-list-items" onClick={event => selectDataItem(event, "from")}>
-                    {form.range.dataList.items.map((item, i) => <li className="range-data-list-item dropdown-btn" key={i}>{item}</li>)}
-                  </ul>
-                </Dropdown>
+          <div>
+            <div className="reminder-form-row">
+              <div className="reminder-form-setting">
+                <label htmlFor="range-from">{locale.calendar.form.range_from_label}</label>
+                <div className="input-icon-btn-container">
+                  <input type="text" id="range-from" className="input reminder-range-input" autoComplete="off" name="from"
+                    onChange={handleRangeInputChange} value={form.range.from.text} required/>
+                  <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-range-data-list-dropdown" }}>
+                    <ul className="range-data-list-items" onClick={event => selectDataItem(event, "from")}>
+                      {form.range.dataList.items.map((item, i) => <li className="range-data-list-item dropdown-btn" key={i}>{item}</li>)}
+                    </ul>
+                  </Dropdown>
+                </div>
               </div>
-            </div>
-            <div className="reminder-form-setting">
-              <label htmlFor="range-to">{locale.calendar.form.range_to_label}</label>
-              <div className="input-icon-btn-container">
-                <input type="text" id="range-to" className="input reminder-range-input" autoComplete="off" name="to"
-                  onChange={handleRangeInputChange} value={form.range.to.text} required/>
-                <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-range-data-list-dropdown" }}>
-                  <ul className="range-data-list-items" onClick={event => selectDataItem(event, "to")}>
-                    {form.range.dataList.items.map((item, i) => <li className="range-data-list-item dropdown-btn" key={i}>{item}</li>)}
-                  </ul>
-                </Dropdown>
+              <div className="reminder-form-setting">
+                <label htmlFor="range-to">{locale.calendar.form.range_to_label}</label>
+                <div className="input-icon-btn-container">
+                  <input type="text" id="range-to" className="input reminder-range-input" autoComplete="off" name="to"
+                    onChange={handleRangeInputChange} value={form.range.to.text} required/>
+                  <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-range-data-list-dropdown" }}>
+                    <ul className="range-data-list-items" onClick={event => selectDataItem(event, "to")}>
+                      {form.range.dataList.items.map((item, i) => <li className="range-data-list-item dropdown-btn" key={i}>{item}</li>)}
+                    </ul>
+                  </Dropdown>
+                </div>
               </div>
             </div>
             {form.range.message && <div className="reminder-form-input-message">{form.range.message}</div>}
@@ -558,31 +560,35 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                 <div className="radio"></div>
                 <span>{locale.calendar.form.repeat_end_setting_never_label}</span>
               </label>
-              <label className="reminder-form-row">
-                <input type="radio" className="sr-only radio-input" name="ends"
-                  value="date" defaultChecked={form.repeat.ends === "date"}/>
-                <div className="radio"></div>
-                <span>On</span>
-                <input type="date" name="enddate" className="input reminder-form-end-date-input" data-modal-keep
-                  min={form.repeat.minEndDate} defaultValue={form.repeat.endDateString}
-                  disabled={form.repeat.ends !== "date"} required={form.repeat.ends === "date"}/>
-              </label>
-              {form.repeat.ends === "date" && form.repeat.dateMessage && (
-                <div className="reminder-form-input-message">{form.repeat.dateMessage}</div>
-              )}
-              <label className="reminder-form-row">
-                <input type="radio" className="sr-only radio-input" name="ends"
-                  value="occurrences" defaultChecked={form.repeat.ends === "occurrences"}/>
-                <div className="radio"></div>
-                <span>After</span>
-                <input type="text" className="input repeat-input" name="count" autoComplete="off"
-                  value={form.repeat.count} onChange={handleRepeatInputChange}
-                  disabled={form.repeat.ends !== "occurrences"} required={form.repeat.ends === "occurrences"}/>
-                <span>occurrences</span>
-              </label>
-              {form.repeat.ends === "occurrences" && form.repeat.countError && (
-                <div className="reminder-form-input-message">{locale.calendar.form.invalid_number_message}</div>
-              )}
+              <div>
+                <label className="reminder-form-row">
+                  <input type="radio" className="sr-only radio-input" name="ends"
+                    value="date" defaultChecked={form.repeat.ends === "date"}/>
+                  <div className="radio"></div>
+                  <span>On</span>
+                  <input type="date" name="enddate" className="input reminder-form-end-date-input" data-modal-keep
+                    min={form.repeat.minEndDate} defaultValue={form.repeat.endDateString}
+                    disabled={form.repeat.ends !== "date"} required={form.repeat.ends === "date"}/>
+                </label>
+                {form.repeat.ends === "date" && form.repeat.dateMessage && (
+                  <div className="reminder-form-input-message">{form.repeat.dateMessage}</div>
+                )}
+              </div>
+              <div>
+                <label className="reminder-form-row">
+                  <input type="radio" className="sr-only radio-input" name="ends"
+                    value="occurrences" defaultChecked={form.repeat.ends === "occurrences"}/>
+                  <div className="radio"></div>
+                  <span>After</span>
+                  <input type="text" className="input repeat-input" name="count" autoComplete="off"
+                    value={form.repeat.count} onChange={handleRepeatInputChange}
+                    disabled={form.repeat.ends !== "occurrences"} required={form.repeat.ends === "occurrences"}/>
+                  <span>occurrences</span>
+                </label>
+                {form.repeat.ends === "occurrences" && form.repeat.countError && (
+                  <div className="reminder-form-input-message">{locale.calendar.form.invalid_number_message}</div>
+                )}
+              </div>
             </div>
           </>
         )}
