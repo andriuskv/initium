@@ -17,7 +17,7 @@ export default function Toast({ message, duration = 0, position = "top", offset 
   return (
     <div className={`container container-opaque toast ${position}`} style={{ "--offset": offset }}>
       <p className="toast-message">{message}</p>
-      <button className="btn icon-btn" onClick={dismiss} title={locale.global.dismiss}>
+      <button type="button" className="btn icon-btn" onClick={dismiss} title={locale.global.dismiss}>
         <Icon id="cross"/>
       </button>
     </div>

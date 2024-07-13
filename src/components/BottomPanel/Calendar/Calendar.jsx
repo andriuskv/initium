@@ -6,6 +6,7 @@ import * as calendarService from "services/calendar";
 import { useSettings } from "contexts/settings";
 import { useMessage } from "hooks";
 import Icon from "components/Icon";
+import Toast from "components/Toast";
 import "./calendar.css";
 import HeaderDropdown from "./HeaderDropdown";
 import ReminderPreview from "./ReminderPreview";
@@ -925,14 +926,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     <>
       <HeaderDropdown user={googleUser} calendars={googleCalendars} toggleCalendarReminders={toggleCalendarReminders}
         showReminderList={showReminderList} handleUserSignOut={handleUserSignOut}/>
-      {message ? (
-        <div className="container container-opaque calendar-message-container">
-          <p className="calendar-message">{message}</p>
-          <button className="btn icon-btn" onClick={dismissMessage} title="Dismiss">
-            <Icon id="cross"/>
-          </button>
-        </div>
-      ) : null}
+      {message ? <Toast message={message} position="top" offset="40px" locale={locale} dismiss={dismissMessage}/> : null}
       <div className="container-body calendar-current-date">
         <button className="btn text-btn calendar-current-date-btn" onClick={showCurrentDateView}>
           <div className="calendar-current-date-weekday">{currentDay.weekdayName}</div>

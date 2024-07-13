@@ -155,10 +155,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-sm);
-
-  .reminder-form-message {
-    margin-top: 0;
-  }
 }
 
 .reminder-form-repeat-type-selection {
@@ -282,11 +278,6 @@
   font-size: var(--text-sm);
   font-weight: bold;
   color: var(--color-negative);
-}
-
-.reminder-form-message {
-  top: auto;
-  bottom: 48px;
 }
 
 .reminder-form-btns {
