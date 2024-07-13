@@ -66,6 +66,7 @@ textarea {
 
 .textarea-container {
   overflow: hidden;
+  flex-shrink: 0;
   border-radius: 8px;
 
   .textarea:focus-visible {
