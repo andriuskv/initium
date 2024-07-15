@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getRandomString, formatBytes } from "utils";
+import { getRandomString } from "utils";
 import { useModal } from "hooks";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -12,7 +12,7 @@ import Tab from "./Tab";
 
 export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs, updateTabPosition, getTabSize, decreaseTextSize, increaseTextSize, hide }) {
   const [modal, setModal, hideModal] = useModal(null);
-  const [storage, setStorage] = useState({ current: 0, used: 0 });
+  const [storage, setStorage] = useState({ usedFormated: "0 kb", usedRatio: 0, maxFormated: "0 kb" });
   const [activeDragId, setActiveDragId] = useState(null);
 
   useEffect(() => {
@@ -95,13 +95,9 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
   }
 
   async function updateStorage() {
-    const bytes = await chromeStorage.getBytesInUse("notepad");
-    const maxBytes = 8192;
+    const { usedFormated, usedRatio, maxFormated } = await chromeStorage.getBytesInUse("notepad");
 
-    setStorage({
-      current: formatBytes(bytes),
-      used: bytes / maxBytes
-    });
+    setStorage({ usedFormated, usedRatio, maxFormated });
   }
 
   function handleSort(items) {
@@ -212,12 +208,12 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
       <CreateButton style={{ "--bottom": "50px" }} onClick={showCreateTabForm} shiftTarget=".js-notepad-tab-dropdown-toggle-btn" trackScroll></CreateButton>
       <div className="container-footer notepad-storage">
         <div className="notepad-storage-text">
-          <div>{storage.current} kB</div>
-          <div>8 kB</div>
+          <div>{storage.usedFormated}</div>
+          <div>{storage.maxFormated}</div>
         </div>
         <div className="notepad-storage-bar">
-          <div className={`notepad-storage-bar-inner${storage.used > 0.9 ? " full" : ""}`}
-            style={{ "--used": storage.used }}>
+          <div className={`notepad-storage-bar-inner${storage.usedRatio > 0.9 ? " full" : ""}`}
+            style={{ "--used": storage.usedRatio }}>
           </div>
         </div>
       </div>

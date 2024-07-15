@@ -1,6 +1,4 @@
-/* global chrome */
-
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { formatBytes, timeout } from "utils";
 import { useModal } from "hooks";
 import { getCurrentDateString } from "services/timeDate";
@@ -8,8 +6,6 @@ import * as chromeStorage from "services/chromeStorage";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./storage-tab.css";
-
-const maxStoragePerItem = chrome.storage.sync.QUOTA_BYTES_PER_ITEM || 8192;
 
 export default function StorageTab({ locale }) {
   const [items, setItems] = useState(() => [
@@ -61,7 +57,6 @@ export default function StorageTab({ locale }) {
   const [stats, setStats] = useState(() => getInitStats());
   const [dataMessage, setDataMessage] = useState("");
   const [modal, setModal, hideModal] = useModal(null);
-  const memoizedChangeHandler = useCallback(handleStorageChange, [items, stats]);
   const ready = useRef(false);
   const storageItems = useRef([]);
   const storageTimeoutId = useRef(0);
@@ -71,33 +66,33 @@ export default function StorageTab({ locale }) {
   }, []);
 
   useEffect(() => {
-    chrome.storage.sync.onChanged.addListener(memoizedChangeHandler);
+    chromeStorage.subscribeToChanges(handleStorageChange, { id: "storage-tab", listenToLocal: true });
 
     return () => {
-      chrome.storage.sync.onChanged.removeListener(memoizedChangeHandler);
+      chromeStorage.removeSubscriber("storage-tab");
     };
-  }, [memoizedChangeHandler]);
+  }, [[items, stats]]);
 
   async function init() {
     let usedStorage = 0;
 
     for (const item of items) {
-      const bytes = await chromeStorage.getBytesInUse(item.name);
-      usedStorage += bytes;
-      item.bytes = bytes;
-      item.usageRatio = bytes / maxStoragePerItem;
-      item.usedStorage = formatBytes(bytes);
+      const { used, usedFormated, usedRatio } = await chromeStorage.getBytesInUse(item.name);
+      usedStorage += used;
+      item.bytes = used;
+      item.usageRatio = usedRatio;
+      item.usedStorage = usedFormated;
     }
-    const maxStorage = items.length * maxStoragePerItem;
+    const maxStorage = items.length * chromeStorage.MAX_QUOTA;
     const usageRatio = usedStorage / maxStorage;
 
     setItems([...items]);
     setStats({
       maxStorage,
-      usedStorage,
       maxStorageFormatted: formatBytes(maxStorage),
+      usedStorage,
       usedStorageInPercent: Math.ceil(usageRatio * 100),
-      usedStorageFormatted: formatBytes(usedStorage),
+      usedStorageFormatted: formatBytes(usedStorage, { excludeUnits: true }),
       // 1000 = empty circle, 717 = full circle
       dashoffset: 1000 - 283 * usageRatio
     });
@@ -118,13 +113,13 @@ export default function StorageTab({ locale }) {
     let usedStorage = stats.usedStorage;
 
     for (const name of storageItems.current) {
-      const bytes = await chromeStorage.getBytesInUse(name);
+      const { used, usedFormated, usedRatio } = await chromeStorage.getBytesInUse(name);
       const item = items.find(item => item.name === name);
-      const byteDiff = bytes - item.bytes;
+      const byteDiff = used - item.bytes;
 
-      item.bytes = bytes;
-      item.usageRatio = bytes / maxStoragePerItem;
-      item.usedStorage = formatBytes(bytes);
+      item.bytes = used;
+      item.usageRatio = usedRatio;
+      item.usedStorage = usedFormated;
 
       usedStorage += byteDiff;
     }
@@ -135,7 +130,7 @@ export default function StorageTab({ locale }) {
       ...stats,
       usedStorage,
       usedStorageInPercent: Math.ceil(usageRatio * 100),
-      usedStorageFormatted: formatBytes(usedStorage),
+      usedStorageFormatted: formatBytes(usedStorage, { excludeUnits: true }),
       // 1000 = empty circle, 717 = full circle
       dashoffset: 1000 - 283 * usageRatio
     });
@@ -230,7 +225,7 @@ export default function StorageTab({ locale }) {
           const isKeyPresent = items.some(item => item.name === key);
 
           if (isKeyPresent) {
-            chromeStorage.set({ [key]: json[key] }, true);
+            chromeStorage.set({ [key]: json[key] }, { updateLocally: true });
           }
         }
       } catch (e) {
@@ -248,7 +243,7 @@ export default function StorageTab({ locale }) {
       return;
     }
     for (const item of items) {
-      chrome.storage.sync.remove(item.name);
+      chromeStorage.remove(item.name);
     }
     setModal(null);
   }
@@ -259,7 +254,7 @@ export default function StorageTab({ locale }) {
 
   function removeItem() {
     setModal(null);
-    chrome.storage.sync.remove(modal.item.name);
+    chromeStorage.remove(modal.item.name);
   }
 
   function renderModal() {
@@ -331,7 +326,7 @@ export default function StorageTab({ locale }) {
             <span>{stats.usedStorageFormatted}</span>
             <span className="storage-usage-current-numerical-units">kB</span>
           </div>
-          <div>Used of {stats.maxStorageFormatted} kB</div>
+          <div>Used of {stats.maxStorageFormatted}</div>
         </div>
         <div className="storage-usage-percental">
           <svg viewBox="0 0 100 100" className="storage-usage-visual">
@@ -350,7 +345,7 @@ export default function StorageTab({ locale }) {
             <div className="storage-item-main">
               <div className="storage-item-info">
                 <div>{item.fullName}</div>
-                <div>{item.usedStorage} kB</div>
+                <div>{item.usedStorage}</div>
               </div>
               <div className="storage-item-bar">
                 {item.usageRatio > 0 ? (

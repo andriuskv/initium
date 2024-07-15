@@ -1,5 +1,3 @@
-/* global chrome */
-
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
@@ -28,20 +26,10 @@ export default function GreetingEditor({ hiding, locale, hide }) {
     setByteUsage();
   }
 
-  function setByteUsage() {
-    chrome.storage.sync.getBytesInUse("greetings", bytes => {
-      setBytes({
-        current: formatBytes(bytes),
-        max: formatBytes(chrome.storage.sync.QUOTA_BYTES_PER_ITEM || 8192)
-      });
-    });
-  }
+  async function setByteUsage() {
+    const { usedFormated, maxFormated } = await chromeStorage.getBytesInUse("greetings");
 
-  function formatBytes(bytes) {
-    const kb = bytes / 1024;
-    const value = kb % 1 === 0 ? kb : kb.toFixed(2);
-
-    return `${value} kB`;
+    setBytes({ usedFormated, maxFormated });
   }
 
   function dismissMessage() {
@@ -57,12 +45,14 @@ export default function GreetingEditor({ hiding, locale, hide }) {
   }
 
   async function saveGreetings(text) {
-    await chromeStorage.set({ greetings: text.split("\n").filter(line => line).map(line => line.trim()) });
+    const data = await chromeStorage.set({
+      greetings: text.split("\n").filter(line => line).map(line => line.trim())
+    }, { warnSize: true });
 
-    if (chrome.runtime.lastError) {
+    if (data.usedRatio === 1) {
       setBytes({
         ...bytes,
-        message: "Storage usage exceeded."
+        message: data.message
       });
     }
     else {
@@ -83,7 +73,7 @@ export default function GreetingEditor({ hiding, locale, hide }) {
             </ul>
           </Dropdown>
           {bytes && (
-            <span className="greeting-editor-space-usage">{bytes.current} / {bytes.max}</span>
+            <span className="greeting-editor-space-usage">{bytes.usedFormated} / {bytes.maxFormated}</span>
           )}
           <h3 className="container-header-title">{locale.greetingEditor.title}</h3>
           <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
@@ -92,7 +82,7 @@ export default function GreetingEditor({ hiding, locale, hide }) {
         </div>
         {bytes?.message && (
           <Suspense fallback={null}>
-            <Toast message={bytes.message} position="bottom" dismiss={dismissMessage}/>
+            <Toast locale={locale} message={bytes.message} position="bottom" dismiss={dismissMessage}/>
           </Suspense>
         )}
         <textarea className="container-body textarea greeting-editor-textarea" value={textArea} onChange={handleTextareaChange}></textarea>

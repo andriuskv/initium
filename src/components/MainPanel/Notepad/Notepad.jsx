@@ -149,23 +149,13 @@ export default function Notepad({ locale }) {
   }
 
   async function checkStorageSize() {
-    /* global chrome */
-    if (chrome.runtime.lastError?.message.startsWith("QUOTA_BYTES_PER_ITEM")) {
-      setStorageWarning({
-        full: true,
-        message: "Storage is full, no additional data will be saved."
-      });
-    }
-    else {
-      const bytes = await chromeStorage.getBytesInUse("notepad");
-      const maxBytes = 8192;
+    const data = await chromeStorage.checkSize("notepad");
 
-      if (bytes / maxBytes * 100 >= 90) {
-        setStorageWarning({ message: "Storage is almost full." });
-      }
-      else {
-        setStorageWarning(null);
-      }
+    if (data.message) {
+      setStorageWarning({
+        usedRatio: data.usedRatio,
+        message: data.message
+      });
     }
   }
 
@@ -302,12 +292,21 @@ export default function Notepad({ locale }) {
   function saveTabs(tabs) {
     saveTimeoutId.current = timeout(async () => {
       saveTabTextSize(tabs);
-      await chromeStorage.set({ notepad: tabs.map(tab => ({
+      const data = await chromeStorage.set({ notepad: tabs.map(tab => ({
         id: tab.id,
         title: tab.title,
         content: tab.content
-      })) });
-      checkStorageSize();
+      })) }, { warnSize: true });
+
+      if (data?.message) {
+        setStorageWarning({
+          usedRatio: data.usedRatio,
+          message: data.message
+        });
+      }
+      else {
+        setStorageWarning(null);
+      }
     }, 1000, saveTimeoutId.current);
   }
 
@@ -315,7 +314,7 @@ export default function Notepad({ locale }) {
     if (storageWarning.hidden) {
       return null;
     }
-    else if (storageWarning.full) {
+    else if (storageWarning.usedRatio >= 1) {
       return <Toast message={storageWarning.message} position="bottom" locale={locale} dismiss={dismissWarning}/>;
     }
     return (
