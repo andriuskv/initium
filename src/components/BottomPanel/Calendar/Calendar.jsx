@@ -529,7 +529,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
       const index = reminders.findIndex(({ id }) => reminder.id === id);
 
       reminders.splice(index, 1);
-      calendarService.saveReminders(reminders);
+      saveReminders(reminders);
     }
     removeCalendarReminder(reminder.id);
     updateCalendar();
@@ -567,7 +567,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     updateCalendar();
 
     saveTimeoutId.current = timeout(() => {
-      calendarService.saveReminders(reminders);
+      saveReminders(reminders);
     }, 1000, saveTimeoutId.current);
   }
 
@@ -708,7 +708,18 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }
 
     if (reminder.type !== "google") {
-      calendarService.saveReminders(reminders);
+      saveReminders(reminders);
+    }
+  }
+
+  async function saveReminders(reminders) {
+    const data = await calendarService.saveReminders(reminders);
+
+    if (data?.usedRatio === 1) {
+      showMessage(data.message);
+    }
+    else {
+      dismissMessage();
     }
   }
 

@@ -6,6 +6,7 @@ import { formatDate } from "services/timeDate";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
+import Toast from "components/Toast";
 import "./tasks-content.css";
 
 const Form = lazy(() => import("./Form"));
@@ -28,6 +29,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   const [form, setForm] = useState(null);
   const [activeComponent, setActiveComponent] = useState(null);
   const [taskCount, setTaskCount] = useState(null);
+  const [storageWarning, setStorageWarning] = useState(null);
   const taskRemoveTimeoutId = useRef(0);
   const ignoreUpdate = useRef(false);
   const checkIntervalId = useRef(0);
@@ -528,7 +530,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   async function saveTasks(groups) {
-    chromeStorage.set({ tasks: structuredClone(groups).map(group => {
+    const data = await chromeStorage.set({ tasks: structuredClone(groups).map(group => {
       delete group.state;
       group.tasks = group.tasks.map(task => {
         task = cleanupTask(task);
@@ -545,7 +547,14 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         return task;
       });
       return group;
-    })});
+    })}, { warnSize: true });
+
+    if (data?.usedRatio === 1) {
+      setStorageWarning({ message: data.message });
+    }
+    else {
+      setStorageWarning(null);
+    }
   }
 
   function updateGroups(groups, shouldSave = true) {
@@ -614,6 +623,10 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       count -= completedTaskCount;
     }
     setTaskCount(count);
+  }
+
+  function dismissStorageWarning() {
+    setStorageWarning(null);
   }
 
   function renderExpirationIndicator(task) {
@@ -760,6 +773,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
           <p className="tasks-message">{locale.tasks.no_tasks}</p>
         )}
         <CreateButton className="tasks-create-btn" onClick={showForm} shiftTarget=".task-edit-btn" trackScroll></CreateButton>
+        {storageWarning ? <Toast message={storageWarning.message} position="bottom" locale={locale} dismiss={dismissStorageWarning}/> : null}
       </div>
       {removedItems.length > 0 && (
         <div className="container-footer tasks-dialog">
