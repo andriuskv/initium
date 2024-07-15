@@ -110,10 +110,14 @@ function findRelativeFocusableElement(element, direction) {
   return elements[index + direction];
 }
 
-function formatBytes(bytes) {
+function formatBytes(bytes, { excludeUnits = false } = {}) {
   const kb = bytes / 1024;
+  const value = kb % 1 === 0 ? kb : kb.toFixed(2);
 
-  return kb % 1 === 0 ? kb : kb.toFixed(2);
+  if (excludeUnits) {
+    return value;
+  }
+  return `${value} kB`;
 }
 
 function generateNoise(amount, opacity) {

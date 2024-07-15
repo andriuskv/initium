@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { getRandomHexColor, hslStringToHex } from "utils";
+import { getRandomHexColor, hslStringToHex, getRandomString } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate, parseDateInputValue, getDateString } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { createCalendarEvent, updateCalendarEvent, getEventColors } from "services/calendar";
