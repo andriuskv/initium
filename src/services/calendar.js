@@ -195,8 +195,8 @@ function getWeekdayRepeatTooltip(weekdayStates, countString, endDateString) {
   return `Repeating ${countString}every ${str}${endDateString}`;
 }
 
-async function saveReminders(reminders) {
-  chromeStorage.set({ reminders: structuredClone(reminders).map(reminder => {
+function saveReminders(reminders) {
+  return chromeStorage.set({ reminders: structuredClone(reminders).map(reminder => {
     if (!reminder.range.from) {
       delete reminder.range;
     }
@@ -220,7 +220,7 @@ async function saveReminders(reminders) {
       text: reminder.text,
       description: reminder.description
     };
-  })});
+  })}, { warnSize: true });
 }
 
 async function authGoogleUser() {
