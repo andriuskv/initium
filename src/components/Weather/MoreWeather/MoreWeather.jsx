@@ -9,7 +9,7 @@ import "./more-weather.css";
 
 const views = ["temp", "prec", "wind"];
 
-export default function MoreWeather({ current, more, units, speedUnits, view, locale, selectView, toggleUnits, hide }) {
+export default function MoreWeather({ current, more, units, speedUnits, view, message, locale, selectView, toggleUnits, hide }) {
   const [tempRange, setTempRange] = useState(null);
   const container = useRef(null);
   const activeTabIndex = views.indexOf(view);
@@ -232,7 +232,9 @@ export default function MoreWeather({ current, more, units, speedUnits, view, lo
             ))}
           </div>
         </>
-      ) : <Spinner className="weather-more-spinner"/>}
+      ) : message ? <p className="weather-more-message">{message}</p>
+        : <Spinner className="weather-more-spinner"/>
+      }
       <Dropdown container={{ className: "weather-more-settings" }} toggle={{ iconId: "settings", title: locale.global.settings }}>
         <label className="dropdown-group weather-more-setting">
           <div>{locale.weather.temp_setting_label}</div>
