@@ -17,6 +17,7 @@ export default function Weather({ timeFormat, locale }) {
   });
   const [current, setCurrentWeather] = useState(null);
   const [moreWeather, setMoreWeather] = useState(null);
+  const [moreWeatherMessage, setMoreWeatherMessage] = useState("");
   const firstRender = useRef(true);
   const lastMoreWeatherUpdate = useRef(0);
   const timeoutId = useRef(0);
@@ -199,9 +200,12 @@ export default function Weather({ timeFormat, locale }) {
         hourly: json.hourly,
         daily: json.daily
       });
+      setMoreWeatherMessage("");
+
     }
     catch (e) {
       console.log(e);
+      setMoreWeatherMessage("Failed to update weather. Will try again later.");
     }
   }
 
@@ -214,7 +218,7 @@ export default function Weather({ timeFormat, locale }) {
         <div className={`container weather-more${state.visible ? " visible" : ""}`}>
           <Suspense fallback={null}>
             <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits} view={state.view}
-              locale={locale} selectView={selectView} toggleUnits={toggleUnits} hide={hideMoreWeather}/>
+              message={moreWeatherMessage} locale={locale} selectView={selectView} toggleUnits={toggleUnits} hide={hideMoreWeather}/>
           </Suspense>
         </div>
       </div>

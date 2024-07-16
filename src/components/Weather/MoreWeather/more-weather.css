@@ -277,6 +277,13 @@
   margin: auto;
 }
 
+.weather-more-message {
+  width: 200px;
+  margin: auto;
+  text-align: center;
+  font-size: var(--text-lg);
+}
+
 .weather-more-settings {
   position: absolute;
   top: 6px;
