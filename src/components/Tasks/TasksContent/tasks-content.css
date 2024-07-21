@@ -20,6 +20,18 @@
 }
 
 .tasks-group {
+  transition: 0.2s opacity;
+  transition-delay: 0.1s;
+
+  &.hiding {
+    pointer-events: none;
+    opacity: 0;
+
+    .tasks-groups-item-toggle-btn {
+      opacity: 0.8;
+    }
+  }
+
   &:not(:first-of-type) {
     box-shadow: 0 -1px 0 0 var(--color-white-10);
   }
@@ -76,7 +88,7 @@
   }
 
   &:disabled {
-    --color: var(--color-white);
+    --color: var(--color-white-80);
 
     pointer-events: none;
   }
