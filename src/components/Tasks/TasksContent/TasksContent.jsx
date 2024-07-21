@@ -346,11 +346,22 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function removeTask(groupIndex, taskIndex, removedThroughForm = false) {
-    const task = groups[groupIndex].tasks[taskIndex];
+    const group = groups[groupIndex];
+    const task = group.tasks[taskIndex];
 
     task.removed = true;
     task.removedThroughForm = removedThroughForm;
 
+    const removedTaskCount = group.tasks.reduce((total, task) => {
+      if (task.removed) {
+        total += 1;
+      }
+      return total;
+    }, 0);
+
+    if (removedTaskCount === group.tasks.length) {
+      group.hiding = true;
+    }
     setGroups([...groups]);
     setRemovedItems([...removedItems, { groupIndex, taskIndex }]);
   }
@@ -387,6 +398,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
   function removeCompletedItems() {
     for (const group of groups) {
+      delete group.hiding;
       group.tasks = group.tasks.map(task => {
         if (task.repeat) {
           if (task.removed) {
@@ -427,7 +439,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
   function undoRemovedTasks() {
     for (const { groupIndex, taskIndex, subtaskIndex } of removedItems) {
-      const task = groups[groupIndex].tasks[taskIndex];
+      const group = groups[groupIndex];
+      const task = group.tasks[taskIndex];
+      group.hiding = false;
 
       if (subtaskIndex >= 0) {
         delete task.subtasks[subtaskIndex].removed;
@@ -532,6 +546,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   async function saveTasks(groups) {
     const data = await chromeStorage.set({ tasks: structuredClone(groups).map(group => {
       delete group.state;
+      delete group.hiding;
       group.tasks = group.tasks.map(task => {
         task = cleanupTask(task);
         task.subtasks = task.subtasks.map(cleanupTask);
@@ -681,11 +696,11 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         {taskCount > 0 ? (
           <ul className="tasks-groups-container">
             {groups.map((group, groupIndex) => (group.taskCount === 0 && settings.emptyGroupsHidden ? null : (
-              <li key={group.id} className="tasks-group">
+              <li key={group.id} className={`tasks-group${group.hiding && settings.emptyGroupsHidden ? " hiding" : ""}`}>
                 {(groupIndex > 0 || settings.defaultGroupVisible) && (
                   <button className={`btn icon-btn tasks-groups-item tasks-groups-item-toggle-btn${group.expanded ? " expanded" : ""}`}
                     onClick={() => toggleGroupVisibility(group)}
-                    disabled={!group.taskCount}
+                    disabled={!group.taskCount || group.hiding}
                     title={group.taskCount > 0 ? group.expanded ? locale.global.collapse : locale.global.expand : ""}>
                     <span className="tasks-group-count">{group.taskCount}</span>
                     <span className="tasks-group-title">{group.name}</span>
