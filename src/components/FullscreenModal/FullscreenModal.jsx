@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import * as focusService from "services/focus";
 import "./fullscreen-modal.css";
 
@@ -7,7 +7,7 @@ export default function FullscreenModal({ children, hiding, transparent = false,
   let pointerInside = false;
   let keep = false;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     focusService.setInitiator(document.activeElement);
     focusService.trapFocus("fullscreen-modal", container.current);
 

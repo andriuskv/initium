@@ -86,6 +86,10 @@
   &:disabled {
     --color: var(--color-white);
   }
+
+  &:hover:disabled {
+    --color: var(--color-white);
+  }
 }
 
 .world-form-result-country {

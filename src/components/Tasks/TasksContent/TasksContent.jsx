@@ -792,7 +792,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       </div>
       {removedItems.length > 0 && (
         <div className="container-footer tasks-dialog">
-          <span>Removed <span className="tasks-dialog-count">{removedItems.length}</span> task{removedItems.length > 1 ? "s" : ""}</span>
+          <span>Completed <span className="tasks-dialog-count">{removedItems.length}</span> task{removedItems.length > 1 ? "s" : ""}</span>
           <button className="btn text-btn" onClick={undoRemovedTasks}>{locale.tasks.undo}</button>
         </div>
       )}

@@ -250,13 +250,13 @@
   }
 }
 
-.repeat-input-container .repeat-input {
-  margin: 0;
-}
-
 .repeat-input {
   width: calc(3ch + 26px);
   text-align: center;
+
+  &:disabled {
+    color: var(--color-white-60);
+  }
 }
 
 .reminder-range-input {
@@ -266,6 +266,10 @@
 
 .reminder-form-end-date-input {
   width: 140px;
+
+  &:disabled {
+    color: var(--color-white-60);
+  }
 }
 
 .reminder-range-data-list-dropdown {

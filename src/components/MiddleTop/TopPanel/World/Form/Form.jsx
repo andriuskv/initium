@@ -3,17 +3,22 @@ import { getRandomString, timeout } from "utils";
 import { getHoursOffset } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import * as focusService from "services/focus";
-import "./form.css";
 import Icon from "components/Icon";
+import "./form.css";
 
 export default function Form({ locale, addClock, hide }) {
   const [currentClocks, setCurrentClocks] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [searchResults, setSearchResults] = useState(null);
   const timeoutId = useRef(0);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     init();
+
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, []);
 
   useEffect(() => {
@@ -108,7 +113,7 @@ export default function Form({ locale, addClock, hide }) {
       <div className="world-form-top">
         <div className="world-form-input-container">
           <Icon id="search" className="world-form-input-icon"/>
-          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} placeholder="Paris" autoFocus/>
+          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} placeholder="Paris" ref={inputRef}/>
           {inputValue.length ? (
             <button className="btn icon-btn world-form-input-clear-btn" onClick={clearInput} title={locale.global.clear}>
               <Icon id="cross"/>

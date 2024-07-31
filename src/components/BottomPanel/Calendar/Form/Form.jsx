@@ -528,7 +528,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
               <div>
                 <label className="reminder-form-setting">
                   <span>{locale.calendar.form.repeat_custom_label}</span>
-                  <span className="multi-input-container repeat-input-container">
+                  <span className="multi-input-container">
                     <input type="text" className="input multi-input-left repeat-input" name="gap" autoComplete="off"
                       value={form.repeat.gap} onChange={handleRepeatInputChange} required/>
                     <select className="input select multi-input-right" onChange={handleCustomTypeGapNameChange} value={form.repeat.customTypeGapName}>
