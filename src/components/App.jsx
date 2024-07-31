@@ -82,7 +82,6 @@ export default function App() {
           modalTimeoutId.current = timeout(() => {
             setFullscreenModal(detail);
           }, 200 * settings.appearance.animationSpeed, modalTimeoutId.current);
-
         }
       }
       else {
@@ -114,7 +113,7 @@ export default function App() {
     else if (fullscreenModal.id === "settings") {
       return (
         <Suspense fallback={null}>
-          {<Settings hiding={fullscreenModal.hiding} locale={locale} hide={hideFullscreenModal}/>}
+          {<Settings locale={locale} hiding={fullscreenModal.hiding} hide={hideFullscreenModal}/>}
         </Suspense>
       );
     }
