@@ -29,6 +29,7 @@
 }
 
 .modal {
+  max-width: calc(100% - var(--space-xl));
   min-width: 280px;
   padding: var(--space-xl);
   margin: auto;
