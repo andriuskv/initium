@@ -71,6 +71,10 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
   }
 
   function getUniqueTaskLabels(groupIndex = -1, taskIndex = -1) {
+    const cachedLabels = (JSON.parse(localStorage.getItem("taskLabels")) || []).map(label => {
+      label.id = getRandomString();
+      return label;
+    });
     let labels = [];
 
     for (const group of groups) {
@@ -93,7 +97,17 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
         return label;
       });
     }
-    return labels;
+    return labels.concat(cachedLabels);
+  }
+
+  function findLabelInTasks(label) {
+    for (const group of groups) {
+      for (const task of group.tasks) {
+        if (findLabel(task.labels, label)) {
+          return true;
+        }
+      }
+    }
   }
 
   function findLabel(labels, { name, color }) {
@@ -108,8 +122,22 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
       setState({ ...state });
     }
     else if (name && color) {
-      state.labels.push({ name, color, flagged: true });
+      state.labels.push({ id: getRandomString(), name, color, flagged: true });
       setState({ ...state });
+      return true;
+    }
+  }
+
+  function removeTaskLabel(label) {
+    if (findLabelInTasks(label)) {
+      return;
+    }
+    const index = state.labels.findIndex(({ name, color }) => label.name === name && label.color === color);
+
+    if (index !== -1) {
+      state.labels.splice(index, 1);
+      setState({ ...state, labels: state.labels });
+      return true;
     }
   }
 
@@ -361,7 +389,9 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
     if (modal.type === "label") {
       return (
         <Suspense fallback={null}>
-          <LabelForm locale={locale} addUniqueLabel={addUniqueLabel} hiding={modal.hiding} hide={hideModal}/>
+          <LabelForm labels={state.labels} locale={locale}
+            addUniqueLabel={addUniqueLabel} removeTaskLabel={removeTaskLabel}
+            hiding={modal.hiding} hide={hideModal}/>
         </Suspense>
       );
     }
@@ -425,7 +455,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
           {state.labels.length > 0 && (
             <ul className="task-form-labels">
               {state.labels.map((label, i) => (
-                <li className="task-form-label" key={i}>
+                <li className="task-form-label" key={label.id}>
                   <button type="button" className={`btn icon-text-btn task-form-label-btn${label.flagged ? " flagged" : ""}`}
                     onClick={() => flagLabel(i)}
                     title={label.flagged ? locale.global.deselect : locale.global.select}>

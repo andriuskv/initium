@@ -1,3 +1,7 @@
+.task-label-modal {
+  width: 100%;
+}
+
 .task-label-form-body {
   display: flex;
   align-items: center;
@@ -25,4 +29,36 @@
 .task-label-form-input {
   flex-shrink: 1;
   width: 100%;
+}
+
+.task-label-form-labels {
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: var(--space-xs);
+  width: 100%;
+  max-height: 140px;
+  padding: var(--space-md) var(--space-xs) var(--space-xs) var(--space-xs);
+  margin-top: var(--space-md);
+  border-top: 1px solid var(--color-white-10);
+
+  .task-form-label-btn:is(:hover, :focus-visible) {
+    .task-label-color,
+    .task-label-title {
+      opacity: 0.4;
+    }
+
+    .task-form-label-btn-icon {
+      display: block;
+    }
+  }
+}
+
+.task-form-label-btn-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
 }
