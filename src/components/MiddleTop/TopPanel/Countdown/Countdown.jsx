@@ -12,7 +12,7 @@ const Form = lazy(() => import("./Form"));
 
 export default function Countdown({ visible, locale, toggleIndicator }) {
   const [countdowns, setCountdowns] = useState([]);
-  const [initWorker, destroyWorker] = useWorker(updateCountdowns, [countdowns.length]);
+  const { initWorker, destroyWorkers } = useWorker(updateCountdowns, [countdowns.length]);
   const running = useRef(0);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function Countdown({ visible, locale, toggleIndicator }) {
   useEffect(() => {
     if (!countdowns.length) {
       running.current = false;
-      destroyWorker();
+      destroyWorkers();
       return;
     }
 
@@ -30,7 +30,7 @@ export default function Countdown({ visible, locale, toggleIndicator }) {
       return;
     }
     running.current = true;
-    initWorker({ type: "clock" });
+    initWorker({ id: "countdown", type: "clock" });
   }, [countdowns]);
 
   async function init() {

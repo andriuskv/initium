@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { padTime } from "services/timeDate";
 import { getSetting } from "services/settings";
-import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
+import { addToRunning, removeFromRunning } from "../running-timers";
 import * as pipService from "../picture-in-picture";
 import Icon from "components/Icon";
 import "./pomodoro.css";
@@ -26,7 +26,8 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
   const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
   const currentStageIndex = useRef(0);
-  const [initWorker, destroyWorker] = useWorker(handleMessage);
+  const { initWorker, destroyWorkers } = useWorker(handleMessage);
+  const name = "pomodoro";
 
   useEffect(() => {
     init();
@@ -34,28 +35,28 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
 
   useEffect(() => {
     if (running) {
-      initWorker({ duration: state.duration });
-      toggleIndicator("pomodoro", true);
-      addToRunning("pomodoro");
+      initWorker({ id: name, duration: state.duration });
+      toggleIndicator(name, true);
+      addToRunning(name);
     }
     else {
-      destroyWorker();
-      toggleIndicator("pomodoro", false);
-      removeFromRunning("pomodoro");
+      destroyWorkers();
+      toggleIndicator(name, false);
+      removeFromRunning(name);
     }
-    pipService.updateActions("pomodoro", { toggle });
+    pipService.updateActions(name, { toggle });
 
     return () => {
-      destroyWorker();
+      destroyWorkers();
     };
   }, [running]);
 
   useEffect(() => {
     if (running) {
-      initWorker({ duration: state.duration });
+      initWorker({ id: name, duration: state.duration });
     }
     return () => {
-      destroyWorker();
+      destroyWorkers();
     };
   }, [stage]);
 
@@ -81,7 +82,7 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
   }
 
   function init() {
-    const data = JSON.parse(localStorage.getItem("pomodoro"));
+    const data = JSON.parse(localStorage.getItem(name));
 
     if (data) {
       dirty.current = true;
@@ -110,25 +111,25 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
       setAudio({ ...audio, element: new Audio("./assets/chime.mp3") });
     }
     setRunning(true);
-    updateTitle("pomodoro", { ...state, isAudioEnabled: audio.shouldPlay });
+    updateTitle(name, { ...state, isAudioEnabled: audio.shouldPlay });
   }
 
   function stop() {
     setRunning(false);
-    updateTitle("pomodoro");
+    updateTitle(name);
   }
 
   function update(duration) {
     const state = parseDuration(duration);
 
     setState(state);
-    updateTitle("pomodoro", { ...state, isAudioEnabled: audio.shouldPlay });
-    pipService.update("pomodoro", {
+    updateTitle(name, { ...state, isAudioEnabled: audio.shouldPlay });
+    pipService.update(name, {
       hours: state.hours,
       minutes: state.minutes,
       seconds: state.seconds
     });
-    localStorage.setItem("pomodoro", JSON.stringify({
+    localStorage.setItem(name, JSON.stringify({
       duration,
       stage,
       label,
@@ -138,9 +139,8 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
   }
 
   async function reset() {
-    if (isLastRunningTimer("pomodoro")) {
-      await handleReset("pomodoro");
-    }
+    await handleReset(name);
+    removeFromRunning(name);
     dirty.current = false;
     currentStageIndex.current = 0;
 
@@ -149,10 +149,10 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
 
     if (running) {
       setRunning(false);
-      updateTitle("pomodoro");
+      updateTitle(name);
     }
-    pipService.close("pomodoro");
-    localStorage.removeItem("pomodoro");
+    pipService.close(name);
+    localStorage.removeItem(name);
   }
 
   function setNextStage() {
@@ -204,7 +204,7 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
   function togglePip() {
     setPipVisible(!pipVisible);
     pipService.toggle({
-      name: "pomodoro",
+      name,
       title: "Pomodoro",
       data: {
         hours: state.hours,
@@ -216,7 +216,7 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
   }
 
   function handlePipClose({ detail }) {
-    if (detail === "pomodoro") {
+    if (detail === name) {
       setPipVisible(false);
     }
   }

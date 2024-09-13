@@ -8,16 +8,16 @@ export default function Clock({ settings }) {
   const [clock, setClock] = useState(() => ({ ...getDisplayTime(settings.clockStyle === "vertical") }));
   const [date, setDate] = useState(() => ({ day: new Date().getDate() }));
   const [expanded, setExpanded] = useState(false);
-  const [initWorker, destroyWorker] = useWorker(handleMessage);
+  const { initWorker, destroyWorkers } = useWorker(handleMessage);
 
   useEffect(() => {
     if (settings.clockDisabled) {
       return;
     }
-    initWorker({ type: "clock" });
+    initWorker({ id: "clock", type: "clock" });
 
     return () => {
-      destroyWorker();
+      destroyWorkers();
     };
   }, [settings, date]);
 
