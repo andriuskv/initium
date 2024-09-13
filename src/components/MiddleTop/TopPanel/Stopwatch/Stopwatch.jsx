@@ -16,7 +16,8 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
   const [label, setLabel] = useState("");
   const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
-  const [initWorker, destroyWorker] = useWorker(handleMessage, [splits.length]);
+  const { initWorker, destroyWorkers } = useWorker(handleMessage, [splits.length]);
+  const name = "stopwatch";
 
   useEffect(() => {
     init();
@@ -24,19 +25,19 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
 
   useEffect(() => {
     if (running) {
-      initWorker();
-      toggleIndicator("stopwatch", true);
-      addToRunning("stopwatch");
+      initWorker({ id: name });
+      toggleIndicator(name, true);
+      addToRunning(name);
     }
     else {
-      destroyWorker();
-      toggleIndicator("stopwatch", false);
-      removeFromRunning("stopwatch");
+      destroyWorkers();
+      toggleIndicator(name, false);
+      removeFromRunning(name);
     }
-    pipService.updateActions("stopwatch", { toggle });
+    pipService.updateActions(name, { toggle });
 
     return () => {
-      destroyWorker();
+      destroyWorkers();
     };
   }, [running]);
 
@@ -53,7 +54,7 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
   }
 
   function init() {
-    const data = JSON.parse(localStorage.getItem("stopwatch"));
+    const data = JSON.parse(localStorage.getItem(name));
 
     if (data) {
       dirty.current = true;
@@ -82,12 +83,12 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
   function start() {
     dirty.current = true;
     setRunning(true);
-    updateTitle("stopwatch", { minutes: "0", seconds: "00" });
+    updateTitle(name, { minutes: "0", seconds: "00" });
   }
 
   function stop() {
     setRunning(false);
-    updateTitle("stopwatch");
+    updateTitle(name);
   }
 
   function update({ diff }) {
@@ -110,14 +111,14 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
       state.minutesDisplay = padTime(state.minutes, state.hours);
       state.secondsDisplay = padTime(state.seconds, state.minutes);
 
-      updateTitle("stopwatch", { hours: state.hours, minutes: state.minutesDisplay, seconds: state.secondsDisplay });
-      localStorage.setItem("stopwatch", JSON.stringify({ ...state, label, splits: splits.slice(0, 100) }));
+      updateTitle(name, { hours: state.hours, minutes: state.minutesDisplay, seconds: state.secondsDisplay });
+      localStorage.setItem(name, JSON.stringify({ ...state, label, splits: splits.slice(0, 100) }));
     }
     const millisecondString = Math.floor(state.milliseconds).toString();
     state.millisecondsDisplay = state.milliseconds < 100 ? `0${millisecondString[0]}` : millisecondString.slice(0, 2);
 
     setState({ ...state });
-    pipService.update("stopwatch", {
+    pipService.update(name, {
       hours: state.hours,
       minutes: state.minutesDisplay,
       seconds: state.secondsDisplay,
@@ -129,8 +130,8 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
     dirty.current = false;
     setState(getInitialState());
     setSplits([]);
-    pipService.close("stopwatch");
-    localStorage.removeItem("stopwatch");
+    pipService.close(name);
+    localStorage.removeItem(name);
 
     if (running) {
       stop();
@@ -191,7 +192,7 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
   function togglePip() {
     setPipVisible(!pipVisible);
     pipService.toggle({
-      name: "stopwatch",
+      name,
       title: "Stopwatch",
       data: {
         hours: state.hours,
@@ -204,7 +205,7 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
   }
 
   function handlePipClose({ detail }) {
-    if (detail === "stopwatch") {
+    if (detail === name) {
       setPipVisible(false);
     }
   }

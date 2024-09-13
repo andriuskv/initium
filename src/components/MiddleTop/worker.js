@@ -1,39 +1,39 @@
-let id = 0;
+let timeoutId = 0;
 
 onmessage = function({ data }) {
-  const { type, action, duration } = data;
+  const { id, type, action, duration } = data;
 
   if (type === "clock") {
     updateClock();
   }
   else if (action === "start") {
-    clearTimeout(id);
+    clearTimeout(timeoutId);
 
     if (duration) {
-      countdown(performance.now(), duration);
+      countdown(performance.now(), { id, duration });
     }
     else {
       update(performance.now());
     }
   }
   else if (action === "stop") {
-    clearTimeout(id);
-    id = 0;
+    clearTimeout(timeoutId);
+    timeoutId = 0;
   }
 };
 
-function countdown(elapsed, duration = 0) {
+function countdown(elapsed, params = { duration: 0 }) {
   const interval = 1000;
   const diff = performance.now() - elapsed;
 
   elapsed += interval;
-  duration -= 1;
+  params.duration -= 1;
 
-  id = setTimeout(() => {
-    postMessage({ elapsed, diff: interval, duration });
+  timeoutId = setTimeout(() => {
+    postMessage({ elapsed, diff: interval, ...params });
 
-    if (duration >= 0) {
-      countdown(elapsed, duration);
+    if (params.duration >= 0) {
+      countdown(elapsed, params);
     }
   }, interval - diff);
 }
@@ -46,7 +46,7 @@ function update(elapsed) {
 
   postMessage({ diff: interval });
 
-  id = setTimeout(() => {
+  timeoutId = setTimeout(() => {
     update(elapsed);
   }, interval - diff);
 }
@@ -58,7 +58,7 @@ function updateClock(elapsed = 0) {
   elapsed += interval;
   postMessage(null);
 
-  id = setTimeout(() => {
+  timeoutId = setTimeout(() => {
     updateClock(elapsed);
   }, interval - diff);
 }

@@ -5,7 +5,7 @@ import { getSetting } from "services/settings";
 import { useLocalization } from "contexts/localization";
 import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
-import { removeFromRunning, getLastRunningTimer, isLastRunningTimer } from "./running-timers";
+import { isLastRunningTimer, isRunning, resetRunningTimers } from "./running-timers";
 import * as pipService from "./picture-in-picture";
 import "./top-panel.css";
 import Countdown from "./Countdown";
@@ -44,12 +44,15 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const activeTabIndex = findTabIndex(activeTab);
 
   useEffect(() => {
-    if (!forceVisibility) {
-      return;
+    if (forceVisibility) {
+      increaseContainerZIndex();
+      setVisible(true);
+      resetTopPanel();
     }
-    increaseContainerZIndex();
-    setVisible(true);
-    resetTopPanel();
+
+    return () => {
+      resetRunningTimers();
+    };
   }, []);
 
   useEffect(() => {
@@ -102,14 +105,16 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }, [visible]);
 
   useLayoutEffect(() => {
-    const timer = getLastRunningTimer();
+    if (!isRunning(activeTab)) {
+      return;
+    }
 
     if (minimal) {
-      containerRef.current.classList.add(timer);
+      containerRef.current.classList.add(activeTab);
     }
-    else if (timer) {
+    else if (activeTab) {
       containerRef.current.classList.remove("minimal");
-      containerRef.current.classList.remove(timer);
+      containerRef.current.classList.remove(activeTab);
     }
   }, [minimal]);
 
@@ -120,32 +125,24 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }
 
   function handleReset(name) {
-    if (minimalVisible.current) {
-      if (isLastRunningTimer(name)) {
-        updateTitle(name);
-      }
-      removeFromRunning(name);
-
-      if (getLastRunningTimer()) {
-        containerRef.current.classList.replace(name, getLastRunningTimer());
-      }
-      else {
-        resetMinimal();
-        return delay(250 * animationSpeed);
-      }
+    if (minimalVisible.current && isRunning(name) && activeTab === name) {
+      resetMinimal();
+      return delay(250 * animationSpeed);
     }
   }
 
   function updateTitle(name, values) {
-    if (isLastRunningTimer(name)) {
-      if (values) {
-        const { hours, minutes, seconds, isAudioEnabled } = values;
+    if (!isLastRunningTimer(name)) {
+      return;
+    }
 
-        setPageTitle(`${hours ? `${hours} h ` : ""}${minutes ? `${minutes} m ` : ""}${seconds} s${isAudioEnabled ? " \uD83D\uDD14" : ""}`);
-      }
-      else {
-        setPageTitle();
-      }
+    if (values) {
+      const { hours, minutes, seconds, isAudioEnabled } = values;
+
+      setPageTitle(`${hours ? `${hours} h ` : ""}${minutes ? `${minutes} m ` : ""}${seconds} s${isAudioEnabled ? " \uD83D\uDD14" : ""}`);
+    }
+    else {
+      setPageTitle();
     }
   }
 
@@ -205,12 +202,12 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }
 
   function showMinimalTimer() {
-    if (pipService.isActive()) {
+    if (pipService.isActive() || tabs[activeTab].ignore) {
       return;
     }
     const { showMinimal } = getSetting("timers");
 
-    if (showMinimal && getLastRunningTimer()) {
+    if (showMinimal && isRunning(activeTab)) {
       minimalVisible.current = true;
 
       setTimeout(() => {
@@ -236,6 +233,11 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     saveTabTimeoutId.current = timeout(() => {
       localStorage.setItem("active-timer-tab", name);
     }, 400, saveTabTimeoutId.current);
+  }
+
+  function ignoreMiniTimerPref(tab, value) {
+    tabs[tab].ignore = value;
+    setTabs({ ...tabs });
   }
 
   function setFullscreenTextScale() {
@@ -308,7 +310,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
           {tabs.timer.rendered ? (
             <Timer visible={activeTab === "timer"} first={tabs.timer.first} locale={locale}
-              toggleIndicator={toggleIndicator} updateTitle={updateTitle}
+              toggleIndicator={toggleIndicator} updateTitle={updateTitle} ignoreMiniTimerPref={ignoreMiniTimerPref}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
           {tabs.stopwatch.rendered ? (

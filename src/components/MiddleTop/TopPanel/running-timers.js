@@ -8,17 +8,22 @@ function removeFromRunning(name) {
   runningTimers = runningTimers.filter(item => item !== name);
 }
 
-function getLastRunningTimer() {
-  return runningTimers.at(-1);
+function isLastRunningTimer(name) {
+  return runningTimers.at(-1)?.startsWith(name);
 }
 
-function isLastRunningTimer(name) {
-  return runningTimers.at(-1) === name;
+function isRunning(name) {
+  return runningTimers.some(timer => timer.startsWith(name));
+}
+
+function resetRunningTimers() {
+  runningTimers.length = 0;
 }
 
 export {
   addToRunning,
   removeFromRunning,
-  getLastRunningTimer,
-  isLastRunningTimer
+  isLastRunningTimer,
+  isRunning,
+  resetRunningTimers
 };

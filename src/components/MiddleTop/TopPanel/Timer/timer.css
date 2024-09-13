@@ -19,3 +19,24 @@
     box-shadow: inset 0 -2px 0 0 var(--color-primary);
   }
 }
+
+.timer-dropdown-btn {
+  position: relative;
+  justify-content: center;
+}
+
+.timer-dropdown-indicator {
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background-color: var(--color-primary);
+}
+
+.timer-dropdown-list {
+  overflow-y: auto;
+  max-height: 135px;
+}

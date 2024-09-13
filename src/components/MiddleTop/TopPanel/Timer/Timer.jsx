@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, lazy } from "react";
-import { dispatchCustomEvent } from "utils";
+import { getRandomString, dispatchCustomEvent } from "utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
-import { addToRunning, removeFromRunning, isLastRunningTimer } from "../running-timers";
+import { addToRunning, removeFromRunning } from "../running-timers";
 import * as pipService from "../picture-in-picture";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
@@ -13,47 +13,47 @@ import useWorker from "../../useWorker";
 
 const Presets = lazy(() => import("./Presets"));
 
-export default function Timer({ visible, first, locale, toggleIndicator, updateTitle, expand, exitFullscreen, handleReset }) {
-  const [running, setRunning] = useState(false);
-  const [state, setState] = useState({
-    hours: "00",
-    minutes: "00",
-    seconds: "00"
+export default function Timer({ visible, first, locale, toggleIndicator, updateTitle, ignoreMiniTimerPref, expand, exitFullscreen, handleReset }) {
+  const [timers, setTimers] = useState(() => {
+    const id = getRandomString(4);
+
+    return {
+      [id]: {
+        id,
+        label: "",
+        active: true,
+        running: false,
+        shouldPlayAudio: true,
+        presetId: null,
+        hours: "00",
+        minutes: "00",
+        seconds: "00"
+      }
+    };
   });
   const [presets, setPresets] = useState([]);
-  const [activePreset, setActivePreset] = useState(null);
-  const [audio, setAudio] = useState({ shouldPlay: true });
-  const [label, setLabel] = useState("");
-  const [pipVisible, setPipVisible] = useState(false);
-  const dirty = useRef(false);
-  const dirtyInput = useRef(false);
-  const audioTimeoutId = useRef(null);
-  const [initWorker, destroyWorker] = useWorker(handleMessage);
+  const [pipId, setPipId] = useState("");
+  const [audioEnded, setAudioEnded] = useState([]);
+  const audio = useRef({});
+  const runningOrder = useRef([]);
+  const { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback } = useWorker(handleMessage);
+  const timersArr = Object.values(timers);
+  const activeTimer = timersArr.find(timer => timer.active) || timersArr[0];
 
   useEffect(() => {
     init();
+
+    return () => {
+      destroyWorkers();
+    };
   }, []);
 
   useEffect(() => {
-    if (running) {
-      initWorker({ duration: state.duration });
-      toggleIndicator("timer", true);
-      addToRunning("timer");
+    for (const { id } of timersArr) {
+      updateWorkerCallback(id, handleMessage);
     }
-    else {
-      destroyWorker();
-      toggleIndicator("timer", false);
-      removeFromRunning("timer");
-    }
-
-    return () => {
-      destroyWorker();
-    };
-  }, [running]);
-
-  useEffect(() => {
-    pipService.updateActions("timer", { toggle });
-  }, [running, state]);
+    pipService.updateActions(`timer-${pipId}`, { toggle });
+  }, [timersArr, pipId]);
 
   useEffect(() => {
     window.addEventListener("pip-close", handlePipClose);
@@ -61,48 +61,62 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
     return () => {
       window.removeEventListener("pip-close", handlePipClose);
     };
-  }, [pipVisible]);
+  }, [pipId]);
+
+  useEffect(() => {
+    if (!audioEnded.length) {
+      return;
+    }
+    for (const id of audioEnded) {
+      resetAudio(id);
+      reset(id);
+    }
+    setAudioEnded([]);
+  }, [audioEnded]);
+
+  function initTimer(params) {
+    initWorker(params);
+    toggleIndicator("timer", true);
+    addToRunning(`timer-${params.id}`);
+    ignoreMiniTimerPref("timer", false);
+  }
+
+  function resetTimer(id) {
+    destroyWorker(id);
+
+    if (timersArr.filter(timer => timer.running).length < 2) {
+      toggleIndicator("timer", false);
+      updateTitle("timer");
+      exitFullscreen();
+    }
+    removeFromRunning(`timer-${id}`);
+    ignoreMiniTimerPref("timer", timers[id].active);
+  }
 
   function handleMessage({ data }) {
-    if (data.duration >= 0) {
-      update(data.duration);
+    const timer = timers[data.id];
 
-      if (data.duration === 0 && audio.shouldPlay) {
-        playAudio();
+    if (data.duration >= 0) {
+      update(data.duration, data.id);
+
+      if (data.duration === 0 && timer.shouldPlayAudio) {
+        playAudio(timer.id);
       }
     }
-    else if (!audio.shouldPlay) {
-      reset();
+    else if (!timer.shouldPlayAudio) {
+      reset(timer.id);
     }
   }
 
   async function init() {
-    const timer = await chromeStorage.get("timer");
-    const data = JSON.parse(localStorage.getItem("timer"));
+    const presets = await chromeStorage.get("timer") || [];
+    const timers = JSON.parse(localStorage.getItem("timers")) || {};
 
-    if (data) {
-      dirty.current = true;
-      dirtyInput.current = true;
-
-      setState({
-        hours: padTime(data.hours),
-        minutes: padTime(data.minutes),
-        seconds: padTime(data.seconds)
-      });
-      setAudio({ shouldPlay: data.isAudioEnabled });
-      setLabel(data.label);
+    if (Object.keys(timers).length) {
+      setTimers(timers);
     }
+    setPresets(presets);
 
-    if (timer?.length) {
-      if (data?.activePresetId) {
-        const preset = timer.find(preset => preset.id === data.activePresetId);
-
-        if (preset) {
-          setActivePreset(preset);
-        }
-      }
-      setPresets(timer);
-    }
     chromeStorage.subscribeToChanges(({ timer }) => {
       if (!timer) {
         return;
@@ -112,75 +126,111 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
         setPresets(timer.newValue);
       }
       else {
-        setActivePreset(null);
+        const id = getRandomString(4);
+
         setPresets([]);
-        resetState();
+        setTimers({
+          [id]: {
+            id,
+            active: true,
+            shouldPlayAudio: true,
+            hours: "00",
+            minutes: "00",
+            seconds: "00"
+          }
+        });
       }
     });
   }
 
-  function toggle() {
-    if (running) {
-      stop();
+  function playAudio(id) {
+    const { volume } = getSetting("timers");
+
+    audio.current[id] = {
+      element: new Audio("./assets/alarm.mp3")
+    };
+    audio.current[id].element.volume = volume;
+    audio.current[id].element.play();
+    audio.current[id].timeoutId = setTimeout(() => {
+      setAudioEnded([...audioEnded, id]);
+    }, 3000);
+  }
+
+  function resetAudio(id) {
+    audio.current[id].element.pause();
+    audio.current[id].element.currentTime = 0;
+    clearTimeout(audio.current[id].timeoutId);
+    delete audio.current[id];
+  }
+
+  function toggle(pip) {
+    const id = typeof pip === "boolean" && pip ? pipId : activeTimer.id;
+
+    if (timers[id].running) {
+      stop(pip);
     }
     else {
-      start();
+      start(pip);
     }
   }
 
-  function start() {
-    const values = normalizeValues();
+  function start(pip) {
+    const id = typeof pip === "boolean" && pip ? pipId : activeTimer.id;
+    const timer = timers[id];
+    const values = normalizeValues(timer);
     const duration = calculateDuration(values);
 
     if (duration) {
       const paddedMinutes = padTime(values.minutes, values.hours);
       const paddedSeconds = padTime(values.seconds, values.hours || values.minutes);
 
-      if (!audio.element) {
-        setAudio({ ...audio, element: new Audio("./assets/alarm.mp3") });
-      }
-      dirty.current = true;
-      dirtyInput.current = true;
-      setRunning(true);
-      setState({
+      initTimer({ id, duration });
+      setTimers({ ...timers, [timer.id]: {
+        ...timer,
+        dirty: true,
+        dirtyInput: true,
+        running: true,
         hours: values.hours,
         minutes: paddedMinutes,
         seconds: paddedSeconds,
         duration
-      });
-      updateTitle("timer", {
-        hours: values.hours,
-        minutes: values.hours || values.minutes ? paddedMinutes : "",
-        seconds: paddedSeconds,
-        isAudioEnabled: audio.shouldPlay
-      });
+      }});
+
+      if (runningOrder.current.length === 0) {
+        updateTitle("timer", {
+          hours: values.hours,
+          minutes: values.hours || values.minutes ? paddedMinutes : "",
+          seconds: paddedSeconds,
+          isAudioEnabled: timer.shouldPlayAudio
+        });
+      }
+      runningOrder.current.push(timer.id);
     }
   }
 
-  function stop() {
-    setState({
-      hours: padTime(state.hours),
-      minutes: padTime(state.minutes),
-      seconds: padTime(state.seconds)
-    });
-    setRunning(false);
-    updateTitle("timer");
+  function stop(pip) {
+    const timer = typeof pip === "boolean" && pip ? timers[pipId] : activeTimer;
+    const newTimer = {
+      ...timer,
+      running: false,
+      hours: padTime(timer.hours),
+      minutes: padTime(timer.minutes),
+      seconds: padTime(timer.seconds)
+    };
 
-    if (audioTimeoutId.current) {
-      clearTimeout(audioTimeoutId.current);
-
-      audioTimeoutId.current = 0;
-      audio.element.currentTime = 0;
-      audio.element.pause();
-
-      reset();
+    if (audio.current[newTimer.id]) {
+      resetAudio(newTimer.id);
+      reset(newTimer.id, true);
     }
+    setTimers({ ...timers, [newTimer.id]: newTimer });
+    resetTimer(newTimer.id);
+    runningOrder.current = runningOrder.current.filter(id => newTimer.id !== id);
   }
 
-  function normalizeValues() {
-    let hours = Number.parseInt(state.hours, 10);
-    let minutes = Number.parseInt(state.minutes, 10);
-    let seconds = Number.parseInt(state.seconds, 10);
+  function normalizeValues(timer) {
+    let hours = Number.parseInt(timer.hours, 10);
+    let minutes = Number.parseInt(timer.minutes, 10);
+    let seconds = Number.parseInt(timer.seconds, 10);
 
     if (seconds >= 60) {
       seconds -= 60;
@@ -203,77 +253,110 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
     return seconds + (minutes * 60) + (hours * 3600);
   }
 
-  function update(duration) {
+  function update(duration, id) {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor(duration / 60 % 60);
     const seconds = duration % 60;
     const paddedMinutes = padTime(minutes, hours);
     const paddedSeconds = padTime(seconds, hours || minutes);
-
-    setState({
+    const timer = timers[id];
+    const newTimers = { ...timers, [id]: {
+      ...timer,
       hours,
       minutes: paddedMinutes,
       seconds: paddedSeconds
-    });
-    updateTitle("timer", {
-      hours,
-      minutes: hours || minutes ? paddedMinutes : "",
-      seconds: paddedSeconds,
-      isAudioEnabled: audio.shouldPlay
-    });
-    pipService.update("timer", {
-      hours,
-      minutes: paddedMinutes,
-      seconds: paddedSeconds
-    });
-    localStorage.setItem("timer", JSON.stringify({
-      hours,
-      minutes,
-      seconds,
-      label,
-      activePresetId: activePreset?.id || "",
-      isAudioEnabled: audio.shouldPlay
-    }));
-  }
+    }};
 
-  async function reset() {
-    exitFullscreen();
+    setTimers(newTimers);
 
-    if (isLastRunningTimer("timer")) {
-      await handleReset("timer");
-    }
-    dirty.current = false;
-    dirtyInput.current = false;
-
-    if (activePreset) {
-      setState({
-        hours: activePreset.hours,
-        minutes: activePreset.minutes,
-        seconds: activePreset.seconds
+    if (runningOrder.current.at(-1) === id) {
+      updateTitle("timer", {
+        hours,
+        minutes: hours || minutes ? paddedMinutes : "",
+        seconds: paddedSeconds,
+        isAudioEnabled: timer.shouldPlayAudio
       });
     }
-    else {
-      resetState();
+    pipService.update(`timer-${id}`, {
+      hours,
+      minutes: paddedMinutes,
+      seconds: paddedSeconds
+    });
+
+    saveTimers(newTimers);
+  }
+
+  async function reset(id, skipCleanup = false) {
+    if (activeTimer.id === id) {
+      exitFullscreen();
+    }
+    await handleReset("timer");
+
+    const timer = timers[id];
+    let inputs = {
+      hours: "00",
+      minutes: "00",
+      seconds: "00"
+    };
+
+    if (timer.presetId) {
+      const preset = findPreset(timer.presetId);
+      inputs = {
+        hours: preset.hours,
+        minutes: preset.minutes,
+        seconds: preset.seconds
+      };
     }
 
-    if (running) {
-      setRunning(false);
-      updateTitle("timer");
+    if (timer.running && !skipCleanup) {
+      resetTimer(id);
     }
-    setPipVisible(false);
-    pipService.close("timer");
-    localStorage.removeItem("timer");
+    const newTimers = { ...timers, [timer.id] : {
+      ...timer,
+      ...inputs,
+      dirty: false,
+      dirtyInput: false,
+      running: false
+    }};
+    runningOrder.current = runningOrder.current.filter(timerId => timerId !== id);
+    setTimers(newTimers);
+    setPipId("");
+    pipService.close(`timer-${id}`);
+    saveTimers(newTimers);
+  }
+
+  function saveTimers(timers) {
+    const obj = {};
+
+    for (const timer of Object.values(timers)) {
+      obj[timer.id] = {
+        id: timer.id,
+        hours: padTime(timer.hours),
+        minutes: padTime(timer.minutes),
+        seconds: padTime(timer.seconds),
+        label: timer.label,
+        active: timer.active,
+        dirty: timer.dirty,
+        dirtyInput: timer.dirtyInput,
+        presetId: timer.presetId || "",
+        shouldPlayAudio: timer.shouldPlayAudio
+      };
+    }
+    localStorage.setItem("timers", JSON.stringify(obj));
   }
 
   function updateInputs(inputs) {
-    dirtyInput.current = true;
-    setState({ ...inputs });
+    setTimers({ ...timers, [activeTimer.id]: {
+      ...activeTimer,
+      ...inputs,
+      dirtyInput: true
+    }});
 
-    if (pipVisible) {
+    if (pipId) {
       const hours = Number.parseInt(inputs.hours, 10);
       const minutes = Number.parseInt(inputs.minutes, 10);
 
-      pipService.update("timer", {
+      pipService.update(`timer-${activeTimer.id}`, {
         hours,
         minutes: padTime(minutes, hours),
         seconds: padTime(inputs.seconds, hours || minutes)
@@ -282,18 +365,10 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   }
 
   function toggleAudio() {
-    setAudio({ ...audio, shouldPlay: !audio.shouldPlay });
-  }
-
-  function playAudio() {
-    const { volume } = getSetting("timers");
-
-    audio.element.volume = volume;
-    audio.element.play();
-
-    audioTimeoutId.current = setTimeout(() => {
-      reset();
-    }, 3000);
+    setTimers({ ...timers, [activeTimer.id]: {
+      ...activeTimer,
+      shouldPlayAudio: !activeTimer.shouldPlayAudio
+    }});
   }
 
   function updatePresetsModal(presets) {
@@ -309,35 +384,33 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
 
   function updatePresets(presets) {
     if (!presets.length) {
-      setActivePreset(null);
+      setTimers({ ...timers, [activeTimer.id]: {
+        ...activeTimer,
+        presetId: ""
+      }});
     }
     setPresets([...presets]);
     savePresets(presets);
     updatePresetsModal(presets);
   }
 
-  function resetState() {
-    setState({
-      hours: "00",
-      minutes: "00",
-      seconds: "00"
-    });
-  }
-
   function resetActivePreset(preset) {
-    if (activePreset?.id === preset.id) {
-      setActivePreset({ ...preset });
-      setState({
+    if (activeTimer.presetId === preset.id) {
+      setTimers({ ...timers, [activeTimer.id]: {
+        ...activeTimer,
         hours: preset.hours,
         minutes: preset.minutes,
         seconds: preset.seconds
-      });
+      }});
     }
   }
 
   function disableActivePreset() {
-    if (activePreset) {
-      setActivePreset(null);
+    if (activeTimer.presetId) {
+      setTimers({ ...timers, [activeTimer.id]: {
+        ...activeTimer,
+        presetId: ""
+      }});
     }
   }
 
@@ -346,82 +419,148 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   }
 
   function togglePip() {
-    setPipVisible(!pipVisible);
+    if (pipId === activeTimer.id) {
+      setPipId("");
+    }
+    else {
+      setPipId(activeTimer.id);
+    }
     pipService.toggle({
-      name: "timer",
+      name: `timer-${activeTimer.id}`,
       title: "Timer",
       data: {
-        hours: state.hours,
-        minutes: state.minutes,
-        seconds: state.seconds
-      }, toggle
+        hours: activeTimer.hours,
+        minutes: activeTimer.minutes,
+        seconds: activeTimer.seconds
+      },
+      toggle
     });
   }
 
   function handlePipClose({ detail }) {
-    if (detail === "timer") {
-      setPipVisible(false);
+    if (detail.startsWith("timer")) {
+      setPipId("");
     }
   }
 
+  function findPreset(id) {
+    return presets.find(preset => preset.id === id);
+  }
+
   function handlePresetSelection(id) {
-    if (activePreset?.id === id) {
+    if (activeTimer.presetId === id) {
       return;
     }
-    const preset = presets.find(preset => preset.id === id);
-
-    setActivePreset(preset || null);
+    const preset = findPreset(id);
 
     if (preset) {
       const { timer: { usePresetNameAsLabel } } = getSetting("timers");
 
-      if (usePresetNameAsLabel) {
-        setLabel(preset.name);
-      }
-      setState({
+      setTimers({ ...timers, [activeTimer.id]: {
+        ...activeTimer,
         hours: preset.hours,
         minutes: preset.minutes,
-        seconds: preset.seconds
-      });
-    }
-    else {
-      resetState();
+        seconds: preset.seconds,
+        label: usePresetNameAsLabel ? preset.name : activeTimer.label,
+        presetId: preset.id
+      }});
     }
   }
 
   function handleLabelInputChange(event) {
-    setLabel(event.target.value);
+    setTimers({ ...timers, [activeTimer.id]: {
+      ...activeTimer,
+      label: event.target.value
+    }});
+  }
+
+  function removeTimer() {
+    delete timers[activeTimer.id];
+    const newTimers = toggleTimer(timers, Object.values(timers)[0].id, true);
+
+    setTimers(newTimers);
+    saveTimers(newTimers);
+  }
+
+  function addTimer() {
+    const id = getRandomString(4);
+    let newTimers = {
+      ...timers,
+      [id]: {
+        id,
+        label: "",
+        active: true,
+        running: false,
+        shouldPlayAudio: true,
+        preset: null,
+        hours: "00",
+        minutes: "00",
+        seconds: "00"
+      }
+    };
+    newTimers = toggleTimer(newTimers, activeTimer.id, false);
+
+    setTimers(newTimers);
+    saveTimers(newTimers);
+  }
+
+  function toggleTimer(timers, id, state) {
+    return {
+      ...timers,
+      [id]: {
+        ...timers[id],
+        active: state
+      }
+    };
+  }
+
+  function selectTimer(timers, id) {
+    const t1 = toggleTimer(timers, activeTimer.id, false);
+    const t2 = toggleTimer(t1, id, true);
+
+    return t2;
+  }
+
+
+  function selectTimerWithState(id) {
+    if (activeTimer.id === id) {
+      return;
+    }
+    const newTimers = selectTimer(timers, id);
+    ignoreMiniTimerPref("timer", !newTimers[id].running);
+    setTimers(newTimers);
+    saveTimers(newTimers);
   }
 
   return (
     <div className={`top-panel-item timer${visible ? " visible" : ""}${first ? " first" : ""}`}>
-      {pipVisible && running ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
+      {pipId === activeTimer.id ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
         <div className="container-body top-panel-item-content">
-          {running ? (
+          {activeTimer.running ? (
             <>
-              {label ? <h4 className="top-panel-item-content-label">{label}</h4> : null}
+              {activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null}
               <div>
-                {state.hours > 0 && (
+                {activeTimer.hours > 0 && (
                   <>
-                    <span className="top-panel-digit">{state.hours}</span>
+                    <span className="top-panel-digit">{activeTimer.hours}</span>
                     <span className="top-panel-digit-sep">h</span>
                   </>
                 )}
-                {(state.hours > 0 || state.minutes > 0) && (
+                {(activeTimer.hours > 0 || activeTimer.minutes > 0) && (
                   <>
-                    <span className="top-panel-digit">{state.minutes}</span>
+                    <span className="top-panel-digit">{activeTimer.minutes}</span>
                     <span className="top-panel-digit-sep">m</span>
                   </>
                 )}
-                <span className="top-panel-digit">{state.seconds}</span>
+                <span className="top-panel-digit">{activeTimer.seconds}</span>
                 <span className="top-panel-digit-sep">s</span>
               </div>
             </>
           ) : (
             <>
-              {dirty.current ? label ? <h4 className="top-panel-item-content-label">{label}</h4> : null : (
+              {activeTimer.dirty ? activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null : (
                 <div className="top-panel-item-content-top">
-                  <input type="text" className="input" value={label} onChange={handleLabelInputChange}
+                  <input type="text" className="input" value={activeTimer.label} onChange={handleLabelInputChange}
                     placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
                   <Dropdown
                     container={{ className: "top-panel-item-content-top-dropdown" }}
@@ -429,7 +568,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
                     <div className="dropdown-group timer-dropdown-presets">
                       {presets.length ? (
                         presets.map(preset => (
-                          <button className={`btn text-btn dropdown-btn${activePreset?.id === preset.id ? " active" : ""}`} key={preset.id}
+                          <button className={`btn text-btn dropdown-btn${activeTimer.presetId === preset.id ? " active" : ""}`} key={preset.id}
                             onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
                         ))
                       ) : (
@@ -440,29 +579,54 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
                   </Dropdown>
                 </div>
               )}
-              <Inputs state={state} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
+              <Inputs state={activeTimer} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
             </>
           )}
         </div>
       )}
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
-        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? locale.topPanel.stop : locale.topPanel.start}</button>
-        {running || !dirtyInput.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.global.reset}</button>}
+        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{activeTimer.running ? locale.topPanel.stop : locale.topPanel.start}</button>
+        {activeTimer.running || !activeTimer.dirtyInput ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={() => reset(activeTimer.id)}>{locale.global.reset}</button>}
         <div className="top-panel-secondary-actions">
-          {dirty.current && pipService.isSupported() && (
+          {/* {timersArr.length > 1 && !activeTimer.running ? (
+            <button className="btn icon-btn" onClick={removeTimer} title="Remove timer">
+              <Icon id="trash"/>
+            </button>
+          ) : null} */}
+          {activeTimer.dirty && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
               <Icon id="pip"/>
             </button>
           )}
-          {running ? (
+          {activeTimer.running ? (
             <button className="btn icon-btn" onClick={expand} title={locale.global.expand}>
               <Icon id="expand"/>
             </button>
           ) : (
-            <button className="btn icon-btn" onClick={toggleAudio} title={audio.shouldPlay ? locale.topPanel.mute : locale.topPanel.unmute}>
-              <Icon id={`bell${audio.shouldPlay ? "" : "-off"}`}/>
+            <button className="btn icon-btn" onClick={toggleAudio} title={ activeTimer.shouldPlayAudio ? locale.topPanel.mute : locale.topPanel.unmute}>
+              <Icon id={`bell${activeTimer.shouldPlayAudio ? "" : "-off"}`}/>
             </button>
           )}
+          <Dropdown toggle={{ className: runningOrder.current.length && timersArr.length > 1 ? "indicator" : "" }}>
+            <div className="dropdown-group timer-dropdown-list">
+              <button className="btn icon-text-btn dropdown-btn timer-dropdown-btn" onClick={addTimer}>
+                <Icon id="plus"/>
+                <span>New timer</span>
+              </button>
+            </div>
+            <div className="dropdown-group timer-dropdown-list">
+              {timersArr.map(timer => (
+                <button className={`btn text-btn dropdown-btn timer-dropdown-btn${activeTimer.id === timer.id ? " active" : ""}`} key={timer.id}
+                  onClick={() => selectTimerWithState(timer.id)}>{timer.running ? <span className="timer-dropdown-indicator"></span> : null}{padTime(timer.hours)}:{padTime(timer.minutes)}:{padTime(timer.seconds)}</button>
+              ))}
+            </div>
+            {timersArr.length > 1 && !activeTimer.running ? (
+              <button className="btn icon-text-btn dropdown-btn timer-dropdown-btn" onClick={removeTimer}>
+                <Icon id="trash"/>
+                <span>Remove timer</span>
+              </button>
+            ) : null}
+          </Dropdown>
         </div>
       </div>
     </div>

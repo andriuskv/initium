@@ -116,7 +116,7 @@ async function init({ name, title, data, toggle }) {
 }
 
 function handleClick() {
-  timerActions[activeTimer].toggle();
+  timerActions[activeTimer].toggle(true);
 }
 
 async function copyStyleSheets(head) {
@@ -124,7 +124,7 @@ async function copyStyleSheets(head) {
     .map(styleSheet => {
       try {
         return [...styleSheet.cssRules].map((r) => r.cssText).join("");
-      } catch (e) {
+      } catch {
         const link = document.createElement("link");
         link.rel = "stylesheet";
         link.type = styleSheet.type;
