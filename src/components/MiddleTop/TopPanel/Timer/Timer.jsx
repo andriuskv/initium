@@ -39,6 +39,10 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   const { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback } = useWorker(handleMessage);
   const timersArr = Object.values(timers);
   const activeTimer = timersArr.find(timer => timer.active) || timersArr[0];
+  const shouldShowIndicator =
+    runningOrder.current.length &&
+    timersArr.length > 1 &&
+    timersArr.some(timer => activeTimer.id !== timer.id && timer.running);
 
   useEffect(() => {
     init();
@@ -588,11 +592,6 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{activeTimer.running ? locale.topPanel.stop : locale.topPanel.start}</button>
         {activeTimer.running || !activeTimer.dirtyInput ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={() => reset(activeTimer.id)}>{locale.global.reset}</button>}
         <div className="top-panel-secondary-actions">
-          {/* {timersArr.length > 1 && !activeTimer.running ? (
-            <button className="btn icon-btn" onClick={removeTimer} title="Remove timer">
-              <Icon id="trash"/>
-            </button>
-          ) : null} */}
           {activeTimer.dirty && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
               <Icon id="pip"/>
@@ -607,7 +606,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
               <Icon id={`bell${activeTimer.shouldPlayAudio ? "" : "-off"}`}/>
             </button>
           )}
-          <Dropdown toggle={{ className: runningOrder.current.length && timersArr.length > 1 ? "indicator" : "" }}>
+          <Dropdown toggle={{ className: shouldShowIndicator ? "indicator" : "" }}>
             <div className="dropdown-group timer-dropdown-list">
               <button className="btn icon-text-btn dropdown-btn timer-dropdown-btn" onClick={addTimer}>
                 <Icon id="plus"/>

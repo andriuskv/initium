@@ -696,7 +696,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         {taskCount > 0 ? (
           <ul className="tasks-groups-container">
             {groups.map((group, groupIndex) => (group.taskCount === 0 && settings.emptyGroupsHidden ? null : (
-              <li key={group.id} className={`tasks-group${group.hiding && settings.emptyGroupsHidden ? " hiding" : ""}`}>
+              <li key={group.id} className="tasks-group">
                 {(groupIndex > 0 || settings.defaultGroupVisible) && (
                   <button className={`btn icon-btn tasks-groups-item tasks-groups-item-toggle-btn${group.expanded ? " expanded" : ""}`}
                     onClick={() => toggleGroupVisibility(group)}
