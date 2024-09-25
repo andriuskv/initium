@@ -72,6 +72,10 @@
       display: none;
     }
 
+    .timer-display-btns {
+      display: none;
+    }
+
     &.timer .top-panel-item {
       &:not(.timer) {
         display: none;
@@ -144,6 +148,10 @@
 
     .top-panel-item-content-label {
       min-height: auto;
+    }
+
+    .timer-display-btns {
+      display: none;
     }
 
     .stopwatch-splits-preview {
@@ -237,6 +245,13 @@
   right: var(--space-md);
 }
 
+.top-panel-item-display {
+  display: flex;
+  align-items: baseline;
+  gap: calc(var(--space-md) * var(--size-multiplier));
+  margin-block: auto;
+}
+
 .top-panel-digit {
   height: 2ch;
   font-size: calc(64px * var(--size-multiplier));
@@ -245,10 +260,6 @@
 .top-panel-digit-sep {
   margin-left: calc(var(--space-sm) * var(--size-multiplier));
   font-size: calc(var(--text-xxxl) * var(--size-multiplier));
-
-  &:not(:last-of-type) {
-    margin-right: calc(var(--space-md) * var(--size-multiplier));
-  }
 }
 
 .top-panel-item-actions {

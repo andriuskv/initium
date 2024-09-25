@@ -242,21 +242,23 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
       {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
         <div className="container-body top-panel-item-content">
           {renderTop()}
-          <div>
+          <div className="top-panel-item-display">
             {state.hours > 0 && (
-              <>
+              <div>
                 <span className="top-panel-digit">{state.hours}</span>
                 <span className="top-panel-digit-sep">h</span>
-              </>
+              </div>
             )}
             {(state.hours > 0 || state.minutes > 0) && (
-              <>
+              <div>
                 <span className="top-panel-digit">{state.minutesDisplay}</span>
                 <span className="top-panel-digit-sep">m</span>
-              </>
+              </div>
             )}
-            <span className="top-panel-digit">{state.secondsDisplay}</span>
-            <span className="top-panel-digit-sep">s</span>
+            <div>
+              <span className="top-panel-digit">{state.secondsDisplay}</span>
+              <span className="top-panel-digit-sep">s</span>
+            </div>
             <span className="stopwatch-milliseconds">{state.millisecondsDisplay}</span>
           </div>
           {splits.length ? (

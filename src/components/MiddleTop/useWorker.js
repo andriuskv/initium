@@ -55,5 +55,12 @@ export default function useWorker(handleMessage, deps) {
     worker.current[id].abortController = controller;
   }
 
-  return { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback };
+  function updateDuration(id, duration) {
+    if (!worker.current[id]) {
+      return;
+    }
+    worker.current[id].ref.postMessage({ action: "update-duration", duration });
+  }
+
+  return { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback, updateDuration };
 }
