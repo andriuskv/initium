@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import { padTime } from "services/timeDate";
+import Icon from "components/Icon";
 
-export default function Inputs({ state, updateInputs, handleKeyDown: handleContainerKeyDown }) {
+export default function Inputs({ state, addTime, removeTime, updateInputs, handleKeyDown: handleContainerKeyDown }) {
   const hoursInputRef = useRef(null);
   const minutesInputRef = useRef(null);
   const secondsInputRef = useRef(null);
@@ -169,16 +170,52 @@ export default function Inputs({ state, updateInputs, handleKeyDown: handleConta
   }
 
   return (
-    <div onKeyDown={handleContainerKeyDown}>
-      <input type="text" className="top-panel-digit timer-input"
-        onChange={handleChange} onKeyDown={handleKeyDown} value={state.hours} data-name="hours" ref={hoursInputRef}/>
-      <span className="top-panel-digit-sep">h</span>
-      <input type="text" className="top-panel-digit timer-input"
-        onChange={handleChange} onKeyDown={handleKeyDown} value={state.minutes} data-name="minutes" ref={minutesInputRef}/>
-      <span className="top-panel-digit-sep">m</span>
-      <input type="text" className="top-panel-digit timer-input"
-        onChange={handleChange} onKeyDown={handleKeyDown} value={state.seconds} data-name="seconds" ref={secondsInputRef}/>
-      <span className="top-panel-digit-sep">s</span>
+    <div className="top-panel-item-display" onKeyDown={handleContainerKeyDown}>
+      <div className="timer-digit-container">
+        <div className="timer-digit-value-container">
+          <div className="timer-display-btns">
+            <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title="Increase">
+              <Icon id="plus" size="16px"/>
+            </button>
+            <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title="Decrease">
+              <Icon id="minus" size="16px"/>
+            </button>
+          </div>
+          <input type="text" className="top-panel-digit timer-input"
+            onChange={handleChange} onKeyDown={handleKeyDown} value={state.hours} data-name="hours" ref={hoursInputRef}/>
+        </div>
+        <span className="top-panel-digit-sep">h</span>
+      </div>
+      <div className="timer-digit-container">
+        <div className="timer-digit-value-container">
+          <div className="timer-display-btns">
+            <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title="Increase">
+              <Icon id="plus" size="16px"/>
+            </button>
+            <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title="Decrease">
+              <Icon id="minus" size="16px"/>
+            </button>
+          </div>
+          <input type="text" className="top-panel-digit timer-input"
+            onChange={handleChange} onKeyDown={handleKeyDown} value={state.minutes} data-name="minutes" ref={minutesInputRef}/>
+        </div>
+        <span className="top-panel-digit-sep">m</span>
+      </div>
+      <div className="timer-digit-container">
+        <div className="timer-digit-value-container">
+          <div className="timer-display-btns">
+            <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title="Increase">
+              <Icon id="plus" size="16px"/>
+            </button>
+            <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title="Decrease">
+              <Icon id="minus" size="16px"/>
+            </button>
+          </div>
+          <input type="text" className="top-panel-digit timer-input"
+            onChange={handleChange} onKeyDown={handleKeyDown} value={state.seconds} data-name="seconds" ref={secondsInputRef}/>
+        </div>
+        <span className="top-panel-digit-sep">s</span>
+      </div>
     </div>
   );
 }

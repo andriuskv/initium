@@ -36,7 +36,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   const [audioEnded, setAudioEnded] = useState([]);
   const audio = useRef({});
   const runningOrder = useRef([]);
-  const { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback } = useWorker(handleMessage);
+  const { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback, updateDuration } = useWorker(handleMessage);
   const timersArr = Object.values(timers);
   const activeTimer = timersArr.find(timer => timer.active) || timersArr[0];
   const shouldShowIndicator =
@@ -378,7 +378,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   function updatePresetsModal(presets) {
     dispatchCustomEvent("fullscreen-modal", {
       component: Presets,
-      params: { presets, locale, updatePresets, resetActivePreset }
+      params: { presets, locale, updatePresets, getUpdatedTime, resetActivePreset }
     });
   }
 
@@ -525,7 +525,6 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
     return t2;
   }
 
-
   function selectTimerWithState(id) {
     if (activeTimer.id === id) {
       return;
@@ -536,6 +535,92 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
     saveTimers(newTimers);
   }
 
+  function updateTime(to, sign, event) {
+    const values = getUpdatedTime(activeTimer, { to, sign, shouldPad: !activeTimer.running }, event);
+
+    setTimers({ ...timers, [activeTimer.id]: { ...activeTimer, ...values }});
+
+    if (activeTimer.running) {
+      updateDuration(activeTimer.id, values.duration);
+    }
+  }
+
+  function addTime(to, event) {
+    updateTime(to, 1, event);
+  }
+
+  async function removeTime(to, event) {
+    updateTime(to, -1, event);
+  }
+
+  function getUpdatedTime(initialValues, { to, sign, shouldPad = true }, event) {
+    let amount = 1;
+
+    if (event.ctrlKey) {
+      amount = 5;
+    }
+    else if (event.shiftKey) {
+      amount = 20;
+    }
+    else if (event.altKey) {
+      amount = 60;
+    }
+    const val = Number.parseInt(initialValues[to], 10) + amount * sign;
+    let { hours, minutes, seconds } = initialValues;
+
+    if (to === "seconds") {
+      if (val < 0) {
+        if (hours > 0 || minutes > 0) {
+          if (minutes > 0) {
+            minutes -= 1;
+            seconds = 60 + val;
+          }
+          else if (hours > 0) {
+            hours -= 1;
+            minutes = 59;
+            seconds = 60 + val;
+          }
+        }
+        else {
+          seconds = 0;
+        }
+      }
+      else {
+        seconds = val;
+      }
+    }
+    else if (to === "minutes") {
+      if (val < 0) {
+        if (hours > 0) {
+          hours -= 1;
+          minutes = 60 + val;
+        }
+        else {
+          minutes = 0;
+        }
+      }
+      else {
+        minutes = val;
+      }
+    }
+    else if (to === "hours") {
+      if (val < 0) {
+        hours = 0;
+      }
+      else {
+        hours = val;
+      }
+    }
+    const values = normalizeValues({ hours, minutes, seconds });
+
+    return {
+      hours: padTime(values.hours, shouldPad),
+      minutes: padTime(values.minutes, shouldPad || values.hours),
+      seconds: padTime(values.seconds, shouldPad || values.hours || values.minutes),
+      duration: calculateDuration(values)
+    };
+  }
+
   return (
     <div className={`top-panel-item timer${visible ? " visible" : ""}${first ? " first" : ""}`}>
       {pipId === activeTimer.id ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
@@ -543,21 +628,53 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
           {activeTimer.running ? (
             <>
               {activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null}
-              <div>
+              <div className="top-panel-item-display">
                 {activeTimer.hours > 0 && (
-                  <>
-                    <span className="top-panel-digit">{activeTimer.hours}</span>
+                  <div className="timer-digit-container">
+                    <div className="timer-digit-value-container">
+                      <div className="timer-display-btns">
+                        <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title="Increase">
+                          <Icon id="plus" size="16px"/>
+                        </button>
+                        <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title="Decrease">
+                          <Icon id="minus" size="16px"/>
+                        </button>
+                      </div>
+                      <span className="top-panel-digit">{activeTimer.hours}</span>
+                    </div>
                     <span className="top-panel-digit-sep">h</span>
-                  </>
+                  </div>
                 )}
                 {(activeTimer.hours > 0 || activeTimer.minutes > 0) && (
-                  <>
-                    <span className="top-panel-digit">{activeTimer.minutes}</span>
+                  <div className="timer-digit-container">
+                    <div className="timer-digit-value-container">
+                      <div className="timer-display-btns">
+                        <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title="Increase">
+                          <Icon id="plus" size="16px"/>
+                        </button>
+                        <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title="Decrease">
+                          <Icon id="minus" size="16px"/>
+                        </button>
+                      </div>
+                      <span className="top-panel-digit">{activeTimer.minutes}</span>
+                    </div>
                     <span className="top-panel-digit-sep">m</span>
-                  </>
+                  </div>
                 )}
-                <span className="top-panel-digit">{activeTimer.seconds}</span>
-                <span className="top-panel-digit-sep">s</span>
+                <div className="timer-digit-container">
+                  <div className="timer-digit-value-container">
+                    <div className="timer-display-btns">
+                      <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title="Increase">
+                        <Icon id="plus" size="16px"/>
+                      </button>
+                      <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title="Decrease">
+                        <Icon id="minus" size="16px"/>
+                      </button>
+                    </div>
+                    <span className="top-panel-digit">{activeTimer.seconds}</span>
+                  </div>
+                  <span className="top-panel-digit-sep">s</span>
+                </div>
               </div>
             </>
           ) : (
@@ -583,7 +700,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
                   </Dropdown>
                 </div>
               )}
-              <Inputs state={activeTimer} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
+              <Inputs state={activeTimer} addTime={addTime} removeTime={removeTime} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
             </>
           )}
         </div>

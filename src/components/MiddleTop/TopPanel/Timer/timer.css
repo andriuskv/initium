@@ -40,3 +40,33 @@
   overflow-y: auto;
   max-height: 135px;
 }
+
+.timer-digit-container {
+  display: flex;
+  align-items: baseline;
+}
+
+.timer-digit-value-container {
+  position: relative;
+
+  &:hover .timer-display-btns {
+    animation: 0s linear 0.5s forwards delayed-reveal;
+  }
+}
+
+.timer-display-btns {
+  position: absolute;
+  top: calc(var(--space-sm) * -1);
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  display: flex;
+
+  &:hover, &:has(:focus-visible) {
+    opacity: 1;
+  }
+
+  .icon-btn {
+    padding: var(--space-xs);
+  }
+}
