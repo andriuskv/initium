@@ -410,7 +410,7 @@ textarea {
     padding-right: 30px;
   }
 
-  .dropdown-container {
+  > .icon-btn, .dropdown-container {
     position: absolute;
     right: var(--space-xs);
     top: 50%;
@@ -419,6 +419,10 @@ textarea {
     .dropdown-toggle-btn {
       padding: var(--space-xs);
     }
+  }
+
+  > .icon-btn {
+    padding: var(--space-xs);
   }
 }
 

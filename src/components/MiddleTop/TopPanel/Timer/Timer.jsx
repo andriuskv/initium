@@ -486,6 +486,16 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
     }, 400, saveTimeoutId.current);
   }
 
+  function clearLabelInput() {
+    const newTimers = { ...timers, [activeTimer.id]: {
+      ...activeTimer,
+      label: ""
+    }};
+
+    setTimers(newTimers);
+    saveTimers(newTimers);
+  }
+
   function removeTimer() {
     delete timers[activeTimer.id];
     const newTimers = toggleTimer(timers, Object.values(timers)[0].id, true);
@@ -689,8 +699,15 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
             <>
               {activeTimer.dirty ? activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null : (
                 <div className="top-panel-item-content-top">
-                  <input type="text" className="input" value={activeTimer.label} onChange={handleLabelInputChange}
-                    placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                  <div className="input-icon-btn-container">
+                    <input type="text" className="input" value={activeTimer.label} onChange={handleLabelInputChange}
+                      placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                    {activeTimer.label ? (
+                      <button className="btn icon-btn" onClick={clearLabelInput} title="Clear">
+                        <Icon id="cross"/>
+                      </button>
+                    ) : null}
+                  </div>
                   <Dropdown
                     container={{ className: "top-panel-item-content-top-dropdown" }}
                     toggle={{ isIconTextBtn: true, title: locale.timer.presets_button, iconId: "menu" }}>
