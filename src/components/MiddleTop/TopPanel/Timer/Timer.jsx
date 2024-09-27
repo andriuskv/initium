@@ -151,9 +151,6 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   function playAudio(id) {
     const { volume } = getSetting("timers");
 
-    audio.current[id] = {
-      element: new Audio("./assets/alarm.mp3")
-    };
     audio.current[id].element.volume = volume;
     audio.current[id].element.play();
     audio.current[id].timeoutId = setTimeout(() => {
@@ -210,6 +207,12 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
         });
       }
       runningOrder.current.push(timer.id);
+
+      if (!audio.current[timer.id]) {
+        audio.current[id] = {
+          element: new Audio("./assets/alarm.mp3")
+        };
+      }
     }
   }
 
