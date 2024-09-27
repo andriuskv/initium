@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy } from "react";
-import { getRandomString, dispatchCustomEvent } from "utils";
+import { timeout, getRandomString, dispatchCustomEvent } from "utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
@@ -36,6 +36,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   const [audioEnded, setAudioEnded] = useState([]);
   const audio = useRef({});
   const runningOrder = useRef([]);
+  const saveTimeoutId = useRef();
   const { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback, updateDuration } = useWorker(handleMessage);
   const timersArr = Object.values(timers);
   const activeTimer = timersArr.find(timer => timer.active) || timersArr[0];
@@ -150,9 +151,6 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   function playAudio(id) {
     const { volume } = getSetting("timers");
 
-    audio.current[id] = {
-      element: new Audio("./assets/alarm.mp3")
-    };
     audio.current[id].element.volume = volume;
     audio.current[id].element.play();
     audio.current[id].timeoutId = setTimeout(() => {
@@ -209,6 +207,12 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
         });
       }
       runningOrder.current.push(timer.id);
+
+      if (!audio.current[timer.id]) {
+        audio.current[id] = {
+          element: new Audio("./assets/alarm.mp3")
+        };
+      }
     }
   }
 
@@ -459,23 +463,40 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
 
     if (preset) {
       const { timer: { usePresetNameAsLabel } } = getSetting("timers");
-
-      setTimers({ ...timers, [activeTimer.id]: {
+      const newTimers = { ...timers, [activeTimer.id]: {
         ...activeTimer,
         hours: preset.hours,
         minutes: preset.minutes,
         seconds: preset.seconds,
         label: usePresetNameAsLabel ? preset.name : activeTimer.label,
         presetId: preset.id
-      }});
+      }};
+
+      setTimers(newTimers);
+      saveTimers(newTimers);
     }
   }
 
   function handleLabelInputChange(event) {
-    setTimers({ ...timers, [activeTimer.id]: {
+    const newTimers = { ...timers, [activeTimer.id]: {
       ...activeTimer,
       label: event.target.value
-    }});
+    }};
+
+    setTimers(newTimers);
+    saveTimeoutId.current = timeout(() => {
+      saveTimers(newTimers);
+    }, 400, saveTimeoutId.current);
+  }
+
+  function clearLabelInput() {
+    const newTimers = { ...timers, [activeTimer.id]: {
+      ...activeTimer,
+      label: ""
+    }};
+
+    setTimers(newTimers);
+    saveTimers(newTimers);
   }
 
   function removeTimer() {
@@ -681,8 +702,15 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
             <>
               {activeTimer.dirty ? activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null : (
                 <div className="top-panel-item-content-top">
-                  <input type="text" className="input" value={activeTimer.label} onChange={handleLabelInputChange}
-                    placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                  <div className="input-icon-btn-container">
+                    <input type="text" className="input" value={activeTimer.label} onChange={handleLabelInputChange}
+                      placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                    {activeTimer.label ? (
+                      <button className="btn icon-btn" onClick={clearLabelInput} title="Clear">
+                        <Icon id="cross"/>
+                      </button>
+                    ) : null}
+                  </div>
                   <Dropdown
                     container={{ className: "top-panel-item-content-top-dropdown" }}
                     toggle={{ isIconTextBtn: true, title: locale.timer.presets_button, iconId: "menu" }}>
