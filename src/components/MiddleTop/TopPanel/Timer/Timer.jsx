@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy } from "react";
-import { getRandomString, dispatchCustomEvent } from "utils";
+import { timeout, getRandomString, dispatchCustomEvent } from "utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
@@ -36,6 +36,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   const [audioEnded, setAudioEnded] = useState([]);
   const audio = useRef({});
   const runningOrder = useRef([]);
+  const saveTimeoutId = useRef();
   const { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback, updateDuration } = useWorker(handleMessage);
   const timersArr = Object.values(timers);
   const activeTimer = timersArr.find(timer => timer.active) || timersArr[0];
@@ -459,23 +460,30 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
 
     if (preset) {
       const { timer: { usePresetNameAsLabel } } = getSetting("timers");
-
-      setTimers({ ...timers, [activeTimer.id]: {
+      const newTimers = { ...timers, [activeTimer.id]: {
         ...activeTimer,
         hours: preset.hours,
         minutes: preset.minutes,
         seconds: preset.seconds,
         label: usePresetNameAsLabel ? preset.name : activeTimer.label,
         presetId: preset.id
-      }});
+      }};
+
+      setTimers(newTimers);
+      saveTimers(newTimers);
     }
   }
 
   function handleLabelInputChange(event) {
-    setTimers({ ...timers, [activeTimer.id]: {
+    const newTimers = { ...timers, [activeTimer.id]: {
       ...activeTimer,
       label: event.target.value
-    }});
+    }};
+
+    setTimers(newTimers);
+    saveTimeoutId.current = timeout(() => {
+      saveTimers(newTimers);
+    }, 400, saveTimeoutId.current);
   }
 
   function removeTimer() {
