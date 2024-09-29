@@ -208,7 +208,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
       }
       runningOrder.current.push(timer.id);
 
-      if (!audio.current[timer.id]) {
+      if (timer.shouldPlayAudio && !audio.current[timer.id]) {
         audio.current[id] = {
           element: new Audio("./assets/alarm.mp3")
         };
@@ -226,9 +226,8 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
       seconds: padTime(timer.seconds)
     };
 
-    if (audio.current[newTimer.id]) {
-      resetAudio(newTimer.id);
-      reset(newTimer.id, true);
+    if (audio.current[newTimer.id]?.timeoutId) {
+      setAudioEnded([...audioEnded, newTimer.id]);
     }
     setTimers({ ...timers, [newTimer.id]: newTimer });
     resetTimer(newTimer.id);
@@ -294,7 +293,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
     saveTimers(newTimers);
   }
 
-  async function reset(id, skipCleanup = false) {
+  async function reset(id) {
     if (activeTimer.id === id) {
       exitFullscreen();
     }
@@ -316,7 +315,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
       };
     }
 
-    if (timer.running && !skipCleanup) {
+    if (timer.running) {
       resetTimer(id);
     }
     const newTimers = { ...timers, [timer.id] : {
@@ -747,7 +746,7 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
               <Icon id="expand"/>
             </button>
           ) : (
-            <button className="btn icon-btn" onClick={toggleAudio} title={ activeTimer.shouldPlayAudio ? locale.topPanel.mute : locale.topPanel.unmute}>
+            <button className="btn icon-btn" onClick={toggleAudio} title={activeTimer.shouldPlayAudio ? locale.topPanel.mute : locale.topPanel.unmute}>
               <Icon id={`bell${activeTimer.shouldPlayAudio ? "" : "-off"}`}/>
             </button>
           )}
