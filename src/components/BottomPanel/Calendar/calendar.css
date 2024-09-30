@@ -81,6 +81,42 @@
   }
 }
 
+.calendar-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  animation-fill-mode: both;
+  animation-duration: var(--duration-n);
+
+  &.slide-left {
+    animation-name: slide-left;
+  }
+
+  &.slide-right {
+    animation-name: slide-right;
+  }
+}
+
+@keyframes slide-left {
+  from {
+    transform: translateX(-14%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-right {
+  from {
+    transform: translateX(14%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
 .calendar-cell {
   display: flex;
   justify-content: center;
