@@ -7,6 +7,7 @@
 }
 
 html {
+  interpolate-size: allow-keywords;
   font-size: 16px;
 }
 

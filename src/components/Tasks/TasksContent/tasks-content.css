@@ -88,14 +88,36 @@
 .tasks-group-items {
   &.expanding {
     animation-fill-mode: both;
-    animation-duration: var(--duration-n);
-    animation-name: expanding-group;
+    animation-duration: var(--duration-f), var(--duration-n);
+    animation-name: expand-height, expanding-group;
+    animation-delay: 0s, calc(var(--duration-f) / 2);
   }
 
   &.collapsing {
     animation-fill-mode: both;
-    animation-duration: var(--duration-n), var(--duration-f);
-    animation-name: opacity-down, collapsing-group;
+    animation-duration: var(--duration-n), var(--duration-f), var(--duration-f);
+    animation-name: opacity-down, collapsing-group, collapse-height;
+    animation-delay: 0s, 0s, var(--duration-f);
+  }
+}
+
+@keyframes expand-height {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: auto;
+  }
+}
+
+@keyframes collapse-height {
+  from {
+    height: auto;
+  }
+
+  to {
+    height: 0;
   }
 }
 
@@ -154,13 +176,12 @@
 
 .task, .subtask {
   overflow: hidden;
-  max-height: 2000px;
+  transition: var(--duration-n) opacity,
+              var(--duration-n) height;
 
   &.removed {
-    transition: var(--duration-n) opacity,
-                var(--duration-s) max-height;
     opacity: 0;
-    max-height: 0;
+    height: 0;
   }
 }
 

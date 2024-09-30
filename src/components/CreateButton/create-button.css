@@ -8,7 +8,7 @@
   position: absolute;
   bottom: var(--bottom);
   right: var(--space-md);
-  overflow: hidden;
+  overflow-x: clip;
   justify-content: flex-start;
   gap: var(--space-md);
   width: 38px;
