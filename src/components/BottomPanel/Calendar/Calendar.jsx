@@ -28,6 +28,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const [googleUser, setGoogleUser] = useState(() => JSON.parse(localStorage.getItem("google-user")) || null);
   const [view, setView] = useState({ name: "default" });
   const [transition, setTransition] = useState({ x: 0, y: 0 });
+  const [slideAnimation, setSlideAnimation] = useState("");
   const [message, showMessage, dismissMessage] = useMessage("");
   const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
@@ -35,6 +36,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const reminderPreviewHeight = useRef(0);
   const saveTimeoutId = useRef(0);
   const dateCheckTimeoutId = useRef(0);
+  const slideAnimationTimeoutId = useRef(0);
   const first = useRef(true);
   const tomorrowDay = useMemo(() => {
     if (!calendar) {
@@ -268,7 +270,7 @@ export default function Calendar({ visible, locale, showIndicator }) {
     }
   }
 
-  function changeMonth(direction) {
+  function changeMonth(direction, animate) {
     let year = currentYear;
     let month = visibleMonth.current.month + direction;
 
@@ -287,6 +289,14 @@ export default function Calendar({ visible, locale, showIndicator }) {
       setCurrentYear(year);
     }
     getVisibleMonth(calendar, { year, month });
+
+    if (animate) {
+      setSlideAnimation(direction === 1 ? "slide-right" : "slide-left");
+
+      slideAnimationTimeoutId.current = timeout(() => {
+        setSlideAnimation("");
+      }, 200 * animationSpeed);
+    }
   }
 
   function getCurrentDay(calendar, date) {
@@ -887,45 +897,47 @@ export default function Calendar({ visible, locale, showIndicator }) {
     return (
       <div className={`calendar${transition.active ? " transition" : ""}`}>
         <div className="calendar-header">
-          <button className="btn icon-btn" onClick={() => changeMonth(-1)} title={locale.calendar.prevoius_month_title}>
+          <button className="btn icon-btn" onClick={() => changeMonth(-1, true)} title={locale.calendar.prevoius_month_title}>
             <Icon id="chevron-left"/>
           </button>
           <button className="btn text-btn calendar-title" onClick={viewYear}>{visibleMonth.current.dateString}</button>
-          <button className="btn icon-btn" onClick={() => changeMonth(1)} title={locale.calendar.next_month_title}>
+          <button className="btn icon-btn" onClick={() => changeMonth(1, true)} title={locale.calendar.next_month_title}>
             <Icon id="chevron-right"/>
           </button>
         </div>
-        <ul className="calendar-week-days">
-          {weekdays.map(weekday => <li className="calendar-cell" key={weekday}>{weekday}</li>)}
-        </ul>
-        <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
-          {visibleMonth.previous.days.map((day, index) => (
-            <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
-              tabIndex="0" aria-label={day.dateString} data-month="previous" data-index={index}>
-              <div>{day.day}</div>
-            </li>
-          ))}
-          {visibleMonth.current.days.map((day, index) => (
-            <li className={`calendar-cell calendar-day current-month-day${day.isCurrentDay ? " current" : ""}`}
-              onClick={({ target }) => showDay(target, day)} key={day.id}
-              tabIndex="0" aria-label={day.dateString} data-month="current" data-index={index}>
-              <div>{day.day}</div>
-              {day.reminders.length > 0 && (
-                <div className="day-reminders">
-                  {day.reminders.map(reminder => (
-                    <div className="day-reminder" style={{ "backgroundColor": reminder.color }} key={reminder.id}></div>
-                  ))}
-                </div>
-              )}
-            </li>
-          ))}
-          {visibleMonth.next.days.map((day, index) => (
-            <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, 1)} key={day.id}
-              tabIndex="0" aria-label={day.dateString} data-month="next" data-index={index}>
-              <div>{day.day}</div>
-            </li>
-          ))}
-        </ul>
+        <div className={`calendar-body${slideAnimation ? ` ${slideAnimation}` : ""}`}>
+          <ul className="calendar-week-days">
+            {weekdays.map(weekday => <li className="calendar-cell" key={weekday}>{weekday}</li>)}
+          </ul>
+          <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
+            {visibleMonth.previous.days.map((day, index) => (
+              <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
+                tabIndex="0" aria-label={day.dateString} data-month="previous" data-index={index}>
+                <div>{day.day}</div>
+              </li>
+            ))}
+            {visibleMonth.current.days.map((day, index) => (
+              <li className={`calendar-cell calendar-day current-month-day${day.isCurrentDay ? " current" : ""}`}
+                onClick={({ target }) => showDay(target, day)} key={day.id}
+                tabIndex="0" aria-label={day.dateString} data-month="current" data-index={index}>
+                <div>{day.day}</div>
+                {day.reminders.length > 0 && (
+                  <div className="day-reminders">
+                    {day.reminders.map(reminder => (
+                      <div className="day-reminder" style={{ "backgroundColor": reminder.color }} key={reminder.id}></div>
+                    ))}
+                  </div>
+                )}
+              </li>
+            ))}
+            {visibleMonth.next.days.map((day, index) => (
+              <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, 1)} key={day.id}
+                tabIndex="0" aria-label={day.dateString} data-month="next" data-index={index}>
+                <div>{day.day}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     );
   }
