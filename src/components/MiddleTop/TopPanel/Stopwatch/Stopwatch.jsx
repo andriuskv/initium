@@ -16,16 +16,32 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
   const [label, setLabel] = useState("");
   const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
+  const pageVisible = useRef(true);
   const { initWorker, destroyWorkers } = useWorker(handleMessage, [splits.length]);
   const name = "stopwatch";
 
   useEffect(() => {
     init();
+
+    function handlePageVisibilityChange() {
+      if (document.hidden) {
+        pageVisible.current = false;
+      }
+      else {
+        pageVisible.current = true;
+      }
+    }
+
+    document.addEventListener("visibilitychange", handlePageVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handlePageVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {
     if (running) {
-      initWorker({ id: name });
+      initWorker({ id: name, elapsed: state.elapsed });
       toggleIndicator(name, true);
       addToRunning(name);
     }
@@ -91,38 +107,35 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
     updateTitle(name);
   }
 
-  function update({ diff }) {
-    state.elapsed += diff;
-    state.milliseconds += diff;
+  function update({ elapsed }) {
+    const { hours, minutes, seconds, milliseconds } = parseTime(elapsed);
+    const newState = {
+      hours,
+      minutes,
+      minutesDisplay: padTime(minutes, hours),
+      secondsDisplay: padTime(seconds, hours || minutes),
+      milliseconds,
+      elapsed
+    };
 
-    if (state.milliseconds >= 1000) {
-      state.milliseconds -= 1000;
-      state.seconds += 1;
-
-      if (state.seconds >= 60) {
-        state.seconds -= 60;
-        state.minutes += 1;
-      }
-
-      if (state.minutes >= 60) {
-        state.minutes -= 60;
-        state.hours += 1;
-      }
-      state.minutesDisplay = padTime(state.minutes, state.hours);
-      state.secondsDisplay = padTime(state.seconds, state.minutes);
-
-      updateTitle(name, { hours: state.hours, minutes: state.minutesDisplay, seconds: state.secondsDisplay });
-      localStorage.setItem(name, JSON.stringify({ ...state, label, splits: splits.slice(0, 100) }));
+    if (newState.milliseconds === 0) {
+      newState.millisecondsDisplay = "00";
+      updateTitle(name, { hours: newState.hours, minutes: newState.minutesDisplay, seconds: newState.secondsDisplay });
+      localStorage.setItem(name, JSON.stringify({ ...newState, label, splits: splits.slice(0, 100) }));
     }
-    const millisecondString = Math.floor(state.milliseconds).toString();
-    state.millisecondsDisplay = state.milliseconds < 100 ? `0${millisecondString[0]}` : millisecondString.slice(0, 2);
+    else {
+      const millisecondString = Math.floor(newState.milliseconds / 10);
+      newState.millisecondsDisplay = padTime(millisecondString, newState.milliseconds < 100);
+    }
 
-    setState({ ...state });
+    if (pageVisible.current) {
+      setState(newState);
+    }
     pipService.update(name, {
-      hours: state.hours,
-      minutes: state.minutesDisplay,
-      seconds: state.secondsDisplay,
-      milliseconds: state.millisecondsDisplay
+      hours: newState.hours,
+      minutes: newState.minutesDisplay,
+      seconds: newState.secondsDisplay,
+      milliseconds: newState.millisecondsDisplay
     });
   }
 
@@ -163,23 +176,23 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
   }
 
   function getSplitString(milliseconds) {
-    const split = parseSplitTime(milliseconds);
+    const split = parseTime(milliseconds);
     const minutesDisplay = padTime(split.minutes, split.hours);
-    const secondsDisplay = padTime(split.seconds, split.minutes);
-    const millisecondString = Math.floor(split.milliseconds).toString();
-    const millisecondsDisplay = split.milliseconds < 100 ? `0${millisecondString[0]}` : millisecondString.slice(0, 2);
+    const secondsDisplay = padTime(split.seconds, split.hours || split.minutes);
+    const millisecondString = Math.floor(split.milliseconds / 10);
+    const millisecondsDisplay = padTime(millisecondString, split.milliseconds < 100);
 
     return `${split.hours ? `${split.hours} ` : ""}${split.minutes ? `${minutesDisplay} ` : ""}${secondsDisplay}.${millisecondsDisplay}`;
   }
 
-  function parseSplitTime(diff) {
-    const hours = Math.floor(diff / 3600000);
-    diff %= 3600000;
-    const minutes = Math.floor(diff / 60000);
-    diff %= 60000;
-    const seconds = Math.floor(diff / 1000);
-    diff %= 1000;
-    const milliseconds = diff;
+  function parseTime(time) {
+    const hours = Math.floor(time / 3600000);
+    time %= 3600000;
+    const minutes = Math.floor(time / 60000);
+    time %= 60000;
+    const seconds = Math.floor(time / 1000);
+    time %= 1000;
+    const milliseconds = time;
 
     return {
       hours,

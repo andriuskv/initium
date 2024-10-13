@@ -15,7 +15,7 @@ onmessage = function({ data }) {
       countdown(performance.now());
     }
     else {
-      update(performance.now());
+      update(performance.now(), data.elapsed || 0);
     }
   }
   else if (action === "stop") {
@@ -43,16 +43,17 @@ function countdown(elapsed) {
   }, interval - diff);
 }
 
-function update(elapsed) {
+function update(start, elapsed = 0) {
   const interval = 20;
-  const diff = performance.now() - elapsed;
+  const diff = performance.now() - start;
 
+  start += interval;
   elapsed += interval;
 
-  postMessage({ diff: interval });
+  postMessage({ diff: interval, elapsed });
 
   timeoutId = setTimeout(() => {
-    update(elapsed);
+    update(start, elapsed);
   }, interval - diff);
 }
 

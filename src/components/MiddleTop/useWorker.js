@@ -9,6 +9,7 @@ export default function useWorker(handleMessage, deps) {
         const controller = new AbortController();
 
         worker.current[id].abortController.abort();
+        worker.current[id].abortController = controller;
         worker.current[id].ref.addEventListener("message", handleMessage, { signal: controller.signal });
       }
     }, deps);
