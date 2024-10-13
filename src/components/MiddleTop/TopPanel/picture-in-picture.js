@@ -1,6 +1,6 @@
-import { dispatchCustomEvent } from "utils";
+import { dispatchCustomEvent, setPageTitle } from "utils";
 
-const pipSupported = "documentPictureInPicture" in window && localStorage.getItem("timer-pip-enabled");
+const pipSupported = "documentPictureInPicture" in window;
 let pipWindow = null;
 let timerActions = {};
 let activeTimer = "";
@@ -46,6 +46,9 @@ function cleanup() {
 }
 
 async function init({ name, title, data, toggle }) {
+  // Temporary reset page title to prevent PiP from showing stale timer info
+  setPageTitle();
+
   activeTimer = name;
   timerActions[name] = { toggle };
   pipWindow = await window.documentPictureInPicture.requestWindow();
