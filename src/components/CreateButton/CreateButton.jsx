@@ -85,7 +85,7 @@ export default function CreateButton({ children, className, attrs = {}, style = 
   return (
     <button className={`btn icon-text-btn create-btn${className ? ` ${className}` : ""}`} { ...attrs } style={{ ...style }} ref={ref} onClick={onClick}>
       <Icon id="plus"/>
-      <span>{children || locale.global.create}</span>
+      <span className="create-btn-text">{children || locale.global.create}</span>
     </button>
   );
 }

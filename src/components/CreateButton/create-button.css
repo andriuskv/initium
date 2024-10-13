@@ -10,14 +10,13 @@
   right: var(--space-md);
   overflow-x: clip;
   justify-content: flex-start;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   width: 38px;
   height: auto;
   padding: var(--space-md) var(--space-lg) var(--space-md) var(--space-md);
   box-shadow: var(--highligh-shadow);
   color: var(--color-white);
   transition: var(--duration-f) width,
-              var(--duration-f) gap,
               var(--duration-f) transform;
   transition-delay: var(--duration-f);
   transform: translateY(var(--shift));
@@ -29,8 +28,12 @@
   &:hover, &:focus-visible {
     --background-color: var(--color-primary-20);
 
-    gap: var(--space-sm);
     width: var(--expanded-width);
+
+    .create-btn-text {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
   &:focus-visible {
@@ -38,4 +41,10 @@
       inset 0 0 0 2px var(--color-white),
       var(--highligh-shadow);
   }
+}
+
+.create-btn-text {
+  opacity: 0;
+  transform: translateX(8px);
+  transition: var(--duration-n) transform, var(--duration-n) opacity;
 }
