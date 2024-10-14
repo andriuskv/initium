@@ -8,7 +8,7 @@ import "./world.css";
 
 const Form = lazy(() => import("./Form"));
 
-export default function World({ visible, first, locale, parentVisible }) {
+export default function World({ visible, locale, animDirection, parentVisible }) {
   const [clocks, setClocks] = useState([]);
   const timeoutId = useRef(0);
 
@@ -102,25 +102,27 @@ export default function World({ visible, first, locale, parentVisible }) {
   }
 
   return (
-    <div className={`container-body top-panel-item world${visible ? " visible" : ""}${first ? " first" : ""}`}>
+    <div className={`container-body top-panel-item world${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
       {clocks.length ? (
-        <ul className="world-clocks">
-          {clocks.map(clock => (
-            <li className="world-clock" key={clock.id}>
-              <div>
-                <div className="world-clock-city">{clock.city}</div>
-                <div className="world-clock-secondary">{clock.country}</div>
-                <div className="world-clock-secondary">{clock.diffString}</div>
-              </div>
-              <div className="world-clock-time">
-                <span className="world-clock-time-text">{clock.time}</span>
-                <button className="btn icon-btn world-clock-remove-btn" onClick={() => removeClock(clock)} title={locale.global.remove}>
-                  <Icon id="trash"/>
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="world-clocks-container">
+          <ul className="top-panel-item-content world-clocks">
+            {clocks.map(clock => (
+              <li className="world-clock" key={clock.id}>
+                <div>
+                  <div className="world-clock-city">{clock.city}</div>
+                  <div className="world-clock-secondary">{clock.country}</div>
+                  <div className="world-clock-secondary">{clock.diffString}</div>
+                </div>
+                <div className="world-clock-time">
+                  <span className="world-clock-time-text">{clock.time}</span>
+                  <button className="btn icon-btn world-clock-remove-btn" onClick={() => removeClock(clock)} title={locale.global.remove}>
+                    <Icon id="trash"/>
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : <p className="world-clocks-message">{locale.world.no_clocks_message}</p>}
       <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": true }}></CreateButton>
     </div>

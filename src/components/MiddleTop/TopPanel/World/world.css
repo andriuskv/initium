@@ -5,8 +5,13 @@
   border-bottom-right-radius: var(--container-inset-radius);
 }
 
+.world-clocks-container {
+  overflow-y: auto;
+  overflow-x: clip;
+  height: 100%;
+}
+
 .world-clocks {
-  overflow: auto;
   display: grid;
   align-content: flex-start;
   grid-template-columns: 1fr 1fr;

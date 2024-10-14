@@ -14,7 +14,7 @@ const stages = {
   long: "Long break"
 };
 
-export default function Pomodoro({ visible, first, locale, toggleIndicator, updateTitle, expand, handleReset }) {
+export default function Pomodoro({ visible, locale, animDirection, toggleIndicator, updateTitle, expand, handleReset }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => {
     const { pomodoro: { focus } } = getSetting("timers");
@@ -246,30 +246,32 @@ export default function Pomodoro({ visible, first, locale, toggleIndicator, upda
   }
 
   return (
-    <div className={`top-panel-item pomodoro${visible ? " visible" : ""}${first ? " first" : ""}`}>
-      {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
-        <div className="container-body top-panel-item-content">
-          {renderTop()}
-          <div className="top-panel-item-display">
-            {state.hours > 0 && (
+    <div className={`top-panel-item pomodoro${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
+      <div className="container-body">
+        {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
+          <div className="top-panel-item-content">
+            {renderTop()}
+            <div className="top-panel-item-display">
+              {state.hours > 0 && (
+                <div>
+                  <span className="top-panel-digit">{state.hours}</span>
+                  <span className="top-panel-digit-sep">h</span>
+                </div>
+              )}
+              {(state.hours > 0 || state.minutes > 0) && (
+                <div>
+                  <span className="top-panel-digit">{state.minutes}</span>
+                  <span className="top-panel-digit-sep">m</span>
+                </div>
+              )}
               <div>
-                <span className="top-panel-digit">{state.hours}</span>
-                <span className="top-panel-digit-sep">h</span>
+                <span className="top-panel-digit">{state.seconds}</span>
+                <span className="top-panel-digit-sep">s</span>
               </div>
-            )}
-            {(state.hours > 0 || state.minutes > 0) && (
-              <div>
-                <span className="top-panel-digit">{state.minutes}</span>
-                <span className="top-panel-digit-sep">m</span>
-              </div>
-            )}
-            <div>
-              <span className="top-panel-digit">{state.seconds}</span>
-              <span className="top-panel-digit-sep">s</span>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? locale.topPanel.stop : locale.topPanel.start}</button>
         {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.global.reset}</button>}

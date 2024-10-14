@@ -25,15 +25,14 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const [expanded, setExpanded] = useState(false);
   const [tabs, setTabs] = useState(() => {
     const tabs = {
-      timer: { first: true, name: locale.topPanel.timer },
-      stopwatch: { first: true, name: locale.topPanel.stopwatch },
-      pomodoro: { first: true, name: locale.topPanel.pomodoro },
-      countdown: { first: true, name: locale.topPanel.countdown },
-      world: { first: true, name: locale.topPanel.world }
+      timer: { name: locale.topPanel.timer },
+      stopwatch: { name: locale.topPanel.stopwatch },
+      pomodoro: { name: locale.topPanel.pomodoro },
+      countdown: { name: locale.topPanel.countdown },
+      world: { name: locale.topPanel.world }
     };
 
     if (activeTab) {
-      delete tabs[activeTab].first;
       tabs[activeTab].rendered = true;
     }
     return tabs;
@@ -117,6 +116,19 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       containerRef.current.classList.remove(activeTab);
     }
   }, [minimal]);
+
+  function getAnimDirection(current, prev) {
+    const tabsArr = Object.keys(tabs);
+
+    if (!prev) {
+      return null;
+    }
+
+    if (tabsArr.indexOf(current) > tabsArr.indexOf(prev)) {
+      return { [current]: "anim-right", [prev]: "anim-left" };
+    }
+    return { [current]: "anim-left", [prev]: "anim-right" };
+  }
 
   function findTabIndex(name) {
     const index = Object.keys(tabs).findIndex(tab => tab === name);
@@ -221,14 +233,21 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       tabs[name].rendered = true;
       setTabs({ ...tabs });
     }
+    const animTabs = getAnimDirection(name, activeTab);
 
-    if (tabs[name].first) {
+    if (animTabs) {
+      tabs[name].direction = animTabs[name];
+
+      setActiveTab(name);
+      setTabs({ ...tabs });
       setTimeout(() => {
-        delete tabs[name].first;
+        delete tabs[name].direction;
         setTabs({ ...tabs });
       }, 200 * animationSpeed);
     }
-    setActiveTab(name);
+    else {
+      setActiveTab(name);
+    }
 
     saveTabTimeoutId.current = timeout(() => {
       localStorage.setItem("active-timer-tab", name);
@@ -309,22 +328,25 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
         </TabsContainer>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
           {tabs.timer.rendered ? (
-            <Timer visible={activeTab === "timer"} first={tabs.timer.first} locale={locale}
+            <Timer visible={activeTab === "timer"} locale={locale} animDirection={tabs.timer.direction}
               toggleIndicator={toggleIndicator} updateTitle={updateTitle} ignoreMiniTimerPref={ignoreMiniTimerPref}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
           {tabs.stopwatch.rendered ? (
-            <Stopwatch visible={activeTab === "stopwatch"} first={tabs.stopwatch.first} locale={locale}
+            <Stopwatch visible={activeTab === "stopwatch"} locale={locale} animDirection={tabs.stopwatch.direction}
               toggleIndicator={toggleIndicator} updateTitle={updateTitle} expand={expand}/>
           ) : null}
           {tabs.pomodoro.rendered ? (
-            <Pomodoro visible={activeTab === "pomodoro"} first={tabs.pomodoro.first} locale={locale}
+            <Pomodoro visible={activeTab === "pomodoro"} locale={locale} animDirection={tabs.pomodoro.direction}
               toggleIndicator={toggleIndicator} updateTitle={updateTitle}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
-          {tabs.world.rendered ? <World visible={activeTab === "world"} parentVisible={visible} first={tabs.world.first} locale={locale}/> : null}
+          {tabs.world.rendered ? (
+            <World visible={activeTab === "world"} parentVisible={visible} animDirection={tabs.world.direction}
+              locale={locale} />
+          ): null}
         </Suspense>
-        <Countdown visible={activeTab === "countdown"} locale={locale} toggleIndicator={toggleIndicator}/>
+        <Countdown visible={activeTab === "countdown"} locale={locale} toggleIndicator={toggleIndicator} animDirection={tabs.countdown.direction}/>
         {expanded && (
           <button className="btn icon-btn top-panel-collapse-btn" onClick={hideTopPanel} title={locale.global.close}>
             <Icon id="cross"/>

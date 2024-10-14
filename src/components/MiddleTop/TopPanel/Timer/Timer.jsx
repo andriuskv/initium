@@ -13,7 +13,7 @@ import useWorker from "../../useWorker";
 
 const Presets = lazy(() => import("./Presets"));
 
-export default function Timer({ visible, first, locale, toggleIndicator, updateTitle, ignoreMiniTimerPref, expand, exitFullscreen, handleReset }) {
+export default function Timer({ visible, locale, animDirection, toggleIndicator, updateTitle, ignoreMiniTimerPref, expand, exitFullscreen, handleReset }) {
   const [timers, setTimers] = useState(() => {
     const id = getRandomString(4);
 
@@ -642,96 +642,98 @@ export default function Timer({ visible, first, locale, toggleIndicator, updateT
   }
 
   return (
-    <div className={`top-panel-item timer${visible ? " visible" : ""}${first ? " first" : ""}`}>
-      {pipId === activeTimer.id ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
-        <div className="container-body top-panel-item-content">
-          {activeTimer.running ? (
-            <>
-              {activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null}
-              <div className="top-panel-item-display">
-                {activeTimer.hours > 0 && (
+    <div className={`top-panel-item timer${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
+      <div className="container-body">
+        {pipId === activeTimer.id ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
+          <div className="top-panel-item-content">
+            {activeTimer.running ? (
+              <>
+                {activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null}
+                <div className="top-panel-item-display">
+                  {activeTimer.hours > 0 && (
+                    <div className="timer-digit-container">
+                      <div className="timer-digit-value-container">
+                        <div className="timer-display-btns">
+                          <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title="Increase">
+                            <Icon id="plus" size="16px"/>
+                          </button>
+                          <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title="Decrease">
+                            <Icon id="minus" size="16px"/>
+                          </button>
+                        </div>
+                        <span className="top-panel-digit">{activeTimer.hours}</span>
+                      </div>
+                      <span className="top-panel-digit-sep">h</span>
+                    </div>
+                  )}
+                  {(activeTimer.hours > 0 || activeTimer.minutes > 0) && (
+                    <div className="timer-digit-container">
+                      <div className="timer-digit-value-container">
+                        <div className="timer-display-btns">
+                          <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title="Increase">
+                            <Icon id="plus" size="16px"/>
+                          </button>
+                          <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title="Decrease">
+                            <Icon id="minus" size="16px"/>
+                          </button>
+                        </div>
+                        <span className="top-panel-digit">{activeTimer.minutes}</span>
+                      </div>
+                      <span className="top-panel-digit-sep">m</span>
+                    </div>
+                  )}
                   <div className="timer-digit-container">
                     <div className="timer-digit-value-container">
                       <div className="timer-display-btns">
-                        <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title="Increase">
+                        <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title="Increase">
                           <Icon id="plus" size="16px"/>
                         </button>
-                        <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title="Decrease">
+                        <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title="Decrease">
                           <Icon id="minus" size="16px"/>
                         </button>
                       </div>
-                      <span className="top-panel-digit">{activeTimer.hours}</span>
+                      <span className="top-panel-digit">{activeTimer.seconds}</span>
                     </div>
-                    <span className="top-panel-digit-sep">h</span>
+                    <span className="top-panel-digit-sep">s</span>
                   </div>
-                )}
-                {(activeTimer.hours > 0 || activeTimer.minutes > 0) && (
-                  <div className="timer-digit-container">
-                    <div className="timer-digit-value-container">
-                      <div className="timer-display-btns">
-                        <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title="Increase">
-                          <Icon id="plus" size="16px"/>
+                </div>
+              </>
+            ) : (
+              <>
+                {activeTimer.dirty ? activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null : (
+                  <div className="top-panel-item-content-top">
+                    <div className="input-icon-btn-container">
+                      <input type="text" className="input" value={activeTimer.label} onChange={handleLabelInputChange}
+                        placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                      {activeTimer.label ? (
+                        <button className="btn icon-btn" onClick={clearLabelInput} title="Clear">
+                          <Icon id="cross"/>
                         </button>
-                        <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title="Decrease">
-                          <Icon id="minus" size="16px"/>
-                        </button>
+                      ) : null}
+                    </div>
+                    <Dropdown
+                      container={{ className: "top-panel-item-content-top-dropdown" }}
+                      toggle={{ isIconTextBtn: true, title: locale.timer.presets_button, iconId: "menu" }}>
+                      <div className="dropdown-group timer-dropdown-presets">
+                        {presets.length ? (
+                          presets.map(preset => (
+                            <button className={`btn text-btn dropdown-btn${activeTimer.presetId === preset.id ? " active" : ""}`} key={preset.id}
+                              onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
+                          ))
+                        ) : (
+                          <p className="timer-dropdown-presets-message">{locale.timer.no_presets_message}</p>
+                        )}
                       </div>
-                      <span className="top-panel-digit">{activeTimer.minutes}</span>
-                    </div>
-                    <span className="top-panel-digit-sep">m</span>
+                      <button className="btn text-btn dropdown-btn" onClick={showPresets}>{locale.timer.manage_presets_button}</button>
+                    </Dropdown>
                   </div>
                 )}
-                <div className="timer-digit-container">
-                  <div className="timer-digit-value-container">
-                    <div className="timer-display-btns">
-                      <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title="Increase">
-                        <Icon id="plus" size="16px"/>
-                      </button>
-                      <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title="Decrease">
-                        <Icon id="minus" size="16px"/>
-                      </button>
-                    </div>
-                    <span className="top-panel-digit">{activeTimer.seconds}</span>
-                  </div>
-                  <span className="top-panel-digit-sep">s</span>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              {activeTimer.dirty ? activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null : (
-                <div className="top-panel-item-content-top">
-                  <div className="input-icon-btn-container">
-                    <input type="text" className="input" value={activeTimer.label} onChange={handleLabelInputChange}
-                      placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
-                    {activeTimer.label ? (
-                      <button className="btn icon-btn" onClick={clearLabelInput} title="Clear">
-                        <Icon id="cross"/>
-                      </button>
-                    ) : null}
-                  </div>
-                  <Dropdown
-                    container={{ className: "top-panel-item-content-top-dropdown" }}
-                    toggle={{ isIconTextBtn: true, title: locale.timer.presets_button, iconId: "menu" }}>
-                    <div className="dropdown-group timer-dropdown-presets">
-                      {presets.length ? (
-                        presets.map(preset => (
-                          <button className={`btn text-btn dropdown-btn${activeTimer.presetId === preset.id ? " active" : ""}`} key={preset.id}
-                            onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
-                        ))
-                      ) : (
-                        <p className="timer-dropdown-presets-message">{locale.timer.no_presets_message}</p>
-                      )}
-                    </div>
-                    <button className="btn text-btn dropdown-btn" onClick={showPresets}>{locale.timer.manage_presets_button}</button>
-                  </Dropdown>
-                </div>
-              )}
-              <Inputs state={activeTimer} addTime={addTime} removeTime={removeTime} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
-            </>
-          )}
-        </div>
-      )}
+                <Inputs state={activeTimer} addTime={addTime} removeTime={removeTime} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
+              </>
+            )}
+          </div>
+        )}
+      </div>
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{activeTimer.running ? locale.topPanel.stop : locale.topPanel.start}</button>
         {activeTimer.running || !activeTimer.dirtyInput ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={() => reset(activeTimer.id)}>{locale.global.reset}</button>}

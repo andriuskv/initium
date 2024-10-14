@@ -6,16 +6,19 @@
 }
 
 .countdowns-message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  min-height: inherit;
   font-size: var(--text-lg);
 }
 
-.countdown-items {
+.countdown-items-container {
   overflow-y: auto;
   max-height: 292px;
+  overflow-x: clip;
+}
+
+.countdown-items {
+  display: block;
+  height: auto;
 }
 
 .countdown-item-remove-btn {

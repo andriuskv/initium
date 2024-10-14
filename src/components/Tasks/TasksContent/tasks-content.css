@@ -86,6 +86,8 @@
 }
 
 .tasks-group-items {
+  overflow-y: clip;
+
   &.expanding {
     animation-fill-mode: both;
     animation-duration: var(--duration-n), var(--duration-n), var(--duration-n);

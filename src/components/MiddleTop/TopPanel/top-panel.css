@@ -201,14 +201,48 @@
 .top-panel-item {
   display: none;
 
-  &.first {
-    animation-duration: var(--duration-n);
-    animation-fill-mode: both;
-    animation-name: opacity-up;
-  }
+    &.anim-left {
+      overflow: hidden;
+
+      .top-panel-item-content {
+        animation-fill-mode: both;
+        animation-duration: var(--duration-n), var(--duration-n);
+        animation-name: opacity-up, slide-left;
+      }
+    }
+
+    &.anim-right {
+      overflow: hidden;
+
+      .top-panel-item-content {
+        animation-fill-mode: both;
+        animation-duration: var(--duration-n), var(--duration-n);
+        animation-name: opacity-up, slide-right;
+      }
+    }
 
   &.visible {
     display: block;
+  }
+}
+
+@keyframes slide-left {
+  from {
+    transform: translateX(-10%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-right {
+  from {
+    transform: translateX(10%);
+  }
+
+  to {
+    transform: translateX(0);
   }
 }
 
