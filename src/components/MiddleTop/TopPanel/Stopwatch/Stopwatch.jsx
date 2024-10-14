@@ -9,7 +9,7 @@ import useWorker from "../../useWorker";
 
 const Splits = lazy(() => import("./Splits"));
 
-export default function Stopwatch({ visible, first, locale, toggleIndicator, updateTitle, expand }) {
+export default function Stopwatch({ visible, locale, animDirection, toggleIndicator, updateTitle, expand }) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
   const [splits, setSplits] = useState([]);
@@ -251,45 +251,47 @@ export default function Stopwatch({ visible, first, locale, toggleIndicator, upd
   }
 
   return (
-    <div className={`top-panel-item stopwatch${visible ? " visible" : ""}${splits.length ? " with-splits" : ""}${first ? " first" : ""}`}>
-      {pipVisible ? <div className="container-body top-panel-item-content">Picture-in-picture is active</div> : (
-        <div className="container-body top-panel-item-content">
-          {renderTop()}
-          <div className="top-panel-item-display">
-            {state.hours > 0 && (
+    <div className={`top-panel-item stopwatch${visible ? " visible" : ""}${splits.length ? " with-splits" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
+      <div className="container-body">
+        {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
+          <div className="top-panel-item-content">
+            {renderTop()}
+            <div className="top-panel-item-display">
+              {state.hours > 0 && (
+                <div>
+                  <span className="top-panel-digit">{state.hours}</span>
+                  <span className="top-panel-digit-sep">h</span>
+                </div>
+              )}
+              {(state.hours > 0 || state.minutes > 0) && (
+                <div>
+                  <span className="top-panel-digit">{state.minutesDisplay}</span>
+                  <span className="top-panel-digit-sep">m</span>
+                </div>
+              )}
               <div>
-                <span className="top-panel-digit">{state.hours}</span>
-                <span className="top-panel-digit-sep">h</span>
+                <span className="top-panel-digit">{state.secondsDisplay}</span>
+                <span className="top-panel-digit-sep">s</span>
               </div>
-            )}
-            {(state.hours > 0 || state.minutes > 0) && (
-              <div>
-                <span className="top-panel-digit">{state.minutesDisplay}</span>
-                <span className="top-panel-digit-sep">m</span>
-              </div>
-            )}
-            <div>
-              <span className="top-panel-digit">{state.secondsDisplay}</span>
-              <span className="top-panel-digit-sep">s</span>
+              <span className="stopwatch-milliseconds">{state.millisecondsDisplay}</span>
             </div>
-            <span className="stopwatch-milliseconds">{state.millisecondsDisplay}</span>
+            {splits.length ? (
+              <div className="stopwatch-splits-preview">
+                <button className="btn text-btn" onClick={showSplits} data-modal-initiator="true">{locale.stopwatch.splits_title}</button>
+                <ul className="stopwatch-splits-preview-items">
+                  {splits.slice(0, 6).map((split, index) => (
+                    <li className="stopwatch-splits-preview-item" key={index}>
+                      <span>#{splits.length - index}</span>
+                      <span>{split.elapsedString}</span>
+                      {split.diffString ? <span>{split.diffString}</span> : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
-          {splits.length ? (
-            <div className="stopwatch-splits-preview">
-              <button className="btn text-btn" onClick={showSplits} data-modal-initiator="true">{locale.stopwatch.splits_title}</button>
-              <ul className="stopwatch-splits-preview-items">
-                {splits.slice(0, 6).map((split, index) => (
-                  <li className="stopwatch-splits-preview-item" key={index}>
-                    <span>#{splits.length - index}</span>
-                    <span>{split.elapsedString}</span>
-                    {split.diffString ? <span>{split.diffString}</span> : null}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </div>
-      )}
+        )}
+      </div>
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? locale.topPanel.stop : locale.topPanel.start}</button>
         {running ? <button className="btn text-btn top-panel-item-action-btn" onClick={makeSplit}>{locale.stopwatch.split_button}</button> : null}

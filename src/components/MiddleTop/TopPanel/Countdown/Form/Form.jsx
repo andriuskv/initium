@@ -66,7 +66,6 @@ export default function Form({ locale, createCountdown, hide }) {
       hours: h,
       minutes: minutes.value
     }, true);
-    console.log(dateString);
     const date = new Date(dateString);
 
     if (date.toString() === "Invalid Date") {

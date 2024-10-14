@@ -10,7 +10,7 @@ import useWorker from "../../useWorker";
 
 const Form = lazy(() => import("./Form"));
 
-export default function Countdown({ visible, locale, toggleIndicator }) {
+export default function Countdown({ visible, locale, animDirection, toggleIndicator }) {
   const [countdowns, setCountdowns] = useState([]);
   const { initWorker, destroyWorkers } = useWorker(updateCountdowns, [countdowns.length]);
   const running = useRef(0);
@@ -182,66 +182,68 @@ export default function Countdown({ visible, locale, toggleIndicator }) {
   function renderCountdowns() {
     if (countdowns.length) {
       return (
-        <ul className="countdown-items">
-          {countdowns.map((countdown, i) => (
-            <li className="countdown-item" key={countdown.id}>
-              {countdown.title && <div className="countdown-item-title">{countdown.title}</div>}
-              <div className="countdown-item-timer">
-                {countdown.isInPast && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">-</span>
+        <div className="countdown-items-container">
+          <ul className="top-panel-item-content countdown-items">
+            {countdowns.map((countdown, i) => (
+              <li className="countdown-item" key={countdown.id}>
+                {countdown.title && <div className="countdown-item-title">{countdown.title}</div>}
+                <div className="countdown-item-timer">
+                  {countdown.isInPast && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">-</span>
+                    </div>
+                  )}
+                  {countdown.years > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.years}</span>
+                      <span>{locale.countdown.year}{countdown.years === 1 ? "" : "s"}</span>
+                    </div>
+                  )}
+                  {countdown.months > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.months}</span>
+                      <span>{locale.countdown.month}{countdown.months === 1 ? "" : "s"}</span>
+                    </div>
+                  )}
+                  {countdown.days > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.days}</span>
+                      <span>{locale.countdown.day}{countdown.days === 1 ? "" : "s"}</span>
+                    </div>
+                  )}
+                  {countdown.hours > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.hours}</span>
+                      <span>{locale.countdown.hour}{countdown.hours === 1 ? "" : "s"}</span>
+                    </div>
+                  )}
+                  {countdown.minutes > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.minutes}</span>
+                      <span>{locale.countdown.minute}{countdown.minutes === 1 ? "" : "s"}</span>
+                    </div>
+                  )}
+                  <div className="countdown-item-timer-part seconds">
+                    <span className="countdown-item-timer-digit">{countdown.seconds}</span>
+                    <span>{locale.countdown.second}{countdown.seconds === 1 ? "" : "s"}</span>
                   </div>
-                )}
-                {countdown.years > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.years}</span>
-                    <span>{locale.countdown.year}{countdown.years === 1 ? "" : "s"}</span>
-                  </div>
-                )}
-                {countdown.months > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.months}</span>
-                    <span>{locale.countdown.month}{countdown.months === 1 ? "" : "s"}</span>
-                  </div>
-                )}
-                {countdown.days > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.days}</span>
-                    <span>{locale.countdown.day}{countdown.days === 1 ? "" : "s"}</span>
-                  </div>
-                )}
-                {countdown.hours > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.hours}</span>
-                    <span>{locale.countdown.hour}{countdown.hours === 1 ? "" : "s"}</span>
-                  </div>
-                )}
-                {countdown.minutes > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.minutes}</span>
-                    <span>{locale.countdown.minute}{countdown.minutes === 1 ? "" : "s"}</span>
-                  </div>
-                )}
-                <div className="countdown-item-timer-part seconds">
-                  <span className="countdown-item-timer-digit">{countdown.seconds}</span>
-                  <span>{locale.countdown.second}{countdown.seconds === 1 ? "" : "s"}</span>
                 </div>
-              </div>
-              <div className="countdown-item-date">{countdown.date}</div>
-              <button className="btn icon-btn alt-icon-btn countdown-item-remove-btn" onClick={() => removeCountdown(i)}
-                title={locale.global.remove}>
-                <Icon id="trash"/>
-              </button>
-            </li>
-          ))}
-        </ul>
+                <div className="countdown-item-date">{countdown.date}</div>
+                <button className="btn icon-btn alt-icon-btn countdown-item-remove-btn" onClick={() => removeCountdown(i)}
+                  title={locale.global.remove}>
+                  <Icon id="trash"/>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       );
     }
-    return <p className="countdowns-message">{locale.countdown.no_countdowns_message}</p>;
+    return <p className="top-panel-item-content countdowns-message">{locale.countdown.no_countdowns_message}</p>;
   }
 
   return (
-    <div className={`container-body top-panel-item countdown${visible ? " visible" : ""}`}>
+    <div className={`container-body top-panel-item countdown${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
       <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": true }}></CreateButton>
       {renderCountdowns()}
     </div>
