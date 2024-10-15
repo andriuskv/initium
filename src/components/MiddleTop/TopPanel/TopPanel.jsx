@@ -118,11 +118,10 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }, [minimal]);
 
   function getAnimDirection(current, prev) {
-    const tabsArr = Object.keys(tabs);
-
     if (!prev) {
       return null;
     }
+    const tabsArr = Object.keys(tabs);
 
     if (tabsArr.indexOf(current) > tabsArr.indexOf(prev)) {
       return { [current]: "anim-right", [prev]: "anim-left" };
