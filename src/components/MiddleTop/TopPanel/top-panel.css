@@ -59,6 +59,10 @@
       2px 4px 4px var(--color-black-2);
     user-select: none;
 
+    .container-body {
+      background-color: transparent;
+    }
+
     .top-panel-hide-target {
       display: none;
     }
