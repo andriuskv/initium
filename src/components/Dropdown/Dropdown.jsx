@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
-import { getRandomString } from "utils";
+import { getRandomString, timeout } from "utils";
 import * as focusService from "services/focus";
+import { getSetting } from "services/settings";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./dropdown.css";
@@ -11,6 +12,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
   const memoizedWindowClickHandler = useCallback(handleWindowClick, [state.id]);
   const isMounted = useRef(false);
   const drop = useRef(null);
+  const timeoutId = useRef(0);
 
   useEffect(() => {
     isMounted.current = true;
@@ -57,28 +59,27 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
   }, [state.reveal]);
 
   function toggleDropdown({ currentTarget }) {
+    if (state.visible) {
+      hideDropdown();
+      return;
+    }
+    const container = currentTarget.parentElement;
+    const element = getParentElement(container);
     let data = null;
 
-    if (state.visible) {
-      window.removeEventListener("click", memoizedWindowClickHandler);
+    if (element) {
+      element.style.position = "relative";
+
+      data = {
+        top: container.offsetTop,
+        bottom: container.offsetTop + currentTarget.offsetHeight,
+        height: element.scrollTop + element.clientHeight
+      };
+
+      element.style.position = "";
     }
-    else {
-      const container = currentTarget.parentElement;
-      const element = getParentElement(container);
+    window.addEventListener("click", memoizedWindowClickHandler);
 
-      if (element) {
-        element.style.position = "relative";
-
-        data = {
-          top: container.offsetTop,
-          bottom: container.offsetTop + currentTarget.offsetHeight,
-          height: element.scrollTop + element.clientHeight
-        };
-
-        element.style.position = "";
-      }
-      window.addEventListener("click", memoizedWindowClickHandler);
-    }
     setState({
       id: state.id,
       visible: false,
@@ -114,7 +115,13 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
 
   function hideDropdown() {
     if (isMounted.current) {
-      setState({ id: state.id, visible: false, reveal: false });
+      const { animationSpeed } = getSetting("appearance");
+
+      setState({ ...state, id: state.id, hiding: true });
+
+      timeoutId.current = timeout(() => {
+        setState({ id: state.id, visible: false, reveal: false });
+      }, 100 * animationSpeed, timeoutId.current);
     }
     window.removeEventListener("click", memoizedWindowClickHandler);
   }
@@ -149,7 +156,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
   return (
     <div id={state.id} className={`dropdown-container${container ? ` ${container.className}` : ""}${state.visible ? " visible" : ""}`}>
       {renderToggleButton()}
-      <div ref={drop} className={`container container-opaque dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}`}>{children}</div>
+      <div ref={drop} className={`container container-opaque dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}${state.hiding ? " hiding" : ""}`}>{children}</div>
     </div>
   );
 }
