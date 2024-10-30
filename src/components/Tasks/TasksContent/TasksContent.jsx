@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString, timeout, replaceLink } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
-import { formatDate } from "services/timeDate";
+import { formatDate, getDSTChangeDirection } from "services/timeDate";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
@@ -240,15 +240,18 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
   function getRepeatStatus(task, current) {
     const { start } = task.repeat;
+    const hourInMs = 60 * 60 * 1000;
 
     if (task.repeat.unit === "day" || task.repeat.unit === "week") {
-      let gap = 24 * 60 * 60 * 1000 * task.repeat.gap;
+      let gap = 24 * hourInMs * task.repeat.gap;
 
       if (task.repeat.unit === "week") {
         gap *= 7;
       }
+      const direction = getDSTChangeDirection(start, current);
+      const offset = direction === 0 ? 0 : -1 * direction * hourInMs;
       const nextDateFull = new Date(start + gap);
-      let next = new Date(nextDateFull.getFullYear(), nextDateFull.getMonth(), nextDateFull.getDate()).getTime();
+      let next = new Date(nextDateFull.getFullYear(), nextDateFull.getMonth(), nextDateFull.getDate()).getTime() + offset;
       let prev = start;
       let missed = 0;
 

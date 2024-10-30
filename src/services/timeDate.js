@@ -21,6 +21,18 @@ function adjustTime({ hours, minutes = 0 }) {
   };
 }
 
+function getDSTChangeDirection(start, end) {
+  const startOffset = (typeof start === "number" ? new Date(start) : new Date()).getTimezoneOffset();
+  const endOffset = (typeof end === "number" ? new Date(end) : new Date()).getTimezoneOffset();
+
+  if (startOffset > endOffset) {
+    return 1;
+  } else if (startOffset < endOffset) {
+    return -1;
+  }
+  return 0;
+}
+
 function getTimeString(time, { padHours = false, excludeMinutes = false } = {}) {
   const { hours, minutes, period } = adjustTime(time);
   const h = padHours ? padTime(hours) : hours;
@@ -294,6 +306,7 @@ export {
   getMonthName,
   getDay,
   getDate,
+  getDSTChangeDirection,
   padTime,
   formatTime,
   formatDate,
