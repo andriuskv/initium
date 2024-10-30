@@ -378,15 +378,11 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     }});
   }
 
-  function updatePresetsModal(presets) {
+  function showPresets() {
     dispatchCustomEvent("fullscreen-modal", {
       component: Presets,
       params: { presets, locale, updatePresets, getUpdatedTime, resetActivePreset }
     });
-  }
-
-  function showPresets() {
-    updatePresetsModal(presets);
   }
 
   function updatePresets(presets) {
@@ -397,8 +393,6 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
       }});
     }
     setPresets([...presets]);
-    savePresets(presets);
-    updatePresetsModal(presets);
   }
 
   function resetActivePreset(preset) {
@@ -419,10 +413,6 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
         presetId: ""
       }});
     }
-  }
-
-  function savePresets(presets) {
-    chromeStorage.set({ timer: presets });
   }
 
   function togglePip() {

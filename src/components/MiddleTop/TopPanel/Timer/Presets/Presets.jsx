@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { getRandomString } from "utils";
+import * as chromeStorage from "services/chromeStorage";
+import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./presets.css";
@@ -12,6 +14,8 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     seconds: "00"
   });
   const [form, setForm] = useState({ name: "" });
+  const [activeDragId, setActiveDragId] = useState(null);
+  const [localPresets, setLocalPresets] = useState(presets);
 
   function updateInputs(inputs) {
     setState({ ...inputs });
@@ -27,7 +31,7 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     const presetName = event.target.elements.name.value.trim();
 
     if (form.updating) {
-      const preset = presets[form.index];
+      const preset = localPresets[form.index];
 
       preset.name = presetName;
       preset.hours = state.hours;
@@ -37,13 +41,14 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
       resetActivePreset(preset);
     }
     else {
-      presets.unshift({
+      localPresets.unshift({
         name: presetName,
         id: getRandomString(4),
         ...state
       });
     }
-    updatePresets(presets);
+    updatePresets(localPresets);
+    savePresets(localPresets);
     resetForm();
   }
 
@@ -58,7 +63,7 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
   }
 
   function editPreset(index) {
-    const preset = presets[index];
+    const preset = localPresets[index];
 
     setForm({
       ...preset,
@@ -74,8 +79,9 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
   }
 
   function removePreset(index) {
-    presets.splice(index, 1);
-    updatePresets(presets);
+    localPresets.splice(index, 1);
+    updatePresets(localPresets);
+    savePresets(localPresets);
   }
 
   function resetForm() {
@@ -85,6 +91,10 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
       minutes: "00",
       seconds: "00"
     });
+  }
+
+  function savePresets(presets) {
+    chromeStorage.set({ timer: presets });
   }
 
   function handlePresetNameChange(event) {
@@ -99,6 +109,19 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
   function removeTime(to, event) {
     const values = getUpdatedTime(state, { to, sign: -1 }, event);
     setState(values);
+  }
+
+  function handleDragStart(event) {
+    setActiveDragId(event.active.id);
+  }
+
+  function handleSort(items) {
+    if (items) {
+      setLocalPresets(items);
+      updatePresets(items);
+      savePresets(items);
+    }
+    setActiveDragId(null);
   }
 
   return (
@@ -116,26 +139,32 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
           <button className="btn">{form.updating ? locale.global.update : locale.global.create}</button>
         </div>
       </form>
-      {presets.length ? (
+      {localPresets.length ? (
         <ul className="timer-preset-list" data-dropdown-parent>
-          {presets.map((preset, i) => (
-            <li className={`timer-preset${form.index === i ? " updating" : ""}`} key={preset.id}>
-              <div>
-                <div className="timer-preset-name">{preset.name}</div>
-                <div className="timer-preset-time">{preset.hours}:{preset.minutes}:{preset.seconds}</div>
-              </div>
-              <Dropdown>
-                <button className="btn icon-text-btn dropdown-btn" onClick={() => editPreset(i)}>
-                  <Icon id="edit"/>
-                  <span>{locale.global.edit}</span>
-                </button>
-                <button className="btn icon-text-btn dropdown-btn" onClick={() => removePreset(i)}>
-                  <Icon id="trash"/>
-                  <span>{locale.global.remove}</span>
-                </button>
-              </Dropdown>
-            </li>
-          ))}
+          <SortableList
+            items={localPresets}
+            handleSort={handleSort}
+            handleDragStart={handleDragStart}>
+            {localPresets.map((preset, i) => (
+              <SortableItem className={`timer-preset${form.index === i ? " updating" : ""}${preset.id === activeDragId ? " dragging" : ""}`}
+                id={preset.id} key={preset.id}>
+                <div>
+                  <div className="timer-preset-name">{preset.name}</div>
+                  <div className="timer-preset-time">{preset.hours}:{preset.minutes}:{preset.seconds}</div>
+                </div>
+                <Dropdown>
+                  <button className="btn icon-text-btn dropdown-btn" onClick={() => editPreset(i)}>
+                    <Icon id="edit"/>
+                    <span>{locale.global.edit}</span>
+                  </button>
+                  <button className="btn icon-text-btn dropdown-btn" onClick={() => removePreset(i)}>
+                    <Icon id="trash"/>
+                    <span>{locale.global.remove}</span>
+                  </button>
+                </Dropdown>
+              </SortableItem>
+            ))}
+          </SortableList>
         </ul>
       ) : (
         <p className="top-panel-item-content timer-presets-message">{locale.timer.no_presets_message}</p>
