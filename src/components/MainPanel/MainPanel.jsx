@@ -204,7 +204,7 @@ export default function MainPanel({ settings, locale }) {
   }
 
   function saveHeight(height) {
-    updateSetting({ mainPanel: { height } });
+    updateSetting("mainPanel", { height });
   }
 
   function renderTopSites() {

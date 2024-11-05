@@ -1,18 +1,18 @@
 import { useSettings } from "contexts/settings";
 
 export default function TimersTab({ locale }) {
-  const { settings: { timers: settings }, updateSetting, toggleSetting } = useSettings();
+  const { settings: { timers: settings }, updateContextSetting, toggleSetting } = useSettings();
 
   function handleVolumeChange({ target }) {
-    updateSetting("timers", { volume: target.valueAsNumber });
+    updateContextSetting("timers", { volume: target.valueAsNumber });
   }
 
   function handleTextScaleChange({ target }) {
-    updateSetting("timers", { fullscreenTextScale: target.valueAsNumber });
+    updateContextSetting("timers", { fullscreenTextScale: target.valueAsNumber });
   }
 
   function toggleTimerSetting(event) {
-    updateSetting("timers", {
+    updateContextSetting("timers", {
       timer: {
         ...settings.timer,
         usePresetNameAsLabel: event.target.checked
@@ -24,7 +24,7 @@ export default function TimersTab({ locale }) {
     if (/\D/.test(target.value)) {
       return;
     }
-    updateSetting("timers", { pomodoro: { ...settings.pomodoro, [target.name]: Number(target.value) } });
+    updateContextSetting("timers", { pomodoro: { ...settings.pomodoro, [target.name]: Number(target.value) } });
   }
 
   return (

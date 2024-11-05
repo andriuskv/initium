@@ -3,7 +3,7 @@ import { useSettings } from "contexts/settings";
 import "./weather-tab.css";
 
 export default function WeatherTab({ locale }) {
-  const { settings: { weather: settings }, updateSetting, toggleSetting } = useSettings();
+  const { settings: { weather: settings }, updateContextSetting, toggleSetting } = useSettings();
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -21,12 +21,12 @@ export default function WeatherTab({ locale }) {
   function toggleTemperatureUnits() {
     const { units } = settings;
 
-    updateSetting("weather", { units: units === "C" ? "F" : "C" });
+    updateContextSetting("weather", { units: units === "C" ? "F" : "C" });
   }
 
   function handleCityNameChange(event) {
     event.preventDefault();
-    updateSetting("weather", { cityName: event.target.elements.cityName.value });
+    updateContextSetting("weather", { cityName: event.target.elements.cityName.value });
   }
 
   return (

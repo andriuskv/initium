@@ -1,4 +1,14 @@
-export default function Icon({ id, className, style = {}, size, title }) {
+import React from "react";
+
+type Props = {
+  id: string,
+  className: string,
+  style?: React.CSSProperties,
+  size?: string,
+  title?: string
+}
+
+export default function Icon({ id, className, style = {}, size, title }: Props) {
   const dimensions = size ? { width: size, height: size } : {};
 
   return (

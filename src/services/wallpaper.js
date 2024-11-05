@@ -117,11 +117,9 @@ function setUrlWallpaper(url, mimeType) {
 }
 
 function resetIDBWallpaper() {
-  setSetting({
-    appearance: {
-      ...getSetting("appearance"),
-      wallpaper: { provider: "unsplash", url: "" }
-    }
+  setSetting("appearance", {
+    ...getSetting("appearance"),
+    wallpaper: { provider: "unsplash", url: "" }
   });
   resetIDBStore();
 }

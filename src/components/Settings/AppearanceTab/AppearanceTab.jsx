@@ -90,7 +90,7 @@ const colors = [
 ];
 
 export default function AppearanceTab({ locale }) {
-  const { settings: { appearance: settings }, updateSetting: updateContextSetting } = useSettings();
+  const { settings: { appearance: settings }, updateContextSetting } = useSettings();
   const [colorIndex, setColorIndex] = useState(() => {
     return colors.findIndex(color => settings.accentColor.hue === color.hue && settings.accentColor.saturation === color.saturation);
   });
@@ -112,7 +112,7 @@ export default function AppearanceTab({ locale }) {
     }
 
     timeoutId.current = timeout(() => {
-      updateSetting({ appearance: { [name]: Number(value) } });
+      updateSetting("appearance", { [name]: Number(value) });
     }, 1000, timeoutId.current);
   }
 
@@ -161,7 +161,7 @@ export default function AppearanceTab({ locale }) {
       document.documentElement.style.setProperty("--accent-lightness", color.lightness);
 
       timeoutId.current = timeout(() => {
-        updateSetting({ appearance: { accentColor: color } });
+        updateSetting("appearance", { accentColor: color });
       }, 1000, timeoutId.current);
     }
   }

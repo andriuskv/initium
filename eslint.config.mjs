@@ -1,21 +1,20 @@
-import js from "@eslint/js";
+import eslint from "@eslint/js";
+import tsEslint from "typescript-eslint";
+import tsParser from "@typescript-eslint/parser";
 import globals from "globals";
 import react from "eslint-plugin-react";
-import babelParser from "@babel/eslint-parser";
 
 export default [
-  js.configs.recommended,
+  eslint.configs.recommended,
+  ...tsEslint.configs.recommended,
   react.configs.flat.recommended,
   {
-    files: ["**/*.js", "**/*.jsx"],
+    files: ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
     languageOptions: {
-      parser: babelParser,
+      parser: tsParser,
       parserOptions: {
-        sourceType: "module",
-        requireConfigFile: false,
-        babelOptions: {
-          presets: ["@babel/preset-env", "@babel/preset-react"]
-        },
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
         ecmaVersion: "latest",
         ecmaFeatures: {
           modules: true,
@@ -33,6 +32,7 @@ export default [
       react
     },
     rules: {
+      "@typescript-eslint/no-require-imports": 0,
       "react/react-in-jsx-scope": 0,
       "react/prop-types": 0,
       "react/display-name": 0,
@@ -82,7 +82,7 @@ export default [
       "no-useless-call": 2,
       "no-useless-concat": 2,
       "no-undef": 2,
-      "no-unused-vars": ["error", {
+      "@typescript-eslint/no-unused-vars": ["error", {
         "argsIgnorePattern": "^_",
         "varsIgnorePattern": "^_",
         "caughtErrorsIgnorePattern": "^_"

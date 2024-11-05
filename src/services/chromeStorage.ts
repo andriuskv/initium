@@ -2,8 +2,14 @@
 
 import { formatBytes } from "utils";
 
+type Subscriber = {
+  id: string,
+  listenToLocal: boolean,
+  handler: (changes: chrome.storage.StorageChange) => void,
+}
+
 const MAX_QUOTA = chrome.storage.sync.QUOTA_BYTES_PER_ITEM || 8192;
-const subscribers = [];
+const subscribers: Subscriber[] = [];
 let isLocalChange = false;
 
 (function listenToChanges() {
@@ -22,30 +28,30 @@ let isLocalChange = false;
   });
 })();
 
-function subscribeToChanges(handler, { id, listenToLocal = false } = {}) {
+function subscribeToChanges(handler: Subscriber["handler"], { id, listenToLocal = false } = {} as Subscriber) {
   if (id) {
     removeSubscriber(id);
   }
   subscribers.push({ id, handler, listenToLocal });
 }
 
-function removeSubscriber(id) {
+function removeSubscriber(id: string) {
   const index = subscribers.findIndex(subscriber => subscriber.id === id);
 
   if (index >= 0) {
     const subscriber = subscribers[index];
 
-    chrome.storage.onChanged.removeListener(subscriber.hanlder);
+    chrome.storage.onChanged.removeListener(subscriber.handler);
     subscribers.splice(index, 1);
   }
 }
 
-async function get(id) {
+async function get(id: string) {
   const item = await chrome.storage.sync.get(id);
   return item[id];
 }
 
-async function set(value, { updateLocally, warnSize } = { updateLocally: false, warnSize: false }) {
+async function set(value: Partial<{ [key: string]: unknown }>, { updateLocally, warnSize } = { updateLocally: false, warnSize: false }) {
   isLocalChange = !updateLocally;
 
   try {
@@ -67,11 +73,11 @@ async function set(value, { updateLocally, warnSize } = { updateLocally: false, 
   }
 }
 
-async function remove(id) {
-  chrome.storage.sync.remove(id);
+function remove(id: string) {
+  return chrome.storage.sync.remove(id);
 }
 
-async function getBytesInUse(id) {
+async function getBytesInUse(id: string) {
   const bytes = await chrome.storage.sync.getBytesInUse(id);
 
   return {
@@ -83,7 +89,7 @@ async function getBytesInUse(id) {
   };
 }
 
-async function checkSize(id) {
+async function checkSize(id: string) {
   const { usedRatio } = await getBytesInUse(id);
 
   if (usedRatio >= 0.9) {

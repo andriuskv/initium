@@ -42,15 +42,16 @@ module.exports = function(env = {}) {
     mode,
     target: "browserslist",
     entry: {
-      main: "./src/index.jsx"
+      main: "./src/index.tsx"
     },
     resolve: {
-      extensions: [".jsx", ".js"],
+      extensions: [".ts", ".tsx", ".js", ".jsx"],
       alias: {
         components: path.resolve(__dirname, "src/components"),
         contexts: path.resolve(__dirname, "src/contexts"),
         hooks: path.resolve(__dirname, "src/hooks"),
         services: path.resolve(__dirname, "src/services"),
+        types: path.resolve(__dirname, "src/types"),
         assets: path.resolve(__dirname, "src/assets"),
         utils$: path.resolve(__dirname, "src/utils.js")
       }
@@ -123,23 +124,9 @@ module.exports = function(env = {}) {
           ]
         },
         {
-          test: /\.jsx?$/,
+          test: /\.(t|j)sx?$/,
           exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: [["@babel/preset-env", {
-                modules: false,
-                loose: true,
-                bugfixes: true,
-                useBuiltIns: "usage",
-                corejs: 3
-              }], ["@babel/preset-react", {
-                runtime: "automatic"
-              }]],
-              plugins: ["@babel/plugin-syntax-import-attributes"]
-            }
-          }
+          use: { loader: "ts-loader" }
         }
       ]
     },

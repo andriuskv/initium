@@ -4,7 +4,7 @@ import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./settings.css";
 
-export default function Settings({ settings, user, updateSetting, hide }) {
+export default function Settings({ settings, user, updateContextSetting, hide }) {
   const timeoutId = useRef(null);
   const userColor = user.highlightColor || user.profileColor;
   const colors = [
@@ -19,17 +19,17 @@ export default function Settings({ settings, user, updateSetting, hide }) {
   ];
 
   function handleVideoQualityChange(event) {
-    updateSetting("videoQuality", event.target.value);
+    updateContextSetting("videoQuality", event.target.value);
   }
 
   function handleVideoVolumeChange(event) {
     timeoutId.current = timeout(() => {
-      updateSetting("videoVolume", event.target.valueAsNumber);
+      updateContextSetting("videoVolume", event.target.valueAsNumber);
     }, 1000, timeoutId.current);
   }
 
   function selectColor(color) {
-    updateSetting("highlightColor", color);
+    updateContextSetting("highlightColor", color);
   }
 
   return (
