@@ -3,7 +3,7 @@ import { useSettings } from "contexts/settings";
 import { dispatchCustomEvent } from "utils";
 
 export default function MainPanelTab({ locale, hide }) {
-  const { settings: { mainPanel: settings }, updateSetting, updateMainPanelComponentSetting, toggleSetting } = useSettings();
+  const { settings: { mainPanel: settings }, updateContextSetting, updateMainPanelComponentSetting, toggleSetting } = useSettings();
   const [topSitesDirty, setTopSitesDirty] = useState(() => !!localStorage.getItem("top sites"));
 
   function toggleComponent(item) {
@@ -16,7 +16,7 @@ export default function MainPanelTab({ locale, hide }) {
         disabledComponentCount += 1;
       }
     }
-    updateSetting("mainPanel", {
+    updateContextSetting("mainPanel", {
       navDisabled: disabledComponentCount >= componentsArray.length - 1,
       disabled: disabledComponentCount === componentsArray.length,
       components: { ...settings.components }

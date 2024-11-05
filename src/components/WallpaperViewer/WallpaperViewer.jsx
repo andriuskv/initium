@@ -32,7 +32,7 @@ function useUrl({ id, url: imageUrl }) {
 }
 
 export default function WallpaperViewer({ locale, hide }) {
-  const { settings: { appearance: { wallpaper: settings } }, updateSetting } = useSettings();
+  const { settings: { appearance: { wallpaper: settings } }, updateContextSetting } = useSettings();
   const url = useUrl(settings);
   const [area, setArea] = useState(null);
   const [image, setImage] = useState(null);
@@ -179,7 +179,7 @@ export default function WallpaperViewer({ locale, hide }) {
     const x = getWallpaperPosition(area.x, "width");
     const y = getWallpaperPosition(area.y, "height");
 
-    updateSetting("appearance", {
+    updateContextSetting("appearance", {
       wallpaper: {
         ...settings,
         x,

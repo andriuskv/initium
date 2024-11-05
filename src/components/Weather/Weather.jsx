@@ -10,7 +10,7 @@ import "./weather.css";
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ timeFormat, locale }) {
-  const { settings: { appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings }, updateSetting } = useSettings();
+  const { settings: { appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings }, updateContextSetting } = useSettings();
   const [state, setState] = useState(() => {
     const view = localStorage.getItem("active-weather-tab") || "temp";
     return { view };
@@ -126,12 +126,12 @@ export default function Weather({ timeFormat, locale }) {
     if (type === "temp") {
       const { units } = settings;
 
-      updateSetting("weather", { units: units === "C" ? "F" : "C" });
+      updateContextSetting("weather", { units: units === "C" ? "F" : "C" });
     }
     else if (type === "wind") {
       const { speedUnits } = settings;
 
-      updateSetting("weather", { speedUnits: speedUnits === "m/s" ? "ft/s" : "m/s" });
+      updateContextSetting("weather", { speedUnits: speedUnits === "m/s" ? "ft/s" : "m/s" });
     }
   }
 

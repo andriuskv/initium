@@ -6,7 +6,7 @@ import "./time-date-tab.css";
 import GoogleUserDropdown from "./GoogleUserDropdown";
 
 export default function TimeDateTab({ locale }) {
-  const { settings: { timeDate: settings }, updateSetting, toggleSetting } = useSettings();
+  const { settings: { timeDate: settings }, updateContextSetting, toggleSetting } = useSettings();
   const [googleUser, setGoogleUser] = useState(() => {
     if (localStorage.getItem("oauth_token")) {
       return { user: JSON.parse(localStorage.getItem("google-user")) || null };
@@ -18,12 +18,12 @@ export default function TimeDateTab({ locale }) {
   function toggleTimeFormat() {
     const { format } = settings;
 
-    updateSetting("timeDate", { format: format === 24 ? 12 : 24 });
+    updateContextSetting("timeDate", { format: format === 24 ? 12 : 24 });
   }
 
   function updateRangeSetting(name, value) {
     timeoutId.current = timeout(() => {
-      updateSetting("timeDate", { [name]: Number(value) });
+      updateContextSetting("timeDate", { [name]: Number(value) });
     }, 1000, timeoutId.current);
   }
 
@@ -42,23 +42,23 @@ export default function TimeDateTab({ locale }) {
   }
 
   function handleDatePositionChange({ target }) {
-    updateSetting("timeDate", { datePosition: target.value });
+    updateContextSetting("timeDate", { datePosition: target.value });
   }
 
   function handleDateAlignmentChange({ target }) {
-    updateSetting("timeDate", { dateAlignment: target.value });
+    updateContextSetting("timeDate", { dateAlignment: target.value });
   }
 
   function handleClockStyleChange({ target }) {
-    updateSetting("timeDate", { clockStyle: target.value });
+    updateContextSetting("timeDate", { clockStyle: target.value });
   }
 
   function handleDateLocaleChange({ target }) {
-    updateSetting("timeDate", { dateLocale: target.value });
+    updateContextSetting("timeDate", { dateLocale: target.value });
   }
 
   function handleWeekdayChange({ target }) {
-    updateSetting("timeDate", { firstWeekday: Number(target.value) });
+    updateContextSetting("timeDate", { firstWeekday: Number(target.value) });
   }
 
   async function handleGoogleCalendarConnect() {

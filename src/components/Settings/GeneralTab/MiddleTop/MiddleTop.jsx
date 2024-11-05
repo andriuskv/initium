@@ -4,7 +4,7 @@ import Modal from "components/Modal";
 import * as settingsService from "services/settings";
 import "./middle-top.css";
 
-export default function MiddleTop({ settings, locale, updateSetting, hiding, hide }) {
+export default function MiddleTop({ settings, locale, updateContextSetting, hiding, hide }) {
   const items = settings.general.middleTopOrder;
 
   function changeOrder(order, id) {
@@ -15,7 +15,7 @@ export default function MiddleTop({ settings, locale, updateSetting, hiding, hid
     }
     ([items[index], items[index + order]] = [items[index + order], items[index]]);
 
-    updateSetting("general", {
+    updateContextSetting("general", {
       middleTopOrder: [...items]
     });
   }
@@ -25,7 +25,7 @@ export default function MiddleTop({ settings, locale, updateSetting, hiding, hid
 
     item.alignment = alignment;
 
-    updateSetting("general", {
+    updateContextSetting("general", {
       middleTopOrder: [...items]
     });
   }
@@ -33,7 +33,7 @@ export default function MiddleTop({ settings, locale, updateSetting, hiding, hid
   function reset() {
     const { general: { middleTopOrder } } = settingsService.getDefault();
 
-    updateSetting("general", { middleTopOrder });
+    updateContextSetting("general", { middleTopOrder });
   }
 
   return (

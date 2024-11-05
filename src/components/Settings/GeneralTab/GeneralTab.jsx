@@ -10,7 +10,7 @@ import "./general-tab.css";
 const MiddleTop = lazy(() => import("./MiddleTop"));
 
 export default function GeneralTab({ locale }) {
-  const { settings, toggleSetting, updateSetting, resetSettings } = useSettings();
+  const { settings, toggleSetting, updateContextSetting, resetSettings } = useSettings();
   const [modal, setModal, hideModal] = useModal(null);
 
   // function handleLocaleChange({ target }) {
@@ -22,7 +22,7 @@ export default function GeneralTab({ locale }) {
   }
 
   function toggleGreetingSetting(event) {
-    updateSetting("general", {
+    updateContextSetting("general", {
       greeting: {
         ...settings.general.greeting,
         disabled: event.target.checked
@@ -31,7 +31,7 @@ export default function GeneralTab({ locale }) {
   }
 
   function handleRangeInputChange({ target }) {
-    updateSetting("general", {
+    updateContextSetting("general", {
       greeting: {
         ...settings.general.greeting,
         textSize: Number(target.value)
@@ -79,7 +79,8 @@ export default function GeneralTab({ locale }) {
     else if (modal.type === "order") {
       return (
         <Suspense fallback={null}>
-          <MiddleTop settings={settings} locale={locale} updateSetting={updateSetting} hiding={modal.hiding} hide={hideModal}/>
+          <MiddleTop settings={settings} locale={locale}
+            updateContextSetting={updateContextSetting} hiding={modal.hiding} hide={hideModal}/>
         </Suspense>
       );
     }

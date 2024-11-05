@@ -1,19 +1,16 @@
 import { generateNoise } from "../utils";
+import { Settings, MainPanelSettings, MainPanelComponents } from "types/settings";
 
 let settings = initSettings();
 
 function initSettings() {
-  let settings = JSON.parse(localStorage.getItem("settings")) || {};
-
-  settings = copyObject(settings, getDefault());
-
-  delete settings.mainPanel.components.twitter;
-
-  return settings;
+  const item = localStorage.getItem("settings");
+  const settings: Partial<Settings> = item ? JSON.parse(item) : {};
+  return fillMissing(settings, getDefault());
 }
 
-function initAppearanceSettings(settings) {
-  document.documentElement.style.setProperty("--animation-speed", settings.animationSpeed);
+function initAppearanceSettings(settings: Settings["appearance"]) {
+  document.documentElement.style.setProperty("--animation-speed", settings.animationSpeed.toString());
 
   document.documentElement.style.setProperty("--accent-hue", settings.accentColor.hue);
   document.documentElement.style.setProperty("--accent-saturation", settings.accentColor.saturation);
@@ -34,7 +31,7 @@ function initAppearanceSettings(settings) {
   }
 }
 
-function getDefault() {
+function getDefault(): Settings {
   return {
     general: {
       locale: "en",
@@ -136,16 +133,16 @@ function getDefault() {
   };
 }
 
-function copyObject(target, source) {
+function fillMissing(target: Partial<Settings>, source: Settings) {
   for (const key of Object.keys(source)) {
     if (typeof target[key] === "undefined") {
       target[key] = source[key];
     }
     else if (typeof target[key] === "object") {
-      target[key] = copyObject(target[key], source[key]);
+      target[key] = fillMissing(target[key], source[key]);
     }
   }
-  return target;
+  return target as Settings;
 }
 
 function resetSettings() {
@@ -158,43 +155,39 @@ function getSettings() {
   return settings;
 }
 
-function getSetting(setting) {
-  return settings[setting] || {};
+function getSetting(name: keyof Settings) {
+  return settings[name];
 }
 
-function setSetting(setting) {
-  const [settingFor] = Object.keys(setting);
-  settings[settingFor] = setting[settingFor];
-
+function setSetting(name: string, value: Settings[keyof Settings]) {
+  settings[name] = value;
   localStorage.setItem("settings", JSON.stringify(settings));
   return settings;
 }
 
-function updateSetting(setting) {
-  const [settingFor] = Object.keys(setting);
-  settings[settingFor] = { ...settings[settingFor], ...setting[settingFor] };
-
+function updateSetting(name: string, value: Partial<Settings[keyof Settings]>) {
+  settings[name] = { ...settings[name], ...value };
   localStorage.setItem("settings", JSON.stringify(settings));
   return settings;
 }
 
-function updateMainPanelComponentSetting(name, setting) {
-  const { components } = settings.mainPanel;
-
-  return updateSetting({
-    mainPanel: {
-      components: {
-        ...components,
-        [name]: {
-          ...components[name],
-          ...setting
-        }
+function updateMainPanelComponentSetting(name: keyof MainPanelComponents, setting: MainPanelComponents[keyof MainPanelComponents]) {
+  const { navHidden, components } = settings.mainPanel;
+  const mainPanel: MainPanelSettings = {
+    navHidden,
+    components: {
+      ...components,
+      [name]: {
+        ...components[name],
+        ...setting
       }
     }
-  });
+  };
+
+  return updateSetting("mainPanel", mainPanel);
 }
 
-function addPanelNoise(noise) {
+function addPanelNoise(noise: string) {
   const sheet = new CSSStyleSheet();
 
   sheet.replaceSync(`:root {
