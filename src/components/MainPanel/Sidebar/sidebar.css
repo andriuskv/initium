@@ -5,12 +5,12 @@
   border-radius: 0;
   border-top-right-radius: var(--container-border-radius);
   border-bottom-right-radius: var(--container-border-radius);
-  transform: translate(-2px, 8px);
+  transform: translate(-2px, 42px);
   pointer-events: auto;
 
   &.expanded {
     border-radius: var(--container-border-radius);
-    transform: translateX(var(--space-md));
+    transform: translate(var(--space-md), var(--nav-height));
     transition: var(--duration-n) transform;
   }
 }

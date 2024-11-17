@@ -109,7 +109,9 @@ export default function Weather({ timeFormat, locale }) {
 
   useEffect(() => {
     if (state.reveal) {
-      setState({ ...state, visible: true });
+      requestAnimationFrame(() => {
+        setState({ ...state, visible: true });
+      });
     }
     else if (moreButton.current) {
       moreButton.current.focus();

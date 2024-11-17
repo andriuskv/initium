@@ -12,10 +12,12 @@ const views = ["temp", "prec", "wind"];
 export default function MoreWeather({ current, more, units, speedUnits, view, message, locale, selectView, toggleUnits, hide }) {
   const [tempRange, setTempRange] = useState(null);
   const container = useRef(null);
+  const first = useRef(true);
   const activeTabIndex = views.indexOf(view);
 
   useEffect(() => {
-    if (tempRange) {
+    if (tempRange && first.current) {
+      first.current = false;
       focusService.focusFirstElement(container.current);
     }
   }, [tempRange]);

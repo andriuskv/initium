@@ -2,7 +2,7 @@ import React from "react";
 
 type Props = {
   id: string,
-  className: string,
+  className?: string,
   style?: React.CSSProperties,
   size?: string,
   title?: string

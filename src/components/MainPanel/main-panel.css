@@ -1,18 +1,28 @@
 @import "../../styles/mixins.css";
 
 .main-panel-nav {
-  position: absolute;
-  top: 0;
-  left: 50%;
   display: flex;
   gap: var(--space-md);
-  transform: translate(-50%, calc(-100% - var(--space-md)));
-  transition:
-    var(--duration-n) opacity,
-    var(--duration-n) visibility,
-    var(--duration-n) transform;
-  transition-delay: var(--duration-n);
-  pointer-events: auto;
+  margin-bottom: var(--space-md);
+  pointer-events: all;
+  animation-name: slide-nav-down;
+  animation-duration: var(--duration-n);
+  animation-delay: var(--duration-n);
+  animation-fill-mode: both;
+}
+
+@keyframes slide-nav-down {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
 .main-panel-item {
@@ -32,13 +42,14 @@
 
 .main-panel {
   --nav-height: 34px;
-  --offset-y: calc(42% + var(--nav-height));
+  --offset-y: 42%;
 
   z-index: var(--z-index, 2);
   position: absolute;
   top: var(--offset-y);
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 588px;
   max-width: calc(100% - var(--space-xl));
   pointer-events: none;
@@ -81,13 +92,14 @@
   &.expanded {
     --offset-y: var(--space-md);
 
-    height: 100%;
+    height: calc(100% + var(--nav-height));
 
     .main-panel-nav {
-      opacity: 0;
-      visibility: hidden;
-      transform: translate(-50%, 100%);
-      transition-delay: 0s;
+      display: none;
+    }
+
+    .main-panel-sidebar.expanded {
+       transform: translateX(var(--space-md));
     }
   }
 }

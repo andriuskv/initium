@@ -95,7 +95,9 @@ export default function BottomPanel({ locale }) {
       setItems({ ...items });
     }
     else {
-      setSelectedItem({ ...selectedItem, visible: true });
+      requestAnimationFrame(() => {
+        setSelectedItem({ ...selectedItem, visible: true });
+      });
     }
   }, [selectedItem.id]);
 
