@@ -1,6 +1,7 @@
 .resizer {
   display: block;
   height: 16px;
+  width: 100%;
   transform: translateY(2px);
   pointer-events: auto;
   cursor: row-resize;

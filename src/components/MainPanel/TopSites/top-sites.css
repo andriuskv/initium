@@ -27,7 +27,9 @@
   pointer-events: auto;
 
   &.visible, &:hover, &:has(:focus-visible) {
-    opacity: 1;
+    animation-name: show-dropdown;
+    animation-duration: var(--duration-n);
+    animation-fill-mode: both;
   }
 
   & > .icon-btn {
@@ -41,8 +43,23 @@
   position: relative;
   width: 136px;
 
-  &:hover .top-site-dropdown:not(.visible) {
-    animation: 0s linear 0.5s forwards delayed-reveal;
+  &:hover .top-site-dropdown:not(.visible, :hover) {
+    animation-name: show-dropdown;
+    animation-duration: var(--duration-n);
+    animation-fill-mode: both;
+    animation-delay: 0.5s;
+  }
+}
+
+@keyframes show-dropdown {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
