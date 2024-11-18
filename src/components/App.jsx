@@ -6,6 +6,7 @@ import { useLocalization } from "contexts/localization";
 import Wallpaper from "components/Wallpaper";
 import MiddleTop from "components/MiddleTop";
 import BottomPanel from "components/BottomPanel";
+import Tooltip from "components/Tooltip";
 
 const MainPanel = lazy(() => import("./MainPanel"));
 const Weather = lazy(() => import("./Weather"));
@@ -153,6 +154,7 @@ export default function App() {
         {weather.rendered && <Weather timeFormat={settings.timeDate.format} locale={locale}/>}
       </Suspense>
       <BottomPanel locale={locale}/>
+      <Tooltip/>
       {fullscreenModal ? renderFullscreenModal() : null}
     </>
   );

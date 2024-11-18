@@ -151,7 +151,7 @@ export default function BottomPanel({ locale }) {
         {Object.values(items).filter(item => !item.disabled).map(item => (
           <li key={item.id}>
             <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
-              onClick={() => selectItem(item.id)} title={item.title} {...(item.attrs ? item.attrs : null)}>
+              onClick={() => selectItem(item.id)} aria-label={item.title} data-tooltip={item.title} {...(item.attrs ? item.attrs : null)}>
               <Icon id={item.iconId} className="panel-item-btn-icon"/>
             </button>
           </li>
