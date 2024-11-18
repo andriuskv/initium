@@ -247,7 +247,7 @@ export default function MainPanel({ settings, locale }) {
           tab.disabled ? null : (
             <li key={tab.id}>
               <button className={`btn icon-btn panel-item-btn${tab.indicatorVisible ? " indicator" : ""}`}
-                onClick={() => selectTab(tab.id)} title={tab.title}>
+                onClick={() => selectTab(tab.id)} aria-label={tab.title} data-tooltip={tab.title}>
                 <Icon id={tab.iconId} className="panel-item-btn-icon"/>
               </button>
             </li>
