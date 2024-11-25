@@ -27,7 +27,7 @@ export type GeneralSettings = {
   middleTopOrder: MiddleTopItem[];
 };
 
-type AppearanceSettings = {
+export type AppearanceSettings = {
   animationSpeed: number;
   accentColor: HSLColor;
   panelBackgroundOpacity: number;
@@ -37,7 +37,7 @@ type AppearanceSettings = {
   wallpaper: Wallpaper;
 };
 
-type TimeDateSettings = {
+export type TimeDateSettings = {
   format: 12 | 24;
   clockDisabled: boolean;
   clockStyle: "default";
@@ -86,7 +86,7 @@ type TasksSettings = {
   showCompletedRepeatingTasks: boolean;
 };
 
-type WeatherSettings = {
+export type WeatherSettings = {
   disabled: boolean;
   useGeo: boolean;
   cityName: string;

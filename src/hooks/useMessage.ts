@@ -1,11 +1,11 @@
 import { useState, useRef } from "react";
 import { timeout } from "utils";
 
-export default function useMessage(initialValue) {
+export default function useMessage(initialValue: string) {
   const [message, setMessage] = useState(initialValue);
   const timeoutId = useRef(0);
 
-  function showMessage(message) {
+  function showMessage(message: string) {
     setMessage(message);
 
     timeoutId.current = timeout(() => {

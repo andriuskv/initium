@@ -1,42 +1,47 @@
-import { useLayoutEffect, useRef } from "react";
+import { PointerEvent as ReactPointerEvent, useLayoutEffect, useRef } from "react";
 import "./resizer.css";
 
-export default function Resizer({ container, saveHeight }) {
-  const resizerRef = useRef(null);
-  const containerRef = useRef(null);
+type Props = {
+  saveHeight: (height: number) => void
+}
+
+export default function Resizer({ saveHeight }: Props) {
+  const resizerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLElement>();
   const startY = useRef(0);
   const initialHeight = useRef(320);
   const height = useRef(0);
 
   useLayoutEffect(() => {
-    containerRef.current = container || resizerRef.current.parentElement;
+    if (!resizerRef.current) {
+      return;
+    }
+    containerRef.current = resizerRef.current.parentElement!;
     containerRef.current.classList.add("resizing");
     document.body.style.touchAction = "none";
-    resizerRef.current.addEventListener("pointerdown", handlePointerDown);
 
     return () => {
-      containerRef.current.classList.remove("resizing");
+      containerRef.current!.classList.remove("resizing");
       document.body.style.touchAction = "";
-      resizerRef.current.removeEventListener("pointerdown", handlePointerDown);
     };
   }, []);
 
-  function handlePointerDown({ clientY }) {
+  function handlePointerDown({ clientY }: ReactPointerEvent<HTMLDivElement>) {
     startY.current = clientY;
-    initialHeight.current = containerRef.current.offsetHeight;
+    initialHeight.current = containerRef.current!.offsetHeight;
     document.body.style.userSelect = "none";
 
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp, { once: true });
   }
 
-  function handlePointerMove({ clientY }) {
+  function handlePointerMove({ clientY }: PointerEvent) {
     height.current = clientY - startY.current + initialHeight.current;
 
     if (height.current < 360) {
       height.current = 360;
     }
-    containerRef.current.style.setProperty("--height", `${height.current}px`);
+    containerRef.current!.style.setProperty("--height", `${height.current}px`);
   }
 
   function handlePointerUp() {
@@ -44,12 +49,12 @@ export default function Resizer({ container, saveHeight }) {
 
     if (height.current > maxHeight) {
       height.current = maxHeight;
-      containerRef.current.style.setProperty("--height", `${height.current}px`);
+      containerRef.current!.style.setProperty("--height", `${height.current}px`);
     }
     saveHeight(height.current);
     document.body.style.userSelect = "";
     window.removeEventListener("pointermove", handlePointerMove);
   }
 
-  return <div className="resizer" ref={resizerRef}></div>;
+  return <div className="resizer" ref={resizerRef} onPointerDown={handlePointerDown}></div>;
 }

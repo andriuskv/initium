@@ -1,10 +1,20 @@
-import { useLayoutEffect, useRef } from "react";
+import { PropsWithChildren, useLayoutEffect, useRef } from "react";
+import { AppearanceSettings } from "types/settings";
 import { getSetting } from "services/settings";
 import "./tabs-container.css";
 
-export default function TabsContainer({ className, children, current, offset = 0, itemCount, visible = true, orientation = "h" }) {
-  const tabsContainerRef = useRef(null);
-  const indicatorRef = useRef(null);
+type Props = PropsWithChildren & {
+  className?: string,
+  current: number,
+  offset?: number,
+  itemCount: number,
+  visible?: boolean,
+  orientation?: "h" | "v"
+}
+
+export default function TabsContainer({ className, children, current, offset = 0, itemCount, visible = true, orientation = "h" }: Props) {
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const indicatorRef = useRef<HTMLDivElement>(null);
   const prev = useRef(current);
   const isStatic = useRef(current === prev.current);
   const first = useRef(true);
@@ -27,7 +37,7 @@ export default function TabsContainer({ className, children, current, offset = 0
   }, [offset, visible, itemCount]);
 
   function updateIndicator() {
-    if (current < 0) {
+    if (current < 0 || !tabsContainerRef.current || !indicatorRef.current) {
       return;
     }
     const containerRect = tabsContainerRef.current.getBoundingClientRect();
@@ -41,7 +51,7 @@ export default function TabsContainer({ className, children, current, offset = 0
       }
       return;
     }
-    const { animationSpeed } = getSetting("appearance");
+    const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
     const tabElements = tabsContainerRef.current.children[1].children;
     prev.current = prev.current > tabElements.length - 1 ? current : prev.current;
     const prevActiveItemRect = tabElements[prev.current].getBoundingClientRect();
@@ -66,8 +76,8 @@ export default function TabsContainer({ className, children, current, offset = 0
       const scale = activeItemRect[props.dimension] / containerSize;
 
       indicatorRef.current.classList.add("static");
-      indicatorRef.current.style.setProperty("--offset", offset);
-      indicatorRef.current.style.setProperty("--scale", scale);
+      indicatorRef.current.style.setProperty("--offset", offset.toString());
+      indicatorRef.current.style.setProperty("--scale", scale.toString());
 
       isStatic.current = false;
       return;
@@ -77,25 +87,29 @@ export default function TabsContainer({ className, children, current, offset = 0
     if (prev.current > current) {
       let scale = (prevActiveItemRect[props.end] - activeItemRect[props.start]) / containerSize;
 
-      indicatorRef.current.style.setProperty("--offset", offset);
-      indicatorRef.current.style.setProperty("--scale", scale);
+      indicatorRef.current.style.setProperty("--offset", offset.toString());
+      indicatorRef.current.style.setProperty("--scale", scale.toString());
 
       setTimeout(() => {
         scale = activeItemRect[props.dimension] / containerSize;
 
-        indicatorRef.current.style.setProperty("--scale", scale);
+        if (indicatorRef.current) {
+          indicatorRef.current.style.setProperty("--scale", scale.toString());
+        }
       }, 70 * animationSpeed);
     }
     else {
       let scale = (activeItemRect[props.end] - prevActiveItemRect[props.start]) / containerSize;
 
-      indicatorRef.current.style.setProperty("--scale", scale);
+      indicatorRef.current.style.setProperty("--scale", scale.toString());
 
       setTimeout(() => {
         scale = activeItemRect[props.dimension] / containerSize;
 
-        indicatorRef.current.style.setProperty("--offset", offset);
-        indicatorRef.current.style.setProperty("--scale", scale);
+        if (indicatorRef.current) {
+          indicatorRef.current.style.setProperty("--offset", offset.toString());
+          indicatorRef.current.style.setProperty("--scale", scale.toString());
+        }
       }, 70 * animationSpeed);
     }
   }

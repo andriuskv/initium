@@ -33,6 +33,7 @@ export default [
     },
     rules: {
       "@typescript-eslint/no-require-imports": 0,
+      "@typescript-eslint/ban-ts-comment": 0,
       "react/react-in-jsx-scope": 0,
       "react/prop-types": 0,
       "react/display-name": 0,

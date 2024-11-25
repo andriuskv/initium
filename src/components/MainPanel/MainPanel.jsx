@@ -66,6 +66,10 @@ export default function MainPanel({ settings, locale }) {
   }, [settings.components]);
 
   useEffect(() => {
+    if (resizerEnabled) {
+      setResizerEnabled(false);
+    }
+
     if (tabs.topSites.renderPending && activeTab.id === "topSites") {
       tabs.topSites.renderPending = false;
       setTabs({ ...tabs });

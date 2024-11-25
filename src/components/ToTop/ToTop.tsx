@@ -1,18 +1,22 @@
-import { useState, useLayoutEffect, useRef } from "react";
+import { MouseEvent, useState, useLayoutEffect, useRef } from "react";
+import { AppearanceSettings } from "types/settings";
 import { getSetting } from "services/settings";
 import Icon from "components/Icon";
 import "./to-top.css";
 
-export default function ToTop({ locale }) {
-  const [state, setState] = useState({ visible: false });
-  const ref = useRef(null);
+export default function ToTop({ locale }: { locale: { toTop: { title: string }} }) {
+  const [state, setState] = useState<{visible: boolean, hiding?: boolean}>({ visible: false });
+  const ref = useRef<HTMLButtonElement>(null);
   const scrolling = useRef(false);
 
   useLayoutEffect(() => {
-    ref.current.previousElementSibling.addEventListener("scroll", handleScroll);
-
+    if (ref.current) {
+      ref.current.previousElementSibling!.addEventListener("scroll", handleScroll);
+    }
     return () => {
-      ref.current.previousElementSibling.removeEventListener("scroll", handleScroll);
+      if (ref.current) {
+        ref.current.previousElementSibling!.removeEventListener("scroll", handleScroll);
+      }
     };
   }, [state]);
 
@@ -29,7 +33,7 @@ export default function ToTop({ locale }) {
         setState({ visible: true });
       }
       else {
-        const { animationSpeed } = getSetting("appearance");
+        const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
 
         setState({ ...state, hiding: true });
         setTimeout(() => {
@@ -39,8 +43,10 @@ export default function ToTop({ locale }) {
     });
   }
 
-  function handleClick() {
-    ref.current.previousElementSibling.scrollTop = 0;
+  function handleClick({ currentTarget }: MouseEvent<HTMLButtonElement>) {
+    if (currentTarget.previousElementSibling) {
+      currentTarget.previousElementSibling.scrollTop = 0;
+    }
   }
 
   return (
