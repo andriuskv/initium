@@ -1,15 +1,26 @@
-import { useLayoutEffect, useRef } from "react";
+import { PropsWithChildren, useLayoutEffect, useRef } from "react";
 import * as focusService from "services/focus";
 import "./fullscreen-modal.css";
 
-export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, hide }) {
+type Props = PropsWithChildren & {
+  className?: string,
+  transparent?: boolean,
+  hiding?: boolean,
+  mask?: boolean,
+  noAnim?: boolean,
+  hide: () => void
+}
+
+export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, hide }: Props) {
   const container = useRef(null);
   let pointerInside = false;
   let keep = false;
 
   useLayoutEffect(() => {
-    focusService.setInitiator(document.activeElement);
-    focusService.trapFocus("fullscreen-modal", container.current);
+    if (container.current) {
+      focusService.setInitiator(document.activeElement as HTMLElement);
+      focusService.trapFocus("fullscreen-modal", container.current);
+    }
 
     window.addEventListener("keydown", handleKeydown);
     window.addEventListener("pointerdown", handlePointerDown);
@@ -25,10 +36,10 @@ export default function FullscreenModal({ children, hiding, transparent = false,
     };
   }, []);
 
-  function handlePointerDown({ target }) {
+  function handlePointerDown({ target }: PointerEvent) {
     keep = false;
 
-    if (target.closest(".fullscreen-modal")) {
+    if (target && target instanceof HTMLElement && target.closest(".fullscreen-modal")) {
       pointerInside = true;
 
       // When date modal is dismissed by clicking outside of it pointer down event is not triggered,

@@ -1,22 +1,50 @@
-import { getRandomString } from "../utils";
+import { TimeDateSettings, WeatherSettings } from "types/settings";
+import { getRandomString } from "utils";
 import { getSetting } from "./settings";
 import { getTimeString, getCurrentDate } from "./timeDate";
 
-function fetchWeatherWithCityName(name) {
+type Weekday = {
+  description: string;
+  icon: string;
+  iconId: string;
+  temperature: {
+    min: number,
+    max: number
+  }
+  weekday: string
+};
+
+type Hour = {
+  hour: number,
+  temperature:number,
+  precipitation:number,
+  wind: {
+    speed: {
+      value:number,
+      raw: number
+    },
+    direction: {
+      name: string,
+      degrees: number
+    }
+  }
+}
+
+function fetchWeatherWithCityName(name: string) {
   return fetchWeatherData(`q=${name}`);
 }
 
 async function fetchWeatherWithCoords() {
   const coords = await fetchCoords();
 
-  if (coords.message) {
+  if ("message" in coords) {
     return coords;
   }
   return fetchWeatherData(`lat=${coords.lat}&lon=${coords.lon}`);
 }
 
 function fetchWeather() {
-  const { cityName, useGeo } = getSetting("weather");
+  const { cityName, useGeo } = getSetting("weather") as WeatherSettings;
 
   if (useGeo) {
     return fetchWeatherWithCoords();
@@ -26,12 +54,12 @@ function fetchWeather() {
   }
 }
 
-async function fetchMoreWeather({ lat, lon }) {
+async function fetchMoreWeather({ lat, lon }: { lat: number, lon: number }) {
   const data = await fetchWeatherData(`type=more&lat=${lat}&lon=${lon}`);
   return parseWeather(data);
 }
 
-function fetchCoords() {
+function fetchCoords(): Promise<{ lat: number, lon: number } | { type: "geo", message: string }> {
   return new Promise(resolve => {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => resolve({ lat: coords.latitude, lon: coords.longitude }),
@@ -48,7 +76,7 @@ function fetchCoords() {
   });
 }
 
-function parseWeather(data) {
+function parseWeather(data: { hourly: Hour[], daily: Weekday[]}) {
   const hourly = data.hourly.map(item => ({
     ...item,
     id: getRandomString(),
@@ -62,7 +90,7 @@ function parseWeather(data) {
   return { hourly, daily };
 }
 
-function updateWeekdayLocale(weekdays, locale = "en") {
+function updateWeekdayLocale(weekdays: Weekday[], locale = "en") {
   const formatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
   const date = getCurrentDate();
 
@@ -75,17 +103,14 @@ function updateWeekdayLocale(weekdays, locale = "en") {
   return weekdays;
 }
 
-function convertTemperature(value, units) {
+function convertTemperature(value: number, units: "C" | "F") {
   if (units === "F") {
-    value = value * 1.8 + 32;
+    return value * 1.8 + 32;
   }
-  else {
-    value = (value - 32) / 1.8;
-  }
-  return value;
+  return (value - 32) / 1.8;
 }
 
-function convertWindSpeed({ value, raw }, units) {
+function convertWindSpeed({ value, raw }, units: "m/s" | "ft/s") {
   if (units === "m/s") {
     value = raw * 0.3048;
   }
@@ -98,10 +123,10 @@ function convertWindSpeed({ value, raw }, units) {
   };
 }
 
-function fetchWeatherData(params) {
-  const { dateLocale } = getSetting("timeDate");
-  const { units, speedUnits } = getSetting("weather");
-  return fetch(`${process.env.SERVER_URL}/weather?${params}&lang=en,${dateLocale}&units=${units},${speedUnits}`).then(res => res.json());
+function fetchWeatherData(params: string) {
+  const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
+  const { units, speedUnits } = getSetting("weather") as WeatherSettings;
+  return fetch(`${process.env.SERVER_URL}/weather?${params}&lang=en,${dateLocale}&units=${units},${speedUnits}`).then(res => res.json()) as Promise<{ hourly: Hour[], daily: Weekday[] }>;
 }
 
 export {

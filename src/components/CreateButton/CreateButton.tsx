@@ -1,11 +1,21 @@
-import { useLayoutEffect, useRef } from "react";
+import { CSSProperties, MouseEvent, useLayoutEffect, useRef, PropsWithChildren } from "react";
+import { timeout } from "utils";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./create-button.css";
 
-export default function CreateButton({ children, className, attrs = {}, style = {}, onClick, shiftTarget = "", trackScroll = false }) {
+type Props = PropsWithChildren & {
+  className?: string,
+  attrs?: Record<string, string>,
+  style?: CSSProperties,
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void,
+  shiftTarget?: string,
+  trackScroll?: boolean,
+}
+
+export default function CreateButton({ children, className, attrs = {}, style = {}, onClick, shiftTarget = "", trackScroll = false }: Props) {
   const locale = useLocalization();
-  const ref = useRef(null);
+  const ref = useRef<HTMLButtonElement>(null);
   const scrolling = useRef(false);
   const scrolled = useRef(false);
   const scrolledId = useRef(0);
@@ -14,14 +24,15 @@ export default function CreateButton({ children, className, attrs = {}, style = 
     if (!trackScroll) {
       return;
     }
+    const buttonElement = ref.current!;
 
     if (shiftTarget) {
-      checkForObstruction();
+      checkForObstruction(buttonElement);
     }
-    ref.current.previousElementSibling.addEventListener("scroll", handleScroll);
+    buttonElement.previousElementSibling!.addEventListener("scroll", handleScroll);
 
     return () => {
-      ref.current.previousElementSibling.removeEventListener("scroll", handleScroll);
+      buttonElement.previousElementSibling!.removeEventListener("scroll", handleScroll);
     };
   }, [trackScroll]);
 
@@ -29,9 +40,10 @@ export default function CreateButton({ children, className, attrs = {}, style = 
     if (scrolling.current) {
       return;
     }
+    const buttonElement = ref.current!;
 
     if (!scrolled.current) {
-      ref.current.style.setProperty("--shift", "0px");
+      buttonElement.style.setProperty("--shift", "0px");
       scrolled.current = true;
       return;
     }
@@ -39,31 +51,30 @@ export default function CreateButton({ children, className, attrs = {}, style = 
 
     requestAnimationFrame(() => {
       if (shiftTarget) {
-        clearTimeout(scrolledId.current);
-        scrolledId.current = setTimeout(() => {
+        scrolledId.current = timeout(() => {
           scrolled.current = false;
-          checkForObstruction();
-        }, 400);
+          checkForObstruction(buttonElement);
+        }, 400, scrolledId.current);
         scrolling.current = false;
         return;
       }
 
       if (target.scrollTop === 0) {
-        ref.current.classList.remove("shift-up");
+        buttonElement.classList.remove("shift-up");
       }
       else {
-        ref.current.classList.toggle("shift-up", target.scrollTop + target.offsetHeight >= target.scrollHeight - 32);
+        buttonElement.classList.toggle("shift-up", target.scrollTop + target.offsetHeight >= target.scrollHeight - 32);
       }
       scrolling.current = false;
     });
   }
 
-  function checkForObstruction() {
-    const elements = ref.current.previousElementSibling.querySelectorAll(shiftTarget);
+  function checkForObstruction(buttonElement: HTMLButtonElement) {
+    const elements = buttonElement.previousElementSibling!.querySelectorAll(shiftTarget);
 
     if (elements.length) {
-      const element = Array.from(elements).at(-1);
-      const buttonRect = ref.current.getBoundingClientRect();
+      const element = Array.from(elements).at(-1)!;
+      const buttonRect = buttonElement.getBoundingClientRect();
       const targetRect = element.getBoundingClientRect();
       const isBeforeTarget = buttonRect.top < targetRect.top && buttonRect.bottom > targetRect.top
         && buttonRect.bottom - targetRect.top > targetRect.height * 0.5;
@@ -74,10 +85,10 @@ export default function CreateButton({ children, className, attrs = {}, style = 
       if (isOnTarget) {
         const shift = buttonRect.top + buttonRect.height - targetRect.top - 8;
 
-        ref.current.style.setProperty("--shift", `-${shift}px`);
+        buttonElement.style.setProperty("--shift", `-${shift}px`);
       }
       else {
-        ref.current.style.setProperty("--shift", "0px");
+        buttonElement.style.setProperty("--shift", "0px");
       }
     }
   }

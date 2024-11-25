@@ -1,7 +1,8 @@
 import { getSetting } from "./settings";
+import { TimeDateSettings } from "types/settings";
 
-function adjustTime({ hours, minutes = 0 }) {
-  const { format } = getSetting("timeDate");
+function adjustTime({ hours, minutes = 0 }: { hours: number, minutes?: number }) {
+  const { format } = getSetting("timeDate") as TimeDateSettings;
   let period = "";
 
   if (format === 12) {
@@ -15,13 +16,13 @@ function adjustTime({ hours, minutes = 0 }) {
     }
   }
   return {
-    minutes,
-    hours,
+    hours: hours.toString(),
+    minutes: minutes.toString(),
     period
   };
 }
 
-function getDSTChangeDirection(start, end) {
+function getDSTChangeDirection(start: number, end: number) {
   const startOffset = (typeof start === "number" ? new Date(start) : new Date()).getTimezoneOffset();
   const endOffset = (typeof end === "number" ? new Date(end) : new Date()).getTimezoneOffset();
 
@@ -33,7 +34,7 @@ function getDSTChangeDirection(start, end) {
   return 0;
 }
 
-function getTimeString(time, { padHours = false, excludeMinutes = false } = {}) {
+function getTimeString(time: { hours: number, minutes?: number }, { padHours = false, excludeMinutes = false } = {}) {
   const { hours, minutes, period } = adjustTime(time);
   const h = padHours ? padTime(hours) : hours;
 
@@ -43,23 +44,15 @@ function getTimeString(time, { padHours = false, excludeMinutes = false } = {}) 
   return `${h}:${padTime(minutes)}${period && ` ${period}`}`;
 }
 
-function padTime(time, pad = true) {
-  return pad ? `00${time}`.slice(-2) : time;
+function padTime(time: number | string, pad = true) {
+  return pad ? `00${time}`.slice(-2) : time.toString();
 }
 
-function formatTime(time) {
-  const hours = Math.floor(time / 3600);
-  const minutes = Math.floor(time / 60 % 60);
-  const seconds = time % 60;
-
-  return `${hours ? `${hours}:` : ""}${padTime(minutes, hours)}:${padTime(seconds)}`;
-}
-
-function formatDate(date, { locale = "en", includeTime = false, includeWeekday = false, excludeYear = false, excludeDay = false } = {}) {
-  let options = { year: "numeric", month: "long", day: "numeric" };
+function formatDate(date: Date | number, { locale = "en", includeTime = false, includeWeekday = false, excludeYear = false, excludeDay = false } = {}) {
+  let options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
 
   if (includeTime) {
-    const { format } = getSetting("timeDate");
+    const { format } = getSetting("timeDate") as TimeDateSettings;
     options = { ...options, hour: "2-digit", minute: "numeric", hourCycle: format === 12 ? "h12": "h23" };
   }
 
@@ -87,8 +80,8 @@ function formatDate(date, { locale = "en", includeTime = false, includeWeekday =
   }
 }
 
-function getWeekdays(locale = "en", format = "long") {
-  const { firstWeekday } = getSetting("timeDate");
+function getWeekdays(locale = "en", format: "short" | "long" = "long") {
+  const { firstWeekday } = getSetting("timeDate") as TimeDateSettings;
   const formatter = new Intl.DateTimeFormat(locale, { weekday: format, timeZone: "UTC" });
   // Start from monday
   const weekdays = [3, 4, 5, 6, 7, 8, 9].map(day => {
@@ -98,17 +91,17 @@ function getWeekdays(locale = "en", format = "long") {
   });
 
   if (firstWeekday === 1) {
-    weekdays.unshift(weekdays.pop());
+    weekdays.unshift(weekdays.pop()!);
   }
   return weekdays;
 }
 
-function getWeekdayName(day, locale = "en", useShortName = false) {
+function getWeekdayName(day: number, locale = "en", useShortName = false) {
   const weekdays = getWeekdays(locale, useShortName ? "short" : "long");
   return weekdays[day];
 }
 
-function getMonthNames(locale = "en", format = "long") {
+function getMonthNames(locale = "en", format: "short" | "long" = "long") {
   const formatter = new Intl.DateTimeFormat(locale, { month: format, timeZone: "UTC" });
   return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => {
     const mm = month < 10 ? `0${month}` : month;
@@ -117,12 +110,12 @@ function getMonthNames(locale = "en", format = "long") {
   });
 }
 
-function getMonthName(month, locale = "en", useShortName = false) {
+function getMonthName(month: number, locale = "en", useShortName = false) {
   const months = getMonthNames(locale, useShortName ? "short" : "long");
   return months[month];
 }
 
-function getDay(day, withSuffix = true) {
+function getDay(day: number, withSuffix = true) {
   if (!withSuffix) {
     return day;
   }
@@ -138,12 +131,12 @@ function getDay(day, withSuffix = true) {
   return `${day}th`;
 }
 
-function getDaysInMonth(year, month) {
+function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
 
-function adjustWeekday(weekday) {
-  const { firstWeekday } = getSetting("timeDate");
+function adjustWeekday(weekday: number) {
+  const { firstWeekday } = getSetting("timeDate") as TimeDateSettings;
 
   if (firstWeekday === 1) {
     return weekday;
@@ -151,12 +144,12 @@ function adjustWeekday(weekday) {
   return weekday === 0 ? 6 : weekday - 1;
 }
 
-function getWeekday(year, month, day) {
+function getWeekday(year: number, month: number, day: number) {
   const weekday = new Date(`${year}-${month + 1}-${day}`).getDay();
   return adjustWeekday(weekday);
 }
 
-function getFirstDayIndex(year, month) {
+function getFirstDayIndex(year: number, month: number) {
   return getWeekday(year, month, 1);
 }
 
@@ -183,8 +176,17 @@ function getTomorrowDate() {
   };
 }
 
-function getDateString(date, includeTime = false) {
-  let data = date;
+type DateOjb = {
+  year: number,
+  month: number,
+  day: number,
+  weekday?: number,
+  hours?: number,
+  minutes?: number
+};
+
+function getDateString(date: Date | DateOjb, includeTime = false) {
+  let data = date as DateOjb;
   let timeString = "";
 
   if (date instanceof Date) {
@@ -198,7 +200,7 @@ function getDateString(date, includeTime = false) {
   }
 
   if (includeTime) {
-    timeString = `T${padTime(data.hours)}:${padTime(data.minutes)}:00`;
+    timeString = `T${padTime(data.hours!)}:${padTime(data.minutes!)}:00`;
   }
   return `${data.year}-${padTime(data.month + 1)}-${padTime(data.day)}${timeString}`;
 }
@@ -207,7 +209,7 @@ function getCurrentDateString() {
   return getDateString(getCurrentDate());
 }
 
-function getTimeObj(milliseconds) {
+function getTimeObj(milliseconds?: number) {
   const date = milliseconds ? new Date(milliseconds) : new Date();
 
   return {
@@ -216,7 +218,7 @@ function getTimeObj(milliseconds) {
   };
 }
 
-function getClockTimeString(milliseconds, params) {
+function getClockTimeString(milliseconds: number, params: Partial<{ padHours: boolean, excludeMinutes: boolean }>) {
   const obj = getTimeObj(milliseconds);
   return getTimeString(obj, params);
 }
@@ -228,28 +230,12 @@ function getDisplayTime(padHours = false) {
   return time;
 }
 
-function getDate(string, date = getCurrentDate()) {
-  const map = {
-    year: date.year,
-    month: getMonthName(date.month),
-    day: getDay(date.day, date.dayWithSuffix),
-    weekday: getWeekdayName(date.weekday),
-    ...adjustTime(date)
-  };
-  const regex = new RegExp(Object.keys(map).join("|"), "g");
-
-  if (typeof map.minutes === "number") {
-    map.minutes = padTime(map.minutes);
-  }
-  return string.replace(regex, item => map[item]).trim();
-}
-
-function getOffsettedCurrentTime(milliseconds) {
+function getOffsettedCurrentTime(milliseconds: number) {
   const offset = new Date(Date.now() + milliseconds).getTime();
   return getClockTimeString(offset, { padHours: true });
 }
 
-function getHoursOffset(milliseconds, useNumerical = false) {
+function getHoursOffset(milliseconds: number, useNumerical = false) {
   const hours = Math.round(milliseconds / 1000 / 60 / 60);
 
   if (useNumerical) {
@@ -272,9 +258,18 @@ function getHoursOffset(milliseconds, useNumerical = false) {
   return "Current timezone";
 }
 
-function parseDateInputValue(value, includeTime = false) {
+function parseDateInputValue(value: string, includeTime = false) {
+  type TimeDateObject = {
+    year: number,
+    month: number,
+    day: number,
+    hours?: number,
+    minutes?: number
+    period?: string
+  }
+
   const values = value.split("-");
-  const data = {
+  const data: TimeDateObject = {
     year: parseInt(values[0], 10),
     month: parseInt(values[1], 10) - 1,
     day: parseInt(values[2], 10)
@@ -284,8 +279,8 @@ function parseDateInputValue(value, includeTime = false) {
     const time = value.split("T")[1].split(":");
     const { hours, minutes, period } = adjustTime({ hours: parseInt(time[0], 10), minutes: parseInt(time[1], 10) });
 
-    data.hours = hours;
-    data.minutes = minutes;
+    data.hours = parseInt(hours, 10);
+    data.minutes = parseInt(minutes, 10);
     data.period = period;
   }
   return data;
@@ -305,10 +300,10 @@ export {
   getWeekdayName,
   getMonthName,
   getDay,
-  getDate,
+  // getDate,
   getDSTChangeDirection,
   padTime,
-  formatTime,
+  // formatTime,
   formatDate,
   getOffsettedCurrentTime,
   getHoursOffset,

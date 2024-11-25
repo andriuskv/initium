@@ -2,12 +2,25 @@ import { useEffect, useRef } from "react";
 import Icon from "components/Icon";
 import "./toast.css";
 
-export default function Toast({ message, duration = 0, position = "top", offset = 0, locale, dismiss }) {
+type Props = {
+  message: string,
+  duration?: number,
+  position?: "top" | "bottom",
+  offset?: number,
+  locale: {
+    global: {
+      dismiss: string
+    }
+  },
+  dismiss: () => void,
+}
+
+export default function Toast({ message, duration = 0, position = "top", offset = 0, locale, dismiss }: Props) {
   const dismissTimeoutId = useRef(0);
 
   useEffect(() => {
     if (duration) {
-      dismissTimeoutId.current = setTimeout(dismiss, duration);
+      dismissTimeoutId.current = window.setTimeout(dismiss, duration);
     }
     return () => {
       clearTimeout(dismissTimeoutId.current);
@@ -15,6 +28,7 @@ export default function Toast({ message, duration = 0, position = "top", offset 
   }, [duration]);
 
   return (
+    // @ts-ignore
     <div className={`container container-opaque toast ${position}`} style={{ "--offset": offset }}>
       <p className="toast-message">{message}</p>
       <button type="button" className="btn icon-btn" onClick={dismiss} title={locale.global.dismiss}>

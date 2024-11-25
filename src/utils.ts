@@ -1,14 +1,14 @@
-function setPageTitle(title) {
+function setPageTitle(title: string) {
   document.title = `${title || "New Tab"} | Initium`;
 }
 
-function dispatchCustomEvent(eventName, data = null) {
+function dispatchCustomEvent<T>(eventName: string, data?: T) {
   const event = new CustomEvent(eventName, { detail: data });
 
   window.dispatchEvent(event);
 }
 
-function delay(milliseconds) {
+function delay<T>(milliseconds: number): Promise<T> {
   return new Promise(resolve => {
     setTimeout(resolve, milliseconds);
   });
@@ -32,7 +32,7 @@ function getRandomHexColor() {
   return color;
 }
 
-function hue2rgb(p, q, t) {
+function hue2rgb(p: number, q: number, t: number): number {
   if (t < 0) {
     t += 1;
   }
@@ -55,7 +55,7 @@ function hue2rgb(p, q, t) {
   return p;
 }
 
-function hslToRgb(h, s, l) {
+function hslToRgb(h: number, s: number, l: number) {
   let r = 255;
   let g = 255;
   let b = 255;
@@ -78,25 +78,30 @@ function hslToRgb(h, s, l) {
   };
 }
 
-function rgbToHex(r, g, b) {
+function rgbToHex(r: number, g: number, b: number) {
   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
-function hslToHex(h, s, l) {
+function hslToHex(h: number, s: number, l: number) {
   const { r, g, b } = hslToRgb(h, s, l);
 
   return rgbToHex(r, g, b);
 }
 
-function hslStringToHex(string) {
+function hslStringToHex(string: string) {
   const regex = /hsl\((\d+)deg (\d+)% (\d+)%\)/;
-  const [_, h, s, l] = string.match(regex);
+  const match = string.match(regex);
 
-  return hslToHex(h / 360, s / 100, l / 100);
+  if (match) {
+    const [_, h, s, l] = match;
+    return hslToHex(parseInt(h, 10) / 360, parseInt(s, 10) / 100, parseInt(l, 10) / 100);
+  }
+  throw new Error("Invalid hsl(h, s, l) value");
 }
 
-function findFocusableElements(container = document, excludeDropdown = false) {
-  const elements = Array.from(container.querySelectorAll("button:not(:disabled), input:not(:disabled), a[href], textarea, [tabindex]"));
+function findFocusableElements(container: HTMLElement | Document = document, excludeDropdown = false) {
+  const selector = "button:not(:disabled), input:not(:disabled), a[href], textarea, [tabindex]";
+  const elements = Array.from(container.querySelectorAll(selector)) as HTMLElement[];
 
   if (excludeDropdown) {
     return elements.filter(element => !element.closest(".dropdown"));
@@ -104,13 +109,13 @@ function findFocusableElements(container = document, excludeDropdown = false) {
   return elements;
 }
 
-function findRelativeFocusableElement(element, direction) {
+function findRelativeFocusableElement(element: HTMLElement, direction: number) {
   const elements = findFocusableElements();
   const index = elements.indexOf(element);
   return elements[index + direction];
 }
 
-function formatBytes(bytes, { excludeUnits = false } = {}) {
+function formatBytes(bytes: number, { excludeUnits = false } = {}) {
   const kb = bytes / 1024;
   const value = kb % 1 === 0 ? kb : kb.toFixed(2);
 
@@ -120,9 +125,9 @@ function formatBytes(bytes, { excludeUnits = false } = {}) {
   return `${value} kB`;
 }
 
-function generateNoise(amount, opacity) {
+function generateNoise(amount: number, opacity: number) {
   const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d")!;
   const size = 128;
   const imageData = ctx.createImageData(size, size);
   const length = imageData.data.length;
@@ -143,35 +148,37 @@ function generateNoise(amount, opacity) {
   return canvas.toDataURL("image/png");
 }
 
-function timeout(callback, duration, id) {
+function timeout(callback: () => void, duration: number, id: number) {
   if (id) {
-    clearTimeout(id);
+    window.clearTimeout(id);
   }
-  id = setTimeout(callback, duration);
+  id = window.setTimeout(callback, duration);
 
   return id;
 }
 
-function getRandomValueBetweenTwoNumbers(min, max) {
+function getRandomValueBetweenTwoNumbers(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function replaceLink(text, className, openInNewTab) {
+function replaceLink(text: string, className: string, openInNewTab: boolean) {
   const regex = /(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?/g;
   return text.replace(regex, href => `<a href="${href}" class="${className}"${openInNewTab ? " target=_blank" : ""}>${href}</a>`);
 }
 
 function toggleBehindElements(shouldShow, className) {
-  const rootElement = document.getElementById("root");
-  const { parentElement } = document.querySelector(`.${className}`);
+  const rootElement = document.getElementById("root")!;
+  const { parentElement } = document.querySelector(`.${className}`)!;
+  const rootElements = rootElement.children as HTMLCollectionOf<HTMLElement>;
+  const parentElements = parentElement!.children as HTMLCollectionOf<HTMLElement>;
 
   if (shouldShow) {
-    for (const element of rootElement.children) {
+    for (const element of rootElements) {
       element.style.opacity = "";
       element.style.visibility = "";
     }
 
-    for (const element of parentElement.children) {
+    for (const element of parentElements) {
       element.style.opacity = "";
       element.style.visibility = "";
     }
@@ -179,14 +186,14 @@ function toggleBehindElements(shouldShow, className) {
   else {
     const excludes = ["wallpaper", "wallpaper-video", "middle-top"];
 
-    for (const element of rootElement.children) {
+    for (const element of rootElements) {
       if (!excludes.some(exclude => element.classList.contains(exclude))) {
         element.style.opacity = "0";
         element.style.visibility = "hidden";
       }
     }
 
-    for (const element of parentElement.children) {
+    for (const element of parentElements) {
       if (!element.classList.contains(className)) {
         element.style.opacity = "0";
         element.style.visibility = "hidden";

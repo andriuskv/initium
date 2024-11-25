@@ -1,4 +1,10 @@
+import { PropsWithChildren } from "react";
 import {
+  Activators,
+  KeyboardSensorOptions,
+  UniqueIdentifier,
+  DragStartEvent,
+  DragCancelEvent,
   DndContext,
   closestCenter,
   KeyboardSensor,
@@ -23,7 +29,7 @@ import { CSS } from "@dnd-kit/utilities";
 import Icon from "components/Icon";
 
 class CustomKeyboardSensor extends KeyboardSensor {
-  static activators = [
+  static activators: Activators<KeyboardSensorOptions> = [
     {
       eventName: "onKeyDown",
       handler: ({ nativeEvent: event }) => {
@@ -40,7 +46,14 @@ class CustomKeyboardSensor extends KeyboardSensor {
   ];
 }
 
-function SortableList({ children, items, axis, handleDragStart, handleSort }) {
+type ListProps = PropsWithChildren & {
+  items: ({ id: UniqueIdentifier; })[],
+  axis: "xy" | "x" | "y",
+  handleDragStart: (event: DragStartEvent) => void,
+  handleSort: (newItems?: unknown[] | null) => void
+}
+
+function SortableList({ children, items, axis, handleDragStart, handleSort }: ListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(CustomKeyboardSensor, {
@@ -60,9 +73,11 @@ function SortableList({ children, items, axis, handleDragStart, handleSort }) {
     modifiers.push(restrictToVerticalAxis);
   }
 
-  function handleDragEnd(event) {
-    const { active, over } = event;
-    let newItems = null;
+  function handleDragEnd({ active, over }: DragCancelEvent) {
+    if (!active || !over) {
+      return;
+    }
+    let newItems: unknown[] | null = null;
 
     if (active.id !== over.id) {
       const oldIndex = items.findIndex(({ id }) => id === active.id);

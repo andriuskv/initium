@@ -1,12 +1,19 @@
 import { delay, findFocusableElements } from "utils";
 
-const traps = {};
-let stack = [];
+type Trap = {
+  first: HTMLElement,
+  last: HTMLElement,
+  isDropdown: boolean,
+  initiator: HTMLElement | null,
+  container: HTMLElement
+}
+const traps: { [key: string]: Trap } = {};
+let stack: string[] = [];
 let activeTrapId = "";
-let initiator = null;
-let ignoreNext = false;
+let initiator: HTMLElement | null = null;
+let ignoreNext: boolean | undefined = false;
 
-function setInitiator(element) {
+function setInitiator(element: HTMLElement | null = null) {
   if (stack.at(-1) === "dropdown") {
     initiator = traps.dropdown.initiator;
     delete traps.dropdown;
@@ -17,10 +24,10 @@ function setInitiator(element) {
   }
 }
 
-function focusInitiator(id) {
+function focusInitiator(id: string) {
   const trap = traps[id];
 
-  if (trap) {
+  if (trap?.initiator) {
     if (trap.isDropdown) {
       if (trap.container.contains(document.activeElement)) {
         focusElement(trap.initiator);
@@ -32,7 +39,7 @@ function focusInitiator(id) {
   }
 }
 
-function trapFocus(id, container, { excludeDropdown = true } = {}) {
+function trapFocus(id: string, container: HTMLElement, { excludeDropdown = true } = {}) {
   const focusableElements = findFocusableElements(container, excludeDropdown);
 
   if (!focusableElements.length) {
@@ -44,7 +51,7 @@ function trapFocus(id, container, { excludeDropdown = true } = {}) {
     container,
     isDropdown: !excludeDropdown,
     first: focusableElements[0],
-    last: focusableElements.at(-1)
+    last: focusableElements.at(-1)!
   };
 
   stack.push(id);
@@ -58,12 +65,12 @@ function trapFocus(id, container, { excludeDropdown = true } = {}) {
   }
 }
 
-function clearFocusTrap(id) {
+function clearFocusTrap(id: string) {
   delete traps[id];
   stack = stack.filter(item => item !== id);
 
   if (stack.length) {
-    activeTrapId = stack.at(-1);
+    activeTrapId = stack.at(-1)!;
   }
   else {
     activeTrapId = "";
@@ -73,7 +80,7 @@ function clearFocusTrap(id) {
   }
 }
 
-async function updateFocusTrap(id) {
+async function updateFocusTrap(id: string) {
   const currentTrap = traps[id];
 
   if (!currentTrap) {
@@ -88,10 +95,10 @@ async function updateFocusTrap(id) {
     return;
   }
   currentTrap.first = elements[0];
-  currentTrap.last = elements.at(-1);
+  currentTrap.last = elements.at(-1)!;
 }
 
-function focusElement(element) {
+function focusElement(element: HTMLElement) {
   if (ignoreNext) {
     ignoreNext = false;
     return;
@@ -99,12 +106,12 @@ function focusElement(element) {
   element.focus();
 }
 
-function focusFirstElement(container, { excludeDropdown = true } = {}) {
+function focusFirstElement(container: HTMLElement, { excludeDropdown = true } = {}) {
   focusNthElement(container, 0, { excludeDropdown });
 }
 
-function focusNthElement(container, index, options = { excludeDropdown: true }) {
-  const focusableElements = findFocusableElements(container, options);
+function focusNthElement(container: HTMLElement, index: number, options: { excludeDropdown?: boolean, ignoreNext?: boolean } = { excludeDropdown: true, ignoreNext: false }) {
+  const focusableElements = findFocusableElements(container, options.excludeDropdown);
 
   if (!focusableElements.length || !focusableElements[index]) {
     return;
@@ -115,8 +122,8 @@ function focusNthElement(container, index, options = { excludeDropdown: true }) 
   }, 100);
 }
 
-function focusSelector(selector) {
-  const element = document.querySelector(selector);
+function focusSelector(selector: string) {
+  const element = document.querySelector(selector) as HTMLElement;
 
   if (element) {
     focusElement(element);
@@ -127,29 +134,30 @@ function resetIgnore() {
   ignoreNext = false;
 }
 
-function handleKeyDown(event) {
-  if (event.key === "Tab") {
-    const trap = traps[activeTrapId];
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key !== "Tab") {
+    return;
+  }
+  const trap = traps[activeTrapId];
 
-    if (event.shiftKey) {
-      if (document.activeElement === trap.first) {
-        if (trap.isDropdown) {
-          clearFocusTrap(activeTrapId);
-        }
-        else {
-          event.preventDefault();
-          focusElement(trap.last);
-        }
-      }
-    }
-    else if (document.activeElement === trap.last) {
+  if (event.shiftKey) {
+    if (document.activeElement === trap.first) {
       if (trap.isDropdown) {
         clearFocusTrap(activeTrapId);
       }
       else {
         event.preventDefault();
-        focusElement(trap.first);
+        focusElement(trap.last);
       }
+    }
+  }
+  else if (document.activeElement === trap.last) {
+    if (trap.isDropdown) {
+      clearFocusTrap(activeTrapId);
+    }
+    else {
+      event.preventDefault();
+      focusElement(trap.first);
     }
   }
 }
