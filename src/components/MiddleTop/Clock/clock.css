@@ -30,20 +30,6 @@
     height: 100dvh;
     align-content: center;
   }
-
-  @media (height <= 720px) {
-    .clock-time {
-      --size: 5.6rem;
-    }
-
-    .clock-time-period {
-      --size: var(--text-xxl);
-    }
-
-    .clock-date {
-      --size: var(--text-lg);
-    }
-  }
 }
 
 .clock-time-container {
@@ -54,7 +40,7 @@
 }
 
 .clock-time {
-  --size: 6.5rem;
+  --size: clamp(5.6rem, 5.5vw, 8rem);
 
   font-size: calc(var(--size) * var(--scale) * var(--fullscreen-scale-multiplier));
   font-variant-numeric: tabular-nums;
@@ -66,19 +52,19 @@
 }
 
 .clock-time-period {
-  --size: var(--text-xxxl);
+  --size: clamp(var(--text-xxl), 2vw, 2.8rem);
 
   position: absolute;
   top: 0;
   right: 0;
   transform: translateX(100%);
-  font-size: calc(var(--size) * var(--scale));
+  font-size: calc(var(--size) * var(--scale) * var(--fullscreen-scale-multiplier));
   line-height: 1;
 }
 
 .clock-date {
   --date-scale: 1;
-  --size: var(--text-lg);
+  --size: clamp(var(--text-lg), 0.82vw, 1.225rem);
 
   grid-row: calc(2 - var(--date-above));
   grid-column: 1 / 3;
