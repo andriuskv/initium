@@ -1,15 +1,40 @@
-import { createContext, useState, useEffect, useContext, useMemo } from "react";
+import { PropsWithChildren, createContext, useState, useEffect, useContext, useMemo } from "react";
 import { replaceLink } from "utils";
 import { useSettings } from "contexts/settings";
 import { getSetting } from "services/settings";
 import * as chromeStorage from "services/chromeStorage";
+import { AppearanceSettings } from "types/settings";
 
-const StickyNotesContext = createContext();
+type Note = {
+  index?: number,
+  action?: string,
+  id?: string,
+  title: string,
+  content: string,
+  titleDisplayString?: string,
+  contentDisplayString?: string
+  color?: string,
+  backgroundColor: string,
+  textStyle?: {
+    index: number,
+    color: [number, number, number],
+    opacity: number,
+    string: string
+  }
+}
 
-function StickyNotesProvider({ children }) {
+type StickyNotesContextType = {
+  notes: Note[],
+  createNote: (note: Note) => void,
+  removeNote: (id: string) => void
+};
+
+const StickyNotesContext = createContext<StickyNotesContextType>({} as StickyNotesContextType);
+
+function StickyNotesProvider({ children }: PropsWithChildren) {
   const { settings } = useSettings();
-  const [notes, setNotes] = useState([]);
-  const memoizedValue = useMemo(() => {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const memoizedValue = useMemo<StickyNotesContextType>(() => {
     return {
       notes,
       createNote,
@@ -22,11 +47,13 @@ function StickyNotesProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    for (const note of notes) {
-      note.titleDisplayString = parseNoteField(note.title, settings.general.openLinkInNewTab);
-      note.contentDisplayString = parseNoteField(note.content, settings.general.openLinkInNewTab);
-    }
-    setNotes([...notes]);
+    setNotes(notes.map(note => {
+      return {
+        ...note,
+        titleDisplayString: parseNoteField(note.title, settings.general.openLinkInNewTab),
+        contentDisplayString: parseNoteField(note.content, settings.general.openLinkInNewTab)
+      };
+    }));
   }, [settings.general.openLinkInNewTab]);
 
   async function init() {
@@ -45,10 +72,10 @@ function StickyNotesProvider({ children }) {
       else {
         setNotes([]);
       }
-    });
+    }, { id: "stickyNotes" });
   }
 
-  function parseNotes(notes) {
+  function parseNotes(notes: Note[]): Note[] {
     return notes.map(note => {
       note.id = crypto.randomUUID();
       note.titleDisplayString = parseNoteField(note.title, settings.general.openLinkInNewTab);
@@ -71,12 +98,12 @@ function StickyNotesProvider({ children }) {
     });
   }
 
-  function parseNoteField(value, openInNewTab) {
+  function parseNoteField(value: string, openInNewTab: boolean) {
     const displayValue = value.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
     return replaceLink(displayValue, "sticky-note-link", openInNewTab);
   }
 
-  function createNote(note) {
+  function createNote(note: Note) {
     const { action } = note;
     let newNotes = notes;
 
@@ -86,8 +113,8 @@ function StickyNotesProvider({ children }) {
     note.title = note.title.trimEnd();
     note.content = note.content.trimEnd();
 
-    note.titleDisplayString = parseNoteField(note.title);
-    note.contentDisplayString = parseNoteField(note.content);
+    note.titleDisplayString = parseNoteField(note.title, settings.general.openLinkInNewTab);
+    note.contentDisplayString = parseNoteField(note.content, settings.general.openLinkInNewTab);
 
     if (action === "create") {
       newNotes = [...notes, note];
@@ -100,23 +127,28 @@ function StickyNotesProvider({ children }) {
     saveNotes(newNotes);
   }
 
-  function removeNote(id) {
-    const { animationSpeed } = getSetting("appearance");
-    const note = notes.find(note => note.id === id);
+  function removeNote(id: string) {
+    const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
 
-    note.discarding = true;
-
-    setNotes([...notes]);
+    setNotes(notes.map(note => {
+      if (note.id === id) {
+        return {
+          ...note,
+          discarding: true
+        };
+      }
+      return note;
+    }));
 
     setTimeout(() => {
       const newNotes = notes.filter(note => note.id !== id);
 
-      setNotes([...newNotes]);
+      setNotes(newNotes);
       saveNotes(newNotes);
     }, 200 * animationSpeed);
   }
 
-  function saveNotes(notes) {
+  function saveNotes(notes: Note[]) {
     chromeStorage.set({ stickyNotes: structuredClone(notes).map(note => {
       delete note.id;
       delete note.titleDisplayString;

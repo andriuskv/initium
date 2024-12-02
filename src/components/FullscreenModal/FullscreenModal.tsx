@@ -37,30 +37,33 @@ export default function FullscreenModal({ children, hiding, transparent = false,
   }, []);
 
   function handlePointerDown({ target }: PointerEvent) {
+    const element = target as HTMLElement;
     keep = false;
 
-    if (target && target instanceof HTMLElement && target.closest(".fullscreen-modal")) {
+    if (element?.closest(".fullscreen-modal")) {
       pointerInside = true;
 
       // When date modal is dismissed by clicking outside of it pointer down event is not triggered,
       // to circumvent around that keep an additional variable to check if it's open.
-      if (target.closest("[data-modal-keep]")) {
+      if (element.closest("[data-modal-keep]")) {
         keep = true;
       }
     }
   }
 
-  function handlePointerUp({ target }) {
+  function handlePointerUp({ target }: PointerEvent) {
+    const element = target as HTMLElement;
+
     if (pointerInside || keep) {
       pointerInside = false;
     }
     // Selecting an option element with the enter key triggers only a pointerup/click event
-    else if (!target.closest("[data-modal-initiator]") && target.nodeName !== "SELECT") {
+    else if (!element.closest("[data-modal-initiator]") && element.nodeName !== "SELECT") {
       hide();
     }
   }
 
-  function handleKeydown({ key }) {
+  function handleKeydown({ key }: KeyboardEvent) {
     if (key === "Escape") {
       hide();
     }

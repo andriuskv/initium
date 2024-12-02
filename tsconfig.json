@@ -4,8 +4,8 @@
     "outDir": "./dist/",
     "sourceMap": true,
     "strictNullChecks": true,
-    "module": "Node16",
-    "moduleResolution": "Node16",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "target": "ESNext",
     "resolveJsonModule": true,
@@ -30,6 +30,6 @@
     "hooks/*": ["./src/hooks/*"],
     "types/*": ["./src/types/*"],
     "assets/*": ["./src/assets/*"],
-    "utils": ["./src/utils.js"]
+    "utils": ["./src/utils.ts"]
   }
 }

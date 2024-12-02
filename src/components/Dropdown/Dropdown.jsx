@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useMemo } from "react";
 import { getRandomString, timeout } from "utils";
 import * as focusService from "services/focus";
 import { getSetting } from "services/settings";
@@ -9,7 +9,7 @@ import "./dropdown.css";
 export default function Dropdown({ container, toggle = {}, body, children }) {
   const locale = useLocalization();
   const [state, setState] = useState({ id: getRandomString() });
-  const memoizedWindowClickHandler = useCallback(handleWindowClick, [state.id]);
+  const memoizedWindowClickHandler = useMemo(() => handleWindowClick, [state.id]);
   const isMounted = useRef(false);
   const drop = useRef(null);
   const timeoutId = useRef(0);
@@ -156,7 +156,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
   return (
     <div id={state.id} className={`dropdown-container${container ? ` ${container.className}` : ""}${state.visible ? " visible" : ""}`}>
       {renderToggleButton()}
-      <div ref={drop} className={`container container-opaque dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}${state.hiding ? " hiding" : ""}`}>{children}</div>
+      <div role="menu" className={`container container-opaque dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}${state.hiding ? " hiding" : ""}`} ref={drop}>{children}</div>
     </div>
   );
 }

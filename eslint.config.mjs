@@ -3,6 +3,7 @@ import tsEslint from "typescript-eslint";
 import tsParser from "@typescript-eslint/parser";
 import globals from "globals";
 import react from "eslint-plugin-react";
+import reactCompiler from "eslint-plugin-react-compiler";
 
 export default [
   eslint.configs.recommended,
@@ -29,17 +30,20 @@ export default [
       },
     },
     plugins: {
-      react
+      react,
+      "react-compiler": reactCompiler
     },
     rules: {
       "@typescript-eslint/no-require-imports": 0,
       "@typescript-eslint/ban-ts-comment": 0,
+      "@typescript-eslint/no-explicit-any": 0,
       "react/react-in-jsx-scope": 0,
       "react/prop-types": 0,
       "react/display-name": 0,
       "react/no-unescaped-entities": 0,
       "react-hooks/exhaustive-deps": 0,
       "react/jsx-no-target-blank": 0,
+      "react-compiler/react-compiler": "error",
       "array-callback-return": 2,
       "arrow-spacing": [2, {
         "before": true,

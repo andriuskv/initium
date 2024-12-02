@@ -1,15 +1,41 @@
-import { dispatchCustomEvent } from "../utils";
+import { AppearanceSettings } from "types/settings";
+import { dispatchCustomEvent, getLocalStorageItem } from "../utils";
 import { getSetting, setSetting } from "./settings";
+import { UseStore } from "idb-keyval";
 
-const downscaledWallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper"));
-let wallpaperInfo = JSON.parse(localStorage.getItem("wallpaper-info"));
+type UnsplashInfo = {
+  cacheDate?: number
+  url: string
+  name: string
+  username: string
+}
 
-function fetchDailyWallpaperInfo(provider) {
+type BingInfo = {
+  cacheDate?: number
+  url: string,
+  endDate: number,
+  copyright: string,
+  copyrightLink: string
+}
+
+type WallpaperInfo = UnsplashInfo | BingInfo | null;
+
+type DownscaledWallpaper = {
+  id: string
+  dataURL: string
+  x?: number
+  y?: number
+}
+
+const downscaledWallpaper = getLocalStorageItem<DownscaledWallpaper>("downscaled-wallpaper");
+let wallpaperInfo = getLocalStorageItem<WallpaperInfo>("wallpaper-info");
+
+function fetchDailyWallpaperInfo(provider: "unsplash" | "bing"): Promise<WallpaperInfo> {
   return fetch(`${process.env.SERVER_URL}/wallpaper?p=${provider}`).then(res => res.json());
 }
 
-async function cacheDailyWallpaperInfo() {
-  const { wallpaper } = getSetting("appearance");
+async function cacheDailyWallpaperInfo(): Promise<WallpaperInfo | undefined> {
+  const { wallpaper } = getSetting("appearance") as AppearanceSettings;
   const provider = wallpaper.provider ?? "unsplash";
   const info = await fetchDailyWallpaperInfo(provider);
 
@@ -37,8 +63,10 @@ async function cacheDailyWallpaperInfo() {
 async function fetchWallpaperInfo() {
   if (wallpaperInfo) {
     const currentDate = Date.now();
+    const cacheDate = wallpaperInfo.cacheDate || 0;
 
-    if (currentDate - wallpaperInfo.cacheDate > 1000 * 60 * 60 * 18 || (wallpaperInfo.endDate && currentDate > wallpaperInfo.endDate)) {
+    if (currentDate - cacheDate > 1000 * 60 * 60 * 18 ||
+      ((wallpaperInfo as BingInfo).endDate && currentDate > (wallpaperInfo as BingInfo).endDate)) {
       cacheDailyWallpaperInfo();
       return wallpaperInfo;
     }
@@ -58,7 +86,7 @@ async function fetchWallpaperInfo() {
   }
 }
 
-function cacheImage(url) {
+function cacheImage(url: string) {
   caches.open("wallpaper-image-cache").then(async cache => {
     const matchedResponse = await cache.match(url);
 
@@ -77,7 +105,7 @@ function cacheImage(url) {
   });
 }
 
-function buildUnsplashImageUrl(url) {
+function buildUnsplashImageUrl(url: string) {
   const { width, height } = screen;
   const dpi = window.devicePixelRatio;
   const crop = "edges";
@@ -108,7 +136,7 @@ function deleteServiceWorkerCache() {
   });
 }
 
-function setUrlWallpaper(url, mimeType) {
+function setUrlWallpaper(url: string, mimeType: string) {
   setTimeout(() => {
     cacheDownscaledWallpaper({ url, source: "url", mimeType });
     resetWallpaperInfo();
@@ -118,13 +146,13 @@ function setUrlWallpaper(url, mimeType) {
 
 function resetIDBWallpaper() {
   setSetting("appearance", {
-    ...getSetting("appearance"),
+    ...getSetting("appearance") as AppearanceSettings,
     wallpaper: { provider: "unsplash", url: "" }
   });
   resetIDBStore();
 }
 
-async function getIDBWallpaper(id) {
+async function getIDBWallpaper(id: string): Promise<File> {
   const { createStore, get } = await import("idb-keyval");
   const store = createStore("initium", "wallpaper");
   const image = await get(id, store);
@@ -132,9 +160,9 @@ async function getIDBWallpaper(id) {
   return image;
 }
 
-async function setIDBWallpaper(file) {
+async function setIDBWallpaper(file: File) {
   const { createStore, set, clear } = await import("idb-keyval");
-  let store = null;
+  let store: UseStore | null = null;
 
   try {
     store = createStore("initium", "wallpaper");
@@ -164,20 +192,20 @@ async function resetIDBStore() {
   }
 }
 
-async function cacheDownscaledWallpaper({ url, id = url, source, mimeType }) {
-  const wallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper")) || {};
+async function cacheDownscaledWallpaper({ url, id = url, source = "", mimeType }: { url: string, id?: string, source?: string, mimeType?: string}) {
+  const wallpaper = getLocalStorageItem<DownscaledWallpaper>("downscaled-wallpaper");
 
-  if (wallpaper.id === id) {
+  if (wallpaper?.id === id) {
     return;
   }
-  const dataURL = await createDownscaledWallpaper({ id, url, source, mimeType });
+  const dataURL = await createDownscaledWallpaper({ url, source, mimeType });
 
   localStorage.setItem("downscaled-wallpaper", JSON.stringify({ id, dataURL }));
 }
 
-function getDownscaledImage(image) {
+function getDownscaledImage(image: HTMLImageElement): string {
   const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d")!;
   let canvasWidth = image.width / 10;
   let canvasHeight = image.height / 10;
 
@@ -194,7 +222,7 @@ function getDownscaledImage(image) {
   return canvas.toDataURL("image/png", 0.8);
 }
 
-function getDownscaledVideo({ url }) {
+function getDownscaledVideo({ url }: { url: string }): Promise<string> {
   return new Promise(resolve => {
     const video = document.createElement("video");
 
@@ -202,7 +230,7 @@ function getDownscaledVideo({ url }) {
 
     video.addEventListener("seeked", () => {
       const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d")!;
       let canvasWidth = video.videoWidth / 10;
       let canvasHeight = video.videoHeight / 10;
 
@@ -225,7 +253,7 @@ function getDownscaledVideo({ url }) {
   });
 }
 
-async function createDownscaledWallpaper({ url, source, mimeType }) {
+async function createDownscaledWallpaper({ url, source, mimeType }: { url: string, source: string, mimeType?: string }) {
   if (!mimeType || mimeType.startsWith("image")) {
     const image = await preloadImage(url, source);
     return getDownscaledImage(image);
@@ -233,16 +261,18 @@ async function createDownscaledWallpaper({ url, source, mimeType }) {
   return getDownscaledVideo({ url });
 }
 
-function updateDownscaledWallpaperPosition(x, y) {
-  const wallpaper = JSON.parse(localStorage.getItem("downscaled-wallpaper"));
+function updateDownscaledWallpaperPosition(x: number, y: number) {
+  const wallpaper = getLocalStorageItem<DownscaledWallpaper>("downscaled-wallpaper");
 
-  wallpaper.x = x;
-  wallpaper.y = y;
+  if (wallpaper) {
+    wallpaper.x = x;
+    wallpaper.y = y;
 
-  localStorage.setItem("downscaled-wallpaper", JSON.stringify(wallpaper));
+    localStorage.setItem("downscaled-wallpaper", JSON.stringify(wallpaper));
+  }
 }
 
-function preloadImage(url, source) {
+function preloadImage(url: string, source: string): Promise<HTMLImageElement> {
   return new Promise(resolve => {
     const image = new Image();
     image.crossOrigin = "anonymous";

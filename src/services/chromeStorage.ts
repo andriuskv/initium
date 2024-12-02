@@ -4,8 +4,8 @@ import { formatBytes } from "utils";
 
 type Subscriber = {
   id: string,
-  listenToLocal: boolean,
-  handler: (changes: chrome.storage.StorageChange) => void,
+  listenToLocal?: boolean,
+  handler: (changes: { [key: string]: chrome.storage.StorageChange; }) => void,
 }
 
 const MAX_QUOTA = chrome.storage.sync.QUOTA_BYTES_PER_ITEM || 8192;
@@ -28,7 +28,7 @@ let isLocalChange = false;
   });
 })();
 
-function subscribeToChanges(handler: Subscriber["handler"], { id, listenToLocal = false } = {} as Subscriber) {
+function subscribeToChanges(handler: Subscriber["handler"], { id, listenToLocal = false } = {} as Omit<Subscriber, "handler">) {
   if (id) {
     removeSubscriber(id);
   }
