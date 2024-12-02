@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from "react";
+import { CSSProperties, useState, useLayoutEffect, useRef } from "react";
 import { timeout, getRandomString } from "utils";
 import "./tooltip.css";
 
@@ -182,8 +182,7 @@ export default function Tooltip() {
   return (
     <>
       {tooltips.map(tooltip => (
-        // @ts-ignore
-        <div id={tooltip.id} role="tooltip" className="tooltip" style={{ "positionAnchor": `--anchor-${tooltip.id}` }} key={tooltip.id}>
+        <div id={tooltip.id} role="tooltip" className="tooltip" style={{ "positionAnchor": `--anchor-${tooltip.id}` } as CSSProperties} key={tooltip.id}>
           <p className="tooltip-text">{tooltip.text}</p>
         </div>
       ))}

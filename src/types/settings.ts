@@ -10,7 +10,7 @@ type HSLColor = {
 };
 
 type Wallpaper = {
-  provider: "unsplash";
+  provider: "unsplash" | "bing";
   url: string;
 };
 
@@ -73,6 +73,7 @@ export type MainPanelComponents = {
 };
 
 export type MainPanelSettings = {
+  disabled?: boolean;
   navHidden: boolean;
   components: MainPanelComponents;
 };

@@ -1,11 +1,13 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { PropsWithChildren, createContext, useState, useContext, useEffect } from "react";
 import { useSettings } from "contexts/settings";
 
-const LocalizationContext = createContext();
+type LocalizationContextType = any;
 
-function LocalizationProvider({ children }) {
+const LocalizationContext = createContext<LocalizationContextType>({} as LocalizationContextType);
+
+function LocalizationProvider({ children }: PropsWithChildren) {
   const { settings } = useSettings();
-  const [locale, setLocale] = useState(null);
+  const [locale, setLocale] = useState<any>();
 
   useEffect(() => {
     init();

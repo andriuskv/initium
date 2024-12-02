@@ -202,6 +202,11 @@ function toggleBehindElements(shouldShow, className) {
   }
 }
 
+function getLocalStorageItem<T>(key: string): T | null {
+  const item = localStorage.getItem(key);
+  return item ? JSON.parse(item) : null;
+}
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -217,5 +222,6 @@ export {
   timeout,
   getRandomValueBetweenTwoNumbers,
   replaceLink,
-  toggleBehindElements
+  toggleBehindElements,
+  getLocalStorageItem
 };

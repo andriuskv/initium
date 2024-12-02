@@ -10,10 +10,22 @@ const StickyNotes = lazy(() => import("./StickyNotes"));
 const Shortcuts = lazy(() => import("./Shortcuts"));
 const Calendar = lazy(() => import("./Calendar"));
 
+type Item = {
+  id: string,
+  title: string,
+  iconId: string,
+  disabled?: boolean,
+  rendered?: boolean,
+  visible?: boolean,
+  indicatorVisible?: boolean
+  attrs?: { [key: string]: string | boolean }
+}
+type Items = Record<string, Item>;
+
 export default function BottomPanel({ locale }) {
   const { settings } = useSettings();
-  const [selectedItem, setSelectedItem] = useState({});
-  const [items, setItems] = useState(() => ({
+  const [selectedItem, setSelectedItem] = useState<Item>({ id: "", title: "", iconId: "" });
+  const [items, setItems] = useState<Items>(() => ({
     "stickyNotes": {
       id: "stickyNotes",
       title: locale.bottomPanel.sticky_notes,
@@ -54,13 +66,12 @@ export default function BottomPanel({ locale }) {
   }));
   const calendarTimeoutId = useRef(0);
   const lastItemId = useRef("");
-  const closeButton = useRef(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!settings.general.calendarDisabled) {
-      calendarTimeoutId.current = setTimeout(() => {
-        items.calendar.rendered = true;
-        setItems({ ...items });
+      calendarTimeoutId.current = window.setTimeout(() => {
+        setItems({ ...items, calendar: {...items.calendar, rendered: true } });
       }, 4000);
     }
 
@@ -72,12 +83,13 @@ export default function BottomPanel({ locale }) {
   }, []);
 
   useEffect(() => {
-    items.stickyNotes.disabled = settings.general.stickyNotesDisabled;
-    items.shortcuts.disabled = settings.general.shortcutsDisabled;
-    items.timers.disabled = settings.timers.disabled;
-    items.calendar.disabled = settings.general.calendarDisabled;
-
-    setItems({ ...items });
+    setItems({
+      ...items,
+      stickyNotes: { ...items.stickyNotes, disabled: settings.general.stickyNotesDisabled },
+      shortcuts: { ...items.shortcuts, disabled: settings.general.shortcutsDisabled },
+      timers: { ...items.timers, disabled: settings.timers.disabled },
+      calendar: { ...items.calendar, disabled: settings.general.calendarDisabled }
+    });
   }, [settings.general, settings.timers]);
 
   useEffect(() => {
@@ -91,8 +103,7 @@ export default function BottomPanel({ locale }) {
 
     if (selectedItem.id === "calendar" && !items.calendar.rendered) {
       clearTimeout(calendarTimeoutId.current);
-      items.calendar.rendered = true;
-      setItems({ ...items });
+      setItems({ ...items, calendar: {...items.calendar, rendered: true } });
     }
     else {
       requestAnimationFrame(() => {
@@ -102,9 +113,11 @@ export default function BottomPanel({ locale }) {
   }, [selectedItem.id]);
 
   useEffect(() => {
-    if (selectedItem.visible && closeButton.current) {
+    if (selectedItem.visible) {
       setTimeout(() => {
-        closeButton.current.focus();
+        if (closeButton.current) {
+          closeButton.current.focus();
+        }
       }, 200 * settings.appearance.animationSpeed);
     }
   }, [selectedItem.visible]);
@@ -115,7 +128,7 @@ export default function BottomPanel({ locale }) {
     }
   }, [items.calendar.rendered]);
 
-  function selectItem(id) {
+  function selectItem(id: string) {
     if (id === "timers") {
       dispatchCustomEvent("top-panel-visible");
     }
@@ -132,16 +145,15 @@ export default function BottomPanel({ locale }) {
     setSelectedItem({ ...selectedItem, visible: false });
 
     setTimeout(() => {
-      setSelectedItem({});
+      setSelectedItem({ id: "", title: "", iconId: "" });
     }, 400 * settings.appearance.animationSpeed);
   }
 
-  function toggleIndicator(id, value) {
-    items[id].indicatorVisible = value;
-    setItems({...items});
+  function toggleIndicator(id: string, value: boolean) {
+    setItems({ ...items, [id]: { ...items[id], indicatorVisible: value } });
   }
 
-  function toggleTimersIndicator({ detail }) {
+  function toggleTimersIndicator({ detail }: CustomEvent) {
     toggleIndicator("timers", detail);
   }
 
@@ -161,33 +173,17 @@ export default function BottomPanel({ locale }) {
   }
 
   function renderSelectedItem() {
-    const props = { locale };
-    let Component = null;
-
     if (selectedItem.id === "stickyNotes") {
-      props.hide = hideItem;
-      Component = StickyNotes;
-    }
-    else if (selectedItem.id === "shortcuts") {
-      Component = Shortcuts;
-    }
-
-    if (Component) {
       return (
         <div className={`container-body bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}>
-          <Suspense fallback={null}><Component {...props}/></Suspense>
+          <Suspense fallback={null}><StickyNotes { ...{ locale, hide: hideItem } }/></Suspense>
         </div>
       );
     }
-  }
-
-  function renderCalendar() {
-    if (items.calendar.rendered) {
+    else if (selectedItem.id === "shortcuts") {
       return (
-        <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}>
-          <Suspense fallback={null}>
-            <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} locale={locale} showIndicator={toggleIndicator}/>
-          </Suspense>
+        <div className={`container-body bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}>
+          <Suspense fallback={null}><Shortcuts { ...{ locale } }/></Suspense>
         </div>
       );
     }
@@ -207,7 +203,13 @@ export default function BottomPanel({ locale }) {
         </div>
         <div className="bottom-panel-transition-target">
           {renderSelectedItem()}
-          {renderCalendar()}
+          {items.calendar.rendered ? (
+            <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}>
+              <Suspense fallback={null}>
+                <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} locale={locale} showIndicator={toggleIndicator}/>
+              </Suspense>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

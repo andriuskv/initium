@@ -64,6 +64,10 @@ export default function GeneralTab({ locale }) {
   }
 
   function renderModal() {
+    if (!modal) {
+      return null;
+    }
+
     if (modal.type === "reset") {
       return (
         <Modal hiding={modal.hiding} hide={hideModal}>

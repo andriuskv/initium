@@ -8,10 +8,10 @@ const Form = lazy(() => import("./Form"));
 
 export default function StickyNotes({ locale }) {
   const { notes } = useNotes();
-  const [form, setForm] = useState(null);
+  const [form, setForm] = useState({});
 
   useEffect(() => {
-    if (form) {
+    if (form.action) {
       discardWithAnimation();
     }
     window.addEventListener("sticky-note", handleStickyNoteChange);
@@ -22,7 +22,7 @@ export default function StickyNotes({ locale }) {
   }, [notes]);
 
   function handleStickyNoteChange({ detail }) {
-    if (form) {
+    if (form.action) {
       resetTextSelection();
     }
 
@@ -54,7 +54,7 @@ export default function StickyNotes({ locale }) {
 
     if (form.action === "edit" || !shouldAnimate) {
       focusService.focusSelector("[data-focus-id=stickyNotes]");
-      setForm(null);
+      setForm({});
     }
     else if (shouldAnimate) {
       discardWithAnimation();
@@ -67,7 +67,7 @@ export default function StickyNotes({ locale }) {
     setForm({ ...form, discarding: true });
 
     setTimeout(() => {
-      setForm(null);
+      setForm({});
     }, 200 * animationSpeed);
   }
 
@@ -108,7 +108,7 @@ export default function StickyNotes({ locale }) {
   return (
     <>
       {renderNotes()}
-      {form ? (
+      {form.action ? (
         <Suspense fallback={null}>
           <Form initialForm={form} noteCount={notes.length} locale={locale} discardNote={discardNote} showForm={showForm}/>
         </Suspense>

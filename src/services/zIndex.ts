@@ -1,3 +1,5 @@
+import { MouseEvent } from "react";
+
 const components: { [key: string]: number } = {};
 let currentActiveComponent: { name: string, index: number } | null = null;
 

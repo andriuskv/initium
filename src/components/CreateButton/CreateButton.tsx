@@ -70,7 +70,7 @@ export default function CreateButton({ children, className, attrs = {}, style = 
   }
 
   function checkForObstruction(buttonElement: HTMLButtonElement) {
-    const elements = buttonElement.previousElementSibling!.querySelectorAll(shiftTarget);
+    const elements = buttonElement.previousElementSibling!.querySelectorAll(shiftTarget) as NodeListOf<HTMLElement>;
 
     if (elements.length) {
       const element = Array.from(elements).at(-1)!;

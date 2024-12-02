@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
+import { FC, useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { timeout } from "utils";
 import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings";
@@ -17,11 +17,18 @@ const GreetingEditor = lazy(() => import("./GreetingEditor"));
 const FullscreenModal = lazy(() => import("./FullscreenModal"));
 const StickyNotes = lazy(() => import("./StickyNotes"));
 
+type FullscreenModal = {
+  id?: string,
+  hiding?: boolean,
+  component?: FC<{ hide: () => void }>,
+  params?: { [key: string]: unknown }
+}
+
 export default function App() {
   const { settings } = useSettings();
   const locale = useLocalization();
-  const [weather, setWeather] = useState(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
-  const [fullscreenModal, setFullscreenModal] = useState(null);
+  const [weather, setWeather] = useState<{ rendered: boolean, shouldDelay?: boolean}>(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
+  const [fullscreenModal, setFullscreenModal] = useState<FullscreenModal>({});
   const weatherTimeoutId = useRef(0);
   const modalTimeoutId = useRef(0);
 
@@ -44,7 +51,7 @@ export default function App() {
 
     if (shouldRender) {
       if (weather.shouldDelay) {
-        weatherTimeoutId.current = setTimeout(() => {
+        weatherTimeoutId.current = window.setTimeout(() => {
           setWeather({ rendered: true });
         }, 2000);
       }
@@ -59,11 +66,11 @@ export default function App() {
 
 
   function isWeatherEnabled() {
-    return !settings.weather.disabled && (settings.weather.cityName || settings.weather.useGeo);
+    return !settings.weather.disabled && (!!settings.weather.cityName || settings.weather.useGeo);
   }
 
-  function handleFullscreenModal({ detail }) {
-    if (detail.shouldToggle && detail.id === fullscreenModal?.id) {
+  function handleFullscreenModal({ detail }: CustomEvent) {
+    if (detail.shouldToggle && detail.id === fullscreenModal.id) {
       if (fullscreenModal.hiding) {
         clearTimeout(modalTimeoutId.current);
         setFullscreenModal(detail);
@@ -73,7 +80,7 @@ export default function App() {
       }
     }
     else {
-      if (fullscreenModal) {
+      if (fullscreenModal.id) {
         if (detail.id === fullscreenModal.id) {
           setFullscreenModal(detail);
         }
@@ -93,13 +100,13 @@ export default function App() {
 
   function hideFullscreenModal() {
     if (fullscreenModal.id === "wallpaper") {
-      setFullscreenModal(null);
+      setFullscreenModal({});
       return;
     }
     setFullscreenModal({ ...fullscreenModal, hiding: true });
 
     modalTimeoutId.current = timeout(() => {
-      setFullscreenModal(null);
+      setFullscreenModal({});
     }, 200 * settings.appearance.animationSpeed, modalTimeoutId.current);
   }
 
@@ -125,13 +132,16 @@ export default function App() {
         </Suspense>
       );
     }
-    return (
-      <Suspense fallback={null}>
-        <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
-          <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
-        </FullscreenModal>
-      </Suspense>
-    );
+    else if (fullscreenModal.component) {
+      return (
+        <Suspense fallback={null}>
+          <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
+            <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
+          </FullscreenModal>
+        </Suspense>
+      );
+    }
+    return null;
   }
 
   if (!locale) {
@@ -140,7 +150,7 @@ export default function App() {
   return (
     <>
       <Wallpaper settings={settings.appearance.wallpaper}/>
-      <MiddleTop settings={settings} greetingEditorVisible={fullscreenModal?.id === "greeting"}/>
+      <MiddleTop settings={settings} greetingEditorVisible={fullscreenModal.id === "greeting"}/>
       <Suspense fallback={null}>
         {settings.general.stickyNotesDisabled ? null : <StickyNotes locale={locale}/>}
       </Suspense>
@@ -155,7 +165,7 @@ export default function App() {
       </Suspense>
       <BottomPanel locale={locale}/>
       <Tooltip/>
-      {fullscreenModal ? renderFullscreenModal() : null}
+      {fullscreenModal.id || fullscreenModal.params ? renderFullscreenModal() : null}
     </>
   );
 }
