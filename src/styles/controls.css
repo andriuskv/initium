@@ -292,10 +292,6 @@ textarea {
   }
 }
 
-.checkbox-label-right {
-  margin-left: var(--space-md);
-}
-
 .radio {
   width: 20px;
   height: 20px;
@@ -460,6 +456,11 @@ textarea {
   &:not(.select) {
     border: none;
   }
+}
+
+.label-top {
+  margin-left: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
 .label-left {

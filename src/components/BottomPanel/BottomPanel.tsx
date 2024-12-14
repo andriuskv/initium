@@ -157,6 +157,10 @@ export default function BottomPanel({ locale }) {
     toggleIndicator("timers", detail);
   }
 
+  function selectCalendar() {
+    selectItem("calendar");
+  }
+
   function renderItems() {
     return (
       <ul className="bottom-panel-item-selection">
@@ -206,7 +210,7 @@ export default function BottomPanel({ locale }) {
           {items.calendar.rendered ? (
             <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}>
               <Suspense fallback={null}>
-                <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} locale={locale} showIndicator={toggleIndicator}/>
+                <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} locale={locale} reveal={selectCalendar} showIndicator={toggleIndicator}/>
               </Suspense>
             </div>
           ) : null}

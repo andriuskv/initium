@@ -10,14 +10,16 @@ import Toast from "components/Toast";
 import "./calendar.css";
 import HeaderDropdown from "./HeaderDropdown";
 import ReminderPreview from "./ReminderPreview";
+import { useNotification } from "contexts/notification";
 
 const SelectedDay = lazy(() => import("./SelectedDay"));
 const ReminderList = lazy(() => import("./ReminderList"));
 const WorldClocks = lazy(() => import("./WorldClocks"));
 const Form = lazy(() => import("./Form"));
 
-export default function Calendar({ visible, locale, showIndicator }) {
+export default function Calendar({ visible, locale, reveal, showIndicator }) {
   const { settings: { appearance: { animationSpeed }, timeDate: settings } } = useSettings();
+  const { showNotification } = useNotification();
   const [calendar, setCalendar] = useState(null);
   const [currentDay, setCurrentDay] = useState(null);
   const [currentYear, setCurrentYear] = useState();
@@ -37,7 +39,9 @@ export default function Calendar({ visible, locale, showIndicator }) {
   const saveTimeoutId = useRef(0);
   const dateCheckTimeoutId = useRef(0);
   const slideAnimationTimeoutId = useRef(0);
+  const notificationCheckIntervalId = useRef(0);
   const first = useRef(true);
+  const revealed = useRef(false);
   const tomorrowDay = useMemo(() => {
     if (!calendar) {
       return null;
@@ -49,6 +53,10 @@ export default function Calendar({ visible, locale, showIndicator }) {
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    reveal.current = visible;
+  }, [visible]);
 
   useEffect(() => {
     if (currentFirstWeekday.current !== settings.firstWeekday) {
@@ -98,6 +106,21 @@ export default function Calendar({ visible, locale, showIndicator }) {
     };
   }, [calendar]);
 
+  useEffect(() => {
+    if (!calendar) {
+      return;
+    }
+    checkForNotications();
+    clearInterval(notificationCheckIntervalId.current);
+    notificationCheckIntervalId.current = window.setInterval(() => {
+      checkForNotications();
+    }, 60000);
+
+    return () => {
+      clearInterval(notificationCheckIntervalId.current);
+    };
+  }, [reminders.length]);
+
   async function init() {
     const reminders = await chromeStorage.get("reminders");
 
@@ -125,6 +148,55 @@ export default function Calendar({ visible, locale, showIndicator }) {
     const gr = resetRepeatableReminders(googleReminders);
 
     initCalendar(r, gr);
+  }
+
+  function checkForNotications() {
+    const { year, month, day } = timeDateService.getCurrentDate();
+    const currentCalendarDay = getCalendarDay(calendar, { year, month, day });
+    const currentTime = Date.now();
+    let notified = JSON.parse(localStorage.getItem("notified")) || [];
+    notified = notified.filter(item => currentTime < item.resets);
+
+    for (const reminder of currentCalendarDay.reminders) {
+      if (reminder.notify && !notified.some(item => item.id === reminder.creationDate)) {
+        if (reminder.notify.type === "time") {
+          const { hours, minutes } = reminder.range.from;
+          const reminderTime = new Date(year, month, day, hours, minutes).getTime();
+
+          if (reminderTime > currentTime && currentTime + reminder.notify.time * 60 * 1000 > reminderTime) {
+            notified.push({
+              id: reminder.creationDate,
+              resets: reminderTime
+            });
+            showReminderNotification(reminder, currentCalendarDay);
+          }
+        }
+        else if (reminder.notify.type === "default") {
+          notified.push({
+            id: reminder.creationDate,
+            resets: new Date(year, month, day + 1).getTime()
+          });
+          showReminderNotification(reminder, currentCalendarDay);
+        }
+      }
+    }
+    localStorage.setItem("notified", JSON.stringify(notified));
+  }
+
+  function showReminderNotification(reminder, day) {
+    showNotification({
+      title: "Calendar",
+      iconId: "calendar",
+      text: `${reminder.notify.type === "default" ? "Today" : reminder.range.text}\n${reminder.text}`,
+      action: () => {
+        if (!revealed.current) {
+          revealed.current = true;
+          reveal();
+        }
+        showDayView(day);
+      },
+      actionTitle: "Show"
+    });
   }
 
   function checkDate() {

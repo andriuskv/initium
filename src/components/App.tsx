@@ -7,6 +7,7 @@ import Wallpaper from "components/Wallpaper";
 import MiddleTop from "components/MiddleTop";
 import BottomPanel from "components/BottomPanel";
 import Tooltip from "components/Tooltip";
+import Notification from "components/Notification";
 
 const MainPanel = lazy(() => import("./MainPanel"));
 const Weather = lazy(() => import("./Weather"));
@@ -165,6 +166,7 @@ export default function App() {
       </Suspense>
       <BottomPanel locale={locale}/>
       <Tooltip/>
+      <Notification/>
       {fullscreenModal.id || fullscreenModal.params ? renderFullscreenModal() : null}
     </>
   );

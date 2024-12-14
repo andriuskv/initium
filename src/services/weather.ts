@@ -80,7 +80,7 @@ function parseWeather(data: { hourly: Hour[], daily: Weekday[]}) {
   const hourly = data.hourly.map(item => ({
     ...item,
     id: getRandomString(),
-    time: getTimeString({ hours: item.hour })
+    time: getTimeString({ hours: item.hour, minutes: 0 })
   }));
   const daily = data.daily.map(item => ({
     ...item,
