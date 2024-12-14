@@ -1,0 +1,76 @@
+.notifications {
+  z-index: 1000;
+  position: absolute;
+  right: var(--space-md);
+  bottom: 42px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.notification {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: 200px;
+  max-width: 360px;
+  animation-duration: var(--duration-n);
+  animation-fill-mode: both;
+  animation-delay: 0.2s;
+  animation-name: show-notification;
+
+  &.hiding {
+    animation-delay: 0s;
+    animation-duration: var(--duration-f), var(--duration-n);
+    animation-name: opacity-down, hide-notification;
+  }
+}
+
+.notification-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-white-10);
+}
+
+.notification-title {
+  font-size: var(--text-sm);
+  font-weight: bold;
+}
+
+.notification-content {
+  padding-inline: var(--space-xl);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.notification-bottom {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: var(--space-md);
+  padding-bottom: var(--space-md);
+
+   &:has(:nth-last-child(n + 2)) {
+    justify-content: space-between;
+   }
+}
+
+@keyframes show-notification {
+  from {
+    transform: translateX(50%);
+    opacity: 0;
+  }
+
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes hide-notification {
+  to {
+    transform: translate(50%);
+  }
+}

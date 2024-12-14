@@ -9,6 +9,7 @@ import "components/TabsContainer/tabs-container.css";
 import { createRoot } from "react-dom/client";
 import { SettingsProvider } from "contexts/settings";
 import { LocalizationProvider } from "contexts/localization";
+import { NotificationProvider } from "contexts/notification";
 import { StickyNotesProvider } from "contexts/stickyNotes";
 import App from "components/App";
 
@@ -17,9 +18,11 @@ const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <SettingsProvider>
     <LocalizationProvider>
-      <StickyNotesProvider>
-        <App/>
-      </StickyNotesProvider>
+      <NotificationProvider>
+        <StickyNotesProvider>
+          <App/>
+        </StickyNotesProvider>
+      </NotificationProvider>
     </LocalizationProvider>
   </SettingsProvider>
 );

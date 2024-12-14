@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  width: 420px;
+  width: 432px;
   height: 480px;
   min-height: 0;
   transition: var(--duration-n) opacity;
@@ -163,6 +163,7 @@
 
 .reminder-form-weeekdays {
   overflow: hidden;
+  flex-shrink: 0;
   display: flex;
   align-items: stretch;
   gap: 0;
@@ -287,4 +288,9 @@
 .reminder-form-btns {
   gap: var(--space-md);
   margin-top: auto;
+}
+
+.reminder-form-notify-setting {
+  display: flex;
+  flex-direction: column;
 }

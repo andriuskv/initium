@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { getRandomHexColor, hslStringToHex, getRandomString } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate, parseDateInputValue, getDateString } from "services/timeDate";
 import { getSetting } from "services/settings";
-import { createCalendarEvent, updateCalendarEvent, getEventColors } from "services/calendar";
+import { createCalendarEvent, updateCalendarEvent, getEventColors, saveNotifiedReminder } from "services/calendar";
 import { useMessage } from "hooks";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
@@ -68,6 +68,17 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           form.repeat.weekdays.static[form.repeat.currentWeekday] = true;
         }
       }
+
+      if (form.notify) {
+        form.notify = {
+          ...form.notify,
+          enabled: true,
+          time: {
+            hours: Math.floor(form.notify.time / 60),
+            minutes: form.notify.time % 60
+          }
+        };
+      }
     }
     else {
       form.id = getRandomString();
@@ -102,6 +113,13 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       ...form.repeat
     };
 
+    const notify = {
+      enabled: false,
+      type: "default",
+      time: { hours: 1, minutes: 0 },
+      ...form.notify
+    };
+
     if (repeat.endDateString) {
       repeat.ends = "date";
     }
@@ -110,7 +128,13 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     form.displayDateString = formatDate(new Date(date.year, date.month, date.day), { locale: dateLocale });
     form.pickerColor = form.color ? form.color.startsWith("hsl") ? hslStringToHex(form.color) : form.color : getRandomHexColor();
 
-    return { type: "normal", ...form, range, repeat };
+    return {
+      type: "normal",
+      ...form,
+      range,
+      repeat,
+      notify
+    };
   }
 
   function generateTimeTable() {
@@ -255,6 +279,34 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       }
     }
 
+    if (form.type !== "google" && form.notify.enabled) {
+      if (form.range.enabled) {
+        const { hours, minutes } = form.notify.time;
+        const hoursNum = Number.parseInt(hours, 10);
+        const minutesNum = Number.parseInt(minutes, 10);
+
+        if (hoursNum === 0 && minutesNum === 0) {
+          setForm({ ...form,
+            range,
+            repeat,
+            notify: {
+              ...form.notify,
+              message:  "Please provide notification time"
+            }
+          });
+          return;
+        }
+        reminder.notify = {
+          type: "time",
+          time:  hoursNum * 60 + minutesNum
+        };
+      }
+      else {
+        reminder.notify = { type: "default" };
+      }
+      saveNotifiedReminder(reminder);
+    }
+
     if (form.type === "google") {
       setForm({ ...form, submiting: true });
 
@@ -385,6 +437,16 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     }
   }
 
+  function handleNotifyTimeChange({ target }) {
+    setForm({
+      ...form,
+      notify: {
+        ...form.notify,
+        time: { hours: form.notify.time.hours, minutes: form.notify.time.minutes, [target.name]: target.value }
+      }
+    });
+  }
+
   function showSelectedDayPicker() {
     const element = document.querySelector("input[name=selecteddate]");
 
@@ -479,6 +541,16 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
             </div>
             <span>{locale.calendar.form.repeat_label}</span>
           </label>
+          {form.type === "google" ? null : (
+            <label className="reminder-form-setting">
+              <input type="checkbox" className="sr-only checkbox-input" name="notify"
+                onChange={toggleFormCheckbox} checked={form.notify.enabled}/>
+              <div className="checkbox">
+                <div className="checkbox-tick"></div>
+              </div>
+              <span>Notify</span>
+            </label>
+          )}
           {form.repeat.enabled && (
             <div className="select-container reminder-form-repeat-type-selection">
               <select className="input select" onChange={handleRepeatTypeChange} value={form.repeat.type}>
@@ -592,6 +664,55 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
             </div>
           </>
         )}
+        {form.notify.enabled && form.range.enabled ? (
+          <div className="reminder-form-notify-setting">
+            <div className="reminder-form-column reminder-form-setting">
+              <div>Notify before</div>
+              <div className="reminder-form-row">
+                <label>
+                  <div className="label-top">Hour(s)</div>
+                  <div className="select-container">
+                    <select className="input select" onChange={handleNotifyTimeChange} value={form.notify.time.hours} name="hours">
+                      <option value="0">0</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                      <option value="11">11</option>
+                      <option value="12">12</option>
+                    </select>
+                  </div>
+                </label>
+                <label>
+                  <div className="label-top">Minutes</div>
+                  <div className="select-container">
+                    <select className="input select" onChange={handleNotifyTimeChange} value={form.notify.time.minutes} name="minutes">
+                      <option value="0">0</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="15">15</option>
+                      <option value="20">20</option>
+                      <option value="25">25</option>
+                      <option value="30">30</option>
+                      <option value="35">35</option>
+                      <option value="40">40</option>
+                      <option value="45">45</option>
+                      <option value="50">50</option>
+                      <option value="55">55</option>
+                    </select>
+                  </div>
+                </label>
+              </div>
+            </div>
+            {form.notify.message && <div className="reminder-form-input-message">{form.notify.message}</div>}
+          </div>
+        ): null}
       </div>
       {message ? <Toast message={message} position="bottom" offset="40px" locale={locale} dismiss={dismissMessage}/> : null}
       <div className="container-footer reminder-form-btns">

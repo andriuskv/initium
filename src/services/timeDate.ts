@@ -34,7 +34,7 @@ function getDSTChangeDirection(start: number, end: number) {
   return 0;
 }
 
-function getTimeString(time: { hours: number, minutes?: number }, { padHours = false, excludeMinutes = false } = {}) {
+function getTimeString(time: { hours: number, minutes: number }, { padHours = false, excludeMinutes = false } = {}) {
   const { hours, minutes, period } = adjustTime(time);
   const h = padHours ? padTime(hours) : hours;
 

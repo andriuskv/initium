@@ -23,7 +23,7 @@
 
     .modal {
       animation-duration: var(--duration-n), var(--duration-f);
-      animation-name: opacity-down, slide-down;
+      animation-name: opacity-down, slide-modal-down;
     }
   }
 }
@@ -75,7 +75,7 @@
   }
 }
 
-@keyframes slide-down {
+@keyframes slide-modal-down {
   from {
     transform: none;
   }
