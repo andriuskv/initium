@@ -61,7 +61,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
   const [modal, setModal, hideModal] = useModal(null);
   const [activeDragId, setActiveDragId] = useState(null);
   const [prefsVisible, setPrefsVisible] = useState(state.completeWithSubtasks);
-  const [message, showMessage, dismissMessage] = useMessage("");
+  const { message, showMessage, dismissMessage }= useMessage("");
 
   function toggleMoreOptions() {
     setState({

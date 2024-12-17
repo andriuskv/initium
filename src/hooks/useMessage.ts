@@ -17,9 +17,9 @@ export default function useMessage(initialValue: string) {
     clearTimeout(timeoutId.current);
     setMessage("");
   }
-  return [
+  return {
     message,
     showMessage,
     dismissMessage
-  ];
+  };
 }

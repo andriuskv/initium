@@ -11,7 +11,7 @@ type Props = PropsWithChildren & {
 
 export default function Modal({ children, className, transparent, hiding, hide }: Props) {
   const container = useRef(null);
-  let element: HTMLElement | null = null;
+  const element = useRef(null);
 
   useEffect(() => {
     if (container.current) {
@@ -30,15 +30,15 @@ export default function Modal({ children, className, transparent, hiding, hide }
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
     if (event.target === event.currentTarget) {
-      element = event.target as HTMLElement;
+      element.current = event.target as HTMLElement;
     }
   }
 
   function handlePointerUp(event: PointerEvent<HTMLDivElement>) {
-    if (element === event.currentTarget) {
+    if (element.current === event.currentTarget) {
       hide();
     }
-    element = null;
+    element.current = null;
   }
 
   function handleKeydown(event: KeyboardEvent) {

@@ -2,22 +2,73 @@ import { getRandomString } from "../utils";
 import { getSetting } from "./settings";
 import { formatDate } from "./timeDate";
 import * as chromeStorage from "./chromeStorage";
+import { TimeDateSettings } from "types/settings";
 
-function getStoredFeeds() {
+type Entry = {
+  id: string,
+  title: string,
+  description: string,
+  link: string,
+  truncated: boolean,
+  newEntry?: boolean,
+  date?: string,
+  thumbnail?: string,
+}
+
+type Feed = {
+  id: string,
+  title: string,
+  url: string,
+  description: string,
+  newEntryCount: number,
+  entries: Entry[]
+  updated?: string,
+  image?: string
+}
+
+type Feeds = {
+  active: Feed[],
+  inactive: Feed[],
+  failed: Feed[]
+}
+
+type FetchEntry = {
+  id: string,
+  title: string,
+  description: string,
+  link?: string,
+  guid?: string,
+  content?: string,
+  thumbnail?: string,
+  pubDate: string,
+}
+
+type FetchFeed = {
+  id: string,
+  title: string,
+  url: string,
+  description: string,
+  lastBuildDate: string,
+  newEntryCount: number,
+  items: FetchEntry[]
+  image?: { url: string }
+}
+
+function getStoredFeeds(): Promise<Feeds | null> {
   return chromeStorage.get("feeds");
 }
 
 async function hasStoredFeeds() {
-  const feeds = await getStoredFeeds() || {};
+  const feeds = await getStoredFeeds() || { active: [] };
 
-  return feeds.active?.length > 0;
+  return feeds.active.length > 0;
 }
 
-function fetchFeedData(url) {
+function fetchFeedData(url: string): Promise<{ feed: FetchFeed }> {
   return fetch(`${process.env.SERVER_URL}/feed?url=${url}`).then(res => res.json());
 }
 
-async function fetchFeed(feed) {
+async function fetchFeed(feed: Feed): Promise<Feed | { message: string }> {
   const data = await fetchFeedData(feed.url);
 
   if (data.feed) {
@@ -29,7 +80,7 @@ async function fetchFeed(feed) {
   return { message: "Feed was not found." };
 }
 
-async function updateFeed({ url, entries, newEntryCount }) {
+async function updateFeed({ url, entries, newEntryCount }: { url: string, entries: Entry[], newEntryCount: number }) {
   const data = await fetchFeedData(url);
 
   if (data.feed) {
@@ -47,7 +98,7 @@ async function updateFeed({ url, entries, newEntryCount }) {
   }
 }
 
-function getNewEntries(newEntries, entries) {
+function getNewEntries(newEntries: FetchEntry[], entries: Entry[]): Entry[] {
   return newEntries.reduce((newEntries, entry) => {
     const notDuplicate = !entries.some(({ link, title }) => {
       return link === getEntryLink(entry) || title === entry.title.trim();
@@ -57,13 +108,21 @@ function getNewEntries(newEntries, entries) {
       newEntries.push(parseEntry(entry, true));
     }
     return newEntries;
-  }, []);
+  }, [] as Entry[]);
 }
 
-function parseFeed(feed, { title, url }) {
-  const data = {};
+function parseFeed(feed: FetchFeed, { title, url }: { title: string, url: string }): Feed {
   const image = feed.image?.url;
   const updated = parseDate(feed.lastBuildDate);
+  const data: Feed = {
+    url,
+    id: getRandomString(),
+    // Don't overwrite manually changed title
+    title: title || feed.title,
+    description: feed.description,
+    newEntryCount: 0,
+    entries: parseEntries(feed.items)
+  };
 
   if (image) {
     data.image = image;
@@ -72,33 +131,25 @@ function parseFeed(feed, { title, url }) {
   if (updated) {
     data.updated = updated;
   }
-  return {
-    ...data,
-    url,
-    id: getRandomString(),
-    // If feed's title was manually changed, don't overwrite it.
-    title: title || feed.title,
-    description: feed.description,
-    newEntryCount: 0,
-    entries: parseEntries(feed.items)
-  };
+
+  return data;
 }
 
-function parseDate(dateStr) {
+function parseDate(dateStr: string) {
   if (!dateStr) {
     return;
   }
-  const { dateLocale } = getSetting("timeDate");
+  const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
   const date = new Date(dateStr);
 
   return formatDate(date, { locale: dateLocale, includeTime: true });
 }
 
-function parseEntries(entries) {
+function parseEntries(entries: FetchEntry[]): Entry[] {
   return entries.map(entry => parseEntry(entry));
 }
 
-function parseEntry(entry, newEntry = false) {
+function parseEntry(entry: FetchEntry, newEntry = false): Entry {
   const content = entry.content ? entry.content.trim() : "";
 
   return {
@@ -113,7 +164,7 @@ function parseEntry(entry, newEntry = false) {
   };
 }
 
-function getEntryLink(entry) {
+function getEntryLink(entry: FetchEntry) {
   if (entry.link) {
     return entry.link.trim();
   }
@@ -123,7 +174,7 @@ function getEntryLink(entry) {
   return "javascript: void 0;";
 }
 
-function needTruncation(content) {
+function needTruncation(content: string) {
   const div = document.createElement("div");
 
   // Simulate original container styles.

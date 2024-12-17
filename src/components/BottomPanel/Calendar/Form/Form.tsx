@@ -1,4 +1,6 @@
-import { useState, useMemo } from "react";
+import type { TimeDateSettings } from "types/settings";
+import type { Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
+import { useState, useMemo, ChangeEvent, MouseEvent, KeyboardEvent} from "react";
 import { getRandomHexColor, hslStringToHex, getRandomString } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate, parseDateInputValue, getDateString } from "services/timeDate";
 import { getSetting } from "services/settings";
@@ -9,20 +11,113 @@ import Dropdown from "components/Dropdown";
 import Toast from "components/Toast";
 import "./form.css";
 
-export default function Form({ form: initialForm, locale, user, googleCalendars, updateReminder, hide }) {
+type SelectedDay = {
+  id: string,
+  dateString: string,
+  day: number,
+  month: number,
+  year: number,
+  reminders: Reminder[]
+}
+
+type FormType = {
+  submiting?: boolean,
+  id: string,
+  creationDate: number,
+  text: string,
+  description?: string
+  day: number,
+  month: number,
+  year: number,
+  range: {
+    enabled: boolean,
+    text?: string
+    dataList?: { items: string[] }
+    from?: {
+      text: string,
+      hours?: number,
+      minutes?: number
+    },
+    to?: {
+      text: string,
+      hours?: number,
+      minutes?: number
+    },
+    message?: string
+  },
+  repeat?: {
+    enabled: boolean,
+    type: "custom" | "week" | "month" | "weekday" | "day",
+    customTypeGapName: "days" | "weeks" | "months",
+    year: number,
+    month: number,
+    day: number,
+    gap: string,
+    count: number,
+    tooltip: string,
+    ends: "occurrences" | "never" | "date",
+    endDate?: {
+      year: number,
+      month: number,
+      day: number,
+    }
+    endDateString?: string,
+    minEndDateString?: string,
+    leftoverDays?: number,
+    currentWeekday?: number,
+    firstWeekday?: 0 | 1,
+    weekdays?: {
+      dynamic: boolean[]
+      static: boolean[]
+    },
+    dateMessage?: string,
+    gapError?: boolean,
+    countError?: boolean
+  },
+  notify?: {
+    enabled: boolean,
+    type: "default" | "time",
+    time?: { full?: number, hours: number, minutes: number },
+    message?: string
+  }
+  color: string,
+  dateString: string,
+  displayDateString: string,
+  pickerColor: string,
+  calendarId?: string
+  colorId?: string,
+  eventColors?: { id: string, color: string }[]
+  eventColorIndex?: number
+  updating?: boolean,
+  selectedDay?: SelectedDay
+}
+
+type Props = {
+  form: FormType,
+  locale: any,
+  user: GoogleUser,
+  googleCalendars: GoogleCalendar[],
+  updateReminder: (reminder: Reminder | GoogleReminder, form: FormType) => void,
+  hide: () => void
+}
+
+export default function Form({ form: initialForm, locale, user, googleCalendars, updateReminder, hide }: Props) {
   const [form, setForm] = useState(() => getInitialForm(structuredClone(initialForm)));
-  const [message, showMessage, dismissMessage] = useMessage("");
+  const { message, showMessage, dismissMessage }= useMessage("");
   const weekdayNames = useMemo(() => {
-    const { dateLocale } = getSetting("timeDate");
+    const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
     return getWeekdays(dateLocale, "short");
   }, []);
 
-  function getInitialForm(form) {
-    const { dateLocale } = getSetting("timeDate");
+  function getInitialForm(form: FormType) {
+    const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
     const weekday = getWeekday(form.year, form.month, form.day);
-    const weekdays = { static: [false, false, false, false, false, false, false] };
-
+    const weekdays = {
+      static: [false, false, false, false, false, false, false],
+      dynamic: [false, false, false, false, false, false, false]
+    };
     weekdays.static[weekday] = true;
+    weekdays.dynamic[weekday] = true;
 
     if (form.updating) {
       if (form.calendarId) {
@@ -64,19 +159,30 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         };
 
         if (form.repeat.type === "weekday") {
-          form.repeat.weekdays = { static: [...form.repeat.weekdays.dynamic] };
+          form.repeat.weekdays = {
+            dynamic: form.repeat.weekdays.dynamic,
+            static: [...form.repeat.weekdays.dynamic]
+          };
           form.repeat.weekdays.static[form.repeat.currentWeekday] = true;
         }
       }
 
       if (form.notify) {
+        let obj = {};
+
+        if (form.notify.time) {
+          obj = {
+            time: {
+              full: form.notify.time.full,
+              hours: Math.floor(form.notify.time.full / 60),
+              minutes: form.notify.time.full % 60
+            }
+          };
+        }
         form.notify = {
           ...form.notify,
           enabled: true,
-          time: {
-            hours: Math.floor(form.notify.time / 60),
-            minutes: form.notify.time % 60
-          }
+          ...obj,
         };
       }
     }
@@ -84,14 +190,14 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       form.id = getRandomString();
     }
 
-    const range = {
+    const range: FormType["range"] = {
       enabled: false,
       dataList: generateTimeTable(),
       from: { text: "" },
       to: { text: "" },
       ...form.range
     };
-    const repeat = {
+    const repeat: FormType["repeat"] = {
       enabled: false,
       type: "custom",
       customTypeGapName: "days",
@@ -113,7 +219,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       ...form.repeat
     };
 
-    const notify = {
+    const notify: FormType["notify"] = {
       enabled: false,
       type: "default",
       time: { hours: 1, minutes: 0 },
@@ -187,7 +293,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
 
     event.preventDefault();
 
-    const reminder = {
+    const reminder: Partial<Reminder> = {
       creationDate: Date.now(),
       id: form.id,
       text: elements.reminder.value,
@@ -200,95 +306,100 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     if (description) {
       reminder.description = description;
     }
+    const formRange = { ...form.range };
 
-    if (form.range.enabled) {
-      const from = parseTimeString(form.range.from.text);
-      const to = parseTimeString(form.range.to.text);
-
-      reminder.range = {};
+    if (formRange.enabled) {
+      reminder.range = {
+        from: parseTimeString(formRange.from.text),
+        to: parseTimeString(formRange.to.text)
+      };
+      const { from, to } = reminder.range;
 
       if (to) {
         if (!from || to.hours < from.hours || (to.hours === from.hours && to.minutes <= from.minutes)) {
-          form.range.message = locale.calendar.form.invalid_range_message;
-          setForm({ ...form });
+          setForm({
+            ...form,
+            range: {
+              ...formRange,
+              message: locale.calendar.form.invalid_range_message
+            }
+          });
           return;
         }
-        delete to.text;
-        reminder.range.to = to;
       }
-      delete form.range.message;
-      delete from.text;
-      reminder.range.from = from;
+      delete formRange.message;
     }
 
-    if (form.repeat.enabled) {
-      reminder.repeat = {};
-      reminder.repeat.type = form.repeat.type;
+    const formRepeat = { ...form.repeat };
 
-      delete form.repeat.dateMessage;
+    if (formRepeat.enabled) {
+      const repeat: Partial<Reminder["repeat"]> = {
+        type: formRepeat.type
+      };
 
-      if (form.repeat.type === "custom") {
-        if (form.repeat.gap) {
-          delete form.repeat.gapError;
-          reminder.repeat.gap = Number(form.repeat.gap);
-          reminder.repeat.customTypeGapName = form.repeat.customTypeGapName;
+      delete formRepeat.dateMessage;
+
+      if (formRepeat.type === "custom") {
+        if (formRepeat.gap) {
+          delete formRepeat.gapError;
+          repeat.gap = Number(formRepeat.gap);
+          repeat.customTypeGapName = formRepeat.customTypeGapName;
         }
         else {
-          form.repeat.gapError = true;
+          formRepeat.gapError = true;
         }
       }
-      else if (form.repeat.type === "weekday") {
-        const settings = getSetting("timeDate");
+      else if (formRepeat.type === "weekday") {
+        const settings = getSetting("timeDate") as TimeDateSettings;
 
-        reminder.repeat.firstWeekday = settings.firstWeekday;
-        reminder.repeat.weekdays = {
-          static: form.repeat.weekdays.static,
-          dynamic: [...form.repeat.weekdays.static]
+        repeat.firstWeekday = settings.firstWeekday;
+        repeat.weekdays = {
+          static: formRepeat.weekdays.static,
+          dynamic: [...formRepeat.weekdays.static]
         };
       }
 
-      if (form.repeat.ends === "occurrences") {
-        if (form.repeat.count) {
-          reminder.repeat.count = Number(form.repeat.count);
+      if (formRepeat.ends === "occurrences") {
+        if (formRepeat.count) {
+          repeat.count = Number(formRepeat.count);
         }
         else {
-          form.repeat.countError = true;
+          formRepeat.countError = true;
         }
       }
-      else if (form.repeat.ends === "date") {
+      else if (formRepeat.ends === "date") {
         const dateString = elements.enddate.value;
 
         if (!dateString) {
-          form.repeat.dateMessage = "Please provide date.";
-          setForm({ ...form });
+          formRepeat.dateMessage = "Please provide date.";
+          setForm({ ...form, range: formRange, repeat: formRepeat });
           return;
         }
         const endDate = parseDateInputValue(dateString);
 
         if (new Date(endDate.year, endDate.month, endDate.day) < new Date(form.year, form.month, form.day)) {
-          form.repeat.dateMessage = "Date should be higher that the current selected date.";
-          setForm({ ...form });
+          formRepeat.dateMessage = "Date should be higher that the current selected date.";
+          setForm({ ...form, range: formRange, repeat: formRepeat });
           return;
         }
-        reminder.repeat.endDate = endDate;
+        repeat.endDate = endDate;
       }
 
-      if (form.repeat.gapError || form.repeat.countError) {
-        setForm({ ...form });
+      if (formRepeat.gapError || formRepeat.countError) {
+        setForm({ ...form, range: formRange, repeat: formRepeat });
         return;
       }
+      reminder.repeat = repeat as Reminder["repeat"];
     }
 
     if (form.type !== "google" && form.notify.enabled) {
       if (form.range.enabled) {
         const { hours, minutes } = form.notify.time;
-        const hoursNum = Number.parseInt(hours, 10);
-        const minutesNum = Number.parseInt(minutes, 10);
 
-        if (hoursNum === 0 && minutesNum === 0) {
+        if (hours === 0 && minutes === 0) {
           setForm({ ...form,
-            range,
-            repeat,
+            range: formRange,
+            repeat: formRepeat,
             notify: {
               ...form.notify,
               message:  "Please provide notification time"
@@ -298,28 +409,29 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         }
         reminder.notify = {
           type: "time",
-          time:  hoursNum * 60 + minutesNum
+          time: { full: hours * 60 + minutes }
         };
       }
       else {
         reminder.notify = { type: "default" };
       }
-      saveNotifiedReminder(reminder);
+      saveNotifiedReminder(reminder as Reminder);
     }
 
     if (form.type === "google") {
+      const googleReminder = reminder as GoogleReminder;
       setForm({ ...form, submiting: true });
 
       const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
 
-      reminder.type = "google";
-      reminder.calendarId = primaryCalendar.id;
-      reminder.color = form.eventColors[form.eventColorIndex].color;
-      reminder.colorId = form.colorId;
-      reminder.editable = true;
+      googleReminder.type = "google";
+      googleReminder.calendarId = primaryCalendar.id;
+      googleReminder.color = form.eventColors[form.eventColorIndex].color;
+      googleReminder.colorId = form.colorId;
+      googleReminder.editable = true;
 
       if (form.updating) {
-        const event = await updateCalendarEvent(reminder, primaryCalendar.id);
+        const event = await updateCalendarEvent(googleReminder, primaryCalendar.id);
 
         if (!event) {
           setForm({ ...form, submiting: false });
@@ -328,7 +440,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         }
       }
       else {
-        const event = await createCalendarEvent(reminder, primaryCalendar.id);
+        const event = await createCalendarEvent(googleReminder, primaryCalendar.id);
 
         if (!event) {
           setForm({ ...form, submiting: false });
@@ -337,140 +449,218 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         }
         reminder.id = event.id;
       }
+      updateReminder(googleReminder, form);
     }
-    updateReminder(reminder, form);
+    else {
+      updateReminder(reminder as Reminder, form);
+    }
     hide();
   }
 
-  function preventFormSubmit(event) {
-    if (event.key === "Enter" && event.target.nodeName !== "BUTTON" && event.target.nodeName !== "TEXTAREA") {
+  function preventFormSubmit(event: KeyboardEvent) {
+    const element = event.target as HTMLElement;
+
+    if (event.key === "Enter" && element.nodeName !== "BUTTON" && element.nodeName !== "TEXTAREA") {
       event.preventDefault();
     }
   }
 
-  function changeReminderType(type) {
+  function changeReminderType(type: "normal" | "google") {
     if (type === "google" && !form.eventColors) {
-      form.eventColors = getEventColors(form.calendarId, googleCalendars);
-      form.eventColorIndex = form.eventColors.length - 1;
-    }
-    setForm({ ...form, type });
-  }
+      const eventColors = getEventColors(form.calendarId, googleCalendars);
 
-  function updateEventColor(id, index) {
-    if (id) {
-      form.colorId = id;
+      setForm({
+        ...form,
+        type,
+        eventColors,
+        eventColorIndex: eventColors.length - 1
+      });
     }
     else {
-      // Default color doesn't have an id
-      delete form.colorId;
+      setForm({ ...form, type });
     }
-    setForm({ ...form, eventColorIndex: index });
   }
 
-  function toggleFormCheckbox(event) {
-    form[event.target.name].enabled = !form[event.target.name].enabled;
-    delete form.repeat.dateMessage;
-    setForm({ ...form });
+  function updateEventColor(id: string, index: number) {
+    setForm({ ...form,
+      colorId: id,
+      eventColorIndex: index
+    });
   }
 
-  function handleRepeatTypeChange({ target }) {
-    form.repeat.type = target.value;
-    setForm({ ...form });
+  function toggleFormCheckbox(event: ChangeEvent<HTMLInputElement>) {
+    const { name } = event.target;
+    const obj = {
+      ...form[name],
+      enabled: !form[name].enabled
+    };
+
+    if (name === "repeat") {
+      obj.dateMessage = undefined;
+    }
+
+    setForm({
+      ...form,
+      [name]: obj
+    });
   }
 
-  function handleCustomTypeGapNameChange({ target }) {
-    form.repeat.customTypeGapName = target.value;
-    setForm({ ...form });
+  function handleRepeatTypeChange({ target }: ChangeEvent<HTMLSelectElement>) {
+    setForm({
+      ...form,
+      repeat: {
+        ...form.repeat,
+        type: target.value as FormType["repeat"]["type"]
+      }
+    });
   }
 
-  function handleWeekdaySelection({ target }) {
-    const weekday = Number(target.name);
+  function handleCustomTypeGapNameChange({ target }: ChangeEvent<HTMLSelectElement>) {
+    setForm({
+      ...form,
+      repeat: {
+        ...form.repeat,
+        customTypeGapName: target.value as FormType["repeat"]["customTypeGapName"]
+      }
+    });
+  }
 
+  function handleWeekdaySelection({ target }: ChangeEvent<HTMLInputElement>, weekday: number) {
     if (weekday === form.repeat.currentWeekday) {
       return;
     }
-    form.repeat.weekdays.static[weekday] = target.checked;
-    setForm({ ...form });
+    setForm({
+      ...form,
+      repeat: {
+        ...form.repeat,
+        weekdays: {
+          static: form.repeat.weekdays.static.with(weekday, target.checked),
+          dynamic: form.repeat.weekdays.dynamic
+        }
+      }
+    });
   }
 
-  function handleRangeInputChange({ target }) {
+  function handleRangeInputChange({ target }: ChangeEvent<HTMLInputElement>) {
     const { name, value } = target;
+    let message = form.range.message;
 
     if (validateHourFormat(value)) {
-      delete form.range.message;
+      message = undefined;
     }
     else if (value) {
-      form.range.message = locale.calendar.form.invalid_time_format_message;
+      message = locale.calendar.form.invalid_time_format_message;
     }
-    form.range[name].text = value;
-    setForm({ ...form });
+    setForm({
+      ...form,
+      range: {
+        ...form.range,
+        message,
+        [name]: {
+          ...form.range[name],
+          text: value
+        }
+      }
+    });
   }
 
-  function handleRepeatInputChange({ target }) {
+  function handleRepeatInputChange({ target }: ChangeEvent<HTMLInputElement>) {
     const { name, value } = target;
     const regex = /^\d+$/;
+    const repeat = { ...form.repeat };
 
     if (!value || regex.test(value)) {
-      form.repeat[`${name}Error`] = false;
+      repeat[`${name}Error`] = false;
     }
     else if (name === "gap") {
-      form.repeat.gapError = true;
+      repeat.gapError = true;
     }
     else if (name === "count") {
-      form.repeat.countError = true;
+      repeat.countError = true;
     }
-    form.repeat[name] = value;
-    setForm({ ...form });
+    setForm({
+      ...form,
+      repeat: {
+        ...repeat,
+        [name]: value
+      }
+    });
   }
 
-  function handleRadioInputChange({ target }) {
+  function handleRadioInputChange({ target }: ChangeEvent<HTMLInputElement>) {
     if (target.type === "radio") {
-      form.repeat.ends = target.value;
-      setForm({ ...form });
+      setForm({
+        ...form,
+        repeat: {
+          ...form.repeat,
+          ends: target.value as FormType["repeat"]["ends"]
+        }
+      });
     }
   }
 
-  function selectDataItem({ target }, listName) {
-    if (target.nodeName === "LI") {
-      form.range[listName].text = target.textContent;
-      setForm({...form });
+  function selectRangeDataItem({ target }: MouseEvent<HTMLElement>, listName: "from" | "to") {
+    const element = target as HTMLLIElement;
+
+    if (element.nodeName === "LI") {
+      setForm({
+        ...form,
+        range: {
+          ...form.range,
+          message: undefined,
+          [listName]: {
+            ...form.range[listName],
+            text: element.textContent
+          }
+        }
+      });
     }
   }
 
-  function handleNotifyTimeChange({ target }) {
+  function handleNotifyTimeChange({ target }: ChangeEvent<HTMLSelectElement>) {
     setForm({
       ...form,
       notify: {
         ...form.notify,
-        time: { hours: form.notify.time.hours, minutes: form.notify.time.minutes, [target.name]: target.value }
+        time: { hours: form.notify.time.hours, minutes: form.notify.time.minutes, [target.name]: Number.parseInt(target.value, 10) }
       }
     });
   }
 
   function showSelectedDayPicker() {
-    const element = document.querySelector("input[name=selecteddate]");
+    const element = document.querySelector("input[name=selecteddate]") as HTMLInputElement;
 
     if (element) {
       element.showPicker();
     }
   }
 
-  function handleSelectedDayInputChange(event) {
-    const { dateLocale } = getSetting("timeDate");
+  function handleSelectedDayInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
     const displayDate = parseDateInputValue(event.target.value);
     const displayDateString = formatDate(new Date(displayDate.year, displayDate.month, displayDate.day), { locale: dateLocale });
-
     const weekday = getWeekday(displayDate.year, displayDate.month, displayDate.day);
+    let weekdaysStatic = form.repeat.weekdays.static.with(form.repeat.currentWeekday, false);
+    weekdaysStatic = weekdaysStatic.with(weekday, true);
 
-    form.repeat.weekdays.static[form.repeat.currentWeekday] = false;
-    form.repeat.currentWeekday = weekday;
-    form.repeat.weekdays.static[weekday] = true;
-
-    setForm({ ...form, ...displayDate, dateString: event.target.value, displayDateString });
+    setForm({
+      ...form,
+      ...displayDate,
+      repeat: {
+        ...form.repeat,
+        currentWeekday: weekday,
+        weekdays: {
+          static: weekdaysStatic,
+          dynamic: form.repeat.weekdays.dynamic
+        }
+      },
+      dateString: event.target.value,
+      displayDateString
+    });
   }
 
   return (
-    <form className="reminder-form" inert={form.submiting ? "" : null} onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
+    <form className="reminder-form" inert={form.submiting} onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
       <div className="container-header">
         {form.type === "google" ? (
           <img src="assets/google-product-logos/calendar.png" className="reminder-form-header-icon"
@@ -502,7 +692,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           <div className="reminder-form-display-date-container">
             <button type="button" className="btn text-btn reminder-form-display-date-btn" title="Show date picker"
               onClick={showSelectedDayPicker} data-modal-keep>{form.displayDateString}</button>
-            <input type="date" name="selecteddate" className="input reminder-form-display-date-input" tabIndex="-1"
+            <input type="date" name="selecteddate" className="input reminder-form-display-date-input" tabIndex={-1}
               value={form.dateString} onChange={handleSelectedDayInputChange}/>
           </div>
           {!form.updating && user ? (
@@ -571,9 +761,9 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                 <div className="input-icon-btn-container">
                   <input type="text" id="range-from" className="input reminder-range-input" autoComplete="off" name="from"
                     onChange={handleRangeInputChange} value={form.range.from.text} required/>
-                  <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-range-data-list-dropdown" }}>
-                    <ul className="range-data-list-items" onClick={event => selectDataItem(event, "from")}>
-                      {form.range.dataList.items.map((item, i) => <li className="range-data-list-item dropdown-btn" key={i}>{item}</li>)}
+                  <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-form-data-list-dropdown" }}>
+                    <ul className="reminder-form-data-list-items" onClick={event => selectRangeDataItem(event, "from")}>
+                      {form.range.dataList.items.map((item, i) => <li className="reminder-form-data-list-item dropdown-btn" key={i}>{item}</li>)}
                     </ul>
                   </Dropdown>
                 </div>
@@ -582,10 +772,10 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                 <label htmlFor="range-to">{locale.calendar.form.range_to_label}</label>
                 <div className="input-icon-btn-container">
                   <input type="text" id="range-to" className="input reminder-range-input" autoComplete="off" name="to"
-                    onChange={handleRangeInputChange} value={form.range.to.text} required/>
-                  <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-range-data-list-dropdown" }}>
-                    <ul className="range-data-list-items" onClick={event => selectDataItem(event, "to")}>
-                      {form.range.dataList.items.map((item, i) => <li className="range-data-list-item dropdown-btn" key={i}>{item}</li>)}
+                    onChange={handleRangeInputChange} value={form.range.to.text}/>
+                  <Dropdown toggle={{ iconId: "clock", title: "Time table" }} body={{ className: "reminder-form-data-list-dropdown" }}>
+                    <ul className="reminder-form-data-list-items" onClick={event => selectRangeDataItem(event, "to")}>
+                      {form.range.dataList.items.map((item, i) => <li className="reminder-form-data-list-item dropdown-btn" key={i}>{item}</li>)}
                     </ul>
                   </Dropdown>
                 </div>
@@ -616,8 +806,8 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
               <div className="reminder-form-setting reminder-form-weeekdays">
                 {form.repeat.weekdays.static.map((selected, index) => (
                   <label className="checkbox-container reminder-form-weekday" key={index}>
-                    <input type="checkbox" className="sr-only checkbox-input" name={index}
-                      onChange={handleWeekdaySelection} checked={selected || index === form.repeat.currentWeekday}
+                    <input type="checkbox" className="sr-only checkbox-input"
+                      onChange={event => handleWeekdaySelection(event, index)} checked={selected || index === form.repeat.currentWeekday}
                       disabled={index === form.repeat.currentWeekday}/>
                     <div className="reminder-form-weekday-content">{weekdayNames[index]}</div>
                   </label>
@@ -639,7 +829,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                   <div className="radio"></div>
                   <span>On</span>
                   <input type="date" name="enddate" className="input reminder-form-end-date-input" data-modal-keep
-                    min={form.repeat.minEndDate} defaultValue={form.repeat.endDateString}
+                    defaultValue={form.repeat.endDateString}
                     disabled={form.repeat.ends !== "date"} required={form.repeat.ends === "date"}/>
                 </label>
                 {form.repeat.ends === "date" && form.repeat.dateMessage && (

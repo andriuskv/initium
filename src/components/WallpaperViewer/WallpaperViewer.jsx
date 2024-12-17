@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useSettings } from "contexts/settings";
 import { getIDBWallpaper, updateDownscaledWallpaperPosition } from "services/wallpaper";
-import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
 import "./wallpaper-viewer.css";
 
 function useUrl({ id, url: imageUrl }) {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(null);
 
   useEffect(() => {
     init();

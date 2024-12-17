@@ -1,61 +1,11 @@
 /* global chrome */
 
+import type { Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
 import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import { getSetting } from "services/settings";
 import { TimeDateSettings } from "types/settings";
-
-type Reminder = {
-  id: string,
-  creationDate: number,
-  day: number,
-  month: number,
-  year: number,
-  range: {
-    from?: { hours: number, minutes: number },
-    to?: { hours: number, minutes: number },
-    text: string
-  },
-  repeat?: {
-    type: "custom" | "week" | "month" | "weekday" | "day",
-    customTypeGapName: "days" | "weeks" | "months",
-    year: number,
-    month: number,
-    day: number,
-    gap: number,
-    count: number,
-    tooltip: string,
-    endDate?: {
-      year: number,
-      month: number,
-      day: number,
-    }
-    leftoverDays?: number,
-    weekdays?: {
-      dynamic: boolean[]
-      static: boolean[]
-    }
-  },
-  notify?: {
-    type: "default" | "time",
-    time?: number
-  }
-  color: string,
-  text: string,
-  description?: string
-}
-
-type GoogleReminder = Reminder & {
-  type: "google",
-  calendarId: string,
-  editable: boolean,
-  colorId?: string,
-  repeat?: Reminder["repeat"] & {
-    freq?: "yearly",
-    firstWeekday: 0 | 1
-  }
-}
 
 type Day = {
   id: string,
@@ -74,21 +24,6 @@ type Month = {
 }
 
 type Calendar = { [key: string]: Month }
-
-type GoogleCalendar = {
-  id: string,
-  title: string,
-  color: string
-  canEdit: boolean,
-  selected: boolean,
-  primary?: boolean
-}
-
-type GoogleUser = {
-  email: string
-  name: string
-  photo: string
-}
 
 type GoogleEvent = {
   id: string,
@@ -312,7 +247,7 @@ function saveNotifiedReminder(reminder: Reminder) {
     const { hours, minutes } = reminder.range.from;
     const reminderTime = new Date(year, month, day, hours, minutes).getTime();
 
-    if (reminderTime > currentTime && currentTime + reminder.notify.time * 60 * 1000 > reminderTime) {
+    if (reminderTime > currentTime && currentTime + reminder.notify.time.full * 60 * 1000 > reminderTime) {
       notified.push({
         id: reminder.creationDate,
         resets: reminderTime
