@@ -6,7 +6,7 @@ type Props = {
   message: string,
   duration?: number,
   position?: "top" | "bottom",
-  offset?: number,
+  offset?: string,
   locale: {
     global: {
       dismiss: string
@@ -15,7 +15,7 @@ type Props = {
   dismiss: () => void,
 }
 
-export default function Toast({ message, duration = 0, position = "top", offset = 0, locale, dismiss }: Props) {
+export default function Toast({ message, duration = 0, position = "top", offset = "0", locale, dismiss }: Props) {
   const dismissTimeoutId = useRef(0);
   const style ={ "--offset": offset } as CSSProperties;
 

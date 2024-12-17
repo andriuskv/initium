@@ -220,26 +220,14 @@
   }
 }
 
-.range-data-list-panel {
-  position: absolute;
-  background-color: var(--color-grey-90);
-  transform: translate(-50%, var(--space-sm));
-}
-
-.range-data-list {
-  overflow: hidden;
-  border-top-right-radius: var(--container-inset-radius);
-  border-bottom-right-radius: var(--container-inset-radius);
-}
-
-.range-data-list-items {
+.reminder-form-data-list-items {
   overflow-y: auto;
   height: 152px;
   padding-top: var(--space-md);
   padding-bottom: var(--space-md);
 }
 
-.range-data-list-item {
+.reminder-form-data-list-item {
   height: 27px;
   padding: var(--space-sm) var(--space-md);
   white-space: nowrap;
@@ -273,7 +261,7 @@
   }
 }
 
-.reminder-range-data-list-dropdown {
+.reminder-form-data-list-dropdown {
   min-width: 120px;
   padding: 0;
 }

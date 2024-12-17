@@ -51,7 +51,7 @@ async function get(id: string) {
   return item[id];
 }
 
-async function set(value: Partial<{ [key: string]: unknown }>, { updateLocally, warnSize } = { updateLocally: false, warnSize: false }) {
+async function set(value: { [key: string]: unknown }, { updateLocally, warnSize }: { updateLocally?: boolean, warnSize: boolean } = { updateLocally: false, warnSize: false }) {
   isLocalChange = !updateLocally;
 
   try {

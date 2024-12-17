@@ -1,7 +1,7 @@
 import Icon from "components/Icon";
 
 type Props = {
-  className: string,
+  className?: string,
   size?: string,
 }
 

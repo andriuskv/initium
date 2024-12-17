@@ -7,7 +7,7 @@ type Props = {
 
 export default function Resizer({ saveHeight }: Props) {
   const resizerRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLElement>();
+  const containerRef = useRef<HTMLElement>(null);
   const startY = useRef(0);
   const initialHeight = useRef(320);
   const height = useRef(0);

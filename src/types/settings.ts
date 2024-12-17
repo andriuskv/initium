@@ -49,7 +49,7 @@ export type TimeDateSettings = {
   datePosition: "bottom";
   dateAlignment: "center";
   dateLocale: string;
-  firstWeekday: number;
+  firstWeekday: 0 | 1;
   worldClocksHidden: boolean;
   reminderPreviewHidden: boolean;
   showTomorrowReminers: boolean;

@@ -1,17 +1,47 @@
-import { useState, useEffect, useLayoutEffect, useRef, useMemo } from "react";
+import { MouseEvent, useState, useEffect, useLayoutEffect, useRef, useMemo, PropsWithChildren, ReactNode } from "react";
 import { getRandomString, timeout } from "utils";
 import * as focusService from "services/focus";
 import { getSetting } from "services/settings";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./dropdown.css";
+import { AppearanceSettings } from "types/settings";
 
-export default function Dropdown({ container, toggle = {}, body, children }) {
+type Props = PropsWithChildren & {
+  container?: {
+    className: string
+  },
+  toggle?: {
+    className?: string,
+    isIconTextBtn?: boolean,
+    iconId?: string,
+    title?: string,
+    body?: ReactNode
+  },
+  body?: {
+    className: string
+   }
+}
+
+type State = {
+  id: string,
+  visible?: boolean,
+  reveal?: boolean,
+  hiding?: boolean,
+  onTop?: boolean,
+  data?: {
+    top: number,
+    bottom: number,
+    height: number
+  } | null;
+}
+
+export default function Dropdown({ container, toggle = {}, body, children }: Props) {
   const locale = useLocalization();
-  const [state, setState] = useState({ id: getRandomString() });
+  const [state, setState] = useState<State>({ id: getRandomString() });
   const memoizedWindowClickHandler = useMemo(() => handleWindowClick, [state.id]);
   const isMounted = useRef(false);
-  const drop = useRef(null);
+  const drop = useRef<HTMLDivElement>(null);
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -25,7 +55,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
 
   useEffect(() => {
     if (state.visible) {
-      focusService.setInitiator(document.activeElement);
+      focusService.setInitiator(document.activeElement as HTMLElement);
       focusService.trapFocus("dropdown", drop.current, { excludeDropdown: false });
 
       window.addEventListener("keyup", handleKeyUp);
@@ -43,7 +73,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
     if (state.reveal) {
       let onTop = false;
 
-      if (state.data) {
+      if (state.data && drop.current) {
         const dropdownHeight = drop.current.getBoundingClientRect().height + 8;
 
         if (state.data.bottom + dropdownHeight > state.data.height && state.data.top > dropdownHeight) {
@@ -58,14 +88,15 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
     }
   }, [state.reveal]);
 
-  function toggleDropdown({ currentTarget }) {
+  function toggleDropdown(event: MouseEvent) {
     if (state.visible) {
       hideDropdown();
       return;
     }
-    const container = currentTarget.parentElement;
+    const currentTarget = event.currentTarget as HTMLElement;
+    const container = currentTarget.parentElement!;
     const element = getParentElement(container);
-    let data = null;
+    let data: State["data"] = null;
 
     if (element) {
       element.style.position = "relative";
@@ -89,8 +120,8 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
     });
   }
 
-  function handleKeyUp(event) {
-    if (event.key === "Escape" || (event.key === "Tab" && !drop.current.contains(event.target))) {
+  function handleKeyUp(event: KeyboardEvent) {
+    if (event.key === "Escape" || (event.key === "Tab" && !drop.current.contains(event.target as HTMLElement))) {
       hideDropdown();
     }
   }
@@ -115,7 +146,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
 
   function hideDropdown() {
     if (isMounted.current) {
-      const { animationSpeed } = getSetting("appearance");
+      const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
 
       setState({ ...state, id: state.id, hiding: true });
 
@@ -126,7 +157,7 @@ export default function Dropdown({ container, toggle = {}, body, children }) {
     window.removeEventListener("click", memoizedWindowClickHandler);
   }
 
-  function getParentElement(element) {
+  function getParentElement(element: HTMLElement) {
     while (element && !element.hasAttribute("data-dropdown-parent")) {
       element = element.parentElement;
     }

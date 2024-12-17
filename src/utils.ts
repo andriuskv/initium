@@ -120,7 +120,7 @@ function formatBytes(bytes: number, { excludeUnits = false } = {}) {
   const value = kb % 1 === 0 ? kb : kb.toFixed(2);
 
   if (excludeUnits) {
-    return value;
+    return value.toString();
   }
   return `${value} kB`;
 }

@@ -31,7 +31,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
   const [view, setView] = useState({ name: "default" });
   const [transition, setTransition] = useState({ x: 0, y: 0 });
   const [slideAnimation, setSlideAnimation] = useState("");
-  const [message, showMessage, dismissMessage] = useMessage("");
+  const { message, showMessage, dismissMessage }= useMessage("");
   const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
   const reminderPreviewRef = useRef(null);
@@ -55,7 +55,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
   }, []);
 
   useEffect(() => {
-    reveal.current = visible;
+    revealed.current = visible;
   }, [visible]);
 
   useEffect(() => {
@@ -163,7 +163,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
           const { hours, minutes } = reminder.range.from;
           const reminderTime = new Date(year, month, day, hours, minutes).getTime();
 
-          if (reminderTime > currentTime && currentTime + reminder.notify.time * 60 * 1000 > reminderTime) {
+          if (reminderTime > currentTime && currentTime + reminder.notify.time.full * 60 * 1000 > reminderTime) {
             notified.push({
               id: reminder.creationDate,
               resets: reminderTime

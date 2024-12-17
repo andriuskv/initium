@@ -50,7 +50,6 @@ export default [
         "after": true
       }],
       "block-spacing": [2, "always"],
-      "comma-dangle": [2, "never"],
       "comma-style": [2, "last"],
       "dot-location": [2, "property"],
       "dot-notation": 2,
