@@ -7,6 +7,7 @@ import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
 import Toast from "components/Toast";
+import Spinner from "components/Spinner";
 import "./tasks-content.css";
 
 const Form = lazy(() => import("./Form"));
@@ -668,7 +669,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
   if (activeComponent === "form") {
     return (
-      <Suspense fallback={null}>
+      <Suspense fallback={<Spinner/>}>
         <Form form={form} groups={groups} locale={locale} updateGroups={updateGroups} removeTask={removeFormTask}
           createGroup={createGroup} hide={hideForm}/>
       </Suspense>
@@ -676,7 +677,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
   else if (activeComponent === "groups") {
     return (
-      <Suspense fallback={null}>
+      <Suspense fallback={<Spinner/>}>
         <Groups groups={groups} locale={locale} updateGroups={updateGroups} createGroup={createGroup} hide={hideActiveComponent}/>
       </Suspense>
     );

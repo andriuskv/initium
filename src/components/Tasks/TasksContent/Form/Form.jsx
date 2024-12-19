@@ -6,11 +6,11 @@ import { formatDate, getDateString } from "services/timeDate";
 import { SortableItem, SortableList } from "components/Sortable";
 import Icon from "components/Icon";
 import "./form.css";
+import GroupForm from "../GroupForm";
+import LabelForm from "./LabelForm";
 import Subtask from "./Subtask";
 
 const Toast = lazy(() => import("components/Toast"));
-const GroupForm = lazy(() => import("../GroupForm"));
-const LabelForm = lazy(() => import("./LabelForm"));
 
 export default function Form({ form, groups, locale, updateGroups, removeTask, createGroup, hide }) {
   const [state, setState] = useState(() => {
@@ -388,19 +388,13 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
 
     if (modal.type === "label") {
       return (
-        <Suspense fallback={null}>
-          <LabelForm labels={state.labels} locale={locale}
-            addUniqueLabel={addUniqueLabel} removeTaskLabel={removeTaskLabel}
-            hiding={modal.hiding} hide={hideModal}/>
-        </Suspense>
+        <LabelForm labels={state.labels} locale={locale}
+          addUniqueLabel={addUniqueLabel} removeTaskLabel={removeTaskLabel}
+          hiding={modal.hiding} hide={hideModal}/>
       );
     }
     else if (modal.type === "group") {
-      return (
-        <Suspense fallback={null}>
-          <GroupForm locale={locale} createGroup={localCreateGroup} hiding={modal.hiding} hide={hideModal} modal/>
-        </Suspense>
-      );
+      return <GroupForm locale={locale} createGroup={localCreateGroup} hiding={modal.hiding} hide={hideModal} modal/>;
     }
   }
 

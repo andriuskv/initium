@@ -27,6 +27,8 @@
   --additional-height: 0px;
 
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   width: 380px;
   height: calc(var(--calendar-height) + var(--additional-height));
 

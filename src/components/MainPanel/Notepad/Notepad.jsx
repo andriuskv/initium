@@ -6,6 +6,7 @@ import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import Toast from "components/Toast";
+import Spinner from "components/Spinner";
 import "./notepad.css";
 
 const Tabs = lazy(() => import("./Tabs"));
@@ -332,7 +333,7 @@ export default function Notepad({ locale }) {
   }
   else if (tabListVisible) {
     return (
-      <Suspense fallback={null}>
+      <Suspense fallback={<Spinner size="24px"/>}>
         <Tabs tabs={tabs} textSize={textSize} locale={locale} selectListTab={selectListTab}
           updateTabs={updateTabs} updateTabPosition={updateTabPosition} getTabSize={getTabSize} setTextSize={setTextSize}
           decreaseTextSize={decreaseTextSize} increaseTextSize={increaseTextSize} hide={hideTabList}/>

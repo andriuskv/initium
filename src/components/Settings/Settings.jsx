@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, lazy, Suspense, useMemo } from "react";
 import { timeout } from "utils";
 import * as focusService from "services/focus";
 import TabsContainer from "components/TabsContainer";
-import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";
 import "./settings.css";
@@ -16,7 +15,7 @@ const WeatherTab = lazy(() => import("./WeatherTab"));
 const TimersTab = lazy(() => import("./TimersTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 
-export default function Settings({ hiding, locale, hide }) {
+export default function Settings({ locale, hide }) {
   const tabs = useMemo(() => [
     {
       id: "general",
@@ -96,27 +95,25 @@ export default function Settings({ hiding, locale, hide }) {
     const Component = tabs[activeTabIndex].component;
 
     return (
-      <Suspense fallback={<Spinner className="setting-tab-spinner"/>}>
+      <Suspense fallback={<Spinner/>}>
         <Component locale={locale} hide={hide}/>
       </Suspense>
     );
   }
 
   return (
-    <FullscreenModal hiding={hiding} hide={hide}>
-      <div className="settings">
-        <div className="container-header settings-header">
-          <Icon id="settings"/>
-          <h3 className="container-header-title">{locale.settings.title}</h3>
-          <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
-            <Icon id="cross"/>
-          </button>
-        </div>
-        <div className="settings-body">
-          {renderNavigation()}
-          {renderTab()}
-        </div>
+    <div className="settings">
+      <div className="container-header settings-header">
+        <Icon id="settings"/>
+        <h3 className="container-header-title">{locale.settings.title}</h3>
+        <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
+          <Icon id="cross"/>
+        </button>
       </div>
-    </FullscreenModal>
+      <div className="settings-body">
+        {renderNavigation()}
+        {renderTab()}
+      </div>
+    </div>
   );
 }

@@ -6,5 +6,5 @@ type Props = {
 }
 
 export default function Spinner({ className, size }: Props) {
-  return <Icon id="spinner" className={className} size={size} style={{ color: "var(--color-primary)" }}/>;
+  return <Icon id="spinner" className={`spinner${className ? ` ${className}` : ""}`} size={size} style={{ color: "var(--color-primary)" }}/>;
 }

@@ -4,13 +4,14 @@ import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import * as calendarService from "services/calendar";
 import { useSettings } from "contexts/settings";
+import { useNotification } from "contexts/notification";
 import { useMessage } from "hooks";
 import Icon from "components/Icon";
 import Toast from "components/Toast";
+import Spinner from "components/Spinner";
 import "./calendar.css";
 import HeaderDropdown from "./HeaderDropdown";
 import ReminderPreview from "./ReminderPreview";
-import { useNotification } from "contexts/notification";
 
 const SelectedDay = lazy(() => import("./SelectedDay"));
 const ReminderList = lazy(() => import("./ReminderList"));
@@ -923,10 +924,21 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
     }
   }
 
+  function shouldReminderPreviewBeHidden() {
+    if (view.name === "reminders") {
+      return true;
+    }
+
+    if (settings.showTomorrowReminers) {
+      return tomorrowDay.reminders.length === 0;
+    }
+    return settings.reminderPreviewHidden || currentDay.reminders.length === 0;
+  }
+
   function renderView() {
     if (view.name === "day") {
       return (
-        <Suspense fallback={null}>
+        <Suspense fallback={<Spinner/>}>
           <SelectedDay calendar={calendar} day={view.data} user={googleUser} locale={locale} editReminder={editReminder}
             showForm={showForm} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
             hide={showCalendar}/>
@@ -1029,7 +1041,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
         </button>
       </div>
       <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${reminderPreviewHeight.current}px` }}>{renderView()}</div>
-      {view.name === "reminders" || currentDay.reminders.length === 0 && tomorrowDay.reminders.length === 0 ? null : (
+      {shouldReminderPreviewBeHidden() ? null : (
         <ReminderPreview currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>
       )}
       {settings.worldClocksHidden ? null : (

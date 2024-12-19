@@ -6,8 +6,10 @@ import { useLocalization } from "contexts/localization";
 import Wallpaper from "components/Wallpaper";
 import MiddleTop from "components/MiddleTop";
 import BottomPanel from "components/BottomPanel";
+import FullscreenModal from "components/FullscreenModal";
 import Tooltip from "components/Tooltip";
 import Notification from "components/Notification";
+import Spinner from "components/Spinner";
 
 const MainPanel = lazy(() => import("./MainPanel"));
 const Weather = lazy(() => import("./Weather"));
@@ -15,10 +17,9 @@ const Tasks = lazy(() => import("./Tasks"));
 const Settings = lazy(() => import("./Settings"));
 const WallpaperViewer = lazy(() => import("./WallpaperViewer"));
 const GreetingEditor = lazy(() => import("./GreetingEditor"));
-const FullscreenModal = lazy(() => import("./FullscreenModal"));
 const StickyNotes = lazy(() => import("./StickyNotes"));
 
-type FullscreenModal = {
+type FullscreenModalType = {
   id?: string,
   hiding?: boolean,
   component?: FC<{ hide: () => void }>,
@@ -29,7 +30,7 @@ export default function App() {
   const { settings } = useSettings();
   const locale = useLocalization();
   const [weather, setWeather] = useState<{ rendered: boolean, shouldDelay?: boolean}>(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
-  const [fullscreenModal, setFullscreenModal] = useState<FullscreenModal>({});
+  const [fullscreenModal, setFullscreenModal] = useState<FullscreenModalType>({});
   const weatherTimeoutId = useRef(0);
   const modalTimeoutId = useRef(0);
 
@@ -114,32 +115,36 @@ export default function App() {
   function renderFullscreenModal() {
     if (fullscreenModal.id === "greeting") {
       return (
-        <Suspense fallback={null}>
-          <GreetingEditor hiding={fullscreenModal.hiding} locale={locale} hide={hideFullscreenModal}/>
-        </Suspense>
+        <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
+          <Suspense fallback={<div className="greeting-editor"><Spinner size="24px"/></div>}>
+            {<GreetingEditor locale={locale} hide={hideFullscreenModal}/>}
+          </Suspense>
+        </FullscreenModal>
       );
     }
     else if (fullscreenModal.id === "settings") {
       return (
-        <Suspense fallback={null}>
-          {<Settings locale={locale} hiding={fullscreenModal.hiding} hide={hideFullscreenModal}/>}
-        </Suspense>
+        <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
+          <Suspense fallback={<div className="settings"><Spinner size="24px"/></div>}>
+            {<Settings locale={locale} hide={hideFullscreenModal}/>}
+          </Suspense>
+        </FullscreenModal>
       );
     }
     else if (fullscreenModal.id === "wallpaper") {
       return (
-        <Suspense fallback={null}>
-          <WallpaperViewer locale={locale} hide={hideFullscreenModal}/>
-        </Suspense>
+        <FullscreenModal transparent mask noAnim hide={hideFullscreenModal}>
+          <Suspense fallback={null}>
+            <WallpaperViewer locale={locale} hide={hideFullscreenModal}/>
+          </Suspense>
+        </FullscreenModal>
       );
     }
     else if (fullscreenModal.component) {
       return (
-        <Suspense fallback={null}>
-          <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
-            <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
-          </FullscreenModal>
-        </Suspense>
+        <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
+          <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
+        </FullscreenModal>
       );
     }
     return null;

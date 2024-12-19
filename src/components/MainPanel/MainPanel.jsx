@@ -4,6 +4,8 @@ import { handleZIndex } from "services/zIndex";
 // import { hasUsers } from "services/twitter";
 import { hasStoredFeeds } from "services/feeds";
 import Icon from "components/Icon";
+import Resizer from "components/Resizer";
+import Spinner from "components/Spinner";
 import "./main-panel.css";
 import Sidebar from "./Sidebar";
 
@@ -11,7 +13,6 @@ const TopSites = lazy(() => import("./TopSites"));
 const Notepad = lazy(() => import("./Notepad"));
 // const Twitter = lazy(() => import("./Twitter"));
 const RssFeed = lazy(() => import("./RssFeed"));
-const Resizer = lazy(() => import("components/Resizer"));
 
 export default function MainPanel({ settings, locale }) {
   const [activeTab, setActiveTab] = useState(() => {
@@ -71,12 +72,22 @@ export default function MainPanel({ settings, locale }) {
     }
 
     if (tabs.topSites.renderPending && activeTab.id === "topSites") {
-      tabs.topSites.renderPending = false;
-      setTabs({ ...tabs });
+      setTabs({
+        ...tabs,
+        topSites: {
+          ...tabs.topSites,
+          renderPending: false
+        }
+      });
     }
     else if (tabs.notepad.renderPending && activeTab.id === "notepad") {
-      tabs.notepad.renderPending = false;
-      setTabs({ ...tabs });
+      setTabs({
+        ...tabs,
+        notepad: {
+          ...tabs.notepad,
+          renderPending: false
+        }
+      });
     }
 
     // if (tabs.twitter.renderPending) {
@@ -89,7 +100,7 @@ export default function MainPanel({ settings, locale }) {
   }, [activeTab.id]);
 
   async function initComponent(id, callback) {
-    const tab = tabs[id];
+    const tab = { ...tabs[id] };
     let delay = -1;
 
     if (activeTab.id === id) {
@@ -103,8 +114,13 @@ export default function MainPanel({ settings, locale }) {
 
     if (delay > 0) {
       tabTimeouts.current[id] = setTimeout(() => {
-        tab.renderPending = false;
-        setTabs({ ...tabs });
+        setTabs({
+          ...tabs,
+          [id]: {
+            ...tab,
+            renderPending: false
+          }
+        });
       }, delay);
     }
   }
@@ -152,11 +168,15 @@ export default function MainPanel({ settings, locale }) {
 
   function selectTab(id) {
     const newId = id === activeTab.id ? "" : id;
-    const tab = tabs[newId];
 
-    if (tab?.indicatorVisible) {
-      tab.indicatorVisible = false;
-      setTabs({ ...tabs });
+    if (tabs[newId]?.indicatorVisible) {
+      setTabs({
+        ...tabs,
+        [newId]: {
+          ...tabs[newId],
+          indicatorVisible: false
+        }
+      });
     }
     setActiveTab({ id: newId });
     localStorage.setItem("mainPanelTab", newId);
@@ -198,8 +218,12 @@ export default function MainPanel({ settings, locale }) {
 
   function showIndicator(id) {
     if (id !== activeTab.id) {
-      tabs[id].indicatorVisible = true;
-      setTabs({ ...tabs });
+      setTabs({
+        ...tabs,
+        [id]: {
+          ...tabs[id],
+          indicatorVisible: true
+        } });
     }
   }
 
@@ -226,13 +250,15 @@ export default function MainPanel({ settings, locale }) {
     );
   }
 
-  function renderComponent(id, component, ignoreFallback) {
+  function renderComponent(id, component, showSpinner) {
     const tab = tabs[id];
 
     if (tab.disabled) {
       return null;
     }
-    const fallback = ignoreFallback ? null : <Icon id={tab.iconId} className="main-panel-item-splash-icon animate"/>;
+    const fallback = showSpinner ?
+      <Spinner size="24px"/> :
+      <Icon id={tab.iconId} className="main-panel-item-splash-icon animate"/>;
 
     return (
       <div className={`container main-panel-item${activeTab.id === id ? "" : " hidden"}`}>
@@ -272,9 +298,7 @@ export default function MainPanel({ settings, locale }) {
       {renderComponent("notepad", <Notepad locale={locale}/>, true)}
       {/* {renderComponent("twitter", <Twitter showIndicator={showIndicator}/>)} */}
       {renderComponent("rssFeed", <RssFeed locale={locale} showIndicator={showIndicator}/>)}
-      <Suspense fallback={null}>
-        {resizerEnabled && <Resizer saveHeight={saveHeight}/>}
-      </Suspense>
+      {resizerEnabled && <Resizer saveHeight={saveHeight}/>}
     </div>
   );
 }

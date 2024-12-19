@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useState, useEffect, useContext, useMemo } from "react";
+import { PropsWithChildren, createContext, useState, useEffect, use, useMemo } from "react";
 import { replaceLink } from "utils";
 import { useSettings } from "contexts/settings";
 import { getSetting } from "services/settings";
@@ -157,11 +157,11 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
     }) });
   }
 
-  return <StickyNotesContext.Provider value={memoizedValue}>{children}</StickyNotesContext.Provider>;
+  return <StickyNotesContext value={memoizedValue}>{children}</StickyNotesContext>;
 }
 
 function useNotes() {
-  return useContext(StickyNotesContext);
+  return use(StickyNotesContext);
 }
 
 export {

@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useState, useContext, useEffect } from "react";
+import { PropsWithChildren, createContext, useState, use, useEffect } from "react";
 import { useSettings } from "contexts/settings";
 
 type LocalizationContextType = any;
@@ -26,11 +26,11 @@ function LocalizationProvider({ children }: PropsWithChildren) {
     }
   }
 
-  return <LocalizationContext.Provider value={locale}>{children}</LocalizationContext.Provider>;
+  return <LocalizationContext value={locale}>{children}</LocalizationContext>;
 }
 
 function useLocalization() {
-  return useContext(LocalizationContext);
+  return use(LocalizationContext);
 }
 
 export {

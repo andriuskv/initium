@@ -179,15 +179,21 @@ export default function BottomPanel({ locale }) {
   function renderSelectedItem() {
     if (selectedItem.id === "stickyNotes") {
       return (
-        <div className={`container-body bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}>
-          <Suspense fallback={null}><StickyNotes { ...{ locale, hide: hideItem } }/></Suspense>
+        <div className={`container-body bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}
+          style={{ width: "280px", height: "312px"}}>
+          <Suspense fallback={null}>
+            <StickyNotes locale={locale} hide={hideItem}/>
+          </Suspense>
         </div>
       );
     }
     else if (selectedItem.id === "shortcuts") {
       return (
-        <div className={`container-body bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}>
-          <Suspense fallback={null}><Shortcuts { ...{ locale } }/></Suspense>
+        <div className={`container-body bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}
+          style={{ width: "364px", height: "272px"}}>
+          <Suspense fallback={null}>
+            <Shortcuts locale={locale}/>
+          </Suspense>
         </div>
       );
     }
@@ -208,7 +214,8 @@ export default function BottomPanel({ locale }) {
         <div className="bottom-panel-transition-target">
           {renderSelectedItem()}
           {items.calendar.rendered ? (
-            <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}>
+            <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}
+              style={{ width: "380px", minHeight: "402px"}}>
               <Suspense fallback={null}>
                 <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} locale={locale} reveal={selectCalendar} showIndicator={toggleIndicator}/>
               </Suspense>
