@@ -1,4 +1,3 @@
-import { Suspense, lazy } from "react";
 import { dispatchCustomEvent } from "utils";
 import { useModal } from "hooks";
 import { initAppearanceSettings } from "services/settings";
@@ -6,8 +5,7 @@ import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
 import { useSettings } from "contexts/settings";
 import Modal from "components/Modal";
 import "./general-tab.css";
-
-const MiddleTop = lazy(() => import("./MiddleTop"));
+import MiddleTop from "./MiddleTop";
 
 export default function GeneralTab({ locale }) {
   const { settings, toggleSetting, updateContextSetting, resetSettings } = useSettings();
@@ -82,10 +80,8 @@ export default function GeneralTab({ locale }) {
     }
     else if (modal.type === "order") {
       return (
-        <Suspense fallback={null}>
-          <MiddleTop settings={settings} locale={locale}
-            updateContextSetting={updateContextSetting} hiding={modal.hiding} hide={hideModal}/>
-        </Suspense>
+        <MiddleTop settings={settings} locale={locale}
+          updateContextSetting={updateContextSetting} hiding={modal.hiding} hide={hideModal}/>
       );
     }
     return null;

@@ -235,7 +235,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
           </div>
         </>
       ) : message ? <p className="weather-more-message">{message}</p>
-        : <Spinner className="weather-more-spinner"/>
+        : <Spinner size="48px"/>
       }
       <Dropdown container={{ className: "weather-more-settings" }} toggle={{ iconId: "settings", title: locale.global.settings }}>
         <label className="dropdown-group weather-more-setting">

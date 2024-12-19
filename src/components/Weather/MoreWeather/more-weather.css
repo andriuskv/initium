@@ -271,12 +271,6 @@
   color: var(--color-white-80);
 }
 
-.weather-more-spinner {
-  width: 48px;
-  height: 48px;
-  margin: auto;
-}
-
 .weather-more-message {
   width: 200px;
   margin: auto;

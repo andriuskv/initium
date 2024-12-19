@@ -3,6 +3,7 @@ import { timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as feedService from "services/feeds";
 import Icon from "components/Icon";
+import Spinner from "components/Spinner";
 import "./rss-feed.css";
 
 const Form = lazy(() => import("./Form"));
@@ -467,7 +468,7 @@ export default function RssFeed({ locale, showIndicator }) {
   }
   else if (activeComponent) {
     return (
-      <Suspense fallback={null}>
+      <Suspense fallback={<Spinner size="24px"/>}>
         {activeComponent === "feeds" && (
           <Feeds feeds={feeds} locale={locale} selectFeedFromList={selectFeedFromList}
             removeFeed={removeFeed} deactivateFeed={deactivateFeed}
@@ -478,7 +479,7 @@ export default function RssFeed({ locale, showIndicator }) {
     );
   }
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Spinner size="24px"/>}>
       <Entries navigation={navigation} feeds={feeds}
         locale={locale} selectFeed={selectFeed} previousShift={previousShift} nextShift={nextShift}
         showFeedList={showFeedList} markEntryAsRead={markEntryAsRead} expandEntry={expandEntry}/>

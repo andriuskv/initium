@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useState, useContext, useMemo } from "react";
+import { PropsWithChildren, createContext, useState, use, useMemo } from "react";
 import * as settingsService from "services/settings";
 import { Settings, MainPanelComponents } from "types/settings";
 
@@ -49,11 +49,11 @@ function SettingsProvider({ children }: PropsWithChildren) {
     return settings;
   }
 
-  return <SettingsContext.Provider value={memoizedValue}>{children}</SettingsContext.Provider>;
+  return <SettingsContext value={memoizedValue}>{children}</SettingsContext>;
 }
 
 function useSettings() {
-  return useContext(SettingsContext);
+  return use(SettingsContext);
 }
 
 export {

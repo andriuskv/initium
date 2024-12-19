@@ -4,8 +4,18 @@ import { getOffsettedCurrentTime, getHoursOffset } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import "./world-clocks.css";
 
-export default function WorldClocks({ parentVisible, locale }) {
-  const [clocks, setClocks] = useState(null);
+type Clock = {
+  city: string,
+  country: string,
+  diff: number,
+  id: string,
+  timeZone: string,
+  time: string,
+  diffString: string
+}
+
+export default function WorldClocks({ parentVisible, locale }: { parentVisible: boolean, locale: any }) {
+  const [clocks, setClocks] = useState<Clock[]>(null);
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -16,9 +26,15 @@ export default function WorldClocks({ parentVisible, locale }) {
     if (!clocks?.length) {
       return;
     }
+    function update() {
+      setClocks(clocks.map(clock => {
+        clock.time = getOffsettedCurrentTime(clock.diff);
+        return clock;
+      }));
+    }
 
     if (parentVisible) {
-      timeoutId.current = setTimeout(update, 1000);
+      timeoutId.current = window.setTimeout(update, 1000);
     }
     return () => {
       clearTimeout(timeoutId.current);
@@ -43,24 +59,15 @@ export default function WorldClocks({ parentVisible, locale }) {
       else {
         setClocks([]);
       }
-    }, { listenToLocal: true });
+    }, { id: "world-clocks", listenToLocal: true });
   }
 
-  function initClocks(clocks) {
-    setClocks(clocks.toSorted((a, b) => {
-      return a.diff - b.diff;
-    }).map(clock => {
+  function initClocks(clocks: Clock[]) {
+    setClocks(clocks.toSorted((a, b) => a.diff - b.diff).map(clock => {
       clock.time = getOffsettedCurrentTime(clock.diff);
       clock.diffString = getHoursOffset(clock.diff, true);
       return clock;
     }));
-  }
-
-  function update() {
-    for (const clock of clocks) {
-      clock.time = getOffsettedCurrentTime(clock.diff);
-    }
-    setClocks([...clocks]);
   }
 
   function revealClocksPanel() {

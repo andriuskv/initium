@@ -199,7 +199,7 @@ export default function WallpaperViewer({ locale, hide }) {
   }
 
   return (
-    <FullscreenModal transparent mask noAnim hide={hide}>
+    <>
       {image ? null : <Spinner className="wallpaper-viewer-spinner"/>}
       <div className={`wallpaper-viewer-image-content${image ? "" : " hidden"}`}>
         <div className="container wallpaper-viewer-image-container" ref={containerRef}>
@@ -216,6 +216,6 @@ export default function WallpaperViewer({ locale, hide }) {
           <button className="btn text-btn" onClick={saveWallpaperPosition}>{locale.global.save}</button>
         </div>
       </div>
-    </FullscreenModal>
+    </>
   );
 }

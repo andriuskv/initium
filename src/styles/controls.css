@@ -500,3 +500,7 @@ textarea {
     mask: url("./assets/svg-mask.svg");
   }
 }
+
+.spinner {
+  margin: auto;
+}

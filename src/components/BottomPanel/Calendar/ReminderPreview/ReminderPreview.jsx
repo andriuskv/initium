@@ -1,8 +1,7 @@
-import { forwardRef } from "react";
 import Icon from "components/Icon";
 import "./reminder-preview.css";
 
-export default forwardRef(({ currentView, currentDay, tomorrowDay, settings }, ref) => {
+export default function ReminderPreview({ currentView, currentDay, tomorrowDay, settings, ref }) {
   const days = [
     {
       shouldShow: !settings.reminderPreviewHidden,
@@ -39,4 +38,4 @@ export default forwardRef(({ currentView, currentDay, tomorrowDay, settings }, r
       </div>
     </div>
   );
-});
+}

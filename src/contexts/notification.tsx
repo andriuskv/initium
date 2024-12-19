@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useContext, useState, useEffect, useRef, useMemo } from "react";
+import { PropsWithChildren, createContext, use, useState, useEffect, useRef, useMemo } from "react";
 import type { AppearanceSettings } from "types/settings";
 import type { Notification } from "types/notification";
 import { getSetting } from "services/settings";
@@ -78,11 +78,11 @@ function NotificationProvider({ children }: PropsWithChildren) {
     }, 200 * animationSpeed);
   }
 
-  return <NotificationContext.Provider value={memoizedValue}>{children}</NotificationContext.Provider>;
+  return <NotificationContext value={memoizedValue}>{children}</NotificationContext>;
 }
 
 function useNotification() {
-  return useContext(NotificationContext);
+  return use(NotificationContext);
 }
 
 export {

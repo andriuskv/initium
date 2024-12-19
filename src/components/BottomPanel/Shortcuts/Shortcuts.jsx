@@ -53,10 +53,13 @@ export default function Shortcuts({ locale }) {
     setActiveDragId(event.active.id);
   }
 
-  function toggleItemVisibility(item) {
-    item.hidden = !item.hidden;
-
-    setItems([...items]);
+  function toggleItemVisibility(id) {
+    setItems(items.map(item => {
+      if (item.id === id) {
+        item.hidden = !item.hidden;
+      }
+      return item;
+    }));
     saveItems(items);
   }
 
@@ -86,7 +89,7 @@ export default function Shortcuts({ locale }) {
             {items.map(item => (
               <SortableItem className={`shortcuts-item${item.hidden ? " hidden" : ""}${item.id === activeDragId ? " dragging" : ""}`} key={item.url} id={item.id}>
                 <button className="btn icon-btn shortcuts-item-toggle-btn" title={item.hidden ? locale.global.show : locale.global.hide}
-                  onClick={() => toggleItemVisibility(item)}>
+                  onClick={() => toggleItemVisibility(item.id)}>
                   <Icon id={item.hidden ? "eye" : "eye-off"}/>
                 </button>
                 <img src={item.iconPath} className="shortcuts-item-icon" width="48px" height="48px" loading="lazy" alt=""/>

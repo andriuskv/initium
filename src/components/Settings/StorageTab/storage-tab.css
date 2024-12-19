@@ -109,10 +109,6 @@
   }
 }
 
-.storage-spinner {
-  margin: auto;
-}
-
 .storage-data {
   margin-top: var(--space-xl);
   padding: var(--space-md);

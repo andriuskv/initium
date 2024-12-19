@@ -48,7 +48,7 @@ export default function SelectedDay({ day, locale, removeReminder, changeReminde
           ))}
         </ul>
       ) : <p className="empty-reminder-list-message">{locale.calendar.no_reminders_message}</p>}
-      <CreateButton onClick={() => showForm(day)} attrs={{ "data-modal-initiator": true }} shiftTarget=".icon-btn" trackScroll/>
+      <CreateButton onClick={() => showForm(day)} attrs={{ "data-modal-initiator": "" }} shiftTarget=".icon-btn" trackScroll/>
     </div>
   );
 }
