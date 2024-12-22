@@ -83,10 +83,11 @@ export default function Wallpaper({ settings }) {
 
   async function removeDownscaled(start) {
     const elapsed = Date.now() - start;
-
     // Show downscaled wallpaper for at least 200 ms.
-    if (elapsed < 200) {
-      await delay(200 - elapsed);
+    const duration = 200;
+
+    if (elapsed < duration) {
+      await delay(duration - elapsed);
     }
     const element = document.getElementById("downscaled-wallpaper");
 
