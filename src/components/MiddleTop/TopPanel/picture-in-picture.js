@@ -151,7 +151,7 @@ function update(name, data) {
   }
   const [hoursElement, minutesElement, secondsElement] = pipWindow.document.querySelectorAll(".top-panel-digit");
 
-  if (data.hours) {
+  if (Number(data.hours)) {
     hoursElement.classList.remove("hidden");
     hoursElement.textContent = data.hours;
   }
@@ -159,7 +159,7 @@ function update(name, data) {
     hoursElement.classList.add("hidden");
   }
 
-  if (data.minutes) {
+  if (Number(data.minutes)) {
     minutesElement.classList.remove("hidden");
     minutesElement.textContent = data.minutes;
   }

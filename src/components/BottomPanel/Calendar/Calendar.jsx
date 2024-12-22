@@ -924,15 +924,21 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
     }
   }
 
-  function shouldReminderPreviewBeHidden() {
+  function shouldReminderPreviewBeShown() {
     if (view.name === "reminders") {
-      return true;
+      return false;
+    }
+    let shouldShow = false;
+
+    if (!settings.reminderPreviewHidden) {
+      shouldShow = currentDay.reminders.length > 0;
     }
 
     if (settings.showTomorrowReminers) {
-      return tomorrowDay.reminders.length === 0;
+      shouldShow ||= tomorrowDay?.reminders.length > 0;
     }
-    return settings.reminderPreviewHidden || currentDay.reminders.length === 0;
+
+    return shouldShow;
   }
 
   function renderView() {
@@ -1041,9 +1047,8 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
         </button>
       </div>
       <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${reminderPreviewHeight.current}px` }}>{renderView()}</div>
-      {shouldReminderPreviewBeHidden() ? null : (
-        <ReminderPreview currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>
-      )}
+      {shouldReminderPreviewBeShown() ? (
+        <ReminderPreview currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>) : null}
       {settings.worldClocksHidden ? null : (
         <Suspense fallback={null}>
           <WorldClocks parentVisible={visible} locale={locale}/>

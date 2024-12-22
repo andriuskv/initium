@@ -185,10 +185,16 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     if (duration) {
       const paddedMinutes = padTime(values.minutes, values.hours);
       const paddedSeconds = padTime(values.seconds, values.hours || values.minutes);
+      const { timer: { usePresetNameAsLabel } } = getSetting("timers");
+      let label = timer.label;
 
+      if (usePresetNameAsLabel && timer.presetId) {
+        label = presets.find(preset => preset.id === timer.presetId).name;
+      }
       initTimer({ id, duration });
       setTimers({ ...timers, [timer.id]: {
         ...timer,
+        label,
         dirty: true,
         dirtyInput: true,
         running: true,
