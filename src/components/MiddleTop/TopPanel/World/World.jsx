@@ -33,6 +33,14 @@ export default function World({ visible, locale, animDirection, parentVisible })
     const clocks = await chromeStorage.get("clocks");
 
     if (clocks?.length) {
+      const { Temporal } = await import("@js-temporal/polyfill");
+
+      for (const clock of clocks) {
+        const tz = Temporal.TimeZone.from(clock.timeZone);
+        const timeZoneDate = tz.getPlainDateTimeFor(Temporal.Now.instant());
+
+        clock.diff = new Date(timeZoneDate.toString()).getTime() - Date.now();
+      }
       initClocks(clocks);
     }
 
@@ -95,7 +103,6 @@ export default function World({ visible, locale, animDirection, parentVisible })
         id: clock.id,
         city: clock.city,
         country: clock.country,
-        diff: clock.diff,
         timeZone: clock.timeZone
       }))
     });
