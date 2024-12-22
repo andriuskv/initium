@@ -74,13 +74,19 @@ export default function BottomPanel({ locale }) {
         setItems({ ...items, calendar: {...items.calendar, rendered: true } });
       }, 4000);
     }
+  }, []);
+
+  useEffect(() => {
+    function toggleTimersIndicator({ detail }: CustomEvent) {
+      toggleIndicator("timers", detail);
+    }
 
     window.addEventListener("indicator-visibility", toggleTimersIndicator);
 
     return () => {
       window.removeEventListener("indicator-visibility", toggleTimersIndicator);
     };
-  }, []);
+  }, [items]);
 
   useEffect(() => {
     setItems({
@@ -153,10 +159,6 @@ export default function BottomPanel({ locale }) {
     setItems({ ...items, [id]: { ...items[id], indicatorVisible: value } });
   }
 
-  function toggleTimersIndicator({ detail }: CustomEvent) {
-    toggleIndicator("timers", detail);
-  }
-
   function selectCalendar() {
     selectItem("calendar");
   }
@@ -217,7 +219,8 @@ export default function BottomPanel({ locale }) {
             <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}
               style={{ width: "380px", minHeight: "402px"}}>
               <Suspense fallback={null}>
-                <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible} locale={locale} reveal={selectCalendar} showIndicator={toggleIndicator}/>
+                <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible}
+                  locale={locale} reveal={selectCalendar} showIndicator={toggleIndicator}/>
               </Suspense>
             </div>
           ) : null}
