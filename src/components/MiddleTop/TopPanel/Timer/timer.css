@@ -1,5 +1,8 @@
+@import "../../../../styles/mixins.css";
+
 .timer-dropdown-presets {
   max-height: 138px;
+  max-width: 180px;
   overflow-y: auto;
 }
 
@@ -21,8 +24,9 @@
 }
 
 .timer-dropdown-btn {
-  position: relative;
-  justify-content: center;
+  overflow: clip;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .timer-dropdown-indicator {
