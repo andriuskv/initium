@@ -58,6 +58,7 @@ export default [
         "SwitchCase": 1,
         "ignoreComments": true
       }],
+      "no-async-promise-executor": 0,
       "no-const-assign": 2,
       "no-constant-condition": 0,
       "no-var": 2,
