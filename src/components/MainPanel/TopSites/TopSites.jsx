@@ -1,7 +1,8 @@
 /* global chrome */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useModal } from "hooks";
+import { getSetting } from "services/settings";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./top-sites.css";
@@ -11,6 +12,7 @@ import PersistentSites from "./PersistentSites";
 export default function TopSites({ settings, locale }) {
   const [sites, setSites] = useState(null);
   const [form, setForm, hideForm] = useModal(null);
+  const first = useRef(true);
 
   useEffect(() => {
     init();
@@ -247,7 +249,16 @@ export default function TopSites({ settings, locale }) {
 
   return (
     <>
-      <ul className="top-sites">
+      <ul className={`top-sites${first.current ? " first" : ""}`} ref={element => {
+        if (element && first.current) {
+          const { animationSpeed } = getSetting("appearance");
+
+          setTimeout(() => {
+            element.classList.remove("first");
+          }, 400 * animationSpeed);
+        }
+        first.current = false;
+      }}>
         {visibleSites.map((site, i) => (
           <li className="top-site" key={site.url}>
             <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"} draggable="false">

@@ -13,8 +13,28 @@
   justify-content: center;
   gap: var(--space-sm);
 
+  &.first {
+    .top-site-container {
+      opacity: 0;
+      animation-name: slide-site-up, opacity-up;
+      animation-duration: var(--duration-n), var(--duration-s);
+      animation-fill-mode: both;
+    }
+  }
+
   @media (height <= 720px) {
     gap: var(--space-xs);
+  }
+}
+
+
+@keyframes slide-site-up {
+  from {
+    transform: translateY(var(--space-md));
+  }
+
+  to {
+    transform: translateY(0);
   }
 }
 
