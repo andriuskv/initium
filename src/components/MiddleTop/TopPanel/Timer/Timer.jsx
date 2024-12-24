@@ -713,7 +713,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
                       <div className="dropdown-group timer-dropdown-presets">
                         {presets.length ? (
                           presets.map(preset => (
-                            <button className={`btn text-btn dropdown-btn${activeTimer.presetId === preset.id ? " active" : ""}`} key={preset.id}
+                            <button className={`btn text-btn dropdown-btn timer-dropdown-btn${activeTimer.presetId === preset.id ? " active" : ""}`} key={preset.id}
                               onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
                           ))
                         ) : (
