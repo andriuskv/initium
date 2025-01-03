@@ -1,5 +1,3 @@
-/* global chrome */
-
 import type { Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
 import type { TimeDateSettings } from "types/settings";
 import { getRandomString } from "utils";
@@ -49,6 +47,7 @@ type GoogleEvent = {
 const baseCalendarURL = "https://www.googleapis.com/calendar/v3";
 let cachedCalendars = {};
 let eventColors = null;
+let authIntervalId = 0;
 
 function generateYear(year: number) {
   const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
@@ -292,43 +291,137 @@ function saveReminders(reminders: Reminder[]) {
   })}, { warnSize: true });
 }
 
+async function getToken(): Promise<string | { message: string } | undefined> {
+  const token = JSON.parse(localStorage.getItem("gtoken"));
+
+  if (!token) {
+    return;
+  }
+
+  if (token.e > Date.now()) {
+    return token.at;
+  }
+  const res = await fetchToken();
+
+  if (res.message) {
+    return res;
+  }
+  return res.at;
+}
+
+async function fetchToken() {
+  const user = JSON.parse(localStorage.getItem("google-user")) || {};
+  const authToken = await fetchAuthToken(user.email);
+
+  if (authToken.error) {
+    clearUser();
+    return { message: authToken.error };
+  }
+  localStorage.setItem("gtoken", JSON.stringify({ at: authToken.at, e: authToken.e }));
+  return authToken;
+}
+
+async function getUser(token: string): Promise<GoogleUser | { message: string }> {
+  const json = await fetchUser(token);
+
+  if (json.error) {
+    return { message: "Couldn't retrieve user. Try again later." };
+  }
+  const user: GoogleUser = {
+    email: json.emailAddresses[0].value,
+    name: json.names[0].displayName,
+    photo: json.photos[0].url
+  };
+  localStorage.setItem("google-user", JSON.stringify(user));
+  return user;
+}
+
+function fetchAuthToken(email: string) {
+  return fetch(`${process.env.SERVER_URL}/gauth/refresh?email=${email}`).then(res => res.json());
+}
+
 async function authGoogleUser(): Promise<{ user: GoogleUser } | { message: string }> {
-  return new Promise(resolve => {
-    chrome.permissions.request({
-      permissions: ["identity"]
-    }, async (granted) => {
-      if (!granted) {
-        resolve({ message: "Permission not granted." });
+  await clearUser();
+
+  return new Promise(async resolve => {
+    const token = await getToken();
+
+    if (token) {
+      if (typeof token === "string") {
+        const user = await getUser(token);
+
+        if ("message" in user) {
+          resolve({ message: user.message });
+          return;
+        }
+        resolve({ user });
+      }
+      else if (token.message) {
+        resolve({ message: token.message });
+        return;
+      }
+    }
+
+    const json = await fetch(`${process.env.SERVER_URL}/gauth`).then(res => res.json());
+
+    if (json.error) {
+      resolve({ message: json.error });
+      return;
+    }
+    const page = window.open(json.url, "_blank", "width=1024,height=720");
+
+    window.addEventListener("message", async (event) => {
+      if (!process.env.SERVER_URL.startsWith(event.origin)) {
+        resolve({ message: "Request origin mismatch." });
         return;
       }
 
-      try {
-        const token = await fetchToken(true);
-        const json = await fetchUser(token);
-
-        const user: GoogleUser = {
-          email: json.emailAddresses[0].value,
-          name: json.names[0].displayName,
-          photo: json.photos[0].url
-        };
-        resolve({ user });
-        localStorage.setItem("google-user", JSON.stringify(user));
-
-      } catch (e) {
-        console.log(e);
-        resolve({ message: "Access not granted." });
-        clearUser();
+      if (event.data) {
+        if (event.data.error) {
+          resolve({ message: event.data.error });
+          page.close();
+          clearInterval(authIntervalId);
+          return;
+        }
+        localStorage.setItem("gtoken", JSON.stringify(event.data));
       }
-    });
+      else {
+        resolve({ message: "Token not found." });
+        page.close();
+        clearInterval(authIntervalId);
+        return;
+      }
+      const user = await getUser(event.data.at);
+
+      if ("message" in user) {
+        resolve({ message: user.message });
+        return;
+      }
+      resolve({ user });
+      page.close();
+      clearInterval(authIntervalId);
+    }, { once: true });
+
+    authIntervalId = window.setInterval(() => {
+      if (page.closed) {
+        clearInterval(authIntervalId);
+        resolve({ message: "Access not granted." });
+      }
+    }, 200);
   });
 }
 
 async function initGoogleCalendar(retried = false): Promise<{ calendars: GoogleCalendar[], reminders: GoogleReminder[] } | { message: string }> {
-  const token = localStorage.getItem("oauth_token");
+  const token = await getToken();
 
   if (!token) {
     return { calendars: [], reminders: [] };
   }
+
+  if (typeof token !== "string") {
+    return { message: token.message };
+  }
+
   const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
 
   try {
@@ -338,16 +431,16 @@ async function initGoogleCalendar(retried = false): Promise<{ calendars: GoogleC
     ]);
 
     if (calendarListJson.error) {
-      if (calendarListJson.error.code === 401) {
-        if (retried) {
-          return { message: "Something went wrong. Try again later." };
-        }
-        // Most likely the auth token has expired, fetch new one and try again.
-        await fetchToken();
-        return initGoogleCalendar(true);
+      if (calendarListJson.error.code === 403 && calendarListJson.error.status === "PERMISSION_DENIED") {
+        return { message: "Permission to access Google Calendar was not granted." };
       }
-      else if (calendarListJson.error.code === 403 && calendarListJson.error.status === "PERMISSION_DENIED") {
-        return { message: "Permission to access calendar was not granted." };
+      else if (calendarListJson.error.code === 401 && !retried) {
+        const res = await fetchToken();
+
+        if (res.message) {
+          return res;
+        }
+        return initGoogleCalendar(true);
       }
       return { message: "Something went wrong. Try again later." };
     }
@@ -387,14 +480,18 @@ async function initGoogleCalendar(retried = false): Promise<{ calendars: GoogleC
   }
 }
 
-async function fetchCalendarItems(calendar, retried = false) {
+async function fetchCalendarItems(calendar: GoogleCalendar, retried = false) {
   if (cachedCalendars[calendar.id]) {
     return { reminders: cachedCalendars[calendar.id] };
   }
-  const token = localStorage.getItem("oauth_token");
+  const token = await getToken();
 
   if (!token) {
     return [];
+  }
+
+  if (typeof token !== "string") {
+    return { message: token.message };
   }
   const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
 
@@ -409,8 +506,11 @@ async function fetchCalendarItems(calendar, retried = false) {
         if (retried) {
           return { message: "Something went wrong. Try again later." };
         }
-        // Most likely the auth token has expired, fetch new one and try again.
-        await fetchToken();
+        const res = await fetchToken();
+
+        if (res.message) {
+          return res;
+        }
         return fetchCalendarItems(calendar, true);
       }
       return { message: "Something went wrong. Try again later." };
@@ -792,9 +892,9 @@ function convertReminderToEvent(reminder: GoogleReminder) {
 }
 
 async function createCalendarEvent(reminder: GoogleReminder, calendarId: string, retried = false) {
-  const token = localStorage.getItem("oauth_token");
+  const token = await getToken();
 
-  if (!token) {
+  if (!token || typeof token !== "string") {
     return;
   }
   const event = convertReminderToEvent(reminder);
@@ -805,7 +905,11 @@ async function createCalendarEvent(reminder: GoogleReminder, calendarId: string,
   });
 
   if (res.status === 401 && !retried) {
-    await fetchToken();
+    const res = await fetchToken();
+
+    if (res.message) {
+      return;
+    }
     return createCalendarEvent(reminder, calendarId, true);
   }
 
@@ -815,9 +919,9 @@ async function createCalendarEvent(reminder: GoogleReminder, calendarId: string,
 }
 
 async function updateCalendarEvent(reminder: GoogleReminder, calendarId: string, retried = false) {
-  const token = localStorage.getItem("oauth_token");
+  const token = await getToken();
 
-  if (!token) {
+  if (!token || typeof token !== "string") {
     return;
   }
   const event = convertReminderToEvent(reminder);
@@ -828,7 +932,11 @@ async function updateCalendarEvent(reminder: GoogleReminder, calendarId: string,
   });
 
   if (res.status === 401 && !retried) {
-    await fetchToken();
+    const res = await fetchToken();
+
+    if (res.message) {
+      return;
+    }
     return updateCalendarEvent(reminder, calendarId, true);
   }
 
@@ -838,9 +946,9 @@ async function updateCalendarEvent(reminder: GoogleReminder, calendarId: string,
 }
 
 async function deleteCalendarEvent(calendarId: string, eventId: string, retried = false) {
-  const token = localStorage.getItem("oauth_token");
+  const token = await getToken();
 
-  if (!token) {
+  if (!token || typeof token !== "string") {
     return;
   }
   try {
@@ -850,7 +958,11 @@ async function deleteCalendarEvent(calendarId: string, eventId: string, retried 
     });
 
     if (res.status === 401 && !retried) {
-      await fetchToken();
+      const res = await fetchToken();
+
+      if (res.message) {
+        return;
+      }
       return deleteCalendarEvent(calendarId, eventId, true);
     }
     return res.status === 204;
@@ -859,47 +971,17 @@ async function deleteCalendarEvent(calendarId: string, eventId: string, retried 
   }
 }
 
-function fetchToken(interactive = false): Promise<string | undefined> {
-  return new Promise(resolve => {
-    chrome.identity.getAuthToken({ interactive }, token => {
-      resolve(token);
-
-      if (token) {
-        localStorage.setItem("oauth_token", token);
-      }
-    });
-  });
-}
-
 function fetchUser(token: string) {
   return fetch(`https://people.googleapis.com/v1/people/me?personFields=emailAddresses,names,photos&key=${process.env.CALENDAR_API_KEY}&access_token=${token}`).then(res => res.json());
 }
 
-async function clearUser(retried = false) {
-  const token = localStorage.getItem("oauth_token");
-
-  if (token) {
-    try {
-      const [json] = await Promise.all([
-        fetch(`https://accounts.google.com/o/oauth2/revoke?token=${token}`).then(res => res.json()),
-        chrome.identity.removeCachedAuthToken({ token })
-      ]);
-
-      if (json?.error === "invalid_token" && !retried) {
-        // If token is not revoked the next auth flow will not be interactive.
-        await fetchToken();
-        return clearUser(true);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
+async function clearUser() {
   cachedCalendars = {};
   eventColors = null;
-  chrome.identity.clearAllCachedAuthTokens();
-  localStorage.removeItem("oauth_token");
+  localStorage.removeItem("gtoken");
   localStorage.removeItem("google-user");
   localStorage.removeItem("google-calendars");
+  localStorage.removeItem("oauth_token");
 }
 
 export {

@@ -8,10 +8,13 @@ import GoogleUserDropdown from "./GoogleUserDropdown";
 export default function TimeDateTab({ locale }) {
   const { settings: { timeDate: settings }, updateContextSetting, toggleSetting } = useSettings();
   const [googleUser, setGoogleUser] = useState(() => {
-    if (localStorage.getItem("oauth_token")) {
+    if (localStorage.getItem("gtoken")) {
       return { user: JSON.parse(localStorage.getItem("google-user")) || null };
     }
-    return {};
+    else {
+      calendarService.clearUser();
+    }
+    return { user: null };
   });
   const timeoutId = useRef(0);
 
