@@ -83,7 +83,14 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
     if (calendar) {
       if (first.current) {
         first.current = false;
-        initGoogleCalendar();
+
+        if (localStorage.getItem("google-user") && localStorage.getItem("gtoken")) {
+          initGoogleCalendar();
+        }
+        else {
+          setGoogleUser(null);
+          calendarService.clearUser();
+        }
       }
       checkDate();
       window.addEventListener("google-user-change", handleGoogleUserChange);
@@ -278,9 +285,9 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
     });
   }
 
-  async function handleGoogleUserChange({ detail: user }) {
+  function handleGoogleUserChange({ detail: user }) {
     if (user) {
-      await initGoogleCalendar();
+      initGoogleCalendar();
       setGoogleUser(user);
     }
     else {
@@ -295,10 +302,10 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
       setGoogleReminders([]);
       initCalendar(r, []);
       showCalendar();
+    }
 
-      if (shouldCleanup) {
-        calendarService.clearUser();
-      }
+    if (shouldCleanup) {
+      calendarService.clearUser();
     }
     setGoogleCalendars([]);
     setGoogleUser(null);
