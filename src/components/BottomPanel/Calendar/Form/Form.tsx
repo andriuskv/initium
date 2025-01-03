@@ -130,6 +130,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
 
           if (index >= 0) {
             form.eventColorIndex = index;
+            form.colorId = form.eventColors[form.eventColorIndex].id;
           }
         }
       }
