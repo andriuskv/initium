@@ -95,7 +95,7 @@ export default [
       "no-useless-constructor": 2,
       "no-dupe-class-members": 2,
       "no-unneeded-ternary": 2,
-      "no-duplicate-imports": 2,
+      "import/no-duplicates": 2,
       "no-iterator": 2,
       "no-new-wrappers": 2,
       "object-shorthand": 2,

@@ -1,10 +1,12 @@
-import { PropsWithChildren } from "react";
-import {
+import type { PropsWithChildren } from "react";
+import type {
   Activators,
   KeyboardSensorOptions,
   UniqueIdentifier,
   DragStartEvent,
-  DragCancelEvent,
+  DragCancelEvent
+} from "@dnd-kit/core";
+import {
   DndContext,
   closestCenter,
   KeyboardSensor,

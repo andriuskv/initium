@@ -1,4 +1,5 @@
-import { CSSProperties, useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 import Icon from "components/Icon";
 import "./toast.css";
 

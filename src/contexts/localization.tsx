@@ -1,4 +1,5 @@
-import { PropsWithChildren, createContext, useState, use, useEffect } from "react";
+import type { PropsWithChildren } from "react";
+import { createContext, useState, use, useEffect } from "react";
 import { useSettings } from "contexts/settings";
 
 type LocalizationContextType = any;

@@ -1,4 +1,5 @@
-import { PointerEvent, PropsWithChildren, useEffect, useRef } from "react";
+import type { PointerEvent, PropsWithChildren } from "react";
+import { useEffect, useRef } from "react";
 import * as focusService from "services/focus";
 import "./modal.css";
 

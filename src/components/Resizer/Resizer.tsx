@@ -1,4 +1,5 @@
-import { PointerEvent as ReactPointerEvent, useLayoutEffect, useRef } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
+import { useLayoutEffect, useRef } from "react";
 import "./resizer.css";
 
 type Props = {

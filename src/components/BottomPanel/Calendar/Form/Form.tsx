@@ -1,6 +1,7 @@
+import type { ChangeEvent, MouseEvent, KeyboardEvent } from "react";
 import type { TimeDateSettings } from "types/settings";
 import type { Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
-import { useState, useMemo, ChangeEvent, MouseEvent, KeyboardEvent} from "react";
+import { useState, useMemo } from "react";
 import { getRandomHexColor, hslStringToHex, getRandomString } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate, parseDateInputValue, getDateString } from "services/timeDate";
 import { getSetting } from "services/settings";

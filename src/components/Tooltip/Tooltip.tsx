@@ -1,4 +1,5 @@
-import { CSSProperties, useState, useLayoutEffect, useRef } from "react";
+import type { CSSProperties } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import { timeout, getRandomString } from "utils";
 import "./tooltip.css";
 

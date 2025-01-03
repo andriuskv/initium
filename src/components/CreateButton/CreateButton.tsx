@@ -1,4 +1,5 @@
-import { CSSProperties, MouseEvent, useLayoutEffect, useRef, PropsWithChildren } from "react";
+import type { CSSProperties, MouseEvent, PropsWithChildren } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { timeout } from "utils";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";

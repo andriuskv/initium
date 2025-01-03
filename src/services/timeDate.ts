@@ -1,5 +1,5 @@
+import type { TimeDateSettings } from "types/settings";
 import { getSetting } from "./settings";
-import { TimeDateSettings } from "types/settings";
 
 function adjustTime({ hours, minutes = 0 }: { hours: number, minutes?: number }) {
   const { format } = getSetting("timeDate") as TimeDateSettings;

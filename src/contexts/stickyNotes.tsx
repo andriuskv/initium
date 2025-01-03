@@ -1,9 +1,10 @@
-import { PropsWithChildren, createContext, useState, useEffect, use, useMemo } from "react";
+import type { PropsWithChildren } from "react";
+import type { AppearanceSettings } from "types/settings";
+import { createContext, useState, useEffect, use, useMemo } from "react";
 import { replaceLink } from "utils";
 import { useSettings } from "contexts/settings";
 import { getSetting } from "services/settings";
 import * as chromeStorage from "services/chromeStorage";
-import { AppearanceSettings } from "types/settings";
 
 type Note = {
   index?: number,

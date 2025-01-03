@@ -1,11 +1,11 @@
 /* global chrome */
 
 import type { Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
+import type { TimeDateSettings } from "types/settings";
 import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import { getSetting } from "services/settings";
-import { TimeDateSettings } from "types/settings";
 
 type Day = {
   id: string,

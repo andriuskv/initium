@@ -1,8 +1,8 @@
+import type { TimeDateSettings } from "types/settings";
 import { getRandomString } from "../utils";
 import { getSetting } from "./settings";
 import { formatDate } from "./timeDate";
 import * as chromeStorage from "./chromeStorage";
-import { TimeDateSettings } from "types/settings";
 
 type Entry = {
   id: string,
