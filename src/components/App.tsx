@@ -1,4 +1,5 @@
-import { FC, useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { timeout } from "utils";
 import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings";

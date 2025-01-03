@@ -1,5 +1,6 @@
-import { PropsWithChildren, useLayoutEffect, useRef } from "react";
-import { AppearanceSettings } from "types/settings";
+import type { PropsWithChildren } from "react";
+import type { AppearanceSettings } from "types/settings";
+import { useLayoutEffect, useRef } from "react";
 import { getSetting } from "services/settings";
 import "./tabs-container.css";
 

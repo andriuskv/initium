@@ -1,5 +1,6 @@
-import { MouseEvent, useState, useLayoutEffect, useRef } from "react";
-import { AppearanceSettings } from "types/settings";
+import type { MouseEvent } from "react";
+import type { AppearanceSettings } from "types/settings";
+import { useState, useLayoutEffect, useRef } from "react";
 import { getSetting } from "services/settings";
 import Icon from "components/Icon";
 import "./to-top.css";

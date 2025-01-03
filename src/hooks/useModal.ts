@@ -1,6 +1,6 @@
+import type { AppearanceSettings } from "types/settings";
 import { useState, useRef } from "react";
 import { timeout } from "utils";
-import { AppearanceSettings } from "types/settings";
 import { getSetting } from "services/settings";
 
 export default function useModal<T>() {

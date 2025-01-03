@@ -1,7 +1,7 @@
-import { AppearanceSettings } from "types/settings";
+import type { UseStore } from "idb-keyval";
+import type { AppearanceSettings } from "types/settings";
 import { dispatchCustomEvent, getLocalStorageItem } from "../utils";
 import { getSetting, setSetting } from "./settings";
-import { UseStore } from "idb-keyval";
 
 type UnsplashInfo = {
   cacheDate?: number

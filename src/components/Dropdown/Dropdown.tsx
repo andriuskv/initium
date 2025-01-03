@@ -1,11 +1,12 @@
-import { MouseEvent, useState, useEffect, useLayoutEffect, useRef, useMemo, PropsWithChildren, ReactNode } from "react";
+import type { MouseEvent, PropsWithChildren, ReactNode } from "react";
+import type { AppearanceSettings } from "types/settings";
+import { useState, useEffect, useLayoutEffect, useRef, useMemo } from "react";
 import { getRandomString, timeout } from "utils";
 import * as focusService from "services/focus";
 import { getSetting } from "services/settings";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./dropdown.css";
-import { AppearanceSettings } from "types/settings";
 
 type Props = PropsWithChildren & {
   container?: {

@@ -1,4 +1,4 @@
-import { TimeDateSettings, WeatherSettings } from "types/settings";
+import type { TimeDateSettings, WeatherSettings } from "types/settings";
 import { getRandomString } from "utils";
 import { getSetting } from "./settings";
 import { getTimeString, getCurrentDate } from "./timeDate";

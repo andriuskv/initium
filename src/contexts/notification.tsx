@@ -1,6 +1,7 @@
-import { PropsWithChildren, createContext, use, useState, useEffect, useRef, useMemo } from "react";
+import type { PropsWithChildren } from "react";
 import type { AppearanceSettings } from "types/settings";
 import type { Notification } from "types/notification";
+import { createContext, use, useState, useEffect, useRef, useMemo } from "react";
 import { getSetting } from "services/settings";
 import { getRandomString, timeout } from "utils";
 

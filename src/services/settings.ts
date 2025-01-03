@@ -1,5 +1,5 @@
+import type { Settings, MainPanelSettings, MainPanelComponents } from "types/settings";
 import { generateNoise } from "../utils";
-import { Settings, MainPanelSettings, MainPanelComponents } from "types/settings";
 
 let settings = initSettings();
 

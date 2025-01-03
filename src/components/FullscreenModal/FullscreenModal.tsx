@@ -1,4 +1,5 @@
-import { PropsWithChildren, useLayoutEffect, useRef } from "react";
+import type { PropsWithChildren } from "react";
+import { useLayoutEffect, useRef } from "react";
 import * as focusService from "services/focus";
 import "./fullscreen-modal.css";
 

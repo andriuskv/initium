@@ -1,4 +1,5 @@
-import { ChangeEvent, useState, useEffect, useRef, lazy, Suspense } from "react";
+import type { ChangeEvent } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import Dropdown from "components/Dropdown";

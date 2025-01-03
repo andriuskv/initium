@@ -1,6 +1,7 @@
-import { PropsWithChildren, createContext, useState, use, useMemo } from "react";
+import type { PropsWithChildren } from "react";
+import type { Settings, MainPanelComponents } from "types/settings";
+import { createContext, useState, use, useMemo } from "react";
 import * as settingsService from "services/settings";
-import { Settings, MainPanelComponents } from "types/settings";
 
 type SettingsContextType = {
   settings: Settings;
