@@ -24,6 +24,7 @@
 }
 
 .timer-dropdown-btn {
+  position: relative;
   overflow: clip;
   text-overflow: ellipsis;
   white-space: nowrap;

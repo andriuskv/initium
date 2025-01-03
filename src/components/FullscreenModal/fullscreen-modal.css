@@ -28,7 +28,7 @@
   &:not(.static) {
     animation-duration: var(--duration-n);
     animation-fill-mode: both;
-    animation-name: reveal-fullscreen-modal;
+    animation-name: opacity-up, reveal-fullscreen-modal;
 
     &.hiding {
       animation-duration: var(--duration-f), var(--duration-n);
@@ -40,20 +40,10 @@
 @keyframes reveal-fullscreen-modal {
   from {
     transform: translate(-50%, calc(-50% + (-1 * var(--space-md))));
-    opacity: 0;
-  }
-
-  to {
-    transform: translate(-50%, -50%);
-    opacity: 1;
   }
 }
 
 @keyframes hide-fullscreen-modal {
-  from {
-    transform: translate(-50%, -50%);
-  }
-
   to {
     transform: translate(-50%, calc(-50% + var(--space-lg))) scale(0.96);
   }

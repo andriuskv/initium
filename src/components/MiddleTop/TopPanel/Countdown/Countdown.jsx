@@ -143,8 +143,14 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
           }
         }
       }
-      return durationParts;
 
+      if (!durationParts.second) {
+        durationParts.second = {
+          value: 0,
+          unit: "seconds"
+        };
+      }
+      return durationParts;
     }
     else {
       const durationParts = {};
@@ -152,7 +158,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
       for (const key in parts) {
         durationParts[key.slice(0, -1)] = {
           value: parts[key],
-          unit: parts[key] > 1 ? key: key.slice(0, -1)
+          unit: parts[key] === 0 || parts[key] > 1 ? key : key.slice(0, -1)
         };
       }
       return durationParts;

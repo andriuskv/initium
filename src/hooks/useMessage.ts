@@ -10,7 +10,7 @@ export default function useMessage(initialValue: string) {
 
     timeoutId.current = timeout(() => {
       setMessage("");
-    }, 4000, timeoutId.current);
+    }, 8000, timeoutId.current);
   }
 
   function dismissMessage() {
