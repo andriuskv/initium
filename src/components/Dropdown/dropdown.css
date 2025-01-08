@@ -18,6 +18,15 @@
   transform: translateY(var(--space-sm));
   white-space: nowrap;
 
+  &.portal {
+    z-index: 100;
+    inset: unset;
+    position-area: bottom left;
+    position-visibility: anchors-visible;
+    position-try-fallbacks: flip-inline;
+    translate: 30px;
+  }
+
   &.reveal {
     display: flex;
     opacity: 0;

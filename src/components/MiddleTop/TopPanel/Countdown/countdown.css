@@ -1,7 +1,5 @@
 .countdown {
-  overflow: hidden;
   position: relative;
-  min-height: 174px;
   border-bottom-right-radius: var(--container-inset-radius);
 }
 
@@ -12,8 +10,10 @@
 
 .countdown-items-container {
   overflow-y: auto;
+  min-height: 174px;
   max-height: 292px;
   overflow-x: clip;
+  scrollbar-gutter: stable both-edges;
 }
 
 .countdown-items {
@@ -21,15 +21,24 @@
   height: auto;
 }
 
-.countdown-item-remove-btn {
+.countdown-item-dropdown {
   position: absolute;
   top: var(--space-md);
   right: var(--space-md);
   opacity: 0;
 
-  &:hover, &:focus-visible {
-    opacity: 1;
+  &.visible, &:hover, &:has(:focus-visible) {
+    animation-name: opacity-up;
+    animation-duration: var(--duration-n);
+    animation-fill-mode: both;
   }
+}
+
+.countdown-item-dropdown-title {
+  padding: var(--space-md);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  text-align: center;
 }
 
 .countdown-item-timer {
@@ -45,8 +54,11 @@
   justify-content: center;
   padding: var(--space-md);
 
-  &:hover .countdown-item-remove-btn {
-    animation: 0s linear 0.5s forwards delayed-reveal;
+  &:hover .countdown-item-dropdown:not(.visible, :hover) {
+    animation-name: opacity-up;
+    animation-duration: var(--duration-n);
+    animation-fill-mode: both;
+    animation-delay: 0.5s;
   }
 
   &:not(:last-of-type) {
