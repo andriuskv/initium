@@ -25,6 +25,8 @@
 
 .timer-dropdown-btn {
   position: relative;
+  min-height: 38px;
+  padding-block: var(--space-xs);
   overflow: clip;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -39,6 +41,11 @@
   border-radius: 50%;
   transform: translateY(-50%);
   background-color: var(--color-primary);
+}
+
+.timer-dropdown-label {
+  font-size: var(--text-sm);
+  font-weight: normal;
 }
 
 .timer-dropdown-list {

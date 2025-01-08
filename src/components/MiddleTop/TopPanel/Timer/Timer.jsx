@@ -757,8 +757,14 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
             </div>
             <div className="dropdown-group timer-dropdown-list">
               {timersArr.map(timer => (
-                <button className={`btn text-btn dropdown-btn timer-dropdown-btn${activeTimer.id === timer.id ? " active" : ""}`} key={timer.id}
-                  onClick={() => selectTimerWithState(timer.id)}>{timer.running ? <span className="timer-dropdown-indicator"></span> : null}{padTime(timer.hours)}:{padTime(timer.minutes)}:{padTime(timer.seconds)}</button>
+                <button className={`btn text-btn dropdown-btn timer-dropdown-btn${activeTimer.id === timer.id ? " active" : ""}`}
+                  key={timer.id} onClick={() => selectTimerWithState(timer.id)}>
+                    {timer.running ? <span className="timer-dropdown-indicator"></span> : null}
+                    <div>
+                      {timer.label ? <div className="timer-dropdown-label">{timer.label}</div> : null}
+                      <div>{padTime(timer.hours)}:{padTime(timer.minutes)}:{padTime(timer.seconds)}</div>
+                    </div>
+                  </button>
               ))}
             </div>
             {timersArr.length > 1 && !activeTimer.running ? (
