@@ -1,6 +1,7 @@
-import type { MouseEvent, PropsWithChildren, ReactNode } from "react";
+import type { CSSProperties, MouseEvent, PropsWithChildren, ReactNode } from "react";
 import type { AppearanceSettings } from "types/settings";
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { getRandomString, timeout } from "utils";
 import * as focusService from "services/focus";
 import { getSetting } from "services/settings";
@@ -9,6 +10,7 @@ import Icon from "components/Icon";
 import "./dropdown.css";
 
 type Props = PropsWithChildren & {
+  usePortal?: boolean,
   container?: {
     className: string
   },
@@ -37,12 +39,13 @@ type State = {
   } | null;
 }
 
-export default function Dropdown({ container, toggle = {}, body, children }: Props) {
+export default function Dropdown({ container, toggle = {}, body, usePortal, children }: Props) {
   const locale = useLocalization();
   const [state, setState] = useState<State>({ id: getRandomString() });
   const memoizedWindowClickHandler = useMemo(() => handleWindowClick, [state.id]);
   const isMounted = useRef(false);
   const drop = useRef<HTMLDivElement>(null);
+  const toggleBtn = useRef<HTMLButtonElement>(null);
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -94,23 +97,30 @@ export default function Dropdown({ container, toggle = {}, body, children }: Pro
       hideDropdown();
       return;
     }
-    const currentTarget = event.currentTarget as HTMLElement;
-    const container = currentTarget.parentElement!;
-    const element = getParentElement(container);
     let data: State["data"] = null;
 
-    if (element) {
-      element.style.position = "relative";
-
-      data = {
-        top: container.offsetTop,
-        bottom: container.offsetTop + currentTarget.offsetHeight,
-        height: element.scrollTop + element.clientHeight
-      };
-
-      element.style.position = "";
+    if (usePortal) {
+      toggleBtn.current.style.setProperty("anchor-name", `--anchor-${state.id}`);
+      window.addEventListener("click", memoizedWindowClickHandler);
     }
-    window.addEventListener("click", memoizedWindowClickHandler);
+    else {
+      const currentTarget = event.currentTarget as HTMLElement;
+      const container = currentTarget.parentElement!;
+      const element = getParentElement(container);
+
+      if (element) {
+        element.style.position = "relative";
+
+        data = {
+          top: container.offsetTop,
+          bottom: container.offsetTop + currentTarget.offsetHeight,
+          height: element.scrollTop + element.clientHeight
+        };
+
+        element.style.position = "";
+      }
+      window.addEventListener("click", memoizedWindowClickHandler);
+    }
 
     setState({
       id: state.id,
@@ -170,7 +180,7 @@ export default function Dropdown({ container, toggle = {}, body, children }: Pro
 
     if (toggle.isIconTextBtn) {
       return (
-        <button type="button" className={`btn icon-text-btn dropdown-toggle-btn${className}`}
+        <button type="button" className={`btn icon-text-btn dropdown-toggle-btn${className}`} ref={toggleBtn}
           onClick={toggleDropdown}>
           <Icon id={toggle.iconId || "vertical-dots"}/>
           <span>{toggle.title}</span>
@@ -178,7 +188,7 @@ export default function Dropdown({ container, toggle = {}, body, children }: Pro
       );
     }
     return (
-      <button type="button" className={`btn icon-btn dropdown-toggle-btn${className}`}
+      <button type="button" className={`btn icon-btn dropdown-toggle-btn${className}`} ref={toggleBtn}
         onClick={toggleDropdown} title={toggle.title || locale.global.more}>
         {toggle.body ? toggle.body : <Icon id={toggle.iconId || "vertical-dots"}/>}
       </button>
@@ -188,7 +198,14 @@ export default function Dropdown({ container, toggle = {}, body, children }: Pro
   return (
     <div id={state.id} className={`dropdown-container${container ? ` ${container.className}` : ""}${state.visible ? " visible" : ""}`}>
       {renderToggleButton()}
-      <div role="menu" className={`container container-opaque dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}${state.hiding ? " hiding" : ""}`} ref={drop}>{children}</div>
+      {usePortal && CSS.supports("anchor-name", "--test") ? (
+        createPortal(
+          <div role="menu" className={`container container-opaque dropdown portal${body? ` ${body.className}` : ""}${state.reveal? " reveal" : ""}${state.visible? " visible" : ""}${state.onTop? " top" : ""}${state.hiding? " hiding" : ""}`} style={{ "positionAnchor": `--anchor-${state.id}` } as CSSProperties } ref={drop}>{children}</div>,
+          document.body
+        )
+      ) : (
+        <div role="menu" className={`container container-opaque dropdown${body ? ` ${body.className}` : ""}${state.reveal ? " reveal" : ""}${state.visible ? " visible" : ""}${state.onTop ? " top" : ""}${state.hiding ? " hiding" : ""}`} ref={drop}>{children}</div>
+      )}
     </div>
   );
 }

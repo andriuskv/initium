@@ -9,14 +9,13 @@
   z-index: var(--z-index, 1);
   position: absolute;
   top: var(--space-md);
-  left: 50%;
   opacity: 0;
   visibility: hidden;
   width: 610px;
   border-bottom-left-radius: 999px;
   border-bottom-right-radius: 999px;
   transform-origin: top center;
-  transform: translateX(-50%) scale(0);
+  transform: scale(0);
   transition:
     var(--duration-n) transform,
     var(--duration-n) opacity,
@@ -32,7 +31,7 @@
     visibility: visible;
     border-bottom-left-radius: var(--container-border-radius);
     border-bottom-right-radius: var(--container-border-radius);
-    transform: translateX(-50%) scale(1);
+    transform: scale(1);
     transition-delay: 0s;
 
     .top-panel-content {
