@@ -1,46 +1,72 @@
-import { useState, useRef } from "react";
+import type { Label } from "../../../tasks.type";
+import { useState, useRef, type FormEvent } from "react";
 import { getRandomString, getRandomHexColor } from "utils";
 import Icon from "components/Icon";
 import Modal from "components/Modal";
 import "./label-form.css";
 
-export default function LabelForm({ locale, addUniqueLabel, removeTaskLabel, hiding, hide }) {
+type Props = {
+  locale: any,
+  addUniqueLabel: (label: Label) => boolean,
+  removeTaskLabel: (label: Label) => void,
+  hiding?: boolean,
+  hide: () => void,
+}
+
+export default function LabelForm({ locale, addUniqueLabel, removeTaskLabel, hiding, hide }: Props) {
   const [currentColor, setCurrentColor] = useState(() => getRandomHexColor());
   const updatingColor = useRef(false);
-  const [labels, setLabels] = useState(() => (JSON.parse(localStorage.getItem("taskLabels")) || []).map(label => {
-    label.id = getRandomString();
-    return label;
-  }));
+  const [labels, setLabels] = useState(() => {
+    const labels: Label[] = JSON.parse(localStorage.getItem("taskLabels")) || [];
 
-  function handleColorChange({ target }) {
+    return labels.map((label: Label) => {
+      label.id = getRandomString();
+      return label;
+    });
+  });
+
+  function handleColorChange({ target }: FormEvent) {
     if (updatingColor.current) {
       return;
     }
+    const element = target as HTMLInputElement;
     updatingColor.current = true;
 
     requestAnimationFrame(() => {
-      setCurrentColor(target.value);
+      setCurrentColor(element.value);
       updatingColor.current = false;
     });
   }
 
-  function handleLabelFormSubmit(event) {
+  function handleLabelFormSubmit(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      name: HTMLInputElement;
+      color: HTMLInputElement;
+    }
     event.preventDefault();
 
-    const { elements } = event.target;
-    const label = {
-      name: elements.name.value.trim(),
-      color: elements.color.value
-    };
-    const added = addUniqueLabel(label);
+    const formElement = event.target as HTMLFormElement;
+    const elements = formElement.elements as FormElements;
+    const name = elements.name.value.trim();
+    const color = elements.color.value;
 
-    if (added) {
-      saveLabels([...labels, {...label, id: getRandomString() }]);
+    if (name && color) {
+      const label = {
+        id: getRandomString(),
+        name,
+        color,
+        flagged: true,
+      };
+      const added = addUniqueLabel(label);
+
+      if (added) {
+        saveLabels([...labels, label]);
+      }
     }
     hide();
   }
 
-  function removeLabel(label) {
+  function removeLabel(label: Label) {
     const newLabels = labels.filter(({ id }) => label.id !== id);
 
     removeTaskLabel(label);
@@ -48,7 +74,7 @@ export default function LabelForm({ locale, addUniqueLabel, removeTaskLabel, hid
     saveLabels(newLabels);
   }
 
-  function saveLabels(labels) {
+  function saveLabels(labels: Label[]) {
     localStorage.setItem("taskLabels", JSON.stringify(structuredClone(labels).map(label => {
       delete label.id;
       delete label.flagged;

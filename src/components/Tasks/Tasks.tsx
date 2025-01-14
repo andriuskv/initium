@@ -1,10 +1,17 @@
 import { useState, useEffect, useRef, lazy, Suspense, useLayoutEffect } from "react";
 import { handleZIndex } from "services/zIndex";
 import "./tasks.css";
+import type { GeneralSettings, TasksSettings } from "types/settings";
 
 const TasksContent = lazy(() => import("./TasksContent"));
 
-export default function Tasks({ settings, generalSettings, locale }) {
+type Props = {
+  settings: TasksSettings,
+  generalSettings: GeneralSettings,
+  locale: any
+}
+
+export default function Tasks({ settings, generalSettings, locale }: Props) {
   const [{ visible, rendered }, setState] = useState({ visible: false, rendered: false });
   const [expanded, setExpanded] = useState(false);
   const containerRef = useRef(null);
@@ -16,7 +23,7 @@ export default function Tasks({ settings, generalSettings, locale }) {
       containerRef.current.classList.add("revealed");
     }
     else {
-      timeoutId.current = setTimeout(() => {
+      timeoutId.current = window.setTimeout(() => {
         containerRef.current.classList.remove("revealed");
       }, 320);
     }
@@ -30,7 +37,7 @@ export default function Tasks({ settings, generalSettings, locale }) {
 
   function toggle() {
     if (!rendered) {
-      setState({ rendered: true });
+      setState({ rendered: true, visible: false });
     }
     else {
       setState({ rendered, visible: !visible });

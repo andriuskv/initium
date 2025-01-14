@@ -1,5 +1,6 @@
 .countdown {
   position: relative;
+  min-height: 174px;
   border-bottom-right-radius: var(--container-inset-radius);
 }
 
@@ -10,7 +11,6 @@
 
 .countdown-items-container {
   overflow-y: auto;
-  min-height: 174px;
   max-height: 292px;
   overflow-x: clip;
   scrollbar-gutter: stable both-edges;

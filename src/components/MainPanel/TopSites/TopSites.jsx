@@ -11,7 +11,7 @@ import PersistentSites from "./PersistentSites";
 
 export default function TopSites({ settings, locale }) {
   const [sites, setSites] = useState(null);
-  const [form, setForm, hideForm] = useModal(null);
+  const { modal, setModal, hideModal } = useModal(null);
   const first = useRef(true);
 
   useEffect(() => {
@@ -92,11 +92,11 @@ export default function TopSites({ settings, locale }) {
   }
 
   function showForm() {
-    setForm({});
+    setModal({});
   }
 
   function editSite(index) {
-    setForm({
+    setModal({
       ...sites[index],
       index,
       updating: true
@@ -148,7 +148,7 @@ export default function TopSites({ settings, locale }) {
       saveSite(site);
     }
     else if (action === "update") {
-      const oldSite = { ...sites[form.index] };
+      const oldSite = { ...sites[modal.index] };
       const updatedSite = {
         iconUrl: getFaviconURL(site.url),
         ...site
@@ -167,7 +167,7 @@ export default function TopSites({ settings, locale }) {
 
         data.sites ??= [];
         data.sites.push(updatedSite);
-        setSites(sites.with(form.index, updatedSite));
+        setSites(sites.with(modal.index, updatedSite));
         saveSites(data);
       }
       else if (site.title !== oldSite.title) {
@@ -202,7 +202,7 @@ export default function TopSites({ settings, locale }) {
             initialTitle: oldSite.title
           });
         }
-        setSites(sites.with(form.index, updatedSite));
+        setSites(sites.with(modal.index, updatedSite));
         saveSites(data);
       }
     }
@@ -293,8 +293,8 @@ export default function TopSites({ settings, locale }) {
       {settings.persistentSitesHidden ? null : (
         <PersistentSites settings={settings} locale={locale} getFaviconURL={getFaviconURL}/>
       )}
-      {form ? (
-        <Form form={form} locale={locale} updateSite={updateSite} hiding={form.hiding} hide={hideForm}/>
+      {modal ? (
+        <Form form={modal} locale={locale} updateSite={updateSite} hiding={modal.hiding} hide={hideModal}/>
       ) : null}
     </>
   );

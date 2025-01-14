@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, FC } from "react";
 import type {
   Activators,
   KeyboardSensorOptions,
@@ -50,7 +50,7 @@ class CustomKeyboardSensor extends KeyboardSensor {
 
 type ListProps = PropsWithChildren & {
   items: ({ id: UniqueIdentifier; })[],
-  axis: "xy" | "x" | "y",
+  axis?: "xy" | "x" | "y",
   handleDragStart: (event: DragStartEvent) => void,
   handleSort: (newItems?: unknown[] | null) => void
 }
@@ -109,7 +109,14 @@ function SortableList({ children, items, axis, handleDragStart, handleSort }: Li
   );
 }
 
-function SortableItem({ children, id, className, component, handleTitle }) {
+type ItemProps = PropsWithChildren & {
+  id: UniqueIdentifier,
+  className?: string,
+  component?: { Component: FC<any>; params: any },
+  handleTitle?: string
+}
+
+function SortableItem({ children, id, className, component, handleTitle }: ItemProps) {
   const {
     attributes,
     listeners,

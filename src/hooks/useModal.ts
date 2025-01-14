@@ -3,8 +3,8 @@ import { useState, useRef } from "react";
 import { timeout } from "utils";
 import { getSetting } from "services/settings";
 
-export default function useModal<T>() {
-  const [modal, setModal] = useState<T | { hiding: boolean } | null>(null);
+export default function useModal() {
+  const [modal, setModal] = useState<{[key: string]: any, hiding?: boolean }>();
   const timeoutId = useRef(0);
 
   function hideModal() {
@@ -21,9 +21,9 @@ export default function useModal<T>() {
     }, 200 * animationSpeed, timeoutId.current);
   }
 
-  return [
+  return {
     modal,
     setModal,
     hideModal
-  ];
+  };
 }

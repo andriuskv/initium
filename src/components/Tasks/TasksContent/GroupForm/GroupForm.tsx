@@ -1,14 +1,30 @@
+import type { FormEvent } from "react";
 import { getRandomString } from "utils";
 import Modal from "components/Modal";
 import "./group-form.css";
+import type { Group } from "../../tasks.type";
 
-export default function GroupForm({ locale, createGroup, modal = false, hiding, hide }) {
-  function handleGroupFormSubmit(event) {
+type Props = {
+  locale: any,
+  modal?: boolean,
+  hiding?: boolean,
+  createGroup: (group: Group) => void,
+  hide: () => void,
+}
+
+export default function GroupForm({ locale, createGroup, modal = false, hiding, hide }: Props) {
+  function handleGroupFormSubmit(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      name: HTMLInputElement;
+    }
+    const formElement = event.target as HTMLFormElement;
+    const elements = formElement.elements as FormElements;
+
     event.preventDefault();
 
     createGroup({
       id: getRandomString(4),
-      name: event.target.elements.name.value.trim(),
+      name: elements.name.value.trim(),
       expanded: true,
       tasks: []
     });
@@ -17,7 +33,7 @@ export default function GroupForm({ locale, createGroup, modal = false, hiding, 
       hide();
     }
     else {
-      event.target.reset();
+      formElement.reset();
     }
   }
 

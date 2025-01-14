@@ -8,7 +8,7 @@ type Props = PropsWithChildren & {
   className?: string,
   current: number,
   offset?: number,
-  itemCount: number,
+  itemCount?: number,
   visible?: boolean,
   orientation?: "h" | "v"
 }
@@ -17,7 +17,7 @@ export default function TabsContainer({ className, children, current, offset = 0
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
   const prev = useRef(current);
-  const isStatic = useRef(current === prev.current);
+  const isStatic = useRef(true);
   const first = useRef(true);
 
   useLayoutEffect(() => {
