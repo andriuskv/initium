@@ -11,7 +11,7 @@ import "./tabs.css";
 import Tab from "./Tab";
 
 export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs, updateTabPosition, getTabSize, decreaseTextSize, increaseTextSize, hide }) {
-  const [modal, setModal, hideModal] = useModal(null);
+  const { modal, setModal, hideModal } = useModal(null);
   const [storage, setStorage] = useState({ usedFormated: "0 kb", usedRatio: 0, maxFormated: "0 kb" });
   const [activeDragId, setActiveDragId] = useState(null);
 

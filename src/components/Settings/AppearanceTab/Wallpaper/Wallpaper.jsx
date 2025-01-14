@@ -8,7 +8,7 @@ import "./wallpaper.css";
 
 export default function Wallpaper({ settings, locale, updateContextSetting }) {
   const [wallpaperInfo, setWallpaperInfo] = useState(() => getWallpaperInfo());
-  const [wallpaperForm, setWallpaperForm, hideWallpaperForm] = useModal(null);
+  const { modal, setModal, hideModal } = useModal(null);
   const [wallpaperSettingsDirty, setWallpaperSettingsDirty] = useState(() => {
     const keys = Object.keys(settings.wallpaper);
 
@@ -44,7 +44,7 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
   }
 
   function showWallpaperForm() {
-    setWallpaperForm({ visible: true });
+    setModal({ visible: true });
   }
 
   function handleWallpaperFormSubmit(event) {
@@ -53,12 +53,12 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
     event.preventDefault();
 
     if (!input.value) {
-      setWallpaperForm(null);
+      setModal(null);
       return;
     }
 
     if (!URL.canParse(input.value)) {
-      setWallpaperForm({ ...wallpaperForm, message: "Invalid URL." });
+      setModal({ ...modal, message: "Invalid URL." });
       return;
     }
     const url = new URL(input.value);
@@ -73,8 +73,8 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
       };
 
       image.onerror = () => {
-        setWallpaperForm({
-          ...wallpaperForm,
+        setModal({
+          ...modal,
           message: "URL does not contain valid image."
         });
       };
@@ -92,8 +92,8 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
       }, { signal: abortController.signal });
 
       video.addEventListener("error", () => {
-        setWallpaperForm({
-          ...wallpaperForm,
+        setModal({
+          ...modal,
           message: "URL does not contain valid video."
         });
         abortController.abort();
@@ -109,7 +109,7 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
     if (mimeType.startsWith("video")) {
       params.videoPlaybackSpeed = settings.wallpaper.videoPlaybackSpeed ?? 1;
     }
-    setWallpaperForm(null);
+    setModal(null);
     updateContextSetting("appearance", { wallpaper: { ...params, type: "url", url, mimeType, provider: "self" } });
     setUrlWallpaper(url, mimeType);
     setWallpaperSettingsDirty(true);
@@ -170,13 +170,13 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
 
   function renderWallpaperForm() {
     return (
-      <Modal hiding={wallpaperForm.hiding} hide={hideWallpaperForm}>
+      <Modal hiding={modal.hiding} hide={hideModal}>
         <form onSubmit={handleWallpaperFormSubmit}>
           <h4 className="modal-title modal-title-center">{locale.settings.appearance.wallpaper_url_form_title}</h4>
           <input type="text" className="input setting-wallpaper-form-input" name="input" placeholder={locale.global.url_input_label} autoComplete="off"/>
-          {wallpaperForm.message ? <div className="setting-wallpaper-form-message">{wallpaperForm.message}</div> : null}
+          {modal.message ? <div className="setting-wallpaper-form-message">{modal.message}</div> : null}
           <div className="modal-actions">
-            <button type="button" className="btn text-btn" onClick={hideWallpaperForm}>{locale.global.cancel}</button>
+            <button type="button" className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
             <button className="btn">{locale.global.set}</button>
           </div>
         </form>
@@ -243,7 +243,7 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
         </div>
       </div>
       {wallpaperInfo && renderWallpaperInfo()}
-      {wallpaperForm && renderWallpaperForm()}
+      {modal && renderWallpaperForm()}
     </div>
   );
 }

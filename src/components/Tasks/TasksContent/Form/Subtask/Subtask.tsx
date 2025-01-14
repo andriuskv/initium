@@ -1,8 +1,19 @@
+import type { Subtask } from "../../../tasks.type";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./subtask.css";
+import type { PropsWithChildren } from "react";
 
-export default function Subtask({ children, index, subtask, locale, completeWithSubtasks, toggleSubtaskReq, removeFormSubtask }) {
+type Props = PropsWithChildren & {
+  index: number,
+  subtask: Subtask,
+  locale: any,
+  completeWithSubtasks: boolean,
+  toggleSubtaskReq: (index: number) => void,
+  removeFormSubtask: (index: number) => void,
+}
+
+export default function Subtask({ children, index, subtask, locale, completeWithSubtasks, toggleSubtaskReq, removeFormSubtask }: Props) {
   return (
     <>
       <div className="task-form-subtask-index-container">

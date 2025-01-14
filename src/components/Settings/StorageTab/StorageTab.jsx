@@ -56,7 +56,7 @@ export default function StorageTab({ locale }) {
   ]);
   const [stats, setStats] = useState(() => getInitStats());
   const [dataMessage, setDataMessage] = useState("");
-  const [modal, setModal, hideModal] = useModal(null);
+  const { modal, setModal, hideModal } = useModal(null);
   const ready = useRef(false);
   const storageItems = useRef([]);
   const storageTimeoutId = useRef(0);

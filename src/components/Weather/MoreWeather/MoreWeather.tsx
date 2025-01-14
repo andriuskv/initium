@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import type { Current, Hour, Weekday, View } from "types/weather";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { convertTemperature } from "services/weather";
 import * as focusService from "services/focus";
 import TabsContainer from "components/TabsContainer";
@@ -7,9 +8,22 @@ import Spinner from "components/Spinner";
 import Dropdown from "components/Dropdown";
 import "./more-weather.css";
 
+type Props = {
+  current: Current,
+  more: { hourly: Hour[], daily: Weekday[] },
+  units: "C" | "F",
+  speedUnits: "m/s" | "ft/s",
+  view: View,
+  message: string,
+  locale: any,
+  selectView: (view: View) => void,
+  toggleUnits: (type: "temp" | "wind") => void,
+  hide: () => void
+}
+
 const views = ["temp", "prec", "wind"];
 
-export default function MoreWeather({ current, more, units, speedUnits, view, message, locale, selectView, toggleUnits, hide }) {
+export default function MoreWeather({ current, more, units, speedUnits, view, message, locale, selectView, toggleUnits, hide }: Props) {
   const [tempRange, setTempRange] = useState(null);
   const container = useRef(null);
   const first = useRef(true);
@@ -42,7 +56,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
     setTempRange({ min: tempRange.min - 2, max: tempRange.max + 1 });
   }, [more]);
 
-  function getTempPath(closePath) {
+  function getTempPath(closePath = false) {
     let path = "";
     let offset = 0;
 
@@ -69,14 +83,14 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
     return `M${path.slice(2)}`;
   }
 
-  function getSvgY(current, offset = 0) {
+  function getSvgY(current: number, offset = 0) {
     const maxRange = tempRange.max - tempRange.min;
     const range = current - tempRange.min;
 
     return (100 - (range / maxRange * 100 * 0.6) - offset).toFixed(2);
   }
 
-  function renderWindView(items) {
+  function renderWindView(items: Hour[]) {
     const [minSpeed, maxSpeed] = items.reduce(([minSpeed, maxSpeed], item) => {
       if (item.wind.speed.raw > maxSpeed) {
         maxSpeed = item.wind.speed.raw;
@@ -100,7 +114,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
             <div className="weather-more-hourly-wind-view-item" key={id}>
               <div className="weather-more-hourly-wind-view-item-speed">{wind.speed.value} {speedUnits}</div>
               <svg viewBox="0 0 24 24" className="weather-more-hourly-wind-view-item-icon"
-                style={{ "--degrees": wind.direction.degrees, "--ratio": ratio }}>
+                style={{ "--degrees": wind.direction.degrees, "--ratio": ratio } as CSSProperties}>
                 <title>{wind.direction.name}</title>
                 <use href="#arrow-up"></use>
               </svg>
@@ -184,7 +198,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
                 <span className="weather-more-current-wind">
                   <span>{current.wind.speed.value} {speedUnits}</span>
                   <svg viewBox="0 0 24 24" className="weather-more-current-wind-icon"
-                    style={{ "--degrees": current.wind.direction.degrees }}>
+                    style={{ "--degrees": current.wind.direction.degrees } as CSSProperties}>
                     <title>{current.wind.direction.name}</title>
                     <use href="#arrow-up"></use>
                   </svg>

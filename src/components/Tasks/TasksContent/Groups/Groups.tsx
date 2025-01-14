@@ -1,3 +1,5 @@
+import type { FocusEvent, KeyboardEvent } from "react";
+import type { Group } from "../../tasks.type";
 import { useState } from "react";
 import { useModal } from "hooks";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -7,33 +9,41 @@ import Icon from "components/Icon";
 import "./groups.css";
 import GroupForm from "../GroupForm";
 
-export default function Groups({ groups, locale, updateGroups, createGroup, hide }) {
-  const [removeModal, setRemoveModal, hideModal] = useModal(null);
+type Props = {
+  groups: Group[],
+  locale: any,
+  updateGroups: (groups: Group[], shouldSave?: boolean) => void,
+  createGroup: (group: Group) => void,
+  hide: () => void,
+}
+
+export default function Groups({ groups, locale, updateGroups, createGroup, hide }: Props) {
+  const { modal, setModal, hideModal } = useModal();
   const [activeDragId, setActiveDragId] = useState(null);
 
-  function showRemoveModal(index) {
+  function showRemoveModal(index: number) {
     const groupIndex = index + 1;
 
     if (groups[groupIndex].tasks.length === 0) {
       removeGroup(groupIndex);
     }
     else {
-      setRemoveModal({ groupIndex });
+      setModal({ groupIndex });
     }
   }
 
   function confirmGroupRemoval() {
-    removeGroup(removeModal.groupIndex);
+    removeGroup(modal.groupIndex);
     hideModal();
   }
 
-  function enableGroupRename(group) {
+  function enableGroupRename(group: Group) {
     group.renameEnabled = true;
     updateGroups(groups, false);
   }
 
-  function renameGroup(event, group) {
-    const newName = event.target.value;
+  function renameGroup(event: FocusEvent, group: Group) {
+    const newName = (event.target as HTMLInputElement).value;
     let shouldSave = false;
 
     delete group.renameEnabled;
@@ -45,18 +55,18 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
     updateGroups(groups, shouldSave);
   }
 
-  function removeGroup(index) {
+  function removeGroup(index: number) {
     groups.splice(index, 1);
     updateGroups(groups);
   }
 
-  function blurGroupNameInput(event) {
+  function blurGroupNameInput(event: KeyboardEvent) {
     if (event.key === "Enter") {
-      event.target.blur();
+      (event.target as HTMLInputElement).blur();
     }
   }
 
-  function handleSort(items) {
+  function handleSort(items: Group[]) {
     if (items) {
       updateGroups(items);
     }
@@ -67,7 +77,7 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
     setActiveDragId(event.active.id);
   }
 
-  function renderGroupContent(group, index, allowRemoval = true) {
+  function renderGroupContent(group: Group, index: number, allowRemoval = true) {
     if (group.renameEnabled) {
       return (
         <input type="text" className="input tasks-group-input" autoFocus defaultValue={group.name}
@@ -98,7 +108,7 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
     <>
       <div className="container-header"></div>
       <div className="container-body tasks-body">
-        <GroupForm locale={locale} createGroup={createGroup}/>
+        <GroupForm locale={locale} createGroup={createGroup} hide={hide}/>
         <ul className="tasks-groups-items" data-dropdown-parent>
           <li className="tasks-groups-item">
             {renderGroupContent(groups[0], 0, false)}
@@ -118,8 +128,8 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
       <div className="container-footer">
         <button className="btn text-btn" onClick={hide}>{locale.global.done}</button>
       </div>
-      {removeModal && (
-        <Modal hiding={removeModal.hiding} hide={hideModal}>
+      {modal && (
+        <Modal hiding={modal.hiding} hide={hideModal}>
           <h4 className="modal-title">{locale.tasks.remove_group_modal_title}</h4>
           <div className="modal-text-body">
             <p>{locale.tasks.remove_group_modal_message}</p>

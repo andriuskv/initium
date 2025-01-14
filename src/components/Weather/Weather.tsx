@@ -1,4 +1,5 @@
-import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
+import type { Current, Hour, Weekday, View } from "types/weather";
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { dispatchCustomEvent, timeout } from "utils";
 import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
@@ -7,16 +8,25 @@ import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
 import "./weather.css";
 
+type Props = {
+  timeFormat: 12 | 24,
+  locale: any
+}
+
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
-export default function Weather({ timeFormat, locale }) {
+export default function Weather({ timeFormat, locale }: Props) {
   const { settings: { appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings }, updateContextSetting } = useSettings();
   const [state, setState] = useState(() => {
-    const view = localStorage.getItem("active-weather-tab") || "temp";
-    return { view };
+    const view = (localStorage.getItem("active-weather-tab") || "temp") as View;
+    return {
+      view,
+      reveal: false,
+      visible: false
+    };
   });
-  const [current, setCurrentWeather] = useState(null);
-  const [moreWeather, setMoreWeather] = useState(null);
+  const [current, setCurrentWeather] = useState<Current>(null);
+  const [moreWeather, setMoreWeather] = useState<{ hourly: Hour[], daily: Weekday[] }>(null);
   const [moreWeatherMessage, setMoreWeatherMessage] = useState("");
   const firstRender = useRef(true);
   const lastMoreWeatherUpdate = useRef(0);
@@ -100,7 +110,7 @@ export default function Weather({ timeFormat, locale }) {
       setMoreWeather({
         ...moreWeather,
         hourly: [...moreWeather.hourly.map(item => {
-          item.time = getTimeString({ hours: item.hour });
+          item.time = getTimeString({ hours: item.hour, minutes: 0 });
           return item;
         })]
       });
@@ -124,7 +134,7 @@ export default function Weather({ timeFormat, locale }) {
     }
   }, [current, state.visible]);
 
-  function toggleUnits(type) {
+  function toggleUnits(type: "temp" | "wind") {
     if (type === "temp") {
       const { units } = settings;
 
@@ -138,7 +148,7 @@ export default function Weather({ timeFormat, locale }) {
   }
 
   function scheduleWeatherUpdate() {
-    timeoutId.current = setTimeout(updateWeather, 1200000);
+    timeoutId.current = window.setTimeout(updateWeather, 1200000);
   }
 
   function showMoreWeather() {
@@ -146,15 +156,14 @@ export default function Weather({ timeFormat, locale }) {
   }
 
   function hideMoreWeather() {
-    state.visible = false;
-    setState({ ...state });
+    setState({ ...state, visible: false });
 
     setTimeout(() => {
-      setState({ ...state, reveal: false });
+      setState({ ...state, visible: false, reveal: false });
     }, 320 * animationSpeed);
   }
 
-  function selectView(view) {
+  function selectView(view: View) {
     setState({ ...state, view });
 
     saveTabTimeoutId.current = timeout(() => {
@@ -164,13 +173,13 @@ export default function Weather({ timeFormat, locale }) {
 
   async function updateWeather(forceMoreWeatherUpdate = false) {
     try {
-      const json = await fetchWeather();
+      const json = await fetchWeather() as Current;
 
       if (!json) {
         return;
       }
 
-      if (json.message) {
+      if ("message" in json) {
         dispatchCustomEvent("weather-error", json);
       }
       else if (json.location) {
@@ -189,7 +198,7 @@ export default function Weather({ timeFormat, locale }) {
     }
   }
 
-  async function updateMoreWeather(coords) {
+  async function updateMoreWeather(coords : { lat: number, lon: number }) {
     if (Date.now() - lastMoreWeatherUpdate.current < 1200000) {
       return;
     }
@@ -216,7 +225,7 @@ export default function Weather({ timeFormat, locale }) {
   }
   else if (state.reveal) {
     return (
-      <div className="weather" style={{ "--z-index": increaseZIndex("weather") }} onClick={event => handleZIndex(event, "weather")}>
+      <div className="weather" style={{ "--z-index": increaseZIndex("weather") } as CSSProperties} onClick={event => handleZIndex(event, "weather")}>
         <div className={`container weather-more${state.visible ? " visible" : ""}`}>
           <Suspense fallback={null}>
             <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits} view={state.view}

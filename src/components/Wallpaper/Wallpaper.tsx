@@ -1,12 +1,22 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { delay } from "../../utils";
+import type { WallpaperSettings } from "types/settings";
+import { delay } from "utils";
 import { fetchWallpaperInfo, getIDBWallpaper, resetIDBWallpaper } from "services/wallpaper";
 import "./wallpaper.css";
+
+
+type WallpaperType = {
+  url: string,
+  type?: "image" | "video",
+  id?: string;
+  x?: number,
+  y?: number
+}
 
 const VideoWallpaper = lazy(() => import("./VideoWallpaper"));
 
 export default function Wallpaper({ settings }) {
-  const [wallpaper, setWallpaper] = useState(null);
+  const [wallpaper, setWallpaper] = useState<WallpaperType>(null);
   const firstRender = useRef(true);
 
   useEffect(() => {
@@ -29,7 +39,7 @@ export default function Wallpaper({ settings }) {
     }
   }, [wallpaper]);
 
-  async function init(settings) {
+  async function init(settings: WallpaperSettings) {
     if (settings.type === "blob") {
       let url = wallpaper?.url;
 
@@ -40,7 +50,7 @@ export default function Wallpaper({ settings }) {
 
           setWallpaper({
             id: settings.id,
-            type: settings.mimeType?.split("/")[0],
+            type: settings.mimeType?.split("/")[0] as "image" | "video",
             url,
             x: settings.x,
             y: settings.y
@@ -67,7 +77,7 @@ export default function Wallpaper({ settings }) {
     else if (settings.type === "url") {
       setWallpaper({
         url: settings.url,
-        type: settings.mimeType?.split("/")[0],
+        type: settings.mimeType?.split("/")[0] as "image" | "video",
         x: settings.x,
         y: settings.y
       });
@@ -81,7 +91,7 @@ export default function Wallpaper({ settings }) {
     }
   }
 
-  async function removeDownscaled(start) {
+  async function removeDownscaled(start: number) {
     const elapsed = Date.now() - start;
     // Show downscaled wallpaper for at least 200 ms.
     const duration = 200;

@@ -1,10 +1,23 @@
-import { useState, useEffect, useRef } from "react";
+import type { WallpaperSettings } from "types/settings";
+import { useState, useEffect, useRef, type MouseEvent as ReactMouseEvent, type SyntheticEvent } from "react";
 import { useSettings } from "contexts/settings";
 import { getIDBWallpaper, updateDownscaledWallpaperPosition } from "services/wallpaper";
 import Spinner from "components/Spinner";
 import "./wallpaper-viewer.css";
 
-function useUrl({ id, url: imageUrl }) {
+type ImageType = {
+  naturalWidth: number,
+  naturalHeight: number,
+  width: number,
+  height: number
+};
+
+type ViewportType = {
+  width: number,
+  height: number
+};
+
+function useUrl({ id, url: imageUrl }: Partial<WallpaperSettings>): string {
   const [url, setUrl] = useState(null);
 
   useEffect(() => {
@@ -34,21 +47,22 @@ export default function WallpaperViewer({ locale, hide }) {
   const { settings: { appearance: { wallpaper: settings } }, updateContextSetting } = useSettings();
   const url = useUrl(settings);
   const [area, setArea] = useState(null);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<ImageType>(null);
   const containerRef = useRef(null);
   const startingPointerPosition = useRef(null);
   const pointerMoveHandler = useRef(null);
   const updating = useRef(false);
 
-  function handleLoad({ target }) {
+  function handleLoad({ target }: SyntheticEvent<HTMLImageElement>) {
     const { innerWidth, innerHeight } = window;
+    const imageElement = target as HTMLImageElement;
 
-    target.style.maxWidth = `${innerWidth - 96}px`;
-    target.style.maxHeight = `${innerHeight - 68}px`;
+    imageElement.style.maxWidth = `${innerWidth - 96}px`;
+    imageElement.style.maxHeight = `${innerHeight - 68}px`;
 
     setTimeout(() => {
-      const { width, naturalWidth, height, naturalHeight } = target;
-      const image = {
+      const { width, naturalWidth, height, naturalHeight } = imageElement;
+      const image: ImageType = {
         naturalWidth,
         naturalHeight,
         width,
@@ -60,7 +74,7 @@ export default function WallpaperViewer({ locale, hide }) {
     }, 200);
   }
 
-  function initArea(viewport, image) {
+  function initArea(viewport: ViewportType, image: ImageType) {
     const { x, y } = settings;
     const { width, height } = getAreaSize(viewport, image);
 
@@ -72,7 +86,7 @@ export default function WallpaperViewer({ locale, hide }) {
     });
   }
 
-  function getAreaSize(viewport, image) {
+  function getAreaSize(viewport: ViewportType, image: ImageType) {
     const { width: viewportWidth, height: viewportHeight } = viewport;
     const { width: containerWidth, height: containerHeight } = image;
     const dimension = getLeastScaledDimension(viewport, image);
@@ -95,7 +109,7 @@ export default function WallpaperViewer({ locale, hide }) {
     return { width, height };
   }
 
-  function getLeastScaledDimension(viewport, image) {
+  function getLeastScaledDimension(viewport: ViewportType, image: ImageType) {
     const { naturalWidth, naturalHeight } = image;
     const { width: viewportWidth, height: viewportHeight } = viewport;
     const widthDiff = Math.abs(naturalWidth - viewportWidth);
@@ -107,7 +121,7 @@ export default function WallpaperViewer({ locale, hide }) {
     return widthDiff > heightDiff ? "width" : "height";
   }
 
-  function getPointerPosition({ clientX, clientY }, target) {
+  function getPointerPosition({ clientX, clientY }: MouseEvent, target: HTMLElement) {
     const { left, top } = target.getBoundingClientRect();
 
     return {
@@ -116,7 +130,7 @@ export default function WallpaperViewer({ locale, hide }) {
     };
   }
 
-  function normalizeSelectionAreaPosition(value, dimensionName) {
+  function normalizeSelectionAreaPosition(value: number, dimensionName: "width" | "height") {
     const areaDimension = area[dimensionName];
     const imageDimension = image[dimensionName];
 
@@ -129,25 +143,25 @@ export default function WallpaperViewer({ locale, hide }) {
     return value;
   }
 
-  function handlePointerDown(event) {
+  function handlePointerDown(event: ReactMouseEvent) {
     if (event.buttons === 2) {
       return;
     }
-    startingPointerPosition.current = getPointerPosition(event, event.currentTarget);
+    startingPointerPosition.current = getPointerPosition(event as unknown as MouseEvent, event.currentTarget as HTMLElement);
     pointerMoveHandler.current = handlePointerMove;
 
     window.addEventListener("pointermove", pointerMoveHandler.current);
     window.addEventListener("pointerup", handlePointerUp, { once: true });
   }
 
-  function handlePointerMove(event) {
+  function handlePointerMove(event: MouseEvent) {
     if (updating.current) {
       return;
     }
     updating.current = true;
 
     requestAnimationFrame(() => {
-      const { x, y } = getPointerPosition(event, containerRef.current);
+      const { x, y } = getPointerPosition(event , containerRef.current);
 
       setArea({
         ...area,
@@ -163,7 +177,7 @@ export default function WallpaperViewer({ locale, hide }) {
     pointerMoveHandler.current = null;
   }
 
-  function getWallpaperPosition(value, dimensionName) {
+  function getWallpaperPosition(value: number, dimensionName: "width" | "height") {
     const areaDimension = area[dimensionName];
     const imageDimension = image[dimensionName];
     const diff = imageDimension - areaDimension;

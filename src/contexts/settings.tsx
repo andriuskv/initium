@@ -5,7 +5,7 @@ import * as settingsService from "services/settings";
 
 type SettingsContextType = {
   settings: Settings;
-  updateContextSetting: (name: string, setting: Settings[keyof Settings]) => void;
+  updateContextSetting: (name: string, setting: Partial<Settings[keyof Settings]>) => void;
   updateMainPanelComponentSetting: (name: keyof MainPanelComponents, setting: MainPanelComponents[keyof MainPanelComponents]) => void;
   toggleSetting: (groupName: string, settingName: string) => void;
   resetSettings: () => void;

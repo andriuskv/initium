@@ -9,7 +9,7 @@ import MiddleTop from "./MiddleTop";
 
 export default function GeneralTab({ locale }) {
   const { settings, toggleSetting, updateContextSetting, resetSettings } = useSettings();
-  const [modal, setModal, hideModal] = useModal(null);
+  const { modal, setModal, hideModal } = useModal(null);
 
   // function handleLocaleChange({ target }) {
   //   updateSetting("general", { locale: target.value });

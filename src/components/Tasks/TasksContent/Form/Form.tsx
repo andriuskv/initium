@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, type FormEvent, type ChangeEvent, type KeyboardEvent } from "react";
 import { getRandomString, replaceLink } from "utils";
 import { useModal, useMessage } from "hooks";
 import { getSetting } from "services/settings";
@@ -9,16 +9,35 @@ import "./form.css";
 import GroupForm from "../GroupForm";
 import LabelForm from "./LabelForm";
 import Subtask from "./Subtask";
+import type { Label, Subtask as SubtaskType, Task, Group, TaskForm } from "components/Tasks/tasks.type";
+import type { GeneralSettings, TimeDateSettings } from "types/settings";
 
 const Toast = lazy(() => import("components/Toast"));
 
-export default function Form({ form, groups, locale, updateGroups, removeTask, createGroup, hide }) {
-  const [state, setState] = useState(() => {
-    const defaultForm = {
+type State = TaskForm & {
+  moreOptionsVisible: boolean,
+  labels: Label[]
+}
+
+type Props = {
+  form: TaskForm,
+  groups: Group[],
+  updateGroup: (index: number, group: Group, shouldSave?: boolean) => void,
+  removeTask: () => void,
+  createGroup: (group: Group) => void,
+  hide: () => void,
+  locale: any
+}
+
+export default function Form({ form, groups, locale, updateGroup, removeTask, createGroup, hide }: Props) {
+  const [state, setState] = useState<State>(() => {
+    const defaultForm: State = {
       moreOptionsVisible: false,
       completeWithSubtasks: !!form.completeWithSubtasks,
       labels: getUniqueTaskLabels(form.groupIndex, form.taskIndex),
       task: {
+        id: getRandomString(4),
+        labels: [],
         rawText: "",
         subtasks: [getDefaultTask(), getDefaultTask()]
       }
@@ -38,7 +57,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
       if (form.task.expirationDate) {
         defaultForm.moreOptionsVisible = true;
         defaultForm.task.expirationDate = form.task.expirationDate;
-        defaultForm.task.expirationDateTimeString = getDateTimeString(form.task.expirationDate);
+        defaultForm.task.expirationDateString = getDateTimeString(form.task.expirationDate);
       }
 
       if (form.task.repeat) {
@@ -46,7 +65,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
         defaultForm.task.repeat = {
           gap: form.task.repeat.gap,
           unit: form.task.repeat.unit,
-          limit: form.task.repeat.limit < 0 ? "" : form.task.repeat.limit
+          limit: form.task.repeat.limit < 0 ? 0 : form.task.repeat.limit
         };
       }
 
@@ -58,7 +77,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
     }
     return defaultForm;
   });
-  const [modal, setModal, hideModal] = useModal(null);
+  const { modal, setModal, hideModal } = useModal();
   const [activeDragId, setActiveDragId] = useState(null);
   const [prefsVisible, setPrefsVisible] = useState(state.completeWithSubtasks);
   const { message, showMessage, dismissMessage }= useMessage("");
@@ -71,11 +90,10 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
   }
 
   function getUniqueTaskLabels(groupIndex = -1, taskIndex = -1) {
-    const cachedLabels = (JSON.parse(localStorage.getItem("taskLabels")) || []).map(label => {
+    let labels: Label[] = (JSON.parse(localStorage.getItem("taskLabels")) || []).map((label: Label) => {
       label.id = getRandomString();
       return label;
     });
-    let labels = [];
 
     for (const group of groups) {
       for (const task of group.tasks) {
@@ -97,10 +115,10 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
         return label;
       });
     }
-    return labels.concat(cachedLabels);
+    return labels;
   }
 
-  function findLabelInTasks(label) {
+  function findLabelInTasks(label: Label) {
     for (const group of groups) {
       for (const task of group.tasks) {
         if (findLabel(task.labels, label)) {
@@ -110,55 +128,75 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
     }
   }
 
-  function findLabel(labels, { name, color }) {
+  function findLabel(labels: Label[], { name, color }: Label) {
     return labels.find(label => label.name === name && label.color === color);
   }
 
-  function addUniqueLabel({ name, color }) {
-    const label = findLabel(state.labels, { name, color });
-
-    if (label) {
-      label.flagged = true;
-      setState({ ...state });
-    }
-    else if (name && color) {
-      state.labels.push({ id: getRandomString(), name, color, flagged: true });
-      setState({ ...state });
-      return true;
-    }
+  function findLabelIndex(labels: Label[], { name, color }: Label) {
+    return labels.findIndex(label => label.name === name && label.color === color);
   }
 
-  function removeTaskLabel(label) {
+  function addUniqueLabel(newLabel: Label) {
+    const index = findLabelIndex(state.labels, newLabel);
+
+    if (index !== -1) {
+      setState({
+        ...state,
+        labels: state.labels.with(index, {
+          ...state.labels[index],
+          flagged: true
+        })
+      });
+      return;
+    }
+    setState({
+      ...state,
+      labels: [...state.labels, newLabel]
+    });
+    return true;
+  }
+
+  function removeTaskLabel(label: Label) {
     if (findLabelInTasks(label)) {
       return;
     }
-    const index = state.labels.findIndex(({ name, color }) => label.name === name && label.color === color);
+    const index = findLabelIndex(state.labels, label);
 
     if (index !== -1) {
-      state.labels.splice(index, 1);
-      setState({ ...state, labels: state.labels });
+      setState({
+        ...state,
+        labels: state.labels.toSpliced(index, 1)
+      });
       return true;
     }
   }
 
-  function flagLabel(index) {
+  function flagLabel(index: number) {
     const label = state.labels[index];
-    label.flagged = !label.flagged;
-    setState({ ...state });
+
+    setState({
+      ...state,
+      labels: state.labels.with(index, {
+        ...label,
+        flagged: !label.flagged
+      })
+    });
   }
 
   function handleGroupSelection({ target }) {
-    state.selectedGroupId = target.value;
-    setState({ ...state });
+    setState({
+      ...state,
+      selectedGroupId: target.value
+    });
   }
 
-  function localCreateGroup(group) {
+  function localCreateGroup(group: Group) {
     setState({ ...state, selectedGroupId: group.id });
     createGroup(group);
   }
 
-  function getDefaultTask(text = "", props = {}) {
-    const { openLinkInNewTab } = getSetting("general");
+  function getDefaultTask(text = "", props = {}): Task | SubtaskType {
+    const { openLinkInNewTab } = getSetting("general") as GeneralSettings;
 
     return {
       id: getRandomString(4),
@@ -169,36 +207,55 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
   }
 
   function addFormSubtask() {
-    setState({ ...state, task: { ...state.task, subtasks: [...state.task.subtasks, getDefaultTask()] } });
+    const subtask: SubtaskType = getDefaultTask();
+
+    setState({
+      ...state,
+      task: {
+        ...state.task,
+        subtasks: [...state.task.subtasks, subtask]
+      }
+    });
   }
 
-  function removeFormSubtask(index) {
+  function removeFormSubtask(index: number) {
     const subtasks = state.task.subtasks.toSpliced(index, 1);
 
     setState({ ...state, task: { ...state.task, subtasks} });
   }
 
-  function handleTaskFormSubmit(event) {
+  function handleTaskFormSubmit(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      text: HTMLInputElement;
+      datetime: HTMLInputElement;
+      repeatUnit: HTMLInputElement;
+      repeatGap: HTMLInputElement;
+      repeatLimit: HTMLInputElement;
+      subtask: HTMLInputElement;
+    }
+
     event.preventDefault();
 
-    const { elements } = event.target;
+    const formElement = event.target as HTMLFormElement;
+    const elements = formElement.elements as FormElements;
     const text = elements.text.value.trim();
     const dateTime = state.moreOptionsVisible ? elements.datetime.value : "";
     const repeatGap = state.moreOptionsVisible ? Number(elements.repeatGap.value) : -1;
     const { selectedGroupId = "default" } = state;
-    const { tasks } = groups.find(({ id }) => id === selectedGroupId);
+    const index = groups.findIndex(({ id }) => id === selectedGroupId);
+    const tasks = groups[index].tasks;
     const task = getDefaultTask(text, {
       creationDate: Date.now(),
       subtasks: getFormSubtasks(elements.subtask),
       labels: getFlaggedFormLabels()
-    });
+    }) as Task;
 
     if (state.completeWithSubtasks) {
       task.completeWithSubtasks = true;
     }
 
     if (repeatGap >= 1) {
-      const repeatUnit = elements.repeatUnit.value;
+      const repeatUnit = elements.repeatUnit.value as "day" | "week" | "month";
       const repeatLimit = Number(elements.repeatLimit.value);
 
       task.repeat = {
@@ -218,6 +275,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
 
     if (state.updating) {
       const { taskIndex } = form;
+      const taskProps: Partial<Task> = {};
 
       if (dateTime) {
         const selectedDateTime = new Date(dateTime).getTime();
@@ -229,7 +287,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
             showMessage("Expiration date can't be in the past.");
             return;
           }
-          const { dateLocale } = getSetting("timeDate");
+          const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
           task.expirationDateString = formatDate(task.expirationDate, {
             locale: dateLocale,
             includeTime: true
@@ -237,22 +295,34 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
         }
       }
       else if (state.task.expirationDate) {
-        delete tasks[taskIndex].expirationDate;
+        taskProps.expirationDate = undefined;
       }
 
       if (repeatGap <= 0 && state.task.repeat) {
-        delete tasks[taskIndex].repeat;
+        taskProps.repeat = undefined;
       }
 
       if (form.groupId !== selectedGroupId) {
-        const group = groups.find(({ id }) => id === form.groupId);
-
-        group.tasks.splice(taskIndex, 1);
-        tasks.unshift(task);
+        const groupIndex = groups.findIndex(({ id }) => id === form.groupId);
+        updateGroup(groupIndex, {
+          ...groups[groupIndex],
+          tasks: groups[groupIndex].tasks.toSpliced(taskIndex, 1)
+        }, false);
+        updateGroup(index, {
+          ...groups[index],
+          tasks: [task, ...groups[index].tasks]
+        });
       }
       else {
-        delete tasks[taskIndex].hidden;
-        tasks[taskIndex] = { ...tasks[taskIndex], ...task };
+        updateGroup(index, {
+          ...groups[index],
+          tasks: tasks.with(taskIndex, {
+            ...tasks[taskIndex],
+            ...task,
+            ...taskProps,
+            hidden: undefined,
+          })
+        });
       }
     }
     else {
@@ -263,40 +333,49 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
           showMessage("Expiration date can't be in the past.");
           return;
         }
-        const { dateLocale } = getSetting("timeDate");
+        const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
         task.expirationDateString = formatDate(task.expirationDate, {
           locale: dateLocale,
           includeTime: true
         });
       }
-      tasks.unshift(task);
+      updateGroup(index, {
+        ...groups[index],
+        tasks: [task, ...groups[index].tasks]
+      });
     }
-    updateGroups(groups);
     hide();
   }
 
-  function handleFormKeydown(event) {
-    if (event.key === "Enter" && event.target.nodeName === "INPUT") {
+  function handleFormKeydown(event: KeyboardEvent) {
+    const element = event.target as HTMLElement;
+
+    if (event.key === "Enter" && element.nodeName === "INPUT") {
       event.preventDefault();
     }
   }
 
-  function getFormSubtasks(elements) {
+  function getFormSubtasks(elements: HTMLInputElement | HTMLInputElement[]): SubtaskType[] {
     if (!elements) {
       return [];
     }
-    else if (elements.value) {
-      const text = elements.value.trim();
+    const input = elements as HTMLInputElement;
+
+    if (input.value) {
+      const text = input.value.trim();
 
       return [getDefaultTask(text, {
         optional: state.task.subtasks[0].optional
       })];
     }
-    else if (elements.length) {
+
+    const inputs = elements as HTMLInputElement[];
+
+    if (inputs.length) {
       const subtasks = [];
 
-      for (let i = 0; i < elements.length; i += 1) {
-        const text = elements[i].value.trim();
+      for (let i = 0; i < inputs.length; i += 1) {
+        const text = inputs[i].value.trim();
 
         if (text) {
           subtasks.push(getDefaultTask(text, {
@@ -327,7 +406,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
     setModal({ type: "group" });
   }
 
-  function getDateTimeString(time) {
+  function getDateTimeString(time?: number) {
     const date = time ? new Date(time) : new Date();
 
     return getDateString(date, true);
@@ -337,21 +416,40 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
     setPrefsVisible(!prefsVisible);
   }
 
-  function togglePref({ target }) {
-    if (!target.checked) {
-      for (const subtask of state.task.subtasks) {
+  function togglePref({ target }: ChangeEvent) {
+    const element = target as HTMLInputElement;
+    let subtasks = state.task.subtasks;
+
+    if (!element.checked) {
+      subtasks = subtasks.map(subtask => {
         delete subtask.optional;
-      }
+        return subtask;
+      });
     }
-    setState({ ...state, completeWithSubtasks: target.checked });
+    setState({
+      ...state,
+      task: {
+        ...state.task,
+        subtasks
+      },
+      completeWithSubtasks: element.checked
+    });
   }
 
-  function toggleSubtaskReq(index) {
-    state.task.subtasks[index].optional = !state.task.subtasks[index].optional;
-    setState({ ...state });
+  function toggleSubtaskReq(index: number) {
+    setState({
+      ...state,
+      task: {
+        ...state.task,
+        subtasks: state.task.subtasks.with(index, {
+          ...state.task.subtasks[index],
+          optional: !state.task.subtasks[index].optional
+        })
+      }
+    });
   }
 
-  function handleSort(items) {
+  function handleSort(items: SubtaskType[]) {
     if (items) {
       setState({...state, task: { ...state.task, subtasks: items } });
     }
@@ -362,7 +460,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
     setActiveDragId(event.active.id);
   }
 
-  function renderSubtasks(subtask, index) {
+  function renderSubtasks(subtask: SubtaskType, index: number) {
     const component = {
       Component: Subtask,
       params: {
@@ -388,8 +486,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
 
     if (modal.type === "label") {
       return (
-        <LabelForm labels={state.labels} locale={locale}
-          addUniqueLabel={addUniqueLabel} removeTaskLabel={removeTaskLabel}
+        <LabelForm locale={locale} addUniqueLabel={addUniqueLabel} removeTaskLabel={removeTaskLabel}
           hiding={modal.hiding} hide={hideModal}/>
       );
     }
@@ -413,7 +510,7 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
                 <h4 className="task-form-item-title">{locale.tasks.expiration_date_label}</h4>
                 <input name="datetime" type="datetime-local" className="input task-form-datetime-input"
                   min={getDateTimeString()}
-                  defaultValue={state.task.expirationDateTimeString}
+                  defaultValue={state.task.expirationDateString}
                 />
               </div>
               <div className="task-form-item-container task-form-repeat-options-container">
@@ -512,7 +609,8 @@ export default function Form({ form, groups, locale, updateGroups, removeTask, c
           )}
         </div>
         <div className="container-footer">
-          {state.updating ? <button type="button" className="btn text-btn text-negative-btn task-form-delete-btn" onClick={removeTask}>{locale.global.delete}</button> : null}
+          {state.updating ? <button type="button" className="btn text-btn text-negative-btn task-form-delete-btn"
+            onClick={removeTask}>{locale.global.delete}</button> : null}
           <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
           <button type="submit" className="btn task-form-submit-btn">{state.updating ? locale.global.update : locale.global.create}</button>
         </div>

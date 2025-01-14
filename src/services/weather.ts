@@ -1,34 +1,8 @@
 import type { TimeDateSettings, WeatherSettings } from "types/settings";
+import type { Current, Hour, Weekday } from "types/weather";
 import { getRandomString } from "utils";
 import { getSetting } from "./settings";
 import { getTimeString, getCurrentDate } from "./timeDate";
-
-type Weekday = {
-  description: string;
-  icon: string;
-  iconId: string;
-  temperature: {
-    min: number,
-    max: number
-  }
-  weekday: string
-};
-
-type Hour = {
-  hour: number,
-  temperature:number,
-  precipitation:number,
-  wind: {
-    speed: {
-      value:number,
-      raw: number
-    },
-    direction: {
-      name: string,
-      degrees: number
-    }
-  }
-}
 
 function fetchWeatherWithCityName(name: string) {
   return fetchWeatherData(`q=${name}`);
@@ -55,8 +29,8 @@ function fetchWeather() {
 }
 
 async function fetchMoreWeather({ lat, lon }: { lat: number, lon: number }) {
-  const data = await fetchWeatherData(`type=more&lat=${lat}&lon=${lon}`);
-  return parseWeather(data);
+  const data = await fetchWeatherData(`type=more&lat=${lat}&lon=${lon}`) as { hourly: Hour[], daily: Weekday[] };
+  return parseMoreWeather(data);
 }
 
 function fetchCoords(): Promise<{ lat: number, lon: number } | { type: "geo", message: string }> {
@@ -76,7 +50,7 @@ function fetchCoords(): Promise<{ lat: number, lon: number } | { type: "geo", me
   });
 }
 
-function parseWeather(data: { hourly: Hour[], daily: Weekday[]}) {
+function parseMoreWeather(data: { hourly: Hour[], daily: Weekday[] }): { hourly: Hour[], daily: Weekday[] } {
   const hourly = data.hourly.map(item => ({
     ...item,
     id: getRandomString(),
@@ -126,7 +100,7 @@ function convertWindSpeed({ value, raw }, units: "m/s" | "ft/s") {
 function fetchWeatherData(params: string) {
   const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
   const { units, speedUnits } = getSetting("weather") as WeatherSettings;
-  return fetch(`${process.env.SERVER_URL}/weather?${params}&lang=en,${dateLocale}&units=${units},${speedUnits}`).then(res => res.json()) as Promise<{ hourly: Hour[], daily: Weekday[] }>;
+  return fetch(`${process.env.SERVER_URL}/weather?${params}&lang=en,${dateLocale}&units=${units},${speedUnits}`).then(res => res.json()) as Promise<{ hourly: Hour[], daily: Weekday[] } | Current>;
 }
 
 export {

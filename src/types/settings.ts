@@ -9,9 +9,14 @@ type HSLColor = {
   lightness: string;
 };
 
-type Wallpaper = {
+export type WallpaperSettings = {
   provider: "unsplash" | "bing";
   url: string;
+  type?: "blob" | "url";
+  mimeType?: string;
+  id?: string;
+  x?: number;
+  y?: number;
 };
 
 export type GeneralSettings = {
@@ -34,7 +39,7 @@ export type AppearanceSettings = {
   panelBackgroundBlur: number;
   panelBackgroundNoiseAmount: number;
   panelBackgroundNoiseOpacity: number;
-  wallpaper: Wallpaper;
+  wallpaper: WallpaperSettings;
 };
 
 export type TimeDateSettings = {
@@ -78,7 +83,7 @@ export type MainPanelSettings = {
   components: MainPanelComponents;
 };
 
-type TasksSettings = {
+export type TasksSettings = {
   disabled: boolean;
   defaultGroupVisible: boolean;
   emptyGroupsHidden: boolean;
@@ -92,7 +97,7 @@ export type WeatherSettings = {
   useGeo: boolean;
   cityName: string;
   units: "C" | "F";
-  speedUnits: "m/s";
+  speedUnits: "m/s" | "ft/s";
 };
 
 type TimersSettings = {

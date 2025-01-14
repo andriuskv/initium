@@ -1,7 +1,13 @@
 import { useEffect, useRef } from "react";
 import "./video-wallpaper.css";
 
-export default function VideoWallpaper({ url, playbackSpeed, removeDownscaled }) {
+type Props = {
+  url: string,
+  playbackSpeed?: number,
+  removeDownscaled: (start: number) => void
+}
+
+export default function VideoWallpaper({ url, playbackSpeed, removeDownscaled }: Props) {
   const firstRender = useRef(true);
   const ref = useRef(null);
 

@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import type { AppearanceSettings, GeneralSettings, TasksSettings, TimeDateSettings } from "types/settings";
+import type { Group, Task, Subtask, TaskForm } from "../tasks.type";
+import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { getRandomString, timeout, replaceLink } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
@@ -24,13 +26,21 @@ const taskStatusMap = {
   "3": "completed"
 };
 
-export default function Tasks({ settings, generalSettings, locale, expanded, toggleSize }) {
-  const [groups, setGroups] = useState(null);
-  const [removedItems, setRemovedItems] = useState([]);
-  const [form, setForm] = useState(null);
-  const [activeComponent, setActiveComponent] = useState(null);
-  const [taskCount, setTaskCount] = useState(null);
-  const [storageWarning, setStorageWarning] = useState(null);
+type Props = {
+  settings: TasksSettings,
+  generalSettings: GeneralSettings,
+  locale: any,
+  expanded: boolean,
+  toggleSize: () => void
+}
+
+export default function Tasks({ settings, generalSettings, locale, expanded, toggleSize }: Props) {
+  const [groups, setGroups] = useState<Group[]>(null);
+  const [removedItems, setRemovedItems] = useState<{ groupIndex: number, taskIndex: number, subtaskIndex?: number }[]>([]);
+  const [form, setForm] = useState<TaskForm>(null);
+  const [activeComponent, setActiveComponent] = useState<"form" | "groups" | "">("");
+  const [taskCount, setTaskCount] = useState(0);
+  const [storageWarning, setStorageWarning] = useState<{ message: string } | null>(null);
   const taskRemoveTimeoutId = useRef(0);
   const ignoreUpdate = useRef(false);
   const checkIntervalId = useRef(0);
@@ -44,14 +54,17 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     if (!groups) {
       return;
     }
+    let newGroups = updateAllGroupTaskCount(groups);
 
-    if (!groups[0].expanded) {
-      groups[0].expanded = !settings.defaultGroupVisible;
-      saveTasks(groups);
+    if (!newGroups[0].expanded) {
+      newGroups = newGroups.with(0, {
+        ...newGroups[0],
+        expanded: !settings.defaultGroupVisible
+      });
+      saveTasks(newGroups);
     }
-    updateAllGroupTaskCount(groups);
-    countTasks(groups);
-    setGroups([...groups]);
+    countTasks(newGroups);
+    setGroups(newGroups);
   }, [settings]);
 
   useEffect(() => {
@@ -79,12 +92,12 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       ignoreUpdate.current = false;
       return;
     }
-    checkIntervalId.current = setInterval(() => {
+    checkIntervalId.current = window.setInterval(() => {
       ignoreUpdate.current = true;
 
       checkGroups(groups);
-      updateAllGroupTaskCount(groups);
-      setGroups([...groups]);
+      const newGroups = updateAllGroupTaskCount(groups);
+      setGroups(newGroups);
     }, 30000);
 
     return () => {
@@ -97,7 +110,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     clearTimeout(taskRemoveTimeoutId.current);
 
     if (removedItems.length) {
-      taskRemoveTimeoutId.current = setTimeout(() => {
+      taskRemoveTimeoutId.current = window.setTimeout(() => {
         removeCompletedItems();
       }, 8000);
     }
@@ -119,32 +132,31 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       }
       else {
         setGroups([getDefaultGroup()]);
-        setTaskCount(null);
+        setTaskCount(0);
       }
     });
   }
 
-  function initGroups(groups, shouldSave) {
+  function initGroups(groups: Group[], shouldSave: boolean) {
     const modified = checkGroups(groups);
 
-    if (!groups[0].expanded) {
-      groups[0].expanded = !settings.defaultGroupVisible;
-    }
+    setGroups(groups.map((group, index) => {
+      if (index === 0 && !group.expanded) {
+        group.expanded = !settings.defaultGroupVisible;
+      }
 
-    setGroups(groups.map(group => {
       if (group.id === "unorganized") {
         group.id = "default";
         group.name = "Default";
       }
       group.tasks.map(task => {
-        task = parseTask(task);
+        task = parseTask(task) as Task;
         task.subtasks = task.subtasks.map(subtask => {
-          subtask = parseTask(subtask);
+          subtask = parseBaseTask(subtask);
           return subtask;
         });
         task.labels = task.labels.map(label => {
-          label.name ??= label.title;
-          delete label.title;
+          label.id = getRandomString(4);
           return label;
         });
 
@@ -166,7 +178,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }
   }
 
-  function getDefaultGroup() {
+  function getDefaultGroup(): Group {
     return {
       id: "default",
       name: "Default",
@@ -175,11 +187,11 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     };
   }
 
-  function updateTaskRepeatProgress(task, prev, current, next) {
+  function updateTaskRepeatProgress(task: Task, prev: number, current: number, next: number) {
     const elapsed = current - prev;
     const total = next - prev;
     const ratio = elapsed / total;
-    const { dateLocale } = getSetting("timeDate");
+    const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
     const dateString = formatDate(next, {
       locale: dateLocale,
       includeTime: true
@@ -190,7 +202,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     historyItem.elapsed = ratio * 100;
   }
 
-  function updateTaskRepeatHistory(task, missedCount) {
+  function updateTaskRepeatHistory(task: Task, missedCount: number) {
     const lastItem = task.repeat.history.at(-1);
 
     task.repeat.number += missedCount;
@@ -216,7 +228,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }
   }
 
-  function getMonthGap(task, start) {
+  function getMonthGap(task: Task, start: number) {
     const startDate = new Date(start);
     let year = startDate.getFullYear();
     let month = startDate.getMonth();
@@ -239,7 +251,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return new Date(endDate.getFullYear(), endDate.getMonth(), endDateDays).getTime() - start;
   }
 
-  function getRepeatStatus(task, current) {
+  function getRepeatStatus(task: Task, current: number) {
     const { start } = task.repeat;
     const hourInMs = 60 * 60 * 1000;
 
@@ -288,7 +300,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     throw new Error("Invalid task repeat unit.");
   }
 
-  function checkGroups(groups) {
+  function checkGroups(groups: Group[]) {
     const currentDate = Date.now();
     let modified = false;
 
@@ -332,14 +344,19 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return modified;
   }
 
-  function parseTask(task) {
+  function parseBaseTask(task: Task | Subtask) {
     task.id = getRandomString();
     task.rawText ??= task.text;
     task.rawText = task.rawText.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
     task.text = replaceLink(task.rawText, "task-link", generalSettings.openLinkInNewTab);
+    return task;
+  }
+
+  function parseTask(task: Task) {
+    task = parseBaseTask(task) as Task;
 
     if (task.expirationDate) {
-      const { dateLocale } = getSetting("timeDate");
+      const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
 
       task.expirationDateString = formatDate(task.expirationDate, {
         locale: dateLocale,
@@ -349,28 +366,31 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return task;
   }
 
-  function removeTask(groupIndex, taskIndex, removedThroughForm = false) {
+  function removeTask(groupIndex: number, taskIndex: number, removedThroughForm = false) {
     const group = groups[groupIndex];
     const task = group.tasks[taskIndex];
-
-    task.removed = true;
-    task.removedThroughForm = removedThroughForm;
-
     const removedTaskCount = group.tasks.reduce((total, task) => {
       if (task.removed) {
         total += 1;
       }
       return total;
-    }, 0);
+    }, 1);
 
-    if (removedTaskCount === group.tasks.length) {
-      group.hiding = true;
-    }
-    setGroups([...groups]);
+    const newGroups = groups.with(groupIndex, {
+      ...group,
+      hiding: removedTaskCount === group.tasks.length,
+      tasks: group.tasks.with(taskIndex, {
+        ...task,
+        removed: true,
+        removedThroughForm
+      })
+    });
+
+    setGroups(newGroups);
     setRemovedItems([...removedItems, { groupIndex, taskIndex }]);
   }
 
-  function removeSubtask(groupIndex, taskIndex, subtaskIndex) {
+  function removeSubtask(groupIndex: number, taskIndex: number, subtaskIndex: number) {
     const task = groups[groupIndex].tasks[taskIndex];
     const subtask = task.subtasks[subtaskIndex];
 
@@ -396,7 +416,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     setRemovedItems([...removedItems, { groupIndex, taskIndex, subtaskIndex }]);
   }
 
-  function setRepeatingTaskStatus(task, status) {
+  function setRepeatingTaskStatus(task: Task, status: number) {
     task.repeat.history[task.repeat.history.length - 1].status = status;
   }
 
@@ -459,7 +479,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     setRemovedItems([]);
   }
 
-  function editTask(groupIndex, taskIndex) {
+  function editTask(groupIndex: number, taskIndex: number) {
     const group = groups[groupIndex];
     const { id, rawText, subtasks, creationDate, expirationDate, repeat, completeWithSubtasks } = group.tasks[taskIndex];
 
@@ -487,8 +507,8 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     hideForm();
   }
 
-  function toggleGroupVisibility(group) {
-    const { animationSpeed } = getSetting("appearance");
+  function toggleGroupVisibility(group: Group) {
+    const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
 
     if (group.expanded) {
       group.state = "collapsing";
@@ -508,16 +528,16 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       saveTasks(groups);
     }, 200 * animationSpeed, groupToggleTimeoutId.current);
 
-    setGroups([ ...groups ]);
+    setGroups([ ...groups]);
   }
 
   function showForm() {
     setActiveComponent("form");
-    setForm({});
+    setForm({} as TaskForm);
   }
 
   function hideForm() {
-    setActiveComponent(null);
+    setActiveComponent("");
     setForm(null);
   }
 
@@ -525,21 +545,27 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     setActiveComponent("groups");
   }
 
-  function createGroup(group) {
+  function createGroup(group: Group) {
     // Insert new group after the default group
-    groups.splice(1, 0, group);
-    updateGroups(groups);
+    updateGroups(groups.toSpliced(1, 0, group));
   }
 
   function hideActiveComponent() {
-    setActiveComponent(null);
+    setActiveComponent("");
   }
 
-  function cleanupTask(task) {
+  function cleanupTask(task: Task) {
     delete task.id;
     delete task.text;
     delete task.removed;
     delete task.expirationDateString;
+    return task;
+  }
+
+  function cleanupSubtask(task: Subtask) {
+    delete task.id;
+    delete task.text;
+    delete task.removed;
 
     if (typeof task.optional === "undefined") {
       delete task.optional;
@@ -547,13 +573,17 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return task;
   }
 
-  async function saveTasks(groups) {
+  async function saveTasks(groups: Group[]) {
     const data = await chromeStorage.set({ tasks: structuredClone(groups).map(group => {
       delete group.state;
       delete group.hiding;
       group.tasks = group.tasks.map(task => {
         task = cleanupTask(task);
-        task.subtasks = task.subtasks.map(cleanupTask);
+        task.subtasks = task.subtasks.map(cleanupSubtask);
+        task.labels = task.labels.map(label => {
+          delete label.id;
+          return label;
+        });
 
         if (task.repeat) {
           task.repeat.history = task.repeat.history.map(item => {
@@ -576,23 +606,35 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }
   }
 
-  function updateGroups(groups, shouldSave = true) {
-    updateAllGroupTaskCount(groups);
-    countTasks(groups);
-    setGroups([...groups]);
+  function updateGroups(groups: Group[], shouldSave = true) {
+    const newGroups = updateAllGroupTaskCount(groups);
+    countTasks(newGroups);
+    setGroups(newGroups);
+
+    if (shouldSave) {
+      saveTasks(newGroups);
+    }
+  }
+
+  function updateGroup(index: number, group: Group, shouldSave = true) {
+    let newGroups = groups.with(index, group);
+    newGroups = updateAllGroupTaskCount(newGroups);
+    countTasks(newGroups);
+    setGroups(newGroups);
 
     if (shouldSave) {
       saveTasks(groups);
     }
   }
 
-  function updateAllGroupTaskCount(groups) {
-    for (const group of groups) {
+  function updateAllGroupTaskCount(groups: Group[]) {
+    return groups.map(group => {
       group.taskCount = getGroupTaskCount(group.tasks);
-    }
+      return group;
+    });
   }
 
-  function getAllSubtaskCount(tasks) {
+  function getAllSubtaskCount(tasks: Task[]) {
     let total = 0;
 
     for (const task of tasks) {
@@ -601,7 +643,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return total;
   }
 
-  function getSubtaskCount(task) {
+  function getSubtaskCount(task: Task) {
     return task.subtasks.reduce((total, task) => {
       if (task.hidden) {
         if (settings.showCompletedRepeatingTasks) {
@@ -613,7 +655,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }, 0);
   }
 
-  function getGroupTaskCount(tasks) {
+  function getGroupTaskCount(tasks: Task[]) {
     const completedTaskCount = countCompletedTasks(tasks);
     let subtaskCount = 0;
 
@@ -623,7 +665,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return tasks.length + subtaskCount - completedTaskCount;
   }
 
-  function countCompletedTasks(tasks) {
+  function countCompletedTasks(tasks: Task[]) {
     return settings.showCompletedRepeatingTasks ? 0 : tasks.reduce((total, task) => {
       if (task.hidden) {
         total += 1;
@@ -632,7 +674,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }, 0);
   }
 
-  function countTasks(groups) {
+  function countTasks(groups: Group[]) {
     let count = 0;
 
     for (const group of groups) {
@@ -648,7 +690,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     setStorageWarning(null);
   }
 
-  function renderExpirationIndicator(task) {
+  function renderExpirationIndicator(task: Task) {
     const full = task.expirationDate - task.creationDate;
     const partial = task.expirationDate - Date.now();
     const dashoffset = 200 - 25 * (1 - partial / full);
@@ -658,7 +700,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         <title>Expires on {task.expirationDateString}</title>
         <circle cx="8" cy="8" r="4" strokeDasharray="100"
           className="task-expiration-indicator-visual"
-          style={{ "--dashoffset": dashoffset }}/>
+          style={{ "--dashoffset": dashoffset } as CSSProperties}/>
       </svg>
     );
   }
@@ -670,7 +712,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   if (activeComponent === "form") {
     return (
       <Suspense fallback={<Spinner/>}>
-        <Form form={form} groups={groups} locale={locale} updateGroups={updateGroups} removeTask={removeFormTask}
+        <Form form={form} groups={groups} locale={locale} updateGroup={updateGroup} removeTask={removeFormTask}
           createGroup={createGroup} hide={hideForm}/>
       </Suspense>
     );
@@ -773,7 +815,8 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
                                   <div className={`task-repeat-history-item${item.status > 0 ? ` ${taskStatusMap[item.status]}` : ""}`}
                                     title={item.dateString} key={item.id}>
                                     {item.elapsed > 0 ? (
-                                      <div className="task-repeat-history-item-inner" style={{ "--elapsed" : item.elapsed }}></div>
+                                      <div className="task-repeat-history-item-inner"
+                                        style={{ "--elapsed" : item.elapsed } as CSSProperties}></div>
                                     ) : null}
                                   </div>
                                 ))}
