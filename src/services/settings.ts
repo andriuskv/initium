@@ -86,6 +86,7 @@ function getDefault(): Settings {
     },
     mainPanel: {
       navHidden: false,
+      navDisabled: false,
       components: {
         topSites: {
           disabled: false,
@@ -171,10 +172,10 @@ function updateSetting(name: string, value: Partial<Settings[keyof Settings]>) {
   return settings;
 }
 
-function updateMainPanelComponentSetting(name: keyof MainPanelComponents, setting: MainPanelComponents[keyof MainPanelComponents]) {
-  const { navHidden, components } = settings.mainPanel;
+function updateMainPanelComponentSetting(name: keyof MainPanelComponents, setting: Partial<MainPanelComponents[keyof MainPanelComponents]>) {
+  const { components, ...rest } = settings.mainPanel;
   const mainPanel: MainPanelSettings = {
-    navHidden,
+    ...rest,
     components: {
       ...components,
       [name]: {

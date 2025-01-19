@@ -6,9 +6,9 @@ import * as settingsService from "services/settings";
 type SettingsContextType = {
   settings: Settings;
   updateContextSetting: (name: string, setting: Partial<Settings[keyof Settings]>) => void;
-  updateMainPanelComponentSetting: (name: keyof MainPanelComponents, setting: MainPanelComponents[keyof MainPanelComponents]) => void;
+  updateMainPanelComponentSetting: (name: keyof MainPanelComponents, setting: Partial<MainPanelComponents[keyof MainPanelComponents]>) => void;
   toggleSetting: (groupName: string, settingName: string) => void;
-  resetSettings: () => void;
+  resetSettings: () => Settings;
 };
 
 const SettingsContext = createContext<SettingsContextType>({} as SettingsContextType);
@@ -31,7 +31,8 @@ function SettingsProvider({ children }: PropsWithChildren) {
     setSettings({ ...settings });
   }
 
-  function updateMainPanelComponentSetting(name: keyof MainPanelComponents, setting: MainPanelComponents[keyof MainPanelComponents]) {
+  // function updateMainPanelComponentSetting(name: keyof MainPanelComponents, setting: MainPanelComponents[keyof MainPanelComponents]) {
+  function updateMainPanelComponentSetting(name: keyof MainPanelComponents, setting: Partial<MainPanelComponents[keyof MainPanelComponents]>) {
     const settings = settingsService.updateMainPanelComponentSetting(name, setting);
 
     setSettings({ ...settings });

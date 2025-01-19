@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties, type ChangeEvent, type FormEvent } from "react";
 import { formatBytes, timeout } from "utils";
 import { useModal } from "hooks";
 import { getCurrentDateString } from "services/timeDate";
@@ -7,8 +7,25 @@ import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./storage-tab.css";
 
+type Item = {
+  name: string;
+  fullName: string;
+  bytes?: number;
+  usageRatio?: number;
+  usedStorage?: string;
+}
+
+type Stats = {
+  maxStorage?: number;
+  maxStorageFormatted?: string;
+  usedStorageFormatted: string;
+  usedStorage: number;
+  usedStorageInPercent: number;
+  dashoffset: number;
+}
+
 export default function StorageTab({ locale }) {
-  const [items, setItems] = useState(() => [
+  const [items, setItems] = useState<Item[]>(() => [
     {
       name: "tasks",
       fullName: locale.tasks.title
@@ -54,9 +71,9 @@ export default function StorageTab({ locale }) {
       fullName: locale.settings.storage.sticky_notes
     }
   ]);
-  const [stats, setStats] = useState(() => getInitStats());
+  const [stats, setStats] = useState<Stats>(() => getInitStats());
   const [dataMessage, setDataMessage] = useState("");
-  const { modal, setModal, hideModal } = useModal(null);
+  const { modal, setModal, hideModal } = useModal();
   const ready = useRef(false);
   const storageItems = useRef([]);
   const storageTimeoutId = useRef(0);
@@ -66,7 +83,14 @@ export default function StorageTab({ locale }) {
   }, []);
 
   useEffect(() => {
-    chromeStorage.subscribeToChanges(handleStorageChange, { id: "storage-tab", listenToLocal: true });
+    chromeStorage.subscribeToChanges(storage => {
+      const [name] = Object.keys(storage);
+      storageItems.current.push(name);
+
+      storageTimeoutId.current = timeout(() => {
+        updateStorageItems();
+      }, 100, storageTimeoutId.current);
+    }, { id: "storage-tab", listenToLocal: true });
 
     return () => {
       chromeStorage.removeSubscriber("storage-tab");
@@ -99,16 +123,6 @@ export default function StorageTab({ locale }) {
     ready.current = true;
   }
 
-  async function handleStorageChange(storage) {
-    const [name] = Object.keys(storage);
-
-    storageItems.current.push(name);
-
-    storageTimeoutId.current = timeout(() => {
-      updateStorageItems();
-    }, 100, storageTimeoutId.current);
-  }
-
   async function updateStorageItems() {
     let usedStorage = stats.usedStorage;
 
@@ -137,16 +151,16 @@ export default function StorageTab({ locale }) {
     storageItems.current.length = 0;
   }
 
-  function getInitStats() {
+  function getInitStats(): Stats {
     return {
-      usedStorageFormatted: 0,
+      usedStorageFormatted: "",
       usedStorage: 0,
       usedStorageInPercent: 0,
       dashoffset: 1000
     };
   }
 
-  function showRemoveItemModal(item) {
+  function showRemoveItemModal(item: Item) {
     setModal({
       type: "item",
       title: `Delete ${item.fullName} data?`,
@@ -195,14 +209,14 @@ export default function StorageTab({ locale }) {
     });
   }
 
-  async function restoreFromBackup(event) {
+  async function restoreFromBackup(event: FormEvent) {
     event.preventDefault();
 
     try {
       if (modal.confirmInputValue !== "restore") {
         return;
       }
-      const [fileHandle] = await window.showOpenFilePicker({
+      const [fileHandle] = await (window as any).showOpenFilePicker({
         types: [{
           accept: {
             "application/json": [".json"]
@@ -228,7 +242,7 @@ export default function StorageTab({ locale }) {
             chromeStorage.set({ [key]: json[key] }, { updateLocally: true });
           }
         }
-      } catch (e) {
+      } catch {
         setDataMessage("Invalid json file.");
       }
     } catch (e) {
@@ -236,7 +250,7 @@ export default function StorageTab({ locale }) {
     }
   }
 
-  function wipeAllData(event) {
+  function wipeAllData(event: FormEvent) {
     event.preventDefault();
 
     if (modal.confirmInputValue !== "wipe all data") {
@@ -248,8 +262,8 @@ export default function StorageTab({ locale }) {
     setModal(null);
   }
 
-  function handleImportInputChange(event) {
-    setModal({ ...modal, confirmInputValue: event.target.value });
+  function handleImportInputChange(event: ChangeEvent) {
+    setModal({ ...modal, confirmInputValue: (event.target as HTMLInputElement).value });
   }
 
   function removeItem() {
@@ -333,7 +347,7 @@ export default function StorageTab({ locale }) {
             <circle cx="50" cy="50" r="45"/>
             <circle cx="50" cy="50" r="45" strokeDasharray="1000"
               className={`storage-usage-current-visual${stats.dashoffset < 745.3 ? " full" : ""}`}
-              style={{ "--dashoffset": stats.dashoffset }}/>
+              style={{ "--dashoffset": stats.dashoffset } as CSSProperties}/>
           </svg>
           <div className="storage-usage-current-percental">{stats.usedStorageInPercent}%</div>
           <div>{locale.settings.storage.used_label}</div>
@@ -350,7 +364,7 @@ export default function StorageTab({ locale }) {
               <div className="storage-item-bar">
                 {item.usageRatio > 0 ? (
                   <div className={`storage-item-bar-inner${item.usageRatio > 0.9 ? " full" : ""}`}
-                    style={{ "--scale": item.usageRatio, "--index": i }}>
+                    style={{ "--scale": item.usageRatio, "--index": i } as CSSProperties}>
                   </div>
                 ) : null}
               </div>

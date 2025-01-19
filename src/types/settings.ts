@@ -10,13 +10,14 @@ type HSLColor = {
 };
 
 export type WallpaperSettings = {
-  provider: "unsplash" | "bing";
-  url: string;
+  provider: "unsplash" | "bing" | "self";
+  url?: string;
   type?: "blob" | "url";
   mimeType?: string;
   id?: string;
   x?: number;
   y?: number;
+  videoPlaybackSpeed?: number;
 };
 
 export type GeneralSettings = {
@@ -45,14 +46,14 @@ export type AppearanceSettings = {
 export type TimeDateSettings = {
   format: 12 | 24;
   clockDisabled: boolean;
-  clockStyle: "default";
+  clockStyle: "default" | "vertical";
   clockScale: number;
   centerClock: boolean;
   clockFullscreenEnabled: boolean;
   dateHidden: boolean;
   dateScale: number;
-  datePosition: "bottom";
-  dateAlignment: "center";
+  datePosition: "top" | "bottom";
+  dateAlignment: "start" | "center" | "end";
   dateLocale: string;
   firstWeekday: 0 | 1;
   worldClocksHidden: boolean;
@@ -63,14 +64,18 @@ export type TimeDateSettings = {
 export type MainPanelComponents = {
   topSites: {
     disabled: boolean;
-    visibleItemCount: number;
+    visibleItemCount: 4 | 8;
     openInNewTab: boolean;
     addSiteButtonHidden: boolean;
     persistentSitesHidden: boolean;
   };
   notepad: {
-    disabled: boolean;
+    disabled?: boolean;
     textSize: number;
+    tabs?: {
+      id: string;
+      textSize: string;
+    }[]
   };
   rssFeed: {
     disabled: boolean;
@@ -80,6 +85,7 @@ export type MainPanelComponents = {
 export type MainPanelSettings = {
   disabled?: boolean;
   navHidden: boolean;
+  navDisabled: boolean;
   components: MainPanelComponents;
 };
 

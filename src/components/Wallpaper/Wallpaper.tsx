@@ -15,7 +15,7 @@ type WallpaperType = {
 
 const VideoWallpaper = lazy(() => import("./VideoWallpaper"));
 
-export default function Wallpaper({ settings }) {
+export default function Wallpaper({ settings }: {settings: WallpaperSettings }) {
   const [wallpaper, setWallpaper] = useState<WallpaperType>(null);
   const firstRender = useRef(true);
 

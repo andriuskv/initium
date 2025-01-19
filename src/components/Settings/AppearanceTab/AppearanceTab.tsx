@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, type ChangeEvent } from "react";
 import { generateNoise, timeout } from "utils";
 import { useSettings } from "contexts/settings";
 import { updateSetting, addPanelNoise, removePanelNoise } from "services/settings";
@@ -96,13 +96,15 @@ export default function AppearanceTab({ locale }) {
   });
   const timeoutId = useRef(0);
 
-  function handleAnimationSpeedChange({ target }) {
-    document.documentElement.style.setProperty("--animation-speed", target.value);
-    updateContextSetting("appearance", { animationSpeed: Number(target.value) });
+  function handleAnimationSpeedChange({ target }: ChangeEvent) {
+    const element = target as HTMLSelectElement;
+
+    document.documentElement.style.setProperty("--animation-speed", element.value);
+    updateContextSetting("appearance", { animationSpeed: Number(element.value) });
   }
 
-  function handleRangeInputChange({ target }) {
-    const { name, value } = target;
+  function handleRangeInputChange({ target }: ChangeEvent) {
+    const { name, value } = target as HTMLInputElement;
 
     if (name === "panelBackgroundOpacity") {
       document.documentElement.style.setProperty("--panel-background-opacity", `${value}%`);
@@ -116,8 +118,8 @@ export default function AppearanceTab({ locale }) {
     }, 1000, timeoutId.current);
   }
 
-  function handleNoiseChange({ target }) {
-    const { name, value } = target;
+  function handleNoiseChange({ target }: ChangeEvent) {
+    const { name, value } = target as HTMLInputElement;
     const num = Number(value);
     let amount = 0;
     let opacity = 0;
@@ -150,7 +152,7 @@ export default function AppearanceTab({ locale }) {
     }, 1000, timeoutId.current);
   }
 
-  function selectColor(index) {
+  function selectColor(index: number) {
     if (index !== colorIndex) {
       const color = colors[index];
 
@@ -226,7 +228,8 @@ export default function AppearanceTab({ locale }) {
             defaultValue={settings.panelBackgroundNoiseOpacity} onChange={handleNoiseChange} name="panelBackgroundNoiseOpacity"/>
         </label>
       </div>
-      <Wallpaper settings={settings} locale={locale} updateContextSetting={updateContextSetting}/>
+      {/* <Wallpaper settings={settings} locale={locale} updateContextSetting={updateContextSetting}/> */}
+      <Wallpaper locale={locale}/>
     </div>
   );
 }

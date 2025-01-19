@@ -1,7 +1,14 @@
+import type { GoogleUser } from "types/calendar";
 import Dropdown from "components/Dropdown";
 import "./google-user-dropdown.css";
 
-export default function GoogleUserDropdown({ className, user, handleSignOut }) {
+type Props = {
+  className?: string,
+  user: GoogleUser,
+  handleSignOut: () => void,
+}
+
+export default function GoogleUserDropdown({ className, user, handleSignOut }: Props) {
   return (
     <Dropdown container={className ? { className } : null} toggle={{
       title: user.name,

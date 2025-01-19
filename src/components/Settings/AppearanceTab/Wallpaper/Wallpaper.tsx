@@ -1,14 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type FormEvent, type ChangeEvent } from "react";
 import { dispatchCustomEvent, timeout } from "utils";
 import { useModal } from "hooks";
 import { getWallpaperInfo, resetWallpaperInfo, setUrlWallpaper, setIDBWallpaper } from "services/wallpaper";
+import { useSettings } from "contexts/settings";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
 import "./wallpaper.css";
+import type { WallpaperSettings } from "types/settings";
 
-export default function Wallpaper({ settings, locale, updateContextSetting }) {
+export default function Wallpaper({ locale }) {
+  const { settings: { appearance: settings }, updateContextSetting } = useSettings();
   const [wallpaperInfo, setWallpaperInfo] = useState(() => getWallpaperInfo());
-  const { modal, setModal, hideModal } = useModal(null);
+  const { modal, setModal, hideModal } = useModal();
   const [wallpaperSettingsDirty, setWallpaperSettingsDirty] = useState(() => {
     const keys = Object.keys(settings.wallpaper);
 
@@ -17,7 +20,7 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
     }
     return false;
   });
-  const [messages, setMessages] = useState({});
+  const [messages, setMessages] = useState<{ wallpaper?: string}>();
   const timeoutId = useRef(0);
   const wallpaperProvider = settings.wallpaper.provider;
 
@@ -29,7 +32,7 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
     };
   }, []);
 
-  function handleWallpaperInfoUpdate({ detail }) {
+  function handleWallpaperInfoUpdate({ detail }: CustomEvent) {
     setWallpaperInfo(detail);
   }
 
@@ -47,8 +50,10 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
     setModal({ visible: true });
   }
 
-  function handleWallpaperFormSubmit(event) {
-    const [input] = event.target.elements;
+  function handleWallpaperFormSubmit(event: FormEvent) {
+    const formElement = event.target as HTMLFormElement;
+    const [element] = formElement.elements;
+    const input = element as HTMLInputElement;
 
     event.preventDefault();
 
@@ -103,8 +108,8 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
     }
   }
 
-  function setWallpaper(url, mimeType) {
-    const params = {};
+  function setWallpaper(url: string, mimeType: string) {
+    const params: { videoPlaybackSpeed?: number } = {};
 
     if (mimeType.startsWith("video")) {
       params.videoPlaybackSpeed = settings.wallpaper.videoPlaybackSpeed ?? 1;
@@ -122,12 +127,11 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
       setMessages({ ...messages, wallpaper: "File size exceeds 50mb. Please try a different file." });
       return;
     }
-    delete messages.wallpaper;
-    setMessages({ ...messages });
+    setMessages({ ...messages, wallpaper: undefined });
 
     await setIDBWallpaper(file);
 
-    const params = {};
+    const params: { videoPlaybackSpeed?: number } = {};
 
     if (file.type.startsWith("video")) {
       params.videoPlaybackSpeed = settings.wallpaper.videoPlaybackSpeed ?? 1;
@@ -136,30 +140,30 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
     setWallpaperSettingsDirty(true);
   }
 
-  function getSelectedFile() {
+  function getSelectedFile(): Promise<File> {
     return new Promise(resolve => {
       const input = document.createElement("input");
 
       input.setAttribute("type", "file");
       input.setAttribute("accept", "image/*,video/mp4,video/webm");
       input.onchange = ({ target }) => {
-        resolve(target.files[0]);
-        target = "";
+        const input = target as HTMLInputElement;
+        resolve(input.files[0]);
         input.onchange = null;
       };
       input.click();
     });
   }
 
-  function handleVideoPlaybackSpeedChange({ target }) {
-    const { name, value } = target;
+  function handleVideoPlaybackSpeedChange({ target }: ChangeEvent) {
+    const { name, value } = target as HTMLInputElement;
 
     timeoutId.current = timeout(() => {
       updateContextSetting("appearance", { wallpaper: { ...settings.wallpaper, [name]: Number(value) } });
     }, 1000, timeoutId.current);
   }
 
-  function handleWallpaperProviderClick(provider) {
+  function handleWallpaperProviderClick(provider: WallpaperSettings["provider"]) {
     if (provider === settings.wallpaper.provider) {
       return;
     }
@@ -217,7 +221,7 @@ export default function Wallpaper({ settings, locale, updateContextSetting }) {
           <button className="btn text-btn" onClick={selectFile}>{locale.settings.appearance.set_wallpaper_device_title}</button>
         </div>
       </div>
-      {messages.wallpaper ? (
+      {messages?.wallpaper ? (
         <p className="setting-message">{messages.wallpaper}</p>
       ): null}
       {settings.wallpaper.mimeType?.startsWith("video") ? (

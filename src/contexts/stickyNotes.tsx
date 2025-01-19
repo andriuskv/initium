@@ -1,28 +1,11 @@
 import type { PropsWithChildren } from "react";
 import type { AppearanceSettings } from "types/settings";
+import type { Note } from "types/stickyNotes";
 import { createContext, useState, useEffect, use, useMemo } from "react";
 import { replaceLink } from "utils";
 import { useSettings } from "contexts/settings";
 import { getSetting } from "services/settings";
 import * as chromeStorage from "services/chromeStorage";
-
-type Note = {
-  index?: number,
-  action?: string,
-  id?: string,
-  title: string,
-  content: string,
-  titleDisplayString?: string,
-  contentDisplayString?: string
-  color?: string,
-  backgroundColor: string,
-  textStyle?: {
-    index: number,
-    color: [number, number, number],
-    opacity: number,
-    string: string
-  }
-}
 
 type StickyNotesContextType = {
   notes: Note[],
@@ -81,11 +64,6 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
       note.id = crypto.randomUUID();
       note.titleDisplayString = parseNoteField(note.title, settings.general.openLinkInNewTab);
       note.contentDisplayString = parseNoteField(note.content, settings.general.openLinkInNewTab);
-
-      if (note.color) {
-        note.backgroundColor = note.color;
-        delete note.color;
-      }
 
       if (!note.textStyle) {
         note.textStyle = {

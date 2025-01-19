@@ -6,10 +6,11 @@ import { useSettings } from "contexts/settings";
 import Modal from "components/Modal";
 import "./general-tab.css";
 import MiddleTop from "./MiddleTop";
+import type { ChangeEvent } from "react";
 
 export default function GeneralTab({ locale }) {
   const { settings, toggleSetting, updateContextSetting, resetSettings } = useSettings();
-  const { modal, setModal, hideModal } = useModal(null);
+  const { modal, setModal, hideModal } = useModal();
 
   // function handleLocaleChange({ target }) {
   //   updateSetting("general", { locale: target.value });
@@ -19,20 +20,20 @@ export default function GeneralTab({ locale }) {
     dispatchCustomEvent("fullscreen-modal", { id: "greeting" });
   }
 
-  function toggleGreetingSetting(event) {
+  function toggleGreetingSetting(event: ChangeEvent) {
     updateContextSetting("general", {
       greeting: {
         ...settings.general.greeting,
-        disabled: event.target.checked
+        disabled: (event.target as HTMLInputElement).checked
       }
     });
   }
 
-  function handleRangeInputChange({ target }) {
+  function handleRangeInputChange({ target }: ChangeEvent) {
     updateContextSetting("general", {
       greeting: {
         ...settings.general.greeting,
-        textSize: Number(target.value)
+        textSize: Number((target as HTMLInputElement).value)
       }
     });
   }

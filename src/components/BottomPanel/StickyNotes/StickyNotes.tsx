@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { dispatchCustomEvent, getRandomValueBetweenTwoNumbers } from "utils";
 import { useNotes } from "contexts/stickyNotes";
 import Icon from "components/Icon";
@@ -5,7 +6,7 @@ import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
 import "./sticky-notes.css";
 
-export default function StickyNotes({ locale, hide }) {
+export default function StickyNotes({ locale, hide }: { locale: any, hide: () => void }) {
   const { notes, removeNote } = useNotes();
 
   function createNote() {
@@ -44,7 +45,7 @@ export default function StickyNotes({ locale, hide }) {
     hide();
   }
 
-  function editNote(id) {
+  function editNote(id: string) {
     dispatchCustomEvent("sticky-note", { action: "edit", id });
     hide();
   }
@@ -54,7 +55,7 @@ export default function StickyNotes({ locale, hide }) {
       {notes.length ? (
         <ul className="sticky-notes-list" data-dropdown-parent>
           {notes.toReversed().map(note => (
-            <li className="sticky-notes-list-item" style={{ backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string }} key={note.id}>
+            <li className="sticky-notes-list-item" style={{ backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string } as CSSProperties} key={note.id}>
               <Dropdown>
                 <button className="btn icon-text-btn dropdown-btn" onClick={() => editNote(note.id)}>
                   <Icon id="edit"/>

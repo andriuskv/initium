@@ -1,4 +1,4 @@
-import type { ChangeEvent, MouseEvent, KeyboardEvent } from "react";
+import type { ChangeEvent, MouseEvent, KeyboardEvent, FormEvent } from "react";
 import type { TimeDateSettings } from "types/settings";
 import type { Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
 import { useState, useMemo } from "react";
@@ -262,14 +262,14 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     return dataList;
   }
 
-  function validateHourFormat(value) {
+  function validateHourFormat(value: string) {
     const regex24Hours = /^(([0-1]?[0-9])|(2[0-3])):[0-5]?[0-9]$/;
     const regex12Hours = /^((0?[1-9])|(1[0-2])):[0-5]?[0-9] ?[a|p|A|P][m|M]$/;
 
     return regex24Hours.test(value) || regex12Hours.test(value);
   }
 
-  function parseTimeString(string) {
+  function parseTimeString(string: string) {
     if (!string || !validateHourFormat(string)) {
       return;
     }
@@ -289,8 +289,15 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     };
   }
 
-  async function handleFormSubmit(event) {
-    const elements = event.target.elements;
+  async function handleFormSubmit(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      description: HTMLInputElement;
+      reminder: HTMLInputElement;
+      color: HTMLInputElement;
+      enddate: HTMLInputElement;
+    }
+    const formElement = event.target as HTMLFormElement;
+    const elements = formElement.elements as FormElements;
     const description = elements.description.value.trim();
 
     event.preventDefault();
