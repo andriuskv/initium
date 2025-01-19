@@ -16,9 +16,10 @@ type BingInfo = {
   endDate: number,
   copyright: string,
   copyrightLink: string
+
 }
 
-type WallpaperInfo = UnsplashInfo | BingInfo | null;
+type WallpaperInfo = UnsplashInfo & BingInfo | null;
 
 type DownscaledWallpaper = {
   id: string
@@ -30,7 +31,7 @@ type DownscaledWallpaper = {
 const downscaledWallpaper = getLocalStorageItem<DownscaledWallpaper>("downscaled-wallpaper");
 let wallpaperInfo = getLocalStorageItem<WallpaperInfo>("wallpaper-info");
 
-function fetchDailyWallpaperInfo(provider: "unsplash" | "bing"): Promise<WallpaperInfo> {
+function fetchDailyWallpaperInfo(provider: AppearanceSettings["wallpaper"]["provider"]): Promise<WallpaperInfo> {
   return fetch(`${process.env.SERVER_URL}/wallpaper?p=${provider}`).then(res => res.json());
 }
 

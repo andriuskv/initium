@@ -183,10 +183,10 @@ export default function Form({ form, groups, locale, updateGroup, removeTask, cr
     });
   }
 
-  function handleGroupSelection({ target }) {
+  function handleGroupSelection({ target }: ChangeEvent) {
     setState({
       ...state,
-      selectedGroupId: target.value
+      selectedGroupId: (target as HTMLSelectElement).value
     });
   }
 
@@ -395,7 +395,7 @@ export default function Form({ form, groups, locale, updateGroup, removeTask, cr
         labels.push(label);
       }
       return labels;
-    }, []);
+    }, [] as Label[]);
   }
 
   function showLabelForm() {

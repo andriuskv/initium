@@ -1,13 +1,20 @@
-import { useState, useRef } from "react";
+import type { GoogleUser } from "types/calendar";
+import { useState, useRef, type ChangeEvent } from "react";
 import { dispatchCustomEvent, timeout } from "utils";
 import { useSettings } from "contexts/settings";
 import * as calendarService from "services/calendar";
 import "./time-date-tab.css";
 import GoogleUserDropdown from "./GoogleUserDropdown";
 
+type CalendarUser = {
+  user?: GoogleUser,
+  message?: string,
+  status?: "connecting"
+}
+
 export default function TimeDateTab({ locale }) {
   const { settings: { timeDate: settings }, updateContextSetting, toggleSetting } = useSettings();
-  const [googleUser, setGoogleUser] = useState(() => {
+  const [calendarUser, setCalendarUser] = useState<CalendarUser>(() => {
     if (localStorage.getItem("gtoken")) {
       return { user: JSON.parse(localStorage.getItem("google-user")) || null };
     }
@@ -24,68 +31,76 @@ export default function TimeDateTab({ locale }) {
     updateContextSetting("timeDate", { format: format === 24 ? 12 : 24 });
   }
 
-  function updateRangeSetting(name, value) {
+  function updateRangeSetting(name: string, value: string) {
     timeoutId.current = timeout(() => {
       updateContextSetting("timeDate", { [name]: Number(value) });
     }, 1000, timeoutId.current);
   }
 
-  function handleClockScaleChange({ target }) {
-    const { name, value } = target;
+  function handleClockScaleChange({ target }: ChangeEvent) {
+    const { name, value } = target as HTMLInputElement;
 
-    document.querySelector(".clock").style.setProperty("--scale", value);
+    (document.querySelector(".clock") as HTMLElement).style.setProperty("--scale", value);
     updateRangeSetting(name, value);
   }
 
-  function handleDateScaleChange({ target }) {
-    const { name, value } = target;
+  function handleDateScaleChange({ target }: ChangeEvent) {
+    const { name, value } = target as HTMLInputElement;
 
-    document.querySelector(".clock-date").style.setProperty("--date-scale", value);
+    (document.querySelector(".clock-date") as HTMLElement).style.setProperty("--date-scale", value);
     updateRangeSetting(name, value);
   }
 
-  function handleDatePositionChange({ target }) {
-    updateContextSetting("timeDate", { datePosition: target.value });
+  function handleDatePositionChange({ target }: ChangeEvent) {
+    const value = (target as HTMLInputElement).value as "top" | "bottom";
+
+    updateContextSetting("timeDate", { datePosition: value });
   }
 
-  function handleDateAlignmentChange({ target }) {
-    updateContextSetting("timeDate", { dateAlignment: target.value });
+  function handleDateAlignmentChange({ target }: ChangeEvent) {
+    const value = (target as HTMLInputElement).value as "start" | "center" | "end";
+
+    updateContextSetting("timeDate", { dateAlignment: value });
   }
 
-  function handleClockStyleChange({ target }) {
-    updateContextSetting("timeDate", { clockStyle: target.value });
+  function handleClockStyleChange({ target }: ChangeEvent) {
+    const value = (target as HTMLInputElement).value as "default" | "vertical";
+
+    updateContextSetting("timeDate", { clockStyle: value });
   }
 
-  function handleDateLocaleChange({ target }) {
-    updateContextSetting("timeDate", { dateLocale: target.value });
+  function handleDateLocaleChange({ target }: ChangeEvent) {
+    updateContextSetting("timeDate", { dateLocale: (target as HTMLInputElement).value });
   }
 
-  function handleWeekdayChange({ target }) {
-    updateContextSetting("timeDate", { firstWeekday: Number(target.value) });
+  function handleWeekdayChange({ target }: ChangeEvent) {
+    const value = Number((target as HTMLInputElement).value) as 0 | 1;
+
+    updateContextSetting("timeDate", { firstWeekday: value });
   }
 
   async function handleGoogleCalendarConnect() {
-    setGoogleUser({ message: "", status: "connecting" });
+    setCalendarUser({ message: "", status: "connecting" });
 
     try {
       const data = await calendarService.authGoogleUser();
 
-      if (data.message) {
-        setGoogleUser({ message: data.message });
+      if ("message" in data) {
+        setCalendarUser({ message: data.message });
       }
       else {
-        setGoogleUser({ user: data.user });
+        setCalendarUser({ user: data.user });
         dispatchCustomEvent("google-user-change", data.user);
       }
     } catch (e) {
       console.log(e);
-      setGoogleUser({ message: "Something went wrong. Try again later." });
+      setCalendarUser({ message: "Something went wrong. Try again later." });
     }
   }
 
   async function handleGoogleCalendarDisconnect() {
     calendarService.clearUser();
-    setGoogleUser({});
+    setCalendarUser({ user: null });
     dispatchCustomEvent("google-user-change");
   }
 
@@ -287,11 +302,11 @@ export default function TimeDateTab({ locale }) {
         <div className="setting last-setting-tab-item google-calendar-integration-setting">
           <div className="google-calendar-integration-setting-main">
             <span>Google Calendar</span>
-            {googleUser.user ? <GoogleUserDropdown user={googleUser.user} handleSignOut={handleGoogleCalendarDisconnect}/> : (
-              <button className="btn" onClick={handleGoogleCalendarConnect} disabled={googleUser.status}>{googleUser.status === "connecting" ? "Connecting" : "Connect"}</button>
+            {calendarUser.user ? <GoogleUserDropdown user={calendarUser.user} handleSignOut={handleGoogleCalendarDisconnect}/> : (
+              <button className="btn" onClick={handleGoogleCalendarConnect} disabled={calendarUser.status === "connecting"}>{calendarUser.status === "connecting" ? "Connecting" : "Connect"}</button>
             )}
           </div>
-          {googleUser.message ? <p className="google-calendar-integration-setting-message">{googleUser.message}</p> : null}
+          {calendarUser.message ? <p className="google-calendar-integration-setting-message">{calendarUser.message}</p> : null}
         </div>
       </div>
     </div>

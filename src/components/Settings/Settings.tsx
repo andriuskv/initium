@@ -15,7 +15,7 @@ const WeatherTab = lazy(() => import("./WeatherTab"));
 const TimersTab = lazy(() => import("./TimersTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 
-export default function Settings({ locale, hide }) {
+export default function Settings({ locale, hide }: { locale: any, hide: () => void}) {
   const tabs = useMemo(() => [
     {
       id: "general",
@@ -83,7 +83,7 @@ export default function Settings({ locale, hide }) {
     );
   }
 
-  function selectTab(id) {
+  function selectTab(id: string) {
     setActiveTab(id);
 
     saveTabTimeoutId.current = timeout(() => {
@@ -94,9 +94,18 @@ export default function Settings({ locale, hide }) {
   function renderTab() {
     const Component = tabs[activeTabIndex].component;
 
+    if (tabs[activeTabIndex].id === "mainPanel") {
+      const MainPanel = tabs[activeTabIndex].component as typeof MainPanelTab;
+
+      return (
+        <Suspense fallback={<Spinner/>}>
+          <MainPanel locale={locale} hide={hide}/>
+        </Suspense>
+      );
+    }
     return (
       <Suspense fallback={<Spinner/>}>
-        <Component locale={locale} hide={hide}/>
+        <Component locale={locale}/>
       </Suspense>
     );
   }

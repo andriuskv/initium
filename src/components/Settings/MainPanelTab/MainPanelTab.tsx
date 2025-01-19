@@ -1,25 +1,32 @@
 import { useState } from "react";
 import { useSettings } from "contexts/settings";
 import { dispatchCustomEvent } from "utils";
+import type { MainPanelComponents } from "types/settings";
 
 export default function MainPanelTab({ locale, hide }) {
   const { settings: { mainPanel: settings }, updateContextSetting, updateMainPanelComponentSetting, toggleSetting } = useSettings();
   const [topSitesDirty, setTopSitesDirty] = useState(() => !!localStorage.getItem("top sites"));
 
-  function toggleComponent(item) {
-    const componentsArray = Object.keys(settings.components);
+  function toggleComponent(item: "topSites" | "notepad" | "rssFeed") {
+    const newComponents = {
+      ...settings.components,
+      [item]: {
+        ...settings.components[item],
+        disabled: !settings.components[item].disabled
+      }
+    };
+    const componentsArray = Object.keys(newComponents);
     let disabledComponentCount = 0;
-    settings.components[item].disabled = !settings.components[item].disabled;
 
     for (const key of componentsArray) {
-      if (settings.components[key].disabled) {
+      if (newComponents[key].disabled) {
         disabledComponentCount += 1;
       }
     }
     updateContextSetting("mainPanel", {
       navDisabled: disabledComponentCount >= componentsArray.length - 1,
       disabled: disabledComponentCount === componentsArray.length,
-      components: { ...settings.components }
+      components: newComponents
     });
   }
 
@@ -40,7 +47,7 @@ export default function MainPanelTab({ locale, hide }) {
     toggleTopSiteSetting({ addSiteButtonHidden: target.checked });
   }
 
-  function toggleTopSiteSetting(setting) {
+  function toggleTopSiteSetting(setting: Partial<MainPanelComponents["topSites"]>) {
     updateMainPanelComponentSetting("topSites", setting);
   }
 

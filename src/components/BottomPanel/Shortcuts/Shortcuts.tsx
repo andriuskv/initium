@@ -10,8 +10,16 @@ import Link from "components/Link";
 import json from "./shortcuts.json";
 import "./shortcuts.css";
 
+type Item = {
+  id: string;
+  title: string,
+  iconPath: string,
+  url: string,
+  hidden?: boolean,
+}
+
 export default function Shortcuts({ locale }) {
-  const [items, setItems] = useState(null);
+  const [items, setItems] = useState<Item[]>(null);
   const [editEnabled, setEditEnabled] = useState(false);
   const [activeDragId, setActiveDragId] = useState(null);
 
@@ -32,7 +40,7 @@ export default function Shortcuts({ locale }) {
     }));
   }
 
-  function getFaviconURL(url) {
+  function getFaviconURL(url: string) {
     const { href } = new URL(url);
     return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${href}&size=48`;
   }
@@ -41,7 +49,7 @@ export default function Shortcuts({ locale }) {
     setEditEnabled(!editEnabled);
   }
 
-  function handleSort(items) {
+  function handleSort(items: Item[]) {
     if (items) {
       setItems(items);
       saveItems(items);
@@ -53,7 +61,7 @@ export default function Shortcuts({ locale }) {
     setActiveDragId(event.active.id);
   }
 
-  function toggleItemVisibility(id) {
+  function toggleItemVisibility(id: string) {
     setItems(items.map(item => {
       if (item.id === id) {
         item.hidden = !item.hidden;
@@ -63,7 +71,7 @@ export default function Shortcuts({ locale }) {
     saveItems(items);
   }
 
-  function saveItems(items) {
+  function saveItems(items: Item[]) {
     chromeStorage.set({ shortcuts: structuredClone(items).map(item => {
       delete item.id;
 

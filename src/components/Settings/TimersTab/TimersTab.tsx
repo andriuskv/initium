@@ -1,30 +1,38 @@
 import { useSettings } from "contexts/settings";
+import type { ChangeEvent } from "react";
 
 export default function TimersTab({ locale }) {
   const { settings: { timers: settings }, updateContextSetting, toggleSetting } = useSettings();
 
-  function handleVolumeChange({ target }) {
-    updateContextSetting("timers", { volume: target.valueAsNumber });
+  function handleVolumeChange({ target }: ChangeEvent) {
+    updateContextSetting("timers", { volume: (target as HTMLInputElement).valueAsNumber });
   }
 
-  function handleTextScaleChange({ target }) {
-    updateContextSetting("timers", { fullscreenTextScale: target.valueAsNumber });
+  function handleTextScaleChange({ target }: ChangeEvent) {
+    updateContextSetting("timers", { fullscreenTextScale: (target as HTMLInputElement).valueAsNumber });
   }
 
-  function toggleTimerSetting(event) {
+  function toggleTimerSetting(event: ChangeEvent) {
     updateContextSetting("timers", {
       timer: {
         ...settings.timer,
-        usePresetNameAsLabel: event.target.checked
+        usePresetNameAsLabel: (event.target as HTMLInputElement).checked
       }
     });
   }
 
-  function handleInputChange({ target }) {
-    if (/\D/.test(target.value)) {
+  function handleInputChange({ target }: ChangeEvent) {
+    const inputElement = target as HTMLInputElement;
+
+    if (/\D/.test(inputElement.value)) {
       return;
     }
-    updateContextSetting("timers", { pomodoro: { ...settings.pomodoro, [target.name]: Number(target.value) } });
+    updateContextSetting("timers", {
+      pomodoro: {
+        ...settings.pomodoro,
+        [inputElement.name]: Number(inputElement.value)
+      }
+    });
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { useSettings } from "contexts/settings";
 import "./weather-tab.css";
 
@@ -14,7 +14,7 @@ export default function WeatherTab({ locale }) {
     };
   }, []);
 
-  function handleWeatherError({ detail }) {
+  function handleWeatherError({ detail }: CustomEvent) {
     setError(detail);
   }
 
@@ -24,9 +24,16 @@ export default function WeatherTab({ locale }) {
     updateContextSetting("weather", { units: units === "C" ? "F" : "C" });
   }
 
-  function handleCityNameChange(event) {
+  function handleCityNameChange(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      cityName: HTMLInputElement;
+    }
+
+    const formElement = event.target as HTMLFormElement;
+    const elements = formElement.elements as FormElements;
+
     event.preventDefault();
-    updateContextSetting("weather", { cityName: event.target.elements.cityName.value });
+    updateContextSetting("weather", { cityName: elements.cityName.value });
   }
 
   return (

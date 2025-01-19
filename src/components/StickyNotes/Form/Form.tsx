@@ -1,4 +1,5 @@
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import type { FormType } from "types/stickyNotes";
+import { useState, useEffect, useLayoutEffect, useRef, type CSSProperties, type FormEvent, type MouseEvent as ReactMouseEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import * as focusService from "services/focus";
 import { useNotes } from "contexts/stickyNotes";
 import Icon from "components/Icon";
@@ -16,10 +17,18 @@ const backgroundColors = [
 
 const textColors = [[0, 0, 0], [1, 0, 0]];
 
-export default function Form({ initialForm, noteCount, locale, discardNote, showForm }) {
+type Props = {
+  initialForm: FormType,
+  noteCount: number,
+  locale: any,
+  discardNote: (shouldAnimate?: boolean) => void,
+  showForm: () => void
+}
+
+export default function Form({ initialForm, noteCount, locale, discardNote, showForm }: Props) {
   const { createNote, removeNote } = useNotes();
   const [movable, setMovable] = useState(false);
-  const [form, setForm] = useState(null);
+  const [form, setForm] = useState<FormType>(null);
   const containerRef = useRef(null);
   const moving = useRef(false);
 
@@ -82,7 +91,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
     };
   }, [movable]);
 
-  function handlePointerMove(event) {
+  function handlePointerMove(event: MouseEvent) {
     if (moving.current) {
       return;
     }
@@ -101,19 +110,23 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
     setMovable(false);
   }
 
-  function handleKeyDown(event) {
+  function handleKeyDown(event: KeyboardEvent) {
     if (event.key === "Escape") {
       discardNote();
     }
   }
 
-  function handleInputChange(event) {
-    setForm({ ...form, [event.target.name]: event.target.value });
+  function handleInputChange(event: FormEvent) {
+    const element = event.target as HTMLTextAreaElement;
+
+    setForm({ ...form, [element.name]: element.value });
   }
 
-  function moveNote(event) {
+  function moveNote(event: ReactKeyboardEvent) {
+    const element = event.target as HTMLElement;
+    const elementParent = element.parentElement as HTMLElement;
     const amount = event.ctrlKey ? 10 : 1;
-    const noteSize = event.target.parentElement.offsetWidth + 40;
+    const noteSize = elementParent.offsetWidth + 40;
     const noteHeight = Math.floor(noteSize / document.documentElement.clientHeight * 100);
     const noteWidth = Math.floor(noteSize / 2 / document.documentElement.clientWidth * 100);
 
@@ -131,29 +144,29 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
     }
   }
 
-  function updateBackgroundColor(color) {
+  function updateBackgroundColor(color: string) {
     setForm({ ...form, backgroundColor: color });
   }
 
-  function getTextColor(textColor, opacity = 60) {
+  function getTextColor(textColor: number[], opacity = 60) {
     return `oklch(${textColor.join(" ")} / ${opacity}%)`;
   }
 
-  function updateTextColor(index) {
+  function updateTextColor(index: number) {
     const color = textColors[index];
     const string = getTextColor(color, form.textStyle.opacity);
 
     setForm({ ...form, textStyle: { ...form.textStyle, color, string, index } });
   }
 
-  function adjustTextOpacity(direction) {
+  function adjustTextOpacity(direction: 1 | -1) {
     const opacity = form.textStyle.opacity + 10 * direction;
     const string = getTextColor(form.textStyle.color, opacity);
 
     setForm({ ...form, textStyle: { ...form.textStyle, opacity, string } });
   }
 
-  function adjustScale(key, direction) {
+  function adjustScale(key: string, direction: 1 | -1) {
     setForm({ ...form, [key]: round(form[key] + 0.1125 * direction, 4) });
   }
 
@@ -162,7 +175,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
     discardNote(false);
   }
 
-  function enableNoteDrag(event) {
+  function enableNoteDrag(event: ReactMouseEvent) {
     if (event.button === 0) {
       setMovable(true);
       setForm({
@@ -176,7 +189,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
     return Math.floor(Math.random() * 20) - 10;
   }
 
-  function round(number, decimals) {
+  function round(number: number, decimals: number) {
     return Math.round((number + Number.EPSILON) * 10 ** decimals) / 10 ** decimals;
   }
 
@@ -185,8 +198,8 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
   }
   return (
     <div className={`sticky-note sticky-note-form${movable ? " movable" : " editable"}${initialForm.discarding ? " discarding" : ""}${form.scale < 1 ? " scaled-down" : ""}`} key={form.id} ref={containerRef}
-      style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.backgroundColor, "--text-color": form.textStyle.string }}>
-      <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} onKeyDown={moveNote} title={movable ? "" : locale.global.move} tabIndex="0"></div>
+      style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.backgroundColor, "--text-color": form.textStyle.string } as CSSProperties}>
+      <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} onKeyDown={moveNote} title={movable ? "" : locale.global.move} tabIndex={0}></div>
       <textarea className="input textarea sticky-note-content sticky-note-input sticky-note-title" name="title"
         onChange={handleInputChange} value={form.title}
         placeholder={`Note #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
@@ -208,7 +221,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
             <Dropdown toggle={{ iconId: "text-color", title: locale.stickyNotes.text_color }} body={{ className: "sticky-note-dropdown" }}>
               <ul className="sticky-note-text-colors">
                 {textColors.map((color, index) => (
-                  <li key={color}>
+                  <li key={index}>
                     <button className={`btn sticky-note-color-picker-item${form.textStyle.index === index ? " active" : ""}${index === 1 ? " black": ""}`}
                       onClick={() => updateTextColor(index)} style={{ backgroundColor: getTextColor(textColors[index], 100) }}></button>
                   </li>
@@ -257,7 +270,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
             ) : null}
           </div>
           <div className="sticky-note-btns">
-            <button className="btn" onClick={discardNote}>{locale.global.discard}</button>
+            <button className="btn" onClick={() => discardNote(true)}>{locale.global.discard}</button>
             <button className="btn" onClick={saveNote}>{locale.global.save}</button>
           </div>
         </>
