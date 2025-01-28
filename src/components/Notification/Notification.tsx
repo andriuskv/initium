@@ -18,11 +18,11 @@ export default function Notification() {
     <div className="notifications">
       {notifications.map(notification => (
         <div className={`container notification${notification.hiding ? " hiding" : ""}`} key={notification.id}>
-          <div className="notification-top">
+          {notification.title ? <div className="notification-top">
             {notification.iconId ? <Icon id={notification.iconId}/>: null}
             {notification.title ? <p className="notification-title">{notification.title}</p>: null}
-          </div>
-          <p className="notification-content">{notification.text}</p>
+          </div> : null}
+          <p className="notification-content">{notification.content}</p>
           <div className="notification-bottom">
             {notification.action ? (
               <button className="btn text-btn" onClick={() => handleActionClick(notification)}>{notification.actionTitle}</button>

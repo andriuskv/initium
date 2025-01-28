@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import type { GeneralSettings } from "types/settings";
+import { useState, useEffect, type CSSProperties } from "react";
 import * as chromeStorage from "services/chromeStorage";
 import "./greeting.css";
 
-export default function Greeting({ settings = {} }) {
+export default function Greeting({ settings }: { settings: GeneralSettings["greeting"]}) {
   const [greeting, setGreeting] = useState("");
 
   useEffect(() => {
@@ -33,13 +34,18 @@ export default function Greeting({ settings = {} }) {
     });
   }
 
-  async function setRandomGreeting(greetings) {
+  async function setRandomGreeting(greetings: string[]) {
     const marked = await import("marked");
     const index = Math.floor(Math.random() * greetings.length);
-    const greeting = marked.parse(greetings[index], { mangle: false, headerIds: false });
+    const greeting = await marked.parse(greetings[index]);
 
     setGreeting(greeting);
   }
 
-  return <div className="greeting" style={{ "--text-size-scale": settings.textSize }} dangerouslySetInnerHTML={{ __html: greeting }}></div>;
+  return (
+    <div className="greeting"
+      style={{ "--text-size-scale": settings.textSize } as CSSProperties }
+      dangerouslySetInnerHTML={{ __html: greeting }}>
+    </div>
+  );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy } from "react";
+import { useState, useEffect, useRef, lazy, type ChangeEvent } from "react";
 import { dispatchCustomEvent } from "utils";
 import { padTime } from "services/timeDate";
 import { addToRunning, removeFromRunning } from "../running-timers";
@@ -9,13 +9,22 @@ import useWorker from "../../useWorker";
 
 const Splits = lazy(() => import("./Splits"));
 
-export default function Stopwatch({ visible, locale, animDirection, toggleIndicator, updateTitle, expand }) {
+type Props = {
+  visible: boolean,
+  locale: any,
+  animDirection: "anim-left" | "anim-right",
+  toggleIndicator: (name: string, visible: boolean) => void,
+  updateTitle: (title: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled?: boolean }) => void,
+  expand: () => void,
+}
+
+export default function Stopwatch({ visible, locale, animDirection, toggleIndicator, updateTitle, expand }: Props) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
-  const [splits, setSplits] = useState([]);
+  const [splits, setSplits] = useState<{ elapsed: number, elapsedString: string, diffString: string }[]>([]);
   const [label, setLabel] = useState("");
+  const [dirty, setDirty] = useState(false);
   const [pipVisible, setPipVisible] = useState(false);
-  const dirty = useRef(false);
   const pageVisible = useRef(true);
   const { initWorker, destroyWorkers } = useWorker(handleMessage, [splits.length]);
   const name = "stopwatch";
@@ -58,6 +67,12 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
   }, [running]);
 
   useEffect(() => {
+    function handlePipClose({ detail }: CustomEvent) {
+      if (detail === name) {
+        setPipVisible(false);
+      }
+    }
+
     window.addEventListener("pip-close", handlePipClose);
 
     return () => {
@@ -65,7 +80,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
     };
   }, [pipVisible]);
 
-  function handleMessage(event) {
+  function handleMessage(event: MessageEvent) {
     update(event.data);
   }
 
@@ -73,8 +88,6 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
     const data = JSON.parse(localStorage.getItem(name));
 
     if (data) {
-      dirty.current = true;
-
       setSplits(data.splits);
       setLabel(data.label);
 
@@ -84,6 +97,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
       data.millisecondsDisplay = "00";
 
       setState(data);
+      setDirty(true);
     }
   }
 
@@ -97,9 +111,9 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
   }
 
   function start() {
-    dirty.current = true;
+    setDirty(true);
     setRunning(true);
-    updateTitle(name, { minutes: "0", seconds: "00" });
+    updateTitle(name, { seconds: "00" });
   }
 
   function stop() {
@@ -107,20 +121,26 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
     updateTitle(name);
   }
 
-  function update({ elapsed }) {
+  function update({ elapsed }: { elapsed: number }) {
     const { hours, minutes, seconds, milliseconds } = parseTime(elapsed);
     const newState = {
       hours,
       minutes,
-      minutesDisplay: padTime(minutes, hours),
-      secondsDisplay: padTime(seconds, hours || minutes),
+      minutesDisplay: padTime(minutes, !!hours),
+      secondsDisplay: padTime(seconds, !!(hours || minutes)),
+      seconds,
       milliseconds,
+      millisecondsDisplay: "",
       elapsed
     };
 
-    if (newState.milliseconds === 0) {
+    if (newState.milliseconds < 20) {
       newState.millisecondsDisplay = "00";
-      updateTitle(name, { hours: newState.hours, minutes: newState.minutesDisplay, seconds: newState.secondsDisplay });
+      updateTitle(name, {
+        hours: newState.hours,
+        minutes: newState.hours || newState.minutes ? newState.minutesDisplay : "",
+        seconds:  newState.secondsDisplay
+      });
       localStorage.setItem(name, JSON.stringify({ ...newState, label, splits: splits.slice(0, 100) }));
     }
     else {
@@ -140,7 +160,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
   }
 
   function reset() {
-    dirty.current = false;
+    setDirty(false);
     setState(getInitialState());
     setSplits([]);
     pipService.close(name);
@@ -156,6 +176,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
       elapsed: 0,
       millisecondsDisplay: "00",
       secondsDisplay: "0",
+      minutesDisplay: "",
       milliseconds: 0,
       seconds: 0,
       minutes: 0,
@@ -165,6 +186,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
 
   function makeSplit() {
     const split = {
+      diffString: "",
       elapsed: state.elapsed,
       elapsedString: getSplitString(state.elapsed)
     };
@@ -175,17 +197,17 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
     setSplits([split, ...splits]);
   }
 
-  function getSplitString(milliseconds) {
+  function getSplitString(milliseconds: number) {
     const split = parseTime(milliseconds);
-    const minutesDisplay = padTime(split.minutes, split.hours);
-    const secondsDisplay = padTime(split.seconds, split.hours || split.minutes);
+    const minutesDisplay = padTime(split.minutes, !!split.hours);
+    const secondsDisplay = padTime(split.seconds, !!(split.hours || split.minutes));
     const millisecondString = Math.floor(split.milliseconds / 10);
     const millisecondsDisplay = padTime(millisecondString, split.milliseconds < 100);
 
-    return `${split.hours ? `${split.hours} ` : ""}${split.minutes ? `${minutesDisplay} ` : ""}${secondsDisplay}.${millisecondsDisplay}`;
+    return `${split.hours ? `${split.hours} ` : ""}${split.hours || split.minutes ? `${minutesDisplay} ` : ""}${secondsDisplay}.${millisecondsDisplay}`;
   }
 
-  function parseTime(time) {
+  function parseTime(time: number) {
     const hours = Math.floor(time / 3600000);
     time %= 3600000;
     const minutes = Math.floor(time / 60000);
@@ -217,14 +239,8 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
     });
   }
 
-  function handlePipClose({ detail }) {
-    if (detail === name) {
-      setPipVisible(false);
-    }
-  }
-
-  function handleLabelInputChange(event) {
-    setLabel(event.target.value);
+  function handleLabelInputChange(event: ChangeEvent) {
+    setLabel((event.target as HTMLInputElement).value);
   }
 
   function showSplits() {
@@ -237,7 +253,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
   }
 
   function renderTop() {
-    if (running || dirty.current) {
+    if (running || dirty) {
       if (label) {
         return <h4 className="top-panel-item-content-label">{label}</h4>;
       }
@@ -295,9 +311,9 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? locale.topPanel.stop : locale.topPanel.start}</button>
         {running ? <button className="btn text-btn top-panel-item-action-btn" onClick={makeSplit}>{locale.stopwatch.split_button}</button> : null}
-        {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.global.reset}</button>}
+        {running || !dirty ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.global.reset}</button>}
         <div className="top-panel-secondary-actions">
-          {dirty.current && pipService.isSupported() && (
+          {dirty && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
               <Icon id="pip"/>
             </button>

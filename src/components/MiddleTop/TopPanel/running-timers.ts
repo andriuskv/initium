@@ -1,18 +1,18 @@
-let runningTimers = [];
+let runningTimers: string[] = [];
 
-function addToRunning(name) {
+function addToRunning(name: string) {
   runningTimers.push(name);
 }
 
-function removeFromRunning(name) {
+function removeFromRunning(name: string) {
   runningTimers = runningTimers.filter(item => item !== name);
 }
 
-function isLastRunningTimer(name) {
+function isLastRunningTimer(name: string) {
   return runningTimers.at(-1)?.startsWith(name);
 }
 
-function isRunning(name) {
+function isRunning(name: string) {
   return runningTimers.some(timer => timer.startsWith(name));
 }
 

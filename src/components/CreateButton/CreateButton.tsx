@@ -7,7 +7,7 @@ import "./create-button.css";
 
 type Props = PropsWithChildren & {
   className?: string,
-  attrs?: Record<string, string>,
+  attrs?: Record<string, string | boolean>,
   style?: CSSProperties,
   onClick: (event: MouseEvent<HTMLButtonElement>) => void,
   shiftTarget?: string,

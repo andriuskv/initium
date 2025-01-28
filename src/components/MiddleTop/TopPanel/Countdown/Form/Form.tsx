@@ -1,12 +1,36 @@
-import { useState, useRef } from "react";
+import type { Countdown } from "../countdown.types";
+import { useState, useRef, type FormEvent, type ChangeEvent, type MouseEvent, type KeyboardEvent, type FocusEvent } from "react";
 import { getRandomString } from "utils";
 import { padTime, getMonthName, getTimeString, parseDateInputValue, getDateString } from "services/timeDate";
 import { getSetting } from "services/settings";
 import Icon from "components/Icon";
 import "./form.css";
+import type { TimeDateSettings } from "types/settings";
 
-export default function Form({ locale, createCountdown, hide }) {
-  const [form, setForm] = useState({
+type Props = {
+  locale: any,
+  createCountdown: (countdown: Countdown) => void,
+  hide: () => void
+}
+
+type FormType = {
+  year: string | number,
+  month: string | number,
+  day: string | number,
+  hours: string | number,
+  minutes: string | number,
+  message?: string,
+  period?: string,
+  dataList?: {
+    name: string
+    x: number,
+    y: number,
+    items: { value: number, displayValue: string }[]
+  } | null
+}
+
+export default function Form({ locale, createCountdown, hide }: Props) {
+  const [form, setForm] = useState<FormType>({
     year: "",
     month: "",
     day: "",
@@ -15,7 +39,7 @@ export default function Form({ locale, createCountdown, hide }) {
   });
   const selected = useRef(false);
 
-  function parseHours(hours) {
+  function parseHours(hours: string): number {
     const value = hours.trim();
 
     if (!value) {
@@ -49,8 +73,17 @@ export default function Form({ locale, createCountdown, hide }) {
     return h;
   }
 
-  function handleFormSubmit(event) {
-    const { title, year, month, day, hours, minutes } = event.target.elements;
+  function handleFormSubmit(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      title: HTMLInputElement;
+      year: HTMLInputElement;
+      month: HTMLInputElement;
+      day: HTMLInputElement;
+      hours: HTMLInputElement;
+      minutes: HTMLInputElement;
+    }
+    const formElement = event.target as HTMLFormElement;
+    const { title, year, month, day, hours, minutes } = formElement.elements as FormElements;
     const h = parseHours(hours.value);
 
     event.preventDefault();
@@ -60,11 +93,11 @@ export default function Form({ locale, createCountdown, hide }) {
       return;
     }
     const dateString = getDateString({
-      year: year.value,
+      year: Number(year.value),
       month: Number.parseInt(month.value, 10) - 1,
-      day: day.value,
+      day: Number(day.value),
       hours: h,
-      minutes: minutes.value
+      minutes: Number(minutes.value)
     }, true);
     const date = new Date(dateString);
 
@@ -72,49 +105,55 @@ export default function Form({ locale, createCountdown, hide }) {
       setForm({ ...form, message: "Invalid date." });
       return;
     }
-    const currentDate = new Date();
+    const dateNum = date.getTime();
+    const currDateNum = Date.now();
     let diff = 0;
     let isInPast = false;
 
-    if (date.getTime() - currentDate.getTime() > 0) {
-      diff = date - currentDate;
+    if (dateNum - currDateNum > 0) {
+      diff = dateNum - currDateNum;
     }
     else {
-      diff = currentDate - date;
+      diff = currDateNum - dateNum;
       isInPast = true;
     }
     createCountdown({
       dateString,
       id: getRandomString(4),
-      date,
       title: title.value.trim(),
       isInPast,
-      diff: Math.floor(diff / 1000)
+      diff: Math.floor(diff / 1000),
+      view: "year"
     });
     hide();
   }
 
-  function handleFormKeydown(event) {
-    if (event.key === "Enter" && event.target.nodeName === "INPUT") {
+  function handleFormKeydown(event: KeyboardEvent) {
+    if (event.key === "Enter" && (event.target as HTMLInputElement).nodeName === "INPUT") {
       event.preventDefault();
     }
   }
 
-  function handleInputChange({ target }) {
-    form[target.name] = target.value;
-    setForm({ ...form });
+  function handleInputChange(event: ChangeEvent) {
+    const element = event.target as HTMLInputElement;
+
+    setForm({
+      ...form,
+      [element.name]: element.value
+    });
   }
 
-  function handleFormFocus({ target }) {
-    const { name } = target;
+  function handleFormFocus(event: FocusEvent) {
+    const element = event.target as HTMLInputElement;
+    const { name } = element;
 
-    if (name === "title" || target.nodeName === "BUTTON" || name === "dateinput") {
+    if (!name || name === "title" || element.nodeName === "BUTTON" || name === "dateinput") {
       return;
     }
     const dataList = {
       name,
-      x: target.offsetLeft + target.offsetWidth / 2,
-      y: target.offsetTop + target.offsetHeight,
+      x: element.offsetLeft + element.offsetWidth / 2,
+      y: element.offsetTop + element.offsetHeight,
       items: []
     };
 
@@ -132,7 +171,7 @@ export default function Form({ locale, createCountdown, hide }) {
       }
     }
     else if (name === "month") {
-      const { dateLocale } = getSetting("timeDate");
+      const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
       let month = 0;
 
       while (month < 12) {
@@ -155,11 +194,11 @@ export default function Form({ locale, createCountdown, hide }) {
       }
     }
     else if (name === "hours") {
-      const { format } = getSetting("timeDate");
+      const { format } = getSetting("timeDate") as TimeDateSettings;
       let hour = 0;
 
       while (hour < 24) {
-        const value = format === 24 ? hour : getTimeString({ hours: hour }, { excludeMinutes: true });
+        const value = format === 24 ? hour : getTimeString({ hours: hour, minutes: 0 }, { excludeMinutes: true });
 
         dataList.items.push({
           value,
@@ -184,24 +223,36 @@ export default function Form({ locale, createCountdown, hide }) {
 
   function handleFormBlur() {
     if (!selected.current && form.dataList) {
-      delete form.dataList;
-      setForm({...form });
+      setForm({...form, dataList: undefined });
     }
     selected.current = false;
   }
 
-  function selectValue({ target }) {
-    const value = target.getAttribute("data-item");
+  function selectValue({ target }: MouseEvent) {
+    const listElement = (target as HTMLElement).closest("[data-list]");
 
-    requestAnimationFrame(() => {
-      if (value) {
-        form[form.dataList.name] = value;
-      }
-      delete form.dataList;
-      setForm({...form });
-    });
+    if (!listElement) {
+      selected.current = false;
+      setForm({
+        ...form,
+        dataList: undefined
+      });
+      return;
+    }
+    const value = (target as HTMLElement).getAttribute("data-item") || "";
 
     selected.current = true;
+
+    if (!value) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      setForm({
+        ...form,
+        dataList: undefined,
+        [form.dataList.name]: value
+      });
+    });
   }
 
   function resetDate() {
@@ -216,23 +267,25 @@ export default function Form({ locale, createCountdown, hide }) {
   }
 
   function showDatePicker() {
-    const element = document.querySelector("input[name=dateinput]");
+    const element = document.querySelector("input[name=dateinput]") as HTMLInputElement;
 
     if (element) {
       element.showPicker();
     }
   }
 
-  function handleDateInputChange(event) {
-    const { value } = event.target;
+  function handleDateInputChange(event: ChangeEvent) {
+    const { value } = event.target as HTMLInputElement;
 
     if (value) {
       const data = parseDateInputValue(value, true);
 
-      if (data.period) {
-        data.hours = `${data.hours} ${data.period.toUpperCase()}`;
-      }
-      setForm({ ...form, ...data, month: data.month + 1 });
+      setForm({
+        ...form,
+        ...data,
+        hours: data.period ? `${data.hours} ${data.period.toUpperCase()}` : data.hours,
+        month: (data.month + 1)
+      });
     }
     else {
       resetDate();
@@ -241,7 +294,7 @@ export default function Form({ locale, createCountdown, hide }) {
 
   return (
     <form className="countdown-form" onSubmit={handleFormSubmit} onFocus={handleFormFocus} onBlur={handleFormBlur}
-      onKeyDown={handleFormKeydown} autoComplete="off">
+      onKeyDown={handleFormKeydown} autoComplete="off" onPointerDown={selectValue}>
       <div className="container-header">
         <h3 className="container-header-title">{locale.countdown.form_title}</h3>
       </div>
@@ -251,7 +304,7 @@ export default function Form({ locale, createCountdown, hide }) {
             onClick={showDatePicker} data-modal-keep>
             <Icon id="calendar"/>
           </button>
-          <input type="datetime-local" name="dateinput" className="input" tabIndex="-1" onChange={handleDateInputChange}/>
+          <input type="datetime-local" name="dateinput" className="input" tabIndex={-1} onChange={handleDateInputChange}/>
         </div>
         <label>
           <div className="countdown-form-field-title">{locale.global.title_input_label}</div>
@@ -287,8 +340,8 @@ export default function Form({ locale, createCountdown, hide }) {
           </label>
         </div>
         {form.dataList ? (
-          <div className="container container-opaque countdown-form-field-datalist-container" style={{ top: form.dataList.y, left:  form.dataList.x }}>
-            <ul className={`countdown-form-field-datalist ${form.dataList.name}`} onPointerDown={selectValue} tabIndex="-1">
+          <div className="container container-opaque countdown-form-field-datalist-container" style={{ top: form.dataList.y, left:  form.dataList.x }} data-list>
+            <ul className={`countdown-form-field-datalist ${form.dataList.name}`} tabIndex={-1}>
               {form.dataList.items.map(item => (
                 <li className="countdown-form-field-datalist-item" key={item.value} data-item={item.value}>{item.displayValue}</li>
               ))}

@@ -1,41 +1,57 @@
-import { useRef } from "react";
+import type { Time } from "../timer.type";
+import { useRef, type MouseEvent, type KeyboardEvent } from "react";
 import { padTime } from "services/timeDate";
 import Icon from "components/Icon";
 
-export default function Inputs({ state, addTime, removeTime, updateInputs, handleKeyDown: handleContainerKeyDown }) {
+type Props = {
+  state: Time,
+  addTime: (to: string, event: MouseEvent) => void,
+  removeTime: (to: string, event: MouseEvent) => void,
+  updateInputs: (newState: Time) => void,
+  handleKeyDown: (event: KeyboardEvent) => void,
+};
+
+export default function Inputs({ state, addTime, removeTime, updateInputs, handleKeyDown: handleContainerKeyDown }: Props) {
   const hoursInputRef = useRef(null);
   const minutesInputRef = useRef(null);
   const secondsInputRef = useRef(null);
   const selection = useRef(null);
 
   function handleChange({ target }) {
-    const name = target.getAttribute("data-name");
-
     if (!target.value) {
       return;
     }
-    else if (target.value.length > 2) {
+    const name = target.getAttribute("data-name");
+    const inputs: Time = {
+      hours: state.hours,
+      minutes: state.minutes,
+      seconds: state.seconds
+    };
+
+    if (target.value.length > 2) {
       if (name === "seconds") {
-        state.hours = state.hours[1] + state.minutes[0];
-        state.minutes = state.minutes[1] + target.value[0];
+        inputs.hours = state.hours[1] + state.minutes[0];
+        inputs.minutes = state.minutes[1] + target.value[0];
       }
       else if (name === "minutes") {
-        state.hours = state.hours[1] + target.value[0];
+        inputs.hours = state.hours[1] + target.value[0];
       }
-      state[name] = padTime(target.value.slice(1));
+      inputs[name] = padTime(target.value.slice(1));
     }
     else {
-      state[name] = padTime(target.value);
+      inputs[name] = padTime(target.value);
     }
-    updateInputs(state);
+    updateInputs(inputs);
     requestAnimationFrame(() => {
       target.setSelectionRange(selection.current.end, selection.current.end);
     });
   }
 
-  function handleKeyDown(event) {
+  function handleKeyDown(event: KeyboardEvent) {
+    const target = event.target as HTMLInputElement;
+
     if (event.key.length === 1) {
-      selection.current = { start: event.target.selectionStart, end: event.target.selectionEnd };
+      selection.current = { start: target.selectionStart, end: target.selectionEnd };
 
       if (event.ctrlKey || event.shiftKey) {
         return;
@@ -47,89 +63,92 @@ export default function Inputs({ state, addTime, removeTime, updateInputs, handl
     else if (event.key === "Backspace" || event.key === "Delete") {
       event.preventDefault();
 
-      const { target } = event;
       const { selectionStart, selectionEnd } = target;
       const name = target.getAttribute("data-name");
+      const inputs: { hours: string, minutes: string, seconds: string } = {
+        hours: state.hours,
+        minutes: state.minutes,
+        seconds: state.seconds
+      };
 
       if (name === "seconds") {
         if ((event.key === "Backspace" && selectionStart === selectionEnd) || selectionEnd - selectionStart === 1) {
           if (selectionEnd === 1) {
-            state.seconds = state.minutes[1] + state.seconds[1];
+            inputs.seconds = state.minutes[1] + state.seconds[1];
           }
           else if (selectionEnd === 2) {
-            state.seconds = state.minutes[1] + state.seconds[0];
+            inputs.seconds = state.minutes[1] + state.seconds[0];
           }
-          state.minutes = state.hours[1] + state.minutes[0];
-          state.hours = "0" + state.hours[0];
+          inputs.minutes = state.hours[1] + state.minutes[0];
+          inputs.hours = "0" + state.hours[0];
         }
         else if (event.key === "Delete" && selectionStart === selectionEnd) {
           if (selectionStart === 1) {
-            state.seconds = state.seconds[0] + "0";
+            inputs.seconds = state.seconds[0] + "0";
           }
           else if (selectionStart === 0) {
-            state.seconds = state.seconds[1] + "0";
+            inputs.seconds = state.seconds[1] + "0";
           }
         }
         else if (selectionEnd - selectionStart === 2) {
-          state.seconds = state.minutes;
-          state.minutes = state.hours;
-          state.hours = "00";
+          inputs.seconds = state.minutes;
+          inputs.minutes = state.hours;
+          inputs.hours = "00";
         }
       }
       else if (name === "minutes") {
         if ((event.key === "Backspace" && selectionStart === selectionEnd) || selectionEnd - selectionStart === 1) {
           if (selectionEnd === 1) {
-            state.minutes = state.hours[1] + state.minutes[1];
+            inputs.minutes = state.hours[1] + state.minutes[1];
           }
           else if (selectionEnd === 2) {
-            state.minutes = state.hours[1] + state.minutes[0];
+            inputs.minutes = state.hours[1] + state.minutes[0];
           }
-          state.hours = "0" + state.hours[0];
+          inputs.hours = "0" + state.hours[0];
         }
         else if (event.key === "Delete" && selectionStart === selectionEnd) {
           if (selectionStart === 1) {
-            state.minutes = state.minutes[0] + state.seconds[0];
+            inputs.minutes = state.minutes[0] + state.seconds[0];
           }
           else if (selectionStart === 0) {
-            state.minutes = state.minutes[1] + state.seconds[0];
+            inputs.minutes = state.minutes[1] + state.seconds[0];
           }
-          state.seconds = state.seconds[1] + "0";
+          inputs.seconds = state.seconds[1] + "0";
         }
         else if (selectionEnd - selectionStart === 2) {
-          state.minutes = state.hours;
-          state.hours = "00";
+          inputs.minutes = state.hours;
+          inputs.hours = "00";
         }
       }
       else if (name === "hours") {
         if ((event.key === "Backspace" && selectionStart === selectionEnd) || selectionEnd - selectionStart === 1) {
           if (selectionEnd === 1) {
-            state.hours = "0" + state.hours[1];
+            inputs.hours = "0" + state.hours[1];
           }
           else if (selectionEnd === 2) {
-            state.hours = "0" + state.hours[0];
+            inputs.hours = "0" + state.hours[0];
           }
         }
         else if (event.key === "Delete" && selectionStart === selectionEnd) {
           if (selectionStart === 1) {
-            state.hours = state.hours[0] + state.minutes[0];
+            inputs.hours = state.hours[0] + state.minutes[0];
           }
           else if (selectionStart === 0) {
-            state.hours = state.hours[1] + state.minutes[0];
+            inputs.hours = state.hours[1] + state.minutes[0];
           }
-          state.minutes = state.minutes[1] + state.seconds[0];
-          state.seconds = state.seconds[1] + "0";
+          inputs.minutes = state.minutes[1] + state.seconds[0];
+          inputs.seconds = state.seconds[1] + "0";
         }
         else if (selectionEnd - selectionStart === 2) {
-          state.hours = "00";
+          inputs.hours = "00";
         }
       }
-      updateInputs(state);
+      updateInputs(inputs);
       requestAnimationFrame(() => {
         target.setSelectionRange(selectionEnd, selectionEnd);
       });
     }
     else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-      const { target } = event;
       const { selectionStart, selectionEnd } = target;
 
       if (selectionStart !== selectionEnd) {
@@ -162,7 +181,6 @@ export default function Inputs({ state, addTime, removeTime, updateInputs, handl
 
       if (element) {
         event.preventDefault();
-
         element.focus();
         element.setSelectionRange(selection, selection);
       }

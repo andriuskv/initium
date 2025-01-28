@@ -1,4 +1,5 @@
-import { useState } from "react";
+import type { Preset, Time } from "../timer.type";
+import { useState, type MouseEvent, type FormEvent, type ChangeEvent } from "react";
 import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -7,38 +8,54 @@ import Icon from "components/Icon";
 import "./presets.css";
 import Inputs from "../Inputs";
 
-export default function Presets({ presets, locale, updatePresets, getUpdatedTime, resetActivePreset, hide }) {
-  const [state, setState] = useState({
+type Props = {
+  presets: Preset[],
+  locale: any,
+  updatePresets: (presets: Preset[]) => void,
+  getUpdatedTime: (initialValues: Time, options: { to: string, sign: number, shouldPad?: boolean }, event: MouseEvent) => Time & { duration: number},
+  resetActivePreset: (preset: Preset) => void,
+  hide: () => void,
+};
+
+export default function Presets({ presets, locale, updatePresets, getUpdatedTime, resetActivePreset, hide }: Props) {
+  const [state, setState] = useState<Time>({
     hours: "00",
     minutes: "00",
     seconds: "00"
   });
-  const [form, setForm] = useState({ name: "" });
+  const [form, setForm] = useState<{ name: string, index?: number, updating?: boolean, error?: boolean }>({ name: "" });
   const [activeDragId, setActiveDragId] = useState(null);
-  const [localPresets, setLocalPresets] = useState(presets);
+  const [localPresets, setLocalPresets] = useState<Preset[]>(presets);
 
-  function updateInputs(inputs) {
+  function updateInputs(inputs: Time) {
     setState({ ...inputs });
   }
 
-  function createPreset(event) {
+  function createPreset(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      name: HTMLInputElement;
+    }
+
     event.preventDefault();
 
     if (isValuesInvalid(state)) {
       setForm({ ...form, error: true });
       return;
     }
-    const presetName = event.target.elements.name.value.trim();
+    const formElement = event.target as HTMLFormElement;
+    const { name } = formElement.elements as FormElements;
+    const presetName = name.value.trim();
 
     if (form.updating) {
       const preset = localPresets[form.index];
 
-      preset.name = presetName;
-      preset.hours = state.hours;
-      preset.minutes = state.minutes;
-      preset.seconds = state.seconds;
-
-      resetActivePreset(preset);
+      resetActivePreset({
+        name: presetName,
+        id: preset.id,
+        hours: state.hours,
+        minutes: state.minutes,
+        seconds: state.seconds
+      });
     }
     else {
       localPresets.unshift({
@@ -52,7 +69,7 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     resetForm();
   }
 
-  function isValuesInvalid(state) {
+  function isValuesInvalid(state: Time) {
     return Object.values(state).every(value => value === "00") || Object.values(state).some(value => /\D/.test(value));
   }
 
@@ -62,7 +79,7 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     }
   }
 
-  function editPreset(index) {
+  function editPreset(index: number) {
     const preset = localPresets[index];
 
     setForm({
@@ -78,7 +95,7 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     });
   }
 
-  function removePreset(index) {
+  function removePreset(index: number) {
     localPresets.splice(index, 1);
     updatePresets(localPresets);
     savePresets(localPresets);
@@ -93,20 +110,20 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     });
   }
 
-  function savePresets(presets) {
+  function savePresets(presets: Preset[]) {
     chromeStorage.set({ timer: presets });
   }
 
-  function handlePresetNameChange(event) {
-    setForm({ ...form, name: event.target.value });
+  function handlePresetNameChange(event: ChangeEvent) {
+    setForm({ ...form, name: (event.target as HTMLInputElement).value });
   }
 
-  function addTime(to, event) {
+  function addTime(to: string, event: MouseEvent) {
     const values = getUpdatedTime(state, { to, sign: 1 }, event);
     setState(values);
   }
 
-  function removeTime(to, event) {
+  function removeTime(to: string, event: MouseEvent) {
     const values = getUpdatedTime(state, { to, sign: -1 }, event);
     setState(values);
   }
@@ -115,7 +132,7 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     setActiveDragId(event.active.id);
   }
 
-  function handleSort(items) {
+  function handleSort(items: Preset[]) {
     if (items) {
       setLocalPresets(items);
       updatePresets(items);

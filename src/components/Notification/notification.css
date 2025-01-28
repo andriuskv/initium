@@ -24,6 +24,12 @@
     animation-duration: var(--duration-f), var(--duration-n);
     animation-name: opacity-down, hide-notification;
   }
+
+  &:not(:has(.notification-top + .notification-content)) {
+    .notification-content {
+      margin-top: var(--space-md);
+    }
+  }
 }
 
 .notification-top {
@@ -41,9 +47,8 @@
 
 .notification-content {
   padding-inline: var(--space-xl);
-  word-wrap: break-word;
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .notification-bottom {
