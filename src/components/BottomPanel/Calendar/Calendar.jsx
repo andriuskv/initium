@@ -195,7 +195,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }) {
     showNotification({
       title: "Calendar",
       iconId: "calendar",
-      text: `${reminder.notify.type === "default" ? "Today" : reminder.range.text}\n${reminder.text}`,
+      content: `${reminder.notify.type === "default" ? "Today" : reminder.range.text}\n${reminder.text}`,
       action: () => {
         if (!revealed.current) {
           revealed.current = true;
