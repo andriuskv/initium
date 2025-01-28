@@ -4,6 +4,7 @@ import { timeout } from "utils";
 import { initAppearanceSettings } from "services/settings";
 import { useSettings } from "contexts/settings";
 import { useLocalization } from "contexts/localization";
+import { useNotification } from "contexts/notification";
 import Wallpaper from "components/Wallpaper";
 import MiddleTop from "components/MiddleTop";
 import BottomPanel from "components/BottomPanel";
@@ -30,6 +31,7 @@ type FullscreenModalType = {
 export default function App() {
   const { settings } = useSettings();
   const locale = useLocalization();
+  const { showNotification } = useNotification();
   const [weather, setWeather] = useState<{ rendered: boolean, shouldDelay?: boolean}>(() => ({ rendered: false, shouldDelay: isWeatherEnabled() }));
   const [fullscreenModal, setFullscreenModal] = useState<FullscreenModalType>({});
   const weatherTimeoutId = useRef(0);
@@ -37,6 +39,7 @@ export default function App() {
 
   useLayoutEffect(() => {
     initAppearanceSettings(settings.appearance);
+    initAnnouncements();
   }, []);
 
   useEffect(() => {
@@ -67,6 +70,38 @@ export default function App() {
     }
   }, [settings.weather]);
 
+  async function initAnnouncements() {
+    type Announcement = {
+      id: string,
+      title?: string,
+      content: string,
+      expires: number
+      duration?: number
+    }
+
+    try {
+      const json = await fetch(`${process.env.SERVER_URL}/messages`).then(res => res.json());
+
+      if (json.messages) {
+        const currentDate = Date.now();
+        const localAnnouncements: Partial<Announcement>[] = (JSON.parse(localStorage.getItem("announcements")) || [])
+          .filter(a => a.expires > currentDate);
+        const newMessages = (json.messages as Announcement[])
+          .filter(m => !localAnnouncements.some((l => l.id === m.id)));
+
+        for (const message of newMessages) {
+          showNotification(message);
+          localAnnouncements.push({
+            id: message.id,
+            expires: message.expires
+          });
+        }
+        localStorage.setItem("announcements", JSON.stringify(localAnnouncements));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   function isWeatherEnabled() {
     return !settings.weather.disabled && (!!settings.weather.cityName || settings.weather.useGeo);
