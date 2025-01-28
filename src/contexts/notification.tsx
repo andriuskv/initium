@@ -30,9 +30,11 @@ function NotificationProvider({ children }: PropsWithChildren) {
     clearTimeout(dismissTimeoutId.current);
 
     if (notifications.length) {
+      const duration = notifications[0].duration || 8;
+
       dismissTimeoutId.current = window.setTimeout(() => {
         hide(0);
-      }, 8000);
+      }, duration * 1000);
     }
     window.addEventListener("notification", handleNotification);
 
@@ -46,13 +48,13 @@ function NotificationProvider({ children }: PropsWithChildren) {
   }
 
   function showNotification(notification: Notification) {
-    notification.id = getRandomString();
+    notification.id ??= getRandomString();
     tempNotifs.current.push(notification);
 
     addTimeoutId.current = timeout(() => {
       const newNotifications = [...notifications, ...tempNotifs.current];
       const end = newNotifications.length;
-      const start = end - 6 < 0 ? 0 : end - 6;
+      const start = end - 10 < 0 ? 0 : end - 10;
       tempNotifs.current.length = 0;
 
       setNotifications(newNotifications.slice(start, end));

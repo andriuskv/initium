@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "outDir": "./dist/",
+    "outDir": "dist",
     "sourceMap": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -15,21 +15,21 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true
   },
-  "lib": ["DOM", "ESNext"],
-  "typeRoots": ["./node_modules/@types", "./src/types"],
+  "lib": ["DOM", "ESNext", "webworker"],
+  "typeRoots": ["node_modules/@types", "src/types"],
   "include": [
     "build.js",
     "webpack.config.js",
-    "./src/"
+    "src/**/*"
   ],
   "exclude": ["node_modules", "dist"],
   "paths": {
-    "services/*": ["./src/services/*"],
-    "components/*": ["./src/components/*"],
-    "contexts/*": ["./src/contexts/*"],
-    "hooks/*": ["./src/hooks/*"],
-    "types/*": ["./src/types/*"],
-    "assets/*": ["./src/assets/*"],
-    "utils": ["./src/utils.ts"]
+    "services/*": ["src/services/*"],
+    "components/*": ["src/components/*"],
+    "contexts/*": ["src/contexts/*"],
+    "hooks/*": ["src/hooks/*"],
+    "types/*": ["src/types/*"],
+    "assets/*": ["src/assets/*"],
+    "utils": ["src/utils.ts"]
   }
 }

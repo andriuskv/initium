@@ -1,4 +1,5 @@
 import type { TimeDateSettings } from "types/settings";
+import type { Countdown } from "./countdown.types";
 import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent, getRandomString } from "utils";
 import { getSetting } from "services/settings";
@@ -11,41 +12,6 @@ import "./countdown.css";
 import useWorker from "../../useWorker";
 
 const Form = lazy(() => import("./Form"));
-
-type Countdown = {
-  id: string,
-  title: string,
-  isInPast?: boolean,
-  willBeInPast?: boolean,
-  date: string,
-  dateString: string,
-  diff: number,
-  view: "year" | "month" | "day" | "hour" | "minute" | "second",
-  year?: {
-    value: number,
-    unit: string,
-  },
-  month?: {
-    value: number,
-    unit: string,
-  },
-  day?: {
-    value: number,
-    unit: string,
-  },
-  hour?: {
-    value: number,
-    unit: string,
-  },
-  minute?: {
-    value: number,
-    unit: string,
-  },
-  second?: {
-    value: number,
-    unit: string,
-  }
-}
 
 export default function Countdown({ visible, locale, animDirection, toggleIndicator }) {
   const [countdowns, setCountdowns] = useState<Countdown[]>([]);
@@ -262,8 +228,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
       {
         ...countdown,
         ...parseDateDiff(countdown.diff, "year"),
-        date: getCountdownDateString(new Date(countdown.dateString)),
-        view: "year" as Countdown["view"]
+        date: getCountdownDateString(new Date(countdown.dateString))
       },
       ...countdowns
     ];

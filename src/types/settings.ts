@@ -1,6 +1,7 @@
 type MiddleTopItem = {
   id: "timers" | "clock" | "greeting";
   name: string;
+  alignment?: "start" | "center" | "end";
 };
 
 type HSLColor = {
@@ -106,7 +107,7 @@ export type WeatherSettings = {
   speedUnits: "m/s" | "ft/s";
 };
 
-type TimersSettings = {
+export type TimersSettings = {
   disabled: boolean;
   volume: number;
   fullscreenTextScale: number;

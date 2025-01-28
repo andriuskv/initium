@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import type { TimeDateSettings } from "types/settings";
+import { useState, useEffect, type CSSProperties, type MouseEvent } from "react";
 import { toggleBehindElements } from "utils";
 import { getDisplayTime, formatDate } from "services/timeDate";
 import "./clock.css";
 import useWorker from "../useWorker";
 
-export default function Clock({ settings }) {
+export default function Clock({ settings }: { settings: TimeDateSettings }) {
   const [clock, setClock] = useState(() => ({ ...getDisplayTime(settings.clockStyle === "vertical") }));
-  const [date, setDate] = useState(() => ({ day: new Date().getDate() }));
+  const [date, setDate] = useState(() => getDate());
   const [expanded, setExpanded] = useState(false);
   const { initWorker, destroyWorkers } = useWorker(handleMessage);
 
@@ -47,18 +48,22 @@ export default function Clock({ settings }) {
     }
   }
 
-  function updateDate() {
-    const currentDate = new Date();
-    const date = formatDate(currentDate.getTime(), {
+  function getDate() {
+    const date = new Date();
+    const formatted = formatDate(date.getTime(), {
       locale: settings.dateLocale,
       includeWeekday: true,
       excludeYear: true
     });
 
-    setDate({ day: currentDate.getDate(), string: date });
+    return { day: date.getDate(), formatted };
   }
 
-  function collapse(event) {
+  function updateDate() {
+    setDate(getDate());
+  }
+
+  function collapse(event: KeyboardEvent) {
     if (event.key === "Escape") {
       document.startViewTransition(() => {
         setExpanded(false);
@@ -66,7 +71,7 @@ export default function Clock({ settings }) {
     }
   }
 
-  function handleClick(event) {
+  function handleClick(event: MouseEvent) {
     if (event.detail === 2 && settings.clockFullscreenEnabled) {
       document.startViewTransition(() => {
         setExpanded(!expanded);
@@ -88,14 +93,14 @@ export default function Clock({ settings }) {
 
   return (
     <div className={`clock${expanded ? " fullscreen-mask expanded" : ""} date-${settings.datePosition}`}
-      style={{ "--scale": settings.clockScale, "--date-alignment": settings.dateAlignment }}
+      style={{ "--scale": settings.clockScale, "--date-alignment": settings.dateAlignment } as CSSProperties}
       onClick={handleClick}>
       <div className="clock-time-container">
         {renderClock()}
         {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
       </div>
       {settings.dateHidden ? null : (
-        <div className="clock-date" style={{ "--date-scale": settings.dateScale }}>{date.string}</div>
+        <div className="clock-date" style={{ "--date-scale": settings.dateScale } as CSSProperties}>{date.formatted}</div>
       )}
     </div>
   );

@@ -27,14 +27,14 @@ onmessage = function({ data }) {
   }
 };
 
-function countdown(elapsed) {
+function countdown(elapsed: number) {
   const interval = 1000;
   const diff = performance.now() - elapsed;
 
   elapsed += interval;
   params.duration -= 1;
 
-  timeoutId = setTimeout(() => {
+  timeoutId = self.setTimeout(() => {
     postMessage({ elapsed, diff: interval, ...params });
 
     if (params.duration >= 0) {
@@ -43,8 +43,8 @@ function countdown(elapsed) {
   }, interval - diff);
 }
 
-function update(start, elapsed = 0) {
-  const interval = 20;
+function update(start: number, elapsed = 0) {
+  const interval = Math.random() * 5 + 15;
   const diff = performance.now() - start;
 
   start += interval;
@@ -52,7 +52,7 @@ function update(start, elapsed = 0) {
 
   postMessage({ diff: interval, elapsed });
 
-  timeoutId = setTimeout(() => {
+  timeoutId = self.setTimeout(() => {
     update(start, elapsed);
   }, interval - diff);
 }
@@ -64,7 +64,9 @@ function updateClock(elapsed = 0) {
   elapsed += interval;
   postMessage(null);
 
-  timeoutId = setTimeout(() => {
+  timeoutId = self.setTimeout(() => {
     updateClock(elapsed);
   }, interval - diff);
 }
+
+export {};

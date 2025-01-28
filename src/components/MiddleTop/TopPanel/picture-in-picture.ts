@@ -13,7 +13,16 @@ function isActive() {
   return !!pipWindow;
 }
 
-function toggle(params) {
+type Params = {
+  name: string,
+  title: string,
+  data: {
+    [key: string]: any
+  },
+  toggle: (isPip: boolean) => void
+}
+
+function toggle(params: Params) {
   if (pipWindow) {
     if (params.name === activeTimer) {
       pipWindow.close();
@@ -28,7 +37,7 @@ function toggle(params) {
   }
 }
 
-function close(name) {
+function close(name: string) {
   if (!pipWindow || name !== activeTimer) {
     return;
   }
@@ -45,13 +54,13 @@ function cleanup() {
   timerActions = {};
 }
 
-async function init({ name, title, data, toggle }) {
+async function init({ name, title, data, toggle }: Params) {
   // Temporary reset page title to prevent PiP from showing stale timer info
   setPageTitle();
 
   activeTimer = name;
   timerActions[name] = { toggle };
-  pipWindow = await window.documentPictureInPicture.requestWindow();
+  pipWindow = await (window as any).documentPictureInPicture.requestWindow();
 
   await copyStyleSheets(pipWindow.document.head);
 
@@ -97,7 +106,7 @@ async function init({ name, title, data, toggle }) {
     </style>
   `);
 
-  const { backgroundPosition, backgroundImage } = document.querySelector(".wallpaper").style;
+  const { backgroundPosition, backgroundImage } = (document.querySelector(".wallpaper") as HTMLElement).style;
 
   pipWindow.document.body.insertAdjacentHTML("beforeend", `
     <div class="wallpaper" style='background-position: ${backgroundPosition}; background-image: ${backgroundImage}'></div>
@@ -112,7 +121,7 @@ async function init({ name, title, data, toggle }) {
     </div>
   `);
 
-  update(data);
+  update(name, data);
 
   pipWindow.document.body.addEventListener("click", handleClick);
   pipWindow.addEventListener("unload", cleanup, { once: true });
@@ -122,7 +131,7 @@ function handleClick() {
   timerActions[activeTimer].toggle(true);
 }
 
-async function copyStyleSheets(head) {
+async function copyStyleSheets(head: HTMLElement) {
   const allCSS = [...document.styleSheets]
     .map(styleSheet => {
       try {
@@ -131,7 +140,7 @@ async function copyStyleSheets(head) {
         const link = document.createElement("link");
         link.rel = "stylesheet";
         link.type = styleSheet.type;
-        link.media = styleSheet.media;
+        link.media = styleSheet.media as unknown as string;
         link.href = styleSheet.href;
         head.appendChild(link);
         return null;
@@ -145,7 +154,7 @@ async function copyStyleSheets(head) {
   head.appendChild(style);
 }
 
-function update(name, data) {
+function update(name: string, data: Params["data"]) {
   if (!pipWindow || name !== activeTimer) {
     return;
   }
@@ -173,7 +182,7 @@ function update(name, data) {
   }
 }
 
-function updateActions(name, actions) {
+function updateActions(name: string, actions: { [key: string]: () => void }) {
   timerActions[name] = actions;
 }
 

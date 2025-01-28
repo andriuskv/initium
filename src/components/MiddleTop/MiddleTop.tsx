@@ -1,4 +1,5 @@
-import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
+import type { Settings } from "types/settings";
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { setPageTitle } from "utils";
 import "./middle-top.css";
 
@@ -6,11 +7,16 @@ const TopPanel = lazy(() => import("./TopPanel"));
 const Clock = lazy(() => import("./Clock"));
 const Greeting = lazy(() => import("./Greeting"));
 
-export default function MiddleTop({ settings, greetingEditorVisible }) {
+type Props = {
+  settings: Settings,
+  greetingEditorVisible: boolean
+}
+
+export default function MiddleTop({ settings, greetingEditorVisible }: Props) {
   const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
   const [greetingVisible, setGreetingVisible] = useState(false);
-  const [topPanel, setTopPanel] = useState({ rendered: false });
-  const [itemOrder, setItemOrder] = useState({});
+  const [topPanel, setTopPanel] = useState<{ rendered: boolean, forceVisibility?: boolean, initialTab?: string }>({ rendered: false });
+  const [itemOrder, setItemOrder] = useState(() => getItemOrder());
   const topPanelTimeoutId = useRef(0);
 
   useEffect(() => {
@@ -36,22 +42,26 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
 
 
   useLayoutEffect(() => {
-    const alignment = {};
-
-    for (const item of settings.general.middleTopOrder) {
-      alignment[`--${item.id}-alignment`] = item.alignment || "center";
-    }
-    setItemOrder({
-      alignment,
-      orderString: getOrderString(settings.general.middleTopOrder)
-    });
+    setItemOrder(getItemOrder());
   }, [settings.general.middleTopOrder]);
 
   useLayoutEffect(() => {
     setShouldCenterClock(getClockCenterState());
   }, [settings.mainPanel, settings.timeDate]);
 
-  function getOrderString(items) {
+  function getItemOrder() {
+    const order = {};
+
+    for (const item of settings.general.middleTopOrder) {
+      order[`--${item.id}-alignment`] = item.alignment || "center";
+    }
+    return {
+      order,
+      orderString: getOrderString(settings.general.middleTopOrder)
+    };
+  }
+
+  function getOrderString(items: Settings["general"]["middleTopOrder"]) {
     return items.reduce((str, item) => `${str} "${item.id}"`, ``).trimStart();
   }
 
@@ -82,7 +92,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
     const countdowns = await chromeStorage.get("countdowns");
 
     if (countdowns?.length) {
-      topPanelTimeoutId.current = setTimeout(() => {
+      topPanelTimeoutId.current = window.setTimeout(() => {
         setTopPanel({ rendered: true });
       }, 4000);
     }
@@ -92,7 +102,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
     setTopPanel({ ...topPanel, rendered: true });
   }
 
-  function renderTopPanel({ detail }) {
+  function renderTopPanel({ detail }: CustomEvent) {
     const initialTab = detail ? detail.tab : "";
 
     clearTimeout(topPanelTimeoutId.current);
@@ -105,9 +115,12 @@ export default function MiddleTop({ settings, greetingEditorVisible }) {
 
   return (
     <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}
-      style={{ "--order": itemOrder.orderString, ...itemOrder.alignment }}>
+      style={{ "--order": itemOrder.orderString, ...itemOrder.order } as CSSProperties}>
       <Suspense fallback={null}>
-        {!settings.timers.disabled && topPanel.rendered && <TopPanel initialTab={topPanel.initialTab} forceVisibility={topPanel.forceVisibility} settings={settings.timers} animationSpeed={settings.appearance.animationSpeed} resetTopPanel={resetTopPanel} />}
+        {!settings.timers.disabled && topPanel.rendered && (
+          <TopPanel initialTab={topPanel.initialTab} forceVisibility={topPanel.forceVisibility} settings={settings.timers}
+            animationSpeed={settings.appearance.animationSpeed} resetTopPanel={resetTopPanel}/>
+        )}
       </Suspense>
       <Suspense fallback={null}>
         {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}

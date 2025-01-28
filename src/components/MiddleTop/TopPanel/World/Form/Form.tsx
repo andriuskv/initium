@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import type { Clock } from "../world.types";
+import { useState, useEffect, useRef, type ChangeEvent, type KeyboardEvent } from "react";
 import { getRandomString, timeout } from "utils";
 import { getHoursOffset } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
@@ -6,10 +7,16 @@ import * as focusService from "services/focus";
 import Icon from "components/Icon";
 import "./form.css";
 
-export default function Form({ locale, addClock, hide }) {
-  const [currentClocks, setCurrentClocks] = useState([]);
+type Props = {
+  locale: any,
+  addClock: (clock: Clock) => void,
+  hide: () => void
+}
+
+export default function Form({ locale, addClock, hide }: Props) {
+  const [currentClocks, setCurrentClocks] = useState<Partial<Clock>[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [searchResults, setSearchResults] = useState(null);
+  const [searchResults, setSearchResults] = useState<Clock[]>(null);
   const timeoutId = useRef(0);
   const inputRef = useRef(null);
 
@@ -33,11 +40,11 @@ export default function Form({ locale, addClock, hide }) {
     }
   }
 
-  async function searchLocation(value) {
+  async function searchLocation(value: string) {
     const { default: cityTimezones } = await import("city-timezones");
     const { Temporal } = await import("@js-temporal/polyfill");
     const cities = cityTimezones.findFromCityStateProvince(value);
-    const results = [];
+    const results: Clock[] = [];
 
     for (const city of cities) {
       const foundLocation = currentClocks.find(clock => clock.city === city.city && clock.timeZone === city.timezone);
@@ -69,12 +76,12 @@ export default function Form({ locale, addClock, hide }) {
     setSearchResults(results);
   }
 
-  function handleChange(event) {
-    setInputValue(event.currentTarget.value);
+  function handleChange(event: ChangeEvent) {
+    setInputValue((event.currentTarget as HTMLInputElement).value);
   }
 
-  async function handleKeyUp(event) {
-    const { value } = event.currentTarget;
+  async function handleKeyUp(event: KeyboardEvent) {
+    const { value } = event.currentTarget as HTMLInputElement;
 
     timeoutId.current = timeout(() => {
       if (value.length > 2) {
@@ -94,7 +101,7 @@ export default function Form({ locale, addClock, hide }) {
     setSearchResults(null);
   }
 
-  function handleClick(result) {
+  function handleClick(result: Clock) {
     if (result.alreadyAdded) {
       return;
     }

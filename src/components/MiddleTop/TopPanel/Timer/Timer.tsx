@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, lazy } from "react";
+import type { Preset, Time } from "./timer.type";
+import { useState, useEffect, useRef, lazy, type ChangeEvent, type MouseEvent } from "react";
 import { timeout, getRandomString, dispatchCustomEvent } from "utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
@@ -10,11 +11,38 @@ import Icon from "components/Icon";
 import "./timer.css";
 import Inputs from "./Inputs";
 import useWorker from "../../useWorker";
+import type { TimersSettings } from "types/settings";
 
 const Presets = lazy(() => import("./Presets"));
 
-export default function Timer({ visible, locale, animDirection, toggleIndicator, updateTitle, ignoreMiniTimerPref, expand, exitFullscreen, handleReset }) {
-  const [timers, setTimers] = useState(() => {
+type Props = {
+  visible: boolean,
+  locale: any,
+  animDirection: "anim-left" | "anim-right",
+  toggleIndicator: (name: string, value: boolean) => void,
+  updateTitle: (title: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
+  ignoreMiniTimerPref: (name: string, value: boolean) => void,
+  expand: () => void,
+  exitFullscreen: () => void,
+  handleReset: (name: string) => Promise<void>
+}
+
+type TimerType = Time & {
+  id: string,
+  active: boolean,
+  label?: string,
+  running?: boolean,
+  dirty?: boolean,
+  dirtyInput?: boolean,
+  presetId?: string,
+  duration?: number,
+  shouldPlayAudio: boolean,
+}
+
+type TimerObj = { [key: string]: TimerType };
+
+export default function Timer({ visible, locale, animDirection, toggleIndicator, updateTitle, ignoreMiniTimerPref, expand, exitFullscreen, handleReset }: Props) {
+  const [timers, setTimers] = useState<TimerObj>(() => {
     const id = getRandomString(4);
 
     return {
@@ -22,21 +50,20 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
         id,
         label: "",
         active: true,
-        running: false,
         shouldPlayAudio: true,
-        presetId: null,
+        presetId: "",
         hours: "00",
         minutes: "00",
         seconds: "00"
       }
     };
   });
-  const [presets, setPresets] = useState([]);
+  const [presets, setPresets] = useState<Preset[]>([]);
   const [pipId, setPipId] = useState("");
   const [audioEnded, setAudioEnded] = useState([]);
   const audio = useRef({});
   const runningOrder = useRef([]);
-  const saveTimeoutId = useRef();
+  const saveTimeoutId = useRef(0);
   const { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback, updateDuration } = useWorker(handleMessage);
   const timersArr = Object.values(timers);
   const activeTimer = timersArr.find(timer => timer.active) || timersArr[0];
@@ -61,6 +88,12 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
   }, [timersArr, pipId]);
 
   useEffect(() => {
+    function handlePipClose({ detail }: CustomEvent) {
+      if (detail.startsWith("timer")) {
+        setPipId("");
+      }
+    }
+
     window.addEventListener("pip-close", handlePipClose);
 
     return () => {
@@ -79,14 +112,14 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     setAudioEnded([]);
   }, [audioEnded]);
 
-  function initTimer(params) {
+  function initTimer(params: { id: string; duration: number }) {
     initWorker(params);
     toggleIndicator("timer", true);
     addToRunning(`timer-${params.id}`);
     ignoreMiniTimerPref("timer", false);
   }
 
-  function resetTimer(id) {
+  function resetTimer(id: string) {
     destroyWorker(id);
 
     if (timersArr.filter(timer => timer.running).length < 2) {
@@ -148,8 +181,8 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     });
   }
 
-  function playAudio(id) {
-    const { volume } = getSetting("timers");
+  function playAudio(id: string) {
+    const { volume } = getSetting("timers") as TimersSettings;
 
     audio.current[id].element.volume = volume;
     audio.current[id].element.play();
@@ -158,14 +191,14 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     }, 3000);
   }
 
-  function resetAudio(id) {
+  function resetAudio(id: string) {
     audio.current[id].element.pause();
     audio.current[id].element.currentTime = 0;
     clearTimeout(audio.current[id].timeoutId);
     delete audio.current[id];
   }
 
-  function toggle(pip) {
+  function toggle(pip?: boolean) {
     const id = typeof pip === "boolean" && pip ? pipId : activeTimer.id;
 
     if (timers[id].running) {
@@ -176,33 +209,36 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     }
   }
 
-  function start(pip) {
+  function start(pip?: boolean) {
     const id = typeof pip === "boolean" && pip ? pipId : activeTimer.id;
     const timer = timers[id];
     const values = normalizeValues(timer);
     const duration = calculateDuration(values);
 
     if (duration) {
-      const paddedMinutes = padTime(values.minutes, values.hours);
-      const paddedSeconds = padTime(values.seconds, values.hours || values.minutes);
-      const { timer: { usePresetNameAsLabel } } = getSetting("timers");
+      const paddedMinutes = padTime(values.minutes, !!values.hours);
+      const paddedSeconds = padTime(values.seconds, !!(values.hours || values.minutes));
+      const { timer: { usePresetNameAsLabel } } = getSetting("timers") as TimersSettings;
       let label = timer.label;
 
       if (usePresetNameAsLabel && timer.presetId) {
         label = presets.find(preset => preset.id === timer.presetId).name;
       }
       initTimer({ id, duration });
-      setTimers({ ...timers, [timer.id]: {
-        ...timer,
-        label,
-        dirty: true,
-        dirtyInput: true,
-        running: true,
-        hours: values.hours,
-        minutes: paddedMinutes,
-        seconds: paddedSeconds,
-        duration
-      }});
+      setTimers({
+        ...timers,
+        [timer.id]: {
+          ...timer,
+          label,
+          dirty: true,
+          dirtyInput: true,
+          running: true,
+          hours: values.hours.toString(),
+          minutes: paddedMinutes,
+          seconds: paddedSeconds,
+          duration
+        }
+      });
 
       if (runningOrder.current.length === 0) {
         updateTitle("timer", {
@@ -222,7 +258,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     }
   }
 
-  function stop(pip) {
+  function stop(pip?: boolean) {
     const timer = typeof pip === "boolean" && pip ? timers[pipId] : activeTimer;
     const newTimer = {
       ...timer,
@@ -240,10 +276,8 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     runningOrder.current = runningOrder.current.filter(id => newTimer.id !== id);
   }
 
-  function normalizeValues(timer) {
-    let hours = Number.parseInt(timer.hours, 10);
-    let minutes = Number.parseInt(timer.minutes, 10);
-    let seconds = Number.parseInt(timer.seconds, 10);
+  function normalizeValues(time: Time) {
+    let { hours, minutes, seconds } = convertTimeObjToNumber(time);
 
     if (seconds >= 60) {
       seconds -= 60;
@@ -266,19 +300,22 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     return seconds + (minutes * 60) + (hours * 3600);
   }
 
-  function update(duration, id) {
+  function update(duration: number, id: string) {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor(duration / 60 % 60);
     const seconds = duration % 60;
-    const paddedMinutes = padTime(minutes, hours);
-    const paddedSeconds = padTime(seconds, hours || minutes);
+    const paddedMinutes = padTime(minutes, !!hours);
+    const paddedSeconds = padTime(seconds, !!(hours || minutes));
     const timer = timers[id];
-    const newTimers = { ...timers, [id]: {
-      ...timer,
-      hours,
-      minutes: paddedMinutes,
-      seconds: paddedSeconds
-    }};
+    const newTimers = {
+      ...timers,
+      [id]: {
+        ...timer,
+        hours: hours.toString(),
+        minutes: paddedMinutes,
+        seconds: paddedSeconds
+      }
+    };
 
     setTimers(newTimers);
 
@@ -299,14 +336,14 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     saveTimers(newTimers);
   }
 
-  async function reset(id) {
+  async function reset(id: string) {
     if (activeTimer.id === id) {
       exitFullscreen();
     }
     await handleReset("timer");
 
     const timer = timers[id];
-    let inputs = {
+    let inputs: Time = {
       hours: "00",
       minutes: "00",
       seconds: "00"
@@ -324,13 +361,16 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     if (timer.running) {
       resetTimer(id);
     }
-    const newTimers = { ...timers, [timer.id] : {
-      ...timer,
-      ...inputs,
-      dirty: false,
-      dirtyInput: false,
-      running: false
-    }};
+    const newTimers = {
+      ...timers,
+      [timer.id] : {
+        ...timer,
+        ...inputs,
+        dirty: false,
+        dirtyInput: false,
+        running: false
+      }
+    };
     runningOrder.current = runningOrder.current.filter(timerId => timerId !== id);
     setTimers(newTimers);
     setPipId("");
@@ -338,7 +378,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     saveTimers(newTimers);
   }
 
-  function saveTimers(timers) {
+  function saveTimers(timers: TimerObj) {
     const obj = {};
 
     for (const timer of Object.values(timers)) {
@@ -358,7 +398,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     localStorage.setItem("timers", JSON.stringify(obj));
   }
 
-  function updateInputs(inputs) {
+  function updateInputs(inputs: Time) {
     setTimers({ ...timers, [activeTimer.id]: {
       ...activeTimer,
       ...inputs,
@@ -371,8 +411,8 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
 
       pipService.update(`timer-${activeTimer.id}`, {
         hours,
-        minutes: padTime(minutes, hours),
-        seconds: padTime(inputs.seconds, hours || minutes)
+        minutes: padTime(minutes, !!hours),
+        seconds: padTime(inputs.seconds, !!(hours || minutes))
       });
     }
   }
@@ -391,7 +431,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     });
   }
 
-  function updatePresets(presets) {
+  function updatePresets(presets: Preset[]) {
     if (!presets.length) {
       setTimers({ ...timers, [activeTimer.id]: {
         ...activeTimer,
@@ -401,23 +441,29 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     setPresets([...presets]);
   }
 
-  function resetActivePreset(preset) {
+  function resetActivePreset(preset: Preset) {
     if (activeTimer.presetId === preset.id) {
-      setTimers({ ...timers, [activeTimer.id]: {
-        ...activeTimer,
-        hours: preset.hours,
-        minutes: preset.minutes,
-        seconds: preset.seconds
-      }});
+      setTimers({
+        ...timers,
+        [activeTimer.id]: {
+          ...activeTimer,
+          hours: preset.hours,
+          minutes: preset.minutes,
+          seconds: preset.seconds
+        }
+      });
     }
   }
 
   function disableActivePreset() {
     if (activeTimer.presetId) {
-      setTimers({ ...timers, [activeTimer.id]: {
-        ...activeTimer,
-        presetId: ""
-      }});
+      setTimers({
+        ...timers,
+        [activeTimer.id]: {
+          ...activeTimer,
+          presetId: ""
+        }
+      });
     }
   }
 
@@ -440,24 +486,18 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     });
   }
 
-  function handlePipClose({ detail }) {
-    if (detail.startsWith("timer")) {
-      setPipId("");
-    }
-  }
-
-  function findPreset(id) {
+  function findPreset(id: string) {
     return presets.find(preset => preset.id === id);
   }
 
-  function handlePresetSelection(id) {
+  function handlePresetSelection(id: string) {
     if (activeTimer.presetId === id) {
       return;
     }
     const preset = findPreset(id);
 
     if (preset) {
-      const { timer: { usePresetNameAsLabel } } = getSetting("timers");
+      const { timer: { usePresetNameAsLabel } } = getSetting("timers") as TimersSettings;
       const newTimers = { ...timers, [activeTimer.id]: {
         ...activeTimer,
         hours: preset.hours,
@@ -472,10 +512,10 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     }
   }
 
-  function handleLabelInputChange(event) {
+  function handleLabelInputChange(event: ChangeEvent) {
     const newTimers = { ...timers, [activeTimer.id]: {
       ...activeTimer,
-      label: event.target.value
+      label: (event.target as HTMLInputElement).value
     }};
 
     setTimers(newTimers);
@@ -495,8 +535,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
   }
 
   function removeTimer() {
-    delete timers[activeTimer.id];
-    const newTimers = toggleTimer(timers, Object.values(timers)[0].id, true);
+    const { [activeTimer.id]: _, ...newTimers } = timers;
 
     setTimers(newTimers);
     saveTimers(newTimers);
@@ -524,7 +563,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     saveTimers(newTimers);
   }
 
-  function toggleTimer(timers, id, state) {
+  function toggleTimer(timers: TimerObj, id: string, state: boolean) {
     return {
       ...timers,
       [id]: {
@@ -534,24 +573,25 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     };
   }
 
-  function selectTimer(timers, id) {
+  function selectTimer(timers: TimerObj, id: string) {
     const t1 = toggleTimer(timers, activeTimer.id, false);
     const t2 = toggleTimer(t1, id, true);
 
     return t2;
   }
 
-  function selectTimerWithState(id) {
+  function selectTimerWithState(id: string) {
     if (activeTimer.id === id) {
       return;
     }
     const newTimers = selectTimer(timers, id);
+
     ignoreMiniTimerPref("timer", !newTimers[id].running);
     setTimers(newTimers);
     saveTimers(newTimers);
   }
 
-  function updateTime(to, sign, event) {
+  function updateTime(to: string, sign: number, event: MouseEvent) {
     const values = getUpdatedTime(activeTimer, { to, sign, shouldPad: !activeTimer.running }, event);
 
     setTimers({ ...timers, [activeTimer.id]: { ...activeTimer, ...values }});
@@ -561,15 +601,23 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     }
   }
 
-  function addTime(to, event) {
+  function addTime(to: string, event: MouseEvent) {
     updateTime(to, 1, event);
   }
 
-  async function removeTime(to, event) {
+  async function removeTime(to: string, event: MouseEvent) {
     updateTime(to, -1, event);
   }
 
-  function getUpdatedTime(initialValues, { to, sign, shouldPad = true }, event) {
+  function convertTimeObjToNumber(time: Time) {
+    return {
+      hours: Number.parseInt(time.hours, 10),
+      minutes: Number.parseInt(time.minutes, 10),
+      seconds: Number.parseInt(time.seconds, 10)
+    };
+  }
+
+  function getUpdatedTime(initialValues: Time, { to, sign, shouldPad = true }, event: MouseEvent) {
     let amount = 1;
 
     if (event.ctrlKey) {
@@ -581,8 +629,9 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     else if (event.altKey) {
       amount = 60;
     }
-    const val = Number.parseInt(initialValues[to], 10) + amount * sign;
-    let { hours, minutes, seconds } = initialValues;
+    const time = convertTimeObjToNumber(initialValues);
+    const val = time[to] + amount * sign;
+    let { hours, minutes, seconds } = time;
 
     if (to === "seconds") {
       if (val < 0) {
@@ -627,15 +676,21 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
         hours = val;
       }
     }
-    const values = normalizeValues({ hours, minutes, seconds });
+    const values = normalizeValues({
+      hours: hours.toString(),
+      minutes: minutes.toString(),
+      seconds: seconds.toString()
+    });
 
     return {
       hours: padTime(values.hours, shouldPad),
-      minutes: padTime(values.minutes, shouldPad || values.hours),
-      seconds: padTime(values.seconds, shouldPad || values.hours || values.minutes),
+      minutes: padTime(values.minutes, shouldPad || !!values.hours),
+      seconds: padTime(values.seconds, shouldPad || !!(values.hours || values.minutes)),
       duration: calculateDuration(values)
     };
   }
+
+  const { hours, minutes } = convertTimeObjToNumber(activeTimer);
 
   return (
     <div className={`top-panel-item timer${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
@@ -646,7 +701,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
               <>
                 {activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null}
                 <div className="top-panel-item-display">
-                  {activeTimer.hours > 0 && (
+                  {hours > 0 && (
                     <div className="timer-digit-container">
                       <div className="timer-digit-value-container">
                         <div className="timer-display-btns">
@@ -662,7 +717,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
                       <span className="top-panel-digit-sep">h</span>
                     </div>
                   )}
-                  {(activeTimer.hours > 0 || activeTimer.minutes > 0) && (
+                  {(hours > 0 || minutes > 0) && (
                     <div className="timer-digit-container">
                       <div className="timer-digit-value-container">
                         <div className="timer-display-btns">
@@ -731,7 +786,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
         )}
       </div>
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
-        <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{activeTimer.running ? locale.topPanel.stop : locale.topPanel.start}</button>
+        <button className="btn text-btn top-panel-item-action-btn" onClick={() => toggle()}>{activeTimer.running ? locale.topPanel.stop : locale.topPanel.start}</button>
         {activeTimer.running || !activeTimer.dirtyInput ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={() => reset(activeTimer.id)}>{locale.global.reset}</button>}
         <div className="top-panel-secondary-actions">
           {activeTimer.dirty && pipService.isSupported() && (
@@ -759,12 +814,12 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
               {timersArr.map(timer => (
                 <button className={`btn text-btn dropdown-btn timer-dropdown-btn${activeTimer.id === timer.id ? " active" : ""}`}
                   key={timer.id} onClick={() => selectTimerWithState(timer.id)}>
-                    {timer.running ? <span className="timer-dropdown-indicator"></span> : null}
-                    <div>
-                      {timer.label ? <div className="timer-dropdown-label">{timer.label}</div> : null}
-                      <div>{padTime(timer.hours)}:{padTime(timer.minutes)}:{padTime(timer.seconds)}</div>
-                    </div>
-                  </button>
+                  {timer.running ? <span className="timer-dropdown-indicator"></span> : null}
+                  <div>
+                    {timer.label ? <div className="timer-dropdown-label">{timer.label}</div> : null}
+                    <div>{padTime(timer.hours)}:{padTime(timer.minutes)}:{padTime(timer.seconds)}</div>
+                  </div>
+                </button>
               ))}
             </div>
             {timersArr.length > 1 && !activeTimer.running ? (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { padTime } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { addToRunning, removeFromRunning } from "../running-timers";
@@ -6,6 +6,17 @@ import * as pipService from "../picture-in-picture";
 import Icon from "components/Icon";
 import "./pomodoro.css";
 import useWorker from "../../useWorker";
+import type { TimersSettings } from "types/settings";
+
+type Props = {
+  visible: boolean,
+  locale: any,
+  animDirection: "anim-left" | "anim-right",
+  toggleIndicator: (name: string, value: boolean) => void,
+  updateTitle: (title: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
+  expand: () => void,
+  handleReset: (name: string) => Promise<void>
+}
 
 const stagesOrder = ["focus", "short", "focus", "long"];
 const stages = {
@@ -14,15 +25,15 @@ const stages = {
   long: "Long break"
 };
 
-export default function Pomodoro({ visible, locale, animDirection, toggleIndicator, updateTitle, expand, handleReset }) {
+export default function Pomodoro({ visible, locale, animDirection, toggleIndicator, updateTitle, expand, handleReset }: Props) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => {
-    const { pomodoro: { focus } } = getSetting("timers");
+    const { pomodoro: { focus } } = getSetting("timers") as TimersSettings;
     return parseDuration(focus * 60);
   });
   const [stage, setStage] = useState("focus");
   const [label, setLabel] = useState("");
-  const [audio, setAudio] = useState({ shouldPlay: true });
+  const [audio, setAudio] = useState<{ shouldPlay: boolean, element?: HTMLAudioElement }>({ shouldPlay: true });
   const [pipVisible, setPipVisible] = useState(false);
   const dirty = useRef(false);
   const currentStageIndex = useRef(0);
@@ -61,6 +72,12 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   }, [stage]);
 
   useEffect(() => {
+    function handlePipClose({ detail }: CustomEvent) {
+      if (detail === name) {
+        setPipVisible(false);
+      }
+    }
+
     window.addEventListener("pip-close", handlePipClose);
 
     return () => {
@@ -68,7 +85,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     };
   }, [pipVisible]);
 
-  function handleMessage({ data }) {
+  function handleMessage({ data }: MessageEvent) {
     if (data.duration < 0) {
       setNextStage();
     }
@@ -111,7 +128,13 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
       setAudio({ ...audio, element: new Audio("./assets/chime.mp3") });
     }
     setRunning(true);
-    updateTitle(name, { ...state, isAudioEnabled: audio.shouldPlay });
+    updateTitle(name, {
+      ...state,
+      hours: state.hours,
+      minutes: state.hours || state.minutes ? state.minutesString : "",
+      seconds: state.secondsString,
+      isAudioEnabled: audio.shouldPlay
+    });
   }
 
   function stop() {
@@ -119,11 +142,17 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     updateTitle(name);
   }
 
-  function update(duration) {
+  function update(duration: number) {
     const state = parseDuration(duration);
 
     setState(state);
-    updateTitle(name, { ...state, isAudioEnabled: audio.shouldPlay });
+    updateTitle(name, {
+      ...state,
+      hours: state.hours,
+      minutes: state.hours || state.minutes ? state.minutesString : "",
+      seconds: state.secondsString,
+      isAudioEnabled: audio.shouldPlay
+    });
     pipService.update(name, {
       hours: state.hours,
       minutes: state.minutes,
@@ -170,14 +199,14 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     resetTimer(nextStage);
   }
 
-  function resetTimer(stage) {
-    const { pomodoro: settings } = getSetting("timers");
+  function resetTimer(stage: string) {
+    const { pomodoro: settings } = getSetting("timers") as TimersSettings;
     const duration = settings[stage];
 
     setState(parseDuration(duration * 60));
   }
 
-  function parseDuration(duration) {
+  function parseDuration(duration: number) {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor(duration / 60 % 60);
     const seconds = duration % 60;
@@ -185,8 +214,10 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     return {
       duration,
       hours,
-      minutes: padTime(minutes, hours),
-      seconds: padTime(seconds, hours || minutes)
+      minutes,
+      seconds,
+      minutesString: padTime(minutes, !!(hours)),
+      secondsString: padTime(seconds, !!(hours || minutes))
     };
   }
 
@@ -195,7 +226,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   }
 
   function playAudio() {
-    const { volume } = getSetting("timers");
+    const { volume } = getSetting("timers") as TimersSettings;
 
     audio.element.volume = volume;
     audio.element.play();
@@ -215,14 +246,8 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     });
   }
 
-  function handlePipClose({ detail }) {
-    if (detail === name) {
-      setPipVisible(false);
-    }
-  }
-
-  function handleLabelInputChange(event) {
-    setLabel(event.target.value);
+  function handleLabelInputChange(event: ChangeEvent) {
+    setLabel((event.target as HTMLInputElement).value);
   }
 
   function renderTop() {
@@ -260,12 +285,12 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
               )}
               {(state.hours > 0 || state.minutes > 0) && (
                 <div>
-                  <span className="top-panel-digit">{state.minutes}</span>
+                  <span className="top-panel-digit">{state.minutesString}</span>
                   <span className="top-panel-digit-sep">m</span>
                 </div>
               )}
               <div>
-                <span className="top-panel-digit">{state.seconds}</span>
+                <span className="top-panel-digit">{state.secondsString}</span>
                 <span className="top-panel-digit-sep">s</span>
               </div>
             </div>

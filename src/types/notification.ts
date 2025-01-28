@@ -1,9 +1,10 @@
 export type Notification = {
-  text: string,
+  content: string,
   id?: string,
   hiding?: boolean,
   iconId?: string,
   title?: string,
+  duration?: number,
   action?: () => void,
   actionTitle?: string
 }

@@ -1,3 +1,4 @@
+import type { Clock } from "./world.types";
 import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent } from "utils";
 import { getOffsettedCurrentTime, getHoursOffset } from "services/timeDate";
@@ -8,8 +9,15 @@ import "./world.css";
 
 const Form = lazy(() => import("./Form"));
 
-export default function World({ visible, locale, animDirection, parentVisible }) {
-  const [clocks, setClocks] = useState([]);
+type Props = {
+  visible: boolean,
+  locale: any,
+  animDirection: "anim-left" | "anim-right",
+  parentVisible: boolean
+}
+
+export default function World({ visible, locale, animDirection, parentVisible }: Props) {
+  const [clocks, setClocks] = useState<Clock[]>([]);
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -22,7 +30,7 @@ export default function World({ visible, locale, animDirection, parentVisible })
     }
 
     if (parentVisible) {
-      timeoutId.current = setTimeout(update, 1000);
+      timeoutId.current = window.setTimeout(update, 1000);
     }
     return () => {
       clearTimeout(timeoutId.current);
@@ -58,7 +66,7 @@ export default function World({ visible, locale, animDirection, parentVisible })
     });
   }
 
-  function initClocks(clocks) {
+  function initClocks(clocks: Clock[]) {
     setClocks(clocks.map(clock => {
       clock.time = getOffsettedCurrentTime(clock.diff);
       clock.diffString = getHoursOffset(clock.diff);
@@ -67,13 +75,13 @@ export default function World({ visible, locale, animDirection, parentVisible })
   }
 
   function update() {
-    for (const clock of clocks) {
+    setClocks(clocks.map(clock => {
       clock.time = getOffsettedCurrentTime(clock.diff);
-    }
-    setClocks([...clocks]);
+      return clock;
+    }));
   }
 
-  function addClock(clock) {
+  function addClock(clock: Clock) {
     clock.time = getOffsettedCurrentTime(clock.diff);
     const newClocks = [clock, ...clocks];
 
@@ -81,7 +89,7 @@ export default function World({ visible, locale, animDirection, parentVisible })
     saveClocks(newClocks);
   }
 
-  function removeClock(clock) {
+  function removeClock(clock: Clock) {
     const filteredClocks = clocks.filter(({ id }) => clock.id !== id);
 
     setClocks(filteredClocks);
@@ -97,7 +105,7 @@ export default function World({ visible, locale, animDirection, parentVisible })
     });
   }
 
-  function saveClocks(clocks) {
+  function saveClocks(clocks: Clock[]) {
     chromeStorage.set({
       clocks: clocks.map(clock => ({
         id: clock.id,
