@@ -616,14 +616,18 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }
   }
 
-  function updateGroup(index: number, group: Group, shouldSave = true) {
-    let newGroups = groups.with(index, group);
+  function replaceGroups(items: { index: number, group: Group}[], shouldSave = true) {
+    let newGroups = groups;
+
+    for (const item of items) {
+      newGroups = newGroups.with(item.index, item.group);
+    }
     newGroups = updateAllGroupTaskCount(newGroups);
     countTasks(newGroups);
     setGroups(newGroups);
 
     if (shouldSave) {
-      saveTasks(groups);
+      saveTasks(newGroups);
     }
   }
 
@@ -712,7 +716,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   if (activeComponent === "form") {
     return (
       <Suspense fallback={<Spinner/>}>
-        <Form form={form} groups={groups} locale={locale} updateGroup={updateGroup} removeTask={removeFormTask}
+        <Form form={form} groups={groups} locale={locale} replaceGroups={replaceGroups} removeTask={removeFormTask}
           createGroup={createGroup} hide={hideForm}/>
       </Suspense>
     );

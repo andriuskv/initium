@@ -22,14 +22,14 @@ type State = TaskForm & {
 type Props = {
   form: TaskForm,
   groups: Group[],
-  updateGroup: (index: number, group: Group, shouldSave?: boolean) => void,
+  replaceGroups: (items: { index: number, group: Group }[], shouldSave?: boolean) => void,
   removeTask: () => void,
   createGroup: (group: Group) => void,
   hide: () => void,
   locale: any
 }
 
-export default function Form({ form, groups, locale, updateGroup, removeTask, createGroup, hide }: Props) {
+export default function Form({ form, groups, locale, replaceGroups, removeTask, createGroup, hide }: Props) {
   const [state, setState] = useState<State>(() => {
     const defaultForm: State = {
       moreOptionsVisible: false,
@@ -304,25 +304,35 @@ export default function Form({ form, groups, locale, updateGroup, removeTask, cr
 
       if (form.groupId !== selectedGroupId) {
         const groupIndex = groups.findIndex(({ id }) => id === form.groupId);
-        updateGroup(groupIndex, {
-          ...groups[groupIndex],
-          tasks: groups[groupIndex].tasks.toSpliced(taskIndex, 1)
-        }, false);
-        updateGroup(index, {
-          ...groups[index],
-          tasks: [task, ...groups[index].tasks]
-        });
+
+        replaceGroups([{
+          index: groupIndex,
+          group: {
+            ...groups[groupIndex],
+            tasks: groups[groupIndex].tasks.toSpliced(taskIndex, 1)
+          }
+        },
+        {
+          index,
+          group: {
+            ...groups[index],
+            tasks: [task, ...groups[index].tasks]
+          }
+        }], true);
       }
       else {
-        updateGroup(index, {
-          ...groups[index],
-          tasks: tasks.with(taskIndex, {
-            ...tasks[taskIndex],
-            ...task,
-            ...taskProps,
-            hidden: undefined,
-          })
-        });
+        replaceGroups([{
+          index,
+          group: {
+            ...groups[index],
+            tasks: tasks.with(taskIndex, {
+              ...tasks[taskIndex],
+              ...task,
+              ...taskProps,
+              hidden: undefined,
+            })
+          }
+        }], true);
       }
     }
     else {
@@ -339,10 +349,13 @@ export default function Form({ form, groups, locale, updateGroup, removeTask, cr
           includeTime: true
         });
       }
-      updateGroup(index, {
-        ...groups[index],
-        tasks: [task, ...groups[index].tasks]
-      });
+      replaceGroups([{
+        index,
+        group: {
+          ...groups[index],
+          tasks: [task, ...groups[index].tasks]
+        }
+      }], true);
     }
     hide();
   }

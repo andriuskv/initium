@@ -65,7 +65,7 @@ export default function Inputs({ state, addTime, removeTime, updateInputs, handl
 
       const { selectionStart, selectionEnd } = target;
       const name = target.getAttribute("data-name");
-      const inputs: { hours: string, minutes: string, seconds: string } = {
+      const inputs: Time = {
         hours: state.hours,
         minutes: state.minutes,
         seconds: state.seconds
