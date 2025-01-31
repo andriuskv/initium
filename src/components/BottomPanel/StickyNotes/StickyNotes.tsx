@@ -7,7 +7,7 @@ import CreateButton from "components/CreateButton";
 import "./sticky-notes.css";
 
 export default function StickyNotes({ locale, hide }: { locale: any, hide: () => void }) {
-  const { notes, removeNote } = useNotes();
+  const { notes, removeNote, toggleHideNote } = useNotes();
 
   function createNote() {
     const width = document.documentElement.clientWidth;
@@ -61,11 +61,16 @@ export default function StickyNotes({ locale, hide }: { locale: any, hide: () =>
                   <Icon id="edit"/>
                   <span>{locale.global.edit}</span>
                 </button>
+                <button className="btn icon-text-btn dropdown-btn" onClick={() => toggleHideNote(note.id)}>
+                  <Icon id={note.hidden ? "eye" : "eye-off"}/>
+                  <span>{note.hidden ? "Show" : "Hide"}</span>
+                </button>
                 <button className="btn icon-text-btn dropdown-btn" onClick={() => removeNote(note.id)}>
                   <Icon id="trash"/>
                   <span>{locale.global.remove}</span>
                 </button>
               </Dropdown>
+              {note.hidden && <Icon id="eye-off" className="sticky-notes-list-item-hidden-icon" title="Hidden"/>}
               {note.title ?
                 <p className="sticky-notes-list-item-content sticky-notes-list-item-title" dangerouslySetInnerHTML={{ __html: note.titleDisplayString }}></p> : null}
               {note.content ?

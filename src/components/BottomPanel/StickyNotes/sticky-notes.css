@@ -31,7 +31,7 @@
   white-space: pre-wrap;
   font-family: "Caveat";
   line-height: 1.1;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .sticky-notes-list-item-title {
@@ -40,4 +40,10 @@
 
 .sticky-notes-list-message {
   margin: auto;
+}
+
+.sticky-notes-list-item-hidden-icon {
+  float: right;
+  opacity: 0.8;
+  margin-top: var(--space-sm);
 }

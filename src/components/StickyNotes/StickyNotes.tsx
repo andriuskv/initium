@@ -13,7 +13,7 @@ export default function StickyNotes({ locale }: { locale: any }) {
   const [form, setForm] = useState<FormType>(null);
 
   useEffect(() => {
-    if (form) {
+    if (form && !notes.some(note => note.togglingHide)) {
       discardWithAnimation();
     }
     window.addEventListener("sticky-note", handleStickyNoteChange);
@@ -87,11 +87,12 @@ export default function StickyNotes({ locale }: { locale: any }) {
     if (!notes.length) {
       return null;
     }
-    let notesToRender = notes;
+    let notesToRender = notes.filter(note => !note.hidden);
 
     if (form?.readyToShow) {
-      notesToRender = notes.filter(note => note.id !== form.id);
+      notesToRender = notesToRender.filter(note => note.id !== form.id);
     }
+
     return (
       <ul className="sticky-notes">
         {notesToRender.map(note => (

@@ -2,6 +2,8 @@ export type Note = {
   index?: number,
   action?: string,
   id?: string,
+  hidden?: boolean,
+  togglingHide?: boolean,
   title: string,
   content: string,
   titleDisplayString?: string,
