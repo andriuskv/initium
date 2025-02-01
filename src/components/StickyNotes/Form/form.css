@@ -19,7 +19,7 @@
     animation-name: rotate-straight;
     animation-duration: var(--duration-n);
     animation-fill-mode: both;
-    transition: var(--duration-n) width, var(--duration-n) height, var(--duration-n) background-color;
+    transition: var(--duration-f) width, var(--duration-f) height, var(--duration-n) background-color;
   }
 
   &.discarding {
@@ -46,6 +46,7 @@
 }
 
 .sticky-note-drag-handle {
+  z-index: 2;
   position: absolute;
   top: 0;
   left: 50%;
@@ -69,11 +70,28 @@
   border-radius: 4px;
   background-color: transparent;
   box-shadow: none;
-  transition: var(--duration-n) font-size;
+  transition: var(--duration-f) font-size;
 
   &:focus-visible {
     box-shadow: 0 0 0 1px var(--color-black-2), var(--fg-shadow);
     background-color: var(--color-white-10);
+  }
+}
+
+.sticky-note-top {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  padding: var(--space-sm) var(--space-md) var(--space-md) var(--space-md);
+  background-color: var(--background-color);
+  transform: translate(-50%, calc(-100% - var(--space-sm)));
+  box-shadow: 0 0 0 1px var(--color-black-4), var(--highligh-shadow);
+  transition: inherit;
+  width: 200px;
+
+  .range-input {
+    width: 100%;
   }
 }
 
@@ -145,6 +163,7 @@
   align-items: center;
   gap: var(--space-md);
   min-width: 128px;
+  margin-bottom: var(--space-sm);
 }
 
 .sticky-note-setting-name {
