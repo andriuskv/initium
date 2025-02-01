@@ -1,5 +1,5 @@
 import type { FormType } from "types/stickyNotes";
-import { useState, useEffect, useLayoutEffect, useRef, type CSSProperties, type FormEvent, type MouseEvent as ReactMouseEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, type CSSProperties, type FormEvent, type MouseEvent as ReactMouseEvent, type KeyboardEvent as ReactKeyboardEvent, type ChangeEvent } from "react";
 import * as focusService from "services/focus";
 import { useNotes } from "contexts/stickyNotes";
 import Icon from "components/Icon";
@@ -29,6 +29,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
   const { createNote, removeNote } = useNotes();
   const [movable, setMovable] = useState(false);
   const [form, setForm] = useState<FormType>(null);
+  const [scaleViewVisible, setScaleViewVisible] = useState(false);
   const containerRef = useRef(null);
   const moving = useRef(false);
 
@@ -193,6 +194,27 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
     return Math.round((number + Number.EPSILON) * 10 ** decimals) / 10 ** decimals;
   }
 
+  function toggleScaleView() {
+    setScaleViewVisible(!scaleViewVisible);
+  }
+
+  function handleRangeInputChange({ target }: ChangeEvent) {
+    const { name, value } = target as HTMLInputElement;
+
+    if (name === "scale") {
+      setForm({ ...form, [name]: round(Number(value), 4) });
+    }
+    else if (name === "opacity") {
+      const opacity = Number(value);
+      const string = getTextColor(form.textStyle.color, opacity);
+
+      setForm({ ...form, textStyle: { ...form.textStyle, opacity, string } });
+    }
+    else if (name === "textScale") {
+      setForm({ ...form, [name]: round(Number(value), 4) });
+    }
+  }
+
   if (!form) {
     return null;
   }
@@ -207,6 +229,23 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
         value={form.content} placeholder={`Content #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
       {movable ? null : (
         <>
+          {scaleViewVisible ? (
+            <div className="sticky-note-top">
+              <div className="dropdown-group sticky-note-setting">
+                <button className="btn icon-btn"
+                  onClick={() => adjustScale("scale", -1)} title={locale.global.decrease_size_title} disabled={form.scale <= 0.75}>
+                  <Icon id="minus"/>
+                </button>
+                <div className="sticky-note-setting-name">{locale.stickyNotes.scale}</div>
+                <button className="btn icon-btn"
+                  onClick={() => adjustScale("scale", 1)} title={locale.global.increase_size_title} disabled={form.scale >= 2.1}>
+                  <Icon id="plus"/>
+                </button>
+              </div>
+              <input type="range" className="range-input" min="0.75" max="2.1" step="0.1125"
+                value={form.scale} onChange={handleRangeInputChange} name="scale"/>
+            </div>
+          ) : null}
           <div className="sticky-note-sidebar">
             <Dropdown toggle={{ iconId: "color-picker", title: locale.stickyNotes.color_picker }} body={{ className: "sticky-note-dropdown" }}>
               <ul className="sticky-note-color-picker-items">
@@ -227,42 +266,40 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
                   </li>
                 ))}
               </ul>
-              <div className="dropdown-group sticky-note-setting">
-                <button className="btn icon-btn"
-                  onClick={() => adjustTextOpacity(-1)} title={locale.global.decrease_size_title} disabled={form.textStyle.opacity <= 10}>
-                  <Icon id="minus"/>
-                </button>
-                <div className="sticky-note-setting-name">{locale.stickyNotes.text_opacity}</div>
-                <button className="btn icon-btn"
-                  onClick={() => adjustTextOpacity(1)} title={locale.global.increase_size_title} disabled={form.textStyle.opacity >= 100}>
-                  <Icon id="plus"/>
-                </button>
+              <div className="dropdown-group">
+                <div className="sticky-note-setting">
+                  <button className="btn icon-btn"
+                    onClick={() => adjustTextOpacity(-1)} title={locale.global.decrease_size_title} disabled={form.textStyle.opacity <= 10}>
+                    <Icon id="minus"/>
+                  </button>
+                  <div className="sticky-note-setting-name">{locale.stickyNotes.text_opacity}</div>
+                  <button className="btn icon-btn"
+                    onClick={() => adjustTextOpacity(1)} title={locale.global.increase_size_title} disabled={form.textStyle.opacity >= 100}>
+                    <Icon id="plus"/>
+                  </button>
+                </div>
+                <input type="range" className="range-input" min="10" max="100" step="5"
+                  value={form.textStyle.opacity} onChange={handleRangeInputChange} name="opacity"/>
+              </div>
+              <div className="dropdown-group">
+                <div className="sticky-note-setting">
+                  <button className="btn icon-btn"
+                    onClick={() => adjustScale("textScale", -1)} title={locale.global.decrease_size_title} disabled={form.textScale <= 0.275}>
+                    <Icon id="minus"/>
+                  </button>
+                  <div className="sticky-note-setting-name">{locale.global.text_size_title}</div>
+                  <button className="btn icon-btn"
+                    onClick={() => adjustScale("textScale", 1)} title={locale.global.increase_size_title} disabled={form.textScale >= 2.1}>
+                    <Icon id="plus"/>
+                  </button>
+                </div>
+                <input type="range" className="range-input" min="0.75" max="2.1" step="0.1125"
+                  value={form.textScale} onChange={handleRangeInputChange} name="textScale"/>
               </div>
             </Dropdown>
-            <Dropdown toggle={{ iconId: "scale", title: locale.stickyNotes.scale }} body={{ className: "sticky-note-dropdown" }}>
-              <div className="dropdown-group sticky-note-setting">
-                <button className="btn icon-btn"
-                  onClick={() => adjustScale("scale", -1)} title={locale.global.decrease_size_title} disabled={form.scale <= 0.75}>
-                  <Icon id="minus"/>
-                </button>
-                <div className="sticky-note-setting-name">{locale.stickyNotes.scale}</div>
-                <button className="btn icon-btn"
-                  onClick={() => adjustScale("scale", 1)} title={locale.global.increase_size_title} disabled={form.scale >= 2}>
-                  <Icon id="plus"/>
-                </button>
-              </div>
-              <div className="dropdown-group sticky-note-setting">
-                <button className="btn icon-btn"
-                  onClick={() => adjustScale("textScale", -1)} title={locale.global.decrease_size_title} disabled={form.textScale <= 0.5}>
-                  <Icon id="minus"/>
-                </button>
-                <div className="sticky-note-setting-name">{locale.global.text_size_title}</div>
-                <button className="btn icon-btn"
-                  onClick={() => adjustScale("textScale", 1)} title={locale.global.increase_size_title} disabled={form.textScale >= 2}>
-                  <Icon id="plus"/>
-                </button>
-              </div>
-            </Dropdown>
+            <button className="btn icon-btn" onClick={toggleScaleView} title="Scale">
+              <Icon id="scale"/>
+            </button>
             {initialForm.action === "edit" ? (
               <button className="btn icon-btn" onClick={() => removeNote(initialForm.id)}>
                 <Icon id="trash"/>

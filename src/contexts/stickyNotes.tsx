@@ -11,6 +11,7 @@ type StickyNotesContextType = {
   notes: Note[],
   createNote: (note: Note) => void,
   removeNote: (id: string) => void
+  toggleHideNote: (id: string) => void
 };
 
 const StickyNotesContext = createContext<StickyNotesContextType>({} as StickyNotesContextType);
@@ -22,7 +23,8 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
     return {
       notes,
       createNote,
-      removeNote
+      removeNote,
+      toggleHideNote
     };
   }, [notes]);
 
@@ -127,11 +129,49 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
     }, 200 * animationSpeed);
   }
 
+  function toggleHideNote(id: string) {
+    const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
+    let hidden = false;
+
+    setNotes(notes.map(note => {
+      if (note.id === id) {
+        hidden = !note.hidden;
+
+        return {
+          ...note,
+          togglingHide: true,
+          discarding: hidden,
+        };
+      }
+      return note;
+    }));
+
+    setTimeout(() => {
+      const newNotes = notes.map(note => {
+        if (note.id === id) {
+          return {
+            ...note,
+            togglingHide: true,
+            discarding: false,
+            hidden
+          };
+        }
+        return note;
+      });
+
+      setNotes(newNotes);
+      saveNotes(newNotes);
+    }, 200 * animationSpeed);
+  }
+
   function saveNotes(notes: Note[]) {
     chromeStorage.set({ stickyNotes: structuredClone(notes).map(note => {
       delete note.id;
       delete note.titleDisplayString;
       delete note.contentDisplayString;
+      delete note.contentDisplayString;
+      delete note.discarding;
+      delete note.togglingHide;
       return note;
     }) });
   }
