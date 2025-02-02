@@ -149,6 +149,10 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
         shouldHide = target.closest("a") || target.closest(".dropdown-btn") || target.closest("[data-dropdown-close]");
       }
     }
+    else if (usePortal) {
+      shouldHide = target.closest("a") || target.closest(".dropdown-btn")
+        || target.closest("[data-dropdown-close]") || target.closest(".dropdown-container");
+    }
 
     if (shouldHide) {
       hideDropdown();
