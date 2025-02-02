@@ -14,6 +14,7 @@ const TasksTab = lazy(() => import("./TasksTab"));
 const WeatherTab = lazy(() => import("./WeatherTab"));
 const TimersTab = lazy(() => import("./TimersTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
+const LogsTab = lazy(() => import("./LogsTab"));
 
 export default function Settings({ locale, hide }: { locale: any, hide: () => void}) {
   const tabs = useMemo(() => [
@@ -56,10 +57,22 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
       id: "storage",
       name: locale.settings.storage.title,
       component: StorageTab
+    },
+    {
+      id: "logs",
+      name: "Logs",
+      shouldHide: (JSON.parse(localStorage.getItem("announcements")) || []).length === 0,
+      component: LogsTab
     }
   ], [locale]);
   const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem("active-settings-tab") || "general";
+    const id = localStorage.getItem("active-settings-tab");
+    const activeTabIndex = tabs.findIndex((tab) => tab.id === id);
+
+    if (tabs[activeTabIndex].shouldHide) {
+      return "general";
+    }
+    return id || "general";
   });
   const saveTabTimeoutId = useRef(0);
   const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
@@ -72,7 +85,7 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
     return (
       <TabsContainer className="setting-nav-container" current={activeTabIndex} orientation="v">
         <ul className="settings-nav">
-          {tabs.map(tab => (
+          {tabs.map(tab => !tab.shouldHide && (
             <li className={`settings-nav-item${activeTab === tab.id ? " active" : ""}`} key={tab.id}>
               <button className="btn text-btn settings-nav-item-btn"
                 onClick={() => selectTab(tab.id)}>{tab.name}</button>
