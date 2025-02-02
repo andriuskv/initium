@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import type { Announcement } from "types/announcement";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { timeout } from "utils";
 import { initAppearanceSettings } from "services/settings";
@@ -71,20 +72,12 @@ export default function App() {
   }, [settings.weather]);
 
   async function initAnnouncements() {
-    type Announcement = {
-      id: string,
-      title?: string,
-      content: string,
-      expires: number
-      duration?: number
-    }
-
     try {
       const json = await fetch(`${process.env.SERVER_URL}/messages`).then(res => res.json());
 
       if (json.messages) {
         const currentDate = Date.now();
-        const localAnnouncements: Partial<Announcement>[] = (JSON.parse(localStorage.getItem("announcements")) || [])
+        const localAnnouncements: Announcement[] = (JSON.parse(localStorage.getItem("announcements")) || [])
           .filter(a => a.expires > currentDate);
         const newMessages = (json.messages as Announcement[])
           .filter(m => !localAnnouncements.some((l => l.id === m.id)));
@@ -92,8 +85,8 @@ export default function App() {
         for (const message of newMessages) {
           showNotification(message);
           localAnnouncements.push({
-            id: message.id,
-            expires: message.expires
+            ...message,
+            date: Date.now(),
           });
         }
         localStorage.setItem("announcements", JSON.stringify(localAnnouncements));
