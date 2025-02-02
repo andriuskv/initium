@@ -64,7 +64,7 @@
 
 .feed-entry-description {
   line-height: 1.4;
-  word-break: break-word;
+  overflow-wrap: anywhere;
   white-space: pre-wrap;
 
   & img {
@@ -82,6 +82,10 @@
     &:hover {
       text-decoration: underline;
       cursor: pointer;
+    }
+
+    &:focus-visible {
+      box-shadow: var(--focus-shadow), var(--highligh-shadow);
     }
   }
 

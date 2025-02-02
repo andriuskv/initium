@@ -67,7 +67,7 @@
 
 .feed-entry-link {
   font-weight: bold;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 
   &:hover {
     text-decoration: underline;
