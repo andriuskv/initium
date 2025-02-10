@@ -18,7 +18,7 @@ type Props = {
 }
 
 export default function Groups({ groups, locale, updateGroups, createGroup, hide }: Props) {
-  const { modal, setModal, hideModal } = useModal();
+  const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const [activeDragId, setActiveDragId] = useState(null);
 
   function showRemoveModal(index: number) {
@@ -129,7 +129,7 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
         <button className="btn text-btn" onClick={hide}>{locale.global.done}</button>
       </div>
       {modal && (
-        <Modal hiding={modal.hiding} hide={hideModal}>
+        <Modal hiding={modalHiding} hide={hideModal}>
           <h4 className="modal-title">{locale.tasks.remove_group_modal_title}</h4>
           <div className="modal-text-body">
             <p>{locale.tasks.remove_group_modal_message}</p>

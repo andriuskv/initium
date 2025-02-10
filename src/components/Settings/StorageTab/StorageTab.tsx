@@ -73,7 +73,7 @@ export default function StorageTab({ locale }) {
   ]);
   const [stats, setStats] = useState<Stats>(() => getInitStats());
   const [dataMessage, setDataMessage] = useState("");
-  const { modal, setModal, hideModal } = useModal();
+  const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const ready = useRef(false);
   const storageItems = useRef([]);
   const storageTimeoutId = useRef(0);
@@ -274,7 +274,7 @@ export default function StorageTab({ locale }) {
   function renderModal() {
     if (modal.type === "item") {
       return (
-        <Modal hiding={modal.hiding} hide={hideModal}>
+        <Modal hiding={modalHiding} hide={hideModal}>
           <h4 className="modal-title">{modal.title}</h4>
           <div className="modal-text-body">{modal.body}</div>
           <div className="modal-actions">
@@ -286,7 +286,7 @@ export default function StorageTab({ locale }) {
     }
     else if (modal.type === "restore") {
       return (
-        <Modal hiding={modal.hiding} hide={hideModal}>
+        <Modal hiding={modalHiding} hide={hideModal}>
           <form onSubmit={restoreFromBackup}>
             <h4 className="modal-title">{modal.title}</h4>
             <div className="modal-text-body">{modal.body}</div>
@@ -307,7 +307,7 @@ export default function StorageTab({ locale }) {
     }
     else if (modal.type === "wipe-data") {
       return (
-        <Modal hiding={modal.hiding} hide={hideModal}>
+        <Modal hiding={modalHiding} hide={hideModal}>
           <form onSubmit={wipeAllData}>
             <h4 className="modal-title">{modal.title}</h4>
             <div className="modal-text-body">{modal.body}</div>

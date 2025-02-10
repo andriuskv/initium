@@ -1,15 +1,33 @@
-import { useState } from "react";
+import type { Feeds, FeedType } from "types/feed";
+import { useState, type FormEvent } from "react";
 import * as feedService from "services/feeds";
 import Icon from "components/Icon";
 import "./form.css";
 
-export default function Form({ feeds, locale, addFeed, hide }) {
+type Props = {
+  feeds: Feeds,
+  locale: any,
+  addFeed: (feed: FeedType) => void,
+  hide: () => void,
+}
+
+export default function Form({ feeds, locale, addFeed, hide }: Props) {
   const [form, setForm] = useState({
+    message: "",
+    fetching: false,
+    title: "",
+    url: "",
     backButtonVisible: feeds.active.length > 0 || feeds.inactive.length > 0 || feeds.failed.length > 0
   });
 
-  async function handleFormSubmit(event) {
-    const { elements } = event.target;
+  async function handleFormSubmit(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      url: HTMLInputElement;
+      title: HTMLInputElement;
+    }
+
+    const formElement = event.target as HTMLFormElement;
+    const elements = formElement.elements as FormElements;
     const title = elements.title.value;
     const url = elements.url.value;
 
@@ -19,13 +37,12 @@ export default function Form({ feeds, locale, addFeed, hide }) {
       setForm({ ...form, message: "Feed already exists." });
       return;
     }
-    delete form.message;
-    setForm({ ...form, fetching: true });
+    setForm({ ...form, message: undefined, fetching: true });
 
     try {
       const data = await feedService.fetchFeed({ url, title });
 
-      if (data.message) {
+      if ("message" in data) {
         setForm({ ...form, message: data.message });
       }
       else {

@@ -1,29 +1,45 @@
+import type { FeedType } from "types/feed";
+import type { PropsWithChildren, MouseEvent, KeyboardEvent, FocusEvent } from "react";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import Link from "components/Link";
 
-export default function Feed({ children, index, feed, feeds, locale, updateFeeds, selectFeedFromList, deactivateFeed, removeFeed }) {
+type Props = PropsWithChildren & {
+  locale: any,
+  index: number,
+  feed: FeedType,
+  updateFeed: (feed: FeedType, shouldSave?: boolean) => void,
+  selectFeedFromList: (event: MouseEvent<HTMLButtonElement>, index: number) => void,
+  deactivateFeed: (index: number) => void,
+  removeFeed: (index: number, type: string) => void,
+}
+
+export default function Feed({ children, index, feed, locale, updateFeed, selectFeedFromList, deactivateFeed, removeFeed }: Props) {
   function enableTitleEdit() {
-    feed.updatingTitle = true;
-    updateFeeds(feeds, false);
+    updateFeed({
+      ...feed,
+      updatingTitle: true
+    });
   }
 
-  function renameFeed(event) {
-    const newTitle = event.target.value;
+  function renameFeed(event: FocusEvent) {
+    const newTitle = (event.target as HTMLInputElement).value;
+    const newFeed = {
+      ...feed,
+      updatingTitle: undefined
+    };
     let shouldSave = false;
 
-    delete feed.updatingTitle;
-
     if (newTitle && newTitle !== feed.title) {
-      feed.title = newTitle;
+      newFeed.title = newTitle;
       shouldSave = true;
     }
-    updateFeeds(feeds, shouldSave);
+    updateFeed(newFeed, shouldSave);
   }
 
-  function blurFeedTitleInput(event) {
+  function blurFeedTitleInput(event: KeyboardEvent) {
     if (event.key === "Enter") {
-      event.target.blur();
+      (event.target as HTMLElement).blur();
     }
   }
 

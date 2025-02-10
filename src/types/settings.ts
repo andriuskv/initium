@@ -75,7 +75,7 @@ export type MainPanelComponents = {
     textSize: number;
     tabs?: {
       id: string;
-      textSize: string;
+      textSize: number;
     }[]
   };
   rssFeed: {
@@ -87,6 +87,7 @@ export type MainPanelSettings = {
   disabled?: boolean;
   navHidden: boolean;
   navDisabled: boolean;
+  height?: number;
   components: MainPanelComponents;
 };
 

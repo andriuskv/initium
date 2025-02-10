@@ -27,9 +27,14 @@
   position: relative;
   min-height: 38px;
   padding-block: var(--space-xs);
-  overflow: clip;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  justify-content: center;
+
+  &:has(.timer-dropdown-label) {
+    .timer-dropdown-indicator {
+      top: auto;
+      bottom: var(--space-md);
+    }
+  }
 }
 
 .timer-dropdown-indicator {
@@ -44,6 +49,10 @@
 }
 
 .timer-dropdown-label {
+  max-width: 160px;
+  overflow: clip;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: var(--text-sm);
   font-weight: normal;
 }

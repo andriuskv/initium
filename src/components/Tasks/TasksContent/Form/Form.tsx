@@ -77,7 +77,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     }
     return defaultForm;
   });
-  const { modal, setModal, hideModal } = useModal();
+  const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const [activeDragId, setActiveDragId] = useState(null);
   const [prefsVisible, setPrefsVisible] = useState(state.completeWithSubtasks);
   const { message, showMessage, dismissMessage }= useMessage("");
@@ -500,11 +500,11 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     if (modal.type === "label") {
       return (
         <LabelForm locale={locale} addUniqueLabel={addUniqueLabel} removeTaskLabel={removeTaskLabel}
-          hiding={modal.hiding} hide={hideModal}/>
+          hiding={modalHiding} hide={hideModal}/>
       );
     }
     else if (modal.type === "group") {
-      return <GroupForm locale={locale} createGroup={localCreateGroup} hiding={modal.hiding} hide={hideModal} modal/>;
+      return <GroupForm locale={locale} createGroup={localCreateGroup} hiding={modalHiding} hide={hideModal} modal/>;
     }
   }
 

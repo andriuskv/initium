@@ -1,8 +1,19 @@
+import type { Reminder, Day } from "types/calendar";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
 
-export default function SelectedDay({ day, locale, removeReminder, changeReminderColor, editReminder, showForm, hide }) {
+type Props = {
+  day: Day,
+  locale: any,
+  removeReminder: (reminder: Reminder, day: Day) => void,
+  changeReminderColor: (reminderId: string) => void,
+  editReminder: (reminderId: string, type: string, day?: Day) => void,
+  showForm: (day: Day) => void,
+  hide: () => void,
+}
+
+export default function SelectedDay({ day, locale, removeReminder, changeReminderColor, editReminder, showForm, hide }: Props) {
   return (
     <div className="calendar full-height">
       <div className="calendar-header reminder-list-header">

@@ -1,36 +1,9 @@
+import type { Entry, Feeds, FeedType } from "types/feed";
 import type { TimeDateSettings } from "types/settings";
 import { getRandomString } from "../utils";
 import { getSetting } from "./settings";
 import { formatDate } from "./timeDate";
 import * as chromeStorage from "./chromeStorage";
-
-type Entry = {
-  id: string,
-  title: string,
-  description: string,
-  link: string,
-  truncated: boolean,
-  newEntry?: boolean,
-  date?: string,
-  thumbnail?: string,
-}
-
-type Feed = {
-  id: string,
-  title: string,
-  url: string,
-  description: string,
-  newEntryCount: number,
-  entries: Entry[]
-  updated?: string,
-  image?: string
-}
-
-type Feeds = {
-  active: Feed[],
-  inactive: Feed[],
-  failed: Feed[]
-}
 
 type FetchEntry = {
   id: string,
@@ -68,7 +41,7 @@ function fetchFeedData(url: string): Promise<{ feed: FetchFeed }> {
   return fetch(`${process.env.SERVER_URL}/feed?url=${url}`).then(res => res.json());
 }
 
-async function fetchFeed(feed: Feed): Promise<Feed | { message: string }> {
+async function fetchFeed(feed: { url: string, title: string }): Promise<FeedType | { message: string }> {
   const data = await fetchFeedData(feed.url);
 
   if (data.feed) {
@@ -111,10 +84,10 @@ function getNewEntries(newEntries: FetchEntry[], entries: Entry[]): Entry[] {
   }, [] as Entry[]);
 }
 
-function parseFeed(feed: FetchFeed, { title, url }: { title: string, url: string }): Feed {
+function parseFeed(feed: FetchFeed, { title, url }: { title: string, url: string }): FeedType {
   const image = feed.image?.url;
   const updated = parseDate(feed.lastBuildDate);
-  const data: Feed = {
+  const data: FeedType = {
     url,
     id: getRandomString(),
     // Don't overwrite manually changed title

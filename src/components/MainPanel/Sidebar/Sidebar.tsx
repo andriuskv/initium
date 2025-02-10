@@ -2,7 +2,15 @@ import { useState } from "react";
 import Icon from "components/Icon";
 import "./sidebar.css";
 
-export default function Sidebar({ expanded, locale, expandTab, resizerEnabled, toggleResizer }) {
+type Props = {
+  locale: any,
+  expanded: boolean,
+  resizerEnabled: boolean,
+  expandTab: () => void,
+  toggleResizer: () => void
+}
+
+export default function Sidebar({ locale, expanded, resizerEnabled, expandTab, toggleResizer }: Props) {
   const [visible, setVisible] = useState(false);
 
   function show() {

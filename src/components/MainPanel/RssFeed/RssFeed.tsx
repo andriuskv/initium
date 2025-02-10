@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import type { Entry, FeedType, Feeds, Nav } from "types/feed";
+import { useState, useEffect, useRef, lazy, Suspense, type MouseEvent } from "react";
 import { timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as feedService from "services/feeds";
@@ -12,11 +13,16 @@ const Entries = lazy(() => import("./Entries"));
 
 const VISIBLE_ITEM_COUNT = 3;
 
-export default function RssFeed({ locale, showIndicator }) {
+type Props = {
+  locale: any,
+  showIndicator: (id: string) => void
+}
+
+export default function RssFeed({ locale, showIndicator }: Props) {
   const [loading, setLoading] = useState(true);
-  const [activeComponent, setActiveComponent] = useState(null);
-  const [feeds, setFeeds] = useState(() => getDefaultFeeds());
-  const [navigation, setNavigation] = useState(() => ({
+  const [activeComponent, setActiveComponent] = useState<"form" | "feeds">(null);
+  const [feeds, setFeeds] = useState<Feeds>(() => getDefaultFeeds());
+  const [navigation, setNavigation] = useState<Nav>(() => ({
     activeIndex: 0,
     shift: 0,
     animateLeft: false,
@@ -83,30 +89,31 @@ export default function RssFeed({ locale, showIndicator }) {
     };
   }
 
-  async function syncFeeds(newFeeds) {
+  async function syncFeeds(newFeeds: Feeds) {
     const length = Math.max(newFeeds.active.length, feeds.active.length);
-    feeds.inactive = newFeeds.inactive;
+    const active = [...feeds.active];
+    const failed = [...feeds.failed];
 
     for (let i = 0; i < length; i++) {
-      const oldFeed = feeds.active[i];
+      const oldFeed = active[i];
       const newFeed = newFeeds.active[i];
 
       if (newFeed) {
-        const match = feeds.active.find(({ url }) => newFeed.url === url);
+        const match = active.find(({ url }) => newFeed.url === url);
 
         if (!match) {
           try {
             const data = await feedService.fetchFeed(newFeed);
 
-            if (data.url) {
-              feeds.active.push(data);
+            if ("message" in data) {
+              failed.push(newFeed);
             }
             else {
-              feeds.failed.push(newFeed);
+              active.push(data);
             }
           } catch (e) {
             console.log(e);
-            feeds.failed.push(newFeed);
+            failed.push(newFeed);
           }
         }
         else if (match.title !== newFeed.title) {
@@ -115,16 +122,22 @@ export default function RssFeed({ locale, showIndicator }) {
       }
 
       if (oldFeed && !newFeeds.active.some(({ url }) => oldFeed.url === url)) {
-        removeFeed(i, "active", false);
+        active.splice(i, 1);
       }
     }
-    setNavigation({ activeIndex: 0, shift: 0 });
-    setFeeds({ ...feeds });
 
-    if (feeds.active.length) {
+    setNavigation({ activeIndex: 0, shift: 0 });
+    setFeeds({
+      ...feeds,
+      active,
+      failed,
+      inactive: newFeeds.inactive
+    });
+
+    if (active.length) {
       setActiveComponent(null);
     }
-    else if (feeds.inactive.length || feeds.failed.length) {
+    else if (newFeeds.inactive.length || failed.length) {
       setActiveComponent("feeds");
     }
     else {
@@ -136,18 +149,12 @@ export default function RssFeed({ locale, showIndicator }) {
     const feedsToLoad = await feedService.getStoredFeeds();
 
     if (feedsToLoad) {
-      const feeds = {};
-      let feedsArray = [];
-
-      if (Array.isArray(feedsToLoad)) {
-        feedsArray = feedsToLoad;
-        feeds.inactive = [];
-      }
-      else {
-        feedsArray = feedsToLoad.active;
-        feeds.inactive = feedsToLoad.inactive;
-      }
-      const { active, failed } = await fetchInitialFeeds(feedsArray);
+      const feeds: Feeds = {
+        active: [],
+        inactive: feedsToLoad.inactive,
+        failed: []
+      };
+      const { active, failed } = await fetchInitialFeeds(feedsToLoad.active);
 
       feeds.active = active;
       feeds.failed = failed;
@@ -174,7 +181,7 @@ export default function RssFeed({ locale, showIndicator }) {
     setLoading(false);
   }
 
-  async function fetchInitialFeeds(feedsToLoad) {
+  async function fetchInitialFeeds(feedsToLoad: FeedType[]) {
     const promises = feedsToLoad.map(feed => feedService.fetchFeed(feed));
     const feeds = [];
     const failedFeeds = [];
@@ -182,16 +189,16 @@ export default function RssFeed({ locale, showIndicator }) {
     try {
       const results = await Promise.allSettled(promises);
 
-      for (const [index, { status, value }] of results.entries()) {
-        if (status === "fulfilled" && value?.entries) {
-          feeds.push(value);
-        }
-        else {
+      for (const [index, item] of results.entries()) {
+        if (item.status === "rejected" || "message" in item.value) {
           failedFeeds.push({
             ...feedsToLoad[index],
             // Keep index to know where to put the feed on successful refetch.
             index
           });
+        }
+        else {
+          feeds.push(item.value);
         }
       }
     } catch (e) {
@@ -215,27 +222,31 @@ export default function RssFeed({ locale, showIndicator }) {
   }
 
   async function refetchFeeds() {
-    for (const [index, feed] of feeds.active.entries()) {
-      await updateFeed(feed, index);
+    const active = [...feeds.active];
+    let failed = [...feeds.failed];
+
+    for (const [index, feed] of active.entries()) {
+      await updateFeed({ ...feed }, index);
     }
 
-    if (feeds.failed.length) {
-      let failedFeeds = feeds.failed;
-
+    if (failed.length) {
       for (const feed of feeds.failed) {
         const data = await feedService.fetchFeed(feed);
 
-        if (!data.message) {
-          failedFeeds = failedFeeds.filter(({ url }) => url !== feed.url);
-          feeds.active.splice(feed.index, 0, data);
+        if (!("message" in data)) {
+          failed = failed.filter(({ url }) => url !== feed.url);
+          active.splice(feed.index, 0, data);
         }
       }
-      feeds.failed = failedFeeds;
     }
-    setFeeds({ ...feeds });
+    setFeeds({
+      ...feeds,
+      active,
+      failed
+    });
   }
 
-  async function updateFeed(feed, index) {
+  async function updateFeed(feed: FeedType, index: number) {
     try {
       const newFeed = await feedService.updateFeed(feed);
 
@@ -290,7 +301,7 @@ export default function RssFeed({ locale, showIndicator }) {
     });
   }
 
-  function selectFeed(element, index, container) {
+  function selectFeed(element: HTMLElement, index: number, container: HTMLElement) {
     if (element.closest("[data-entry-count]")) {
       markEntriesAsRead(feeds.active[index]);
     }
@@ -304,8 +315,8 @@ export default function RssFeed({ locale, showIndicator }) {
     }
   }
 
-  function selectFeedFromList({ target }, index) {
-    if (target.closest("[data-entry-count]")) {
+  function selectFeedFromList({ target }: MouseEvent, index: number) {
+    if ((target as HTMLElement).closest("[data-entry-count]")) {
       markEntriesAsRead(feeds.active[index]);
       return;
     }
@@ -323,8 +334,8 @@ export default function RssFeed({ locale, showIndicator }) {
   }
 
   function animateNavigation() {
-    let animateLeft = navigator.animateLeft;
-    let animateRight = navigator.animateRight;
+    let animateLeft = navigation.animateLeft;
+    let animateRight = navigation.animateRight;
 
     for (const index of updatedFeeds.current) {
       if (index < navigation.shift) {
@@ -345,30 +356,58 @@ export default function RssFeed({ locale, showIndicator }) {
     }
   }
 
-  function markEntriesAsRead(feed) {
-    feed.newEntryCount = 0;
-    feed.entries = feed.entries.map(entry => {
-      entry.newEntry = false;
-      return entry;
-    });
+  function markEntriesAsRead(feed: FeedType) {
+    const index = feeds.active.findIndex(({ id }) => feed.id === id);
 
-    setFeeds({ ...feeds });
+    setFeeds({
+      ...feeds,
+      active: feeds.active.with(index, {
+        ...feed,
+        newEntryCount: 0,
+        entries: feed.entries.map(entry => {
+          entry.newEntry = false;
+          return entry;
+        })
+      })
+    });
   }
 
-  function markEntryAsRead(entry) {
+  function markEntryAsRead(entry: Entry, index: number) {
     if (entry.newEntry) {
-      feeds.active[navigation.activeIndex].newEntryCount -= 1;
-      entry.newEntry = false;
-      setFeeds({ ...feeds });
+      const activeFeed = feeds.active[navigation.activeIndex];
+      const entries = activeFeed.entries.with(index, {
+        ...entry,
+        newEntry: false,
+      });
+
+      setFeeds({
+        ...feeds,
+        active: feeds.active.with(navigation.activeIndex, {
+          ...activeFeed,
+          entries,
+          newEntryCount: activeFeed.newEntryCount - 1
+        })
+      });
     }
   }
 
-  function expandEntry(entry) {
-    entry.truncated = false;
-    setFeeds({ ...feeds });
+  function expandEntry(entry: Entry, index: number) {
+    const activeFeed = feeds.active[navigation.activeIndex];
+    const entries = activeFeed.entries.with(index, {
+      ...entry,
+      truncated: false,
+    });
+
+    setFeeds({
+      ...feeds,
+      active: feeds.active.with(navigation.activeIndex, {
+        ...activeFeed,
+        entries
+      })
+    });
   }
 
-  function updateFeeds(feeds, save = true) {
+  function updateFeeds(feeds: Feeds, save = true) {
     setFeeds({ ...feeds });
 
     if (save) {
@@ -376,7 +415,16 @@ export default function RssFeed({ locale, showIndicator }) {
     }
   }
 
-  function removeFeed(index, type, save = true) {
+  function updateActiveFeed(feed: FeedType, save = true) {
+    const index = feeds.active.findIndex(({ id }) => id === feed.id);
+
+    updateFeeds({
+      ...feeds,
+      active: feeds.active.with(index, feed)
+    }, save);
+  }
+
+  function removeFeed(index: number, type: string, save = true) {
     feeds[type].splice(index, 1);
 
     if (type === "active" && feeds.active.length) {
@@ -394,26 +442,32 @@ export default function RssFeed({ locale, showIndicator }) {
     updateFeeds(feeds, save);
   }
 
-  function addFeed(feed) {
-    feeds.active.push(feed);
+  function addFeed(feed: FeedType) {
     selectView({
       ...navigation,
       activeIndex: feeds.active.length - 1,
       shift: feeds.active.length - VISIBLE_ITEM_COUNT < 0 ? 0 : feeds.active.length - VISIBLE_ITEM_COUNT
     });
     setActiveComponent(null);
-    updateFeeds(feeds);
+    updateFeeds({
+      ...feeds,
+      active: [...feeds.active, feed]
+    });
   }
 
-  function deactivateFeed(index) {
-    const [feed] = feeds.active.splice(index, 1);
+  function deactivateFeed(index: number) {
+    const active = [...feeds.active];
+    const [feed] = active.splice(index, 1);
 
-    feeds.inactive.push(feed);
-
-    if (feeds.active.length) {
+    if (active.length) {
       selectView({ activeIndex: 0, shift: 0 });
     }
-    updateFeeds(feeds);
+    updateFeeds({
+      ...feeds,
+      active,
+      inactive: [...feeds.inactive, feed]
+
+    });
   }
 
   function showForm() {
@@ -428,9 +482,11 @@ export default function RssFeed({ locale, showIndicator }) {
     setActiveComponent("feeds");
 
     if (navigation.animateLeft || navigation.animateRight) {
-      delete navigation.animateLeft;
-      delete navigation.animateRight;
-      setNavigation({ ...navigation });
+      setNavigation({
+        ...navigation,
+        animateLeft: false,
+        animateRight: false
+      });
     }
   }
 
@@ -438,7 +494,7 @@ export default function RssFeed({ locale, showIndicator }) {
     setActiveComponent(null);
   }
 
-  function selectView(navigation) {
+  function selectView(navigation: Nav) {
     setNavigation(navigation);
 
     saveTabTimeoutId.current = timeout(() => {
@@ -449,7 +505,7 @@ export default function RssFeed({ locale, showIndicator }) {
     }, 400, saveTabTimeoutId.current);
   }
 
-  function saveFeeds(feeds) {
+  function saveFeeds(feeds: Feeds) {
     chromeStorage.set({
       feeds: {
         active: feeds.active.concat(feeds.failed).map(({ url, title }) => ({ url, title })),
@@ -472,6 +528,7 @@ export default function RssFeed({ locale, showIndicator }) {
         {activeComponent === "feeds" && (
           <Feeds feeds={feeds} locale={locale} selectFeedFromList={selectFeedFromList}
             removeFeed={removeFeed} deactivateFeed={deactivateFeed}
+            updateFeed={updateActiveFeed}
             updateFeeds={updateFeeds} showForm={showForm} hide={hideFeedList}/>
         )}
         {activeComponent === "form" && <Form feeds={feeds} locale={locale} addFeed={addFeed} hide={hideForm}/>}

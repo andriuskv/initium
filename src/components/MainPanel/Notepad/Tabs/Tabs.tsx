@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import type { TabType } from "../notepad.type";
+import { useState, useEffect, type FormEvent, type CSSProperties } from "react";
 import { getRandomString } from "utils";
 import { useModal } from "hooks";
 import * as chromeStorage from "services/chromeStorage";
@@ -10,10 +11,24 @@ import CreateButton from "components/CreateButton";
 import "./tabs.css";
 import Tab from "./Tab";
 
-export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs, updateTabPosition, getTabSize, decreaseTextSize, increaseTextSize, hide }) {
-  const { modal, setModal, hideModal } = useModal(null);
+type Props = {
+  tabs: TabType[],
+  textSize: number,
+  locale: any,
+  selectListTab: (index: number) => void,
+  updateTabs: (tabs: TabType[], shouldSave?: boolean) => void,
+  updateTab: (tab: TabType, shouldSave?: boolean) => void,
+  updateTabPosition: (index: number) => void,
+  getTabSize: (tab: TabType) => { sizeString: string; size: number },
+  decreaseTextSize: (size: number, tab?: TabType) => void,
+  increaseTextSize: (size: number, tab?: TabType) => void,
+  hide: () => void
+}
+
+export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs, updateTab, updateTabPosition, getTabSize, decreaseTextSize, increaseTextSize, hide }: Props) {
+  const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const [storage, setStorage] = useState({ usedFormated: "0 kb", usedRatio: 0, maxFormated: "0 kb" });
-  const [activeDragId, setActiveDragId] = useState(null);
+  const [activeDragId, setActiveDragId] = useState("");
 
   useEffect(() => {
     updateStorage();
@@ -37,7 +52,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     setModal({ type: "create" });
   }
 
-  function showRemoveModal(index) {
+  function showRemoveModal(index: number) {
     const tab = tabs[index];
 
     if (tab.content) {
@@ -53,10 +68,9 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     hideModal();
   }
 
-  function removeTab(index) {
-    tabs.splice(index, 1);
+  function removeTab(index: number) {
     updateTabPosition(0);
-    updateTabs(tabs);
+    updateTabs(tabs.toSpliced(index, 1));
   }
 
   function getNewTabTitle() {
@@ -77,20 +91,29 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     return `Tab ${number}`;
   }
 
-  function createTab(event) {
+  function createTab(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      title: HTMLInputElement;
+    }
+
+    const formElement = event.target as HTMLFormElement;
+    const elements = formElement.elements as FormElements;
     const tab = {
-      title : event.target.elements.title.value.trim() || getNewTabTitle(),
+      id: getRandomString(),
+      title : elements.title.value.trim() || getNewTabTitle(),
       content: ""
     };
 
     event.preventDefault();
-    tabs.push({
-      ...tab,
-      id: getRandomString(),
-      sizeString: getTabSize(tab).sizeString
-    });
-    updateTabPosition(tabs.length - 1);
-    updateTabs(tabs);
+
+    updateTabPosition(tabs.length);
+    updateTabs([
+      ...tabs,
+      {
+        ...tab,
+        sizeString: getTabSize(tab).sizeString
+      }
+    ]);
     hideModal();
   }
 
@@ -100,7 +123,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     setStorage({ usedFormated, usedRatio, maxFormated });
   }
 
-  function handleSort(items) {
+  function handleSort(items: TabType[]) {
     if (items) {
       updateTabs(items);
     }
@@ -114,7 +137,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
   function renderModal() {
     if (modal.type === "create") {
       return (
-        <Modal className="notepad-modal" hiding={modal.hiding} hide={hideModal}>
+        <Modal className="notepad-modal" hiding={modalHiding} hide={hideModal}>
           <form onSubmit={createTab}>
             <h4 className="modal-title modal-title-center">{locale.notepad.create_modal_title}</h4>
             <input type="text" className="input" name="title"
@@ -130,7 +153,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     }
     else if (modal.type === "remove") {
       return (
-        <Modal className="notepad-modal" hiding={modal.hiding} hide={hideModal}>
+        <Modal className="notepad-modal" hiding={modalHiding} hide={hideModal}>
           <h4 className="modal-title">{locale.notepad.remove_modal_title}</h4>
           <div className="modal-text-body">
             <p>{locale.notepad.remove_modal_text}</p>
@@ -151,10 +174,10 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
       params: {
         index,
         tab,
-        tabs,
+        canRemove: tabs.length > 1,
         textSize,
         locale,
-        updateTabs,
+        updateTab,
         decreaseTextSize,
         increaseTextSize,
         selectListTab,
@@ -205,7 +228,8 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
           {tabs.map((tab, index) => renderTab(tab, index))}
         </SortableList>
       </ul>
-      <CreateButton style={{ "--bottom": "50px" }} onClick={showCreateTabForm} shiftTarget=".js-notepad-tab-dropdown-toggle-btn" trackScroll></CreateButton>
+      <CreateButton style={{ "--bottom": "50px" } as CSSProperties}
+        onClick={showCreateTabForm} shiftTarget=".js-notepad-tab-dropdown-toggle-btn" trackScroll></CreateButton>
       <div className="container-footer notepad-storage">
         <div className="notepad-storage-text">
           <div>{storage.usedFormated}</div>
@@ -213,7 +237,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
         </div>
         <div className="notepad-storage-bar">
           <div className={`notepad-storage-bar-inner${storage.usedRatio > 0.9 ? " full" : ""}`}
-            style={{ "--used": storage.usedRatio }}>
+            style={{ "--used": storage.usedRatio } as CSSProperties}>
           </div>
         </div>
       </div>

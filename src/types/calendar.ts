@@ -1,9 +1,17 @@
+export type DDate = {
+  year: number,
+  month: number,
+  day: number
+}
+
 export type Reminder = {
   id: string,
+  type: string,
   creationDate: number,
-  day: number,
-  month: number,
+  dateString?: string,
   year: number,
+  month: number,
+  day: number,
   range: {
     from?: { hours: number, minutes: number },
     to?: { hours: number, minutes: number },
@@ -21,8 +29,8 @@ export type Reminder = {
     endDate?: {
       year: number,
       month: number,
-      day: number,
-    }
+      day: number
+    },
     leftoverDays?: number,
     firstWeekday?: 0 | 1,
     weekdays?: {
@@ -30,10 +38,22 @@ export type Reminder = {
       static: boolean[]
     }
   },
+  nextRepeat?: {
+    year: number,
+    month: number,
+    day: number,
+    repeats: number,
+    gapIndex: number,
+    gaps?: number[],
+    leftoverDays?: number,
+    done?: boolean
+  }
   notify?: {
     type: "default" | "time",
     time?: { full: number, hours?: number, minutes?: number }
   }
+  removing?: boolean,
+  editable: boolean,
   color: string,
   text: string,
   description?: string
@@ -42,7 +62,6 @@ export type Reminder = {
 export type GoogleReminder = Reminder & {
   type: "google",
   calendarId: string,
-  editable: boolean,
   colorId?: string,
   repeat?: Reminder["repeat"] & {
     freq?: "yearly",
@@ -50,13 +69,35 @@ export type GoogleReminder = Reminder & {
   }
 }
 
+export type Day = {
+  isCurrentDay?: boolean,
+  id: string,
+  year: number,
+  month: number,
+  day: number,
+  weekdayName?: string,
+  dateString: string,
+  reminders: Reminder[]
+}
+
+export type Month = {
+  isCurrentMonth?: boolean,
+  firstDayIndex: number,
+  name: string,
+  dateString: string,
+  days: Day[]
+}
+
+export type CalendarType = { [key: string]: Month[] }
+
 export type GoogleCalendar = {
   id: string,
   title: string,
   color: string
   canEdit: boolean,
   selected: boolean,
-  primary?: boolean
+  primary?: boolean,
+  fetching?: boolean
 }
 
 export type GoogleUser = {
