@@ -11,7 +11,7 @@ import type { WallpaperSettings } from "types/settings";
 export default function Wallpaper({ locale }) {
   const { settings: { appearance: settings }, updateContextSetting } = useSettings();
   const [wallpaperInfo, setWallpaperInfo] = useState(() => getWallpaperInfo());
-  const { modal, setModal, hideModal } = useModal();
+  const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const [wallpaperSettingsDirty, setWallpaperSettingsDirty] = useState(() => {
     const keys = Object.keys(settings.wallpaper);
 
@@ -174,7 +174,7 @@ export default function Wallpaper({ locale }) {
 
   function renderWallpaperForm() {
     return (
-      <Modal hiding={modal.hiding} hide={hideModal}>
+      <Modal hiding={modalHiding} hide={hideModal}>
         <form onSubmit={handleWallpaperFormSubmit}>
           <h4 className="modal-title modal-title-center">{locale.settings.appearance.wallpaper_url_form_title}</h4>
           <input type="text" className="input setting-wallpaper-form-input" name="input" placeholder={locale.global.url_input_label} autoComplete="off"/>

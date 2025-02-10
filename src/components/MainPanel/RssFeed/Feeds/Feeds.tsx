@@ -1,4 +1,5 @@
-import { useState } from "react";
+import type { Feeds, FeedType } from "types/feed";
+import { useState, type CSSProperties, type MouseEvent } from "react";
 import * as feedService from "services/feeds";
 import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
@@ -9,19 +10,35 @@ import CreateButton from "components/CreateButton";
 import "./feeds.css";
 import Feed from "./Feed";
 
-export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, deactivateFeed, updateFeeds, showForm, hide }) {
+type Props = {
+  locale: any,
+  feeds: Feeds,
+  selectFeedFromList: (event: MouseEvent<HTMLButtonElement>, index: number) => void,
+  removeFeed: (index: number, type: string) => void,
+  deactivateFeed: (index: number) => void,
+  updateFeeds: (feeds: Feeds, shouldSave?: boolean) => void,
+  updateFeed: (feed: FeedType, shouldSave?: boolean) => void,
+  showForm: () => void,
+  hide: () => void,
+}
+
+export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, deactivateFeed, updateFeeds, updateFeed, showForm, hide }: Props) {
   const [activeDragId, setActiveDragId] = useState(null);
 
-  async function refetchFeed(feed, type) {
-    feed.fetching = true;
-    updateFeeds(feeds, false);
+  async function refetchFeed(feed: FeedType, type: string) {
+    updateFeed({
+      ...feed,
+      fetching: true
+    }, false);
 
     try {
       const data = await feedService.fetchFeed(feed);
 
-      if (data.message) {
-        feed.fetching = false;
-        updateFeeds(feeds, false);
+      if ("message" in data) {
+        updateFeed({
+          ...feed,
+          fetching: undefined
+        }, false);
         return;
       }
 
@@ -31,28 +48,38 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
       else if (type === "inactive") {
         activateFeed(data);
       }
-      updateFeeds(feeds);
     } catch (e) {
       console.log(e);
-      feed.fetching = false;
-      updateFeeds(feeds, false);
+
+      updateFeed({
+        ...feed,
+        fetching: undefined
+      }, false);
     }
   }
 
-  function insertFailedFeed(feed, index) {
-    feeds.failed = feeds.failed.filter(({ url }) => url !== feed.url);
-    feeds.active.splice(index, 0, feed);
+  function insertFailedFeed(feed: FeedType, index: number) {
+    updateFeeds({
+      ...feeds,
+      failed: feeds.failed.filter(({ url }) => url !== feed.url),
+      active: feeds.active.toSpliced(index, 0, feed)
+    });
   }
 
-  function activateFeed(feed) {
-    feeds.inactive = feeds.inactive.filter(({ url }) => url !== feed.url);
-    feeds.active.push(feed);
+  function activateFeed(feed: FeedType) {
+    updateFeeds({
+      ...feeds,
+      inactive: feeds.inactive.filter(({ url }) => url !== feed.url),
+      active: [...feeds.active, feed]
+    });
   }
 
-  function handleSort(items) {
+  function handleSort(items: Feeds["active"]) {
     if (items) {
-      feeds.active = items;
-      updateFeeds(feeds);
+      updateFeeds({
+        ...feeds,
+        active: items
+      });
     }
     setActiveDragId(null);
   }
@@ -61,15 +88,14 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
     setActiveDragId(event.active.id);
   }
 
-  function renderFeed(feed, index) {
+  function renderFeed(feed: FeedType, index: number) {
     const component = {
       Component: Feed,
       params: {
         index,
         feed,
-        feeds,
         locale,
-        updateFeeds,
+        updateFeed,
         selectFeedFromList,
         deactivateFeed,
         removeFeed
@@ -105,7 +131,7 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
               <div className="feed-list-item-header">
                 <div className="feed-list-item-title-container">
                   <h3 className="feed-list-item-title">{feed.title}</h3>
-                  <Link href={feed.url} className="feed-list-item-url" target="_blank" rel="noreferrer">{feed.url}</Link>
+                  <Link href={feed.url} className="feed-list-item-url">{feed.url}</Link>
                 </div>
                 <button className="btn icon-btn" onClick={() => removeFeed(index, "failed")} title={locale.global.remove}>
                   <Icon id="trash"/>
@@ -151,7 +177,7 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
           </li>
         ))}
       </ul>
-      <CreateButton style={{ "--expanded-width": "76px" }} onClick={showForm}>{locale.global.add}</CreateButton>
+      <CreateButton style={{ "--expanded-width": "76px" } as CSSProperties} onClick={showForm}>{locale.global.add}</CreateButton>
     </div>
   );
 }

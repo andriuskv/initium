@@ -8,5 +8,5 @@ type Props = PropsWithChildren & {
 
 export default function Link({ href, className, children }: Props) {
   const { settings } = useSettings();
-  return <a href={href} className={className} {...(settings.general.openLinkInNewTab ? { target: "_blank" } : {})}>{children}</a>;
+  return <a href={href} className={className} {...(settings.general.openLinkInNewTab ? { target: "_blank", rel: "noreferrer" } : {})}>{children}</a>;
 }

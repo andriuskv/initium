@@ -1,14 +1,25 @@
+import type { GoogleCalendar, GoogleUser } from "types/calendar";
 import { useState } from "react";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./header-dropdown.css";
 
-export default function HeaderDropdown({ user, calendars, toggleCalendarReminders, showReminderList, handleUserSignOut }) {
+type Props = {
+  user: GoogleUser,
+  calendars: GoogleCalendar[],
+  toggleCalendarReminders: (calendarId: string, selected: boolean) => void,
+  showReminderList: () => void,
+  handleUserSignOut: (shouldCleanup?: boolean) => void
+}
+
+export default function HeaderDropdown({ user, calendars, toggleCalendarReminders, showReminderList, handleUserSignOut }: Props) {
   const [calendarsVisible, setCalendarsVisible] = useState(() => localStorage.getItem("calendar-list-visible") === "true");
 
   function toggleCalendarList() {
-    setCalendarsVisible(!calendarsVisible);
-    localStorage.setItem("calendar-list-visible", !calendarsVisible);
+    const visible = !calendarsVisible;
+
+    setCalendarsVisible(visible);
+    localStorage.setItem("calendar-list-visible", visible.toString());
   }
 
   return (

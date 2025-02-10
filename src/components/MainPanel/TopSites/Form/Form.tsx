@@ -1,13 +1,29 @@
+import type { Site, FormType } from "../top-sites.type";
 import Modal from "components/Modal";
 import "./form.css";
+import type { FormEvent } from "react";
 
-export default function Form({ form, locale, updateSite, hiding, hide }) {
-  function getUrl(value) {
+type Props = {
+  form: FormType,
+  locale: any,
+  hiding?: boolean,
+  updateSite: (site: Site, action: "add" | "update") => void,
+  hide: () => void
+}
+
+export default function Form({ form, locale, hiding, updateSite, hide }: Props) {
+  function getUrl(value: string) {
     return /^https?:\/\//.test(value) ? value : `https://${value}`;
   }
 
-  function handleFormSubmit(event) {
-    const { elements } = event.target;
+  function handleFormSubmit(event: FormEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      url: HTMLInputElement;
+      title: HTMLInputElement;
+    }
+
+    const formElement = event.target as HTMLFormElement;
+    const elements = formElement.elements as FormElements;
     const url = getUrl(elements.url.value);
     const title = elements.title.value;
 

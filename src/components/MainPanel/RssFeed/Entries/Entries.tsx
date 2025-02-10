@@ -1,21 +1,34 @@
-import { useRef } from "react";
+import { useRef, type MouseEvent } from "react";
 import TabsContainer from "components/TabsContainer";
 import ToTop from "components/ToTop";
 import Icon from "components/Icon";
 import Link from "components/Link";
 import "./entries.css";
+import type { Feeds, Entry, Nav } from "types/feed";
 
 const VISIBLE_ITEM_COUNT = 3;
 
-export default function Entries({ navigation, feeds, locale, selectFeed, previousShift, nextShift, showFeedList, markEntryAsRead, expandEntry }) {
-  const containerRef = useRef(0);
+type Props = {
+  navigation: Nav,
+  feeds: Feeds,
+  locale: any,
+  selectFeed: (element: HTMLElement, index: number, container: HTMLElement) => void,
+  previousShift: () => void,
+  nextShift: () => void,
+  showFeedList: () => void,
+  markEntryAsRead: (entry: Entry, index: number) => void,
+  expandEntry: (entry: Entry, index: number) => void,
+}
+
+export default function Entries({ navigation, feeds, locale, selectFeed, previousShift, nextShift, showFeedList, markEntryAsRead, expandEntry }: Props) {
+  const containerRef = useRef(null);
   const { activeIndex, shift, animateLeft, animateRight } = navigation;
 
-  function handleFeedSelection(event, index) {
-    selectFeed(event.target, index, containerRef.current);
+  function handleFeedSelection(event: MouseEvent, index: number) {
+    selectFeed(event.target as HTMLElement, index, containerRef.current);
   }
 
-  function getEntryDescription(description) {
+  function getEntryDescription(description: string) {
     const div = document.createElement("div");
 
     div.innerHTML = description;
@@ -65,8 +78,8 @@ export default function Entries({ navigation, feeds, locale, selectFeed, previou
         </button>
       </div>
       <ul className="container-body feed-entries" ref={containerRef}>
-        {feeds.active[activeIndex].entries.map(entry => (
-          <li className="feed-entry" onClick={() => markEntryAsRead(entry)} key={entry.id}>
+        {feeds.active[activeIndex].entries.map((entry, index) => (
+          <li className="feed-entry" onClick={() => markEntryAsRead(entry, index)} key={entry.id}>
             <div className="feed-entry-title">
               {entry.newEntry && <span className="new-entry-indicator">{locale.rssFeed.new_entry}</span>}
               <span>
@@ -79,7 +92,7 @@ export default function Entries({ navigation, feeds, locale, selectFeed, previou
                 <p className="feed-entry-description" dangerouslySetInnerHTML={{ __html: getEntryDescription(entry.description) }}></p>
               ) : null}
             </div>
-            <button className="btn text-btn feed-entry-expand-btn" onClick={() => expandEntry(entry)}>{locale.rssFeed.show_more}</button>
+            <button className="btn text-btn feed-entry-expand-btn" onClick={() => expandEntry(entry, index)}>{locale.rssFeed.show_more}</button>
             {entry.date ? <div className="feed-date">Posted on {entry.date}</div> : null}
           </li>
         ))}

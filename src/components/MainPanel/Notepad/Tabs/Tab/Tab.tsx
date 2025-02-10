@@ -1,30 +1,49 @@
+import type { TabType } from "../../notepad.type";
+import type { FocusEvent, KeyboardEvent, MouseEvent, PropsWithChildren } from "react";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./tab.css";
 
-export default function Tab({ children, index, tab, tabs, textSize, locale, updateTabs, selectListTab, showRemoveModal, decreaseTextSize, increaseTextSize }) {
+type Props = PropsWithChildren & {
+  index: number,
+  tab: TabType,
+  canRemove: boolean,
+  textSize: number,
+  locale: any,
+  updateTab: (tab: TabType, shouldSave?: boolean) => void,
+  selectListTab: (index: number) => void,
+  showRemoveModal: (index: number) => void,
+  decreaseTextSize: (size: number, tab: TabType) => void,
+  increaseTextSize: (size: number, tab: TabType) => void,
+}
+
+export default function Tab({ children, index, tab, canRemove, textSize, locale, updateTab, selectListTab, showRemoveModal, decreaseTextSize, increaseTextSize }: Props) {
   function enableTabRename() {
-    tab.renameEnabled = true;
-    updateTabs(tabs, false);
+    updateTab({
+      ...tab,
+      renameEnabled: true,
+    }, false);
   }
 
-  function renameTab(event) {
-    const newTitle = event.target.value;
+  function renameTab(event: FocusEvent) {
+    const newTitle = (event.target as HTMLInputElement).value;
     let shouldSave = false;
-
-    delete tab.renameEnabled;
+    const newTab = {
+      ...tab,
+      renameEnabled: undefined
+    };
 
     if (newTitle && newTitle !== tab.title) {
-      tab.title = newTitle;
+      newTab.title = newTitle;
       shouldSave = true;
     }
-    updateTabs(tabs, shouldSave);
+    updateTab(newTab, shouldSave);
   }
 
-  function downloadTab(event) {
+  function downloadTab(event: MouseEvent) {
     const data = new Blob([tab.content], { type: "text/plain" });
     const url = URL.createObjectURL(data);
-    const target = event.currentTarget;
+    const target = event.currentTarget as HTMLAnchorElement;
     target.href = url;
 
     setTimeout(() => {
@@ -33,9 +52,9 @@ export default function Tab({ children, index, tab, tabs, textSize, locale, upda
     }, 100);
   }
 
-  function blurTabTitleInput(event) {
+  function blurTabTitleInput(event: KeyboardEvent) {
     if (event.key === "Enter") {
-      event.target.blur();
+      (event.target as HTMLInputElement).blur();
     }
   }
 
@@ -92,7 +111,8 @@ export default function Tab({ children, index, tab, tabs, textSize, locale, upda
             <Icon id="download"/>
             <span>{locale.global.download}</span>
           </a>
-          {tabs.length > 1 && (
+          {/* {tabs.length > 1 && ( */}
+          {canRemove && (
             <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
               <Icon id="trash"/>
               <span>{locale.global.remove}</span>

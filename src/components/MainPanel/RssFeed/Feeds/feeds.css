@@ -97,7 +97,7 @@
   font-size: var(--text-sm);
   font-weight: bold;
   color: var(--color-white-60);
-  word-break: break-word;
+  overflow-wrap: anywhere;
 
   &:hover {
     text-decoration: underline;

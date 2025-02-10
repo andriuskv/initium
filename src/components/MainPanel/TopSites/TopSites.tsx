@@ -1,5 +1,7 @@
 /* global chrome */
 
+import type { MainPanelComponents, AppearanceSettings } from "types/settings";
+import type { Site } from "./top-sites.type";
 import { useState, useEffect, useRef } from "react";
 import { useModal } from "hooks";
 import { getSetting } from "services/settings";
@@ -9,9 +11,24 @@ import "./top-sites.css";
 import Form from "./Form";
 import PersistentSites from "./PersistentSites";
 
-export default function TopSites({ settings, locale }) {
-  const [sites, setSites] = useState(null);
-  const { modal, setModal, hideModal } = useModal(null);
+type Props = {
+  settings: MainPanelComponents["topSites"],
+  locale: any
+}
+
+type LocalData = {
+  filtered?: string[],
+  modified?: {
+    initialTitle: string,
+    title: string,
+    url: string
+  }[]
+  sites?: Site[]
+};
+
+export default function TopSites({ settings, locale }: Props) {
+  const [sites, setSites] = useState<Site[]>(null);
+  const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const first = useRef(true);
 
   useEffect(() => {
@@ -28,27 +45,6 @@ export default function TopSites({ settings, locale }) {
     const data = getLocalSites();
     let sites = [];
 
-    if (Array.isArray(data.static)) {
-      data.sites = parseSites(data.static, data).map(site => {
-        site.local = true;
-        return site;
-      });
-      delete data.static;
-
-      const chromeSites = await fetchTopSites(data);
-
-      for (let i = 0; i < data.sites.length; i += 1) {
-        if (chromeSites.some(site => site.url === data.sites[i].url)) {
-          data.sites[i] = null;
-        }
-      }
-      data.sites = data.sites.filter(site => Boolean(site));
-
-      setSites(data.sites.concat(chromeSites));
-      saveSites(data);
-      return;
-    }
-
     if (Array.isArray(data.sites)) {
       const localSites = parseSites(data.sites, data);
       sites = sites.concat(localSites);
@@ -63,12 +59,12 @@ export default function TopSites({ settings, locale }) {
     setSites(sites);
   }
 
-  async function fetchTopSites(localData) {
-    const sites = await chrome.topSites.get();
+  async function fetchTopSites(localData?: LocalData) {
+    const sites = await chrome.topSites.get() as { url: string, title: string }[];
     return parseSites(sites, localData);
   }
 
-  function parseSites(sites, { filtered = [], modified = [] } = {}) {
+  function parseSites(sites: Site[], { filtered = [], modified = [] }: LocalData) {
     return sites.filter(site => !filtered.includes(site.url)).map(site => {
       const modifiedSite = modified.find(({ url }) => url === site.url);
 
@@ -82,11 +78,12 @@ export default function TopSites({ settings, locale }) {
 
   async function resetTopSites() {
     const sites = await fetchTopSites();
+
     setSites(sites);
     localStorage.removeItem("top sites");
   }
 
-  function getFaviconURL(url) {
+  function getFaviconURL(url: string) {
     const { href } = new URL(url);
     return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${href}&size=32`;
   }
@@ -95,7 +92,7 @@ export default function TopSites({ settings, locale }) {
     setModal({});
   }
 
-  function editSite(index) {
+  function editSite(index: number) {
     setModal({
       ...sites[index],
       index,
@@ -103,11 +100,11 @@ export default function TopSites({ settings, locale }) {
     });
   }
 
-  function removeSite(index) {
-    const [site] = sites.splice(index, 1);
+  function removeSite(index: number) {
+    const site = sites[index];
     const data = getLocalSites();
 
-    setSites([...sites]);
+    setSites(sites.toSpliced(index, 1));
 
     if (site.local) {
       data.sites = data.sites.filter(item => item.url !== site.url);
@@ -123,11 +120,11 @@ export default function TopSites({ settings, locale }) {
     saveSites(data);
   }
 
-  function isUniqueSite(site, sites) {
+  function isUniqueSite(site: Site, sites: Site[]) {
     return !sites.some(({ url }) => site.url === url);
   }
 
-  function updateSite(site, action) {
+  function updateSite(site: Site, action: "add" | "update") {
     if (action === "add") {
       if (!isUniqueSite(site, sites)) {
         return;
@@ -143,8 +140,7 @@ export default function TopSites({ settings, locale }) {
         index += 1;
       }
       // Append site after the last local site
-      sites.splice(index, 0, site);
-      setSites([...sites]);
+      setSites(sites.toSpliced(index, 0, site));
       saveSite(site);
     }
     else if (action === "update") {
@@ -173,8 +169,9 @@ export default function TopSites({ settings, locale }) {
       else if (site.title !== oldSite.title) {
         if (oldSite.local) {
           updatedSite.local = true;
+
           saveSite(updatedSite);
-          setSites([...sites]);
+          setSites(sites.with(modal.index, updatedSite));
           return;
         }
         const data = getLocalSites();
@@ -208,7 +205,7 @@ export default function TopSites({ settings, locale }) {
     }
   }
 
-  function saveSite(site) {
+  function saveSite(site: Site) {
     const data = getLocalSites();
     data.sites ??= [];
 
@@ -223,7 +220,7 @@ export default function TopSites({ settings, locale }) {
     saveSites(data);
   }
 
-  function saveSites(data) {
+  function saveSites(data: LocalData) {
     let sites = undefined;
 
     if (data.sites) {
@@ -238,7 +235,7 @@ export default function TopSites({ settings, locale }) {
     }));
   }
 
-  function getLocalSites() {
+  function getLocalSites(): LocalData {
     return JSON.parse(localStorage.getItem("top sites")) || {};
   }
 
@@ -251,7 +248,7 @@ export default function TopSites({ settings, locale }) {
     <>
       <ul className={`top-sites${first.current ? " first" : ""}`} ref={element => {
         if (element && first.current) {
-          const { animationSpeed } = getSetting("appearance");
+          const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
 
           setTimeout(() => {
             element.classList.remove("first");
@@ -294,7 +291,7 @@ export default function TopSites({ settings, locale }) {
         <PersistentSites settings={settings} locale={locale} getFaviconURL={getFaviconURL}/>
       )}
       {modal ? (
-        <Form form={modal} locale={locale} updateSite={updateSite} hiding={modal.hiding} hide={hideModal}/>
+        <Form form={modal} locale={locale} updateSite={updateSite} hiding={modalHiding} hide={hideModal}/>
       ) : null}
     </>
   );

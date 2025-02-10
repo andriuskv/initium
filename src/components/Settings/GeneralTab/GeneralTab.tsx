@@ -10,7 +10,7 @@ import type { ChangeEvent } from "react";
 
 export default function GeneralTab({ locale }) {
   const { settings, toggleSetting, updateContextSetting, resetSettings } = useSettings();
-  const { modal, setModal, hideModal } = useModal();
+  const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
 
   // function handleLocaleChange({ target }) {
   //   updateSetting("general", { locale: target.value });
@@ -69,7 +69,7 @@ export default function GeneralTab({ locale }) {
 
     if (modal.type === "reset") {
       return (
-        <Modal hiding={modal.hiding} hide={hideModal}>
+        <Modal hiding={modalHiding} hide={hideModal}>
           <h4 className="modal-title">{locale.settings.general.reset_settings_title}</h4>
           <p className="modal-text-body">{locale.settings.general.reset_settings_message}</p>
           <div className="modal-actions">
@@ -82,7 +82,7 @@ export default function GeneralTab({ locale }) {
     else if (modal.type === "order") {
       return (
         <MiddleTop settings={settings} locale={locale}
-          updateContextSetting={updateContextSetting} hiding={modal.hiding} hide={hideModal}/>
+          updateContextSetting={updateContextSetting} hiding={modalHiding} hide={hideModal}/>
       );
     }
     return null;

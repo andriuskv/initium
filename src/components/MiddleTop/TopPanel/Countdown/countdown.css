@@ -92,3 +92,7 @@
   text-align: center;
   color: var(--color-white-60);
 }
+
+.countdown-item-dropdown-remove-btn {
+  justify-content: center;
+}

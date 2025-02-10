@@ -1,3 +1,5 @@
+import type { MainPanelComponents } from "types/settings";
+import type { FormType } from "../top-sites.type";
 import { useState, useEffect, lazy, Suspense } from "react";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -6,10 +8,23 @@ import "./persistent-sites.css";
 
 const Form = lazy(() => import("../Form"));
 
-export default function PersistentSites({ settings, locale, getFaviconURL }) {
-  const [sites, setSites] = useState(null);
+export type Site = {
+  id: string,
+  url: string,
+  title: string,
+  iconUrl?: string
+}
+
+type Props = {
+  settings: MainPanelComponents["topSites"],
+  locale: any,
+  getFaviconURL: (url: string) => string
+}
+
+export default function PersistentSites({ settings, locale, getFaviconURL }: Props) {
+  const [sites, setSites] = useState<Site[]>(null);
   const [siteEditEnabled, setSiteEditEnabled] = useState(false);
-  const [form, setForm] = useState(null);
+  const [form, setForm] = useState<FormType>(null);
   const [activeDragId, setActiveDragId] = useState(null);
 
   useEffect(() => {
@@ -42,7 +57,7 @@ export default function PersistentSites({ settings, locale, getFaviconURL }) {
     });
   }
 
-  function initSites(sites) {
+  function initSites(sites: Site[]) {
     return sites.map(site => {
       site.id = crypto.randomUUID();
       site.iconUrl = getFaviconURL(site.url);
@@ -66,29 +81,32 @@ export default function PersistentSites({ settings, locale, getFaviconURL }) {
     setForm(null);
   }
 
-  function updateSite(site, action) {
+  function updateSite(site: Site, action: "add" | "update") {
     const isNewSite = !sites.some(({ url }) => site.url === url);
 
     if (action === "add" && isNewSite) {
-      site.id = crypto.randomUUID();
-      site.iconUrl = getFaviconURL(site.url);
+      const newSites = [...sites, {
+        ...site,
+        id:  crypto.randomUUID(),
+        iconUrl:  getFaviconURL(site.url)
+      }];
 
-      sites.push(site);
-      setSites([...sites]);
-      saveSites(sites);
+      setSites(newSites);
+      saveSites(newSites);
     }
     else if (action === "update" && (isNewSite || site.title !== sites[form.index].title)) {
-      sites[form.index] = {
+      const newSites = sites.with(form.index, {
         ...site,
         id: crypto.randomUUID(),
         iconUrl: getFaviconURL(site.url)
-      };
-      setSites([...sites]);
-      saveSites(sites);
+      });
+
+      setSites(newSites);
+      saveSites(newSites);
     }
   }
 
-  function saveSites(sites) {
+  function saveSites(sites: Site[]) {
     chromeStorage.set({ persistentSites: structuredClone(sites).map(site => {
       delete site.id;
       delete site.iconUrl;
@@ -96,7 +114,7 @@ export default function PersistentSites({ settings, locale, getFaviconURL }) {
     }) });
   }
 
-  function editSite(index) {
+  function editSite(index: number) {
     showForm({
       ...sites[index],
       index,
@@ -104,15 +122,16 @@ export default function PersistentSites({ settings, locale, getFaviconURL }) {
     });
   }
 
-  function removeSite(index) {
-    sites.splice(index, 1);
-    setSites([...sites]);
-    saveSites(sites);
+  function removeSite(index: number) {
+    const newSites = sites.toSpliced(index, 1);
+
+    setSites(newSites);
+    saveSites(newSites);
   }
 
-  function handleSort(sites) {
+  function handleSort(sites: Site[]) {
     if (sites) {
-      setSites([...sites]);
+      setSites(sites);
       saveSites(sites);
     }
     setActiveDragId(null);

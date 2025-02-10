@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type ReactNode } from "react";
 import { getSetting, updateSetting } from "services/settings";
 import { handleZIndex } from "services/zIndex";
 // import { hasUsers } from "services/twitter";
@@ -8,14 +8,41 @@ import Resizer from "components/Resizer";
 import Spinner from "components/Spinner";
 import "./main-panel.css";
 import Sidebar from "./Sidebar";
+import type { AppearanceSettings, MainPanelSettings } from "types/settings";
 
 const TopSites = lazy(() => import("./TopSites"));
 const Notepad = lazy(() => import("./Notepad"));
 // const Twitter = lazy(() => import("./Twitter"));
 const RssFeed = lazy(() => import("./RssFeed"));
 
-export default function MainPanel({ settings, locale }) {
-  const [activeTab, setActiveTab] = useState(() => {
+type Props = {
+  settings: MainPanelSettings,
+  locale: any
+}
+
+type Tab = {
+  id: string,
+  title: string,
+  iconId: string,
+  disabled?: boolean,
+  renderPending?: boolean,
+  expandable?: boolean,
+  indicatorVisible?: boolean,
+  delay?: number,
+  firstRender?: boolean
+}
+
+type Tabs = { [key: string]: Tab };
+
+type ActiveTab = {
+  id: string,
+  expanded?: boolean,
+  collapsing?: boolean,
+  manuallySelected?: boolean,
+}
+
+export default function MainPanel({ settings, locale }: Props) {
+  const [activeTab, setActiveTab] = useState((): ActiveTab => {
     return { id: localStorage.getItem("mainPanelTab") ?? "topSites" };
   });
   const [tabs, setTabs] = useState(() => getTabs());
@@ -25,10 +52,13 @@ export default function MainPanel({ settings, locale }) {
   const tabExpandable = tabs[activeTab.id]?.expandable;
 
   useLayoutEffect(() => {
-    const { height } = getSetting("mainPanel");
+    function selectTopSitesTab() {
+      setActiveTab({ id: "topSites" });
+      localStorage.setItem("mainPanelTab", "topSites");
+    }
 
-    if (height) {
-      containerRef.current.style.setProperty("--height", `${height}px`);
+    if (settings.height) {
+      containerRef.current.style.setProperty("--height", `${settings.height}px`);
     }
 
     window.addEventListener("enable-persistent-site-edit", selectTopSitesTab);
@@ -39,14 +69,18 @@ export default function MainPanel({ settings, locale }) {
   }, []);
 
   useEffect(() => {
-    const tabsArray = Object.values(tabs);
     let firstEnabledTab = "";
     let activeTabDisabled = false;
     let disabledComponentCount = 0;
+    const newTabs: Tabs = {};
+    const componentEntries = Object.entries(settings.components);
 
-    for (const tab of tabsArray) {
-      const { disabled } = settings.components[tab.id];
-      tab.disabled = disabled;
+    for (const [id, { disabled }] of componentEntries) {
+      const tab = tabs[id];
+      newTabs[id] = {
+        ...tab,
+        disabled
+      };
 
       if (disabled) {
         disabledComponentCount += 1;
@@ -60,10 +94,10 @@ export default function MainPanel({ settings, locale }) {
       }
     }
 
-    if (activeTabDisabled || activeTab.id === "twitter" || activeTab.id === "" && disabledComponentCount >= tabsArray.length - 1) {
+    if (activeTabDisabled || activeTab.id === "twitter" || activeTab.id === "" && disabledComponentCount >= componentEntries.length - 1) {
       selectTab(firstEnabledTab);
     }
-    setTabs({ ...tabs });
+    setTabs(newTabs);
   }, [settings.components]);
 
   useEffect(() => {
@@ -99,7 +133,7 @@ export default function MainPanel({ settings, locale }) {
     }
   }, [activeTab.id]);
 
-  async function initComponent(id, callback) {
+  async function initComponent(id: string, callback: () => Promise<boolean>) {
     const tab = { ...tabs[id] };
     let delay = -1;
 
@@ -126,7 +160,7 @@ export default function MainPanel({ settings, locale }) {
   }
 
   function getTabs() {
-    const tabs = {
+    const tabs: Tabs = {
       topSites: {
         id: "topSites",
         title: "Top sites",
@@ -166,7 +200,7 @@ export default function MainPanel({ settings, locale }) {
     return tabs;
   }
 
-  function selectTab(id) {
+  function selectTab(id: string) {
     const newId = id === activeTab.id ? "" : id;
 
     if (tabs[newId]?.indicatorVisible) {
@@ -178,13 +212,8 @@ export default function MainPanel({ settings, locale }) {
         }
       });
     }
-    setActiveTab({ id: newId });
+    setActiveTab({ id: newId, manuallySelected: true });
     localStorage.setItem("mainPanelTab", newId);
-  }
-
-  function selectTopSitesTab() {
-    setActiveTab({ id: "topSites" });
-    localStorage.setItem("mainPanelTab", "topSites");
   }
 
   function expandTab() {
@@ -198,7 +227,7 @@ export default function MainPanel({ settings, locale }) {
       setResizerEnabled(false);
     }
     else {
-      const { animationSpeed } = getSetting("appearance");
+      const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
 
       setActiveTab({
         ...activeTab,
@@ -216,7 +245,7 @@ export default function MainPanel({ settings, locale }) {
     }
   }
 
-  function showIndicator(id) {
+  function showIndicator(id: string) {
     if (id !== activeTab.id) {
       setTabs({
         ...tabs,
@@ -231,7 +260,7 @@ export default function MainPanel({ settings, locale }) {
     setResizerEnabled(!resizerEnabled);
   }
 
-  function saveHeight(height) {
+  function saveHeight(height: number) {
     updateSetting("mainPanel", { height });
   }
 
@@ -250,7 +279,7 @@ export default function MainPanel({ settings, locale }) {
     );
   }
 
-  function renderComponent(id, component, showSpinner) {
+  function renderComponent(id: string, component: ReactNode, showSpinner?: boolean) {
     const tab = tabs[id];
 
     if (tab.disabled) {

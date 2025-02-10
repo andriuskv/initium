@@ -352,7 +352,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
                   <button className={`btn text-btn dropdown-btn${countdown.view === "second" ? " active" : ""}`}
                     onClick={() => selectView("second", i)}>Second</button>
                 </div>
-                <button className="btn icon-text-btn dropdown-btn" onClick={() => removeCountdown(i)}>
+                <button className="btn icon-text-btn dropdown-btn countdown-item-dropdown-remove-btn" onClick={() => removeCountdown(i)}>
                   <Icon id="trash"/>
                   <span>{locale.global.remove}</span>
                 </button>

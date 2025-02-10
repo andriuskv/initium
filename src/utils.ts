@@ -148,7 +148,7 @@ function generateNoise(amount: number, opacity: number) {
   return canvas.toDataURL("image/png");
 }
 
-function timeout(callback: () => void, duration: number, id: number) {
+function timeout(callback: () => void, duration: number, id?: number) {
   if (id) {
     window.clearTimeout(id);
   }

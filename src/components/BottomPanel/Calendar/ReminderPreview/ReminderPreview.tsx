@@ -1,7 +1,18 @@
+import type { RefObject } from "react";
+import type { Day } from "types/calendar";
+import type { TimeDateSettings } from "types/settings";
 import Icon from "components/Icon";
 import "./reminder-preview.css";
 
-export default function ReminderPreview({ currentView, currentDay, tomorrowDay, settings, ref }) {
+type Props = {
+  currentView: "default" | "day" | "year" | "reminders",
+  currentDay: Day,
+  tomorrowDay: Day,
+  settings: TimeDateSettings,
+  ref: RefObject<HTMLDivElement>
+}
+
+export default function ReminderPreview({ currentView, currentDay, tomorrowDay, settings, ref }: Props) {
   const days = [
     {
       shouldShow: !settings.reminderPreviewHidden,

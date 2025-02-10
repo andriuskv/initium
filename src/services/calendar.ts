@@ -1,27 +1,9 @@
-import type { Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
+import type { DDate, CalendarType, Month, Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
 import type { TimeDateSettings } from "types/settings";
 import { getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import { getSetting } from "services/settings";
-
-type Day = {
-  id: string,
-  year: number,
-  month: number,
-  day: number,
-  dateString: string,
-  reminders: Reminder[]
-}
-
-type Month = {
-  firstDayIndex: number,
-  name: string,
-  dateString: string,
-  days: Day[]
-}
-
-type Calendar = { [key: string]: Month }
 
 type GoogleEvent = {
   id: string,
@@ -85,7 +67,7 @@ function generateYear(year: number) {
   return months;
 }
 
-function getDayCountFromMonthCount(monthCount: number, repeatAtDay: number, nextRepeat: Reminder["repeat"]) {
+function getDayCountFromMonthCount(monthCount: number, repeatAtDay: number, nextRepeat: Reminder["nextRepeat"]) {
   let dayCount = 0;
 
   nextRepeat.leftoverDays ??= 0;
@@ -135,7 +117,7 @@ function getWeekdayRepeatGaps(reminder: Reminder) {
   return gaps;
 }
 
-function getNextReminderDate(calendar: Calendar, { year, month: monthIndex, day: dayIndex }: { year: number, month: number, day: number }) {
+function getNextReminderDate(calendar: CalendarType, { year, month: monthIndex, day: dayIndex }: DDate) {
   let months = calendar[year];
   let month = months[monthIndex];
 

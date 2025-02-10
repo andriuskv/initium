@@ -1,13 +1,27 @@
+import type { TimeDateSettings } from "types/settings";
+import type { GoogleReminder, Reminder, Day } from "types/calendar";
 import { formatDate } from "services/timeDate";
 import { getSetting } from "services/settings";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import "./reminder-list.css";
 
-export default function ReminderList({ reminders, locale, editReminder, removeReminder, changeReminderColor, hide }) {
-  const { dateLocale } = getSetting("timeDate");
+type Props = {
+  reminders: (Reminder | GoogleReminder)[],
+  locale: any,
+  editReminder: (reminderId: string, type: string, day?: Day) => void,
+  removeReminder: (reminder: Reminder) => void,
+  changeReminderColor: (reminderId: string) => void,
+  hide: () => void
+}
+
+export default function ReminderList({ reminders, locale, editReminder, removeReminder, changeReminderColor, hide }: Props) {
+  const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
   const sortedReminders = reminders.filter(reminder => reminder.type === "google" ? reminder.editable : true).toSorted((a, b) => {
-    return new Date(a.year, a.month, a.day) - new Date(b.year, b.month, b.day);
+    const dateA = new Date(a.year, a.month, a.day).getTime();
+    const dateB = new Date(b.year, b.month, b.day).getTime();
+
+    return dateA - dateB;
   }).map(reminder => {
     reminder.dateString = formatDate(new Date(reminder.year, reminder.month, reminder.day), {
       locale: dateLocale
