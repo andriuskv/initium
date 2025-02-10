@@ -111,7 +111,6 @@ export default function Tab({ children, index, tab, canRemove, textSize, locale,
             <Icon id="download"/>
             <span>{locale.global.download}</span>
           </a>
-          {/* {tabs.length > 1 && ( */}
           {canRemove && (
             <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
               <Icon id="trash"/>
