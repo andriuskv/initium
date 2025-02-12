@@ -438,20 +438,23 @@ export default function RssFeed({ locale, showIndicator }: Props) {
       else {
         showForm();
       }
+      localStorage.remove("active-feed-tab");
     }
     updateFeeds(feeds, save);
   }
 
   function addFeed(feed: FeedType) {
+    const active = feeds.active;
+
     selectView({
       ...navigation,
-      activeIndex: feeds.active.length - 1,
-      shift: feeds.active.length - VISIBLE_ITEM_COUNT < 0 ? 0 : feeds.active.length - VISIBLE_ITEM_COUNT
+      activeIndex: active.length === 0 ? 0 : active.length - 1,
+      shift: active.length - VISIBLE_ITEM_COUNT < 0 ? 0 : active.length - VISIBLE_ITEM_COUNT
     });
     setActiveComponent(null);
     updateFeeds({
       ...feeds,
-      active: [...feeds.active, feed]
+      active: [...active, feed]
     });
   }
 
