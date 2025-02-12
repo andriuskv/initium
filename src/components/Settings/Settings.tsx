@@ -69,7 +69,7 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
     const id = localStorage.getItem("active-settings-tab");
     const activeTabIndex = tabs.findIndex((tab) => tab.id === id);
 
-    if (tabs[activeTabIndex].shouldHide) {
+    if (activeTabIndex > -1 && tabs[activeTabIndex].shouldHide) {
       return "general";
     }
     return id || "general";
