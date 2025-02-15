@@ -20,7 +20,7 @@ type Props = {
 
 export default function RssFeed({ locale, showIndicator }: Props) {
   const [loading, setLoading] = useState(true);
-  const [activeComponent, setActiveComponent] = useState<"form" | "feeds">(null);
+  const [activeComponent, setActiveComponent] = useState<"form" | "feeds" | "">("");
   const [feeds, setFeeds] = useState<Feeds>(() => getDefaultFeeds());
   const [navigation, setNavigation] = useState<Nav>(() => ({
     activeIndex: 0,
@@ -135,7 +135,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
     });
 
     if (active.length) {
-      setActiveComponent(null);
+      setActiveComponent("");
     }
     else if (newFeeds.inactive.length || failed.length) {
       setActiveComponent("feeds");
@@ -222,11 +222,20 @@ export default function RssFeed({ locale, showIndicator }: Props) {
   }
 
   async function refetchFeeds() {
+    const newActive: FeedType[] = [];
+    const newFailed: FeedType[] = [];
     const active = [...feeds.active];
     let failed = [...feeds.failed];
 
     for (const [index, feed] of active.entries()) {
-      await updateFeed({ ...feed }, index);
+      const newFeed = await updateFeed({ ...feed }, index);
+
+      if (newFeed) {
+        newActive.push(newFeed);
+      }
+      else {
+        newFailed.push(feed);
+      }
     }
 
     if (failed.length) {
@@ -235,14 +244,14 @@ export default function RssFeed({ locale, showIndicator }: Props) {
 
         if (!("message" in data)) {
           failed = failed.filter(({ url }) => url !== feed.url);
-          active.splice(feed.index, 0, data);
+          newActive.splice(feed.index, 0, data);
         }
       }
     }
     setFeeds({
       ...feeds,
-      active,
-      failed
+      active: newActive,
+      failed: failed.concat(newFailed)
     });
   }
 
@@ -264,6 +273,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
       if (newFeed.updated) {
         feed.updated = newFeed.updated;
       }
+      return feed;
     } catch (e) {
       console.log(e);
     }
@@ -415,32 +425,37 @@ export default function RssFeed({ locale, showIndicator }: Props) {
     }
   }
 
-  function updateActiveFeed(feed: FeedType, save = true) {
-    const index = feeds.active.findIndex(({ id }) => id === feed.id);
-
+  function updateTypeFeed(feed: FeedType, type: "active" | "inactive" | "failed", save = true) {
     updateFeeds({
       ...feeds,
-      active: feeds.active.with(index, feed)
+      [type]: feeds[type].map(f => {
+        if (f.id === feed.id) {
+          return feed;
+        }
+        return f;
+      })
     }, save);
   }
 
-  function removeFeed(index: number, type: string, save = true) {
-    feeds[type].splice(index, 1);
+  function removeFeed(index: number, type: "active" | "inactive" | "failed", save = true) {
+    const newFeeds = {
+      ...feeds,
+      [type]: feeds[type].toSpliced(index, 1)
+    };
 
-    if (type === "active" && feeds.active.length) {
+    if (type === "active" && newFeeds.active.length) {
       selectView({ activeIndex: 0, shift: 0 });
     }
-
-    if (!feeds.active.length) {
-      if (feeds.inactive.length || feeds.failed.length) {
+    else if (!newFeeds.active.length) {
+      if (newFeeds.inactive.length || newFeeds.failed.length) {
         showFeedList();
       }
       else {
         showForm();
       }
-      localStorage.remove("active-feed-tab");
+      localStorage.removeItem("active-feed-tab");
     }
-    updateFeeds(feeds, save);
+    updateFeeds(newFeeds, save);
   }
 
   function addFeed(feed: FeedType) {
@@ -451,7 +466,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
       activeIndex: active.length === 0 ? 0 : active.length - 1,
       shift: active.length - VISIBLE_ITEM_COUNT < 0 ? 0 : active.length - VISIBLE_ITEM_COUNT
     });
-    setActiveComponent(null);
+    setActiveComponent("");
     updateFeeds({
       ...feeds,
       active: [...active, feed]
@@ -494,7 +509,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
   }
 
   function hideFeedList() {
-    setActiveComponent(null);
+    setActiveComponent("");
   }
 
   function selectView(navigation: Nav) {
@@ -531,7 +546,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
         {activeComponent === "feeds" && (
           <Feeds feeds={feeds} locale={locale} selectFeedFromList={selectFeedFromList}
             removeFeed={removeFeed} deactivateFeed={deactivateFeed}
-            updateFeed={updateActiveFeed}
+            updateFeed={updateTypeFeed}
             updateFeeds={updateFeeds} showForm={showForm} hide={hideFeedList}/>
         )}
         {activeComponent === "form" && <Form feeds={feeds} locale={locale} addFeed={addFeed} hide={hideForm}/>}

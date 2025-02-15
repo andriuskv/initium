@@ -14,10 +14,10 @@ type Props = {
   locale: any,
   feeds: Feeds,
   selectFeedFromList: (event: MouseEvent<HTMLButtonElement>, index: number) => void,
-  removeFeed: (index: number, type: string) => void,
+  removeFeed: (index: number, type: "active" | "inactive" | "failed") => void,
   deactivateFeed: (index: number) => void,
   updateFeeds: (feeds: Feeds, shouldSave?: boolean) => void,
-  updateFeed: (feed: FeedType, shouldSave?: boolean) => void,
+  updateFeed: (feed: FeedType, type: "active" | "inactive" | "failed", shouldSave?: boolean) => void,
   showForm: () => void,
   hide: () => void,
 }
@@ -25,11 +25,11 @@ type Props = {
 export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, deactivateFeed, updateFeeds, updateFeed, showForm, hide }: Props) {
   const [activeDragId, setActiveDragId] = useState(null);
 
-  async function refetchFeed(feed: FeedType, type: string) {
+  async function refetchFeed(feed: FeedType, type: "active" | "inactive" | "failed") {
     updateFeed({
       ...feed,
       fetching: true
-    }, false);
+    }, type, false);
 
     try {
       const data = await feedService.fetchFeed(feed);
@@ -38,7 +38,7 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
         updateFeed({
           ...feed,
           fetching: undefined
-        }, false);
+        }, type, false);
         return;
       }
 
@@ -54,7 +54,7 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
       updateFeed({
         ...feed,
         fetching: undefined
-      }, false);
+      }, type, false);
     }
   }
 
