@@ -7,6 +7,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
   max-width: 572px;
   font-size: calc(var(--text-size-scale) * var(--text-xl));
   line-height: 1.25;

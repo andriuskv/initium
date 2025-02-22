@@ -60,7 +60,7 @@ export default function StorageTab({ locale }) {
     },
     {
       name: "shortcuts",
-      fullName: locale.bottomPanel.shortcuts
+      fullName: locale.secondaryPanel.shortcuts
     },
     {
       name: "clocks",

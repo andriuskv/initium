@@ -2,8 +2,8 @@
   position: absolute;
   position-area: top;
   position-visibility: anchors-visible;
-  position-try-fallbacks: flip-inline;
-  margin-bottom: var(--space-sm);
+  position-try-fallbacks: flip-inline flip-block;
+  margin-block: var(--space-sm);
   padding: var(--space-sm) var(--space-xl);
   border-radius: 999px;
   box-shadow:

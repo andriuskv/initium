@@ -13,7 +13,20 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "allowJs": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "resolvePackageJsonImports": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "paths": {
+      "services/*": ["services/*"],
+      "components/*": ["components/*"],
+      "contexts/*": ["contexts/*"],
+      "hooks/*": ["hooks/*"],
+      "types/*": ["types/*"],
+      "assets/*": ["assets/*"],
+      "lang/*": ["lang/*"],
+      "utils": ["utils.ts"]
+    }
   },
   "lib": ["DOM", "ESNext", "webworker"],
   "typeRoots": ["node_modules/@types", "src/types"],
@@ -22,14 +35,5 @@
     "webpack.config.js",
     "src/**/*"
   ],
-  "exclude": ["node_modules", "dist"],
-  "paths": {
-    "services/*": ["src/services/*"],
-    "components/*": ["src/components/*"],
-    "contexts/*": ["src/contexts/*"],
-    "hooks/*": ["src/hooks/*"],
-    "types/*": ["src/types/*"],
-    "assets/*": ["src/assets/*"],
-    "utils": ["src/utils.ts"]
-  }
+  "exclude": ["node_modules", "dist"]
 }

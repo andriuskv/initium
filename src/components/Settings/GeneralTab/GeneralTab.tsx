@@ -7,6 +7,7 @@ import Modal from "components/Modal";
 import "./general-tab.css";
 import MiddleTop from "./MiddleTop";
 import type { ChangeEvent } from "react";
+import Placement from "./Placement";
 
 export default function GeneralTab({ locale }) {
   const { settings, toggleSetting, updateContextSetting, resetSettings } = useSettings();
@@ -46,6 +47,10 @@ export default function GeneralTab({ locale }) {
     setModal({ type: "reset" });
   }
 
+  function showPlacementModal() {
+    setModal({ type: "placement" });
+  }
+
   function reset() {
     if (settings.appearance.wallpaper.type === "blob") {
       localStorage.removeItem("downscaled-wallpaper");
@@ -83,6 +88,11 @@ export default function GeneralTab({ locale }) {
       return (
         <MiddleTop settings={settings} locale={locale}
           updateContextSetting={updateContextSetting} hiding={modalHiding} hide={hideModal}/>
+      );
+    }
+    else if (modal.type === "placement") {
+      return (
+        <Placement locale={locale} hiding={modalHiding} hide={hideModal}/>
       );
     }
     return null;
@@ -160,6 +170,12 @@ export default function GeneralTab({ locale }) {
           <div className="checkbox-tick"></div>
         </div>
       </label>
+      <div className="settings-group last-setting-tab-item">
+        <div className="settings-group-top">
+          <h4 className="settings-group-title">Corners</h4>
+          <button className="btn outline-btn settings-group-top-btn" onClick={showPlacementModal}>Show</button>
+        </div>
+      </div>
       <div className="setting setting-reset">
         <span>{locale.settings.general.reset_settings_title}</span>
         <button className="btn text-btn text-negative-btn" onClick={showResetModal}>{locale.global.reset}</button>

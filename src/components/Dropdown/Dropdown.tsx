@@ -17,6 +17,7 @@ type Props = PropsWithChildren & {
   toggle?: {
     className?: string,
     isIconTextBtn?: boolean,
+    isTextBtn?: boolean,
     iconId?: string,
     title?: string,
     body?: ReactNode
@@ -189,6 +190,12 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
           <Icon id={toggle.iconId || "vertical-dots"}/>
           <span>{toggle.title}</span>
         </button>
+      );
+    }
+    else if (toggle.isTextBtn) {
+      return (
+        <button type="button" className={`btn text-btn dropdown-toggle-btn${className}`} ref={toggleBtn}
+          onClick={toggleDropdown}>{toggle.title}</button>
       );
     }
     return (

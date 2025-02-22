@@ -4,7 +4,7 @@ import { useSettings } from "contexts/settings";
 import { handleZIndex } from "services/zIndex";
 import * as focusService from "services/focus";
 import Icon from "components/Icon";
-import "./bottom-panel.css";
+import "./secondary-panel.css";
 
 const StickyNotes = lazy(() => import("./StickyNotes"));
 const Shortcuts = lazy(() => import("./Shortcuts"));
@@ -22,13 +22,13 @@ type Item = {
 }
 type Items = Record<string, Item>;
 
-export default function BottomPanel({ locale }) {
+export default function SecondaryPanel({ corner, locale }: { corner: string, locale: any }) {
   const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState<Item>({ id: "", title: "", iconId: "" });
   const [items, setItems] = useState<Items>(() => ({
     "stickyNotes": {
       id: "stickyNotes",
-      title: locale.bottomPanel.sticky_notes,
+      title: locale.secondaryPanel.sticky_notes,
       iconId: "sticky-notes",
       attrs: {
         "data-focus-id": "stickyNotes"
@@ -36,7 +36,7 @@ export default function BottomPanel({ locale }) {
     },
     "shortcuts": {
       id: "shortcuts",
-      title: locale.bottomPanel.shortcuts,
+      title: locale.secondaryPanel.shortcuts,
       iconId: "grid",
       attrs: {
         "data-focus-id": "shortcuts"
@@ -44,12 +44,12 @@ export default function BottomPanel({ locale }) {
     },
     "timers": {
       id: "timers",
-      title: locale.bottomPanel.timers,
+      title: locale.secondaryPanel.timers,
       iconId: "clock"
     },
     "calendar": {
       id: "calendar",
-      title: locale.bottomPanel.calendar,
+      title: locale.secondaryPanel.calendar,
       iconId: "calendar",
       attrs: {
         "data-focus-id": "calendar"
@@ -165,7 +165,7 @@ export default function BottomPanel({ locale }) {
 
   function renderItems() {
     return (
-      <ul className="bottom-panel-item-selection">
+      <ul className="secondary-panel-item-selection">
         {Object.values(items).filter(item => !item.disabled).map(item => (
           <li key={item.id}>
             <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
@@ -181,7 +181,7 @@ export default function BottomPanel({ locale }) {
   function renderSelectedItem() {
     if (selectedItem.id === "stickyNotes") {
       return (
-        <div className={`container-body bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}
+        <div className={`container-body secondary-panel-item-content${selectedItem.id ? "" : " hidden"}`}
           style={{ width: "280px", height: "312px"}}>
           <Suspense fallback={null}>
             <StickyNotes locale={locale} hide={hideItem}/>
@@ -191,7 +191,7 @@ export default function BottomPanel({ locale }) {
     }
     else if (selectedItem.id === "shortcuts") {
       return (
-        <div className={`container-body bottom-panel-item-content${selectedItem.id ? "" : " hidden"}`}
+        <div className={`container-body secondary-panel-item-content${selectedItem.id ? "" : " hidden"}`}
           style={{ width: "364px", height: "272px"}}>
           <Suspense fallback={null}>
             <Shortcuts locale={locale}/>
@@ -203,20 +203,20 @@ export default function BottomPanel({ locale }) {
   }
 
   return (
-    <div className="bottom-panel" onClick={event => handleZIndex(event, "bottom-panel")}>
+    <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondary-panel")}>
       {selectedItem.id ? null : renderItems()}
-      <div className={`container bottom-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""}`}>
-        <div className="container-header bottom-panel-item-header bottom-panel-transition-target">
+      <div className={`container secondary-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""} corner-item`}>
+        <div className="container-header secondary-panel-item-header secondary-panel-transition-target">
           <Icon id={selectedItem.iconId}/>
-          <h3 className="bottom-panel-item-title">{selectedItem.title}</h3>
+          <h3 className="secondary-panel-item-title">{selectedItem.title}</h3>
           <button className="btn icon-btn" onClick={hideItem} ref={closeButton} title={locale.global.close}>
             <Icon id="cross"/>
           </button>
         </div>
-        <div className="bottom-panel-transition-target">
+        <div className="secondary-panel-transition-target">
           {renderSelectedItem()}
           {items.calendar.rendered ? (
-            <div className={`bottom-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}
+            <div className={`secondary-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}
               style={{ width: "380px", minHeight: "402px"}}>
               <Suspense fallback={null}>
                 <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible}

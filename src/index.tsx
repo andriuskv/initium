@@ -11,6 +11,7 @@ import { SettingsProvider } from "contexts/settings";
 import { LocalizationProvider } from "contexts/localization";
 import { NotificationProvider } from "contexts/notification";
 import { StickyNotesProvider } from "contexts/stickyNotes";
+import { PlacementProvider } from "contexts/placement";
 import App from "components/App";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
@@ -20,7 +21,9 @@ root.render(
     <LocalizationProvider>
       <NotificationProvider>
         <StickyNotesProvider>
-          <App/>
+          <PlacementProvider>
+            <App/>
+          </PlacementProvider>
         </StickyNotesProvider>
       </NotificationProvider>
     </LocalizationProvider>

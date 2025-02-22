@@ -6,23 +6,41 @@
       url("#weather-icon-ambilight");
 
   z-index: var(--z-index, 1);
-  position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
   cursor: default;
 
-  &:has(.weather-more-btn) {
-    &:hover, &:has(:focus-visible) {
-      .weather-more-btn {
-        --background-color: var(--color-white-10);
-
-        opacity: 1;
-      }
-
-      .weather-current {
-        scale: 0.5;
-      }
+  &.top-left, &.bottom-left {
+    .weather-temperature {
+      order: 1;
     }
+
+    .weather-location {
+      margin-left: var(--space-md);
+      text-align: left;
+    }
+  }
+
+  &.top-right, &.bottom-right {
+    .weather-location {
+      margin-right: var(--space-md);
+      text-align: right;
+    }
+  }
+}
+
+.weather-small {
+  &:hover, &:has(:focus-visible) {
+    .weather-more-btn {
+      opacity: 1;
+      translate: 8px 8px;
+    }
+
+    .weather-current {
+      scale: 0.64;
+    }
+  }
+
+  &.hidden {
+    display: none;
   }
 }
 
@@ -32,29 +50,21 @@
     1px 2px 2px var(--color-black-4),
     2px 4px 4px var(--color-black-2);
   transition: var(--duration-n) opacity, var(--duration-f) scale;
-  transform-origin: top right;
   user-select: none;
 }
 
 .weather-more-btn {
   z-index: 1;
   position: absolute;
-  right: calc(-1 * var(--space-md));
-  top: calc(-1 * var(--space-md));
   opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 96px;
-  height: 56px;
-  border-radius: 0;
-  border-bottom-left-radius: 999px;
+  width: 90%;
+  height: 80%;
+  border-radius: 16px;
   backdrop-filter: blur(2px);
   background-image: var(--panel-background-noise);
-
-  .svg-icon {
-    transform: translateX(var(--space-md));
-  }
 }
 
 .weather-temperature-icon-container {
@@ -95,34 +105,20 @@
 }
 
 .weather-location {
-  margin-right: var(--space-md);
   font-weight: bold;
-  text-align: right;
   letter-spacing: 1px;
 }
 
 .weather-more {
-  opacity: 0;
-  visibility: hidden;
+  display: none;
   width: 580px;
   height: 426px;
-  border-bottom-left-radius: 999px;
-  transform-origin: top right;
-  transform: scale(0);
-  transition:
-    var(--duration-n) transform,
-    var(--duration-n) opacity,
-    var(--duration-n) visibility,
-    var(--duration-n) border-bottom-left-radius;
-  transition-delay: var(--duration-f);
+
+  &.reveal {
+    display: block;
+  }
 
   &.visible {
-    opacity: 1;
-    visibility: inherit;
-    border-bottom-left-radius: var(--container-border-radius);
-    transform: scale(1);
-    transition-delay: 0s;
-
     .weather-transition-target {
       opacity: 1;
       transition-delay: var(--duration-f);
