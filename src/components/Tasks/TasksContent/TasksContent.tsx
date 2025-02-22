@@ -577,6 +577,8 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     const data = await chromeStorage.set({ tasks: structuredClone(groups).map(group => {
       delete group.state;
       delete group.hiding;
+      delete group.taskCount;
+
       group.tasks = group.tasks.map(task => {
         task = cleanupTask(task);
         task.subtasks = task.subtasks.map(cleanupSubtask);

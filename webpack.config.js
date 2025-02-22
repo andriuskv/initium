@@ -54,6 +54,7 @@ module.exports = function(env = {}) {
         services: path.resolve(__dirname, "src/services"),
         types: path.resolve(__dirname, "src/types"),
         assets: path.resolve(__dirname, "src/assets"),
+        lang: path.resolve(__dirname, "src/lang"),
         utils$: path.resolve(__dirname, "src/utils.ts")
       }
     },
@@ -128,7 +129,12 @@ module.exports = function(env = {}) {
           test: /\.(t|j)sx?$/,
           exclude: /node_modules/,
           use: [
-            { loader: "ts-loader" }
+            {
+              loader: "ts-loader",
+              options: {
+                transpileOnly: env.prod
+              }
+            }
             // {
             //   loader: reactCompilerLoader,
             //   options: defineReactCompilerLoaderOption({

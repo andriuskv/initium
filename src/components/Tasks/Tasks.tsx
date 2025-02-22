@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense, useLayoutEffect } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { handleZIndex } from "services/zIndex";
 import "./tasks.css";
 import type { GeneralSettings, TasksSettings } from "types/settings";
@@ -8,39 +8,39 @@ const TasksContent = lazy(() => import("./TasksContent"));
 type Props = {
   settings: TasksSettings,
   generalSettings: GeneralSettings,
+  corner: string,
   locale: any
 }
 
-export default function Tasks({ settings, generalSettings, locale }: Props) {
-  const [{ visible, rendered }, setState] = useState({ visible: false, rendered: false });
+export default function Tasks({ settings, generalSettings, corner, locale }: Props) {
+  const [state, setState] = useState({ rendered: false, visible: false, revealed: false, hiding: false });
   const [expanded, setExpanded] = useState(false);
-  const containerRef = useRef(null);
   const timeoutId = useRef(0);
 
-  useLayoutEffect(() => {
-    if (visible) {
+  useEffect(() => {
+    if (state.visible) {
       clearTimeout(timeoutId.current);
-      containerRef.current.classList.add("revealed");
+      setState({ ...state, revealed: true });
     }
     else {
       timeoutId.current = window.setTimeout(() => {
-        containerRef.current.classList.remove("revealed");
+        setState({ ...state, revealed: false, hiding: false });
       }, 320);
     }
-  }, [visible, expanded]);
+  }, [state.visible, expanded]);
 
   useEffect(() => {
-    if (rendered) {
-      setState({ rendered, visible: true });
+    if (state.rendered) {
+      setState({ ...state, visible: true });
     }
-  }, [rendered]);
+  }, [state.rendered]);
 
   function toggle() {
-    if (!rendered) {
-      setState({ rendered: true, visible: false });
+    if (!state.rendered) {
+      setState({ ...state, rendered: true, visible: false });
     }
     else {
-      setState({ rendered, visible: !visible });
+      setState({ ...state, visible: !state.visible, hiding: state.visible });
     }
   }
 
@@ -49,12 +49,13 @@ export default function Tasks({ settings, generalSettings, locale }: Props) {
   }
 
   return (
-    <div className={`tasks${expanded ? " expanded" : ""}`} onClick={event => handleZIndex(event, "tasks")} ref={containerRef}>
-      <button className={`btn tasks-toggle-btn${visible ? " shifted" : ""}`} onClick={toggle}>{locale.tasks.title}</button>
-      <div className={`container tasks-container${visible ? " visible" : ""}`}>
+    <div className={`tasks${expanded ? " expanded" : ""}${state.revealed ? " revealed" : ""} ${corner}`}
+      onClick={event => handleZIndex(event, "tasks")}>
+      <button className={`btn tasks-toggle-btn${state.visible ? " shifted" : ""}${state.hiding ? " hiding" : ""}`} onClick={toggle}>{locale.tasks.title}</button>
+      <div className={`container tasks-container${state.visible ? " visible" : ""} corner-item`}>
         <div className="tasks-transition-target tasks-content">
           <Suspense fallback={null}>
-            {rendered && <TasksContent settings={settings} generalSettings={generalSettings} expanded={expanded} locale={locale} toggleSize={toggleSize}/>}
+            {state.rendered && <TasksContent settings={settings} generalSettings={generalSettings} expanded={expanded} locale={locale} toggleSize={toggleSize}/>}
           </Suspense>
         </div>
       </div>

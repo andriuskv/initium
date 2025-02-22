@@ -1,6 +1,7 @@
 import type { Settings } from "types/settings";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { setPageTitle } from "utils";
+import * as chromeStorage from "services/chromeStorage";
 import "./middle-top.css";
 
 const TopPanel = lazy(() => import("./TopPanel"));
@@ -8,11 +9,10 @@ const Clock = lazy(() => import("./Clock"));
 const Greeting = lazy(() => import("./Greeting"));
 
 type Props = {
-  settings: Settings,
-  greetingEditorVisible: boolean
+  settings: Settings
 }
 
-export default function MiddleTop({ settings, greetingEditorVisible }: Props) {
+export default function MiddleTop({ settings }: Props) {
   const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
   const [greetingVisible, setGreetingVisible] = useState(false);
   const [topPanel, setTopPanel] = useState<{ rendered: boolean, forceVisibility?: boolean, initialTab?: string }>({ rendered: false });
@@ -21,6 +21,7 @@ export default function MiddleTop({ settings, greetingEditorVisible }: Props) {
 
   useEffect(() => {
     initTopPanel();
+    initGreeting();
 
     window.addEventListener("top-panel-visible", renderTopPanel, { once: true });
   }, []);
@@ -30,16 +31,6 @@ export default function MiddleTop({ settings, greetingEditorVisible }: Props) {
       setPageTitle();
     }
   }, [settings]);
-
-  useEffect(() => {
-    if (greetingEditorVisible) {
-      setGreetingVisible(false);
-    }
-    else {
-      initGreeting();
-    }
-  }, [greetingEditorVisible]);
-
 
   useLayoutEffect(() => {
     setItemOrder(getItemOrder());
@@ -73,15 +64,18 @@ export default function MiddleTop({ settings, greetingEditorVisible }: Props) {
   }
 
   async function initGreeting() {
-    if (settings.general.greeting.disabled) {
-      return;
-    }
-    const chromeStorage = await import("services/chromeStorage");
     const greetings = await chromeStorage.get("greetings");
 
     if (greetings?.length) {
       setGreetingVisible(true);
+      return;
     }
+    chromeStorage.subscribeToChanges(({ greetings }) => {
+      if (greetings?.newValue) {
+        setGreetingVisible(true);
+        chromeStorage.removeSubscriber("greeting");
+      }
+    }, { id: "greeting", listenToLocal: true });
   }
 
   async function initTopPanel() {

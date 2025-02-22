@@ -56,7 +56,25 @@ function getDefault(): Settings {
           id: "greeting",
           name: "Greeting"
         }
-      ]
+      ],
+      placement: {
+        "top-left": {
+          id: "tasks",
+          name: "Tasks"
+        },
+        "top-right": {
+          id: "weather",
+          name: "Weather"
+        },
+        "bottom-left": {
+          id: "",
+          name: "Empty"
+        },
+        "bottom-right": {
+          id: "secondary",
+          name: "Secondary"
+        }
+      }
     },
     appearance: {
       animationSpeed: 1,

@@ -145,7 +145,7 @@
     "temp_setting_label": "Temperature units",
     "wind_setting_label": "Wind speed units"
   },
-  "bottomPanel": {
+  "secondaryPanel": {
     "sticky_notes": "Sticky Notes",
     "shortcuts": "Shortcuts",
     "timers": "Timers",

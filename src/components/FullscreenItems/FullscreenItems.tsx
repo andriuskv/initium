@@ -1,0 +1,106 @@
+import { useState, useEffect, useRef, lazy, Suspense, type FC } from "react";
+import { timeout } from "utils";
+import FullscreenModal from "components/FullscreenModal";
+import Spinner from "components/Spinner";
+import type { AppearanceSettings } from "types/settings";
+
+const Settings = lazy(() => import("components/Settings"));
+const WallpaperViewer = lazy(() => import("components/WallpaperViewer"));
+const GreetingEditor = lazy(() => import("components/GreetingEditor"));
+
+type FullscreenModalType = {
+  id?: string,
+  hiding?: boolean,
+  component?: FC<{ hide: () => void }>,
+  params?: { [key: string]: unknown }
+}
+
+export default function FullscreenItems({ appearanceSettings, locale }: { appearanceSettings: AppearanceSettings, locale: any }) {
+  const [fullscreenModal, setFullscreenModal] = useState<FullscreenModalType>({});
+  const modalTimeoutId = useRef(0);
+
+  useEffect(() => {
+    window.addEventListener("fullscreen-modal", handleFullscreenModal);
+
+    return () => {
+      window.removeEventListener("fullscreen-modal", handleFullscreenModal);
+    };
+  }, [fullscreenModal]);
+
+  function handleFullscreenModal({ detail }: CustomEvent) {
+    if (detail.shouldToggle && detail.id === fullscreenModal.id) {
+      if (fullscreenModal.hiding) {
+        clearTimeout(modalTimeoutId.current);
+        setFullscreenModal(detail);
+      }
+      else {
+        hideFullscreenModal();
+      }
+    }
+    else {
+      if (fullscreenModal.id) {
+        if (detail.id === fullscreenModal.id) {
+          setFullscreenModal(detail);
+        }
+        else {
+          hideFullscreenModal();
+
+          modalTimeoutId.current = timeout(() => {
+            setFullscreenModal(detail);
+          }, 200 * appearanceSettings.animationSpeed, modalTimeoutId.current);
+        }
+      }
+      else {
+        setFullscreenModal(detail);
+      }
+    }
+  }
+
+  function hideFullscreenModal() {
+    if (fullscreenModal.id === "wallpaper") {
+      setFullscreenModal({});
+      return;
+    }
+    setFullscreenModal({ ...fullscreenModal, hiding: true });
+
+    modalTimeoutId.current = timeout(() => {
+      setFullscreenModal({});
+    }, 200 * appearanceSettings.animationSpeed, modalTimeoutId.current);
+  }
+
+  if (fullscreenModal.id === "greeting") {
+    return (
+      <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
+        <Suspense fallback={<div className="greeting-editor"><Spinner size="24px"/></div>}>
+          {<GreetingEditor locale={locale} hide={hideFullscreenModal}/>}
+        </Suspense>
+      </FullscreenModal>
+    );
+  }
+  else if (fullscreenModal.id === "settings") {
+    return (
+      <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
+        <Suspense fallback={<div className="settings"><Spinner size="24px"/></div>}>
+          {<Settings locale={locale} hide={hideFullscreenModal}/>}
+        </Suspense>
+      </FullscreenModal>
+    );
+  }
+  else if (fullscreenModal.id === "wallpaper") {
+    return (
+      <FullscreenModal transparent mask noAnim hide={hideFullscreenModal}>
+        <Suspense fallback={null}>
+          <WallpaperViewer locale={locale} hide={hideFullscreenModal}/>
+        </Suspense>
+      </FullscreenModal>
+    );
+  }
+  else if (fullscreenModal.component) {
+    return (
+      <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
+        <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
+      </FullscreenModal>
+    );
+  }
+  return null;
+}

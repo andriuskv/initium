@@ -1,0 +1,115 @@
+.top-left {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+
+  .corner-item {
+    opacity: 0;
+    visibility: hidden;
+    border-bottom-right-radius: 999px;
+    transform-origin: top left;
+    transform: scale(0);
+    transition:
+      var(--duration-n) transform,
+      var(--duration-n) opacity,
+      var(--duration-n) visibility,
+      var(--duration-n) border-bottom-right-radius;
+    transition-delay: var(--duration-f);
+    will-change: border;
+
+    &.visible {
+      opacity: 1;
+      visibility: inherit;
+      border-bottom-right-radius: var(--container-border-radius);
+      transform: scale(1);
+      transition-delay: 0s;
+    }
+  }
+}
+
+.top-right {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+
+  .corner-item {
+    opacity: 0;
+    visibility: hidden;
+    border-bottom-left-radius: 999px;
+    transform-origin: top right;
+    transform: scale(0);
+    transition:
+      var(--duration-n) transform,
+      var(--duration-n) opacity,
+      var(--duration-n) visibility,
+      var(--duration-n) border-bottom-left-radius;
+    transition-delay: var(--duration-f);
+    will-change: border;
+
+    &.visible {
+      opacity: 1;
+      visibility: inherit;
+      border-bottom-left-radius: var(--container-border-radius);
+      transform: scale(1);
+      transition-delay: 0s;
+    }
+  }
+}
+
+.bottom-left {
+  position: absolute;
+  bottom: var(--space-md);
+  left: var(--space-md);
+
+  .corner-item {
+    opacity: 0;
+    visibility: hidden;
+    border-top-left-radius: 999px;
+    transform-origin: bottom left;
+    transform: scale(0);
+    transition:
+      var(--duration-n) transform,
+      var(--duration-n) opacity,
+      var(--duration-n) visibility,
+      var(--duration-n) border-top-left-radius;
+    transition-delay: var(--duration-f);
+    will-change: border;
+
+    &.visible {
+      opacity: 1;
+      visibility: inherit;
+      border-top-left-radius: var(--container-border-radius);
+      transform: scale(1);
+      transition-delay: 0s;
+    }
+  }
+}
+
+.bottom-right {
+  position: absolute;
+  bottom: var(--space-md);
+  right: var(--space-md);
+
+  .corner-item {
+    opacity: 0;
+    visibility: hidden;
+    border-top-right-radius: 999px;
+    transform-origin: bottom right;
+    transform: scale(0);
+    transition:
+      var(--duration-n) transform,
+      var(--duration-n) opacity,
+      var(--duration-n) visibility,
+      var(--duration-n) border-top-right-radius;
+    transition-delay: var(--duration-f);
+    will-change: border;
+
+    &.visible {
+      opacity: 1;
+      visibility: inherit;
+      border-top-right-radius: var(--container-border-radius);
+      transform: scale(1);
+      transition-delay: 0s;
+    }
+  }
+}

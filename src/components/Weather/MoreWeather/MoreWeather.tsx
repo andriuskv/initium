@@ -1,7 +1,7 @@
 import type { Current, Hour, Weekday, View } from "types/weather";
-import { useState, useEffect, useRef, type CSSProperties } from "react";
+import { useState, useRef, useMemo, type CSSProperties } from "react";
+import { timeout } from "utils";
 import { convertTemperature } from "services/weather";
-import * as focusService from "services/focus";
 import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
 import Spinner from "components/Spinner";
@@ -10,35 +10,24 @@ import "./more-weather.css";
 
 type Props = {
   current: Current,
-  more: { hourly: Hour[], daily: Weekday[] },
+  more: { hourly: Hour[], daily: Weekday[] } | null,
   units: "C" | "F",
   speedUnits: "m/s" | "ft/s",
-  view: View,
   message: string,
   locale: any,
-  selectView: (view: View) => void,
   toggleUnits: (type: "temp" | "wind") => void,
   hide: () => void
 }
 
 const views = ["temp", "prec", "wind"];
 
-export default function MoreWeather({ current, more, units, speedUnits, view, message, locale, selectView, toggleUnits, hide }: Props) {
-  const [tempRange, setTempRange] = useState(null);
-  const container = useRef(null);
-  const first = useRef(true);
+export default function MoreWeather({ current, more, units, speedUnits, message, locale, toggleUnits, hide }: Props) {
+  const [view, setView] = useState<View>(() => (localStorage.getItem("active-weather-tab") || "temp") as View);
+  const saveTabTimeoutId = useRef(0);
   const activeTabIndex = views.indexOf(view);
-
-  useEffect(() => {
-    if (tempRange && first.current) {
-      first.current = false;
-      focusService.focusFirstElement(container.current);
-    }
-  }, [tempRange]);
-
-  useEffect(() => {
+  const tempRange = useMemo(() => {
     if (!more) {
-      return;
+      return null;
     }
     const tempRange = more.hourly.reduce((range, item) => {
       const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
@@ -53,10 +42,24 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
       return range;
     }, { min: Infinity, max: -Infinity });
 
-    setTempRange({ min: tempRange.min - 2, max: tempRange.max + 1 });
+    return {
+      min: tempRange.min - 2,
+      max: tempRange.max + 1
+    };
   }, [more]);
 
+  function selectView(view: View) {
+    setView(view);
+
+    saveTabTimeoutId.current = timeout(() => {
+      localStorage.setItem("active-weather-tab", view);
+    }, 400, saveTabTimeoutId.current);
+  }
+
   function getTempPath(closePath = false) {
+    if (!more) {
+      return null;
+    }
     let path = "";
     let offset = 0;
 
@@ -84,6 +87,9 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
   }
 
   function getSvgY(current: number, offset = 0) {
+    if (!tempRange) {
+      return 0;
+    }
     const maxRange = tempRange.max - tempRange.min;
     const range = current - tempRange.min;
 
@@ -126,6 +132,9 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
   }
 
   function renderTempValues() {
+    if (!more) {
+      return null;
+    }
     return more.hourly.map((item, index) => {
       const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
       const x = `calc(${index * 24 + 12}px - ${Math.round(item.temperature).toString().length / 2}ch)`;
@@ -140,6 +149,10 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
   }
 
   function renderHourlyView() {
+    if (!more) {
+      return null;
+    }
+
     if (view === "temp") {
       return (
         <svg className="weather-more-hourly-view weather-more-hourly-temp-view">
@@ -172,7 +185,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
   }
 
   return (
-    <div className="weather-transition-target weather-more-info" ref={container}>
+    <>
       <div className="container-header weather-more-current">
         <div className="weather-more-current-icon-container">
           <img src={current.icon} className={`weather-more-current-icon icon-${current.iconId}`} alt="" width="100px" height="100px" loading="lazy"/>
@@ -209,7 +222,7 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
           <div className="weather-more-current-description">{current.description}</div>
         </div>
       </div>
-      {tempRange ? (
+      {more ? (
         <>
           <div className="container-body weather-more-hourly-view-container">
             <TabsContainer className="weather-more-hourly-view-top" current={activeTabIndex}>
@@ -276,6 +289,6 @@ export default function MoreWeather({ current, more, units, speedUnits, view, me
       <button className="btn icon-btn weather-more-close-btn" onClick={hide} title={locale.global.close}>
         <Icon id="cross"/>
       </button>
-    </div>
+    </>
   );
 }

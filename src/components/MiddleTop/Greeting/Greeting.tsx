@@ -31,10 +31,14 @@ export default function Greeting({ settings }: { settings: GeneralSettings["gree
       else {
         setGreeting("");
       }
-    });
+    }, { id: "greeting", listenToLocal: true });
   }
 
   async function setRandomGreeting(greetings: string[]) {
+    if (!greetings.length) {
+      setGreeting("");
+      return;
+    }
     const marked = await import("marked");
     const index = Math.floor(Math.random() * greetings.length);
     const greeting = await marked.parse(greetings[index]);

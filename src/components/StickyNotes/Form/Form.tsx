@@ -259,7 +259,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
             </Dropdown>
             <Dropdown toggle={{ iconId: "text-color", title: locale.stickyNotes.text_color }} body={{ className: "sticky-note-dropdown" }}>
               <ul className="sticky-note-text-colors">
-                {textColors.map((color, index) => (
+                {textColors.map((_, index) => (
                   <li key={index}>
                     <button className={`btn sticky-note-color-picker-item${form.textStyle.index === index ? " active" : ""}${index === 1 ? " black": ""}`}
                       onClick={() => updateTextColor(index)} style={{ backgroundColor: getTextColor(textColors[index], 100) }}></button>

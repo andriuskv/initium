@@ -4,6 +4,18 @@ type MiddleTopItem = {
   alignment?: "start" | "center" | "end";
 };
 
+export type PlacementItem = {
+  id: string,
+  name: string
+}
+
+export type Placement = {
+  "top-left": PlacementItem,
+  "top-right": PlacementItem,
+  "bottom-left": PlacementItem,
+  "bottom-right": PlacementItem
+}
+
 type HSLColor = {
   hue: string;
   saturation: string;
@@ -32,6 +44,7 @@ export type GeneralSettings = {
     textSize: number;
   };
   middleTopOrder: MiddleTopItem[];
+  placement: Placement;
 };
 
 export type AppearanceSettings = {
