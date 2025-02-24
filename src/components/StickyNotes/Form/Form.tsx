@@ -53,7 +53,6 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
         id: crypto.randomUUID(),
         x: initialForm.x,
         y: initialForm.y,
-        title: "",
         content: "",
         textStyle: {
           index: 0,
@@ -222,9 +221,6 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
     <div className={`sticky-note sticky-note-form${movable ? " movable" : " editable"}${initialForm.discarding ? " discarding" : ""}${form.scale < 1 ? " scaled-down" : ""}`} key={form.id} ref={containerRef}
       style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.backgroundColor, "--text-color": form.textStyle.string } as CSSProperties}>
       <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} onKeyDown={moveNote} title={movable ? "" : locale.global.move} tabIndex={0}></div>
-      <textarea className="input textarea sticky-note-content sticky-note-input sticky-note-title" name="title"
-        onChange={handleInputChange} value={form.title}
-        placeholder={`Note #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
       <textarea className="input textarea sticky-note-content sticky-note-input" name="content" onChange={handleInputChange}
         value={form.content} placeholder={`Content #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
       {movable ? null : (

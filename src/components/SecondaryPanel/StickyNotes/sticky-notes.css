@@ -34,10 +34,6 @@
   overflow-wrap: anywhere;
 }
 
-.sticky-notes-list-item-title {
-  font-size: var(--text-xxl);
-}
-
 .sticky-notes-list-message {
   margin: auto;
 }
