@@ -34,7 +34,7 @@ export default function Placement({ locale }: { locale: any }) {
       id: getRandomString(),
       component: Tasks,
       shouldSkip: settings.tasks.disabled,
-      params: { settings, generalSettings: settings.general, locale }
+      params: { settings: settings.tasks, generalSettings: settings.general, locale }
     },
     secondary: {
       id: getRandomString(),
@@ -54,17 +54,18 @@ export default function Placement({ locale }: { locale: any }) {
         }
       });
     }
+  }, [weather.rendered]);
 
-    if (components.tasks.shouldSkip !== settings.tasks.disabled) {
-      setComponents({
-        ...components,
-        tasks: {
-          ...components.tasks,
-          shouldSkip: settings.tasks.disabled
-        }
-      });
-    }
-  }, [placement, weather.rendered, settings.tasks.disabled]);
+  useEffect(() => {
+    setComponents({
+      ...components,
+      tasks: {
+        ...components.tasks,
+        shouldSkip: settings.tasks.disabled,
+        params: { ...components.tasks.params, settings: settings.tasks }
+      }
+    });
+  }, [settings.tasks]);
 
   useEffect(() => {
     const shouldRender = isWeatherEnabled();
