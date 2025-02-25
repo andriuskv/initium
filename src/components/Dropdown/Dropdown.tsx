@@ -153,6 +153,10 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
     else if (usePortal) {
       shouldHide = target.closest("a") || target.closest(".dropdown-btn")
         || target.closest("[data-dropdown-close]") || target.closest(".dropdown-container");
+
+      if (!shouldHide && !target.closest(".dropdown")) {
+        shouldHide = true;
+      }
     }
 
     if (shouldHide) {
