@@ -41,7 +41,7 @@
     "postcss-import": "^16.1.0",
     "postcss-loader": "^8.1.1",
     "postcss-mixins": "^11.0.3",
-    "postcss-preset-env": "^10.1.4",
+    "postcss-preset-env": "^10.1.5",
     "raw-loader": "^4.0.2",
     "react-compiler-webpack": "^0.1.2",
     "source-map-loader": "^5.0.0",
