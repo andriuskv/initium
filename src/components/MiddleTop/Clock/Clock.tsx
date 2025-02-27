@@ -6,7 +6,7 @@ import "./clock.css";
 import useWorker from "../useWorker";
 
 export default function Clock({ settings }: { settings: TimeDateSettings }) {
-  const [clock, setClock] = useState(() => ({ ...getDisplayTime(settings.clockStyle === "vertical") }));
+  const [clock, setClock] = useState(() => getDisplayTime(settings.clockStyle === "vertical"));
   const [date, setDate] = useState(() => getDate());
   const [expanded, setExpanded] = useState(false);
   const { initWorker, destroyWorkers } = useWorker(handleMessage);
@@ -41,7 +41,7 @@ export default function Clock({ settings }: { settings: TimeDateSettings }) {
   }, [expanded]);
 
   function handleMessage() {
-    setClock({ ...getDisplayTime(settings.clockStyle === "vertical") });
+    setClock(getDisplayTime(settings.clockStyle === "vertical"));
 
     if (new Date().getDate() !== date.day) {
       updateDate();

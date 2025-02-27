@@ -455,18 +455,6 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     }
   }
 
-  function disableActivePreset() {
-    if (activeTimer.presetId) {
-      setTimers({
-        ...timers,
-        [activeTimer.id]: {
-          ...activeTimer,
-          presetId: ""
-        }
-      });
-    }
-  }
-
   function togglePip() {
     if (pipId === activeTimer.id) {
       setPipId("");
@@ -779,7 +767,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
                     </Dropdown>
                   </div>
                 )}
-                <Inputs state={activeTimer} addTime={addTime} removeTime={removeTime} updateInputs={updateInputs} handleKeyDown={disableActivePreset}/>
+                <Inputs state={activeTimer} addTime={addTime} removeTime={removeTime} updateInputs={updateInputs}/>
               </>
             )}
           </div>
