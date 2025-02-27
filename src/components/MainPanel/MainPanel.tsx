@@ -47,7 +47,8 @@ export default function MainPanel({ settings, locale }: Props) {
   });
   const [tabs, setTabs] = useState(() => getTabs());
   const [resizerEnabled, setResizerEnabled] = useState(false);
-  const tabTimeouts = useRef({});
+  const [feedReady, setFeedReady] = useState(false);
+  const tabTimeouts = useRef<({ [key: string]: number })>({});
   const containerRef = useRef(null);
   const tabExpandable = tabs[activeTab.id]?.expandable;
 
@@ -105,56 +106,51 @@ export default function MainPanel({ settings, locale }: Props) {
       setResizerEnabled(false);
     }
 
-    if (tabs.topSites.renderPending && activeTab.id === "topSites") {
+    if (activeTab.id !== "rssFeed" && tabs[activeTab.id].renderPending) {
       setTabs({
         ...tabs,
-        topSites: {
-          ...tabs.topSites,
+        [activeTab.id]: {
+          ...tabs[activeTab.id],
           renderPending: false
         }
       });
     }
-    else if (tabs.notepad.renderPending && activeTab.id === "notepad") {
-      setTabs({
-        ...tabs,
-        notepad: {
-          ...tabs.notepad,
-          renderPending: false
-        }
-      });
-    }
-
-    // if (tabs.twitter.renderPending) {
-    //   initComponent("twitter", hasUsers);
-    // }
 
     if (tabs.rssFeed.renderPending) {
       initComponent("rssFeed", hasStoredFeeds);
     }
   }, [activeTab.id]);
 
+  useEffect(() => {
+    if (feedReady) {
+      setTabs({
+        ...tabs,
+        rssFeed: {
+          ...tabs.rssFeed,
+          firstRender: false,
+          renderPending: false
+        }
+      });
+    }
+  }, [feedReady]);
+
   async function initComponent(id: string, callback: () => Promise<boolean>) {
     const tab = { ...tabs[id] };
     let delay = -1;
 
+    clearTimeout(tabTimeouts.current[id]);
+    delete tabTimeouts.current[id];
+
     if (activeTab.id === id) {
       delay = activeTab.manuallySelected ? 1 : 2000;
-      clearTimeout(tabTimeouts.current[id]);
     }
     else if (tab.firstRender && await callback()) {
       delay = tab.delay;
-      tab.firstRender = false;
     }
 
     if (delay > 0) {
-      tabTimeouts.current[id] = setTimeout(() => {
-        setTabs({
-          ...tabs,
-          [id]: {
-            ...tab,
-            renderPending: false
-          }
-        });
+      tabTimeouts.current[id] = window.setTimeout(() => {
+        setFeedReady(true);
       }, delay);
     }
   }
