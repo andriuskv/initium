@@ -8,10 +8,10 @@ type Props = {
   addTime: (to: string, event: MouseEvent) => void,
   removeTime: (to: string, event: MouseEvent) => void,
   updateInputs: (newState: Time) => void,
-  handleKeyDown: (event: KeyboardEvent) => void,
+  handleKeyDown?: (event: KeyboardEvent) => void,
 };
 
-export default function Inputs({ state, addTime, removeTime, updateInputs, handleKeyDown: handleContainerKeyDown }: Props) {
+export default function Inputs({ state, addTime, removeTime, updateInputs, handleKeyDown: handleContainerKeyDown = () => {} }: Props) {
   const hoursInputRef = useRef(null);
   const minutesInputRef = useRef(null);
   const secondsInputRef = useRef(null);
