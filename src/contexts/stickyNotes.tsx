@@ -69,16 +69,14 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
 
   async function parseNotes(notes: Note[]) {
     return Promise.all(notes.map(async note => {
-      let content = "";
-
       note.id = crypto.randomUUID();
 
       // Change to new format
       if (note.title) {
-        content = `# ${note.title}\n`;
+        note.content = `# ${note.title}\n`;
         delete note.title;
       }
-      note.contentDisplayString = await parseContent(content.concat(note.content));
+      note.contentDisplayString = await parseContent(note.content);
 
       if (!note.textStyle) {
         note.textStyle = {
