@@ -106,7 +106,7 @@ export default function MainPanel({ settings, locale }: Props) {
       setResizerEnabled(false);
     }
 
-    if (activeTab.id !== "rssFeed" && tabs[activeTab.id].renderPending) {
+    if (activeTab.id !== "rssFeed" && tabs[activeTab.id]?.renderPending) {
       setTabs({
         ...tabs,
         [activeTab.id]: {
