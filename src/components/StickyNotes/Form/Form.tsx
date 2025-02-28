@@ -167,7 +167,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
   }
 
   function adjustScale(key: string, direction: 1 | -1) {
-    setForm({ ...form, [key]: round(form[key] + 0.1125 * direction, 4) });
+    setForm({ ...form, [key]: round(form[key] + 0.125 * direction, 4) });
   }
 
   function saveNote() {
@@ -238,7 +238,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
                   <Icon id="plus"/>
                 </button>
               </div>
-              <input type="range" className="range-input" min="0.75" max="2.1" step="0.1125"
+              <input type="range" className="range-input" min="0.75" max="2" step="0.125"
                 value={form.scale} onChange={handleRangeInputChange} name="scale"/>
             </div>
           ) : null}
@@ -289,7 +289,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
                     <Icon id="plus"/>
                   </button>
                 </div>
-                <input type="range" className="range-input" min="0.75" max="2.1" step="0.1125"
+                <input type="range" className="range-input" min="0.75" max="2" step="0.125"
                   value={form.textScale} onChange={handleRangeInputChange} name="textScale"/>
               </div>
             </Dropdown>

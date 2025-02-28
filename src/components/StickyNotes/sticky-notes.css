@@ -42,10 +42,26 @@
 .sticky-note-content {
   color: var(--text-color);
   white-space: pre-wrap;
-  font-size: calc(var(--text-xl) * var(--scale) * var(--text-scale));
+  font-size: calc(var(--text-xl) * var(--text-scale));
   font-family: "Caveat";
   line-height: 1.1;
   overflow-wrap: anywhere;
+
+  h1, h2, h3, h4 {
+    line-height: 1;
+  }
+
+  h1 {
+    font-size: 1.8em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
+
+  h3 {
+    font-size: 1.25em;
+  }
 }
 
 .sticky-note-link {
