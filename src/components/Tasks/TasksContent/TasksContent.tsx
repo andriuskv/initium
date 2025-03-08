@@ -1,6 +1,6 @@
 import type { AppearanceSettings, GeneralSettings, TasksSettings, TimeDateSettings } from "types/settings";
-import type { Group, Task, Subtask, TaskForm } from "../tasks.type";
-import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
+import type { Group, TaskType, Subtask, TaskForm } from "../tasks.type";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString, timeout, replaceLink } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
@@ -11,6 +11,7 @@ import CreateButton from "components/CreateButton";
 import Toast from "components/Toast";
 import Spinner from "components/Spinner";
 import "./tasks-content.css";
+import Task from "./Task";
 
 const Form = lazy(() => import("./Form"));
 const Groups = lazy(() => import("./Groups"));
@@ -19,12 +20,6 @@ const IN_PROGRESS_STATUS = 0;
 const FAILED_STATUS = 1;
 const PARTIAL_STATUS = 2;
 const COMPLETED_STATUS = 3;
-
-const taskStatusMap = {
-  "1": "failed",
-  "2": "partial",
-  "3": "completed"
-};
 
 type Props = {
   settings: TasksSettings,
@@ -150,7 +145,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         group.name = "Default";
       }
       group.tasks.map(task => {
-        task = parseTask(task) as Task;
+        task = parseTask(task) as TaskType;
         task.subtasks = task.subtasks.map(subtask => {
           subtask = parseBaseTask(subtask);
           return subtask;
@@ -187,7 +182,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     };
   }
 
-  function updateTaskRepeatProgress(task: Task, prev: number, current: number, next: number) {
+  function updateTaskRepeatProgress(task: TaskType, prev: number, current: number, next: number) {
     const elapsed = current - prev;
     const total = next - prev;
     const ratio = elapsed / total;
@@ -202,7 +197,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     historyItem.elapsed = ratio * 100;
   }
 
-  function updateTaskRepeatHistory(task: Task, missedCount: number) {
+  function updateTaskRepeatHistory(task: TaskType, missedCount: number) {
     const lastItem = task.repeat.history.at(-1);
 
     task.repeat.number += missedCount;
@@ -228,7 +223,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }
   }
 
-  function getMonthGap(task: Task, start: number) {
+  function getMonthGap(task: TaskType, start: number) {
     const startDate = new Date(start);
     let year = startDate.getFullYear();
     let month = startDate.getMonth();
@@ -251,7 +246,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return new Date(endDate.getFullYear(), endDate.getMonth(), endDateDays).getTime() - start;
   }
 
-  function getRepeatStatus(task: Task, current: number) {
+  function getRepeatStatus(task: TaskType, current: number) {
     const { start } = task.repeat;
     const hourInMs = 60 * 60 * 1000;
 
@@ -344,7 +339,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return modified;
   }
 
-  function parseBaseTask(task: Task | Subtask) {
+  function parseBaseTask(task: TaskType | Subtask) {
     task.id = getRandomString();
     task.rawText ??= task.text;
     task.rawText = task.rawText.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
@@ -352,8 +347,8 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return task;
   }
 
-  function parseTask(task: Task) {
-    task = parseBaseTask(task) as Task;
+  function parseTask(task: TaskType) {
+    task = parseBaseTask(task) as TaskType;
 
     if (task.expirationDate) {
       const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
@@ -416,7 +411,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     setRemovedItems([...removedItems, { groupIndex, taskIndex, subtaskIndex }]);
   }
 
-  function setRepeatingTaskStatus(task: Task, status: number) {
+  function setRepeatingTaskStatus(task: TaskType, status: number) {
     task.repeat.history[task.repeat.history.length - 1].status = status;
   }
 
@@ -554,7 +549,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     setActiveComponent("");
   }
 
-  function cleanupTask(task: Task) {
+  function cleanupTask(task: TaskType) {
     delete task.id;
     delete task.text;
     delete task.removed;
@@ -640,7 +635,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     });
   }
 
-  function getAllSubtaskCount(tasks: Task[]) {
+  function getAllSubtaskCount(tasks: TaskType[]) {
     let total = 0;
 
     for (const task of tasks) {
@@ -649,7 +644,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return total;
   }
 
-  function getSubtaskCount(task: Task) {
+  function getSubtaskCount(task: TaskType) {
     return task.subtasks.reduce((total, task) => {
       if (task.hidden) {
         if (settings.showCompletedRepeatingTasks) {
@@ -661,7 +656,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }, 0);
   }
 
-  function getGroupTaskCount(tasks: Task[]) {
+  function getGroupTaskCount(tasks: TaskType[]) {
     const completedTaskCount = countCompletedTasks(tasks);
     let subtaskCount = 0;
 
@@ -671,7 +666,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return tasks.length + subtaskCount - completedTaskCount;
   }
 
-  function countCompletedTasks(tasks: Task[]) {
+  function countCompletedTasks(tasks: TaskType[]) {
     return settings.showCompletedRepeatingTasks ? 0 : tasks.reduce((total, task) => {
       if (task.hidden) {
         total += 1;
@@ -694,21 +689,6 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
   function dismissStorageWarning() {
     setStorageWarning(null);
-  }
-
-  function renderExpirationIndicator(task: Task) {
-    const full = task.expirationDate - task.creationDate;
-    const partial = task.expirationDate - Date.now();
-    const dashoffset = 200 - 25 * (1 - partial / full);
-
-    return (
-      <svg className="task-expiration-indicator">
-        <title>Expires on {task.expirationDateString}</title>
-        <circle cx="8" cy="8" r="4" strokeDasharray="100"
-          className="task-expiration-indicator-visual"
-          style={{ "--dashoffset": dashoffset } as CSSProperties}/>
-      </svg>
-    );
   }
 
   if (!groups) {
@@ -765,71 +745,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
                   <ul className={`tasks-group-items${group.state ? ` ${group.state}` : ""}`}>
                     {group.tasks.map((task, taskIndex) => (
                       !settings.showCompletedRepeatingTasks && task.hidden ? null : (
-                        <li className={`task${task.removed ? " removed" : ""}`} key={task.id}>
-                          <div className="task-body">
-                            {task.labels.length > 0 && (
-                              <ul className="task-labels">
-                                {task.labels.map((label, i) => (
-                                  <li className="task-label" key={i}>
-                                    <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
-                                    <div className="task-label-title">{label.name}</div>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                            <div className="task-text-container">
-                              {task.hidden ? (
-                                <div className="checkbox task-checkbox-btn disabled"></div>
-                              ) : (
-                                <button className="checkbox task-checkbox-btn"
-                                  onClick={() => removeTask(groupIndex, taskIndex)} title={locale.tasks.complete}>
-                                  <div className="checkbox-tick"></div>
-                                </button>
-                              )}
-                              <div className="task-text" dangerouslySetInnerHTML={{ __html: task.text }}></div>
-                            </div>
-                            {task.subtasks.length > 0 && (
-                              <ul className="subtasks">
-                                {task.subtasks.map((subtask, subtaskIndex) => (
-                                  !settings.showCompletedRepeatingTasks && subtask.hidden ? null : (
-                                    <li className={`subtask${subtask.removed ? " removed" : ""}`} key={subtask.id}>
-                                      <div className="subtask-body">
-                                        {subtask.hidden ? (
-                                          <div className="checkbox task-checkbox-btn disabled"></div>
-                                        ) : (
-                                          <button className="checkbox task-checkbox-btn"
-                                            onClick={() => removeSubtask(groupIndex, taskIndex, subtaskIndex)} title={locale.tasks.complete}>
-                                            <div className="checkbox-tick"></div>
-                                          </button>
-                                        )}
-                                        <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text }}></span>
-                                        {task.completeWithSubtasks && subtask.optional ? <span className="task-text">*</span> : null}
-                                      </div>
-                                    </li>
-                                  )
-                                ))}
-                              </ul>
-                            )}
-                            <button className="btn icon-btn alt-icon-btn task-edit-btn"
-                              onClick={() => editTask(groupIndex, taskIndex)} title={locale.global.edit}>
-                              <Icon id="edit"/>
-                            </button>
-                            {task.expirationDate ? renderExpirationIndicator(task) : null}
-                            {!settings.repeatHistoryHidden && task.repeat?.history.length ? (
-                              <div className="task-repeat-history">
-                                {task.repeat.history.map(item => (
-                                  <div className={`task-repeat-history-item${item.status > 0 ? ` ${taskStatusMap[item.status]}` : ""}`}
-                                    title={item.dateString} key={item.id}>
-                                    {item.elapsed > 0 ? (
-                                      <div className="task-repeat-history-item-inner"
-                                        style={{ "--elapsed" : item.elapsed } as CSSProperties}></div>
-                                    ) : null}
-                                  </div>
-                                ))}
-                              </div>
-                            ) : null}
-                          </div>
-                        </li>
+                        <Task task={task} groupIndex={groupIndex} taskIndex={taskIndex} locale={locale} settings={settings} removeTask={removeTask} removeSubtask={removeSubtask} editTask={editTask} key={task.id}/>
                       )
                     ))}
                   </ul>

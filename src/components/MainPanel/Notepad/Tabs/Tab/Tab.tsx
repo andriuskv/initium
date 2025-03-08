@@ -58,31 +58,6 @@ export default function Tab({ children, index, tab, canRemove, textSize, locale,
     }
   }
 
-  function renderTextSizeSetting() {
-    let size = textSize;
-
-    if (tab?.textSize) {
-      size = tab.textSize;
-    }
-
-    return (
-      <div className="dropdown-group notepad-tabs-dropdown-setting-group">
-        <div className="notepad-tabs-dropdown-setting-title">{locale.global.text_size_title}</div>
-        <div className="notepad-tabs-dropdown-setting">
-          <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-            onClick={() => decreaseTextSize(size, tab)} title={locale.global.decreate_size_title} disabled={size <= 10}>
-            <Icon id="minus"/>
-          </button>
-          <span className="notepad-tabs-dropdown-setting-value">{size}px</span>
-          <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
-            onClick={() => increaseTextSize(size, tab)} title={locale.global.increase_size_title} disabled={size >= 32}>
-            <Icon id="plus"/>
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       {tab.renameEnabled ? (
@@ -101,7 +76,20 @@ export default function Tab({ children, index, tab, canRemove, textSize, locale,
       <div className="notepad-tabs-item-bottom">
         <span className="notepad-tab-size-text">Size: {tab.sizeString}</span>
         <Dropdown toggle={{ className: "js-notepad-tab-dropdown-toggle-btn" }}>
-          {renderTextSizeSetting()}
+          <div className="dropdown-group notepad-tabs-dropdown-setting-group">
+            <div className="notepad-tabs-dropdown-setting-title">{locale.global.text_size_title}</div>
+            <div className="notepad-tabs-dropdown-setting">
+              <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
+                onClick={() => decreaseTextSize(textSize, tab)} title={locale.global.decreate_size_title} disabled={textSize <= 10}>
+                <Icon id="minus"/>
+              </button>
+              <span className="notepad-tabs-dropdown-setting-value">{textSize}px</span>
+              <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
+                onClick={() => increaseTextSize(textSize, tab)} title={locale.global.increase_size_title} disabled={textSize >= 32}>
+                <Icon id="plus"/>
+              </button>
+            </div>
+          </div>
           <button className="btn icon-text-btn dropdown-btn" onClick={enableTabRename}>
             <Icon id="edit"/>
             <span>{locale.global.rename}</span>

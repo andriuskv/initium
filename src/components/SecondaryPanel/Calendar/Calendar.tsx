@@ -984,97 +984,6 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     return shouldShow;
   }
 
-  function renderView() {
-    if (view.name === "day") {
-      return (
-        <Suspense fallback={<Spinner/>}>
-          <SelectedDay day={view.data as Day} locale={locale} editReminder={editReminder}
-            showForm={showForm} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
-            hide={showCalendar}/>
-        </Suspense>
-      );
-    }
-    else if (view.name === "year") {
-      return (
-        <div className={`calendar${transition.active ? " transition" : ""}`}>
-          <div className="calendar-header">
-            <button className="btn icon-btn" onClick={() => setVisibleYear(-1)} title={locale.calendar.prevoius_year_title}>
-              <Icon id="chevron-left"/>
-            </button>
-            <span className="calendar-title">{currentYear}</span>
-            <button className="btn icon-btn" onClick={() => setVisibleYear(1)} title={locale.calendar.next_year_title}>
-              <Icon id="chevron-right"/>
-            </button>
-          </div>
-          <ul className="calendar-months" onKeyDown={handleMonthsKeyDown}>
-            {calendar[currentYear].map((month, index) => (
-              <li className={`calendar-month${month.isCurrentMonth ? " current" : ""}`}
-                onClick={({ target }) => showMonth(target as HTMLElement, index)} key={month.name}
-                tabIndex={0} data-index={index}>
-                <div className="calendar-month-inner">{month.name}</div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-    else if (view.name === "reminders") {
-      return (
-        <Suspense fallback={null}>
-          <ReminderList reminders={reminders.concat(googleReminders)} locale={locale}
-            editReminder={editReminder} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
-            hide={showCalendar}/>
-        </Suspense>
-      );
-    }
-    return (
-      <div className={`calendar${transition.active ? " transition" : ""}`}>
-        <div className="calendar-header">
-          <button className="btn icon-btn" onClick={() => changeMonth(-1, true)} title={locale.calendar.prevoius_month_title}>
-            <Icon id="chevron-left"/>
-          </button>
-          <button className="btn text-btn calendar-title" onClick={viewYear}>{visibleMonth.current.dateString}</button>
-          <button className="btn icon-btn" onClick={() => changeMonth(1, true)} title={locale.calendar.next_month_title}>
-            <Icon id="chevron-right"/>
-          </button>
-        </div>
-        <div className={`calendar-body${slideAnimation ? ` ${slideAnimation}` : ""}`}>
-          <ul className="calendar-week-days">
-            {weekdays.map(weekday => <li className="calendar-cell" key={weekday}>{weekday}</li>)}
-          </ul>
-          <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
-            {visibleMonth.previous.days.map((day, index) => (
-              <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
-                tabIndex={0} aria-label={day.dateString} data-month="previous" data-index={index}>
-                <div>{day.day}</div>
-              </li>
-            ))}
-            {visibleMonth.current.days.map((day, index) => (
-              <li className={`calendar-cell calendar-day current-month-day${day.isCurrentDay ? " current" : ""}`}
-                onClick={({ target }) => showDay(target, day)} key={day.id}
-                tabIndex={0} aria-label={day.dateString} data-month="current" data-index={index}>
-                <div>{day.day}</div>
-                {day.reminders.length > 0 && (
-                  <div className="day-reminders">
-                    {day.reminders.map(reminder => (
-                      <div className="day-reminder" style={{ "backgroundColor": reminder.color }} key={reminder.id}></div>
-                    ))}
-                  </div>
-                )}
-              </li>
-            ))}
-            {visibleMonth.next.days.map((day, index) => (
-              <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, 1)} key={day.id}
-                tabIndex={0} aria-label={day.dateString} data-month="next" data-index={index}>
-                <div>{day.day}</div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    );
-  }
-
   if (!calendar) {
     return null;
   }
@@ -1089,7 +998,87 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
           <div>{currentDay.dateString}</div>
         </button>
       </div>
-      <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${reminderPreviewHeight.current}px` } as CSSProperties}>{renderView()}</div>
+      <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${reminderPreviewHeight.current}px` } as CSSProperties}>
+        {view.name === "day" ? (
+          <Suspense fallback={<Spinner/>}>
+            <SelectedDay day={view.data as Day} locale={locale} editReminder={editReminder}
+              showForm={showForm} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
+              hide={showCalendar}/>
+          </Suspense>
+        ) : view.name === "year" ? (
+          <div className={`calendar${transition.active ? " transition" : ""}`}>
+            <div className="calendar-header">
+              <button className="btn icon-btn" onClick={() => setVisibleYear(-1)} title={locale.calendar.prevoius_year_title}>
+                <Icon id="chevron-left"/>
+              </button>
+              <span className="calendar-title">{currentYear}</span>
+              <button className="btn icon-btn" onClick={() => setVisibleYear(1)} title={locale.calendar.next_year_title}>
+                <Icon id="chevron-right"/>
+              </button>
+            </div>
+            <ul className="calendar-months" onKeyDown={handleMonthsKeyDown}>
+              {calendar[currentYear].map((month, index) => (
+                <li className={`calendar-month${month.isCurrentMonth ? " current" : ""}`}
+                  onClick={({ target }) => showMonth(target as HTMLElement, index)} key={month.name}
+                  tabIndex={0} data-index={index}>
+                  <div className="calendar-month-inner">{month.name}</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : view.name === "reminders" ? (
+          <Suspense fallback={null}>
+            <ReminderList reminders={reminders.concat(googleReminders)} locale={locale}
+              editReminder={editReminder} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
+              hide={showCalendar}/>
+          </Suspense>
+        ) : (
+          <div className={`calendar${transition.active ? " transition" : ""}`}>
+            <div className="calendar-header">
+              <button className="btn icon-btn" onClick={() => changeMonth(-1, true)} title={locale.calendar.prevoius_month_title}>
+                <Icon id="chevron-left"/>
+              </button>
+              <button className="btn text-btn calendar-title" onClick={viewYear}>{visibleMonth.current.dateString}</button>
+              <button className="btn icon-btn" onClick={() => changeMonth(1, true)} title={locale.calendar.next_month_title}>
+                <Icon id="chevron-right"/>
+              </button>
+            </div>
+            <div className={`calendar-body${slideAnimation ? ` ${slideAnimation}` : ""}`}>
+              <ul className="calendar-week-days">
+                {weekdays.map(weekday => <li className="calendar-cell" key={weekday}>{weekday}</li>)}
+              </ul>
+              <ul className="calendar-days" onKeyDown={handleDaysKeyDown}>
+                {visibleMonth.previous.days.map((day, index) => (
+                  <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, -1)} key={day.id}
+                    tabIndex={0} aria-label={day.dateString} data-month="previous" data-index={index}>
+                    <div>{day.day}</div>
+                  </li>
+                ))}
+                {visibleMonth.current.days.map((day, index) => (
+                  <li className={`calendar-cell calendar-day current-month-day${day.isCurrentDay ? " current" : ""}`}
+                    onClick={({ target }) => showDay(target, day)} key={day.id}
+                    tabIndex={0} aria-label={day.dateString} data-month="current" data-index={index}>
+                    <div>{day.day}</div>
+                    {day.reminders.length > 0 && (
+                      <div className="day-reminders">
+                        {day.reminders.map(reminder => (
+                          <div className="day-reminder" style={{ "backgroundColor": reminder.color }} key={reminder.id}></div>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                ))}
+                {visibleMonth.next.days.map((day, index) => (
+                  <li className="calendar-cell calendar-day" onClick={({ target }) => showDay(target, day, 1)} key={day.id}
+                    tabIndex={0} aria-label={day.dateString} data-month="next" data-index={index}>
+                    <div>{day.day}</div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
       {shouldReminderPreviewBeShown() ? (
         <ReminderPreview currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>) : null}
       {settings.worldClocksHidden ? null : (

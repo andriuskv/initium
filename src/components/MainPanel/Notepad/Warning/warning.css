@@ -1,0 +1,9 @@
+.notepad-warning-dropdown-container {
+  position: absolute;
+  top: 44px;
+  right: 5px;
+}
+
+.notepad-warning-dropdown {
+  padding: var(--space-xl);
+}

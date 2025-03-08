@@ -11,6 +11,15 @@ const Form = lazy(() => import("./Form"));
 export default function StickyNotes({ locale }: { locale: any }) {
   const { notes } = useNotes();
   const [form, setForm] = useState<FormType>(null);
+  let notesToRender: Note[] = null;
+
+  if (notes.length) {
+    notesToRender = notes.filter(note => !note.hidden);
+
+    if (form?.readyToShow) {
+      notesToRender = notesToRender.filter(note => note.id !== form.id);
+    }
+  }
 
   useEffect(() => {
     if (form && !notes.some(note => note.togglingHide)) {
@@ -83,31 +92,18 @@ export default function StickyNotes({ locale }: { locale: any }) {
     setForm({ ...form, readyToShow: true });
   }
 
-  function renderNotes() {
-    if (!notes.length) {
-      return null;
-    }
-    let notesToRender = notes.filter(note => !note.hidden);
-
-    if (form?.readyToShow) {
-      notesToRender = notesToRender.filter(note => note.id !== form.id);
-    }
-
-    return (
-      <ul className="sticky-notes">
-        {notesToRender.map(note => (
-          <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string } as CSSProperties} onClick={event => handleNoteClick(note, event)}
-            onMouseDown={handleNoteMouseDown} key={note.id}>
-            <p className="sticky-note-content" dangerouslySetInnerHTML={{ __html: note.contentDisplayString }}></p>
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
   return (
     <>
-      {renderNotes()}
+      { notesToRender ? (
+        <ul className="sticky-notes">
+          {notesToRender.map(note => (
+            <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string } as CSSProperties} onClick={event => handleNoteClick(note, event)}
+              onMouseDown={handleNoteMouseDown} key={note.id}>
+              <p className="sticky-note-content" dangerouslySetInnerHTML={{ __html: note.contentDisplayString }}></p>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       {form ? (
         <Suspense fallback={null}>
           <Form initialForm={form} noteCount={notes.length} locale={locale} discardNote={discardNote} showForm={showForm}/>

@@ -6,10 +6,9 @@ import * as chromeStorage from "services/chromeStorage";
 import { getSetting, updateMainPanelComponentSetting } from "services/settings";
 import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
-import Dropdown from "components/Dropdown";
-import Toast from "components/Toast";
 import Spinner from "components/Spinner";
 import "./notepad.css";
+import Warning from "./Warning";
 
 const Tabs = lazy(() => import("./Tabs"));
 
@@ -168,8 +167,7 @@ export default function Notepad({ locale }) {
   }
 
   function dismissWarning() {
-    storageWarning.hidden = true;
-    setStorageWarning({ ...storageWarning });
+    setStorageWarning({ ...storageWarning, hidden: true });
   }
 
   function getTabSize(tab: TabType) {
@@ -333,23 +331,6 @@ export default function Notepad({ locale }) {
     }, 1000, saveTimeoutId.current);
   }
 
-  function renderWarning() {
-    if (storageWarning.hidden) {
-      return null;
-    }
-    else if (storageWarning.usedRatio >= 1) {
-      return <Toast message={storageWarning.message} position="bottom" locale={locale} dismiss={dismissWarning}/>;
-    }
-    return (
-      <Dropdown
-        container={{ className: "notepad-warning-dropdown-container" }}
-        toggle={{ title: "Show warning", iconId: "warning" }}
-        body={{ className: "notepad-warning-dropdown" }}>
-        <p>{storageWarning.message}</p>
-      </Dropdown>
-    );
-  }
-
   if (!tabs) {
     return null;
   }
@@ -362,7 +343,6 @@ export default function Notepad({ locale }) {
       </Suspense>
     );
   }
-
   return (
     <div className="notepad">
       <div className="container-header main-panel-item-header">
@@ -394,7 +374,7 @@ export default function Notepad({ locale }) {
           <Icon id="menu"/>
         </button>
       </div>
-      {storageWarning && renderWarning()}
+      {storageWarning && <Warning locale={locale} storageWarning={storageWarning} dismiss={dismissWarning}/> }
       <textarea className="container-body textarea notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` } as CSSProperties}
         onChange={handleTextareaChange}
         onKeyDown={handleTextareaKeyDown}

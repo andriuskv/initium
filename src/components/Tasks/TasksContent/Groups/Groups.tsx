@@ -1,13 +1,12 @@
-import type { FocusEvent, KeyboardEvent } from "react";
+import type { FocusEvent } from "react";
 import type { Group } from "../../tasks.type";
 import { useState } from "react";
 import { useModal } from "hooks";
 import { SortableItem, SortableList } from "components/Sortable";
-import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
-import Icon from "components/Icon";
 import "./groups.css";
 import GroupForm from "../GroupForm";
+import GroupContent from "./GroupContent";
 
 type Props = {
   groups: Group[],
@@ -22,6 +21,7 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
   const [activeDragId, setActiveDragId] = useState(null);
 
   function showRemoveModal(index: number) {
+    // + 1 to skip default group
     const groupIndex = index + 1;
 
     if (groups[groupIndex].tasks.length === 0) {
@@ -60,12 +60,6 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
     updateGroups(groups);
   }
 
-  function blurGroupNameInput(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      (event.target as HTMLInputElement).blur();
-    }
-  }
-
   function handleSort(items: Group[]) {
     if (items) {
       updateGroups(items);
@@ -77,33 +71,6 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
     setActiveDragId(event.active.id);
   }
 
-  function renderGroupContent(group: Group, index: number, allowRemoval = true) {
-    if (group.renameEnabled) {
-      return (
-        <input type="text" className="input tasks-group-input" autoFocus defaultValue={group.name}
-          onBlur={(event) => renameGroup(event, group)} onKeyUp={blurGroupNameInput}/>
-      );
-    }
-    return (
-      <>
-        <div className="tasks-group-count">{group.taskCount}</div>
-        <div className="tasks-group-title">{group.name}</div>
-        <Dropdown>
-          <button className="btn icon-text-btn dropdown-btn" onClick={() => enableGroupRename(group)}>
-            <Icon id="edit"/>
-            <span>{locale.global.rename}</span>
-          </button>
-          {allowRemoval && (
-            <button className="btn icon-text-btn dropdown-btn" onClick={() => showRemoveModal(index)}>
-              <Icon id="trash"/>
-              <span>{locale.global.remove}</span>
-            </button>
-          )}
-        </Dropdown>
-      </>
-    );
-  }
-
   return (
     <>
       <div className="container-header"></div>
@@ -111,7 +78,8 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
         <GroupForm locale={locale} createGroup={createGroup} hide={hide}/>
         <ul className="tasks-groups-items" data-dropdown-parent>
           <li className="tasks-groups-item">
-            {renderGroupContent(groups[0], 0, false)}
+            <GroupContent locale={locale} group={groups[0]} index={0} allowRemoval={false}
+              showRemoveModal={showRemoveModal} enableGroupRename={enableGroupRename} renameGroup={renameGroup}/>
           </li>
           <SortableList
             items={groups}
@@ -119,7 +87,8 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
             handleDragStart={handleDragStart}>
             {groups.slice(1).map((group, index) => (
               <SortableItem className={`tasks-groups-item${group.id === activeDragId ? " dragging" : ""}`} id={group.id} key={group.id}>
-                {renderGroupContent(group, index)}
+                <GroupContent locale={locale} group={group} index={index}
+                  showRemoveModal={showRemoveModal}enableGroupRename={enableGroupRename} renameGroup={renameGroup}/>
               </SortableItem>
             ))}
           </SortableList>

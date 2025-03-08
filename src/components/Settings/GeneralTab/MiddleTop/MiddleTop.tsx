@@ -1,13 +1,22 @@
+import type { Settings } from "types/settings";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
 import * as settingsService from "services/settings";
 import "./middle-top.css";
 
-export default function MiddleTop({ settings, locale, updateContextSetting, hiding, hide }) {
-  const items = settings.general.middleTopOrder;
+type Props = {
+  locale: any,
+  settings: Settings,
+  updateContextSetting: (name: string, setting: Partial<Settings[keyof Settings]>) => void,
+  hiding: boolean,
+  hide: () => void
+}
 
-  function changeOrder(order, id) {
+export default function MiddleTop({ settings, locale, updateContextSetting, hiding, hide }: Props) {
+  const items = [...settings.general.middleTopOrder];
+
+  function changeOrder(order: 1 | -1, id: string) {
     const index = items.findIndex(item => item.id === id);
 
     if (order === -1 && index <= 0 || order === 1 && index >= items.length - 1) {
@@ -16,17 +25,17 @@ export default function MiddleTop({ settings, locale, updateContextSetting, hidi
     ([items[index], items[index + order]] = [items[index + order], items[index]]);
 
     updateContextSetting("general", {
-      middleTopOrder: [...items]
+      middleTopOrder: items
     });
   }
 
-  function changeAlignment(alignment, id) {
+  function changeAlignment(alignment: "start" | "center" | "end", id: string) {
     const item = items.find(item => item.id === id);
 
     item.alignment = alignment;
 
     updateContextSetting("general", {
-      middleTopOrder: [...items]
+      middleTopOrder: items
     });
   }
 

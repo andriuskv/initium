@@ -163,48 +163,20 @@ export default function SecondaryPanel({ corner, locale }: { corner: string, loc
     selectItem("calendar");
   }
 
-  function renderItems() {
-    return (
-      <ul className="secondary-panel-item-selection">
-        {Object.values(items).filter(item => !item.disabled).map(item => (
-          <li key={item.id}>
-            <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
-              onClick={() => selectItem(item.id)} aria-label={item.title} data-tooltip={item.title} {...(item.attrs ? item.attrs : null)}>
-              <Icon id={item.iconId} className="panel-item-btn-icon"/>
-            </button>
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
-  function renderSelectedItem() {
-    if (selectedItem.id === "stickyNotes") {
-      return (
-        <div className={`container-body secondary-panel-item-content${selectedItem.id ? "" : " hidden"}`}
-          style={{ width: "280px", height: "312px"}}>
-          <Suspense fallback={null}>
-            <StickyNotes locale={locale} hide={hideItem}/>
-          </Suspense>
-        </div>
-      );
-    }
-    else if (selectedItem.id === "shortcuts") {
-      return (
-        <div className={`container-body secondary-panel-item-content${selectedItem.id ? "" : " hidden"}`}
-          style={{ width: "364px", height: "272px"}}>
-          <Suspense fallback={null}>
-            <Shortcuts locale={locale}/>
-          </Suspense>
-        </div>
-      );
-    }
-    return null;
-  }
-
   return (
     <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondary-panel")}>
-      {selectedItem.id ? null : renderItems()}
+      {selectedItem.id ? null : (
+        <ul className="secondary-panel-item-selection">
+          {Object.values(items).filter(item => !item.disabled).map(item => (
+            <li key={item.id}>
+              <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
+                onClick={() => selectItem(item.id)} aria-label={item.title} data-tooltip={item.title} {...(item.attrs ? item.attrs : null)}>
+                <Icon id={item.iconId} className="panel-item-btn-icon"/>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
       <div className={`container secondary-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""} corner-item`}>
         <div className="container-header secondary-panel-item-header secondary-panel-transition-target">
           <Icon id={selectedItem.iconId}/>
@@ -214,7 +186,21 @@ export default function SecondaryPanel({ corner, locale }: { corner: string, loc
           </button>
         </div>
         <div className="secondary-panel-transition-target">
-          {renderSelectedItem()}
+          {selectedItem.id === "stickyNotes" ? (
+            <div className={`container-body secondary-panel-item-content${selectedItem.id ? "" : " hidden"}`}
+              style={{ width: "280px", height: "312px"}}>
+              <Suspense fallback={null}>
+                <StickyNotes locale={locale} hide={hideItem}/>
+              </Suspense>
+            </div>
+          ) : selectedItem.id === "shortcuts" ? (
+            <div className={`container-body secondary-panel-item-content${selectedItem.id ? "" : " hidden"}`}
+              style={{ width: "364px", height: "272px"}}>
+              <Suspense fallback={null}>
+                <Shortcuts locale={locale}/>
+              </Suspense>
+            </div>
+          ) : null}
           {items.calendar.rendered ? (
             <div className={`secondary-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}
               style={{ width: "380px", minHeight: "402px"}}>

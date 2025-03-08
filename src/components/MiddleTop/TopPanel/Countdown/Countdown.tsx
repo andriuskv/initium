@@ -282,92 +282,85 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
     });
   }
 
-  function renderCountdowns() {
-    if (!countdowns.length) {
-      return <p className="top-panel-item-content countdowns-message">{locale.countdown.no_countdowns_message}</p>;
-    }
-    return (
-      <div className="countdown-items-container">
-        <ul className="top-panel-item-content countdown-items">
-          {countdowns.map((countdown, i) => (
-            <li className="countdown-item" key={countdown.id}>
-              {countdown.title && <div className="countdown-item-title">{countdown.title}</div>}
-              <div className="countdown-item-timer">
-                {countdown.isInPast && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">-</span>
-                  </div>
-                )}
-                {countdown.year?.value > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.year.value}</span>
-                    <span>{countdown.year.unit}</span>
-                  </div>
-                )}
-                {countdown.month?.value > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.month.value}</span>
-                    <span>{countdown.month.unit}</span>
-                  </div>
-                )}
-                {countdown.day?.value > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.day.value}</span>
-                    <span>{countdown.day.unit}</span>
-                  </div>
-                )}
-                {countdown.hour?.value > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.hour.value}</span>
-                    <span>{countdown.hour.unit}</span>
-                  </div>
-                )}
-                {countdown.minute?.value > 0 && (
-                  <div className="countdown-item-timer-part">
-                    <span className="countdown-item-timer-digit">{countdown.minute.value}</span>
-                    <span>{countdown.minute.unit}</span>
-                  </div>
-                )}
-                <div className="countdown-item-timer-part seconds">
-                  <span className="countdown-item-timer-digit">{countdown.second.value}</span>
-                  <span>{countdown.second.unit}</span>
-                </div>
-              </div>
-              <div className="countdown-item-date">{countdown.date}</div>
-              <Dropdown container={{ className: "countdown-item-dropdown" }} usePortal>
-                <div className="dropdown-group">
-                  <div className="countdown-item-dropdown-title">View</div>
-                </div>
-                <div className="dropdown-group">
-                  <button className={`btn text-btn dropdown-btn${countdown.view === "year" ? " active" : ""}`}
-                    onClick={() => selectView("year", i)}>Full</button>
-                  <button className={`btn text-btn dropdown-btn${countdown.view === "month" ? " active" : ""}`}
-                    onClick={() => selectView("month", i)}>Month</button>
-                  <button className={`btn text-btn dropdown-btn${countdown.view === "day" ? " active" : ""}`}
-                    onClick={() => selectView("day", i)}>Day</button>
-                  <button className={`btn text-btn dropdown-btn${countdown.view === "hour" ? " active" : ""}`}
-                    onClick={() => selectView("hour", i)}>Hour</button>
-                  <button className={`btn text-btn dropdown-btn${countdown.view === "minute" ? " active" : ""}`}
-                    onClick={() => selectView("minute", i)}>Minute</button>
-                  <button className={`btn text-btn dropdown-btn${countdown.view === "second" ? " active" : ""}`}
-                    onClick={() => selectView("second", i)}>Second</button>
-                </div>
-                <button className="btn icon-text-btn dropdown-btn countdown-item-dropdown-remove-btn" onClick={() => removeCountdown(i)}>
-                  <Icon id="trash"/>
-                  <span>{locale.global.remove}</span>
-                </button>
-              </Dropdown>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
-
   return (
     <div className={`container-body top-panel-item countdown${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
       <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": "" }}></CreateButton>
-      {renderCountdowns()}
+      {countdowns.length ? (
+        <div className="countdown-items-container">
+          <ul className="top-panel-item-content countdown-items">
+            {countdowns.map((countdown, i) => (
+              <li className="countdown-item" key={countdown.id}>
+                {countdown.title && <div className="countdown-item-title">{countdown.title}</div>}
+                <div className="countdown-item-timer">
+                  {countdown.isInPast && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">-</span>
+                    </div>
+                  )}
+                  {countdown.year?.value > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.year.value}</span>
+                      <span>{countdown.year.unit}</span>
+                    </div>
+                  )}
+                  {countdown.month?.value > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.month.value}</span>
+                      <span>{countdown.month.unit}</span>
+                    </div>
+                  )}
+                  {countdown.day?.value > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.day.value}</span>
+                      <span>{countdown.day.unit}</span>
+                    </div>
+                  )}
+                  {countdown.hour?.value > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.hour.value}</span>
+                      <span>{countdown.hour.unit}</span>
+                    </div>
+                  )}
+                  {countdown.minute?.value > 0 && (
+                    <div className="countdown-item-timer-part">
+                      <span className="countdown-item-timer-digit">{countdown.minute.value}</span>
+                      <span>{countdown.minute.unit}</span>
+                    </div>
+                  )}
+                  <div className="countdown-item-timer-part seconds">
+                    <span className="countdown-item-timer-digit">{countdown.second.value}</span>
+                    <span>{countdown.second.unit}</span>
+                  </div>
+                </div>
+                <div className="countdown-item-date">{countdown.date}</div>
+                <Dropdown container={{ className: "countdown-item-dropdown" }} usePortal>
+                  <div className="dropdown-group">
+                    <div className="countdown-item-dropdown-title">View</div>
+                  </div>
+                  <div className="dropdown-group">
+                    <button className={`btn text-btn dropdown-btn${countdown.view === "year" ? " active" : ""}`}
+                      onClick={() => selectView("year", i)}>Full</button>
+                    <button className={`btn text-btn dropdown-btn${countdown.view === "month" ? " active" : ""}`}
+                      onClick={() => selectView("month", i)}>Month</button>
+                    <button className={`btn text-btn dropdown-btn${countdown.view === "day" ? " active" : ""}`}
+                      onClick={() => selectView("day", i)}>Day</button>
+                    <button className={`btn text-btn dropdown-btn${countdown.view === "hour" ? " active" : ""}`}
+                      onClick={() => selectView("hour", i)}>Hour</button>
+                    <button className={`btn text-btn dropdown-btn${countdown.view === "minute" ? " active" : ""}`}
+                      onClick={() => selectView("minute", i)}>Minute</button>
+                    <button className={`btn text-btn dropdown-btn${countdown.view === "second" ? " active" : ""}`}
+                      onClick={() => selectView("second", i)}>Second</button>
+                  </div>
+                  <button className="btn icon-text-btn dropdown-btn countdown-item-dropdown-remove-btn" onClick={() => removeCountdown(i)}>
+                    <Icon id="trash"/>
+                    <span>{locale.global.remove}</span>
+                  </button>
+                </Dropdown>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : <p className="top-panel-item-content countdowns-message">{locale.countdown.no_countdowns_message}</p>}
     </div>
   );
 }

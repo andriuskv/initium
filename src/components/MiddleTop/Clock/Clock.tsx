@@ -79,24 +79,17 @@ export default function Clock({ settings }: { settings: TimeDateSettings }) {
     }
   }
 
-  function renderClock() {
-    if (settings.clockStyle === "vertical") {
-      return (
-        <div className="clock-time">
-          <div className="clock-time-hours">{clock.hours}</div>
-          <div>{clock.minutes}</div>
-        </div>
-      );
-    }
-    return <span className="clock-time">{clock.hours}:{clock.minutes}</span>;
-  }
-
   return (
     <div className={`clock${expanded ? " fullscreen-mask expanded" : ""} date-${settings.datePosition}`}
       style={{ "--scale": settings.clockScale, "--date-alignment": settings.dateAlignment } as CSSProperties}
       onClick={handleClick}>
       <div className="clock-time-container">
-        {renderClock()}
+        {settings.clockStyle === "vertical" ? (
+          <div className="clock-time">
+            <div className="clock-time-hours">{clock.hours}</div>
+            <div>{clock.minutes}</div>
+          </div>
+        ) : <span className="clock-time">{clock.hours}:{clock.minutes}</span>}
         {clock.period ? <span className="clock-time-period">{clock.period}</span> : null}
       </div>
       {settings.dateHidden ? null : (
