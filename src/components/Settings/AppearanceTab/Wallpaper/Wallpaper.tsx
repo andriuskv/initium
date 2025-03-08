@@ -172,35 +172,6 @@ export default function Wallpaper({ locale }) {
     updateContextSetting("appearance", { wallpaper: { url: "", provider } });
   }
 
-  function renderWallpaperForm() {
-    return (
-      <Modal hiding={modalHiding} hide={hideModal}>
-        <form onSubmit={handleWallpaperFormSubmit}>
-          <h4 className="modal-title modal-title-center">{locale.settings.appearance.wallpaper_url_form_title}</h4>
-          <input type="text" className="input setting-wallpaper-form-input" name="input" placeholder={locale.global.url_input_label} autoComplete="off"/>
-          {modal.message ? <div className="setting-wallpaper-form-message">{modal.message}</div> : null}
-          <div className="modal-actions">
-            <button type="button" className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
-            <button className="btn">{locale.global.set}</button>
-          </div>
-        </form>
-      </Modal>
-    );
-  }
-
-  function renderWallpaperInfo() {
-    if (wallpaperProvider === "bing") {
-      return (
-        <p className="setting-wallpaper-info">
-          <a href={wallpaperInfo.copyrightLink} target="_blank" rel="noreferrer">{wallpaperInfo.copyright}<Icon id="open-in-new" className="setting-wallpaper-info-inline-icon"/></a>
-        </p>
-      );
-    }
-    return (
-      <p className="setting-wallpaper-info">Wallpaper image by <a href={`https://unsplash.com/@${wallpaperInfo.username}?utm_source=initium&utm_medium=referral`} className="setting-wallpaper-info-link" target="_blank" rel="noreferrer">{wallpaperInfo.name}</a> on <a href="https://unsplash.com/?utm_source=initium&utm_medium=referral" className="setting-wallpaper-info-link" target="_blank" rel="noreferrer">Unsplash</a></p>
-    );
-  }
-
   return (
     <div className="settings-group">
       <div className="settings-group-top">
@@ -246,8 +217,28 @@ export default function Wallpaper({ locale }) {
           </button>
         </div>
       </div>
-      {wallpaperInfo && renderWallpaperInfo()}
-      {modal && renderWallpaperForm()}
+      {wallpaperInfo && (
+        wallpaperProvider === "bing" ? (
+          <p className="setting-wallpaper-info">
+            <a href={wallpaperInfo.copyrightLink} target="_blank" rel="noreferrer">{wallpaperInfo.copyright}<Icon id="open-in-new" className="setting-wallpaper-info-inline-icon"/></a>
+          </p>
+        ) : (
+          <p className="setting-wallpaper-info">Wallpaper image by <a href={`https://unsplash.com/@${wallpaperInfo.username}?utm_source=initium&utm_medium=referral`} className="setting-wallpaper-info-link" target="_blank" rel="noreferrer">{wallpaperInfo.name}</a> on <a href="https://unsplash.com/?utm_source=initium&utm_medium=referral" className="setting-wallpaper-info-link" target="_blank" rel="noreferrer">Unsplash</a></p>
+        )
+      )}
+      {modal && (
+        <Modal hiding={modalHiding} hide={hideModal}>
+          <form onSubmit={handleWallpaperFormSubmit}>
+            <h4 className="modal-title modal-title-center">{locale.settings.appearance.wallpaper_url_form_title}</h4>
+            <input type="text" className="input setting-wallpaper-form-input" name="input" placeholder={locale.global.url_input_label} autoComplete="off"/>
+            {modal.message ? <div className="setting-wallpaper-form-message">{modal.message}</div> : null}
+            <div className="modal-actions">
+              <button type="button" className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
+              <button className="btn">{locale.global.set}</button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 }

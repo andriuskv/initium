@@ -18,7 +18,7 @@ type Props = {
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ timeFormat, corner, locale }: Props) {
-  const { settings: { appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings }, updateContextSetting } = useSettings();
+  const { settings: { appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings } } = useSettings();
   const [state, setState] = useState({ visible: false, rendered: false, reveal: false });
   const [current, setCurrentWeather] = useState<Current | null>(null);
   const [moreWeather, setMoreWeather] = useState<{ hourly: Hour[], daily: Weekday[]} | null>(null);
@@ -135,19 +135,6 @@ export default function Weather({ timeFormat, corner, locale }: Props) {
     }
   }, [state.reveal]);
 
-  function toggleUnits(type: "temp" | "wind") {
-    if (type === "temp") {
-      const { units } = settings;
-
-      updateContextSetting("weather", { units: units === "C" ? "F" : "C" });
-    }
-    else if (type === "wind") {
-      const { speedUnits } = settings;
-
-      updateContextSetting("weather", { speedUnits: speedUnits === "m/s" ? "ft/s" : "m/s" });
-    }
-  }
-
   function scheduleWeatherUpdate() {
     timeoutId.current = window.setTimeout(updateWeather, 1200000);
   }
@@ -242,7 +229,7 @@ export default function Weather({ timeFormat, corner, locale }: Props) {
         <div className="weather-transition-target weather-more-info">
           <Suspense fallback={null}>
             {state.rendered && <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits}
-              message={moreWeatherMessage} locale={locale} toggleUnits={toggleUnits} hide={hideMoreWeather}/>}
+              message={moreWeatherMessage} locale={locale} hide={hideMoreWeather}/>}
           </Suspense>
         </div>
       </div>

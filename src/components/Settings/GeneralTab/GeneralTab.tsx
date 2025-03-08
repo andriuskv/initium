@@ -67,37 +67,6 @@ export default function GeneralTab({ locale }) {
     hideModal();
   }
 
-  function renderModal() {
-    if (!modal) {
-      return null;
-    }
-
-    if (modal.type === "reset") {
-      return (
-        <Modal hiding={modalHiding} hide={hideModal}>
-          <h4 className="modal-title">{locale.settings.general.reset_settings_title}</h4>
-          <p className="modal-text-body">{locale.settings.general.reset_settings_message}</p>
-          <div className="modal-actions">
-            <button className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
-            <button className="btn" onClick={reset}>{locale.global.reset}</button>
-          </div>
-        </Modal>
-      );
-    }
-    else if (modal.type === "order") {
-      return (
-        <MiddleTop settings={settings} locale={locale}
-          updateContextSetting={updateContextSetting} hiding={modalHiding} hide={hideModal}/>
-      );
-    }
-    else if (modal.type === "placement") {
-      return (
-        <Placement locale={locale} hiding={modalHiding} hide={hideModal}/>
-      );
-    }
-    return null;
-  }
-
   return (
     <div className="container-body setting-tab">
       {/* <label className="setting">
@@ -180,7 +149,21 @@ export default function GeneralTab({ locale }) {
         <span>{locale.settings.general.reset_settings_title}</span>
         <button className="btn text-btn text-negative-btn" onClick={showResetModal}>{locale.global.reset}</button>
       </div>
-      {modal && renderModal()}
+      {modal?.type === "reset" ? (
+        <Modal hiding={modalHiding} hide={hideModal}>
+          <h4 className="modal-title">{locale.settings.general.reset_settings_title}</h4>
+          <p className="modal-text-body">{locale.settings.general.reset_settings_message}</p>
+          <div className="modal-actions">
+            <button className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
+            <button className="btn" onClick={reset}>{locale.global.reset}</button>
+          </div>
+        </Modal>
+      ) : modal?.type === "order" ? (
+        <MiddleTop settings={settings} locale={locale}
+          updateContextSetting={updateContextSetting} hiding={modalHiding} hide={hideModal}/>
+      ) : modal?.type === "placement" ?
+        <Placement locale={locale} hiding={modalHiding} hide={hideModal}/> : null
+      }
     </div>
   );
 }

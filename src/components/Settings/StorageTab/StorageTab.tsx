@@ -271,64 +271,6 @@ export default function StorageTab({ locale }) {
     chromeStorage.remove(modal.item.name);
   }
 
-  function renderModal() {
-    if (modal.type === "item") {
-      return (
-        <Modal hiding={modalHiding} hide={hideModal}>
-          <h4 className="modal-title">{modal.title}</h4>
-          <div className="modal-text-body">{modal.body}</div>
-          <div className="modal-actions">
-            <button className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
-            <button className="btn" onClick={removeItem}>{locale.global.delete}</button>
-          </div>
-        </Modal>
-      );
-    }
-    else if (modal.type === "restore") {
-      return (
-        <Modal hiding={modalHiding} hide={hideModal}>
-          <form onSubmit={restoreFromBackup}>
-            <h4 className="modal-title">{modal.title}</h4>
-            <div className="modal-text-body">{modal.body}</div>
-            <div className="storage-confirm-input-container">
-              <label>
-                <div>For confirmation type: <b>restore</b></div>
-                <input type="text" className="input" autoComplete="off"
-                  onChange={handleImportInputChange} value={modal.confirmInputValue} required/>
-              </label>
-            </div>
-            <div className="modal-actions">
-              <button type="button" className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
-              <button className="btn" disabled={modal.confirmInputValue !== "restore"}>{locale.global.restore}</button>
-            </div>
-          </form>
-        </Modal>
-      );
-    }
-    else if (modal.type === "wipe-data") {
-      return (
-        <Modal hiding={modalHiding} hide={hideModal}>
-          <form onSubmit={wipeAllData}>
-            <h4 className="modal-title">{modal.title}</h4>
-            <div className="modal-text-body">{modal.body}</div>
-            <div className="storage-confirm-input-container">
-              <label>
-                <div>For confirmation type: <b>wipe all data</b></div>
-                <input type="text" className="input" autoComplete="off"
-                  onChange={handleImportInputChange} value={modal.confirmInputValue} required/>
-              </label>
-            </div>
-            <div className="modal-actions">
-              <button type="button" className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
-              <button className="btn" disabled={modal.confirmInputValue !== "wipe all data"}>{locale.global.confirm}</button>
-            </div>
-          </form>
-        </Modal>
-      );
-    }
-    return null;
-  }
-
   if (!ready.current) {
     return null;
   }
@@ -393,7 +335,52 @@ export default function StorageTab({ locale }) {
           </button>
         </div>
       </div>
-      {modal && renderModal()}
+      {modal?.type === "item" ? (
+        <Modal hiding={modalHiding} hide={hideModal}>
+          <h4 className="modal-title">{modal.title}</h4>
+          <div className="modal-text-body">{modal.body}</div>
+          <div className="modal-actions">
+            <button className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
+            <button className="btn" onClick={removeItem}>{locale.global.delete}</button>
+          </div>
+        </Modal>
+      ) : modal?.type === "restore" ? (
+        <Modal hiding={modalHiding} hide={hideModal}>
+          <form onSubmit={restoreFromBackup}>
+            <h4 className="modal-title">{modal.title}</h4>
+            <div className="modal-text-body">{modal.body}</div>
+            <div className="storage-confirm-input-container">
+              <label>
+                <div>For confirmation type: <b>restore</b></div>
+                <input type="text" className="input" autoComplete="off"
+                  onChange={handleImportInputChange} value={modal.confirmInputValue} required/>
+              </label>
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
+              <button className="btn" disabled={modal.confirmInputValue !== "restore"}>{locale.global.restore}</button>
+            </div>
+          </form>
+        </Modal>
+      ) : modal?.type === "wipe-data" ? (
+        <Modal hiding={modalHiding} hide={hideModal}>
+          <form onSubmit={wipeAllData}>
+            <h4 className="modal-title">{modal.title}</h4>
+            <div className="modal-text-body">{modal.body}</div>
+            <div className="storage-confirm-input-container">
+              <label>
+                <div>For confirmation type: <b>wipe all data</b></div>
+                <input type="text" className="input" autoComplete="off"
+                  onChange={handleImportInputChange} value={modal.confirmInputValue} required/>
+              </label>
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
+              <button className="btn" disabled={modal.confirmInputValue !== "wipe all data"}>{locale.global.confirm}</button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
     </div>
   );
 }

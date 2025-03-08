@@ -112,7 +112,6 @@ export default function Twitter({ showIndicator }) {
 
     if (fetchedUser && fetchedTimeline) {
       if (fetchedUser.statusCode) {
-        // TODO: handle erorr.
         return {
           user,
           tweets: []

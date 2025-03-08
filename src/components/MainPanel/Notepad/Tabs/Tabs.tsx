@@ -5,11 +5,11 @@ import { useModal } from "hooks";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
-import Modal from "components/Modal";
 import Icon from "components/Icon";
 import CreateButton from "components/CreateButton";
 import "./tabs.css";
 import Tab from "./Tab";
+import TabsModal from "./TabsModal";
 
 type Props = {
   tabs: TabType[],
@@ -134,48 +134,14 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     setActiveDragId(event.active.id);
   }
 
-  function renderModal() {
-    if (modal.type === "create") {
-      return (
-        <Modal className="notepad-modal" hiding={modalHiding} hide={hideModal}>
-          <form onSubmit={createTab}>
-            <h4 className="modal-title modal-title-center">{locale.notepad.create_modal_title}</h4>
-            <input type="text" className="input" name="title"
-              autoComplete="off"
-              placeholder="Tab title"/>
-            <div className="modal-actions">
-              <button type="button" className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
-              <button className="btn">{locale.global.create}</button>
-            </div>
-          </form>
-        </Modal>
-      );
-    }
-    else if (modal.type === "remove") {
-      return (
-        <Modal className="notepad-modal" hiding={modalHiding} hide={hideModal}>
-          <h4 className="modal-title">{locale.notepad.remove_modal_title}</h4>
-          <div className="modal-text-body">
-            <p>{locale.notepad.remove_modal_text}</p>
-          </div>
-          <div className="modal-actions">
-            <button className="btn text-btn" onClick={hideModal}>{locale.global.cancel}</button>
-            <button className="btn" onClick={confirmTabRemoval}>{locale.global.remove}</button>
-          </div>
-        </Modal>
-      );
-    }
-    return null;
-  }
-
-  function renderTab(tab, index) {
+  function renderTab(tab: TabType, index: number) {
     const component = {
       Component: Tab,
       params: {
         index,
         tab,
         canRemove: tabs.length > 1,
-        textSize,
+        textSize: tab.textSize || textSize,
         locale,
         updateTab,
         decreaseTextSize,
@@ -241,7 +207,8 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
           </div>
         </div>
       </div>
-      {modal && renderModal()}
+      {modal && <TabsModal locale={locale} modal={modal} hiding={modalHiding}
+        hide={hideModal} confirmTabRemoval={confirmTabRemoval} createTab={createTab}/>}
     </div>
   );
 }

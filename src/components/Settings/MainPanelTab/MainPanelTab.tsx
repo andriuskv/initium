@@ -3,7 +3,7 @@ import { useSettings } from "contexts/settings";
 import { dispatchCustomEvent } from "utils";
 import type { MainPanelComponents } from "types/settings";
 
-export default function MainPanelTab({ locale, hide }) {
+export default function MainPanelTab({ locale, hide }: { locale: any, hide: () => void }) {
   const { settings: { mainPanel: settings }, updateContextSetting, updateMainPanelComponentSetting, toggleSetting } = useSettings();
   const [topSitesDirty, setTopSitesDirty] = useState(() => !!localStorage.getItem("top sites"));
 

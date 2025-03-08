@@ -44,14 +44,6 @@
   font-weight: bold;
 }
 
-.notepad-modal {
-  min-width: 320px;
-
-  .input {
-    width: 100%;
-  }
-}
-
 .notepad-storage {
   flex-direction: column;
   padding: var(--space-md);

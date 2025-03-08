@@ -13,8 +13,9 @@ type Props = {
   locale: any,
   animDirection: "anim-left" | "anim-right",
   toggleIndicator: (name: string, value: boolean) => void,
-  updateTitle: (title: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
+  updateTitle: (name: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
   expand: () => void,
+  exitFullscreen: () => void,
   handleReset: (name: string) => Promise<void>
 }
 
@@ -29,14 +30,17 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => {
     const { pomodoro: { focus } } = getSetting("timers") as TimersSettings;
-    return parseDuration(focus * 60);
+    return {
+      ...parseDuration(focus * 60),
+      dirty: false
+    };
   });
   const [stage, setStage] = useState("focus");
   const [label, setLabel] = useState("");
-  const [audio, setAudio] = useState<{ shouldPlay: boolean, element?: HTMLAudioElement }>({ shouldPlay: true });
+  const [audio, setAudio] = useState<{ shouldPlay: boolean }>({ shouldPlay: true });
   const [pipVisible, setPipVisible] = useState(false);
-  const dirty = useRef(false);
   const currentStageIndex = useRef(0);
+  const audioElement = useRef<HTMLAudioElement>(null);
   const { initWorker, destroyWorkers } = useWorker(handleMessage);
   const name = "pomodoro";
 
@@ -102,13 +106,15 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     const data = JSON.parse(localStorage.getItem(name));
 
     if (data) {
-      dirty.current = true;
       currentStageIndex.current = data.stageIndex;
 
       setStage(data.stage);
       setAudio({ shouldPlay: data.isAudioEnabled });
       setLabel(data.label);
-      setState(parseDuration(data.duration));
+      setState({
+        ...parseDuration(data.duration),
+        dirty: true
+      });
     }
   }
 
@@ -122,12 +128,11 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   }
 
   function start() {
-    dirty.current = true;
-
-    if (!audio.element) {
-      setAudio({ ...audio, element: new Audio("./assets/chime.mp3") });
+    if (!audioElement.current) {
+      audioElement.current = new Audio("./assets/chime.mp3");
     }
     setRunning(true);
+    setState({ ...state, dirty: true });
     updateTitle(name, {
       ...state,
       hours: state.hours,
@@ -143,20 +148,20 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   }
 
   function update(duration: number) {
-    const state = parseDuration(duration);
+    const time = parseDuration(duration);
 
-    setState(state);
+    setState({ ...state, ...time });
     updateTitle(name, {
       ...state,
-      hours: state.hours,
-      minutes: state.hours || state.minutes ? state.minutesString : "",
-      seconds: state.secondsString,
+      hours: time.hours,
+      minutes: time.hours || time.minutes ? time.minutesString : "",
+      seconds: time.secondsString,
       isAudioEnabled: audio.shouldPlay
     });
     pipService.update(name, {
-      hours: state.hours,
-      minutes: state.minutes,
-      seconds: state.seconds
+      hours: time.hours,
+      minutes: time.minutes,
+      seconds: time.seconds
     });
     localStorage.setItem(name, JSON.stringify({
       duration,
@@ -170,7 +175,6 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   async function reset() {
     await handleReset(name);
     removeFromRunning(name);
-    dirty.current = false;
     currentStageIndex.current = 0;
 
     setStage("focus");
@@ -203,7 +207,10 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     const { pomodoro: settings } = getSetting("timers") as TimersSettings;
     const duration = settings[stage];
 
-    setState(parseDuration(duration * 60));
+    setState({
+      ...parseDuration(duration * 60),
+      dirty: false
+    });
   }
 
   function parseDuration(duration: number) {
@@ -228,8 +235,8 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   function playAudio() {
     const { volume } = getSetting("timers") as TimersSettings;
 
-    audio.element.volume = volume;
-    audio.element.play();
+    audioElement.current.volume = volume;
+    audioElement.current.play();
   }
 
   function togglePip() {
@@ -250,32 +257,23 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     setLabel((event.target as HTMLInputElement).value);
   }
 
-  function renderTop() {
-    if (running || dirty.current) {
-      if (label) {
-        return (
-          <h4 className="top-panel-item-content-label pomodoro-label">
-            <div>{label}</div>
-            <div className="pomodoro-stage">{stages[stage]}</div>
-          </h4>
-        );
-      }
-      return <h4 className="top-panel-item-content-label pomodoro-stage">{stages[stage]}</h4>;
-    }
-    return (
-      <div className="top-panel-item-content-top">
-        <input type="text" className="input" value={label} onChange={handleLabelInputChange}
-          placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
-      </div>
-    );
-  }
-
   return (
     <div className={`top-panel-item pomodoro${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
       <div className="container-body">
         {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
           <div className="top-panel-item-content">
-            {renderTop()}
+            {running || state.dirty ?
+              label ? (
+                <h4 className="top-panel-item-content-label pomodoro-label">
+                  <div>{label}</div>
+                  <div className="pomodoro-stage">{stages[stage]}</div>
+                </h4>
+              ) : <h4 className="top-panel-item-content-label pomodoro-stage">{stages[stage]}</h4> : (
+                <div className="top-panel-item-content-top">
+                  <input type="text" className="input" value={label} onChange={handleLabelInputChange}
+                    placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                </div>
+              )}
             <div className="top-panel-item-display">
               {state.hours > 0 && (
                 <div>
@@ -299,9 +297,9 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
       </div>
       <div className="top-panel-hide-target container-footer top-panel-item-actions">
         <button className="btn text-btn top-panel-item-action-btn" onClick={toggle}>{running ? locale.topPanel.stop : locale.topPanel.start}</button>
-        {running || !dirty.current ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.global.reset}</button>}
+        {running || !state.dirty ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.global.reset}</button>}
         <div className="top-panel-secondary-actions">
-          {dirty.current && pipService.isSupported() && (
+          {state.dirty && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
               <Icon id="pip"/>
             </button>

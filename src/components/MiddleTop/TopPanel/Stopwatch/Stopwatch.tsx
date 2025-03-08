@@ -14,7 +14,7 @@ type Props = {
   locale: any,
   animDirection: "anim-left" | "anim-right",
   toggleIndicator: (name: string, visible: boolean) => void,
-  updateTitle: (title: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled?: boolean }) => void,
+  updateTitle: (name: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled?: boolean }) => void,
   expand: () => void,
 }
 
@@ -252,26 +252,19 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
     });
   }
 
-  function renderTop() {
-    if (running || dirty) {
-      if (label) {
-        return <h4 className="top-panel-item-content-label">{label}</h4>;
-      }
-      return null;
-    }
-    return (
-      <div className="top-panel-item-content-top">
-        <input type="text" className="input" value={label} onChange={handleLabelInputChange} placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
-      </div>
-    );
-  }
-
   return (
     <div className={`top-panel-item stopwatch${visible ? " visible" : ""}${splits.length ? " with-splits" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
       <div className="container-body">
         {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
           <div className="top-panel-item-content">
-            {renderTop()}
+            {running || dirty ?
+              label ? (
+                <h4 className="top-panel-item-content-label">{label}</h4>
+              ) : null : (
+                <div className="top-panel-item-content-top">
+                  <input type="text" className="input" value={label} onChange={handleLabelInputChange} placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                </div>
+              )}
             <div className="top-panel-item-display">
               {state.hours > 0 && (
                 <div>

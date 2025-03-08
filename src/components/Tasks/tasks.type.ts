@@ -14,7 +14,7 @@ export type Subtask = {
   removed?: boolean
 }
 
-export type Task = {
+export type TaskType = {
   id: string,
   rawText: string,
   text?: string,
@@ -46,7 +46,7 @@ export type Task = {
 export type Group = {
   id: string,
   name: string,
-  tasks: Task[],
+  tasks: TaskType[],
   expanded: boolean,
   taskCount?: number,
   hiding?: boolean,
@@ -61,5 +61,5 @@ export type TaskForm = {
   groupId?: string,
   selectedGroupId?: string,
   completeWithSubtasks: boolean,
-  task: Task
+  task: TaskType
 }

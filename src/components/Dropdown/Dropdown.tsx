@@ -5,9 +5,8 @@ import { createPortal } from "react-dom";
 import { getRandomString, timeout } from "utils";
 import * as focusService from "services/focus";
 import { getSetting } from "services/settings";
-import { useLocalization } from "contexts/localization";
-import Icon from "components/Icon";
 import "./dropdown.css";
+import ToggleBtn from "./ToggleBtn/ToggleBtn";
 
 type Props = PropsWithChildren & {
   usePortal?: boolean,
@@ -41,7 +40,6 @@ type State = {
 }
 
 export default function Dropdown({ container, toggle = {}, body, usePortal, children }: Props) {
-  const locale = useLocalization();
   const [state, setState] = useState<State>({ id: getRandomString() });
   const memoizedWindowClickHandler = useMemo(() => handleWindowClick, [state.id]);
   const isMounted = useRef(false);
@@ -184,35 +182,9 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
     return element;
   }
 
-  function renderToggleButton() {
-    const className = `${toggle.className ? ` ${toggle.className}` : ""}${state.visible ? " active" : ""}`;
-
-    if (toggle.isIconTextBtn) {
-      return (
-        <button type="button" className={`btn icon-text-btn dropdown-toggle-btn${className}`} ref={toggleBtn}
-          onClick={toggleDropdown}>
-          <Icon id={toggle.iconId || "vertical-dots"}/>
-          <span>{toggle.title}</span>
-        </button>
-      );
-    }
-    else if (toggle.isTextBtn) {
-      return (
-        <button type="button" className={`btn text-btn dropdown-toggle-btn${className}`} ref={toggleBtn}
-          onClick={toggleDropdown}>{toggle.title}</button>
-      );
-    }
-    return (
-      <button type="button" className={`btn icon-btn dropdown-toggle-btn${className}`} ref={toggleBtn}
-        onClick={toggleDropdown} title={toggle.title || locale.global.more}>
-        {toggle.body ? toggle.body : <Icon id={toggle.iconId || "vertical-dots"}/>}
-      </button>
-    );
-  }
-
   return (
     <div id={state.id} className={`dropdown-container${container ? ` ${container.className}` : ""}${state.visible ? " visible" : ""}`}>
-      {renderToggleButton()}
+      <ToggleBtn params={toggle} toggleDropdown={toggleDropdown} ref={toggleBtn} visible={state.visible}/>
       {usePortal && CSS.supports("anchor-name", "--test") ? (
         createPortal(
           <div role="menu" className={`container container-opaque dropdown portal${body? ` ${body.className}` : ""}${state.reveal? " reveal" : ""}${state.visible? " visible" : ""}${state.onTop? " top" : ""}${state.hiding? " hiding" : ""}`} style={{ "positionAnchor": `--anchor-${state.id}` } as CSSProperties } ref={drop}>{children}</div>,

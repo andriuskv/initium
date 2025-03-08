@@ -38,7 +38,7 @@ function toggle(params: Params) {
 }
 
 function close(name: string) {
-  if (!pipWindow || name !== activeTimer) {
+  if (!pipWindow || name && name !== activeTimer) {
     return;
   }
   pipWindow.close();

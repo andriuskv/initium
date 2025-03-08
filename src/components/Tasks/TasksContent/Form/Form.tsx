@@ -492,22 +492,6 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     );
   }
 
-  function renderModal() {
-    if (!modal) {
-      return;
-    }
-
-    if (modal.type === "label") {
-      return (
-        <LabelForm locale={locale} addUniqueLabel={addUniqueLabel} removeTaskLabel={removeTaskLabel}
-          hiding={modalHiding} hide={hideModal}/>
-      );
-    }
-    else if (modal.type === "group") {
-      return <GroupForm locale={locale} createGroup={localCreateGroup} hiding={modalHiding} hide={hideModal} modal/>;
-    }
-  }
-
   return (
     <>
       <div className="container-header">
@@ -633,7 +617,12 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
           <Toast message={message} position="bottom" offset="40px" locale={locale} dismiss={dismissMessage}/>
         </Suspense>
       ) : null}
-      {renderModal()}
+      {modal?.type === "label" ? (
+        <LabelForm locale={locale} addUniqueLabel={addUniqueLabel} removeTaskLabel={removeTaskLabel}
+          hiding={modalHiding} hide={hideModal}/>
+      ) : modal?.type === "group" ? (
+        <GroupForm locale={locale} createGroup={localCreateGroup} hiding={modalHiding} hide={hideModal} modal/>
+      ) : null}
     </>
   );
 }

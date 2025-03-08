@@ -20,7 +20,7 @@ type Props = {
   locale: any,
   animDirection: "anim-left" | "anim-right",
   toggleIndicator: (name: string, value: boolean) => void,
-  updateTitle: (title: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
+  updateTitle: (name: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
   ignoreMiniTimerPref: (name: string, value: boolean) => void,
   expand: () => void,
   exitFullscreen: () => void,

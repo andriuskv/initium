@@ -31,7 +31,6 @@ function SettingsProvider({ children }: PropsWithChildren) {
     setSettings({ ...settings });
   }
 
-  // function updateMainPanelComponentSetting(name: keyof MainPanelComponents, setting: MainPanelComponents[keyof MainPanelComponents]) {
   function updateMainPanelComponentSetting(name: keyof MainPanelComponents, setting: Partial<MainPanelComponents[keyof MainPanelComponents]>) {
     const settings = settingsService.updateMainPanelComponentSetting(name, setting);
 

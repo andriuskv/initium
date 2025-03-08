@@ -1,0 +1,7 @@
+.notepad-tabs-modal {
+  min-width: 320px;
+
+  .input {
+    width: 100%;
+  }
+}

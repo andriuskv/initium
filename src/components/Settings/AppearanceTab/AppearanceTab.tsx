@@ -168,22 +168,6 @@ export default function AppearanceTab({ locale }) {
     }
   }
 
-  function renderAccentColors() {
-    return (
-      <ul className="setting setting-appearance-tab-accent-colors">
-        {colors.map((color, index) => (
-          <li key={index}>
-            <button className={`btn setting-appearance-tab-accent-color-btn${colorIndex === index ? " selected" : ""}`}
-              style={{ backgroundColor: `hsl(${color.hue} ${color.saturation} ${color.lightness})` }}
-              onClick={() => selectColor(index)}>
-              {colorIndex === index ? <Icon id="check"/> : null}
-            </button>
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
   return (
     <div className="container-body setting-tab">
       <label className="setting">
@@ -201,7 +185,17 @@ export default function AppearanceTab({ locale }) {
         <div className="settings-group-top">
           <h4 className="settings-group-title">{locale.settings.appearance.accent_color_group_title}</h4>
         </div>
-        {renderAccentColors()}
+        <ul className="setting setting-appearance-tab-accent-colors">
+          {colors.map((color, index) => (
+            <li key={index}>
+              <button className={`btn setting-appearance-tab-accent-color-btn${colorIndex === index ? " selected" : ""}`}
+                style={{ backgroundColor: `hsl(${color.hue} ${color.saturation} ${color.lightness})` }}
+                onClick={() => selectColor(index)}>
+                {colorIndex === index ? <Icon id="check"/> : null}
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
       <div className="settings-group">
         <div className="settings-group-top">
@@ -228,7 +222,6 @@ export default function AppearanceTab({ locale }) {
             defaultValue={settings.panelBackgroundNoiseOpacity} onChange={handleNoiseChange} name="panelBackgroundNoiseOpacity"/>
         </label>
       </div>
-      {/* <Wallpaper settings={settings} locale={locale} updateContextSetting={updateContextSetting}/> */}
       <Wallpaper locale={locale}/>
     </div>
   );

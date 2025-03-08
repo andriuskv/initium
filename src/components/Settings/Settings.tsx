@@ -65,7 +65,7 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
       component: LogsTab
     }
   ], [locale]);
-  const [activeTab, setActiveTab] = useState(() => {
+  const [activeTabId, setActiveTabId] = useState(() => {
     const id = localStorage.getItem("active-settings-tab");
     const activeTabIndex = tabs.findIndex((tab) => tab.id === id);
 
@@ -75,52 +75,19 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
     return id || "general";
   });
   const saveTabTimeoutId = useRef(0);
-  const activeTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+  const activeTabIndex = tabs.findIndex(tab => tab.id === activeTabId);
+  const activeTab = tabs[activeTabIndex];
 
   useEffect(() => {
     focusService.updateFocusTrap("fullscreen-modal");
-  }, [activeTab]);
-
-  function renderNavigation() {
-    return (
-      <TabsContainer className="setting-nav-container" current={activeTabIndex} orientation="v">
-        <ul className="settings-nav">
-          {tabs.map(tab => !tab.shouldHide && (
-            <li className={`settings-nav-item${activeTab === tab.id ? " active" : ""}`} key={tab.id}>
-              <button className="btn text-btn settings-nav-item-btn"
-                onClick={() => selectTab(tab.id)}>{tab.name}</button>
-            </li>
-          ))}
-        </ul>
-      </TabsContainer>
-    );
-  }
+  }, [activeTabId]);
 
   function selectTab(id: string) {
-    setActiveTab(id);
+    setActiveTabId(id);
 
     saveTabTimeoutId.current = timeout(() => {
       localStorage.setItem("active-settings-tab", id);
     }, 400, saveTabTimeoutId.current);
-  }
-
-  function renderTab() {
-    const Component = tabs[activeTabIndex].component;
-
-    if (tabs[activeTabIndex].id === "mainPanel") {
-      const MainPanel = tabs[activeTabIndex].component as typeof MainPanelTab;
-
-      return (
-        <Suspense fallback={<Spinner/>}>
-          <MainPanel locale={locale} hide={hide}/>
-        </Suspense>
-      );
-    }
-    return (
-      <Suspense fallback={<Spinner/>}>
-        <Component locale={locale}/>
-      </Suspense>
-    );
   }
 
   return (
@@ -133,8 +100,25 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
         </button>
       </div>
       <div className="settings-body">
-        {renderNavigation()}
-        {renderTab()}
+        <TabsContainer className="setting-nav-container" current={activeTabIndex} orientation="v">
+          <ul className="settings-nav">
+            {tabs.map(tab => !tab.shouldHide && (
+              <li className={`settings-nav-item${activeTabId === tab.id ? " active" : ""}`} key={tab.id}>
+                <button className="btn text-btn settings-nav-item-btn"
+                  onClick={() => selectTab(tab.id)}>{tab.name}</button>
+              </li>
+            ))}
+          </ul>
+        </TabsContainer>
+        {activeTab.id === "mainPanel" ? (
+          <Suspense fallback={<Spinner/>}>
+            <MainPanelTab locale={locale} hide={hide}/>
+          </Suspense>
+        ) : (
+          <Suspense fallback={<Spinner/>}>
+            <activeTab.component locale={locale}/>
+          </Suspense>
+        )}
       </div>
     </div>
   );

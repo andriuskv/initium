@@ -72,8 +72,11 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
       note.id = crypto.randomUUID();
 
       // Change to new format
+      // @ts-ignore
       if (note.title) {
+        // @ts-ignore
         note.content = `# ${note.title}\n`;
+        // @ts-ignore
         delete note.title;
       }
       note.contentDisplayString = await parseContent(note.content);

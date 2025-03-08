@@ -1,9 +1,9 @@
-import React from "react";
+import { type CSSProperties } from "react";
 
 type Props = {
   id: string,
   className?: string,
-  style?: React.CSSProperties,
+  style?: CSSProperties,
   size?: string,
   title?: string
 }

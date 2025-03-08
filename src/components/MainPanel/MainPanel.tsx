@@ -1,7 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type ReactNode } from "react";
 import { getSetting, updateSetting } from "services/settings";
 import { handleZIndex } from "services/zIndex";
-// import { hasUsers } from "services/twitter";
 import { hasStoredFeeds } from "services/feeds";
 import Icon from "components/Icon";
 import Resizer from "components/Resizer";
@@ -12,7 +11,6 @@ import type { AppearanceSettings, MainPanelSettings } from "types/settings";
 
 const TopSites = lazy(() => import("./TopSites"));
 const Notepad = lazy(() => import("./Notepad"));
-// const Twitter = lazy(() => import("./Twitter"));
 const RssFeed = lazy(() => import("./RssFeed"));
 
 type Props = {
@@ -40,6 +38,21 @@ type ActiveTab = {
   collapsing?: boolean,
   manuallySelected?: boolean,
 }
+
+  function renderComponent(tab: Tab, activeTabId: string, component: ReactNode, showSpinner?: boolean) {
+    if (tab.disabled) {
+      return null;
+    }
+    const fallback = showSpinner ?
+      <Spinner size="24px"/> :
+      <Icon id={tab.iconId} className="main-panel-item-splash-icon animate"/>;
+
+    return (
+      <div className={`container main-panel-item${activeTabId === tab.id ? "" : " hidden"}`}>
+        {tab.renderPending ? fallback : <Suspense fallback={fallback}>{component}</Suspense>}
+      </div>
+    );
+  }
 
 export default function MainPanel({ settings, locale }: Props) {
   const [activeTab, setActiveTab] = useState((): ActiveTab => {
@@ -170,15 +183,6 @@ export default function MainPanel({ settings, locale }: Props) {
         expandable: true,
         renderPending: true
       },
-      // twitter: {
-      //   id: "twitter",
-      //   title: "Twitter",
-      //   iconId: "twitter",
-      //   delay: 600000,
-      //   expandable: true,
-      //   firstRender: true,
-      //   renderPending: true
-      // },
       rssFeed: {
         id: "rssFeed",
         title: "RSS feed",
@@ -260,69 +264,36 @@ export default function MainPanel({ settings, locale }: Props) {
     updateSetting("mainPanel", { height });
   }
 
-  function renderTopSites() {
-    const tab = tabs.topSites;
-
-    if (tab.disabled || tab.renderPending) {
-      return null;
-    }
-    return (
-      <div className={`main-panel-item top-sites-container${activeTab.id === tab.id ? "" : " hidden"}`}>
-        <Suspense fallback={null}>
-          <TopSites settings={settings.components.topSites} locale={locale}/>
-        </Suspense>
-      </div>
-    );
-  }
-
-  function renderComponent(id: string, component: ReactNode, showSpinner?: boolean) {
-    const tab = tabs[id];
-
-    if (tab.disabled) {
-      return null;
-    }
-    const fallback = showSpinner ?
-      <Spinner size="24px"/> :
-      <Icon id={tab.iconId} className="main-panel-item-splash-icon animate"/>;
-
-    return (
-      <div className={`container main-panel-item${activeTab.id === id ? "" : " hidden"}`}>
-        {tab.renderPending ? fallback : <Suspense fallback={fallback}>{component}</Suspense>}
-      </div>
-    );
-  }
-
-  function renderNavigation() {
-    if (settings.navHidden || settings.navDisabled) {
-      return;
-    }
-    return (
-      <ul className="main-panel-nav">
-        {Object.values(tabs).map(tab => (
-          tab.disabled ? null : (
-            <li key={tab.id}>
-              <button className={`btn icon-btn panel-item-btn${tab.indicatorVisible ? " indicator" : ""}`}
-                onClick={() => selectTab(tab.id)} aria-label={tab.title} data-tooltip={tab.title}>
-                <Icon id={tab.iconId} className="panel-item-btn-icon"/>
-              </button>
-            </li>
-          )
-        ))}
-      </ul>
-    );
-  }
-
   return (
     <div className={`main-panel${tabExpandable ? " expandable" : ""}${activeTab.expanded ? " expanded" : ""}${settings.navHidden || settings.navDisabled ? " nav-hidden" : ""}${activeTab.collapsing ? " collapsing" : ""}`}
       onClick={event => handleZIndex(event, "main-panel")} ref={containerRef}>
-      {renderNavigation()}
-      {tabExpandable && (
-        <Sidebar expanded={activeTab.expanded} locale={locale} expandTab={expandTab} resizerEnabled={resizerEnabled} toggleResizer={toggleResizer}/>
+      {settings.navHidden || settings.navDisabled ? null : (
+        <ul className="main-panel-nav">
+          {Object.values(tabs).map(tab => (
+            tab.disabled ? null : (
+              <li key={tab.id}>
+                <button className={`btn icon-btn panel-item-btn${tab.indicatorVisible ? " indicator" : ""}`}
+                  onClick={() => selectTab(tab.id)} aria-label={tab.title} data-tooltip={tab.title}>
+                  <Icon id={tab.iconId} className="panel-item-btn-icon"/>
+                </button>
+              </li>
+            )
+          ))}
+        </ul>
       )}
-      {renderTopSites()}
-      {renderComponent("notepad", <Notepad locale={locale}/>, true)}
-      {/* {renderComponent("twitter", <Twitter showIndicator={showIndicator}/>)} */}
-      {renderComponent("rssFeed", <RssFeed locale={locale} showIndicator={showIndicator}/>)}
+      {tabExpandable && (
+        <Sidebar expanded={activeTab.expanded} locale={locale} expandTab={expandTab}
+          resizerEnabled={resizerEnabled} toggleResizer={toggleResizer}/>
+      )}
+      {tabs.topSites.disabled || tabs.topSites.renderPending ? null : (
+        <div className={`main-panel-item top-sites-container${activeTab.id === tabs.topSites.id ? "" : " hidden"}`}>
+          <Suspense fallback={null}>
+            <TopSites settings={settings.components.topSites} locale={locale}/>
+          </Suspense>
+        </div>
+      )}
+      {renderComponent(tabs.notepad, activeTab.id, <Notepad locale={locale}/>, true)}
+      {renderComponent(tabs.rssFeed, activeTab.id, <RssFeed locale={locale} showIndicator={showIndicator}/>)}
       {resizerEnabled && <Resizer saveHeight={saveHeight}/>}
     </div>
   );
