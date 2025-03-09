@@ -13,6 +13,7 @@ import PersistentSites from "./PersistentSites";
 
 type Props = {
   settings: MainPanelComponents["topSites"],
+  enableEdit?: boolean,
   locale: any
 }
 
@@ -26,7 +27,7 @@ type LocalData = {
   sites?: Site[]
 };
 
-export default function TopSites({ settings, locale }: Props) {
+export default function TopSites({ settings, enableEdit, locale }: Props) {
   const [sites, setSites] = useState<Site[]>(null);
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const first = useRef(true);
@@ -288,7 +289,7 @@ export default function TopSites({ settings, locale }: Props) {
         )}
       </ul>
       {settings.persistentSitesHidden ? null : (
-        <PersistentSites settings={settings} locale={locale} getFaviconURL={getFaviconURL}/>
+        <PersistentSites settings={settings} locale={locale} getFaviconURL={getFaviconURL} enableEdit={enableEdit}/>
       )}
       {modal ? (
         <Form form={modal} locale={locale} updateSite={updateSite} hiding={modalHiding} hide={hideModal}/>

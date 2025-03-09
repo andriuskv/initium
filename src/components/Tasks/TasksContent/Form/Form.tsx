@@ -9,7 +9,7 @@ import "./form.css";
 import GroupForm from "../GroupForm";
 import LabelForm from "./LabelForm";
 import Subtask from "./Subtask";
-import type { Label, Subtask as SubtaskType, Task, Group, TaskForm } from "components/Tasks/tasks.type";
+import type { Label, Subtask as SubtaskType, TaskType, Group, TaskForm } from "components/Tasks/tasks.type";
 import type { GeneralSettings, TimeDateSettings } from "types/settings";
 
 const Toast = lazy(() => import("components/Toast"));
@@ -195,7 +195,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     createGroup(group);
   }
 
-  function getDefaultTask(text = "", props = {}): Task | SubtaskType {
+  function getDefaultTask(text = "", props = {}): TaskType | SubtaskType {
     const { openLinkInNewTab } = getSetting("general") as GeneralSettings;
 
     return {
@@ -248,7 +248,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
       creationDate: Date.now(),
       subtasks: getFormSubtasks(elements.subtask),
       labels: getFlaggedFormLabels()
-    }) as Task;
+    }) as TaskType;
 
     if (state.completeWithSubtasks) {
       task.completeWithSubtasks = true;
@@ -275,7 +275,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
 
     if (state.updating) {
       const { taskIndex } = form;
-      const taskProps: Partial<Task> = {};
+      const taskProps: Partial<TaskType> = {};
 
       if (dateTime) {
         const selectedDateTime = new Date(dateTime).getTime();
