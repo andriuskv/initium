@@ -10,6 +10,7 @@ type GoogleEvent = {
   status: string,
   updated: string,
   created: string,
+  eventType: string,
   start: {
     date: string
     dateTime?: string,
@@ -580,7 +581,7 @@ function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDes
     }
 
     if (includeDesc && item.description) {
-      optionalParams.description = item.description;
+      optionalParams.description = item.description.trimEnd();
     }
 
     const reminder: GoogleReminder = {
@@ -588,7 +589,7 @@ function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDes
       id: item.id,
       type: "google",
       calendarId,
-      editable,
+      editable: editable && item.eventType !== "birthday",
       color: item.colorId ? colors.event[item.colorId].background : defaultColor,
       text: getReminderText(item),
       range: getRange(item.start, item.end),
