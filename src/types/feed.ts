@@ -10,7 +10,6 @@ export type Entry = {
 }
 
 export type FeedType = {
-  index?: number,
   id: string,
   title: string,
   url: string,
@@ -23,10 +22,14 @@ export type FeedType = {
   updatingTitle?: boolean
 }
 
+export type FailedFeedType = FeedType & {
+  index: number
+}
+
 export type Feeds = {
   active: FeedType[],
   inactive: FeedType[],
-  failed: FeedType[]
+  failed: FailedFeedType[]
 }
 
 export type Nav = {

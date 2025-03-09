@@ -17,13 +17,14 @@ export type Site = {
 
 type Props = {
   settings: MainPanelComponents["topSites"],
+  enableEdit: boolean,
   locale: any,
   getFaviconURL: (url: string) => string
 }
 
-export default function PersistentSites({ settings, locale, getFaviconURL }: Props) {
+export default function PersistentSites({ settings, enableEdit, locale, getFaviconURL }: Props) {
   const [sites, setSites] = useState<Site[]>(null);
-  const [siteEditEnabled, setSiteEditEnabled] = useState(false);
+  const [siteEditEnabled, setSiteEditEnabled] = useState(enableEdit);
   const [form, setForm] = useState<FormType>(null);
   const [activeDragId, setActiveDragId] = useState(null);
 
@@ -187,18 +188,18 @@ export default function PersistentSites({ settings, locale, getFaviconURL }: Pro
           </button>
         </>
       ) : (
-      <ul className="persistent-sites">
-        {sites.map(site => (
-          <li className="top-site" key={site.id}>
-            <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"} draggable="false">
-              <div className="container top-site-container top-site-thumbnail-container">
-                <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt="" draggable="false"/>
-              </div>
-              <div className="container top-site-container top-site-title">{site.title}</div>
-            </a>
-          </li>
-        ))}
-      </ul>
+        <ul className="persistent-sites">
+          {sites.map(site => (
+            <li className="top-site" key={site.id}>
+              <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"} draggable="false">
+                <div className="container top-site-container top-site-thumbnail-container">
+                  <img src={site.iconUrl} className="top-site-icon" width="24px" height="24px" loading="lazy" alt="" draggable="false"/>
+                </div>
+                <div className="container top-site-container top-site-title">{site.title}</div>
+              </a>
+            </li>
+          ))}
+        </ul>
       )}
       {form ? (
         <Suspense fallback={null}>

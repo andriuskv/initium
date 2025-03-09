@@ -307,6 +307,7 @@
 .reminder-list-item-description {
   margin-top: var(--space-xs);
   font-size: var(--text-xs);
+  white-space: pre-wrap;
 }
 
 .reminder-list-item-range {

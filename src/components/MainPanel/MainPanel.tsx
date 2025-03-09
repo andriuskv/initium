@@ -37,22 +37,23 @@ type ActiveTab = {
   expanded?: boolean,
   collapsing?: boolean,
   manuallySelected?: boolean,
+  params?: { [key: string]: any }
 }
 
-  function renderComponent(tab: Tab, activeTabId: string, component: ReactNode, showSpinner?: boolean) {
-    if (tab.disabled) {
-      return null;
-    }
-    const fallback = showSpinner ?
-      <Spinner size="24px"/> :
-      <Icon id={tab.iconId} className="main-panel-item-splash-icon animate"/>;
-
-    return (
-      <div className={`container main-panel-item${activeTabId === tab.id ? "" : " hidden"}`}>
-        {tab.renderPending ? fallback : <Suspense fallback={fallback}>{component}</Suspense>}
-      </div>
-    );
+function renderComponent(tab: Tab, activeTabId: string, component: ReactNode, showSpinner?: boolean) {
+  if (tab.disabled) {
+    return null;
   }
+  const fallback = showSpinner ?
+    <Spinner size="24px"/> :
+    <Icon id={tab.iconId} className="main-panel-item-splash-icon animate"/>;
+
+  return (
+    <div className={`container main-panel-item${activeTabId === tab.id ? "" : " hidden"}`}>
+      {tab.renderPending ? fallback : <Suspense fallback={fallback}>{component}</Suspense>}
+    </div>
+  );
+}
 
 export default function MainPanel({ settings, locale }: Props) {
   const [activeTab, setActiveTab] = useState((): ActiveTab => {
@@ -67,7 +68,7 @@ export default function MainPanel({ settings, locale }: Props) {
 
   useLayoutEffect(() => {
     function selectTopSitesTab() {
-      setActiveTab({ id: "topSites" });
+      setActiveTab({ id: "topSites", params: { enableEdit: true } });
       localStorage.setItem("mainPanelTab", "topSites");
     }
 
@@ -288,7 +289,7 @@ export default function MainPanel({ settings, locale }: Props) {
       {tabs.topSites.disabled || tabs.topSites.renderPending ? null : (
         <div className={`main-panel-item top-sites-container${activeTab.id === tabs.topSites.id ? "" : " hidden"}`}>
           <Suspense fallback={null}>
-            <TopSites settings={settings.components.topSites} locale={locale}/>
+            <TopSites settings={settings.components.topSites} locale={locale} { ...(activeTab.params ? activeTab.params : {})}/>
           </Suspense>
         </div>
       )}
