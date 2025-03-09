@@ -1,4 +1,4 @@
-import type { Entry, FeedType, Feeds, Nav } from "types/feed";
+import type { Entry, FeedType, FailedFeedType, Feeds, Nav } from "types/feed";
 import { useState, useEffect, useRef, lazy, Suspense, type MouseEvent } from "react";
 import { timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
@@ -106,14 +106,20 @@ export default function RssFeed({ locale, showIndicator }: Props) {
             const data = await feedService.fetchFeed(newFeed);
 
             if ("message" in data) {
-              failed.push(newFeed);
+              failed.push({
+                ...newFeed,
+                index: i
+              });
             }
             else {
               active.push(data);
             }
           } catch (e) {
             console.log(e);
-            failed.push(newFeed);
+            failed.push({
+              ...newFeed,
+              index: i
+            });
           }
         }
         else if (match.title !== newFeed.title) {
@@ -183,8 +189,8 @@ export default function RssFeed({ locale, showIndicator }: Props) {
 
   async function fetchInitialFeeds(feedsToLoad: FeedType[]) {
     const promises = feedsToLoad.map(feed => feedService.fetchFeed(feed));
-    const feeds = [];
-    const failedFeeds = [];
+    const feeds: FeedType[] = [];
+    const failedFeeds: FailedFeedType[] = [];
 
     try {
       const results = await Promise.allSettled(promises);
@@ -223,7 +229,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
 
   async function refetchFeeds() {
     const newActive: FeedType[] = [];
-    const newFailed: FeedType[] = [];
+    const newFailed: FailedFeedType[] = [];
     const active = [...feeds.active];
     let failed = [...feeds.failed];
 
@@ -234,7 +240,10 @@ export default function RssFeed({ locale, showIndicator }: Props) {
         newActive.push(newFeed);
       }
       else {
-        newFailed.push(feed);
+        newFailed.push({
+          ...feed,
+          index
+        });
       }
     }
 

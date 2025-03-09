@@ -1,4 +1,4 @@
-import type { Feeds, FeedType } from "types/feed";
+import type { FailedFeedType, Feeds, FeedType } from "types/feed";
 import { useState, type CSSProperties, type MouseEvent } from "react";
 import * as feedService from "services/feeds";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -43,7 +43,7 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
       }
 
       if (type === "failed") {
-        insertFailedFeed(data, feed.index);
+        insertFailedFeed(data, (feed as FailedFeedType).index);
       }
       else if (type === "inactive") {
         activateFeed(data);
