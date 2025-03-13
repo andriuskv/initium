@@ -145,6 +145,9 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         if (form.range.to) {
           form.range.to = { text: `${form.range.to.hours}:${padTime(form.range.to.minutes)}`};
         }
+        else {
+          form.range.to = { text: "" };
+        }
       }
 
       if (form.repeat) {

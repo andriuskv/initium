@@ -12,12 +12,12 @@ type GoogleEvent = {
   created: string,
   eventType: string,
   start: {
-    date: string
+    date?: string
     dateTime?: string,
     timeZone?: string,
   },
   end: {
-    date: string
+    date?: string
     dateTime?: string,
     timeZone?: string,
   },
@@ -771,8 +771,8 @@ function convertReminderToEvent(reminder: GoogleReminder) {
   const startDate = new Date(reminder.year, reminder.month, reminder.day);
   const endDate = new Date(reminder.year, reminder.month, reminder.day);
   const event: Partial<GoogleEvent> = {
-    start: { date: "" },
-    end: { date: "" },
+    start: {},
+    end: {},
     summary: reminder.text
   };
 
