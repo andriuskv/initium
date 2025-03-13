@@ -15,6 +15,7 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "resolvePackageJsonImports": true,
+    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
