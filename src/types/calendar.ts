@@ -57,6 +57,7 @@ export type Reminder = {
   color: string,
   text: string,
   description?: string
+  descriptionRaw?: string
 }
 
 export type GoogleReminder = Reminder & {

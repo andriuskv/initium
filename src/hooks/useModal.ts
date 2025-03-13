@@ -4,7 +4,7 @@ import { timeout } from "utils";
 import { getSetting } from "services/settings";
 
 export default function useModal() {
-  const [modal, setModal] = useState<{ [key: string]: any }>();
+  const [modal, setModal] = useState<{ [key: string]: any } | null>(null);
   const [hiding, setHiding] = useState(false);
   const timeoutId = useRef(0);
 

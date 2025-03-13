@@ -161,12 +161,12 @@ function getRandomValueBetweenTwoNumbers(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function replaceLink(text: string, className: string, openInNewTab: boolean) {
+function replaceLink(text: string, className: string, openInNewTab?: boolean) {
   const regex = /(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?/g;
   return text.replace(regex, href => `<a href="${href}" class="${className}"${openInNewTab ? " target=_blank" : ""}>${href}</a>`);
 }
 
-function toggleBehindElements(shouldShow, className) {
+function toggleBehindElements(shouldShow: boolean, className: string) {
   const rootElement = document.getElementById("root")!;
   const { parentElement } = document.querySelector(`.${className}`)!;
   const rootElements = rootElement.children as HTMLCollectionOf<HTMLElement>;
