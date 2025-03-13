@@ -26,7 +26,7 @@ type FormType = {
   id: string,
   creationDate: number,
   text: string,
-  description?: string
+  descriptionRaw?: string
   day: number,
   month: number,
   year: number,
@@ -301,7 +301,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     }
     const formElement = event.target as HTMLFormElement;
     const elements = formElement.elements as FormElements;
-    const description = elements.description.value.trim();
+    const descriptionRaw = elements.description.value.trim();
 
     event.preventDefault();
 
@@ -315,8 +315,8 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       day: form.day
     };
 
-    if (description) {
-      reminder.description = description;
+    if (descriptionRaw) {
+      reminder.descriptionRaw = descriptionRaw;
     }
     const formRange = { ...form.range };
 
@@ -723,7 +723,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         </div>
         <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
         <div className="textarea-container">
-          <textarea className="input textarea reminder-form-textarea" name="description" defaultValue={form.description}
+          <textarea className="input textarea reminder-form-textarea" name="description" defaultValue={form.descriptionRaw}
             placeholder="Description"></textarea>
         </div>
         <div className="reminder-form-row">

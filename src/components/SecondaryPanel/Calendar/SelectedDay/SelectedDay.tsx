@@ -38,7 +38,7 @@ export default function SelectedDay({ day, locale, removeReminder, changeReminde
               </div>
               <div>
                 <p>{reminder.text}</p>
-                {reminder.description ? <p className="reminder-list-item-description">{reminder.description}</p> : null}
+                {reminder.description ? <p className="reminder-list-item-description" dangerouslySetInnerHTML={{ __html: reminder.description }}></p> : null}
                 <div className="reminder-list-item-range">{reminder.range.text}</div>
               </div>
               {reminder.type === "google" && !reminder.editable ? null : (

@@ -1,6 +1,6 @@
 import type { DDate, CalendarType, Day, GoogleCalendar, GoogleReminder, Reminder } from "types/calendar";
 import { useState, useEffect, useRef, useMemo, Suspense, lazy, type CSSProperties, type KeyboardEvent } from "react";
-import { dispatchCustomEvent, timeout, getRandomString, getRandomHslColor, findFocusableElements, findRelativeFocusableElement } from "utils";
+import { dispatchCustomEvent, timeout, getRandomString, getRandomHslColor, findFocusableElements, findRelativeFocusableElement, replaceLink } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import * as calendarService from "services/calendar";
@@ -713,6 +713,15 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     reminder.id ??= getRandomString();
     reminder.range ??= {};
     reminder.range.text = calendarService.getReminderRangeString(reminder.range);
+
+    if (reminder.description) {
+      reminder.descriptionRaw = reminder.description;
+      delete reminder.description;
+    }
+
+    if (reminder.descriptionRaw) {
+      reminder.description = replaceLink(reminder.descriptionRaw, "reminder-list-item-description-link");
+    }
 
     if (reminder.repeat) {
       if (reminder.repeat.type === "weekday") {

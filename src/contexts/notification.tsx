@@ -27,6 +27,10 @@ function NotificationProvider({ children }: PropsWithChildren) {
   const tempNotifs = useRef<Notification[]>([]);
 
   useEffect(() => {
+    function handleNotification({ detail }: CustomEvent) {
+      showNotification(detail);
+    }
+
     clearTimeout(dismissTimeoutId.current);
 
     if (notifications.length) {
@@ -42,10 +46,6 @@ function NotificationProvider({ children }: PropsWithChildren) {
       window.removeEventListener("notification", handleNotification);
     };
   }, [notifications]);
-
-  function handleNotification({ detail }: CustomEvent) {
-    showNotification(detail);
-  }
 
   function showNotification(notification: Notification) {
     notification.id ??= getRandomString();

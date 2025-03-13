@@ -310,6 +310,14 @@
   white-space: pre-wrap;
 }
 
+.reminder-list-item-description-link {
+  color: var(--color-primary);
+
+  &:hover, &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
 .reminder-list-item-range {
   margin-top: var(--space-sm);
   font-size: var(--text-xs);

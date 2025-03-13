@@ -1,6 +1,6 @@
 import type { DDate, CalendarType, Month, Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
 import type { TimeDateSettings } from "types/settings";
-import { getRandomString } from "utils";
+import { getRandomString, replaceLink } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import { getSetting } from "services/settings";
@@ -258,6 +258,7 @@ function saveReminders(reminders: Reminder[]) {
         delete reminder.repeat.weekdays.dynamic;
       }
     }
+    delete reminder.description;
 
     return {
       creationDate: reminder.creationDate,
@@ -269,7 +270,7 @@ function saveReminders(reminders: Reminder[]) {
       notify: reminder.notify,
       color: reminder.color,
       text: reminder.text,
-      description: reminder.description
+      descriptionRaw: reminder.descriptionRaw
     };
   })}, { warnSize: true });
 }
@@ -581,7 +582,7 @@ function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDes
     }
 
     if (includeDesc && item.description) {
-      optionalParams.description = item.description.trimEnd();
+      optionalParams.descriptionRaw = item.description.trimEnd();
     }
 
     const reminder: GoogleReminder = {
@@ -780,8 +781,8 @@ function convertReminderToEvent(reminder: GoogleReminder) {
     event.colorId = reminder.colorId;
   }
 
-  if (reminder.description) {
-    event.description = reminder.description;
+  if (reminder.descriptionRaw) {
+    event.description = reminder.descriptionRaw;
   }
 
   if (!reminder.range || reminder.range.text === "All day") {
