@@ -1,4 +1,4 @@
-import type { CSSProperties, MouseEvent, PropsWithChildren, ReactNode } from "react";
+import type { CSSProperties, MouseEvent as ReactMouseEvent, PropsWithChildren, ReactNode } from "react";
 import type { AppearanceSettings } from "types/settings";
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
@@ -28,7 +28,7 @@ type Props = PropsWithChildren & {
 
 type State = {
   id: string,
-  visible?: boolean,
+  visible: boolean,
   reveal?: boolean,
   hiding?: boolean,
   onTop?: boolean,
@@ -40,7 +40,7 @@ type State = {
 }
 
 export default function Dropdown({ container, toggle = {}, body, usePortal, children }: Props) {
-  const [state, setState] = useState<State>({ id: getRandomString() });
+  const [state, setState] = useState<State>({ id: getRandomString(), visible: false });
   const memoizedWindowClickHandler = useMemo(() => handleWindowClick, [state.id]);
   const isMounted = useRef(false);
   const drop = useRef<HTMLDivElement>(null);
@@ -59,8 +59,10 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
   useEffect(() => {
     if (state.visible) {
       focusService.setInitiator(document.activeElement as HTMLElement);
-      focusService.trapFocus("dropdown", drop.current, { excludeDropdown: false });
 
+      if (drop.current) {
+        focusService.trapFocus("dropdown", drop.current, { excludeDropdown: false });
+      }
       window.addEventListener("keyup", handleKeyUp);
     }
     return () => {
@@ -91,7 +93,7 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
     }
   }, [state.reveal]);
 
-  function toggleDropdown(event: MouseEvent) {
+  function toggleDropdown(event: ReactMouseEvent) {
     if (state.visible) {
       hideDropdown();
       return;
@@ -99,7 +101,9 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
     let data: State["data"] = null;
 
     if (usePortal) {
-      toggleBtn.current.style.setProperty("anchor-name", `--anchor-${state.id}`);
+      if (toggleBtn.current) {
+        toggleBtn.current.style.setProperty("anchor-name", `--anchor-${state.id}`);
+      }
       window.addEventListener("click", memoizedWindowClickHandler);
     }
     else {
@@ -131,28 +135,29 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
   }
 
   function handleKeyUp(event: KeyboardEvent) {
-    if (event.key === "Escape" || (event.key === "Tab" && !drop.current.contains(event.target as HTMLElement))) {
+    if (event.key === "Escape" || (event.key === "Tab" && !drop.current!.contains(event.target as HTMLElement))) {
       hideDropdown();
     }
   }
 
-  function handleWindowClick({ target }) {
-    const closestContainer = target.closest(".dropdown-container");
+  function handleWindowClick({ target }: MouseEvent) {
+    const element = target as HTMLElement;
+    const closestContainer = element.closest(".dropdown-container");
     let shouldHide = true;
 
     if (closestContainer?.id === state.id) {
-      if (target.closest("[data-dropdown-keep]")) {
+      if (element.closest("[data-dropdown-keep]")) {
         shouldHide = false;
       }
       else {
-        shouldHide = target.closest("a") || target.closest(".dropdown-btn") || target.closest("[data-dropdown-close]");
+        shouldHide = !!(element.closest("a") || element.closest(".dropdown-btn") || element.closest("[data-dropdown-close]"));
       }
     }
     else if (usePortal) {
-      shouldHide = target.closest("a") || target.closest(".dropdown-btn")
-        || target.closest("[data-dropdown-close]") || target.closest(".dropdown-container");
+      shouldHide = !!(element.closest("a") || element.closest(".dropdown-btn")
+        || element.closest("[data-dropdown-close]") || element.closest(".dropdown-container"));
 
-      if (!shouldHide && !target.closest(".dropdown")) {
+      if (!shouldHide && !element.closest(".dropdown")) {
         shouldHide = true;
       }
     }
@@ -175,7 +180,7 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
     window.removeEventListener("click", memoizedWindowClickHandler);
   }
 
-  function getParentElement(element: HTMLElement) {
+  function getParentElement(element: HTMLElement | null) {
     while (element && !element.hasAttribute("data-dropdown-parent")) {
       element = element.parentElement;
     }

@@ -1,3 +1,4 @@
+import type { DragStartEvent } from "@dnd-kit/core";
 import type { Preset, Time } from "../timer.type";
 import { useState, type MouseEvent, type FormEvent, type ChangeEvent } from "react";
 import { getRandomString } from "utils";
@@ -24,7 +25,7 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     seconds: "00"
   });
   const [form, setForm] = useState<{ name: string, index?: number, updating?: boolean, error?: boolean }>({ name: "" });
-  const [activeDragId, setActiveDragId] = useState(null);
+  const [activeDragId, setActiveDragId] = useState("");
   const [localPresets, setLocalPresets] = useState<Preset[]>(presets);
 
   function updateInputs(inputs: Time) {
@@ -47,7 +48,7 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     const presetName = name.value.trim();
 
     if (form.updating) {
-      const preset = localPresets[form.index];
+      const preset = localPresets[form.index!];
 
       resetActivePreset({
         name: presetName,
@@ -128,17 +129,19 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
     setState(values);
   }
 
-  function handleDragStart(event) {
-    setActiveDragId(event.active.id);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragId(event.active.id as string);
   }
 
-  function handleSort(items: Preset[]) {
-    if (items) {
-      setLocalPresets(items);
-      updatePresets(items);
-      savePresets(items);
+  function handleSort(items: unknown[] | null) {
+    const presets = items as Preset[];
+
+    if (presets) {
+      setLocalPresets(presets);
+      updatePresets(presets);
+      savePresets(presets);
     }
-    setActiveDragId(null);
+    setActiveDragId("");
   }
 
   return (

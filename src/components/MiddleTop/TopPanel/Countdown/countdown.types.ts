@@ -1,3 +1,5 @@
+export type Units = "year" | "month" | "day" | "hour" | "minute" | "second";
+
 export type Countdown = {
   id: string,
   title: string,
@@ -6,7 +8,7 @@ export type Countdown = {
   date?: string,
   dateString: string,
   diff: number,
-  view: "year" | "month" | "day" | "hour" | "minute" | "second",
+  view: Units,
   year?: {
     value: number,
     unit: string,

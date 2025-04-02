@@ -57,7 +57,7 @@ export default function TabsContainer({ className, children, current, offset = 0
     prev.current = prev.current > tabElements.length - 1 ? current : prev.current;
     const prevActiveItemRect = tabElements[prev.current].getBoundingClientRect();
     const activeItemRect = tabElements[current].getBoundingClientRect();
-    let props = {
+    let props: { start: "left" | "top", end: "right" | "bottom", dimension: "width" | "height" } = {
       start: "left",
       end: "right",
       dimension: "width"

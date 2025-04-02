@@ -1,7 +1,17 @@
 import Icon from "components/Icon";
 import "./splits.css";
 
-export default function Splits({ splits, locale, hide }) {
+type Props = {
+  splits: {
+    elapsed: number,
+    elapsedString: string,
+    diffString: string
+  }[],
+  locale: any,
+  hide: () => void
+}
+
+export default function Splits({ splits, locale, hide } : Props) {
   return (
     <div className="stopwatch-splits-modal">
       <div className="container-header">

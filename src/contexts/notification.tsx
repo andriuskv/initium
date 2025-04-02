@@ -27,7 +27,7 @@ function NotificationProvider({ children }: PropsWithChildren) {
   const tempNotifs = useRef<Notification[]>([]);
 
   useEffect(() => {
-    function handleNotification({ detail }: CustomEvent) {
+    function handleNotification({ detail }: CustomEventInit) {
       showNotification(detail);
     }
 

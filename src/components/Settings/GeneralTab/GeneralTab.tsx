@@ -9,7 +9,7 @@ import MiddleTop from "./MiddleTop";
 import type { ChangeEvent } from "react";
 import Placement from "./Placement";
 
-export default function GeneralTab({ locale }) {
+export default function GeneralTab({ locale }: { locale: any }) {
   const { settings, toggleSetting, updateContextSetting, resetSettings } = useSettings();
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
 

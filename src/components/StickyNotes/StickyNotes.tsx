@@ -10,8 +10,8 @@ const Form = lazy(() => import("./Form"));
 
 export default function StickyNotes({ locale }: { locale: any }) {
   const { notes } = useNotes();
-  const [form, setForm] = useState<FormType>(null);
-  let notesToRender: Note[] = null;
+  const [form, setForm] = useState<FormType | null>(null);
+  let notesToRender: Note[] | null = null;
 
   if (notes.length) {
     notesToRender = notes.filter(note => !note.hidden);
@@ -22,6 +22,21 @@ export default function StickyNotes({ locale }: { locale: any }) {
   }
 
   useEffect(() => {
+    function handleStickyNoteChange({ detail }: CustomEventInit) {
+      if (form) {
+        resetTextSelection();
+      }
+
+      if (detail.action === "create") {
+        setForm(detail);
+      }
+      else if (detail.action === "edit") {
+        const index = notes.findIndex(note => note.id === detail.id);
+
+        setForm({ ...notes[index], index, action: detail.action });
+      }
+    }
+
     if (form && !notes.some(note => note.togglingHide)) {
       discardWithAnimation();
     }
@@ -32,24 +47,11 @@ export default function StickyNotes({ locale }: { locale: any }) {
     };
   }, [notes]);
 
-  function handleStickyNoteChange({ detail }: CustomEvent) {
-    if (form) {
-      resetTextSelection();
-    }
-
-    if (detail.action === "create") {
-      setForm(detail);
-    }
-    else if (detail.action === "edit") {
-      const index = notes.findIndex(note => note.id === detail.id);
-
-      setForm({ ...notes[index], index, action: detail.action });
-    }
-  }
-
   function handleNoteClick(note: Note, event: MouseEvent) {
     if (event.detail === 2) {
       const index = notes.findIndex(({ id }) => note.id === id);
+
+
       setForm({ ...note, index, action: "edit" });
     }
   }
@@ -64,7 +66,7 @@ export default function StickyNotes({ locale }: { locale: any }) {
   function discardNote(shouldAnimate = true) {
     resetTextSelection();
 
-    if (form.action === "edit" || !shouldAnimate) {
+    if (form?.action === "edit" || !shouldAnimate) {
       focusService.focusSelector("[data-focus-id=stickyNotes]");
       setForm(null);
     }
@@ -76,8 +78,9 @@ export default function StickyNotes({ locale }: { locale: any }) {
   function discardWithAnimation() {
     const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
 
-    setForm({ ...form, discarding: true });
-
+    if (form) {
+      setForm({ ...form, discarding: true });
+    }
     setTimeout(() => {
       setForm(null);
     }, 200 * animationSpeed);
@@ -89,7 +92,9 @@ export default function StickyNotes({ locale }: { locale: any }) {
   }
 
   function showForm() {
-    setForm({ ...form, readyToShow: true });
+    if (form) {
+      setForm({ ...form, readyToShow: true });
+    }
   }
 
   return (
@@ -99,7 +104,7 @@ export default function StickyNotes({ locale }: { locale: any }) {
           {notesToRender.map(note => (
             <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string } as CSSProperties} onClick={event => handleNoteClick(note, event)}
               onMouseDown={handleNoteMouseDown} key={note.id}>
-              <p className="sticky-note-content" dangerouslySetInnerHTML={{ __html: note.contentDisplayString }}></p>
+              <p className="sticky-note-content" dangerouslySetInnerHTML={{ __html: note.contentDisplayString! }}></p>
             </li>
           ))}
         </ul>

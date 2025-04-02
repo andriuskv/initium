@@ -1,5 +1,6 @@
 import type { TimeDateSettings } from "types/settings";
-import type { Countdown } from "./countdown.types";
+import type { TabName } from "../top-panel-types";
+import type { Units, Countdown } from "./countdown.types";
 import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent, getRandomString } from "utils";
 import { getSetting } from "services/settings";
@@ -13,7 +14,14 @@ import useWorker from "../../useWorker";
 
 const Form = lazy(() => import("./Form"));
 
-export default function Countdown({ visible, locale, animDirection, toggleIndicator }) {
+type Props = {
+  locale: any;
+  visible: boolean;
+  animDirection?: "anim-right" | "anim-left";
+  toggleIndicator: (name: TabName, value: boolean) => void;
+}
+
+export default function Countdown({ visible, locale, animDirection, toggleIndicator }: Props) {
   const [countdowns, setCountdowns] = useState<Countdown[]>([]);
   const { initWorker, destroyWorkers, updateWorkerCallback } = useWorker(updateCountdowns);
   const running = useRef(false);
@@ -167,11 +175,20 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
       seconds
     };
 
+    type Part = {
+      unit: string;
+      value: number;
+    }
+
     // @ts-ignore
-    if (!Intl.DurationFormat) {
+    if (Intl.DurationFormat) {
       // @ts-ignore
-      const durationItems = new Intl.DurationFormat("en-US", { style: "long" }).formatToParts(parts);
-      const durationParts = {
+      const durationItems = new Intl.DurationFormat("en-US", { style: "long" }).formatToParts(parts) as {
+        unit: Units;
+        type: "integer" | "unit";
+        value: string;
+      }[];
+      const durationParts: Partial<Record<Units, Part>> = {
         second: {
           value: 0,
           unit: "seconds"
@@ -180,37 +197,44 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
 
       for (const item of durationItems) {
         if (item.unit) {
-          durationParts[item.unit] ??= {};
+          durationParts[item.unit] ??= {
+            value: 0,
+            unit: item.unit
+          };
 
           if (item.type === "integer") {
-            durationParts[item.unit].value = parts[`${item.unit}s`];
+            durationParts[item.unit]!.value = parts[`${item.unit}s`];
           }
           else if (item.type === "unit") {
-            durationParts[item.unit].unit = item.value;
+            durationParts[item.unit]!.unit = item.value;
           }
         }
       }
 
       // Fill missing parts with 0 to overwrite old values
       for (const key in parts) {
-        durationParts[key.slice(0, -1)] ??= {
+        const unit = key.slice(0, -1) as Units;
+        durationParts[unit] ??= {
           value: 0,
           unit: key
         };
       }
 
-      return durationParts;
+      return durationParts as Record<Units, Part>;
     }
     else {
-      const durationParts = {};
+      const durationParts: Partial<Record<Units, Part>> = {};
 
       for (const key in parts) {
-        durationParts[key.slice(0, -1)] = {
-          value: parts[key],
-          unit: parts[key] === 0 || parts[key] > 1 ? key : key.slice(0, -1)
+        const unit = key.slice(0, -1) as Units;
+        const part = parts[key as keyof typeof parts];
+
+        durationParts[unit] = {
+          value: part,
+          unit: part === 0 || part > 1 ? key : key.slice(0, -1)
         };
       }
-      return durationParts;
+      return durationParts as Record<Units, Part>;
     }
   }
 
@@ -297,40 +321,42 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
                       <span className="countdown-item-timer-digit">-</span>
                     </div>
                   )}
-                  {countdown.year?.value > 0 && (
+                  {countdown.year && countdown.year.value > 0 && (
                     <div className="countdown-item-timer-part">
                       <span className="countdown-item-timer-digit">{countdown.year.value}</span>
                       <span>{countdown.year.unit}</span>
                     </div>
                   )}
-                  {countdown.month?.value > 0 && (
+                  {countdown.month && countdown.month.value > 0 && (
                     <div className="countdown-item-timer-part">
                       <span className="countdown-item-timer-digit">{countdown.month.value}</span>
                       <span>{countdown.month.unit}</span>
                     </div>
                   )}
-                  {countdown.day?.value > 0 && (
+                  {countdown.day && countdown.day.value > 0 && (
                     <div className="countdown-item-timer-part">
                       <span className="countdown-item-timer-digit">{countdown.day.value}</span>
                       <span>{countdown.day.unit}</span>
                     </div>
                   )}
-                  {countdown.hour?.value > 0 && (
+                  {countdown.hour && countdown.hour.value > 0 && (
                     <div className="countdown-item-timer-part">
                       <span className="countdown-item-timer-digit">{countdown.hour.value}</span>
                       <span>{countdown.hour.unit}</span>
                     </div>
                   )}
-                  {countdown.minute?.value > 0 && (
+                  {countdown.minute && countdown.minute.value > 0 && (
                     <div className="countdown-item-timer-part">
                       <span className="countdown-item-timer-digit">{countdown.minute.value}</span>
                       <span>{countdown.minute.unit}</span>
                     </div>
                   )}
-                  <div className="countdown-item-timer-part seconds">
-                    <span className="countdown-item-timer-digit">{countdown.second.value}</span>
-                    <span>{countdown.second.unit}</span>
-                  </div>
+                  {countdown.second && (
+                    <div className="countdown-item-timer-part seconds">
+                      <span className="countdown-item-timer-digit">{countdown.second.value}</span>
+                      <span>{countdown.second.unit}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="countdown-item-date">{countdown.date}</div>
                 <Dropdown container={{ className: "countdown-item-dropdown" }} usePortal>

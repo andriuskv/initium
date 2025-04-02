@@ -5,7 +5,7 @@ import Icon from "components/Icon";
 import "./header-dropdown.css";
 
 type Props = {
-  user: GoogleUser,
+  user: GoogleUser | null,
   calendars: GoogleCalendar[],
   toggleCalendarReminders: (calendarId: string, selected: boolean) => void,
   showReminderList: () => void,

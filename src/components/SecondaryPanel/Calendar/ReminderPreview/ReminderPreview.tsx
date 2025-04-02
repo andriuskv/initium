@@ -9,7 +9,7 @@ type Props = {
   currentDay: Day,
   tomorrowDay: Day,
   settings: TimeDateSettings,
-  ref: RefObject<HTMLDivElement>
+  ref: RefObject<HTMLDivElement | null>
 }
 
 export default function ReminderPreview({ currentView, currentDay, tomorrowDay, settings, ref }: Props) {

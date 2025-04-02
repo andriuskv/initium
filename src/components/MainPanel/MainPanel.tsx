@@ -63,7 +63,7 @@ export default function MainPanel({ settings, locale }: Props) {
   const [resizerEnabled, setResizerEnabled] = useState(false);
   const [feedReady, setFeedReady] = useState(false);
   const tabTimeouts = useRef<({ [key: string]: number })>({});
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const tabExpandable = tabs[activeTab.id]?.expandable;
 
   useLayoutEffect(() => {
@@ -72,7 +72,7 @@ export default function MainPanel({ settings, locale }: Props) {
       localStorage.setItem("mainPanelTab", "topSites");
     }
 
-    if (settings.height) {
+    if (containerRef.current && settings.height) {
       containerRef.current.style.setProperty("--height", `${settings.height}px`);
     }
 
@@ -158,7 +158,7 @@ export default function MainPanel({ settings, locale }: Props) {
     if (activeTab.id === id) {
       delay = activeTab.manuallySelected ? 1 : 2000;
     }
-    else if (tab.firstRender && await callback()) {
+    else if (tab.firstRender && tab.delay && await callback()) {
       delay = tab.delay;
     }
 
@@ -196,7 +196,7 @@ export default function MainPanel({ settings, locale }: Props) {
     };
 
     for (const tab of Object.values(tabs)) {
-      tab.disabled = settings.components[tab.id].disabled;
+      tab.disabled = settings.components[tab.id as keyof MainPanelSettings["components"]].disabled;
     }
     return tabs;
   }

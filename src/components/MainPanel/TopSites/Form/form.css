@@ -11,3 +11,10 @@
 .top-sites-form-input {
   width: 100%;
 }
+
+.top-sites-form-message {
+  padding-left: var(--space-sm);
+  color: var(--color-negative);
+  font-weight: bold;
+  font-size: var(--text-sm);
+}

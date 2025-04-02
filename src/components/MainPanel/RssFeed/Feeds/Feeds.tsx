@@ -1,3 +1,4 @@
+import type { DragStartEvent } from "@dnd-kit/core";
 import type { FailedFeedType, Feeds, FeedType } from "types/feed";
 import { useState, type CSSProperties, type MouseEvent } from "react";
 import * as feedService from "services/feeds";
@@ -23,7 +24,7 @@ type Props = {
 }
 
 export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, deactivateFeed, updateFeeds, updateFeed, showForm, hide }: Props) {
-  const [activeDragId, setActiveDragId] = useState(null);
+  const [activeDragId, setActiveDragId] = useState("");
 
   async function refetchFeed(feed: FeedType, type: "active" | "inactive" | "failed") {
     updateFeed({
@@ -74,18 +75,18 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
     });
   }
 
-  function handleSort(items: Feeds["active"]) {
+  function handleSort(items: unknown[] | null) {
     if (items) {
       updateFeeds({
         ...feeds,
-        active: items
+        active: items as Feeds["active"]
       });
     }
-    setActiveDragId(null);
+    setActiveDragId("");
   }
 
-  function handleDragStart(event) {
-    setActiveDragId(event.active.id);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragId(event.active.id as string);
   }
 
   function renderFeed(feed: FeedType, index: number) {

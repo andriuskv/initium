@@ -1,7 +1,8 @@
-import type { Reminder, Day } from "types/calendar";
+import type { Reminder, Day, GoogleReminder } from "types/calendar";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
+import Meet from "./Meet";
 
 type Props = {
   day: Day,
@@ -34,10 +35,11 @@ export default function SelectedDay({ day, locale, removeReminder, changeReminde
               )}
               <div>
                 {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
-                {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google calendar event"/> : ""}
+                {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
               </div>
               <div>
                 <p>{reminder.text}</p>
+                {(reminder as GoogleReminder).meet ? <Meet meet={(reminder as GoogleReminder).meet}/> : null}
                 {reminder.description ? <p className="reminder-list-item-description" dangerouslySetInnerHTML={{ __html: reminder.description }}></p> : null}
                 <div className="reminder-list-item-range">{reminder.range.text}</div>
               </div>

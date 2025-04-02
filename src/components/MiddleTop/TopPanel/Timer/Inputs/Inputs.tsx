@@ -1,57 +1,62 @@
 import type { Time } from "../timer.type";
-import { useRef, type MouseEvent, type KeyboardEvent } from "react";
+import { useRef, type MouseEvent, type KeyboardEvent, type ChangeEvent } from "react";
 import { padTime } from "services/timeDate";
 import Icon from "components/Icon";
 
 type Props = {
   state: Time,
-  addTime: (to: string, event: MouseEvent) => void,
-  removeTime: (to: string, event: MouseEvent) => void,
+  addTime: (to: "hours" | "minutes" | "seconds", event: MouseEvent) => void,
+  removeTime: (to: "hours" | "minutes" | "seconds", event: MouseEvent) => void,
   updateInputs: (newState: Time) => void,
   handleKeyDown?: (event: KeyboardEvent) => void,
 };
 
 export default function Inputs({ state, addTime, removeTime, updateInputs, handleKeyDown: handleContainerKeyDown = () => {} }: Props) {
-  const hoursInputRef = useRef(null);
-  const minutesInputRef = useRef(null);
-  const secondsInputRef = useRef(null);
-  const selection = useRef(null);
+  const hoursInputRef = useRef<HTMLInputElement>(null);
+  const minutesInputRef = useRef<HTMLInputElement>(null);
+  const secondsInputRef = useRef<HTMLInputElement>(null);
+  const selection = useRef<{ start: number, end: number }>(null);
 
-  function handleChange({ target }) {
-    if (!target.value) {
+  function handleChange({ target }: ChangeEvent) {
+    const element = target as HTMLInputElement;
+
+    if (!element.value) {
       return;
     }
-    const name = target.getAttribute("data-name");
+    const name = element.getAttribute("data-name") as "hours" | "minutes" | "seconds";
     const inputs: Time = {
       hours: state.hours,
       minutes: state.minutes,
       seconds: state.seconds
     };
 
-    if (target.value.length > 2) {
+    if (element.value.length > 2) {
       if (name === "seconds") {
         inputs.hours = state.hours[1] + state.minutes[0];
-        inputs.minutes = state.minutes[1] + target.value[0];
+        inputs.minutes = state.minutes[1] + element.value[0];
       }
       else if (name === "minutes") {
-        inputs.hours = state.hours[1] + target.value[0];
+        inputs.hours = state.hours[1] + element.value[0];
       }
-      inputs[name] = padTime(target.value.slice(1));
+      inputs[name] = padTime(element.value.slice(1));
     }
     else {
-      inputs[name] = padTime(target.value);
+      inputs[name] = padTime(element.value);
     }
     updateInputs(inputs);
     requestAnimationFrame(() => {
-      target.setSelectionRange(selection.current.end, selection.current.end);
+      if (selection.current) {
+        element.setSelectionRange(selection.current.end, selection.current.end);
+      }
     });
   }
 
   function handleKeyDown(event: KeyboardEvent) {
     const target = event.target as HTMLInputElement;
+    const { selectionStart, selectionEnd } = target as (HTMLInputElement & { selectionStart: number, selectionEnd: number });
 
     if (event.key.length === 1) {
-      selection.current = { start: target.selectionStart, end: target.selectionEnd };
+      selection.current = { start: selectionStart, end: selectionEnd };
 
       if (event.ctrlKey || event.shiftKey) {
         return;
@@ -63,7 +68,6 @@ export default function Inputs({ state, addTime, removeTime, updateInputs, handl
     else if (event.key === "Backspace" || event.key === "Delete") {
       event.preventDefault();
 
-      const { selectionStart, selectionEnd } = target;
       const name = target.getAttribute("data-name");
       const inputs: Time = {
         hours: state.hours,
@@ -149,8 +153,6 @@ export default function Inputs({ state, addTime, removeTime, updateInputs, handl
       });
     }
     else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-      const { selectionStart, selectionEnd } = target;
-
       if (selectionStart !== selectionEnd) {
         return;
       }

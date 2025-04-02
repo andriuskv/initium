@@ -14,17 +14,20 @@ type Props = {
   editTask: (groupIndex: number, taskIndex: number) => void,
 }
 
-const taskStatusMap = {
+const taskStatusMap: { [key: string]: string } = {
   "1": "failed",
   "2": "partial",
   "3": "completed"
 };
 
-export default function Task({ locale, task, groupIndex, taskIndex, settings, removeTask, removeSubtask, editTask }: Props) {
-  const full = task.expirationDate - task.creationDate;
-  const partial = task.expirationDate - Date.now();
+function getOffset(expirationDate: number, creationDate: number) {
+  const full = expirationDate - creationDate;
+  const partial = expirationDate - Date.now();
   const dashoffset = 200 - 25 * (1 - partial / full);
+  return dashoffset;
+}
 
+export default function Task({ locale, task, groupIndex, taskIndex, settings, removeTask, removeSubtask, editTask }: Props) {
   return (
     <li className={`task${task.removed ? " removed" : ""}`}>
       <div className="task-body">
@@ -47,7 +50,7 @@ export default function Task({ locale, task, groupIndex, taskIndex, settings, re
               <div className="checkbox-tick"></div>
             </button>
           )}
-          <div className="task-text" dangerouslySetInnerHTML={{ __html: task.text }}></div>
+          <div className="task-text" dangerouslySetInnerHTML={{ __html: task.text || "" }}></div>
         </div>
         {task.subtasks.length > 0 && (
           <ul className="subtasks">
@@ -63,7 +66,7 @@ export default function Task({ locale, task, groupIndex, taskIndex, settings, re
                         <div className="checkbox-tick"></div>
                       </button>
                     )}
-                    <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text }}></span>
+                    <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text || "" }}></span>
                     {task.completeWithSubtasks && subtask.optional ? <span className="task-text">*</span> : null}
                   </div>
                 </li>
@@ -80,15 +83,15 @@ export default function Task({ locale, task, groupIndex, taskIndex, settings, re
             <title>Expires on {task.expirationDateString}</title>
             <circle cx="8" cy="8" r="4" strokeDasharray="100"
               className="task-expiration-indicator-visual"
-              style={{ "--dashoffset": dashoffset } as CSSProperties}/>
+              style={{ "--dashoffset": getOffset(task.expirationDate, task.creationDate) } as CSSProperties}/>
           </svg>
         ) : null}
-        {!settings.repeatHistoryHidden && task.repeat?.history.length ? (
+        {!settings.repeatHistoryHidden && task.repeat?.history?.length ? (
           <div className="task-repeat-history">
             {task.repeat.history.map(item => (
               <div className={`task-repeat-history-item${item.status > 0 ? ` ${taskStatusMap[item.status]}` : ""}`}
                 title={item.dateString} key={item.id}>
-                {item.elapsed > 0 ? (
+                {typeof item.elapsed === "number" && item.elapsed > 0 ? (
                   <div className="task-repeat-history-item-inner"
                     style={{ "--elapsed" : item.elapsed } as CSSProperties}></div>
                 ) : null}

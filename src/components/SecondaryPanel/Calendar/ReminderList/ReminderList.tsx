@@ -9,13 +9,14 @@ import "./reminder-list.css";
 type Props = {
   reminders: (Reminder | GoogleReminder)[],
   locale: any,
+  showReminderDay: (reminder: Reminder | GoogleReminder) => void,
   editReminder: (reminderId: string, type: string, day?: Day) => void,
   removeReminder: (reminder: Reminder) => void,
   changeReminderColor: (reminderId: string) => void,
   hide: () => void
 }
 
-export default function ReminderList({ reminders, locale, editReminder, removeReminder, changeReminderColor, hide }: Props) {
+export default function ReminderList({ reminders, locale, showReminderDay, editReminder, removeReminder, changeReminderColor, hide }: Props) {
   const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
   const sortedReminders = reminders.filter(reminder => reminder.type === "google" ? reminder.editable : true).toSorted((a, b) => {
     const dateA = new Date(a.year, a.month, a.day).getTime();
@@ -41,7 +42,7 @@ export default function ReminderList({ reminders, locale, editReminder, removeRe
         <ul className="reminder-list-items" data-dropdown-parent>
           {sortedReminders.map(reminder => (
             <li className={`reminder-list-item reminder-list-item-col${reminder.removing ? " removing" : ""}`} key={reminder.id}>
-              <div className="reminder-list-item-date">{reminder.dateString}</div>
+              <button className="btn text-btn reminder-list-item-date" onClick={() => showReminderDay(reminder)}>{reminder.dateString}</button>
               <div className="reminder-list-item-content">
                 {reminder.type === "google" ? (
                   <div className="reminder-list-item-color inert" style={{ "backgroundColor": reminder.color }}></div>

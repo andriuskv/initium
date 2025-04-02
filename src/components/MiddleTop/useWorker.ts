@@ -3,7 +3,7 @@ import { useRef, useEffect } from "react";
 type HandleMessage = (event: MessageEvent) => void;
 
 export default function useWorker(handleMessage: HandleMessage, deps: unknown[] = []) {
-  const worker = useRef({});
+  const worker = useRef<{ [key: string]: { ref: Worker, abortController: AbortController } }>({});
 
   useEffect(() => {
     for (const id of Object.keys(worker.current)) {

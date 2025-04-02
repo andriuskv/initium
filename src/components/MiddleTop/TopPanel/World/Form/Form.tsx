@@ -16,9 +16,9 @@ type Props = {
 export default function Form({ locale, addClock, hide }: Props) {
   const [currentClocks, setCurrentClocks] = useState<Partial<Clock>[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [searchResults, setSearchResults] = useState<Clock[]>(null);
+  const [searchResults, setSearchResults] = useState<Clock[] | null>(null);
   const timeoutId = useRef(0);
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     init();
@@ -55,9 +55,7 @@ export default function Form({ locale, addClock, hide }: Props) {
       }
 
       try {
-        const tz = Temporal.TimeZone.from(city.timezone);
-        const timeZoneDate = tz.getPlainDateTimeFor(Temporal.Now.instant());
-        const diff = new Date(timeZoneDate.toString()).getTime() - Date.now();
+        const diff = new Date(Temporal.Now.zonedDateTimeISO(city.timezone).toPlainDateTime().toString()).getTime() - Date.now();
 
         results.push({
           alreadyAdded,
@@ -67,7 +65,6 @@ export default function Form({ locale, addClock, hide }: Props) {
           country: city.country,
           diff,
           diffString: getHoursOffset(diff)
-
         });
       } catch (e) {
         console.log(e);

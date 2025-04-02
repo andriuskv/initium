@@ -37,7 +37,7 @@ export default function Form({ feeds, locale, addFeed, hide }: Props) {
       setForm({ ...form, message: "Feed already exists." });
       return;
     }
-    setForm({ ...form, message: undefined, fetching: true });
+    setForm({ ...form, message: "", fetching: true });
 
     try {
       const data = await feedService.fetchFeed({ url, title });
@@ -51,7 +51,7 @@ export default function Form({ feeds, locale, addFeed, hide }: Props) {
     }
     catch (e) {
       console.log(e);
-      setForm({ ...form, message: e.message });
+      setForm({ ...form, message: (e as Error).message });
     }
   }
 

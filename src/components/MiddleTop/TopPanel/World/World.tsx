@@ -12,7 +12,7 @@ const Form = lazy(() => import("./Form"));
 type Props = {
   visible: boolean,
   locale: any,
-  animDirection: "anim-left" | "anim-right",
+  animDirection?: "anim-left" | "anim-right",
   parentVisible: boolean
 }
 
@@ -44,10 +44,7 @@ export default function World({ visible, locale, animDirection, parentVisible }:
       const { Temporal } = await import("@js-temporal/polyfill");
 
       for (const clock of clocks) {
-        const tz = Temporal.TimeZone.from(clock.timeZone);
-        const timeZoneDate = tz.getPlainDateTimeFor(Temporal.Now.instant());
-
-        clock.diff = new Date(timeZoneDate.toString()).getTime() - Date.now();
+        clock.diff = new Date(Temporal.Now.zonedDateTimeISO(clock.timeZone).toPlainDateTime().toString()).getTime() - Date.now();
       }
       initClocks(clocks);
     }

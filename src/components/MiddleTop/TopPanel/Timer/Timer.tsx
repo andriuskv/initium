@@ -1,6 +1,7 @@
+import type { TabName } from "../top-panel-types";
 import type { Preset, Time } from "./timer.type";
 import { useState, useEffect, useRef, lazy, type ChangeEvent, type MouseEvent } from "react";
-import { timeout, getRandomString, dispatchCustomEvent } from "utils";
+import { timeout, getRandomString, dispatchCustomEvent, getLocalStorageItem } from "utils";
 import { padTime } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
@@ -18,13 +19,13 @@ const Presets = lazy(() => import("./Presets"));
 type Props = {
   visible: boolean,
   locale: any,
-  animDirection: "anim-left" | "anim-right",
-  toggleIndicator: (name: string, value: boolean) => void,
+  animDirection?: "anim-left" | "anim-right",
+  toggleIndicator: (name: TabName, value: boolean) => void,
   updateTitle: (name: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
-  ignoreMiniTimerPref: (name: string, value: boolean) => void,
+  ignoreMiniTimerPref: (name: TabName, value: boolean) => void,
   expand: () => void,
   exitFullscreen: () => void,
-  handleReset: (name: string) => Promise<void>
+  handleReset: (name: string) => Promise<unknown> | undefined
 }
 
 type TimerType = Time & {
@@ -60,9 +61,9 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
   });
   const [presets, setPresets] = useState<Preset[]>([]);
   const [pipId, setPipId] = useState("");
-  const [audioEnded, setAudioEnded] = useState([]);
-  const audio = useRef({});
-  const runningOrder = useRef([]);
+  const [audioEnded, setAudioEnded] = useState<string[]>([]);
+  const audio = useRef<{ [key: string]: { element: HTMLAudioElement, timeoutId?: number } }>({});
+  const runningOrder = useRef<string[]>([]);
   const saveTimeoutId = useRef(0);
   const { initWorker, destroyWorker, destroyWorkers, updateWorkerCallback, updateDuration } = useWorker(handleMessage);
   const timersArr = Object.values(timers);
@@ -88,7 +89,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
   }, [timersArr, pipId]);
 
   useEffect(() => {
-    function handlePipClose({ detail }: CustomEvent) {
+    function handlePipClose({ detail }: CustomEventInit) {
       if (detail.startsWith("timer")) {
         setPipId("");
       }
@@ -131,7 +132,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     ignoreMiniTimerPref("timer", timers[id].active);
   }
 
-  function handleMessage({ data }) {
+  function handleMessage({ data }: { data: { id: string; duration: number } }) {
     const timer = timers[data.id];
 
     if (data.duration >= 0) {
@@ -148,7 +149,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
 
   async function init() {
     const presets = await chromeStorage.get("timer") || [];
-    const timers = JSON.parse(localStorage.getItem("timers")) || {};
+    const timers = getLocalStorageItem<TimerObj>("timers") || {};
 
     if (Object.keys(timers).length) {
       setTimers(timers);
@@ -186,7 +187,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
 
     audio.current[id].element.volume = volume;
     audio.current[id].element.play();
-    audio.current[id].timeoutId = setTimeout(() => {
+    audio.current[id].timeoutId = window.setTimeout(() => {
       setAudioEnded([...audioEnded, id]);
     }, 3000);
   }
@@ -222,7 +223,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
       let label = timer.label;
 
       if (usePresetNameAsLabel && timer.presetId) {
-        label = presets.find(preset => preset.id === timer.presetId).name;
+        label = presets.find(preset => preset.id === timer.presetId)!.name;
       }
       initTimer({ id, duration });
       setTimers({
@@ -296,7 +297,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     return { hours, minutes, seconds };
   }
 
-  function calculateDuration({ hours, minutes, seconds }) {
+  function calculateDuration({ hours, minutes, seconds }: { hours: number, minutes: number, seconds: number }) {
     return seconds + (minutes * 60) + (hours * 3600);
   }
 
@@ -350,7 +351,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     };
 
     if (timer.presetId) {
-      const preset = findPreset(timer.presetId);
+      const preset = findPreset(timer.presetId)!;
       inputs = {
         hours: preset.hours,
         minutes: preset.minutes,
@@ -379,7 +380,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
   }
 
   function saveTimers(timers: TimerObj) {
-    const obj = {};
+    const obj: Partial<TimerObj> = {};
 
     for (const timer of Object.values(timers)) {
       obj[timer.id] = {
@@ -579,7 +580,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     saveTimers(newTimers);
   }
 
-  function updateTime(to: string, sign: number, event: MouseEvent) {
+  function updateTime(to: "hours" | "minutes" | "seconds", sign: 1 | -1, event: MouseEvent) {
     const values = getUpdatedTime(activeTimer, { to, sign, shouldPad: !activeTimer.running }, event);
 
     setTimers({ ...timers, [activeTimer.id]: { ...activeTimer, ...values }});
@@ -589,11 +590,11 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     }
   }
 
-  function addTime(to: string, event: MouseEvent) {
+  function addTime(to: "hours" | "minutes" | "seconds", event: MouseEvent) {
     updateTime(to, 1, event);
   }
 
-  async function removeTime(to: string, event: MouseEvent) {
+  async function removeTime(to: "hours" | "minutes" | "seconds", event: MouseEvent) {
     updateTime(to, -1, event);
   }
 
@@ -605,7 +606,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     };
   }
 
-  function getUpdatedTime(initialValues: Time, { to, sign, shouldPad = true }, event: MouseEvent) {
+  function getUpdatedTime(initialValues: Time, { to, sign, shouldPad = true } : { to: "hours" | "minutes" | "seconds", sign: 1 | -1, shouldPad?: boolean }, event: MouseEvent) {
     let amount = 1;
 
     if (event.ctrlKey) {

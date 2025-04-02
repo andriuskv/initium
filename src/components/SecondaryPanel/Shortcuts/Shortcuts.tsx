@@ -1,5 +1,6 @@
 /* global chrome */
 
+import type { DragStartEvent } from "@dnd-kit/core";
 import { useState, useEffect } from "react";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -13,25 +14,25 @@ import "./shortcuts.css";
 type Item = {
   id: string;
   title: string,
-  iconPath: string,
+  iconPath?: string,
   url: string,
   hidden?: boolean,
 }
 
-export default function Shortcuts({ locale }) {
-  const [items, setItems] = useState<Item[]>(null);
+export default function Shortcuts({ locale } : { locale: any }) {
+  const [items, setItems] = useState<Item[] | null>(null);
   const [editEnabled, setEditEnabled] = useState(false);
-  const [activeDragId, setActiveDragId] = useState(null);
+  const [activeDragId, setActiveDragId] = useState("");
 
   useEffect(() => {
     init();
   }, []);
 
   async function init() {
-    let shortcuts = await chromeStorage.get("shortcuts");
+    let shortcuts = await chromeStorage.get("shortcuts") as Item[] | null;
 
     if (!shortcuts?.length) {
-      shortcuts = json.shortcuts;
+      shortcuts = json.shortcuts as Item[];
     }
     setItems(shortcuts.map(item => {
       item.id = crypto.randomUUID();
@@ -49,19 +50,22 @@ export default function Shortcuts({ locale }) {
     setEditEnabled(!editEnabled);
   }
 
-  function handleSort(items: Item[]) {
+  function handleSort(items: unknown[] | null) {
     if (items) {
-      setItems(items);
-      saveItems(items);
+      setItems(items as Item[]);
+      saveItems(items as Item[]);
     }
-    setActiveDragId(null);
+    setActiveDragId("");
   }
 
-  function handleDragStart(event) {
-    setActiveDragId(event.active.id);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragId(event.active.id as string);
   }
 
   function toggleItemVisibility(id: string) {
+    if (!items) {
+      return;
+    }
     setItems(items.map(item => {
       if (item.id === id) {
         item.hidden = !item.hidden;
@@ -71,11 +75,11 @@ export default function Shortcuts({ locale }) {
     saveItems(items);
   }
 
-  function saveItems(items: Item[]) {
+  function saveItems(items: Partial<Item>[]) {
     chromeStorage.set({ shortcuts: structuredClone(items).map(item => {
       delete item.id;
 
-      if (item.iconPath.startsWith("chrome")) {
+      if (item.iconPath?.startsWith("chrome")) {
         delete item.iconPath;
       }
       return item;

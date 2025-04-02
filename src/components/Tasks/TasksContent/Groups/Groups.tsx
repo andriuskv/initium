@@ -1,4 +1,5 @@
 import type { FocusEvent } from "react";
+import type { DragStartEvent } from "@dnd-kit/core";
 import type { Group } from "../../tasks.type";
 import { useState } from "react";
 import { useModal } from "hooks";
@@ -18,7 +19,7 @@ type Props = {
 
 export default function Groups({ groups, locale, updateGroups, createGroup, hide }: Props) {
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
-  const [activeDragId, setActiveDragId] = useState(null);
+  const [activeDragId, setActiveDragId] = useState("");
 
   function showRemoveModal(index: number) {
     // + 1 to skip default group
@@ -33,7 +34,9 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
   }
 
   function confirmGroupRemoval() {
-    removeGroup(modal.groupIndex);
+    if (modal) {
+      removeGroup(modal.groupIndex);
+    }
     hideModal();
   }
 
@@ -60,15 +63,15 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
     updateGroups(groups);
   }
 
-  function handleSort(items: Group[]) {
+  function handleSort(items: unknown[] | null) {
     if (items) {
-      updateGroups(items);
+      updateGroups(items as Group[]);
     }
-    setActiveDragId(null);
+    setActiveDragId("");
   }
 
-  function handleDragStart(event) {
-    setActiveDragId(event.active.id);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragId(event.active.id as string);
   }
 
   return (

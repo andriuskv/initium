@@ -1,6 +1,6 @@
 import type { ChangeEvent, MouseEvent, KeyboardEvent, FormEvent } from "react";
 import type { TimeDateSettings } from "types/settings";
-import type { Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
+import type { Day, Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
 import { useState, useMemo } from "react";
 import { getRandomHexColor, hslStringToHex, getRandomString } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate, parseDateInputValue, getDateString } from "services/timeDate";
@@ -30,32 +30,32 @@ type FormType = {
   day: number,
   month: number,
   year: number,
+  type?: string,
   range: {
     enabled: boolean,
     text?: string
-    dataList?: { items: string[] }
-    from?: {
+    dataList: { items: string[] }
+    from: {
       text: string,
-      hours?: number,
-      minutes?: number
+      hours: number,
+      minutes: number
     },
-    to?: {
+    to: {
       text: string,
-      hours?: number,
-      minutes?: number
+      hours: number,
+      minutes: number
     },
     message?: string
   },
-  repeat?: {
+  repeat: {
     enabled: boolean,
     type: "custom" | "week" | "month" | "weekday" | "day",
     customTypeGapName: "days" | "weeks" | "months",
     year: number,
     month: number,
     day: number,
-    gap: string,
-    count: number,
-    tooltip: string,
+    gap: string | number,
+    count: string | number,
     ends: "occurrences" | "never" | "date",
     endDate?: {
       year: number,
@@ -65,9 +65,9 @@ type FormType = {
     endDateString?: string,
     minEndDateString?: string,
     leftoverDays?: number,
-    currentWeekday?: number,
     firstWeekday?: 0 | 1,
-    weekdays?: {
+    weekdays: {
+      current: number,
       dynamic: boolean[]
       static: boolean[]
     },
@@ -75,13 +75,12 @@ type FormType = {
     gapError?: boolean,
     countError?: boolean
   },
-  notify?: {
+  notify: {
     enabled: boolean,
     type: "default" | "time",
-    time?: { full?: number, hours: number, minutes: number },
+    time: { full?: number, hours: number, minutes: number },
     message?: string
   }
-  color: string,
   dateString: string,
   displayDateString: string,
   pickerColor: string,
@@ -93,8 +92,13 @@ type FormType = {
   selectedDay?: SelectedDay
 }
 
+type InitialForm = GoogleReminder & {
+  selectedDay: Day,
+  updating: boolean
+};
+
 type Props = {
-  form: FormType,
+  form: InitialForm,
   locale: any,
   user: GoogleUser,
   googleCalendars: GoogleCalendar[],
@@ -103,149 +107,150 @@ type Props = {
 }
 
 export default function Form({ form: initialForm, locale, user, googleCalendars, updateReminder, hide }: Props) {
-  const [form, setForm] = useState(() => getInitialForm(structuredClone(initialForm)));
+  const [form, setForm] = useState(() => getInitialForm(initialForm));
   const { message, showMessage, dismissMessage }= useMessage("");
   const weekdayNames = useMemo(() => {
     const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
     return getWeekdays(dateLocale, "short");
   }, []);
 
-  function getInitialForm(form: FormType) {
+  function getInitialForm(initialForm: InitialForm) {
     const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
-    const weekday = getWeekday(form.year, form.month, form.day);
+    const weekday = getWeekday(initialForm.year, initialForm.month, initialForm.day);
     const weekdays = {
+      current: weekday,
       static: [false, false, false, false, false, false, false],
       dynamic: [false, false, false, false, false, false, false]
     };
     weekdays.static[weekday] = true;
     weekdays.dynamic[weekday] = true;
 
-    if (form.updating) {
-      if (form.calendarId) {
-        form.eventColors = getEventColors(form.calendarId, googleCalendars);
-        form.eventColorIndex = form.eventColors.length - 1;
+    const date = initialForm.selectedDay ? initialForm.selectedDay: initialForm;
+    const dateString = getDateString(date);
+    const displayDateString = formatDate(new Date(date.year, date.month, date.day), { locale: dateLocale });
+    const pickerColor = initialForm.color ? initialForm.color.startsWith("hsl") ? hslStringToHex(initialForm.color) : initialForm.color : getRandomHexColor();
 
-        if (form.color) {
-          const index = form.eventColors.findIndex(({ color }) => form.color === color);
+    const formA: FormType = {
+      id: initialForm.id || getRandomString(),
+      type: initialForm.type || "normal",
+      creationDate: Date.now(),
+      text: initialForm.text,
+      descriptionRaw: initialForm.descriptionRaw,
+      day: initialForm.day,
+      month: initialForm.month,
+      year: initialForm.year,
+      dateString,
+      displayDateString,
+      pickerColor,
+      updating: initialForm.updating,
+      range: {
+        enabled: false,
+        dataList: generateTimeTable(),
+        from: { hours: 0, minutes: 0, text: "" },
+        to: { hours: 0, minutes: 0, text: "" }
+      },
+      repeat: {
+        enabled: false,
+        type: "custom",
+        customTypeGapName: "days",
+        day: initialForm.day,
+        month: initialForm.month,
+        year: initialForm.year,
+        weekdays,
+        ends: "never",
+        gap: "",
+        count: "",
+        endDateString: initialForm.repeat?.endDate ? getDateString({
+          year: initialForm.repeat.endDate.year,
+          month: initialForm.repeat.endDate.month,
+          day: initialForm.repeat.endDate.day
+        }) : undefined,
+        minEndDateString: getDateString({
+          year: initialForm.year,
+          month: initialForm.month,
+          day: initialForm.day
+        }),
+      },
+      notify: {
+        enabled: false,
+        type: "default",
+        time: { hours: 1, minutes: 0 }
+      }
+    };
 
-          if (index >= 0) {
-            form.eventColorIndex = index;
-            form.colorId = form.eventColors[form.eventColorIndex].id;
-          }
-        }
+    if (initialForm.calendarId) {
+      formA.eventColors = getEventColors(initialForm.calendarId, googleCalendars);
+
+      if (formA.eventColors) {
+        formA.eventColorIndex = formA.eventColors.length - 1;
       }
 
-      if (form.range) {
-        form.range.enabled = form.range.text !== "All day";
+      if (initialForm.color && formA.eventColors) {
+        const index = formA.eventColors.findIndex(({ color }) => initialForm.color === color);
 
-        if (form.range.from) {
-          form.range.from = { text: `${form.range.from.hours}:${padTime(form.range.from.minutes)}`};
-        }
-
-        if (form.range.to) {
-          form.range.to = { text: `${form.range.to.hours}:${padTime(form.range.to.minutes)}`};
-        }
-        else {
-          form.range.to = { text: "" };
+        if (index >= 0) {
+          formA.eventColorIndex = index;
+          formA.colorId = formA.eventColors[formA.eventColorIndex].id;
         }
       }
+    }
 
-      if (form.repeat) {
-        form.repeat = {
-          ...form.repeat,
-          enabled: true,
-          type: form.repeat.type || "custom",
-          ends: form.repeat.count > 0 ? "occurrences" : "never",
-          gap: form.repeat.gap ?? "",
-          count: form.repeat.count,
-          year: form.year,
-          month: form.month,
-          day: form.day
+    if (initialForm.range) {
+      formA.range.enabled = initialForm.range.text !== "All day";
+
+      if (initialForm.range.from) {
+        formA.range.from = { ...initialForm.range.from, text: `${initialForm.range.from.hours}:${padTime(initialForm.range.from.minutes)}`, };
+      }
+
+      if (initialForm.range.to) {
+        formA.range.to = { ...initialForm.range.to, text: `${initialForm.range.to.hours}:${padTime(initialForm.range.to.minutes)}`};
+      }
+      else {
+        formA.range.to = {
+          text: "",
+          hours: 0,
+          minutes: 0
         };
+      }
+    }
 
-        if (form.repeat.type === "weekday") {
-          form.repeat.weekdays = {
-            dynamic: form.repeat.weekdays.dynamic,
-            static: [...form.repeat.weekdays.dynamic]
-          };
-          form.repeat.weekdays.static[form.repeat.currentWeekday] = true;
-        }
+    if (initialForm.repeat) {
+      formA.repeat.enabled = true;
+      formA.repeat.type = initialForm.repeat.type || "custom";
+      formA.repeat.ends = initialForm.repeat.count > 0 ? "occurrences" : "never";
+      formA.repeat.gap = initialForm.repeat.gap ?? "";
+      formA.repeat.count = initialForm.repeat.count;
+      formA.repeat.year = initialForm.year;
+      formA.repeat.month = initialForm.month;
+      formA.repeat.day = initialForm.day;
+
+      if (formA.repeat.endDateString) {
+        formA.repeat.ends = "date";
       }
 
-      if (form.notify) {
-        let obj = {};
-
-        if (form.notify.time) {
-          obj = {
-            time: {
-              full: form.notify.time.full,
-              hours: Math.floor(form.notify.time.full / 60),
-              minutes: form.notify.time.full % 60
-            }
-          };
-        }
-        form.notify = {
-          ...form.notify,
-          enabled: true,
-          ...obj,
+      if (initialForm.repeat.type === "weekday" && initialForm.repeat.weekdays) {
+        formA.repeat.weekdays = {
+          current: weekday,
+          dynamic: initialForm.repeat.weekdays.dynamic,
+          static: [...initialForm.repeat.weekdays.dynamic].with(weekday, true)
         };
       }
     }
-    else {
-      form.id = getRandomString();
+
+    if (initialForm.notify) {
+      formA.notify.enabled = true;
+      formA.notify.type = initialForm.notify.type;
+
+      if (initialForm.notify.time) {
+        formA.notify.time = {
+          full: initialForm.notify.time.full,
+          hours: Math.floor(initialForm.notify.time.full / 60),
+          minutes: initialForm.notify.time.full % 60
+        };
+      }
     }
 
-    const range: FormType["range"] = {
-      enabled: false,
-      dataList: generateTimeTable(),
-      from: { text: "" },
-      to: { text: "" },
-      ...form.range
-    };
-    const repeat: FormType["repeat"] = {
-      enabled: false,
-      type: "custom",
-      customTypeGapName: "days",
-      currentWeekday: weekday,
-      weekdays,
-      ends: "never",
-      gap: "",
-      count: "",
-      endDateString: form.repeat?.endDate ? getDateString({
-        year: form.repeat.endDate.year,
-        month: form.repeat.endDate.month,
-        day: form.repeat.endDate.day
-      }) : undefined,
-      minEndDateString: getDateString({
-        year: form.year,
-        month: form.month,
-        day: form.day
-      }),
-      ...form.repeat
-    };
-
-    const notify: FormType["notify"] = {
-      enabled: false,
-      type: "default",
-      time: { hours: 1, minutes: 0 },
-      ...form.notify
-    };
-
-    if (repeat.endDateString) {
-      repeat.ends = "date";
-    }
-    const date = form.selectedDay ? form.selectedDay: form;
-    form.dateString = getDateString(date);
-    form.displayDateString = formatDate(new Date(date.year, date.month, date.day), { locale: dateLocale });
-    form.pickerColor = form.color ? form.color.startsWith("hsl") ? hslStringToHex(form.color) : form.color : getRandomHexColor();
-
-    return {
-      type: "normal",
-      ...form,
-      range,
-      repeat,
-      notify
-    };
+    return formA;
   }
 
   function generateTimeTable() {
@@ -409,7 +414,8 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         const { hours, minutes } = form.notify.time;
 
         if (hours === 0 && minutes === 0) {
-          setForm({ ...form,
+          setForm({
+            ...form,
             range: formRange,
             repeat: formRepeat,
             notify: {
@@ -436,9 +442,14 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
 
       const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
 
+      if (!primaryCalendar) {
+        return;
+      }
       googleReminder.type = "google";
       googleReminder.calendarId = primaryCalendar.id;
-      googleReminder.color = form.eventColors[form.eventColorIndex].color;
+      if (form.eventColors && typeof form.eventColorIndex === "number") {
+        googleReminder.color = form.eventColors[form.eventColorIndex].color;
+      }
       googleReminder.colorId = form.colorId;
       googleReminder.editable = true;
 
@@ -478,15 +489,18 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   function changeReminderType(type: "normal" | "google") {
-    if (type === "google" && !form.eventColors) {
+    if (type === "google" && !form.eventColors && form.calendarId) {
       const eventColors = getEventColors(form.calendarId, googleCalendars);
 
-      setForm({
-        ...form,
-        type,
-        eventColors,
-        eventColorIndex: eventColors.length - 1
-      });
+      if (eventColors) {
+        setForm({
+          ...form,
+          type,
+          eventColors,
+          eventColorIndex: eventColors.length - 1
+        });
+      }
+
     }
     else {
       setForm({ ...form, type });
@@ -501,14 +515,14 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   function toggleFormCheckbox(event: ChangeEvent<HTMLInputElement>) {
-    const { name } = event.target;
+    const { name } = event.target as { name: "range" | "repeat" | "notify" };
     const obj = {
       ...form[name],
       enabled: !form[name].enabled
     };
 
     if (name === "repeat") {
-      obj.dateMessage = undefined;
+      (obj as FormType["repeat"]).dateMessage = undefined;
     }
 
     setForm({
@@ -538,7 +552,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   function handleWeekdaySelection({ target }: ChangeEvent<HTMLInputElement>, weekday: number) {
-    if (weekday === form.repeat.currentWeekday) {
+    if (!form.repeat?.weekdays || weekday === form.repeat.weekdays.current) {
       return;
     }
     setForm({
@@ -546,6 +560,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       repeat: {
         ...form.repeat,
         weekdays: {
+          ...form.repeat.weekdays,
           static: form.repeat.weekdays.static.with(weekday, target.checked),
           dynamic: form.repeat.weekdays.dynamic
         }
@@ -554,7 +569,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   function handleRangeInputChange({ target }: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = target;
+    const { name, value } = target as { name: "from" | "to", value: string };
     let message = form.range.message;
 
     if (validateHourFormat(value)) {
@@ -577,7 +592,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   function handleRepeatInputChange({ target }: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = target;
+    const { name, value } = target as { name: "gap" | "count", value: string };
     const regex = /^\d+$/;
     const repeat = { ...form.repeat };
 
@@ -630,6 +645,9 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   function handleNotifyTimeChange({ target }: ChangeEvent<HTMLSelectElement>) {
+    if (!form.notify.time) {
+      return;
+    }
     setForm({
       ...form,
       notify: {
@@ -652,7 +670,11 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     const displayDate = parseDateInputValue(event.target.value);
     const displayDateString = formatDate(new Date(displayDate.year, displayDate.month, displayDate.day), { locale: dateLocale });
     const weekday = getWeekday(displayDate.year, displayDate.month, displayDate.day);
-    let weekdaysStatic = form.repeat.weekdays.static.with(form.repeat.currentWeekday, false);
+
+    if (!form.repeat) {
+      return;
+    }
+    let weekdaysStatic = form.repeat.weekdays.static.with(form.repeat.weekdays.current, false);
     weekdaysStatic = weekdaysStatic.with(weekday, true);
 
     setForm({
@@ -660,8 +682,8 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       ...displayDate,
       repeat: {
         ...form.repeat,
-        currentWeekday: weekday,
         weekdays: {
+          current: weekday,
           static: weekdaysStatic,
           dynamic: form.repeat.weekdays.dynamic
         }
@@ -682,7 +704,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
       </div>
       <div className="container-body reminder-form-body">
         <div className="reminder-form-display-date">
-          {form.type === "google" ? (
+          {form.type === "google" && form.eventColors && form.eventColorIndex !== undefined ? (
             <Dropdown
               toggle={{ body: <div className="reminder-form-selecated-event-color" style={{ backgroundColor: form.eventColors[form.eventColorIndex].color }}></div>, title: "Color picker" }}
               container={{ className: "reminder-form-event-color-dropdown-container" }}>
@@ -819,8 +841,8 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                 {form.repeat.weekdays.static.map((selected, index) => (
                   <label className="checkbox-container reminder-form-weekday" key={index}>
                     <input type="checkbox" className="sr-only checkbox-input"
-                      onChange={event => handleWeekdaySelection(event, index)} checked={selected || index === form.repeat.currentWeekday}
-                      disabled={index === form.repeat.currentWeekday}/>
+                      onChange={event => handleWeekdaySelection(event, index)} checked={selected || index === form.repeat?.weekdays.current}
+                      disabled={index === form.repeat?.weekdays.current}/>
                     <div className="reminder-form-weekday-content">{weekdayNames[index]}</div>
                   </label>
                 ))}
@@ -855,7 +877,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                   <div className="radio"></div>
                   <span>After</span>
                   <input type="text" className="input repeat-input" name="count" autoComplete="off"
-                    value={form.repeat.count} onChange={handleRepeatInputChange}
+                    value={form.repeat.count || ""} onChange={handleRepeatInputChange}
                     disabled={form.repeat.ends !== "occurrences"} required={form.repeat.ends === "occurrences"}/>
                   <span>occurrences</span>
                 </label>

@@ -1,8 +1,12 @@
 import { dispatchCustomEvent, setPageTitle } from "utils";
 
 const pipSupported = "documentPictureInPicture" in window;
-let pipWindow = null;
-let timerActions = {};
+let pipWindow: typeof window | null = null;
+let timerActions: {
+  [key: string]: {
+    toggle: (isPip: boolean) => void
+  }
+} = {};
 let activeTimer = "";
 
 function isSupported() {
@@ -47,8 +51,11 @@ function close(name: string) {
 
 function cleanup() {
   dispatchCustomEvent("pip-close", activeTimer);
-  pipWindow.removeEventListener("unload", cleanup, { once: true });
-  pipWindow.document.body.removeEventListener("click", handleClick);
+
+  if (pipWindow) {
+    pipWindow.removeEventListener("unload", cleanup);
+    pipWindow.document.body.removeEventListener("click", handleClick);
+  }
   pipWindow = null;
   activeTimer = "";
   timerActions = {};
@@ -62,9 +69,9 @@ async function init({ name, title, data, toggle }: Params) {
   timerActions[name] = { toggle };
   pipWindow = await (window as any).documentPictureInPicture.requestWindow();
 
-  await copyStyleSheets(pipWindow.document.head);
+  await copyStyleSheets(pipWindow!.document.head);
 
-  pipWindow.document.head.insertAdjacentHTML("beforeend", `
+  pipWindow!.document.head.insertAdjacentHTML("beforeend", `
     <title>${title} | Initium</title>
     <style>
       body {
@@ -108,23 +115,25 @@ async function init({ name, title, data, toggle }: Params) {
 
   const { backgroundPosition, backgroundImage } = (document.querySelector(".wallpaper") as HTMLElement).style;
 
-  pipWindow.document.body.insertAdjacentHTML("beforeend", `
-    <div class="wallpaper" style='background-position: ${backgroundPosition}; background-image: ${backgroundImage}'></div>
-    <div>
-      <span class="top-panel-digit${data.hours > 0 ? "" : " hidden"}">${data.hours}</span>
-      <span class="top-panel-digit-sep">h</span>
-      <span class="top-panel-digit${(data.hours > 0 || data.minutes > 0) ? "" : " hidden"}">${data.minutes}</span>
-      <span class="top-panel-digit-sep">m</span>
-      <span class="top-panel-digit">${data.seconds}</span>
-      <span class="top-panel-digit-sep">s</span>
-      <span id="milliseconds" class="stopwatch-milliseconds${name === "stopwatch" ? "" : " hidden"}">${data.milliseconds}</span>
-    </div>
-  `);
+  if (pipWindow) {
+    pipWindow.document.body.insertAdjacentHTML("beforeend", `
+      <div class="wallpaper" style='background-position: ${backgroundPosition}; background-image: ${backgroundImage}'></div>
+      <div>
+        <span class="top-panel-digit${data.hours > 0 ? "" : " hidden"}">${data.hours}</span>
+        <span class="top-panel-digit-sep">h</span>
+        <span class="top-panel-digit${(data.hours > 0 || data.minutes > 0) ? "" : " hidden"}">${data.minutes}</span>
+        <span class="top-panel-digit-sep">m</span>
+        <span class="top-panel-digit">${data.seconds}</span>
+        <span class="top-panel-digit-sep">s</span>
+        <span id="milliseconds" class="stopwatch-milliseconds${name === "stopwatch" ? "" : " hidden"}">${data.milliseconds}</span>
+      </div>
+    `);
 
-  update(name, data);
+    update(name, data);
 
-  pipWindow.document.body.addEventListener("click", handleClick);
-  pipWindow.addEventListener("unload", cleanup, { once: true });
+    pipWindow.document.body.addEventListener("click", handleClick);
+    pipWindow.addEventListener("unload", cleanup, { once: true });
+  }
 }
 
 function handleClick() {
@@ -141,7 +150,7 @@ async function copyStyleSheets(head: HTMLElement) {
         link.rel = "stylesheet";
         link.type = styleSheet.type;
         link.media = styleSheet.media as unknown as string;
-        link.href = styleSheet.href;
+        link.href = styleSheet.href!;
         head.appendChild(link);
         return null;
       }
@@ -178,11 +187,11 @@ function update(name: string, data: Params["data"]) {
   secondsElement.textContent = data.seconds;
 
   if (activeTimer === "stopwatch") {
-    pipWindow.document.getElementById("milliseconds").textContent = data.milliseconds;
+    pipWindow.document.getElementById("milliseconds")!.textContent = data.milliseconds;
   }
 }
 
-function updateActions(name: string, actions: { [key: string]: () => void }) {
+function updateActions(name: string, actions: { toggle: (isPip: boolean) => void }) {
   timerActions[name] = actions;
 }
 

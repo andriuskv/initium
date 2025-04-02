@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, lazy, Suspense, useMemo } from "react";
-import { timeout } from "utils";
+import { getLocalStorageItem, timeout } from "utils";
 import * as focusService from "services/focus";
 import TabsContainer from "components/TabsContainer";
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";
 import "./settings.css";
+import type { Announcement } from "types/announcement";
 
 const GeneralTab = lazy(() => import("./GeneralTab"));
 const AppearanceTab = lazy(() => import("./AppearanceTab"));
@@ -16,7 +17,7 @@ const TimersTab = lazy(() => import("./TimersTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 const LogsTab = lazy(() => import("./LogsTab"));
 
-export default function Settings({ locale, hide }: { locale: any, hide: () => void}) {
+export default function Settings({ locale, hide }: { locale: any, hide: () => void }) {
   const tabs = useMemo(() => [
     {
       id: "general",
@@ -61,7 +62,7 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
     {
       id: "logs",
       name: "Logs",
-      shouldHide: (JSON.parse(localStorage.getItem("announcements")) || []).length === 0,
+      shouldHide: (getLocalStorageItem<Announcement[]>("announcements") || []).length === 0,
       component: LogsTab
     }
   ], [locale]);
@@ -110,15 +111,9 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
             ))}
           </ul>
         </TabsContainer>
-        {activeTab.id === "mainPanel" ? (
-          <Suspense fallback={<Spinner/>}>
-            <MainPanelTab locale={locale} hide={hide}/>
-          </Suspense>
-        ) : (
-          <Suspense fallback={<Spinner/>}>
-            <activeTab.component locale={locale}/>
-          </Suspense>
-        )}
+        <Suspense fallback={<Spinner/>}>
+          <activeTab.component locale={locale} hide={hide}/>
+        </Suspense>
       </div>
     </div>
   );

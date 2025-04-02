@@ -177,7 +177,7 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
     }, 200 * animationSpeed);
   }
 
-  function saveNotes(notes: Note[]) {
+  function saveNotes(notes: Partial<Note>[]) {
     chromeStorage.set({ stickyNotes: structuredClone(notes).map(note => {
       delete note.id;
       delete note.contentDisplayString;

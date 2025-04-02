@@ -5,7 +5,7 @@ import { useSettings } from "contexts/settings";
 
 type PlacementContextType = {
   placement: Placement,
-  swapPosition: (position1: string, position2: string) => void
+  swapPosition: (pos1: keyof Placement, pos2: keyof Placement) => void
   resetPositions: () => void
 }
 
@@ -25,7 +25,7 @@ function PlacementProvider({ children }: PropsWithChildren) {
     };
   }, [placement]);
 
-  function swapPosition(pos1: string, pos2: string) {
+  function swapPosition(pos1: keyof Placement, pos2: keyof Placement) {
     const newPlacement = {
       ...placement,
       [pos1]: placement[pos2],

@@ -2,21 +2,26 @@ import { useState, useEffect, type FormEvent } from "react";
 import { useSettings } from "contexts/settings";
 import "./weather-tab.css";
 
-export default function WeatherTab({ locale }) {
+type ErrorType = {
+  type: "general" | "geo" | "target";
+  message: string;
+}
+
+export default function WeatherTab({ locale }: { locale: any }) {
   const { settings: { weather: settings }, updateContextSetting, toggleSetting } = useSettings();
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<ErrorType | null>(null);
 
   useEffect(() => {
+    function handleWeatherError({ detail }: CustomEventInit) {
+      setError(detail);
+    }
+
     window.addEventListener("weather-error", handleWeatherError);
 
     return () => {
       window.removeEventListener("weather-error", handleWeatherError);
     };
   }, []);
-
-  function handleWeatherError({ detail }: CustomEvent) {
-    setError(detail);
-  }
 
   function toggleTemperatureUnits() {
     const { units } = settings;

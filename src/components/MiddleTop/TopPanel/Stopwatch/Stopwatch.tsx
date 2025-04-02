@@ -1,5 +1,6 @@
+import type { TabName } from "../top-panel-types";
 import { useState, useEffect, useRef, lazy, type ChangeEvent } from "react";
-import { dispatchCustomEvent } from "utils";
+import { dispatchCustomEvent, getLocalStorageItem } from "utils";
 import { padTime } from "services/timeDate";
 import { addToRunning, removeFromRunning } from "../running-timers";
 import * as pipService from "../picture-in-picture";
@@ -12,16 +13,22 @@ const Splits = lazy(() => import("./Splits"));
 type Props = {
   visible: boolean,
   locale: any,
-  animDirection: "anim-left" | "anim-right",
-  toggleIndicator: (name: string, visible: boolean) => void,
-  updateTitle: (name: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled?: boolean }) => void,
+  animDirection?: "anim-left" | "anim-right",
+  toggleIndicator: (name: TabName, visible: boolean) => void,
+  updateTitle: (name: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
   expand: () => void,
 }
+
+type Split = {
+  elapsed: number,
+  elapsedString: string,
+  diffString: string
+};
 
 export default function Stopwatch({ visible, locale, animDirection, toggleIndicator, updateTitle, expand }: Props) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
-  const [splits, setSplits] = useState<{ elapsed: number, elapsedString: string, diffString: string }[]>([]);
+  const [splits, setSplits] = useState<Split[]>([]);
   const [label, setLabel] = useState("");
   const [dirty, setDirty] = useState(false);
   const [pipVisible, setPipVisible] = useState(false);
@@ -67,7 +74,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
   }, [running]);
 
   useEffect(() => {
-    function handlePipClose({ detail }: CustomEvent) {
+    function handlePipClose({ detail }: CustomEventInit) {
       if (detail === name) {
         setPipVisible(false);
       }
@@ -85,11 +92,25 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
   }
 
   function init() {
-    const data = JSON.parse(localStorage.getItem(name));
+    type Data = {
+      splits?: Split[],
+      label?: string
+      elapsed: number,
+      millisecondsDisplay: string,
+      secondsDisplay: string,
+      minutesDisplay: string,
+      milliseconds: number,
+      seconds: number,
+      minutes: number,
+      hours: number
+    }
+    const data = getLocalStorageItem<Data>(name);
 
     if (data) {
-      setSplits(data.splits);
-      setLabel(data.label);
+      if (data.splits) {
+        setSplits(data.splits);
+      }
+      setLabel(data.label || "");
 
       delete data.splits;
       delete data.label;
@@ -113,7 +134,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
   function start() {
     setDirty(true);
     setRunning(true);
-    updateTitle(name, { seconds: "00" });
+    updateTitle(name, { seconds: "00", isAudioEnabled: false });
   }
 
   function stop() {
@@ -139,7 +160,8 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
       updateTitle(name, {
         hours: newState.hours,
         minutes: newState.hours || newState.minutes ? newState.minutesDisplay : "",
-        seconds:  newState.secondsDisplay
+        seconds:  newState.secondsDisplay,
+        isAudioEnabled: false
       });
       localStorage.setItem(name, JSON.stringify({ ...newState, label, splits: splits.slice(0, 100) }));
     }

@@ -1,11 +1,12 @@
+import type { Placement, PlacementItem } from "types/settings";
 import { usePlacement } from "contexts/placement";
 import Dropdown from "components/Dropdown";
 import Modal from "components/Modal";
 import "./placement.css";
 
-export default function Placement({ locale, hiding, hide }) {
+export default function Placement({ locale, hiding, hide }: { locale: any, hiding: boolean, hide: () => void }) {
   const { placement, swapPosition, resetPositions } = usePlacement();
-  const arr = Object.entries(placement);
+  const arr = Object.entries(placement) as [keyof Placement, PlacementItem][];
 
   return (
     <Modal hiding={hiding} hide={hide}>

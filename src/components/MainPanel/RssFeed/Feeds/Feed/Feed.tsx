@@ -8,7 +8,7 @@ type Props = PropsWithChildren & {
   locale: any,
   index: number,
   feed: FeedType,
-  updateFeed: (feed: FeedType, shouldSave?: boolean) => void,
+  updateFeed: (feed: FeedType, type: "active" | "inactive" | "failed", shouldSave?: boolean) => void,
   selectFeedFromList: (event: MouseEvent<HTMLButtonElement>, index: number) => void,
   deactivateFeed: (index: number) => void,
   removeFeed: (index: number, type: string) => void,
@@ -19,7 +19,7 @@ export default function Feed({ children, index, feed, locale, updateFeed, select
     updateFeed({
       ...feed,
       updatingTitle: true
-    });
+    }, "active");
   }
 
   function renameFeed(event: FocusEvent) {
@@ -34,7 +34,7 @@ export default function Feed({ children, index, feed, locale, updateFeed, select
       newFeed.title = newTitle;
       shouldSave = true;
     }
-    updateFeed(newFeed, shouldSave);
+    updateFeed(newFeed, "active", shouldSave);
   }
 
   function blurFeedTitleInput(event: KeyboardEvent) {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useSettings } from "contexts/settings";
 import { dispatchCustomEvent } from "utils";
 import type { MainPanelComponents } from "types/settings";
@@ -15,7 +15,7 @@ export default function MainPanelTab({ locale, hide }: { locale: any, hide: () =
         disabled: !settings.components[item].disabled
       }
     };
-    const componentsArray = Object.keys(newComponents);
+    const componentsArray = Object.keys(newComponents) as Array<keyof MainPanelComponents>;
     let disabledComponentCount = 0;
 
     for (const key of componentsArray) {
@@ -35,16 +35,22 @@ export default function MainPanelTab({ locale, hide }: { locale: any, hide: () =
     dispatchCustomEvent("reset-top-sites");
   }
 
-  function toggleTopSiteItemCount({ target }) {
-    toggleTopSiteSetting({ visibleItemCount: target.checked ? 4 : 8 });
+  function toggleTopSiteItemCount({ target }: ChangeEvent) {
+    const element = target as HTMLInputElement;
+
+    toggleTopSiteSetting({ visibleItemCount: element.checked ? 4 : 8 });
   }
 
-  function toggleTopSiteOpenSetting({ target }) {
-    toggleTopSiteSetting({ openInNewTab: target.checked });
+  function toggleTopSiteOpenSetting({ target }: ChangeEvent) {
+    const element = target as HTMLInputElement;
+
+    toggleTopSiteSetting({ openInNewTab: element.checked });
   }
 
-  function toggleTopSiteButtonVisibility({ target }) {
-    toggleTopSiteSetting({ addSiteButtonHidden: target.checked });
+  function toggleTopSiteButtonVisibility({ target }: ChangeEvent) {
+    const element = target as HTMLInputElement;
+
+    toggleTopSiteSetting({ addSiteButtonHidden: element.checked });
   }
 
   function toggleTopSiteSetting(setting: Partial<MainPanelComponents["topSites"]>) {
@@ -56,10 +62,12 @@ export default function MainPanelTab({ locale, hide }: { locale: any, hide: () =
     dispatchCustomEvent("enable-persistent-site-edit");
   }
 
-  function togglePersistentSitesVisibility({ target }) {
-    toggleTopSiteSetting({ persistentSitesHidden: target.checked });
+  function togglePersistentSitesVisibility({ target }: ChangeEvent) {
+    const element = target as HTMLInputElement;
 
-    if (target.checked) {
+    toggleTopSiteSetting({ persistentSitesHidden: element.checked });
+
+    if (element.checked) {
       dispatchCustomEvent("enable-persistent-site-edit", false);
     }
   }

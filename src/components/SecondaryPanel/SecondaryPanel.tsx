@@ -77,7 +77,7 @@ export default function SecondaryPanel({ corner, locale }: { corner: string, loc
   }, []);
 
   useEffect(() => {
-    function toggleTimersIndicator({ detail }: CustomEvent) {
+    function toggleTimersIndicator({ detail }: CustomEventInit) {
       toggleIndicator("timers", detail);
     }
 
@@ -205,7 +205,7 @@ export default function SecondaryPanel({ corner, locale }: { corner: string, loc
             <div className={`secondary-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}
               style={{ width: "380px", minHeight: "402px"}}>
               <Suspense fallback={null}>
-                <Calendar visible={selectedItem.id === "calendar" && selectedItem.visible}
+                <Calendar visible={selectedItem.id === "calendar" && !!selectedItem.visible}
                   locale={locale} reveal={selectCalendar} showIndicator={toggleIndicator}/>
               </Suspense>
             </div>

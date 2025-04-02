@@ -12,7 +12,7 @@ type Props = PropsWithChildren & {
 
 export default function Modal({ children, className, transparent, hiding, hide }: Props) {
   const container = useRef(null);
-  const element = useRef(null);
+  const element = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (container.current) {

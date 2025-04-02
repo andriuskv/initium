@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense, type FormEvent, type ChangeEvent, type KeyboardEvent } from "react";
-import { getRandomString, replaceLink } from "utils";
+import type { DragStartEvent } from "@dnd-kit/core";
+import { getLocalStorageItem, getRandomString, replaceLink } from "utils";
 import { useModal, useMessage } from "hooks";
 import { getSetting } from "services/settings";
 import { formatDate, getDateString } from "services/timeDate";
@@ -20,7 +21,7 @@ type State = TaskForm & {
 }
 
 type Props = {
-  form: TaskForm,
+  form: TaskForm | null,
   groups: Group[],
   replaceGroups: (items: { index: number, group: Group }[], shouldSave?: boolean) => void,
   removeTask: () => void,
@@ -33,17 +34,17 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
   const [state, setState] = useState<State>(() => {
     const defaultForm: State = {
       moreOptionsVisible: false,
-      completeWithSubtasks: !!form.completeWithSubtasks,
-      labels: getUniqueTaskLabels(form.groupIndex, form.taskIndex),
+      completeWithSubtasks: form ? !!form.completeWithSubtasks : false,
+      labels: form ? getUniqueTaskLabels(form.groupIndex, form.taskIndex): [],
       task: {
+        creationDate: Date.now(),
         id: getRandomString(4),
-        labels: [],
         rawText: "",
         subtasks: [getDefaultTask(), getDefaultTask()]
       }
     };
 
-    if (form.updating) {
+    if (form?.updating) {
       const subtasks = [...form.task.subtasks];
       let missingSubtaskCount = 2 - subtasks.length;
 
@@ -63,9 +64,11 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
       if (form.task.repeat) {
         defaultForm.moreOptionsVisible = true;
         defaultForm.task.repeat = {
+          number: form.task.repeat.number,
+          start: form.task.repeat.start,
           gap: form.task.repeat.gap,
           unit: form.task.repeat.unit,
-          limit: form.task.repeat.limit < 0 ? 0 : form.task.repeat.limit
+          limit: typeof form.task.repeat.limit === "number" && form.task.repeat.limit < 0 ? 0 : form.task.repeat.limit
         };
       }
 
@@ -78,7 +81,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     return defaultForm;
   });
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
-  const [activeDragId, setActiveDragId] = useState(null);
+  const [activeDragId, setActiveDragId] = useState("");
   const [prefsVisible, setPrefsVisible] = useState(state.completeWithSubtasks);
   const { message, showMessage, dismissMessage }= useMessage("");
 
@@ -90,7 +93,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
   }
 
   function getUniqueTaskLabels(groupIndex = -1, taskIndex = -1) {
-    let labels: Label[] = (JSON.parse(localStorage.getItem("taskLabels")) || []).map((label: Label) => {
+    let labels: Label[] = (getLocalStorageItem<Label[]>("taskLabels") || []).map((label: Label) => {
       label.id = getRandomString();
       return label;
     });
@@ -136,7 +139,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     return labels.findIndex(label => label.name === name && label.color === color);
   }
 
-  function addUniqueLabel(newLabel: Label) {
+  function addUniqueLabel(newLabel: Label): boolean {
     const index = findLabelIndex(state.labels, newLabel);
 
     if (index !== -1) {
@@ -147,7 +150,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
           flagged: true
         })
       });
-      return;
+      return false;
     }
     setState({
       ...state,
@@ -236,6 +239,10 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
 
     event.preventDefault();
 
+    if (!form) {
+      return;
+    }
+
     const formElement = event.target as HTMLFormElement;
     const elements = formElement.elements as FormElements;
     const text = elements.text.value.trim();
@@ -274,7 +281,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     }
 
     if (state.updating) {
-      const { taskIndex } = form;
+      const taskIndex = form.taskIndex as number;
       const taskProps: Partial<TaskType> = {};
 
       if (dateTime) {
@@ -462,15 +469,15 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     });
   }
 
-  function handleSort(items: SubtaskType[]) {
+  function handleSort(items: unknown[] | null) {
     if (items) {
-      setState({...state, task: { ...state.task, subtasks: items } });
+      setState({...state, task: { ...state.task, subtasks: items as SubtaskType[] } });
     }
-    setActiveDragId(null);
+    setActiveDragId("");
   }
 
-  function handleDragStart(event) {
-    setActiveDragId(event.active.id);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragId(event.active.id as string);
   }
 
   function renderSubtasks(subtask: SubtaskType, index: number) {

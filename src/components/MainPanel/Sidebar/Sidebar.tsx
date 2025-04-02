@@ -4,7 +4,7 @@ import "./sidebar.css";
 
 type Props = {
   locale: any,
-  expanded: boolean,
+  expanded?: boolean,
   resizerEnabled: boolean,
   expandTab: () => void,
   toggleResizer: () => void

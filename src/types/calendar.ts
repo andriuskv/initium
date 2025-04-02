@@ -4,6 +4,28 @@ export type DDate = {
   day: number
 }
 
+export type ReminderRepeat = {
+  type: "custom" | "week" | "month" | "weekday" | "day",
+  customTypeGapName: "days" | "weeks" | "months",
+  year: number,
+  month: number,
+  day: number,
+  gap: number,
+  count: number,
+  tooltip: string,
+  endDate?: {
+    year: number,
+    month: number,
+    day: number
+  },
+  leftoverDays?: number,
+  firstWeekday?: 0 | 1,
+  weekdays?: {
+    dynamic: boolean[]
+    static: boolean[]
+  }
+}
+
 export type Reminder = {
   id: string,
   type: string,
@@ -17,27 +39,7 @@ export type Reminder = {
     to?: { hours: number, minutes: number },
     text?: string
   },
-  repeat?: {
-    type: "custom" | "week" | "month" | "weekday" | "day",
-    customTypeGapName: "days" | "weeks" | "months",
-    year: number,
-    month: number,
-    day: number,
-    gap: number,
-    count: number,
-    tooltip: string,
-    endDate?: {
-      year: number,
-      month: number,
-      day: number
-    },
-    leftoverDays?: number,
-    firstWeekday?: 0 | 1,
-    weekdays?: {
-      dynamic: boolean[]
-      static: boolean[]
-    }
-  },
+  repeat?: ReminderRepeat,
   nextRepeat?: {
     year: number,
     month: number,
@@ -64,6 +66,11 @@ export type GoogleReminder = Reminder & {
   type: "google",
   calendarId: string,
   colorId?: string,
+  meet?: {
+    iconUri: string,
+    label: string,
+    uri: string
+  }
   repeat?: Reminder["repeat"] & {
     freq?: "yearly",
     firstWeekday: 0 | 1
@@ -78,7 +85,7 @@ export type Day = {
   day: number,
   weekdayName?: string,
   dateString: string,
-  reminders: Reminder[]
+  reminders: (Reminder | GoogleReminder)[]
 }
 
 export type Month = {

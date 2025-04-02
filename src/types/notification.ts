@@ -1,6 +1,6 @@
 export type Notification = {
   content: string,
-  id?: string,
+  id: string,
   hiding?: boolean,
   iconId?: string,
   title?: string,
