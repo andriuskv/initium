@@ -27,7 +27,7 @@ export default function FullscreenItems({ appearanceSettings, locale }: { appear
     };
   }, [fullscreenModal]);
 
-  function handleFullscreenModal({ detail }: CustomEvent) {
+  function handleFullscreenModal({ detail }: CustomEventInit) {
     if (detail.shouldToggle && detail.id === fullscreenModal.id) {
       if (fullscreenModal.hiding) {
         clearTimeout(modalTimeoutId.current);

@@ -17,14 +17,14 @@ type ViewportType = {
   height: number
 };
 
-function useUrl({ id, url: imageUrl }: Partial<WallpaperSettings>): string {
-  const [url, setUrl] = useState(null);
+function useUrl({ id, url: imageUrl }: WallpaperSettings): string | null {
+  const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
     init();
 
     return () => {
-      if (id) {
+      if (id && url) {
         URL.revokeObjectURL(url);
       }
     };
@@ -35,7 +35,7 @@ function useUrl({ id, url: imageUrl }: Partial<WallpaperSettings>): string {
       const image = await getIDBWallpaper(id);
       setUrl(URL.createObjectURL(image));
     }
-    else {
+    else if (imageUrl) {
       setUrl(imageUrl);
     }
   }
@@ -43,14 +43,22 @@ function useUrl({ id, url: imageUrl }: Partial<WallpaperSettings>): string {
   return url;
 }
 
-export default function WallpaperViewer({ locale, hide }) {
+
+type Area = {
+  width: number,
+  height: number,
+  x: number,
+  y: number
+}
+
+export default function WallpaperViewer({ locale, hide }: { locale: any, hide: () => void }) {
   const { settings: { appearance: { wallpaper: settings } }, updateContextSetting } = useSettings();
   const url = useUrl(settings);
-  const [area, setArea] = useState(null);
-  const [image, setImage] = useState<ImageType>(null);
-  const containerRef = useRef(null);
-  const startingPointerPosition = useRef(null);
-  const pointerMoveHandler = useRef(null);
+  const [area, setArea] = useState<Area | null>(null);
+  const [image, setImage] = useState<ImageType | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const startingPointerPosition = useRef<{ x: number, y: number }>(null);
+  const pointerAbortController = useRef<AbortController>(null);
   const updating = useRef(false);
 
   function handleLoad({ target }: SyntheticEvent<HTMLImageElement>) {
@@ -131,6 +139,9 @@ export default function WallpaperViewer({ locale, hide }) {
   }
 
   function normalizeSelectionAreaPosition(value: number, dimensionName: "width" | "height") {
+    if (!area || !image) {
+      return value;
+    }
     const areaDimension = area[dimensionName];
     const imageDimension = image[dimensionName];
 
@@ -147,11 +158,11 @@ export default function WallpaperViewer({ locale, hide }) {
     if (event.buttons === 2) {
       return;
     }
+    pointerAbortController.current = new AbortController();
     startingPointerPosition.current = getPointerPosition(event as unknown as MouseEvent, event.currentTarget as HTMLElement);
-    pointerMoveHandler.current = handlePointerMove;
 
-    window.addEventListener("pointermove", pointerMoveHandler.current);
-    window.addEventListener("pointerup", handlePointerUp, { once: true });
+    window.addEventListener("pointermove", handlePointerMove, { signal: pointerAbortController.current.signal });
+    window.addEventListener("pointerup", handlePointerUp, { signal: pointerAbortController.current.signal });
   }
 
   function handlePointerMove(event: MouseEvent) {
@@ -161,25 +172,30 @@ export default function WallpaperViewer({ locale, hide }) {
     updating.current = true;
 
     requestAnimationFrame(() => {
-      const { x, y } = getPointerPosition(event , containerRef.current);
+      const { x, y } = getPointerPosition(event , containerRef.current as HTMLElement);
 
-      setArea({
-        ...area,
-        x: normalizeSelectionAreaPosition(x - startingPointerPosition.current.x, "width"),
-        y: normalizeSelectionAreaPosition(y - startingPointerPosition.current.y, "height")
-      });
+      if (area && startingPointerPosition.current) {
+        setArea({
+          ...area,
+          x: normalizeSelectionAreaPosition(x - startingPointerPosition.current.x, "width"),
+          y: normalizeSelectionAreaPosition(y - startingPointerPosition.current.y, "height")
+        });
+      }
+
       updating.current = false;
     });
   }
 
   function handlePointerUp() {
-    window.removeEventListener("pointermove", pointerMoveHandler.current);
-    pointerMoveHandler.current = null;
+    if (pointerAbortController.current) {
+      pointerAbortController.current.abort();
+      pointerAbortController.current = null;
+    }
   }
 
   function getWallpaperPosition(value: number, dimensionName: "width" | "height") {
-    const areaDimension = area[dimensionName];
-    const imageDimension = image[dimensionName];
+    const areaDimension = area![dimensionName];
+    const imageDimension = image![dimensionName];
     const diff = imageDimension - areaDimension;
 
     if (diff === 0) {
@@ -189,6 +205,9 @@ export default function WallpaperViewer({ locale, hide }) {
   }
 
   function saveWallpaperPosition() {
+    if (!area) {
+      return;
+    }
     const x = getWallpaperPosition(area.x, "width");
     const y = getWallpaperPosition(area.y, "height");
 
@@ -205,6 +224,9 @@ export default function WallpaperViewer({ locale, hide }) {
   }
 
   function resetArea() {
+    if (!area || !image) {
+      return;
+    }
     setArea({
       ...area,
       x: (image.width / 2) - (area.width / 2),
@@ -217,7 +239,7 @@ export default function WallpaperViewer({ locale, hide }) {
       {image ? null : <Spinner className="wallpaper-viewer-spinner"/>}
       <div className={`wallpaper-viewer-image-content${image ? "" : " hidden"}`}>
         <div className="container wallpaper-viewer-image-container" ref={containerRef}>
-          <img src={url} className="wallpaper-viewer-image" onLoad={handleLoad}/>
+          <img src={url!} className="wallpaper-viewer-image" onLoad={handleLoad}/>
           {area && <div className="wallpaper-viewer-area" style={{
             width: `${area.width}px`,
             height: `${area.height}px`,

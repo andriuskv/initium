@@ -25,7 +25,7 @@ type FormType = {
     name: string
     x: number,
     y: number,
-    items: { value: number, displayValue: string }[]
+    items: { value: string | number, displayValue: string | number }[]
   } | null
 }
 
@@ -150,7 +150,7 @@ export default function Form({ locale, createCountdown, hide }: Props) {
     if (!name || name === "title" || element.nodeName === "BUTTON" || name === "dateinput") {
       return;
     }
-    const dataList = {
+    const dataList: FormType["dataList"] = {
       name,
       x: element.offsetLeft + element.offsetWidth / 2,
       y: element.offsetTop + element.offsetHeight,
@@ -247,11 +247,13 @@ export default function Form({ locale, createCountdown, hide }: Props) {
       return;
     }
     requestAnimationFrame(() => {
-      setForm({
-        ...form,
-        dataList: undefined,
-        [form.dataList.name]: value
-      });
+      if (form.dataList) {
+        setForm({
+          ...form,
+          dataList: undefined,
+          [form.dataList.name]: value
+        });
+      }
     });
   }
 
@@ -283,7 +285,7 @@ export default function Form({ locale, createCountdown, hide }: Props) {
       setForm({
         ...form,
         ...data,
-        hours: data.period ? `${data.hours} ${data.period.toUpperCase()}` : data.hours,
+        hours: data.period ? `${data.hours} ${data.period.toUpperCase()}` : data.hours!,
         month: (data.month + 1)
       });
     }

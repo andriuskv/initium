@@ -89,7 +89,7 @@ const colors = [
   }
 ];
 
-export default function AppearanceTab({ locale }) {
+export default function AppearanceTab({ locale }: { locale: any }) {
   const { settings: { appearance: settings }, updateContextSetting } = useSettings();
   const [colorIndex, setColorIndex] = useState(() => {
     return colors.findIndex(color => settings.accentColor.hue === color.hue && settings.accentColor.saturation === color.saturation);

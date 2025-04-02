@@ -4,6 +4,7 @@ import type { MainPanelComponents, AppearanceSettings } from "types/settings";
 import type { Site } from "./top-sites.type";
 import { useState, useEffect, useRef } from "react";
 import { useModal } from "hooks";
+import { getLocalStorageItem } from "utils";
 import { getSetting } from "services/settings";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
@@ -28,7 +29,7 @@ type LocalData = {
 };
 
 export default function TopSites({ settings, enableEdit, locale }: Props) {
-  const [sites, setSites] = useState<Site[]>(null);
+  const [sites, setSites] = useState<Site[] | null>(null);
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const first = useRef(true);
 
@@ -44,7 +45,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
 
   async function init() {
     const data = getLocalSites();
-    let sites = [];
+    let sites: Site[] = [];
 
     if (Array.isArray(data.sites)) {
       const localSites = parseSites(data.sites, data);
@@ -60,7 +61,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
     setSites(sites);
   }
 
-  async function fetchTopSites(localData?: LocalData) {
+  async function fetchTopSites(localData: LocalData = {}) {
     const sites = await chrome.topSites.get() as { url: string, title: string }[];
     return parseSites(sites, localData);
   }
@@ -94,6 +95,9 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
   }
 
   function editSite(index: number) {
+    if (!sites) {
+      return;
+    }
     setModal({
       ...sites[index],
       index,
@@ -102,12 +106,15 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
   }
 
   function removeSite(index: number) {
+    if (!sites) {
+      return;
+    }
     const site = sites[index];
     const data = getLocalSites();
 
     setSites(sites.toSpliced(index, 1));
 
-    if (site.local) {
+    if (site.local && data.sites) {
       data.sites = data.sites.filter(item => item.url !== site.url);
     }
     else {
@@ -121,14 +128,18 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
     saveSites(data);
   }
 
-  function isUniqueSite(site: Site, sites: Site[]) {
-    return !sites.some(({ url }) => site.url === url);
+  function isDuplicateSite(siteUrl: string, sites: Site[]) {
+    return sites.some(({ url }) => siteUrl === url);
   }
 
-  function updateSite(site: Site, action: "add" | "update") {
+  function updateSite(site: Site, action: "add" | "update"): string | undefined {
+    if (!sites) {
+      return;
+    }
+
     if (action === "add") {
-      if (!isUniqueSite(site, sites)) {
-        return;
+      if (isDuplicateSite(site.url, sites)) {
+        return "Site with the same URL already exists.";
       }
       site.local = true;
       site.iconUrl = getFaviconURL(site.url);
@@ -144,7 +155,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
       setSites(sites.toSpliced(index, 0, site));
       saveSite(site);
     }
-    else if (action === "update") {
+    else if (action === "update" && modal) {
       const oldSite = { ...sites[modal.index] };
       const updatedSite = {
         iconUrl: getFaviconURL(site.url),
@@ -152,8 +163,8 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
       };
 
       if (site.url !== oldSite.url) {
-        if (!isUniqueSite(site, sites)) {
-          return;
+        if (isDuplicateSite(site.url, sites)) {
+          return "Site with the same URL already exists.";
         }
         const data = getLocalSites();
 
@@ -237,7 +248,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
   }
 
   function getLocalSites(): LocalData {
-    return JSON.parse(localStorage.getItem("top sites")) || {};
+    return getLocalStorageItem<LocalData>("top sites") || {};
   }
 
   if (!sites) {

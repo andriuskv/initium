@@ -12,7 +12,7 @@ type Props = {
     body?: ReactNode
   },
   visible: boolean,
-  ref: RefObject<HTMLButtonElement>,
+  ref: RefObject<HTMLButtonElement | null>,
   toggleDropdown: (event: MouseEvent) => void
 }
 

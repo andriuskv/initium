@@ -8,7 +8,7 @@ import "./middle-top.css";
 type Props = {
   locale: any,
   settings: Settings,
-  updateContextSetting: (name: string, setting: Partial<Settings[keyof Settings]>) => void,
+  updateContextSetting: (name: keyof Settings, setting: Partial<Settings[keyof Settings]>) => void,
   hiding: boolean,
   hide: () => void
 }
@@ -30,12 +30,16 @@ export default function MiddleTop({ settings, locale, updateContextSetting, hidi
   }
 
   function changeAlignment(alignment: "start" | "center" | "end", id: string) {
-    const item = items.find(item => item.id === id);
+    const index = items.findIndex(item => item.id === id);
 
-    item.alignment = alignment;
-
+    if (index < 0) {
+      return;
+    }
     updateContextSetting("general", {
-      middleTopOrder: items
+      middleTopOrder: items.with(index, {
+        ...items[index],
+        alignment
+      })
     });
   }
 

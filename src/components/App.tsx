@@ -10,6 +10,7 @@ import Placement from "components/Placement";
 import Tooltip from "components/Tooltip";
 import Notification from "components/Notification";
 import FullscreenItems from "components/FullscreenItems";
+import { getLocalStorageItem } from "utils";
 
 const MainPanel = lazy(() => import("./MainPanel"));
 const StickyNotes = lazy(() => import("./StickyNotes"));
@@ -30,7 +31,7 @@ export default function App() {
 
       if (json.messages) {
         const currentDate = Date.now();
-        const localAnnouncements: Announcement[] = (JSON.parse(localStorage.getItem("announcements")) || [])
+        const localAnnouncements = (getLocalStorageItem<Announcement[]>("announcements") || [])
           .filter(a => a.expires > currentDate);
         const newMessages = (json.messages as Announcement[])
           .filter(m => !localAnnouncements.some((l => l.id === m.id)));

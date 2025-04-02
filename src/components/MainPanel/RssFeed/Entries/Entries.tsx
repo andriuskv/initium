@@ -21,11 +21,11 @@ type Props = {
 }
 
 export default function Entries({ navigation, feeds, locale, selectFeed, previousShift, nextShift, showFeedList, markEntryAsRead, expandEntry }: Props) {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLUListElement>(null);
   const { activeIndex, shift, animateLeft, animateRight } = navigation;
 
   function handleFeedSelection(event: MouseEvent, index: number) {
-    selectFeed(event.target as HTMLElement, index, containerRef.current);
+    selectFeed(event.target as HTMLElement, index, containerRef.current as HTMLElement);
   }
 
   function getEntryDescription(description: string) {

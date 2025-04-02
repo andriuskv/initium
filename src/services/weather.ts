@@ -84,7 +84,7 @@ function convertTemperature(value: number, units: "C" | "F") {
   return (value - 32) / 1.8;
 }
 
-function convertWindSpeed({ value, raw }, units: "m/s" | "ft/s") {
+function convertWindSpeed({ value, raw }: { value: number, raw: number }, units: "m/s" | "ft/s") {
   if (units === "m/s") {
     value = raw * 0.3048;
   }

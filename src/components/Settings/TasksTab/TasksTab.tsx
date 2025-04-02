@@ -1,6 +1,6 @@
 import { useSettings } from "contexts/settings";
 
-export default function Tasks({ locale }) {
+export default function Tasks({ locale }: { locale: any }) {
   const { settings: { tasks: settings }, toggleSetting } = useSettings();
 
   return (

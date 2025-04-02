@@ -28,7 +28,7 @@ type Props = {
 export default function Form({ initialForm, noteCount, locale, discardNote, showForm }: Props) {
   const { createNote, removeNote } = useNotes();
   const [movable, setMovable] = useState(false);
-  const [form, setForm] = useState<FormType>(null);
+  const [form, setForm] = useState<FormType | null>(null);
   const [scaleViewVisible, setScaleViewVisible] = useState(false);
   const containerRef = useRef(null);
   const moving = useRef(false);
@@ -98,6 +98,9 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
     moving.current = true;
 
     requestAnimationFrame(() => {
+      if (!form) {
+        return;
+      }
       const x = event.clientX / document.documentElement.clientWidth * 100;
       const y = event.clientY / document.documentElement.clientHeight * 100;
 
@@ -117,12 +120,18 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
   }
 
   function handleInputChange(event: FormEvent) {
+    if (!form) {
+      return;
+    }
     const element = event.target as HTMLTextAreaElement;
 
     setForm({ ...form, [element.name]: element.value });
   }
 
   function moveNote(event: ReactKeyboardEvent) {
+    if (!form) {
+      return;
+    }
     const element = event.target as HTMLElement;
     const elementParent = element.parentElement as HTMLElement;
     const amount = event.ctrlKey ? 10 : 1;
@@ -145,6 +154,9 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
   }
 
   function updateBackgroundColor(color: string) {
+    if (!form) {
+      return;
+    }
     setForm({ ...form, backgroundColor: color });
   }
 
@@ -153,6 +165,9 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
   }
 
   function updateTextColor(index: number) {
+    if (!form) {
+      return;
+    }
     const color = textColors[index];
     const string = getTextColor(color, form.textStyle.opacity);
 
@@ -160,23 +175,35 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
   }
 
   function adjustTextOpacity(direction: 1 | -1) {
+    if (!form) {
+      return;
+    }
     const opacity = form.textStyle.opacity + 10 * direction;
     const string = getTextColor(form.textStyle.color, opacity);
 
     setForm({ ...form, textStyle: { ...form.textStyle, opacity, string } });
   }
 
-  function adjustScale(key: string, direction: 1 | -1) {
+  function adjustScale(key: "scale" | "textScale", direction: 1 | -1) {
+    if (!form) {
+      return;
+    }
     setForm({ ...form, [key]: round(form[key] + 0.125 * direction, 4) });
   }
 
   function saveNote() {
-    createNote(form);
+    if (!form) {
+      return;
+    }
+    createNote({
+      ...form,
+      index: undefined
+    });
     discardNote(false);
   }
 
   function enableNoteDrag(event: ReactMouseEvent) {
-    if (event.button === 0) {
+    if (event.button === 0 && form) {
       setMovable(true);
       setForm({
         ...form,
@@ -198,6 +225,9 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
   }
 
   function handleRangeInputChange({ target }: ChangeEvent) {
+    if (!form) {
+      return;
+    }
     const { name, value } = target as HTMLInputElement;
 
     if (name === "scale") {
@@ -222,7 +252,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
       style={{ "--x": form.x, "--y": form.y, "--tilt": form.tilt, "--scale": form.scale, "--text-scale": form.textScale, "--background-color": form.backgroundColor, "--text-color": form.textStyle.string } as CSSProperties}>
       <div className="sticky-note-drag-handle" onPointerDown={enableNoteDrag} onKeyDown={moveNote} title={movable ? "" : locale.global.move} tabIndex={0}></div>
       <textarea className="input textarea sticky-note-content sticky-note-input" name="content" onChange={handleInputChange}
-        value={form.content} placeholder={`Content #${form.action === "edit" ? form.index + 1 : noteCount + 1}`}></textarea>
+        value={form.content} placeholder={`Content #${form.action === "edit" ? form.index! + 1 : noteCount + 1}`}></textarea>
       {movable ? null : (
         <>
           {scaleViewVisible ? (
@@ -297,7 +327,7 @@ export default function Form({ initialForm, noteCount, locale, discardNote, show
               <Icon id="scale"/>
             </button>
             {initialForm.action === "edit" ? (
-              <button className="btn icon-btn" onClick={() => removeNote(initialForm.id)}>
+              <button className="btn icon-btn" onClick={() => removeNote(initialForm.id!)}>
                 <Icon id="trash"/>
               </button>
             ) : null}

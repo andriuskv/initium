@@ -2,7 +2,7 @@ export type Label = {
   id: string,
   name: string,
   color: string,
-  flagged: boolean
+  flagged?: boolean
 }
 
 export type Subtask = {
@@ -14,33 +14,37 @@ export type Subtask = {
   removed?: boolean
 }
 
+export type TaskRepeatHistory = {
+  id: string,
+  status: number,
+  elapsed?: number,
+  dateString?: string
+}
+
+export type TaskRepeat = {
+  start: number,
+  gap: number,
+  unit: "day" | "week" | "month",
+  limit: number,
+  status?: number,
+  number: number,
+  history?: TaskRepeatHistory[]
+}
+
 export type TaskType = {
   id: string,
   rawText: string,
   text?: string,
   subtasks: Subtask[],
-  labels?: Label[],
+  labels: Label[],
   hidden?: boolean,
-  creationDate?: number,
+  creationDate: number,
   completeWithSubtasks?: boolean,
   expirationDate?: number,
   expirationDateString?: string,
   removed?: boolean,
   removedThroughForm?: boolean,
-  repeat?: {
-    start?: number,
-    gap: number,
-    unit: "day" | "week" | "month",
-    limit?: number,
-    status?: number,
-    number?: number,
-    history?: {
-      id: string,
-      status: number,
-      elapsed?: number,
-      dateString?: string
-    }[]
-  }
+  repeat?: TaskRepeat
 }
 
 export type Group = {
@@ -48,18 +52,19 @@ export type Group = {
   name: string,
   tasks: TaskType[],
   expanded: boolean,
-  taskCount?: number,
+  taskCount: number,
   hiding?: boolean,
   renameEnabled?: boolean,
   state?: "collapsing" | "expanding"
 }
 
 export type TaskForm = {
+  creationDate?: number,
   updating?: boolean,
   groupIndex?: number,
   taskIndex?: number,
   groupId?: string,
   selectedGroupId?: string,
-  completeWithSubtasks: boolean,
-  task: TaskType
+  completeWithSubtasks?: boolean,
+  task: Omit<TaskType, "labels">
 }

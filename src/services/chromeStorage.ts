@@ -62,9 +62,9 @@ async function set(value: { [key: string]: unknown }, { updateLocally, warnSize 
       return checkSize(id);
     }
   } catch (e) {
-    console.log(e.message);
+    console.log((e as Error).message);
 
-    if (e.message?.startsWith("QUOTA_BYTES_PER_ITEM")) {
+    if ((e as Error).message?.startsWith("QUOTA_BYTES_PER_ITEM")) {
       return {
         usedRatio: 1,
         message: "Storage is full, no data was saved."

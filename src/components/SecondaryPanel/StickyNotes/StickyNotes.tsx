@@ -71,7 +71,7 @@ export default function StickyNotes({ locale, hide }: { locale: any, hide: () =>
                 </button>
               </Dropdown>
               {note.hidden && <Icon id="eye-off" className="sticky-notes-list-item-hidden-icon" title="Hidden"/>}
-              <p className="sticky-notes-list-item-content" dangerouslySetInnerHTML={{ __html: note.contentDisplayString }}></p>
+              <p className="sticky-notes-list-item-content" dangerouslySetInnerHTML={{ __html: note.contentDisplayString! }}></p>
             </li>
           ))}
         </ul>

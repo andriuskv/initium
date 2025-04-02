@@ -1,7 +1,7 @@
 export type Note = {
   index?: number,
   action?: string,
-  id?: string,
+  id: string,
   hidden?: boolean,
   togglingHide?: boolean,
   content: string,
@@ -12,9 +12,9 @@ export type Note = {
   x: number;
   y: number;
   tilt: number;
-  scale?: number,
-  textScale?: number,
-  textStyle?: {
+  scale: number,
+  textScale: number,
+  textStyle: {
     index: number,
     color: number[],
     opacity: number,

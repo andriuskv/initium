@@ -6,7 +6,7 @@ import "./wallpaper.css";
 
 
 type WallpaperType = {
-  url: string,
+  url?: string,
   type?: "image" | "video",
   id?: string;
   x?: number,
@@ -16,7 +16,7 @@ type WallpaperType = {
 const VideoWallpaper = lazy(() => import("./VideoWallpaper"));
 
 export default function Wallpaper({ settings }: {settings: WallpaperSettings }) {
-  const [wallpaper, setWallpaper] = useState<WallpaperType>(null);
+  const [wallpaper, setWallpaper] = useState<WallpaperType | null>(null);
   const firstRender = useRef(true);
 
   useEffect(() => {
@@ -34,18 +34,21 @@ export default function Wallpaper({ settings }: {settings: WallpaperSettings }) 
         image.onload = () => {
           removeDownscaled(start);
         };
-        image.src = wallpaper.url;
+
+        if (wallpaper.url) {
+          image.src = wallpaper.url;
+        }
       }
     }
   }, [wallpaper]);
 
   async function init(settings: WallpaperSettings) {
     if (settings.type === "blob") {
-      let url = wallpaper?.url;
+      let { id, url } = wallpaper ? wallpaper : {};
 
-      if (settings.id !== wallpaper?.id) {
+      if (settings.id !== id) {
         try {
-          const file = await getIDBWallpaper(settings.id);
+          const file = await getIDBWallpaper(settings.id!);
           url = URL.createObjectURL(file);
 
           setWallpaper({
@@ -114,7 +117,7 @@ export default function Wallpaper({ settings }: {settings: WallpaperSettings }) 
     return null;
   }
 
-  if (wallpaper.type === "video") {
+  if (wallpaper.type === "video" && wallpaper.url) {
     return (
       <Suspense fallback={null}>
         <VideoWallpaper url={wallpaper.url} playbackSpeed={settings.videoPlaybackSpeed} removeDownscaled={removeDownscaled}/>

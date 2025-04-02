@@ -1,3 +1,4 @@
+import { getLocalStorageItem } from "utils";
 import type { TimeDateSettings } from "types/settings";
 import type { Announcement } from "types/announcement";
 import { formatDate } from "services/timeDate";
@@ -5,7 +6,7 @@ import { getSetting } from "services/settings";
 import "./logs.css";
 
 export default function LogsTab() {
-  const announcements: Announcement[] = (JSON.parse(localStorage.getItem("announcements")) || []);
+  const announcements: Announcement[] = (getLocalStorageItem("announcements") || []);
   const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
 
   return (

@@ -10,7 +10,7 @@ type Props = {
 
 export default function GoogleUserDropdown({ className, user, handleSignOut }: Props) {
   return (
-    <Dropdown container={className ? { className } : null} toggle={{
+    <Dropdown container={className ? { className } : undefined} toggle={{
       title: user.name,
       body: <img src={user.photo} className="google-user-dropdown-toggle-image" alt=""/>,
       className: "google-user-dropdown-toggle-btn"

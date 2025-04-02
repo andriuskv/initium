@@ -11,8 +11,7 @@
 .notification {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  min-width: 200px;
+  min-width: 320px;
   max-width: 360px;
   animation-duration: var(--duration-n);
   animation-fill-mode: both;
@@ -34,10 +33,9 @@
 
 .notification-top {
   display: flex;
-  align-items: center;
+  justify-content: flex-start;
   gap: var(--space-md);
   padding: var(--space-md);
-  border-bottom: 1px solid var(--color-white-10);
 }
 
 .notification-title {
@@ -45,8 +43,12 @@
   font-weight: bold;
 }
 
-.notification-content {
-  padding-inline: var(--space-xl);
+.notification-body {
+  padding: var(--space-md);
+}
+
+.notification-text {
+  padding-inline: var(--space-md);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -54,8 +56,7 @@
 .notification-bottom {
   display: flex;
   justify-content: flex-end;
-  padding-right: var(--space-md);
-  padding-bottom: var(--space-md);
+  margin-top: var(--space-lg);
 
    &:has(:nth-last-child(n + 2)) {
     justify-content: space-between;

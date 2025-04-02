@@ -1,12 +1,13 @@
-import eslint from "@eslint/js";
+import js from "@eslint/js";
 import tsEslint from "typescript-eslint";
 import tsParser from "@typescript-eslint/parser";
 import globals from "globals";
 import react from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
+import css from "@eslint/css";
 
 export default [
-  eslint.configs.recommended,
+  js.configs.recommended,
   ...tsEslint.configs.recommended,
   react.configs.flat.recommended,
   {
@@ -121,6 +122,20 @@ export default [
       "use-isnan": 2,
       "valid-typeof": 2,
       "wrap-iife": [2, "inside"]
+    }
+  },
+  {
+    files: ["**/*.css"],
+    plugins: {
+      css
+    },
+    language: "css/css",
+    ...css.configs.recommended,
+    rules: {
+      "css/no-duplicate-imports": "error",
+      "css/require-baseline": ["warn", {
+        available: "widely"
+      }]
     }
   }
 ];

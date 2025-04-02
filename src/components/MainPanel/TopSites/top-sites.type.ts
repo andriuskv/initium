@@ -5,6 +5,13 @@ export type Site = {
   local?: boolean
 }
 
+export type PersistentSite = {
+  id: string,
+  url: string,
+  title: string,
+  iconUrl?: string
+}
+
 export type FormType = {
   index?: number,
   updating?: boolean,

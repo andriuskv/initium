@@ -8,7 +8,7 @@ import Icon from "components/Icon";
 import "./wallpaper.css";
 import type { WallpaperSettings } from "types/settings";
 
-export default function Wallpaper({ locale }) {
+export default function Wallpaper({ locale }: { locale: any }) {
   const { settings: { appearance: settings }, updateContextSetting } = useSettings();
   const [wallpaperInfo, setWallpaperInfo] = useState(() => getWallpaperInfo());
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
@@ -32,7 +32,7 @@ export default function Wallpaper({ locale }) {
     };
   }, []);
 
-  function handleWallpaperInfoUpdate({ detail }: CustomEvent) {
+  function handleWallpaperInfoUpdate({ detail }: CustomEventInit) {
     setWallpaperInfo(detail);
   }
 
@@ -148,7 +148,10 @@ export default function Wallpaper({ locale }) {
       input.setAttribute("accept", "image/*,video/mp4,video/webm");
       input.onchange = ({ target }) => {
         const input = target as HTMLInputElement;
-        resolve(input.files[0]);
+
+        if (input.files) {
+          resolve(input.files[0]);
+        }
         input.onchange = null;
       };
       input.click();

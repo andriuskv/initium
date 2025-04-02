@@ -1,7 +1,7 @@
 import { useSettings } from "contexts/settings";
 import type { ChangeEvent } from "react";
 
-export default function TimersTab({ locale }) {
+export default function TimersTab({ locale }: { locale: any }) {
   const { settings: { timers: settings }, updateContextSetting, toggleSetting } = useSettings();
 
   function handleVolumeChange({ target }: ChangeEvent) {

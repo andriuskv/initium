@@ -1,12 +1,11 @@
 import type { Settings, MainPanelSettings, MainPanelComponents } from "types/settings";
-import { generateNoise } from "../utils";
+import { generateNoise, getLocalStorageItem } from "../utils";
 
 let settings = initSettings();
 
 function initSettings() {
-  const item = localStorage.getItem("settings");
-  const settings: Partial<Settings> = item ? JSON.parse(item) : {};
-  return fillMissing(settings, getDefault());
+  const settings = getLocalStorageItem<Partial<Settings>>("settings") || {};
+  return fillMissing(settings, getDefault()) as Settings;
 }
 
 function initAppearanceSettings(settings: Settings["appearance"]) {
@@ -152,16 +151,17 @@ function getDefault(): Settings {
   };
 }
 
-function fillMissing(target: Partial<Settings>, source: Settings) {
+
+function fillMissing(target: { [key: string]: unknown }, source: { [key: string]: unknown }) {
   for (const key of Object.keys(source)) {
     if (typeof target[key] === "undefined") {
       target[key] = source[key];
     }
-    else if (typeof target[key] === "object") {
-      target[key] = fillMissing(target[key], source[key]);
+    else if (target[key] && typeof target[key] === "object") {
+      target[key] = fillMissing(target[key] as { [key: string]: unknown }, source[key] as { [key: string]: unknown });
     }
   }
-  return target as Settings;
+  return target;
 }
 
 function resetSettings() {
@@ -178,14 +178,14 @@ function getSetting(name: keyof Settings) {
   return settings[name];
 }
 
-function setSetting(name: string, value: Settings[keyof Settings]) {
-  settings[name] = value;
+function setSetting(name: keyof Settings, value: Settings[keyof Settings]) {
+  (settings[name] as Settings[keyof Settings]) = value;
   localStorage.setItem("settings", JSON.stringify(settings));
   return settings;
 }
 
-function updateSetting(name: string, value: Partial<Settings[keyof Settings]>) {
-  settings[name] = { ...settings[name], ...value };
+function updateSetting(name: keyof Settings, value: Partial<Settings[keyof Settings]>) {
+  (settings[name] as Settings[keyof Settings]) = { ...settings[name], ...value };
   localStorage.setItem("settings", JSON.stringify(settings));
   return settings;
 }

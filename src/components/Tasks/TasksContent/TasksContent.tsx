@@ -1,5 +1,5 @@
 import type { AppearanceSettings, GeneralSettings, TasksSettings, TimeDateSettings } from "types/settings";
-import type { Group, TaskType, Subtask, TaskForm } from "../tasks.type";
+import type { Group, Label, TaskRepeat, TaskRepeatHistory, TaskType, Subtask, TaskForm } from "../tasks.type";
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { getRandomString, timeout, replaceLink } from "utils";
 import * as chromeStorage from "services/chromeStorage";
@@ -30,9 +30,9 @@ type Props = {
 }
 
 export default function Tasks({ settings, generalSettings, locale, expanded, toggleSize }: Props) {
-  const [groups, setGroups] = useState<Group[]>(null);
+  const [groups, setGroups] = useState<Group[] | null>(null);
   const [removedItems, setRemovedItems] = useState<{ groupIndex: number, taskIndex: number, subtaskIndex?: number }[]>([]);
-  const [form, setForm] = useState<TaskForm>(null);
+  const [form, setForm] = useState<TaskForm | null>(null);
   const [activeComponent, setActiveComponent] = useState<"form" | "groups" | "">("");
   const [taskCount, setTaskCount] = useState(0);
   const [storageWarning, setStorageWarning] = useState<{ message: string } | null>(null);
@@ -133,7 +133,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function initGroups(groups: Group[], shouldSave: boolean) {
-    const modified = checkGroups(groups);
+    let modified = checkGroups(groups);
 
     setGroups(groups.map((group, index) => {
       if (index === 0 && !group.expanded) {
@@ -143,6 +143,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       if (group.id === "unorganized") {
         group.id = "default";
         group.name = "Default";
+        modified = true;
       }
       group.tasks.map(task => {
         task = parseTask(task) as TaskType;
@@ -155,7 +156,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
           return label;
         });
 
-        if (task.repeat) {
+        if (task.repeat?.history) {
           task.repeat.history = task.repeat.history.map(item => {
             item.id = getRandomString(4);
             return item;
@@ -178,6 +179,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       id: "default",
       name: "Default",
       expanded: true,
+      taskCount: 0,
       tasks: []
     };
   }
@@ -191,16 +193,22 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       locale: dateLocale,
       includeTime: true
     });
-    const historyItem = task.repeat.history.at(-1);
 
-    historyItem.dateString = `Resets on ${dateString}`;
-    historyItem.elapsed = ratio * 100;
+    if (task.repeat?.history) {
+      const historyItem = task.repeat.history.at(-1)!;
+
+      historyItem.dateString = `Resets on ${dateString}`;
+      historyItem.elapsed = ratio * 100;
+    }
   }
 
   function updateTaskRepeatHistory(task: TaskType, missedCount: number) {
-    const lastItem = task.repeat.history.at(-1);
+    if (!task.repeat || !task.repeat.history) {
+      return;
+    }
+    const lastItem = task.repeat.history.at(-1)!;
 
-    task.repeat.number += missedCount;
+    task.repeat.number = task.repeat.number ? task.repeat.number + missedCount : missedCount;
     task.repeat.history[task.repeat.history.length - 1] = {
       id: getRandomString(4),
       status: lastItem.status !== COMPLETED_STATUS ? FAILED_STATUS : lastItem.status
@@ -223,7 +231,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }
   }
 
-  function getMonthGap(task: TaskType, start: number) {
+  function getMonthGap(repeatGap: number, start: number) {
     const startDate = new Date(start);
     let year = startDate.getFullYear();
     let month = startDate.getMonth();
@@ -231,7 +239,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     const hours = startDate.getHours();
     const minutes = startDate.getMinutes();
 
-    for (let i = 0; i < task.repeat.gap; i += 1) {
+    for (let i = 0; i < repeatGap; i += 1) {
       month += 1;
 
       if (month > 11) {
@@ -246,14 +254,14 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return new Date(endDate.getFullYear(), endDate.getMonth(), endDateDays).getTime() - start;
   }
 
-  function getRepeatStatus(task: TaskType, current: number) {
-    const { start } = task.repeat;
+  function getRepeatStatus(taskRepeat: TaskRepeat, current: number) {
+    const { start } = taskRepeat;
     const hourInMs = 60 * 60 * 1000;
 
-    if (task.repeat.unit === "day" || task.repeat.unit === "week") {
-      let gap = 24 * hourInMs * task.repeat.gap;
+    if (taskRepeat.unit === "day" || taskRepeat.unit === "week") {
+      let gap = 24 * hourInMs * taskRepeat.gap;
 
-      if (task.repeat.unit === "week") {
+      if (taskRepeat.unit === "week") {
         gap *= 7;
       }
       const direction = getDSTChangeDirection(start, current);
@@ -275,15 +283,15 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         nextDate: next
       };
     }
-    else if (task.repeat.unit === "month") {
-      let next = start + getMonthGap(task, start);
+    else if (taskRepeat?.unit === "month") {
+      let next = start + getMonthGap(taskRepeat.gap, start);
       let prev = start;
       let missed = 0;
 
       while (next < current) {
         prev = next;
         missed += 1;
-        next += getMonthGap(task, next);
+        next += getMonthGap(taskRepeat.gap, next);
       }
 
       return {
@@ -305,7 +313,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       group.tasks = group.tasks.map(task => {
         if (task.repeat) {
           task.repeat.start ??= task.creationDate;
-          const { missed, prevDate, nextDate } = getRepeatStatus(task, currentDate);
+          const { missed, prevDate, nextDate } = getRepeatStatus(task.repeat, currentDate);
 
           if (missed > 0) {
             updateTaskRepeatHistory(task, missed);
@@ -326,7 +334,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         if (task.expirationDate) {
           return task.expirationDate > currentDate;
         }
-        else if (task.repeat?.limit > 0 && task.repeat.number >= task.repeat.limit) {
+        else if (task.repeat && (task.repeat.limit > 0 && task.repeat.number >= task.repeat.limit)) {
           return false;
         }
         return true;
@@ -341,9 +349,8 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
   function parseBaseTask(task: TaskType | Subtask) {
     task.id = getRandomString();
-    task.rawText ??= task.text;
-    task.rawText = task.rawText.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
-    task.text = replaceLink(task.rawText, "task-link", generalSettings.openLinkInNewTab);
+    task.text = task.rawText.replace(/<(.+?)>/g, (_, g1) => `&lt;${g1}&gt;`);
+    task.text = replaceLink(task.text, "task-link", generalSettings.openLinkInNewTab);
     return task;
   }
 
@@ -362,6 +369,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function removeTask(groupIndex: number, taskIndex: number, removedThroughForm = false) {
+    if (!groups) {
+      return;
+    }
     const group = groups[groupIndex];
     const task = group.tasks[taskIndex];
     const removedTaskCount = group.tasks.reduce((total, task) => {
@@ -386,6 +396,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function removeSubtask(groupIndex: number, taskIndex: number, subtaskIndex: number) {
+    if (!groups) {
+      return;
+    }
     const task = groups[groupIndex].tasks[taskIndex];
     const subtask = task.subtasks[subtaskIndex];
 
@@ -412,10 +425,16 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function setRepeatingTaskStatus(task: TaskType, status: number) {
-    task.repeat.history[task.repeat.history.length - 1].status = status;
+    if (task.repeat?.history) {
+      task.repeat.history[task.repeat.history.length - 1].status = status;
+    }
   }
 
   function removeCompletedItems() {
+    if (!groups) {
+      return;
+    }
+
     for (const group of groups) {
       delete group.hiding;
       group.tasks = group.tasks.map(task => {
@@ -457,12 +476,15 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function undoRemovedTasks() {
+    if (!groups) {
+      return;
+    }
     for (const { groupIndex, taskIndex, subtaskIndex } of removedItems) {
       const group = groups[groupIndex];
       const task = group.tasks[taskIndex];
       group.hiding = false;
 
-      if (subtaskIndex >= 0) {
+      if (typeof subtaskIndex === "number" && subtaskIndex >= 0) {
         delete task.subtasks[subtaskIndex].removed;
       }
       else {
@@ -475,6 +497,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function editTask(groupIndex: number, taskIndex: number) {
+    if (!groups) {
+      return;
+    }
     const group = groups[groupIndex];
     const { id, rawText, subtasks, creationDate, expirationDate, repeat, completeWithSubtasks } = group.tasks[taskIndex];
 
@@ -498,11 +523,16 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function removeFormTask() {
-    removeTask(form.groupIndex, form.taskIndex, true);
+    if (form && typeof form.groupIndex === "number" && typeof form.taskIndex === "number") {
+      removeTask(form.groupIndex, form.taskIndex, true);
+    }
     hideForm();
   }
 
   function toggleGroupVisibility(group: Group) {
+    if (!groups) {
+      return;
+    }
     const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
 
     if (group.expanded) {
@@ -514,6 +544,10 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }
 
     groupToggleTimeoutId.current = timeout(() => {
+      if (!groups) {
+        return;
+      }
+
       if (group.state === "collapsing") {
         group.expanded = false;
       }
@@ -541,6 +575,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function createGroup(group: Group) {
+    if (!groups) {
+      return;
+    }
     // Insert new group after the default group
     updateGroups(groups.toSpliced(1, 0, group));
   }
@@ -549,15 +586,16 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     setActiveComponent("");
   }
 
-  function cleanupTask(task: TaskType) {
+  function cleanupTask(task: Partial<TaskType>) {
     delete task.id;
     delete task.text;
     delete task.removed;
     delete task.expirationDateString;
+    delete task.removedThroughForm;
     return task;
   }
 
-  function cleanupSubtask(task: Subtask) {
+  function cleanupSubtask(task: Partial<Subtask>) {
     delete task.id;
     delete task.text;
     delete task.removed;
@@ -568,34 +606,35 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return task;
   }
 
-  async function saveTasks(groups: Group[]) {
+  async function saveTasks(groups: Partial<Group>[]) {
     const data = await chromeStorage.set({ tasks: structuredClone(groups).map(group => {
       delete group.state;
       delete group.hiding;
       delete group.taskCount;
 
-      group.tasks = group.tasks.map(task => {
-        task = cleanupTask(task);
-        task.subtasks = task.subtasks.map(cleanupSubtask);
-        task.labels = task.labels.map(label => {
+      group.tasks = group.tasks?.map(task => {
+        const cleanTask = cleanupTask(task);
+
+        cleanTask.subtasks = task.subtasks.map(cleanupSubtask) as Subtask[];
+        cleanTask.labels = (task.labels as Partial<Label>[]).map(label => {
           delete label.id;
           return label;
-        });
+        }) as Label[];
 
-        if (task.repeat) {
-          task.repeat.history = task.repeat.history.map(item => {
+        if (cleanTask.repeat?.history) {
+          cleanTask.repeat.history = (cleanTask.repeat.history as Partial<TaskRepeatHistory>[]).map(item => {
             delete item.id;
             delete item.elapsed;
             delete item.dateString;
             return item;
-          });
+          }) as TaskRepeatHistory[];
         }
-        return task;
-      });
+        return cleanTask;
+      }) as TaskType[];
       return group;
     })}, { warnSize: true });
 
-    if (data?.usedRatio === 1) {
+    if (data?.usedRatio === 1 && data?.message) {
       setStorageWarning({ message: data.message });
     }
     else {
@@ -614,6 +653,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function replaceGroups(items: { index: number, group: Group}[], shouldSave = true) {
+    if (!groups) {
+      return;
+    }
     let newGroups = groups;
 
     for (const item of items) {

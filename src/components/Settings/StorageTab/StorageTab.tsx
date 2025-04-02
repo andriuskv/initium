@@ -16,15 +16,15 @@ type Item = {
 }
 
 type Stats = {
-  maxStorage?: number;
-  maxStorageFormatted?: string;
+  maxStorage: number;
+  maxStorageFormatted: string;
   usedStorageFormatted: string;
   usedStorage: number;
   usedStorageInPercent: number;
   dashoffset: number;
 }
 
-export default function StorageTab({ locale }) {
+export default function StorageTab({ locale }: { locale: any }) {
   const [items, setItems] = useState<Item[]>(() => [
     {
       name: "tasks",
@@ -71,11 +71,11 @@ export default function StorageTab({ locale }) {
       fullName: locale.settings.storage.sticky_notes
     }
   ]);
-  const [stats, setStats] = useState<Stats>(() => getInitStats());
+  const [stats, setStats] = useState<Stats>(() => getInitStats(items.length));
   const [dataMessage, setDataMessage] = useState("");
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const ready = useRef(false);
-  const storageItems = useRef([]);
+  const storageItems = useRef<string[]>([]);
   const storageTimeoutId = useRef(0);
 
   useEffect(() => {
@@ -107,13 +107,11 @@ export default function StorageTab({ locale }) {
       item.usageRatio = usedRatio;
       item.usedStorage = usedFormated;
     }
-    const maxStorage = items.length * chromeStorage.MAX_QUOTA;
-    const usageRatio = usedStorage / maxStorage;
+    const usageRatio = usedStorage / stats.maxStorage;
 
     setItems([...items]);
     setStats({
-      maxStorage,
-      maxStorageFormatted: formatBytes(maxStorage),
+      ...stats,
       usedStorage,
       usedStorageInPercent: Math.ceil(usageRatio * 100),
       usedStorageFormatted: formatBytes(usedStorage, { excludeUnits: true }),
@@ -129,13 +127,16 @@ export default function StorageTab({ locale }) {
     for (const name of storageItems.current) {
       const { used, usedFormated, usedRatio } = await chromeStorage.getBytesInUse(name);
       const item = items.find(item => item.name === name);
-      const byteDiff = used - item.bytes;
 
-      item.bytes = used;
-      item.usageRatio = usedRatio;
-      item.usedStorage = usedFormated;
+      if (item) {
+        const byteDiff = used - (item.bytes || 0);
 
-      usedStorage += byteDiff;
+        item.bytes = used;
+        item.usageRatio = usedRatio;
+        item.usedStorage = usedFormated;
+
+        usedStorage += byteDiff;
+      }
     }
     const usageRatio = usedStorage / stats.maxStorage;
 
@@ -151,8 +152,12 @@ export default function StorageTab({ locale }) {
     storageItems.current.length = 0;
   }
 
-  function getInitStats(): Stats {
+  function getInitStats(itemCount: number): Stats {
+    const maxStorage = itemCount * chromeStorage.MAX_QUOTA;
+
     return {
+      maxStorage,
+      maxStorageFormatted: formatBytes(maxStorage),
       usedStorageFormatted: "",
       usedStorage: 0,
       usedStorageInPercent: 0,
@@ -173,7 +178,7 @@ export default function StorageTab({ locale }) {
 
   async function createDataBackup() {
     const { default: saveAs } = await import("file-saver");
-    const backup = {};
+    const backup: { [key: string]: any } = {};
 
     for (const item of items) {
       const data = await chromeStorage.get(item.name);
@@ -213,7 +218,7 @@ export default function StorageTab({ locale }) {
     event.preventDefault();
 
     try {
-      if (modal.confirmInputValue !== "restore") {
+      if (modal?.confirmInputValue !== "restore") {
         return;
       }
       const [fileHandle] = await (window as any).showOpenFilePicker({
@@ -253,7 +258,7 @@ export default function StorageTab({ locale }) {
   function wipeAllData(event: FormEvent) {
     event.preventDefault();
 
-    if (modal.confirmInputValue !== "wipe all data") {
+    if (modal?.confirmInputValue !== "wipe all data") {
       return;
     }
     for (const item of items) {
@@ -268,7 +273,10 @@ export default function StorageTab({ locale }) {
 
   function removeItem() {
     setModal(null);
-    chromeStorage.remove(modal.item.name);
+
+    if (modal) {
+      chromeStorage.remove(modal.item.name);
+    }
   }
 
   if (!ready.current) {
@@ -304,7 +312,7 @@ export default function StorageTab({ locale }) {
                 <div>{item.usedStorage}</div>
               </div>
               <div className="storage-item-bar">
-                {item.usageRatio > 0 ? (
+                {typeof item.usageRatio === "number" && item.usageRatio > 0 ? (
                   <div className={`storage-item-bar-inner${item.usageRatio > 0.9 ? " full" : ""}`}
                     style={{ "--scale": item.usageRatio, "--index": i } as CSSProperties}>
                   </div>

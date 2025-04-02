@@ -8,7 +8,10 @@ export default function Notification() {
 
   function handleActionClick(notification: Notification) {
     dismissNotification(notification.id);
-    notification.action();
+
+    if (notification.action) {
+      notification.action();
+    }
   }
 
   if (!notifications.length) {
@@ -18,16 +21,18 @@ export default function Notification() {
     <div className="notifications">
       {notifications.map(notification => (
         <div className={`container notification${notification.hiding ? " hiding" : ""}`} key={notification.id}>
-          {notification.title ? <div className="notification-top">
+          {notification.title ? <div className="container-header notification-top">
             {notification.iconId ? <Icon id={notification.iconId}/>: null}
             {notification.title ? <p className="notification-title">{notification.title}</p>: null}
           </div> : null}
-          <p className="notification-content">{notification.content}</p>
-          <div className="notification-bottom">
-            {notification.action ? (
-              <button className="btn text-btn" onClick={() => handleActionClick(notification)}>{notification.actionTitle}</button>
-            ) : null}
-            <button className="btn text-btn" onClick={() => dismissNotification(notification.id)}>Dismiss</button>
+          <div className="container-body notification-body">
+            <p className="notification-text">{notification.content}</p>
+            <div className="notification-bottom">
+              {notification.action ? (
+                <button className="btn text-btn" onClick={() => handleActionClick(notification)}>{notification.actionTitle}</button>
+              ) : null}
+              <button className="btn text-btn" onClick={() => dismissNotification(notification.id)}>Dismiss</button>
+            </div>
           </div>
         </div>
       ))}

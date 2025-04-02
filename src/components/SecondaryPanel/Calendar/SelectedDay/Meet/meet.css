@@ -1,0 +1,25 @@
+.reminder-list-item-meet {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-sm);
+}
+
+.reminder-list-item-meet-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.reminder-list-item-meet-link-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.reminder-list-item-meet-link {
+  white-space: nowrap;
+}
+
+.reminder-list-item-meet-label {
+  font-size: var(--text-sm);
+}

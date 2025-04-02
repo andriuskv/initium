@@ -53,6 +53,7 @@ export default function Resizer({ saveHeight }: Props) {
       containerRef.current!.style.setProperty("--height", `${height.current}px`);
     }
     saveHeight(height.current);
+    // eslint-disable-next-line react-compiler/react-compiler
     document.body.style.userSelect = "";
     window.removeEventListener("pointermove", handlePointerMove);
   }

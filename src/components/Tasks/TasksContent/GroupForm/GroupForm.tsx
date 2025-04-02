@@ -26,6 +26,7 @@ export default function GroupForm({ locale, createGroup, modal = false, hiding, 
       id: getRandomString(4),
       name: elements.name.value.trim(),
       expanded: true,
+      taskCount: 0,
       tasks: []
     });
 

@@ -1,5 +1,5 @@
 let timeoutId = 0;
-let params = null;
+let params: { id: string, duration: number } | null = null;
 
 onmessage = function({ data }) {
   const { id, type, action, duration } = data;
@@ -22,12 +22,15 @@ onmessage = function({ data }) {
     clearTimeout(timeoutId);
     timeoutId = 0;
   }
-  else if (action === "update-duration") {
+  else if (action === "update-duration" && params) {
     params.duration = duration;
   }
 };
 
 function countdown(elapsed: number) {
+  if (!params) {
+    return;
+  }
   const interval = 1000;
   const diff = performance.now() - elapsed;
 
@@ -37,7 +40,7 @@ function countdown(elapsed: number) {
   timeoutId = self.setTimeout(() => {
     postMessage({ elapsed, diff: interval, ...params });
 
-    if (params.duration >= 0) {
+    if (params && params.duration >= 0) {
       countdown(elapsed);
     }
   }, interval - diff);

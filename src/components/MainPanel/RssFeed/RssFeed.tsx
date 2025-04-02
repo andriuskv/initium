@@ -1,6 +1,6 @@
 import type { Entry, FeedType, FailedFeedType, Feeds, Nav } from "types/feed";
 import { useState, useEffect, useRef, lazy, Suspense, type MouseEvent } from "react";
-import { timeout } from "utils";
+import { getLocalStorageItem, timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as feedService from "services/feeds";
 import Icon from "components/Icon";
@@ -28,7 +28,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
     animateLeft: false,
     animateRight: false
   }));
-  const updatedFeeds = useRef([]);
+  const updatedFeeds = useRef<number[]>([]);
   const lastUpdate = useRef(0);
   const timeoutId = useRef(0);
   const saveTabTimeoutId = useRef(0);
@@ -173,7 +173,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
           showForm();
         }
       }
-      const saved = JSON.parse(localStorage.getItem("active-feed-tab")) || { activeIndex: 0, shift: 0 };
+      const saved = getLocalStorageItem<{ activeIndex: number, shift: number }>("active-feed-tab") || { activeIndex: 0, shift: 0 };
 
       if (saved.activeIndex < feeds.active.length) {
         setNavigation({ ...navigation, ...saved });
@@ -536,7 +536,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
     chromeStorage.set({
       feeds: {
         active: feeds.active.concat(feeds.failed).map(({ url, title }) => ({ url, title })),
-        inactive: feeds.inactive.map(feed => {
+        inactive: (feeds.inactive as Partial<FeedType>[]).map(feed => {
           delete feed.fetching;
           delete feed.entries;
           delete feed.newEntryCount;

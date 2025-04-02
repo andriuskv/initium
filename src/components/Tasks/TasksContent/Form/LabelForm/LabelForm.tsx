@@ -1,6 +1,6 @@
 import type { Label } from "../../../tasks.type";
 import { useState, useRef, type FormEvent } from "react";
-import { getRandomString, getRandomHexColor } from "utils";
+import { getRandomString, getRandomHexColor, getLocalStorageItem } from "utils";
 import Icon from "components/Icon";
 import Modal from "components/Modal";
 import "./label-form.css";
@@ -17,7 +17,7 @@ export default function LabelForm({ locale, addUniqueLabel, removeTaskLabel, hid
   const [currentColor, setCurrentColor] = useState(() => getRandomHexColor());
   const updatingColor = useRef(false);
   const [labels, setLabels] = useState(() => {
-    const labels: Label[] = JSON.parse(localStorage.getItem("taskLabels")) || [];
+    const labels: Label[] = getLocalStorageItem("taskLabels") || [];
 
     return labels.map((label: Label) => {
       label.id = getRandomString();
@@ -74,7 +74,7 @@ export default function LabelForm({ locale, addUniqueLabel, removeTaskLabel, hid
     saveLabels(newLabels);
   }
 
-  function saveLabels(labels: Label[]) {
+  function saveLabels(labels: Partial<Label>[]) {
     localStorage.setItem("taskLabels", JSON.stringify(structuredClone(labels).map(label => {
       delete label.id;
       delete label.flagged;

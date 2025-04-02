@@ -37,7 +37,7 @@ export default function CreateButton({ children, className, attrs = {}, style = 
     };
   }, [trackScroll]);
 
-  function handleScroll({ target }) {
+  function handleScroll({ target }: Event) {
     if (scrolling.current) {
       return;
     }
@@ -59,14 +59,19 @@ export default function CreateButton({ children, className, attrs = {}, style = 
         scrolling.current = false;
         return;
       }
+      scrolling.current = false;
 
-      if (target.scrollTop === 0) {
+      if (!target) {
+        return;
+      }
+      const element = target as HTMLElement;
+
+      if (element.scrollTop === 0) {
         buttonElement.classList.remove("shift-up");
       }
       else {
-        buttonElement.classList.toggle("shift-up", target.scrollTop + target.offsetHeight >= target.scrollHeight - 32);
+        buttonElement.classList.toggle("shift-up", element.scrollTop + element.offsetHeight >= element.scrollHeight - 32);
       }
-      scrolling.current = false;
     });
   }
 

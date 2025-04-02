@@ -52,7 +52,7 @@ type ListProps = PropsWithChildren & {
   items: ({ id: UniqueIdentifier; })[],
   axis?: "xy" | "x" | "y",
   handleDragStart: (event: DragStartEvent) => void,
-  handleSort: (newItems?: unknown[] | null) => void
+  handleSort: (items: unknown[] | null) => void
 }
 
 function SortableList({ children, items, axis, handleDragStart, handleSort }: ListProps) {
@@ -79,7 +79,7 @@ function SortableList({ children, items, axis, handleDragStart, handleSort }: Li
     if (!active || !over) {
       return;
     }
-    let newItems: unknown[] | null = null;
+    let newItems: unknown[] | null = items;
 
     if (active.id !== over.id) {
       const oldIndex = items.findIndex(({ id }) => id === active.id);
@@ -91,7 +91,7 @@ function SortableList({ children, items, axis, handleDragStart, handleSort }: Li
   }
 
   function handleDragCancel() {
-    handleSort();
+    handleSort(null);
   }
 
   return (

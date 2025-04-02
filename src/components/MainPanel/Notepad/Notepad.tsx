@@ -1,7 +1,7 @@
 import type { TabType } from "./notepad.type";
 import type { MainPanelSettings } from "types/settings";
 import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties, type ChangeEvent, type KeyboardEvent } from "react";
-import { getRandomString, formatBytes, timeout } from "utils";
+import { getRandomString, formatBytes, timeout, getLocalStorageItem } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting, updateMainPanelComponentSetting } from "services/settings";
 import TabsContainer from "components/TabsContainer";
@@ -19,11 +19,11 @@ type Nav = {
 
 const VISIBLE_ITEM_COUNT = 3;
 
-export default function Notepad({ locale }) {
-  const [tabs, setTabs] = useState<TabType[]>(null);
+export default function Notepad({ locale }: { locale: any }) {
+  const [tabs, setTabs] = useState<TabType[] | null>(null);
   const [{ activeIndex, shift }, setNavigation] = useState<Nav>(() => ({ activeIndex: 0, shift: 0 }));
   const [tabListVisible, setTabListVisible] = useState(false);
-  const [storageWarning, setStorageWarning] = useState(null);
+  const [storageWarning, setStorageWarning] = useState<{ usedRatio: number, message: string, hidden?: boolean } | null>(null);
   const [textSize, setTextSize] = useState(() => {
     const { components: { notepad } } = getSetting("mainPanel") as MainPanelSettings;
     return notepad.textSize;
@@ -51,13 +51,15 @@ export default function Notepad({ locale }) {
     if (!tabListVisible && tabs) {
       const element = textareaRef.current;
 
-      element.focus();
-      element.selectionStart = element.value.length;
+      if (element) {
+        element.focus();
+        element.selectionStart = element.value.length;
+      }
     }
   }, [tabListVisible]);
 
   async function init() {
-    const saved = JSON.parse(localStorage.getItem("active-notepad-tab")) || { activeIndex: 0, shift: 0 };
+    const saved = getLocalStorageItem<{ activeIndex: number, shift: number }>("active-notepad-tab") || { activeIndex: 0, shift: 0 };
     let notepad = await chromeStorage.get("notepad");
 
     if (notepad?.length) {
@@ -107,10 +109,13 @@ export default function Notepad({ locale }) {
 
   function handleTextSizeReset() {
     setTextSize(14);
-    setTabs(tabs.map(tab => {
-      delete tab.textSize;
-      return tab;
-    }));
+
+    if (tabs) {
+      setTabs(tabs.map(tab => {
+        delete tab.textSize;
+        return tab;
+      }));
+    }
   }
 
   function getDefaultTab() {
@@ -167,7 +172,9 @@ export default function Notepad({ locale }) {
   }
 
   function dismissWarning() {
-    setStorageWarning({ ...storageWarning, hidden: true });
+    if (storageWarning) {
+      setStorageWarning({ ...storageWarning, hidden: true });
+    }
   }
 
   function getTabSize(tab: TabType) {
@@ -182,7 +189,7 @@ export default function Notepad({ locale }) {
   function handleTextareaChange({ target }: ChangeEvent) {
     const content = (target as HTMLTextAreaElement).value;
     const tab: TabType = {
-      ...activeTab,
+      ...activeTab!,
       content
     };
 
@@ -197,7 +204,7 @@ export default function Notepad({ locale }) {
   }
 
   function handleTextareaKeyDown(event: KeyboardEvent) {
-    if (!event.ctrlKey) {
+    if (!event.ctrlKey || !activeTab) {
       return;
     }
 
@@ -237,7 +244,10 @@ export default function Notepad({ locale }) {
         ...tab,
         textSize: value
       }, false);
-      saveTabTextSize(tabs);
+
+      if (tabs) {
+        saveTabTextSize(tabs);
+      }
     }
     else {
       setTextSize(value);
@@ -256,7 +266,7 @@ export default function Notepad({ locale }) {
       updateMainPanelComponentSetting("notepad", {
         tabs: tabs.filter(tab => tab.textSize).map(tab => ({
           id: tab.id,
-          textSize: tab.textSize
+          textSize: tab.textSize!
         }))
       });
     }, 1000, saveTimeoutId.current);
@@ -272,6 +282,9 @@ export default function Notepad({ locale }) {
   }
 
   function selectListTab(index: number) {
+    if (!tabs) {
+      return;
+    }
     let newShift = shift;
 
     if (index < shift || index >= shift + VISIBLE_ITEM_COUNT) {
@@ -290,6 +303,9 @@ export default function Notepad({ locale }) {
   }
 
   function updateTab(tab: TabType, shouldSave = true) {
+    if (!tabs) {
+      return;
+    }
     const index = tabs.findIndex(({ id }) => id === tab.id);
 
     updateTabs(tabs.with(index, tab), shouldSave);
@@ -375,13 +391,15 @@ export default function Notepad({ locale }) {
         </button>
       </div>
       {storageWarning && <Warning locale={locale} storageWarning={storageWarning} dismiss={dismissWarning}/> }
-      <textarea className="container-body textarea notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` } as CSSProperties}
-        onChange={handleTextareaChange}
-        onKeyDown={handleTextareaKeyDown}
-        value={activeTab.content}
-        key={activeTab.id}>
-      </textarea>
-      {textSizeLabelVisible && <div className="container notepad-text-size-label">{activeTab.textSize}px</div>}
+      {activeTab ? (
+        <textarea className="container-body textarea notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` } as CSSProperties}
+          onChange={handleTextareaChange}
+          onKeyDown={handleTextareaKeyDown}
+          value={activeTab.content}
+          key={activeTab.id}>
+        </textarea>
+      ): null}
+      {textSizeLabelVisible && activeTab && <div className="container notepad-text-size-label">{activeTab.textSize}px</div>}
     </div>
   );
 }

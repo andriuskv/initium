@@ -1,3 +1,4 @@
+import type { TabName } from "./TopPanel/top-panel-types";
 import type { Settings } from "types/settings";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { setPageTitle } from "utils";
@@ -15,7 +16,7 @@ type Props = {
 export default function MiddleTop({ settings }: Props) {
   const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
   const [greetingVisible, setGreetingVisible] = useState(false);
-  const [topPanel, setTopPanel] = useState<{ rendered: boolean, forceVisibility?: boolean, initialTab?: string }>({ rendered: false });
+  const [topPanel, setTopPanel] = useState<{ rendered: boolean, forceVisibility?: boolean, initialTab?: TabName }>({ rendered: false });
   const [itemOrder, setItemOrder] = useState(() => getItemOrder());
   const topPanelTimeoutId = useRef(0);
 
@@ -41,7 +42,7 @@ export default function MiddleTop({ settings }: Props) {
   }, [settings.mainPanel, settings.timeDate]);
 
   function getItemOrder() {
-    const order = {};
+    const order: Record<string, string> = {};
 
     for (const item of settings.general.middleTopOrder) {
       order[`--${item.id}-alignment`] = item.alignment || "center";
@@ -96,7 +97,7 @@ export default function MiddleTop({ settings }: Props) {
     setTopPanel({ ...topPanel, rendered: true });
   }
 
-  function renderTopPanel({ detail }: CustomEvent) {
+  function renderTopPanel({ detail }: CustomEventInit) {
     const initialTab = detail ? detail.tab : "";
 
     clearTimeout(topPanelTimeoutId.current);

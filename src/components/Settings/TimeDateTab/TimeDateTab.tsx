@@ -1,27 +1,27 @@
 import type { GoogleUser } from "types/calendar";
 import { useState, useRef, type ChangeEvent } from "react";
-import { dispatchCustomEvent, timeout } from "utils";
+import { dispatchCustomEvent, getLocalStorageItem, timeout } from "utils";
 import { useSettings } from "contexts/settings";
 import * as calendarService from "services/calendar";
 import "./time-date-tab.css";
 import GoogleUserDropdown from "./GoogleUserDropdown";
 
 type CalendarUser = {
-  user?: GoogleUser,
+  user?: GoogleUser | null,
   message?: string,
   status?: "connecting"
 }
 
-export default function TimeDateTab({ locale }) {
+export default function TimeDateTab({ locale }: { locale: any }) {
   const { settings: { timeDate: settings }, updateContextSetting, toggleSetting } = useSettings();
   const [calendarUser, setCalendarUser] = useState<CalendarUser>(() => {
     if (localStorage.getItem("gtoken")) {
-      return { user: JSON.parse(localStorage.getItem("google-user")) || null };
+      return { user: getLocalStorageItem<GoogleUser>("google-user") || null } as CalendarUser;
     }
     else {
       calendarService.clearUser();
     }
-    return { user: null };
+    return { user: null } as unknown as CalendarUser;
   });
   const timeoutId = useRef(0);
 

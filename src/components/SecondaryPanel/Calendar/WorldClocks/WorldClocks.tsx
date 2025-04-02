@@ -15,7 +15,7 @@ type Clock = {
 }
 
 export default function WorldClocks({ parentVisible, locale }: { parentVisible: boolean, locale: any }) {
-  const [clocks, setClocks] = useState<Clock[]>(null);
+  const [clocks, setClocks] = useState<Clock[] | null>(null);
   const timeoutId = useRef(0);
 
   useEffect(() => {
@@ -27,10 +27,12 @@ export default function WorldClocks({ parentVisible, locale }: { parentVisible: 
       return;
     }
     function update() {
-      setClocks(clocks.map(clock => {
-        clock.time = getOffsettedCurrentTime(clock.diff);
-        return clock;
-      }));
+      if (clocks) {
+        setClocks(clocks.map(clock => {
+          clock.time = getOffsettedCurrentTime(clock.diff);
+          return clock;
+        }));
+      }
     }
 
     if (parentVisible) {
@@ -48,10 +50,7 @@ export default function WorldClocks({ parentVisible, locale }: { parentVisible: 
       const { Temporal } = await import("@js-temporal/polyfill");
 
       for (const clock of clocks) {
-        const tz = Temporal.TimeZone.from(clock.timeZone);
-        const timeZoneDate = tz.getPlainDateTimeFor(Temporal.Now.instant());
-
-        clock.diff = new Date(timeZoneDate.toString()).getTime() - Date.now();
+        clock.diff = new Date(Temporal.Now.zonedDateTimeISO(clock.timeZone).toPlainDateTime().toString()).getTime() - Date.now();
       }
       initClocks(clocks);
     }

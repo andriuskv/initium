@@ -21,7 +21,7 @@ export default function ToTop({ locale }: { locale: { toTop: { title: string }} 
     };
   }, [state]);
 
-  function handleScroll({ target }) {
+  function handleScroll({ target }: Event) {
     if (scrolling.current) {
       return;
     }
@@ -30,7 +30,11 @@ export default function ToTop({ locale }: { locale: { toTop: { title: string }} 
     requestAnimationFrame(() => {
       scrolling.current = false;
 
-      if (target.scrollTop > 0) {
+      if (!target) {
+        return;
+      }
+
+      if ((target as HTMLElement).scrollTop > 0) {
         setState({ visible: true });
       }
       else {

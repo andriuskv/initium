@@ -1,3 +1,4 @@
+import type { TabName } from "../top-panel-types";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { padTime } from "services/timeDate";
 import { getSetting } from "services/settings";
@@ -7,19 +8,22 @@ import Icon from "components/Icon";
 import "./pomodoro.css";
 import useWorker from "../../useWorker";
 import type { TimersSettings } from "types/settings";
+import { getLocalStorageItem } from "utils";
 
 type Props = {
   visible: boolean,
   locale: any,
-  animDirection: "anim-left" | "anim-right",
-  toggleIndicator: (name: string, value: boolean) => void,
+  animDirection?: "anim-left" | "anim-right",
+  toggleIndicator: (name: TabName, value: boolean) => void,
   updateTitle: (name: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
   expand: () => void,
   exitFullscreen: () => void,
-  handleReset: (name: string) => Promise<void>
+  handleReset: (name: string) => Promise<unknown> | undefined
 }
 
-const stagesOrder = ["focus", "short", "focus", "long"];
+type Stage = "focus" | "short" | "long";
+
+const stagesOrder: Stage[] = ["focus", "short", "focus", "long"];
 const stages = {
   focus: "Focus",
   short: "Short break",
@@ -35,7 +39,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
       dirty: false
     };
   });
-  const [stage, setStage] = useState("focus");
+  const [stage, setStage] = useState<Stage>("focus");
   const [label, setLabel] = useState("");
   const [audio, setAudio] = useState<{ shouldPlay: boolean }>({ shouldPlay: true });
   const [pipVisible, setPipVisible] = useState(false);
@@ -76,7 +80,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   }, [stage]);
 
   useEffect(() => {
-    function handlePipClose({ detail }: CustomEvent) {
+    function handlePipClose({ detail }: CustomEventInit) {
       if (detail === name) {
         setPipVisible(false);
       }
@@ -103,7 +107,14 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   }
 
   function init() {
-    const data = JSON.parse(localStorage.getItem(name));
+    type Data = {
+      duration: number,
+      stage: Stage,
+      stageIndex: number,
+      label: string,
+      isAudioEnabled: boolean
+    }
+    const data = getLocalStorageItem<Data>(name);
 
     if (data) {
       currentStageIndex.current = data.stageIndex;
@@ -189,7 +200,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   }
 
   function setNextStage() {
-    let nextStage = "";
+    let nextStage: Stage | "" = "";
     currentStageIndex.current += 1;
 
     if (currentStageIndex.current >= stagesOrder.length) {
@@ -203,7 +214,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     resetTimer(nextStage);
   }
 
-  function resetTimer(stage: string) {
+  function resetTimer(stage: Stage) {
     const { pomodoro: settings } = getSetting("timers") as TimersSettings;
     const duration = settings[stage];
 
@@ -235,8 +246,10 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   function playAudio() {
     const { volume } = getSetting("timers") as TimersSettings;
 
-    audioElement.current.volume = volume;
-    audioElement.current.play();
+    if (audioElement.current) {
+      audioElement.current.volume = volume;
+      audioElement.current.play();
+    }
   }
 
   function togglePip() {

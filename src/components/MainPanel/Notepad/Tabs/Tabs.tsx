@@ -1,3 +1,4 @@
+import type { DragStartEvent } from "@dnd-kit/core";
 import type { TabType } from "../notepad.type";
 import { useState, useEffect, type FormEvent, type CSSProperties } from "react";
 import { getRandomString } from "utils";
@@ -64,7 +65,9 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
   }
 
   function confirmTabRemoval() {
-    removeTab(modal.index);
+    if (modal) {
+      removeTab(modal.index);
+    }
     hideModal();
   }
 
@@ -123,15 +126,15 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     setStorage({ usedFormated, usedRatio, maxFormated });
   }
 
-  function handleSort(items: TabType[]) {
+  function handleSort(items: unknown[] | null) {
     if (items) {
-      updateTabs(items);
+      updateTabs(items as TabType[]);
     }
-    setActiveDragId(null);
+    setActiveDragId("");
   }
 
-  function handleDragStart(event) {
-    setActiveDragId(event.active.id);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragId(event.active.id as string);
   }
 
   function renderTab(tab: TabType, index: number) {

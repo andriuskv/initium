@@ -9,7 +9,8 @@ type Props = {
 
 export default function VideoWallpaper({ url, playbackSpeed, removeDownscaled }: Props) {
   const firstRender = useRef(true);
-  const ref = useRef(null);
+  const ref = useRef<HTMLVideoElement>(null);
+  const timeoutId = useRef(0);
 
   useEffect(() => {
     if (!ref.current) {
@@ -20,10 +21,15 @@ export default function VideoWallpaper({ url, playbackSpeed, removeDownscaled }:
       const start = Date.now();
       firstRender.current = false;
 
+      // Show downscaled images for no longer than 2 seconds
+      timeoutId.current = window.setTimeout(() => {
+        removeDownscaled(start);
+      }, 2000);
+
       ref.current.addEventListener("canplay", () => {
+        clearTimeout(timeoutId.current);
         removeDownscaled(start);
       }, { once: true });
-      return;
     }
     document.addEventListener("visibilitychange", handlePageVisibilityChange);
 
@@ -39,6 +45,10 @@ export default function VideoWallpaper({ url, playbackSpeed, removeDownscaled }:
   }, [playbackSpeed]);
 
   function handlePageVisibilityChange() {
+    if (!ref.current) {
+      return;
+    }
+
     if (document.hidden) {
       ref.current.pause();
     }

@@ -1,6 +1,7 @@
-import type { DDate, CalendarType, Month, Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
+import type { PartialDeep } from "type-fest";
+import type { DDate, ReminderRepeat, CalendarType, Month, Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
 import type { TimeDateSettings } from "types/settings";
-import { getRandomString, replaceLink } from "utils";
+import { getLocalStorageItem, getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import { getSetting } from "services/settings";
@@ -21,15 +22,41 @@ type GoogleEvent = {
     dateTime?: string,
     timeZone?: string,
   },
+  conferenceData?: {
+    conferenceId: string,
+    conferenceSolution: {
+      name: string,
+      iconUri: string
+    },
+    entryPoints: [
+      {
+        entryPointType: string,
+        label: string,
+        uri: string
+      }
+    ]
+  },
   summary: string
-  colorId?: string,
+  colorId?: number,
   description?: string,
   recurrence?: [string]
 }
 
+type GoogleCalendarFetch = {
+  primary: boolean,
+  id: string,
+  summary: string,
+  backgroundColor: string,
+  accessRole: string,
+  colorId: number
+}
+
+type ColorsFetch = { background: string }[];
+type EventColors = { id: string, color: string }[];
+
 const baseCalendarURL = "https://www.googleapis.com/calendar/v3";
-let cachedCalendars = {};
-let eventColors = null;
+let cachedCalendars: { [key: string]: GoogleReminder[] } = {};
+let eventColors: EventColors | null = null;
 let authIntervalId = 0;
 
 function generateYear(year: number) {
@@ -71,6 +98,10 @@ function generateYear(year: number) {
 function getDayCountFromMonthCount(monthCount: number, repeatAtDay: number, nextRepeat: Reminder["nextRepeat"]) {
   let dayCount = 0;
 
+  if (!nextRepeat) {
+    throw new Error("next repeat is missing");
+  }
+
   nextRepeat.leftoverDays ??= 0;
 
   for (let i = 1; i <= monthCount; i += 1) {
@@ -92,6 +123,9 @@ function getDayCountFromMonthCount(monthCount: number, repeatAtDay: number, next
 }
 
 function getWeekdayRepeatGaps(reminder: Reminder) {
+  if (!reminder.repeat?.weekdays) {
+    throw new Error("reminder repeat weekdays is missing");
+  }
   const { weekdays } = reminder.repeat;
   const gaps: number[] = [];
   let weekday = timeDateService.getWeekday(reminder.year, reminder.month, reminder.day);
@@ -166,9 +200,10 @@ function getReminderRangeString({ from, to }: Reminder["range"]) {
   return timeDateService.getTimeString(from);
 }
 
-function getReminderRepeatTooltip({ type, gap, count, weekdays, customTypeGapName, endDate }: Reminder["repeat"]): string {
+function getReminderRepeatTooltip({ type, gap, count, weekdays, customTypeGapName, endDate }: ReminderRepeat): string {
   const countString = `${count > 1 ? `${count} times ` : ""}`;
   let endDateString = "";
+  let tooltip = "";
 
   if (endDate) {
     const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
@@ -181,27 +216,31 @@ function getReminderRepeatTooltip({ type, gap, count, weekdays, customTypeGapNam
     if (customTypeGapName === "months" && gap > 11) {
       const yearCount = Math.floor(gap / 12);
       const monthCount = gap % 12;
-      return `Repeating ${countString}every ${yearCount} year${yearCount > 1 ? "s" : ""}${monthCount > 0 ? ` ${monthCount} month${monthCount > 1 ? "s" : ""}` : ""}${endDateString}`;
+      tooltip = `Repeating ${countString}every ${yearCount} year${yearCount > 1 ? "s" : ""}${monthCount > 0 ? ` ${monthCount} month${monthCount > 1 ? "s" : ""}` : ""}${endDateString}`;
     }
-    return `Repeating ${countString}every ${gap === 1 ? customTypeGapName.slice(0, -1) : `${gap} ${customTypeGapName}`}${endDateString}`;
+    tooltip = `Repeating ${countString}every ${gap === 1 ? customTypeGapName.slice(0, -1) : `${gap} ${customTypeGapName}`}${endDateString}`;
+  }
+  else if (type === "day") {
+    tooltip = `Repeating ${countString}every day${endDateString}`;
   }
   else if (type === "week") {
-    return `Repeating ${countString}every week${endDateString}`;
+    tooltip = `Repeating ${countString}every week${endDateString}`;
   }
   else if (type === "month") {
-    return `Repeating ${countString}every month${endDateString}`;
+    tooltip = `Repeating ${countString}every month${endDateString}`;
   }
-  else if (type === "weekday") {
+  else if (type === "weekday" && weekdays) {
     const fullySelected = weekdays.dynamic.every(weekday => weekday);
 
     if (fullySelected) {
       return `Repeating ${countString}every weekday${endDateString}`;
     }
-    return getWeekdayRepeatTooltip(weekdays.dynamic, countString, endDateString);
+    tooltip = getWeekdayRepeatTooltip(weekdays.dynamic, countString, endDateString);
   }
+  return tooltip;
 }
 
-function getWeekdayRepeatTooltip(weekdayStates: Reminder["repeat"]["weekdays"]["dynamic"], countString: string, endDateString: string) {
+function getWeekdayRepeatTooltip(weekdayStates: boolean[], countString: string, endDateString: string) {
   const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
   const weekdays = timeDateService.getWeekdays(dateLocale);
   const formatter = new Intl.ListFormat(dateLocale, {
@@ -213,7 +252,7 @@ function getWeekdayRepeatTooltip(weekdayStates: Reminder["repeat"]["weekdays"]["
       arr.push(weekdays[index]);
     }
     return arr;
-  }, []);
+  }, [] as string[]);
   const str = formatter.format(arr);
   return `Repeating ${countString}every ${str}${endDateString}`;
 }
@@ -222,14 +261,18 @@ function saveNotifiedReminder(reminder: Reminder) {
   type Notified = { id: number, resets: number }[];
 
   const { year, month, day } = reminder;
-  const notified: Notified = JSON.parse(localStorage.getItem("notified")) || [];
+  const notified = getLocalStorageItem<Notified>("notified") || [];
   const currentTime = Date.now();
 
+  if (!reminder.notify) {
+    return;
+  }
+
   if (reminder.notify.type === "time") {
-    const { hours, minutes } = reminder.range.from;
+    const { hours, minutes } = reminder.range.from || { hours: 0, minutes: 0 };
     const reminderTime = new Date(year, month, day, hours, minutes).getTime();
 
-    if (reminderTime > currentTime && currentTime + reminder.notify.time.full * 60 * 1000 > reminderTime) {
+    if (reminderTime > currentTime && currentTime + reminder.notify.time!.full * 60 * 1000 > reminderTime) {
       notified.push({
         id: reminder.creationDate,
         resets: reminderTime
@@ -245,16 +288,16 @@ function saveNotifiedReminder(reminder: Reminder) {
   localStorage.setItem("notified", JSON.stringify(notified));
 }
 
-function saveReminders(reminders: Reminder[]) {
+function saveReminders(reminders: PartialDeep<Reminder>[]) {
   return chromeStorage.set({ reminders: structuredClone(reminders).map(reminder => {
-    if (!reminder.range.from) {
+    if (!reminder.range?.from) {
       delete reminder.range;
     }
 
     if (reminder.repeat) {
       delete reminder.repeat.tooltip;
 
-      if (reminder.repeat.type === "weekday") {
+      if (reminder.repeat.type === "weekday" && reminder.repeat.weekdays) {
         delete reminder.repeat.weekdays.dynamic;
       }
     }
@@ -276,7 +319,7 @@ function saveReminders(reminders: Reminder[]) {
 }
 
 async function getToken(): Promise<string | { message: string } | undefined> {
-  const token = JSON.parse(localStorage.getItem("gtoken"));
+  const token = getLocalStorageItem<{ e: number, at: string }>("gtoken");
 
   if (!token) {
     return;
@@ -294,7 +337,12 @@ async function getToken(): Promise<string | { message: string } | undefined> {
 }
 
 async function fetchToken() {
-  const user = JSON.parse(localStorage.getItem("google-user")) || {};
+  const user = getLocalStorageItem<GoogleUser>("google-user");
+
+  if (!user) {
+    clearUser();
+    return { message: "User is missing. Authenticate again please." };
+  }
   const authToken = await fetchAuthToken(user.email);
 
   if (authToken.error) {
@@ -355,7 +403,7 @@ async function authGoogleUser(): Promise<{ user: GoogleUser } | { message: strin
     const page = window.open(json.url, "_blank", "width=1024,height=720");
 
     window.addEventListener("message", async (event) => {
-      if (!process.env.SERVER_URL.startsWith(event.origin)) {
+      if (!process.env.SERVER_URL?.startsWith(event.origin)) {
         resolve({ message: "Request origin mismatch." });
         return;
       }
@@ -363,7 +411,7 @@ async function authGoogleUser(): Promise<{ user: GoogleUser } | { message: strin
       if (event.data) {
         if (event.data.error) {
           resolve({ message: event.data.error });
-          page.close();
+          page?.close();
           clearInterval(authIntervalId);
           return;
         }
@@ -371,7 +419,7 @@ async function authGoogleUser(): Promise<{ user: GoogleUser } | { message: strin
       }
       else {
         resolve({ message: "Token not found." });
-        page.close();
+        page?.close();
         clearInterval(authIntervalId);
         return;
       }
@@ -382,12 +430,12 @@ async function authGoogleUser(): Promise<{ user: GoogleUser } | { message: strin
         return;
       }
       resolve({ user });
-      page.close();
+      page?.close();
       clearInterval(authIntervalId);
     }, { once: true });
 
     authIntervalId = window.setInterval(() => {
-      if (page.closed) {
+      if (page?.closed) {
         clearInterval(authIntervalId);
         resolve({ message: "Access not granted." });
       }
@@ -428,7 +476,7 @@ async function initGoogleCalendar(retried = false): Promise<{ calendars: GoogleC
       }
       return { message: "Something went wrong. Try again later." };
     }
-    const calendars = parseCalendars(calendarListJson.items, colorsJson);
+    const calendars = parseCalendars(calendarListJson.items, colorsJson.calendar);
     const selectedCalendars = calendars.filter(calendar => calendar.selected);
     const selectedCalendarsPromises = selectedCalendars.map(calendar => (
       fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendar.id)}/events?${params}`).then(res => res.json())
@@ -437,7 +485,10 @@ async function initGoogleCalendar(retried = false): Promise<{ calendars: GoogleC
     let reminders: GoogleReminder[] = [];
 
     eventColors = Object.keys(colorsJson.event).map(id => {
-      return { id, color: colorsJson.event[id].background };
+      return {
+        id,
+        color: colorsJson.event[id].background
+      };
     });
 
     for (let i = 0; i < selectedCalendars.length; i += 1) {
@@ -450,7 +501,7 @@ async function initGoogleCalendar(retried = false): Promise<{ calendars: GoogleC
           defaultColor: calendar.color,
           editable: calendar.canEdit,
           includeDesc: !calendar.id.endsWith("v.calendar.google.com")
-        }, colorsJson);
+        }, colorsJson.event);
 
         reminders = reminders.concat(calendarItems);
         cachedCalendars[calendar.id] = calendarItems;
@@ -504,7 +555,7 @@ async function fetchCalendarItems(calendar: GoogleCalendar, retried = false) {
       calendarId: calendar.id,
       editable: calendar.canEdit,
       includeDesc: !calendar.id.includes("#holiday@group")
-    }, colorsJson);
+    }, colorsJson.event);
 
     cachedCalendars[calendar.id] = calendarItems;
     return { reminders: calendarItems };
@@ -514,9 +565,9 @@ async function fetchCalendarItems(calendar: GoogleCalendar, retried = false) {
   }
 }
 
-function parseCalendars(items, colors) {
-  const user = JSON.parse(localStorage.getItem("google-user")) || {};
-  const oldCalendars = JSON.parse(localStorage.getItem("google-calendars")) || [];
+function parseCalendars(items: GoogleCalendarFetch[], colors: ColorsFetch) {
+  const user = getLocalStorageItem<GoogleUser>("google-user")!;
+  const oldCalendars = getLocalStorageItem<GoogleCalendar[]>("google-calendars") || [];
   const calendars: GoogleCalendar[] = [];
 
   for (const item of items) {
@@ -532,7 +583,7 @@ function parseCalendars(items, colors) {
     calendars.push({
       id: item.id,
       title: item.summary,
-      color: item.backgroundColor || colors.calendar[item.colorId].background,
+      color: item.backgroundColor || colors[item.colorId].background,
       canEdit: item.accessRole === "owner",
       selected,
       ...(item.primary ? { primary: true, title: user.name } : {})
@@ -553,18 +604,26 @@ function parseCalendars(items, colors) {
 function getEventColors(calendarId: string, calendars: GoogleCalendar[]) {
   let calendar = null;
 
+  if (!eventColors) {
+    return;
+  }
+
   if (calendarId) {
     calendar = calendars.find(calendar => calendar.id === calendarId);
   }
   else {
     calendar = calendars.find(calendar => calendar.primary);
   }
-  const defaultColor = calendar.color;
 
-  return [...eventColors, { color: defaultColor }];
+  if (calendar) {
+    const defaultColor = calendar.color;
+
+    return [...eventColors, { id: "", color: defaultColor }];
+  }
+  return eventColors;
 }
 
-function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDesc, editable }, colors) {
+function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDesc, editable }: { calendarId: string, defaultColor: string, includeDesc: boolean, editable: boolean }, colors: ColorsFetch) {
   const reminders: GoogleReminder[] = [];
 
   for (const item of items) {
@@ -585,13 +644,21 @@ function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDes
       optionalParams.descriptionRaw = item.description.trimEnd();
     }
 
+    if (item.conferenceData) {
+      optionalParams.meet = {
+        iconUri: item.conferenceData.conferenceSolution.iconUri,
+        uri: item.conferenceData.entryPoints[0].uri,
+        label: item.conferenceData.entryPoints[0].label
+      };
+    }
+
     const reminder: GoogleReminder = {
       creationDate: new Date(item.updated ?? item.created).getTime(),
       id: item.id,
       type: "google",
       calendarId,
       editable: editable && item.eventType !== "birthday",
-      color: item.colorId ? colors.event[item.colorId].background : defaultColor,
+      color: item.colorId ? colors[item.colorId].background : defaultColor,
       text: getReminderText(item),
       range: getRange(item.start, item.end),
       ...getStartDate(item.start),
@@ -618,7 +685,7 @@ function getReminderText(item: GoogleEvent) {
 }
 
 function getStartDate(start: GoogleEvent["start"]) {
-  const dateString = start.date ?? start.dateTime;
+  const dateString = start.date ?? start.dateTime!;
   const date = new Date(dateString);
 
   return {
@@ -655,6 +722,7 @@ function getRange(start: GoogleEvent["start"], end: GoogleEvent["end"]): GoogleR
       text: getReminderRangeString({ from, to, text: "" })
     };
   }
+  return { text: "All day" };
 }
 
 function parseRecurrence(recurrence: string[]): GoogleReminder["repeat"] | null {
@@ -708,7 +776,7 @@ function parseRecurrence(recurrence: string[]): GoogleReminder["repeat"] | null 
       const gap = Number.parseInt(val, 10);
 
       if (repeat.freq === "yearly") {
-        repeat.gap *= gap;
+        repeat.gap = (repeat.gap || 1) * gap;
       }
       else {
         repeat.gap = gap;
@@ -729,7 +797,7 @@ function parseRecurrence(recurrence: string[]): GoogleReminder["repeat"] | null 
       const days = val.split(",");
 
       if (days.length > 1) {
-        const weekdays = {
+        const weekdays: { dynamic: boolean[], static: boolean[] } = {
           dynamic: [],
           static: [false, false, false, false, false, false, false]
         };
@@ -739,7 +807,7 @@ function parseRecurrence(recurrence: string[]): GoogleReminder["repeat"] | null 
         delete repeat.customTypeGapName;
 
         for (const weekday of days) {
-          weekdays.static[weekdayIndexes[weekday]] = true;
+          weekdays.static[weekdayIndexes[weekday as keyof typeof weekdayIndexes]] = true;
         }
         weekdays.dynamic = [...weekdays.static];
         repeat.weekdays = weekdays;
@@ -759,7 +827,7 @@ function parseRecurrence(recurrence: string[]): GoogleReminder["repeat"] | null 
 
 function parseEndDateString(string: string) {
   const regex = /(\d{4})(\d{2})(\d{2})/;
-  const [_, year, month, day] = string.match(regex);
+  const [_, year, month, day] = string.match(regex)!;
 
   return { year: Number.parseInt(year, 10), month: Number.parseInt(month, 10) - 1, day: Number.parseInt(day, 10) };
 }
@@ -769,9 +837,26 @@ function pad(value: number) {
 }
 
 function convertReminderToEvent(reminder: GoogleReminder) {
+  type Event = {
+    start: {
+      date?: string;
+      dateTime?: string;
+      timeZone?: string;
+    },
+    end: {
+      date?: string;
+      dateTime?: string;
+      timeZone?: string;
+    },
+    summary: string;
+    colorId?: string;
+    description?: string;
+    recurrence?: string[];
+  }
+
   const startDate = new Date(reminder.year, reminder.month, reminder.day);
   const endDate = new Date(reminder.year, reminder.month, reminder.day);
-  const event: Partial<GoogleEvent> = {
+  const event: Event = {
     start: {},
     end: {},
     summary: reminder.text
@@ -791,9 +876,10 @@ function convertReminderToEvent(reminder: GoogleReminder) {
     event.end.date = timeDateService.getDateString(endDate);
   }
   else {
+    const { hours, minutes } = reminder.range.from || { hours: 0, minutes: 0 };
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    startDate.setHours(reminder.range.from.hours, reminder.range.from.minutes);
+    startDate.setHours(hours, minutes);
     event.start.dateTime = timeDateService.getDateString(startDate, true);
     event.start.timeZone = timeZone;
 
@@ -840,7 +926,7 @@ function convertReminderToEvent(reminder: GoogleReminder) {
       recurenceString += `FREQ=WEEKLY;BYDAY=${weekdayIndexes[wdIndex]};`;
     }
     else if (type === "weekday") {
-      const wds = weekdays.static.map((w, index) => w ? index : w)
+      const wds = weekdays!.static.map((w, index) => w ? index : w)
         .filter(w => typeof w === "number")
         .map(index => weekdayIndexes[index]).join(",");
 

@@ -1,5 +1,6 @@
+import type { DragStartEvent } from "@dnd-kit/core";
 import type { MainPanelComponents } from "types/settings";
-import type { FormType } from "../top-sites.type";
+import type { PersistentSite, FormType } from "../top-sites.type";
 import { useState, useEffect, lazy, Suspense } from "react";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -8,25 +9,18 @@ import "./persistent-sites.css";
 
 const Form = lazy(() => import("../Form"));
 
-export type Site = {
-  id: string,
-  url: string,
-  title: string,
-  iconUrl?: string
-}
-
 type Props = {
   settings: MainPanelComponents["topSites"],
-  enableEdit: boolean,
+  enableEdit?: boolean,
   locale: any,
   getFaviconURL: (url: string) => string
 }
 
 export default function PersistentSites({ settings, enableEdit, locale, getFaviconURL }: Props) {
-  const [sites, setSites] = useState<Site[]>(null);
+  const [sites, setSites] = useState<PersistentSite[] | null>(null);
   const [siteEditEnabled, setSiteEditEnabled] = useState(enableEdit);
-  const [form, setForm] = useState<FormType>(null);
-  const [activeDragId, setActiveDragId] = useState(null);
+  const [form, setForm] = useState<FormType | null>(null);
+  const [activeDragId, setActiveDragId] = useState("");
 
   useEffect(() => {
     init();
@@ -58,7 +52,7 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
     });
   }
 
-  function initSites(sites: Site[]) {
+  function initSites(sites: PersistentSite[]) {
     return sites.map(site => {
       site.id = crypto.randomUUID();
       site.iconUrl = getFaviconURL(site.url);
@@ -82,24 +76,36 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
     setForm(null);
   }
 
-  function updateSite(site: Site, action: "add" | "update") {
-    const isNewSite = !sites.some(({ url }) => site.url === url);
+  function updateSite(site: Partial<PersistentSite>, action: "add" | "update"): string | undefined {
+    if (!sites || !form) {
+      return;
+    }
+    const siteUrl = site.url as string;
+    const siteTitle = site.title as string;
+    const isDuplicate = sites.some(({ url }) => siteUrl === url);
+    const index = form.index as number;
 
-    if (action === "add" && isNewSite) {
+    if (isDuplicate) {
+      return "Site with the same URL already exists.";
+    }
+
+    if (action === "add") {
       const newSites = [...sites, {
-        ...site,
+        title: siteTitle,
+        url: siteUrl,
         id:  crypto.randomUUID(),
-        iconUrl:  getFaviconURL(site.url)
+        iconUrl:  getFaviconURL(siteUrl)
       }];
 
       setSites(newSites);
       saveSites(newSites);
     }
-    else if (action === "update" && (isNewSite || site.title !== sites[form.index].title)) {
-      const newSites = sites.with(form.index, {
-        ...site,
+    else if (action === "update" && site.title !== sites[index].title) {
+      const newSites = sites.with(index, {
+        title: siteTitle,
+        url: siteUrl,
         id: crypto.randomUUID(),
-        iconUrl: getFaviconURL(site.url)
+        iconUrl: getFaviconURL(siteUrl)
       });
 
       setSites(newSites);
@@ -107,7 +113,7 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
     }
   }
 
-  function saveSites(sites: Site[]) {
+  function saveSites(sites: Partial<PersistentSite>[]) {
     chromeStorage.set({ persistentSites: structuredClone(sites).map(site => {
       delete site.id;
       delete site.iconUrl;
@@ -116,6 +122,9 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
   }
 
   function editSite(index: number) {
+    if (!sites) {
+      return;
+    }
     showForm({
       ...sites[index],
       index,
@@ -124,22 +133,25 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
   }
 
   function removeSite(index: number) {
+    if (!sites) {
+      return;
+    }
     const newSites = sites.toSpliced(index, 1);
 
     setSites(newSites);
     saveSites(newSites);
   }
 
-  function handleSort(sites: Site[]) {
+  function handleSort(sites: unknown[] | null) {
     if (sites) {
-      setSites(sites);
-      saveSites(sites);
+      setSites(sites as PersistentSite[]);
+      saveSites(sites as PersistentSite[]);
     }
-    setActiveDragId(null);
+    setActiveDragId("");
   }
 
-  function handleDragStart(event) {
-    setActiveDragId(event.active.id);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragId(event.active.id as string);
   }
 
   if (!sites) {
