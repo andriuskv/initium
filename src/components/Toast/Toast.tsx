@@ -8,11 +8,7 @@ type Props = {
   duration?: number,
   position?: "top" | "bottom",
   offset?: string,
-  locale: {
-    global: {
-      dismiss: string
-    }
-  },
+  locale: any,
   dismiss: () => void,
 }
 

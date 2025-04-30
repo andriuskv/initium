@@ -28,9 +28,9 @@ function fetchWeather() {
   }
 }
 
-async function fetchMoreWeather({ lat, lon }: { lat: number, lon: number }) {
+async function fetchMoreWeather({ lat, lon }: { lat: number, lon: number }, units: "C" | "F") {
   const data = await fetchWeatherData(`type=more&lat=${lat}&lon=${lon}`) as { hourly: Hour[], daily: Weekday[] };
-  return parseMoreWeather(data);
+  return parseMoreWeather(data, units);
 }
 
 function fetchCoords(): Promise<{ lat: number, lon: number } | { type: "geo", message: string }> {
@@ -50,12 +50,15 @@ function fetchCoords(): Promise<{ lat: number, lon: number } | { type: "geo", me
   });
 }
 
-function parseMoreWeather(data: { hourly: Hour[], daily: Weekday[] }): { hourly: Hour[], daily: Weekday[] } {
-  const hourly = data.hourly.map(item => ({
-    ...item,
-    id: getRandomString(),
-    time: getTimeString({ hours: item.hour, minutes: 0 })
-  }));
+function parseMoreWeather(data: { hourly: Hour[], daily: Weekday[] }, units: "C" | "F"): { hourly: Hour[], daily: Weekday[] } {
+  const hourly = data.hourly.map(item => {
+    return {
+      ...item,
+      id: getRandomString(),
+      tempC: units === "C" ? item.temperature : convertTemperature(item.temperature, "C"),
+      time: getTimeString({ hours: item.hour, minutes: 0 })
+    }
+  });
   const daily = data.daily.map(item => ({
     ...item,
     id: getRandomString()

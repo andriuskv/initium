@@ -1,6 +1,5 @@
 import { type CSSProperties } from "react";
 import type { Hour, View } from "types/weather";
-import { convertTemperature } from "services/weather";
 
 type Props = {
   view: View,
@@ -9,9 +8,9 @@ type Props = {
   speedUnits: "m/s" | "ft/s",
 }
 
-function getTempRange(hourly: Hour[], units: "C" | "F") {
+function getTempRange(hourly: Hour[]) {
   const tempRange = hourly.reduce((range, item) => {
-    const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
+    const temp = item.tempC;
 
     if (temp < range.min) {
       range.min = temp;
@@ -29,9 +28,9 @@ function getTempRange(hourly: Hour[], units: "C" | "F") {
   };
 }
 
-export default function HourlyView({ view, hourly, units, speedUnits }: Props) {
+export default function HourlyView({ view, hourly, speedUnits }: Props) {
   function getSvgY(current: number, offset = 0) {
-    const tempRange = getTempRange(hourly, units);
+    const tempRange = getTempRange(hourly);
     const maxRange = tempRange.max - tempRange.min;
     const range = current - tempRange.min;
 
@@ -43,8 +42,7 @@ export default function HourlyView({ view, hourly, units, speedUnits }: Props) {
     let offset = 0;
 
     for (const [index, item] of Object.entries(hourly)) {
-      const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
-      const y = getSvgY(temp);
+      const y = getSvgY(item.tempC);
       const numIndex = Number(index);
 
       // 576 = container width; 24 = item count
@@ -67,9 +65,8 @@ export default function HourlyView({ view, hourly, units, speedUnits }: Props) {
 
   if (view === "temp") {
     const values = hourly.map((item, index) => {
-      const temp = units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
       const x = `calc(${index * 24 + 12}px - ${Math.round(item.temperature).toString().length / 2}ch)`;
-      const y = `calc(${getSvgY(temp, 6)}px - 0.5ch)`;
+      const y = `calc(${getSvgY(item.tempC, 6)}px - 0.5ch)`;
 
       if (index % 3 === 1) {
         return <text className="weather-more-hourly-temp-view-text" style={{ transform: `translate(${x}, ${y})` }}
@@ -96,7 +93,7 @@ export default function HourlyView({ view, hourly, units, speedUnits }: Props) {
         </div>
         <div className="weather-more-hourly-prec-view-graph">
           {hourly.slice(0, -1).map(item => (
-            <div className="weather-more-hourly-prec-view-graph-bar" key={item.id} style={{ height: `${item.precipitation}%` }}></div>
+            <div className="weather-more-hourly-prec-view-graph-bar" key={item.id} style={{ height: `${item.precipitation}%` }} data-testid="bar"></div>
           ))}
         </div>
       </div>

@@ -56,6 +56,7 @@ export default function Weather({ timeFormat, corner, locale }: Props) {
         setMoreWeather({
           hourly: [...moreWeather.hourly.map(item => {
             item.temperature = convertTemperature(item.temperature, settings.units);
+            item.tempC = settings.units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
             return item;
           })],
           daily: [...moreWeather.daily.map(item => {
@@ -190,7 +191,7 @@ export default function Weather({ timeFormat, corner, locale }: Props) {
     try {
       lastMoreWeatherUpdate.current = Date.now();
 
-      const json = await fetchMoreWeather(coords);
+      const json = await fetchMoreWeather(coords, settings.units);
 
       setMoreWeather({
         hourly: json.hourly,
