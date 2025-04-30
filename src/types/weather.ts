@@ -29,11 +29,12 @@ export type Hour = {
   id: string,
   hour: number,
   time: string,
-  temperature:number,
-  precipitation:number,
+  temperature: number,
+  tempC: number,
+  precipitation: number,
   wind: {
     speed: {
-      value:number,
+      value: number,
       raw: number
     },
     direction: {

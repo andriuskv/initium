@@ -1,8 +1,7 @@
 import type { TimeDateSettings } from "types/settings";
 import { getSetting } from "./settings";
 
-function adjustTime({ hours, minutes = 0 }: { hours: number, minutes?: number }) {
-  const { format } = getSetting("timeDate") as TimeDateSettings;
+function adjustTime({ hours, minutes = 0 }: { hours: number, minutes?: number }, format: 12 | 24 = 24) {
   let period = "";
 
   if (format === 12) {
@@ -35,7 +34,8 @@ function getDSTChangeDirection(start: number, end: number) {
 }
 
 function getTimeString(time: { hours: number, minutes: number }, { padHours = false, excludeMinutes = false } = {}) {
-  const { hours, minutes, period } = adjustTime(time);
+  const { format } = getSetting("timeDate") as TimeDateSettings;
+  const { hours, minutes, period } = adjustTime(time, format);
   const h = padHours ? padTime(hours) : hours;
 
   if (excludeMinutes) {
@@ -224,7 +224,8 @@ function getClockTimeString(milliseconds: number, params: Partial<{ padHours: bo
 }
 
 function getDisplayTime(padHours = false) {
-  const time = adjustTime(getTimeObj());
+  const { format } = getSetting("timeDate") as TimeDateSettings;
+  const time = adjustTime(getTimeObj(), format);
   time.hours = padHours ? padTime(time.hours) : time.hours;
   time.minutes = padTime(time.minutes);
   return time;
@@ -276,8 +277,9 @@ function parseDateInputValue(value: string, includeTime = false) {
   };
 
   if (includeTime) {
+    const { format } = getSetting("timeDate") as TimeDateSettings;
     const time = value.split("T")[1].split(":");
-    const { hours, minutes, period } = adjustTime({ hours: parseInt(time[0], 10), minutes: parseInt(time[1], 10) });
+    const { hours, minutes, period } = adjustTime({ hours: parseInt(time[0], 10), minutes: parseInt(time[1], 10) }, format);
 
     data.hours = parseInt(hours, 10);
     data.minutes = parseInt(minutes, 10);
@@ -287,6 +289,7 @@ function parseDateInputValue(value: string, includeTime = false) {
 }
 
 export {
+  adjustTime,
   getTimeString,
   getDisplayTime,
   getDaysInMonth,

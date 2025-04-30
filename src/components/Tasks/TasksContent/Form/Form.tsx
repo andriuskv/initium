@@ -480,7 +480,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     setActiveDragId(event.active.id as string);
   }
 
-  function renderSubtasks(subtask: SubtaskType, index: number) {
+  function renderSubtask(subtask: SubtaskType, index: number) {
     const component = {
       Component: Subtask,
       params: {
@@ -607,7 +607,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
                 items={state.task.subtasks}
                 handleSort={handleSort}
                 handleDragStart={handleDragStart}>
-                {state.task.subtasks.map((subtask, index) => renderSubtasks(subtask, index))}
+                {state.task.subtasks.map((subtask, index) => renderSubtask(subtask, index))}
               </SortableList>
             </ul>
           )}

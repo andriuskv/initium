@@ -1,6 +1,6 @@
 import type { MouseEvent } from "react";
 
-const components: { [key: string]: number } = {};
+let components: { [key: string]: number } = {};
 let currentActiveComponent: { name: string, index: number } | null = null;
 
 function getZIndex(name: string): number {
@@ -29,7 +29,13 @@ function handleZIndex({ currentTarget }: MouseEvent, name: string) {
   }
 }
 
+function resetIndexes() {
+  components = {};
+  currentActiveComponent = null;
+}
+
 export {
   increaseZIndex,
-  handleZIndex
+  handleZIndex,
+  resetIndexes
 };
