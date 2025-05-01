@@ -32,7 +32,7 @@ export default function Weather({ timeFormat, corner, locale }: Props) {
     if (firstRender.current) {
       updateWeather();
     }
-    else if (settings.cityName || settings.useGeo) {
+    else if (current && (settings.cityName || settings.useGeo)) {
       updateWeather(true);
     }
     else {
@@ -117,7 +117,6 @@ export default function Weather({ timeFormat, corner, locale }: Props) {
       setState({ ...state, visible: true });
     }
   }, [state.rendered, state.reveal]);
-
 
   useEffect(() => {
     if (current && state.visible) {

@@ -4,7 +4,6 @@ import { delay } from "utils";
 import { fetchWallpaperInfo, getIDBWallpaper, resetIDBWallpaper } from "services/wallpaper";
 import "./wallpaper.css";
 
-
 type WallpaperType = {
   url?: string,
   type?: "image" | "video",
@@ -20,29 +19,17 @@ export default function Wallpaper({ settings }: {settings: WallpaperSettings }) 
   const firstRender = useRef(true);
 
   useEffect(() => {
-    init(settings);
+    if (firstRender.current) {
+      init(settings, true);
+      firstRender.current = false;
+      return;
+    }
+    else if (wallpaper) {
+      init(settings);
+    }
   }, [settings]);
 
-  useEffect(() => {
-    if (firstRender.current && wallpaper) {
-      firstRender.current = false;
-
-      if (wallpaper.type !== "video") {
-        const start = Date.now();
-        const image = new Image();
-
-        image.onload = () => {
-          removeDownscaled(start);
-        };
-
-        if (wallpaper.url) {
-          image.src = wallpaper.url;
-        }
-      }
-    }
-  }, [wallpaper]);
-
-  async function init(settings: WallpaperSettings) {
+  async function init(settings: WallpaperSettings, first = false) {
     if (settings.type === "blob") {
       let { id, url } = wallpaper ? wallpaper : {};
 
@@ -51,45 +38,63 @@ export default function Wallpaper({ settings }: {settings: WallpaperSettings }) 
           const file = await getIDBWallpaper(settings.id!);
           url = URL.createObjectURL(file);
 
-          setWallpaper({
+          updateWallpaper({
             id: settings.id,
             type: settings.mimeType?.split("/")[0] as "image" | "video",
             url,
             x: settings.x,
             y: settings.y
-          });
+          }, first);
         } catch (e) {
           console.log(e);
 
           const info = await fetchWallpaperInfo();
 
           if (info) {
-            setWallpaper({ url: info.url });
+            updateWallpaper({ url: info.url }, first);
           }
           resetIDBWallpaper();
         }
       }
       else {
-        setWallpaper({
+        updateWallpaper({
           ...wallpaper,
           x: settings.x,
           y: settings.y
-        });
+        }, first);
       }
     }
     else if (settings.type === "url") {
-      setWallpaper({
+      updateWallpaper({
         url: settings.url,
         type: settings.mimeType?.split("/")[0] as "image" | "video",
         x: settings.x,
         y: settings.y
-      });
+      }, first);
     }
     else {
       const info = await fetchWallpaperInfo();
 
       if (info) {
-        setWallpaper({ url: info.url });
+        updateWallpaper({ url: info.url }, first);
+      }
+    }
+  }
+
+  function updateWallpaper(wallpaper: WallpaperType, first: boolean) {
+    setWallpaper(wallpaper);
+
+    if (first && wallpaper.type !== "video") {
+      const start = Date.now();
+      const image = new Image();
+
+      image.onload = () => {
+        removeDownscaled(start);
+        image.onload = null;
+      };
+
+      if (wallpaper.url) {
+        image.src = wallpaper.url;
       }
     }
   }

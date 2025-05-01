@@ -6,7 +6,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const postcssPresetEnv = require("postcss-preset-env");
-// const { defineReactCompilerLoaderOption, reactCompilerLoader } = require("react-compiler-webpack");
+const { defineReactCompilerLoaderOption, reactCompilerLoader } = require("react-compiler-webpack");
 
 module.exports = function(env = {}) {
   const mode = env.prod ? "production" : "development";
@@ -132,16 +132,16 @@ module.exports = function(env = {}) {
             {
               loader: "ts-loader",
               options: {
-                transpileOnly: env.prod
+                transpileOnly: true
               }
+            },
+            {
+              loader: reactCompilerLoader,
+              options: defineReactCompilerLoaderOption({
+                target: "19",
+                panicThreshold: "none"
+              })
             }
-            // {
-            //   loader: reactCompilerLoader,
-            //   options: defineReactCompilerLoaderOption({
-            //     target: "18",
-            //     panicThreshold: "none"
-            //   })
-            // }
           ]
         }
       ]
