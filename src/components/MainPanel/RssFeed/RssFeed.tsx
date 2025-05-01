@@ -32,9 +32,14 @@ export default function RssFeed({ locale, showIndicator }: Props) {
   const lastUpdate = useRef(0);
   const timeoutId = useRef(0);
   const saveTabTimeoutId = useRef(0);
+  const first = useRef(true);
 
   useEffect(() => {
-    init();
+    if (first.current) {
+      init();
+      first.current = false;
+      return;
+    }
   }, []);
 
   useEffect(() => {

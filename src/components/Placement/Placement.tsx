@@ -68,6 +68,17 @@ export default function Placement({ locale }: { locale: any }) {
   }, [settings.tasks]);
 
   useEffect(() => {
+    setComponents({
+      ...components,
+      weather: {
+        ...components.weather,
+        params: { ...components.weather.params, timeFormat: settings.timeDate.format },
+        shouldSkip: !weather.rendered
+      }
+    });
+  }, [settings.timeDate.format]);
+
+  useEffect(() => {
     const shouldRender = isWeatherEnabled();
 
     clearTimeout(weatherTimeoutId.current);

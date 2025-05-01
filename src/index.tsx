@@ -6,6 +6,7 @@ import "components/FullscreenModal/fullscreen-modal.css";
 import "components/CreateButton/create-button.css";
 import "components/TabsContainer/tabs-container.css";
 
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { SettingsProvider } from "contexts/settings";
 import { LocalizationProvider } from "contexts/localization";
@@ -17,15 +18,17 @@ import App from "components/App";
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
-  <SettingsProvider>
-    <LocalizationProvider>
-      <NotificationProvider>
-        <StickyNotesProvider>
-          <PlacementProvider>
-            <App/>
-          </PlacementProvider>
-        </StickyNotesProvider>
-      </NotificationProvider>
-    </LocalizationProvider>
-  </SettingsProvider>
+  <StrictMode>
+    <SettingsProvider>
+      <LocalizationProvider>
+        <NotificationProvider>
+          <StickyNotesProvider>
+            <PlacementProvider>
+              <App/>
+            </PlacementProvider>
+          </StickyNotesProvider>
+        </NotificationProvider>
+      </LocalizationProvider>
+    </SettingsProvider>
+  </StrictMode>
 );
