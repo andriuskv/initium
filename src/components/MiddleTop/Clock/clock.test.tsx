@@ -66,7 +66,7 @@ beforeEach(() => {
     updateDuration: vi.fn(),
     updateWorkerCallback: vi.fn()
   });
-  vi.spyOn(global.Date, 'now').mockImplementation(() => new Date('2024-04-15T10:30:00').getTime());
+  vi.spyOn(global.Date, "now").mockImplementation(() => new Date("2024-04-15T10:30:00").getTime());
 });
 
 afterEach(() => {

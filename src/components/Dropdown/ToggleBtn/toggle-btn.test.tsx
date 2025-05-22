@@ -4,8 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { type ReactNode } from "react";
 import { LocalizationProvider, useLocalization } from "contexts/localization";
 import ToggleBtn from "./ToggleBtn";
+import locale from "lang/en.json" assert { type: "json" };
 
-// Mock the useLocalization hook
 vi.mock("contexts/localization", () => ({
   useLocalization: vi.fn(),
   LocalizationProvider: ({ children }: { children: ReactNode }) => <>{children}</>
@@ -16,7 +16,7 @@ const mockRef = { current: null };
 
 beforeEach(() => {
   vi.clearAllMocks();
-  (useLocalization as MockedFunction<typeof useLocalization>).mockReturnValue({ global: { more: "More" } });
+  (useLocalization as MockedFunction<typeof useLocalization>).mockReturnValue(locale);
 });
 
 test("renders with icon and text button", () => {

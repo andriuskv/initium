@@ -91,7 +91,7 @@ export default function Groups({ groups, locale, updateGroups, createGroup, hide
             {groups.slice(1).map((group, index) => (
               <SortableItem className={`tasks-groups-item${group.id === activeDragId ? " dragging" : ""}`} id={group.id} key={group.id}>
                 <GroupContent locale={locale} group={group} index={index}
-                  showRemoveModal={showRemoveModal}enableGroupRename={enableGroupRename} renameGroup={renameGroup}/>
+                  showRemoveModal={showRemoveModal} enableGroupRename={enableGroupRename} renameGroup={renameGroup}/>
               </SortableItem>
             ))}
           </SortableList>

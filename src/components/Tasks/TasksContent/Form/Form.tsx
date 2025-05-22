@@ -15,13 +15,21 @@ import type { GeneralSettings, TimeDateSettings } from "types/settings";
 
 const Toast = lazy(() => import("components/Toast"));
 
-type State = TaskForm & {
+type State = {
+  creationDate?: number,
+  updating?: boolean,
+  groupIndex?: number,
+  taskIndex?: number,
+  groupId?: string,
+  selectedGroupId?: string,
   moreOptionsVisible: boolean,
-  labels: Label[]
+  completeWithSubtasks?: boolean,
+  labels: Label[],
+  task: Omit<TaskType, "labels">
 }
 
 type Props = {
-  form: TaskForm | null,
+  form: TaskForm,
   groups: Group[],
   replaceGroups: (items: { index: number, group: Group }[], shouldSave?: boolean) => void,
   removeTask: () => void,
@@ -34,7 +42,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
   const [state, setState] = useState<State>(() => {
     const defaultForm: State = {
       moreOptionsVisible: false,
-      completeWithSubtasks: form ? !!form.completeWithSubtasks : false,
+      completeWithSubtasks: false,
       labels: form ? getUniqueTaskLabels(form.groupIndex, form.taskIndex): [],
       task: {
         creationDate: Date.now(),
@@ -45,37 +53,39 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     };
 
     if (form?.updating) {
-      const subtasks = [...form.task.subtasks];
+      const task = groups[form.groupIndex!].tasks[form.taskIndex!];
+      const subtasks = [...task.subtasks];
       let missingSubtaskCount = 2 - subtasks.length;
 
       while (missingSubtaskCount > 0) {
         subtasks.push(getDefaultTask());
         missingSubtaskCount -= 1;
       }
-      defaultForm.task.rawText = form.task.rawText;
+      defaultForm.task.rawText = task.rawText;
       defaultForm.task.subtasks = subtasks;
 
-      if (form.task.expirationDate) {
+      if (task.expirationDate) {
         defaultForm.moreOptionsVisible = true;
-        defaultForm.task.expirationDate = form.task.expirationDate;
-        defaultForm.task.expirationDateString = getDateTimeString(form.task.expirationDate);
+        defaultForm.task.expirationDate = task.expirationDate;
+        defaultForm.task.expirationDateString = getDateTimeString(task.expirationDate);
       }
 
-      if (form.task.repeat) {
+      if (task.repeat) {
         defaultForm.moreOptionsVisible = true;
         defaultForm.task.repeat = {
-          number: form.task.repeat.number,
-          start: form.task.repeat.start,
-          gap: form.task.repeat.gap,
-          unit: form.task.repeat.unit,
-          limit: typeof form.task.repeat.limit === "number" && form.task.repeat.limit < 0 ? 0 : form.task.repeat.limit
+          number: task.repeat.number,
+          start: task.repeat.start,
+          gap: task.repeat.gap,
+          unit: task.repeat.unit,
+          limit: typeof task.repeat.limit === "number" && task.repeat.limit < 0 ? 0 : task.repeat.limit
         };
       }
 
       return {
         ...defaultForm,
         updating: true,
-        selectedGroupId: form.selectedGroupId
+        completeWithSubtasks: !!task.completeWithSubtasks,
+        selectedGroupId: form.groupId
       };
     }
     return defaultForm;
@@ -239,10 +249,6 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
 
     event.preventDefault();
 
-    if (!form) {
-      return;
-    }
-
     const formElement = event.target as HTMLFormElement;
     const elements = formElement.elements as FormElements;
     const text = elements.text.value.trim();
@@ -256,6 +262,10 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
       subtasks: getFormSubtasks(elements.subtask),
       labels: getFlaggedFormLabels()
     }) as TaskType;
+
+    if (!text) {
+      return;
+    }
 
     if (state.completeWithSubtasks) {
       task.completeWithSubtasks = true;

@@ -500,25 +500,12 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     if (!groups) {
       return;
     }
-    const group = groups[groupIndex];
-    const { id, rawText, subtasks, creationDate, expirationDate, repeat, completeWithSubtasks } = group.tasks[taskIndex];
-
     setActiveComponent("form");
     setForm({
       updating: true,
       groupIndex,
       taskIndex,
-      groupId: group.id,
-      selectedGroupId: group.id,
-      completeWithSubtasks,
-      task: {
-        id,
-        rawText,
-        subtasks,
-        creationDate,
-        expirationDate,
-        repeat
-      }
+      groupId: groups[groupIndex].id
     });
   }
 
@@ -737,7 +724,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return null;
   }
 
-  if (activeComponent === "form") {
+  if (activeComponent === "form" && form) {
     return (
       <Suspense fallback={<Spinner/>}>
         <Form form={form} groups={groups} locale={locale} replaceGroups={replaceGroups} removeTask={removeFormTask}

@@ -53,7 +53,7 @@ test("does not apply container class when transparent is true", () => {
 });
 
 test("renders with mask", () => {
-  const { container } =  render(
+  const { container } = render(
     <FullscreenModal hide={hideMock} mask>
       <div>Test Content</div>
     </FullscreenModal>
@@ -64,16 +64,16 @@ test("renders with mask", () => {
 });
 
 test("calls hide on outside click", () => {
-    render(
-      <FullscreenModal hide={hideMock}>
-        <div>Test Content</div>
-      </FullscreenModal>
-    );
+  render(
+    <FullscreenModal hide={hideMock}>
+      <div>Test Content</div>
+    </FullscreenModal>
+  );
 
-    fireEvent.pointerDown(document.body);
-    fireEvent.pointerUp(document.body);
+  fireEvent.pointerDown(document.body);
+  fireEvent.pointerUp(document.body);
 
-    expect(hideMock).toHaveBeenCalledTimes(1);
+  expect(hideMock).toHaveBeenCalledTimes(1);
 });
 
 test("does not call hide on inside click", () => {

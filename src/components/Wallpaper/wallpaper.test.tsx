@@ -1,9 +1,8 @@
-import { expect, test, beforeAll, afterEach, beforeEach, afterAll, vi, type MockedFunction } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { expect, test, afterEach, afterAll, vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
 import type { WallpaperSettings } from "types/settings";
 import { getIDBWallpaper, resetIDBWallpaper } from "services/wallpaper";
 import Wallpaper from "./Wallpaper";
-
 
 vi.mock("services/wallpaper", () => ({
   getIDBWallpaper: vi.fn(),
