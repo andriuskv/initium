@@ -14,7 +14,7 @@ type Props = {
   more: { hourly: Hour[], daily: Weekday[] } | null,
   units: "C" | "F",
   speedUnits: "m/s" | "ft/s",
-  message: string,
+  message?: string,
   locale: any,
   hide: () => void
 }
@@ -64,7 +64,7 @@ export default function MoreWeather({ current, more, units, speedUnits, message,
             <div className="weather-more-current-secondary">
               <div className="weather-more-current-secondary-item">
                 <span className="weather-more-current-secondary-name">{locale.weather.precipitation}:</span>
-                <span>{current.precipitation ?? 0}%</span>
+                <span>{current.precipitation}%</span>
               </div>
               <div className="weather-more-current-secondary-item">
                 <span className="weather-more-current-secondary-name">{locale.weather.humidity}:</span>

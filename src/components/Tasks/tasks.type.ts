@@ -64,7 +64,4 @@ export type TaskForm = {
   groupIndex?: number,
   taskIndex?: number,
   groupId?: string,
-  selectedGroupId?: string,
-  completeWithSubtasks?: boolean,
-  task: Omit<TaskType, "labels">
 }
