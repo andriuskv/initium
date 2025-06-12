@@ -8,7 +8,7 @@ import "./sticky-notes.css";
 
 const Form = lazy(() => import("./Form"));
 
-export default function StickyNotes({ locale }: { locale: any }) {
+export default function StickyNotes() {
   const { notes } = useNotes();
   const [form, setForm] = useState<FormType | null>(null);
   let notesToRender: Note[] | null = null;
@@ -111,7 +111,7 @@ export default function StickyNotes({ locale }: { locale: any }) {
       ) : null}
       {form ? (
         <Suspense fallback={null}>
-          <Form initialForm={form} noteCount={notes.length} locale={locale} discardNote={discardNote} showForm={showForm}/>
+          <Form initialForm={form} noteCount={notes.length} discardNote={discardNote} showForm={showForm}/>
         </Suspense>
       ) : null}
     </>

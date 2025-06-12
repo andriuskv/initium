@@ -80,7 +80,8 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     let number = 1;
 
     for (const tab of tabs) {
-      const match = tab.title.match(/Tab (\d)/);
+      const regex = new RegExp(`^${locale.notepad.placeholder_title} (\\d)$`);
+      const match = tab.title.match(regex);
 
       if (match) {
         const n = Number(match[1]);
@@ -91,7 +92,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
       }
     }
 
-    return `Tab ${number}`;
+    return `${locale.notepad.placeholder_title} ${number}`;
   }
 
   function createTab(event: FormEvent) {

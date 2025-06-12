@@ -2,16 +2,18 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  width: 240px;
+  width: 280px;
   height: 336px;
   border-bottom-right-radius: var(--container-inset-radius);
 }
 
-.stopwatch-splits-header {
+.stopwatch-splits-header, .stopwatch-split {
   display: grid;
-  grid-template-columns: 40px 1fr 1fr;
+  grid-template-columns: 36px 160px 1fr;
   padding: var(--space-md);
+}
 
+.stopwatch-splits-header {
   /* Space for scrollbar */
   padding-right: 18px;
   border-bottom: 1px solid var(--color-white-10);
@@ -27,9 +29,6 @@
 }
 
 .stopwatch-split {
-  display: grid;
-  grid-template-columns: 40px 1fr 1fr;
-  padding: var(--space-md);
   box-shadow: 0 1px 0 0 var(--color-white-10);
   color: var(--color-white-80);
 }

@@ -1,6 +1,6 @@
-import type { PropsWithChildren } from "react";
-import { createContext, useState, use, useEffect } from "react";
+import { createContext, useState, use, useEffect, type PropsWithChildren } from "react";
 import { useSettings } from "contexts/settings";
+import * as localizationService from "services/localization";
 
 type LocalizationContextType = any;
 
@@ -19,12 +19,15 @@ function LocalizationProvider({ children }: PropsWithChildren) {
 
     if (module) {
       setLocale(module.default);
+      localizationService.setLocale(module.default);
     }
     else {
       const module = await import("lang/en.json", { assert: { type: "json" } });
 
       setLocale(module.default);
+      localizationService.setLocale(module.default);
     }
+    document.documentElement.lang = settings.general.locale;
   }
 
   return <LocalizationContext value={locale}>{children}</LocalizationContext>;

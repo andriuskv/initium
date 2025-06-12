@@ -7,12 +7,13 @@ import "./header-dropdown.css";
 type Props = {
   user: GoogleUser | null,
   calendars: GoogleCalendar[],
+  locale: any,
   toggleCalendarReminders: (calendarId: string, selected: boolean) => void,
   showReminderList: () => void,
   handleUserSignOut: (shouldCleanup?: boolean) => void
 }
 
-export default function HeaderDropdown({ user, calendars, toggleCalendarReminders, showReminderList, handleUserSignOut }: Props) {
+export default function HeaderDropdown({ user, calendars, locale, toggleCalendarReminders, showReminderList, handleUserSignOut }: Props) {
   const [calendarsVisible, setCalendarsVisible] = useState(() => localStorage.getItem("calendar-list-visible") === "true");
 
   function toggleCalendarList() {
@@ -45,15 +46,15 @@ export default function HeaderDropdown({ user, calendars, toggleCalendarReminder
               </div>
             </div>
             <div className="calendar-header-dropdown-user-bottom">
-              <a href="https://calendar.google.com" className="btn icon-btn calendar-header-dropdown-calendar-link" target="_blank" title="Open Google Calendar">
+              <a href="https://calendar.google.com" className="btn icon-btn calendar-header-dropdown-calendar-link" target="_blank" title={locale.calendar.user_dropdown.open_caledar_title}>
                 <img src="assets/google-product-logos/calendar.png" className="calendar-header-dropdown-calendar-logo" width="24px" height="24px" loading="lazy" alt=""></img>
               </a>
-              <button className="btn text-btn calendar-header-dropdown-user-logout-btn" onClick={() => handleUserSignOut(true)}>Sign Out</button>
+              <button className="btn text-btn calendar-header-dropdown-user-logout-btn" onClick={() => handleUserSignOut(true)}>{locale.calendar.user_dropdown.sign_out}</button>
             </div>
           </div>
           <div className="dropdown-group">
             <button className="btn text-btn calendar-list-toggle-btn" onClick={toggleCalendarList}>
-              <span>Calendars</span>
+              <span>{locale.calendar.user_dropdown.calendars_list_title}</span>
               <Icon id="chevron-down" className={`calendar-list-state-icon${calendarsVisible ? " expanded" : ""}`}/>
             </button>
             {calendarsVisible ? (
@@ -78,7 +79,7 @@ export default function HeaderDropdown({ user, calendars, toggleCalendarReminder
         </>
       ) : null}
       <div className="dropdown-group">
-        <button className="btn text-btn dropdown-btn" onClick={showReminderList}>Reminders</button>
+        <button className="btn text-btn dropdown-btn" onClick={showReminderList}>{locale.calendar.reminders_title}</button>
       </div>
     </Dropdown>
   );

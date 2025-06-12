@@ -134,7 +134,7 @@ function SortableItem({ children, id, className, component, handleTitle }: ItemP
     return (
       <li ref={setNodeRef} style={style} className={className}>
         <component.Component {...component.params}>
-          <button type="button" className="btn icon-btn drag-handle" {...attributes} {...listeners} title={handleTitle || "Drag"}>
+          <button type="button" className="btn icon-btn drag-handle" {...attributes} {...listeners} title={handleTitle}>
             <Icon id="drag"/>
           </button>
         </component.Component>

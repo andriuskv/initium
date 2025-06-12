@@ -175,7 +175,7 @@
   position: absolute;
   bottom: var(--space-md);
   left: 50%;
-  width: 180px;
+  min-width: 180px;
   padding: var(--space-md);
   display: flex;
   align-items: center;

@@ -74,7 +74,7 @@ export default function Tab({ children, index, tab, canRemove, textSize, locale,
         </div>
       )}
       <div className="notepad-tabs-item-bottom">
-        <span className="notepad-tab-size-text">Size: {tab.sizeString}</span>
+        <span className="notepad-tab-size-text">{locale.notepad.tab_size_label}: {tab.sizeString}</span>
         <Dropdown toggle={{ className: "js-notepad-tab-dropdown-toggle-btn" }}>
           <div className="dropdown-group notepad-tabs-dropdown-setting-group">
             <div className="notepad-tabs-dropdown-setting-title">{locale.global.text_size_title}</div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type CSSProperties, type ChangeEvent, type FormEvent } from "react";
-import { formatBytes, timeout } from "utils";
+import { formatBytes, parseLocaleString, timeout } from "utils";
 import { useModal } from "hooks";
 import { getCurrentDateString } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
@@ -282,15 +282,20 @@ export default function StorageTab({ locale }: { locale: any }) {
   if (!ready.current) {
     return null;
   }
+  const restoreConfirmMessage = parseLocaleString(locale.settings.storage.data_confirm, <b>restore</b>);
+  const wipeConfirmMessage = parseLocaleString(locale.settings.storage.data_confirm, <b>wipe all data</b>);
+  const usedGroup = parseLocaleString(locale.settings.storage.usage_label_1, (
+    <div className="storage-usage-current-numerical" key={stats.usedStorageFormatted}>
+      <span>{stats.usedStorageFormatted}</span>
+      <span className="storage-usage-current-numerical-units">kB</span>
+    </div>
+  ), <div key={stats.maxStorageFormatted}>{parseLocaleString(locale.settings.storage.usage_label_2, stats.maxStorageFormatted)}</div>);
+
   return (
     <div className="container-body setting-tab">
       <div className="storage-usage">
         <div className="storage-usage-numerical">
-          <div className="storage-usage-current-numerical">
-            <span>{stats.usedStorageFormatted}</span>
-            <span className="storage-usage-current-numerical-units">kB</span>
-          </div>
-          <div>Used of {stats.maxStorageFormatted}</div>
+          {usedGroup}
         </div>
         <div className="storage-usage-percental">
           <svg viewBox="0 0 100 100" className="storage-usage-visual">
@@ -326,20 +331,20 @@ export default function StorageTab({ locale }: { locale: any }) {
         ))}
       </ul>
       <div className="storage-data">
-        <h4 className="storage-data-title">Data Management</h4>
+        <h4 className="storage-data-title">{locale.settings.storage.data_title}</h4>
         {dataMessage ? <p className="storage-data-message">{dataMessage}</p> : null}
         <div className="storage-data-btns">
           <button className="btn icon-text-btn alt-icon-text-btn" onClick={createDataBackup}>
             <Icon id="download"/>
-            <span>Backup</span>
+            <span>{locale.settings.storage.data_backup}</span>
           </button>
           <button className="btn icon-text-btn alt-icon-text-btn" onClick={showRestoreModal}>
             <Icon id="upload"/>
-            <span>Restore</span>
+            <span>{locale.settings.storage.data_restore}</span>
           </button>
           <button className="btn icon-text-btn alt-icon-text-btn" onClick={showWipeDataModal}>
             <Icon id="trash"/>
-            <span>Wipe all</span>
+            <span>{locale.settings.storage.data_wipe}</span>
           </button>
         </div>
       </div>
@@ -359,7 +364,7 @@ export default function StorageTab({ locale }: { locale: any }) {
             <div className="modal-text-body">{modal.body}</div>
             <div className="storage-confirm-input-container">
               <label>
-                <div>For confirmation type: <b>restore</b></div>
+                <div>{restoreConfirmMessage}</div>
                 <input type="text" className="input" autoComplete="off"
                   onChange={handleImportInputChange} value={modal.confirmInputValue} required/>
               </label>
@@ -377,7 +382,7 @@ export default function StorageTab({ locale }: { locale: any }) {
             <div className="modal-text-body">{modal.body}</div>
             <div className="storage-confirm-input-container">
               <label>
-                <div>For confirmation type: <b>wipe all data</b></div>
+                <div>{wipeConfirmMessage}</div>
                 <input type="text" className="input" autoComplete="off"
                   onChange={handleImportInputChange} value={modal.confirmInputValue} required/>
               </label>

@@ -428,7 +428,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
   function showPresets() {
     dispatchCustomEvent("fullscreen-modal", {
       component: Presets,
-      params: { presets, locale, updatePresets, getUpdatedTime, resetActivePreset }
+      params: { presets, updatePresets, getUpdatedTime, resetActivePreset }
     });
   }
 
@@ -779,7 +779,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
         {activeTimer.running || !activeTimer.dirtyInput ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={() => reset(activeTimer.id)}>{locale.global.reset}</button>}
         <div className="top-panel-secondary-actions">
           {activeTimer.dirty && pipService.isSupported() && (
-            <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
+            <button className="btn icon-btn" onClick={togglePip} title={locale.topPanel.toggle_pip}>
               <Icon id="pip"/>
             </button>
           )}
@@ -796,7 +796,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
             <div className="dropdown-group timer-dropdown-list">
               <button className="btn icon-text-btn dropdown-btn timer-dropdown-btn" onClick={addTimer}>
                 <Icon id="plus"/>
-                <span>New timer</span>
+                <span>{locale.timer.new_timer_btn}</span>
               </button>
             </div>
             <div className="dropdown-group timer-dropdown-list">
@@ -814,7 +814,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
             {timersArr.length > 1 && !activeTimer.running ? (
               <button className="btn icon-text-btn dropdown-btn timer-dropdown-btn" onClick={removeTimer}>
                 <Icon id="trash"/>
-                <span>Remove timer</span>
+                <span>{locale.timer.remove_timer_btn}</span>
               </button>
             ) : null}
           </Dropdown>

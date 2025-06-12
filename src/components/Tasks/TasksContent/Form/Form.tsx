@@ -536,9 +536,9 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
                         defaultValue={state.task.repeat?.gap} name="repeatGap" placeholder="1" autoComplete="off"/>
                       <select className="input select multi-input-right"
                         defaultValue={state.task.repeat?.unit} name="repeatUnit">
-                        <option value="day">day(s)</option>
-                        <option value="week">week(s)</option>
-                        <option value="month">month(s)</option>
+                        <option value="day">{locale.tasks.repeat_label_days}</option>
+                        <option value="week">{locale.tasks.repeat_label_weeks}</option>
+                        <option value="month">{locale.tasks.repeat_label_months}</option>
                       </select>
                     </div>
                   </div>
@@ -607,7 +607,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
                 <div className="checkbox">
                   <div className="checkbox-tick"></div>
                 </div>
-                <span>Complete the task by completing all its subtasks</span>
+                <span>{locale.tasks.complete_with_subtasks_message}</span>
               </label>
             </div>
           ) : null}

@@ -59,15 +59,15 @@ export default function App() {
       <Wallpaper settings={settings.appearance.wallpaper}/>
       <MiddleTop settings={settings}/>
       <Suspense fallback={null}>
-        {settings.general.stickyNotesDisabled ? null : <StickyNotes locale={locale}/>}
+        {settings.general.stickyNotesDisabled ? null : <StickyNotes/>}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel} locale={locale}/>}
+        {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>
-      <Placement locale={locale}/>
+      <Placement/>
       <Tooltip/>
       <Notification/>
-      <FullscreenItems locale={locale} appearanceSettings={settings.appearance}/>
+      <FullscreenItems appearanceSettings={settings.appearance}/>
     </>
   );
 }

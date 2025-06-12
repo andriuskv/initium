@@ -77,6 +77,20 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }, []);
 
   useEffect(() => {
+    const newTabs: Tabs = { ...tabs };
+
+    for (const tab in tabs) {
+      const a = tab as TabName;
+
+      newTabs[a] = {
+        ...tabs[a],
+        name: locale.topPanel[tab]
+      };
+    }
+    setTabs(newTabs);
+  }, [locale.locale]);
+
+  useEffect(() => {
     if (settings.showMinimal && visible) {
       return;
     }
@@ -255,6 +269,9 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   }
 
   function selectTab(name: TabName) {
+    if (activeTab === name) {
+      return;
+    }
     const tab = { ...tabs[name], rendered: true };
     const animTabs = getAnimDirection(name, activeTab);
 

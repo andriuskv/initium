@@ -155,16 +155,6 @@ export default function TimeDateTab({ locale }: { locale: any }) {
             <div className="checkbox-tick"></div>
           </div>
         </label>
-        <label className={`setting${settings.clockDisabled ? " disabled" : ""}`}>
-          <span>Enable to fullscreen the clock by double clicking on it</span>
-          <input type="checkbox" className="sr-only checkbox-input"
-            checked={settings.clockFullscreenEnabled}
-            onChange={() => toggleSetting("timeDate", "clockFullscreenEnabled")}
-            disabled={settings.clockDisabled}/>
-          <div className="checkbox">
-            <div className="checkbox-tick"></div>
-          </div>
-        </label>
       </div>
       <div className="settings-group">
         <div className="settings-group-top">
@@ -185,6 +175,7 @@ export default function TimeDateTab({ locale }: { locale: any }) {
           <div className="select-container">
             <select className="input select" onChange={handleDateLocaleChange} value={settings.dateLocale}
               disabled={settings.clockDisabled || settings.dateHidden}>
+              <option value="default">Default</option>
               <option value="system">System</option>
               <option value="cs-CZ">Čeština</option>
               <option value="da-DK">Dansk</option>
@@ -265,8 +256,8 @@ export default function TimeDateTab({ locale }: { locale: any }) {
           <div className="select-container">
             <select className="input select" onChange={handleWeekdayChange} value={settings.firstWeekday}
               disabled={settings.clockDisabled}>
-              <option value="0">Monday</option>
-              <option value="1">Sunday</option>
+              <option value="0">{locale.settings.time_date.monday}</option>
+              <option value="1">{locale.settings.time_date.sunday}</option>
             </select>
           </div>
         </label>
@@ -280,7 +271,7 @@ export default function TimeDateTab({ locale }: { locale: any }) {
           </div>
         </label>
         <label className="setting">
-          <span>Hide current day reminder preview</span>
+          <span>{locale.settings.time_date.today_reminder_preview}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.reminderPreviewHidden}
             onChange={() => toggleSetting("timeDate", "reminderPreviewHidden")}/>
@@ -291,7 +282,7 @@ export default function TimeDateTab({ locale }: { locale: any }) {
         {/* Use relative here because sr-only class causes the input to move out of screen bounds causing layout shift,
         even though on other inputs it doesn't, go figure. */}
         <label className="setting relative">
-          <span>Show tomorrow reminder preview</span>
+          <span>{locale.settings.time_date.tomorrow_reminder_preview}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.showTomorrowReminers}
             onChange={() => toggleSetting("timeDate", "showTomorrowReminers")}/>
@@ -301,9 +292,10 @@ export default function TimeDateTab({ locale }: { locale: any }) {
         </label>
         <div className="setting last-setting-tab-item google-calendar-integration-setting">
           <div className="google-calendar-integration-setting-main">
+            <img src="assets/google-product-logos/calendar.png" className="" width="24px" height="24px" loading="lazy" alt=""></img>
             <span>Google Calendar</span>
-            {calendarUser.user ? <GoogleUserDropdown user={calendarUser.user} handleSignOut={handleGoogleCalendarDisconnect}/> : (
-              <button className="btn" onClick={handleGoogleCalendarConnect} disabled={calendarUser.status === "connecting"}>{calendarUser.status === "connecting" ? "Connecting" : "Connect"}</button>
+            {calendarUser.user ? <GoogleUserDropdown user={calendarUser.user} locale={locale} handleSignOut={handleGoogleCalendarDisconnect}/> : (
+              <button className="btn" onClick={handleGoogleCalendarConnect} disabled={calendarUser.status === "connecting"}>{calendarUser.status === "connecting" ? locale.settings.time_date.connecting : locale.settings.time_date.connect}</button>
             )}
           </div>
           {calendarUser.message ? <p className="google-calendar-integration-setting-message">{calendarUser.message}</p> : null}

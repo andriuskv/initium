@@ -1,6 +1,5 @@
 .create-btn {
   --bottom: var(--space-md);
-  --expanded-width: 92px;
   --background-color: var(--color-primary);
   --shift: 0px;
 
@@ -28,7 +27,7 @@
   &:hover, &:focus-visible {
     --background-color: var(--color-primary-20);
 
-    width: var(--expanded-width);
+    width: fit-content;
 
     .create-btn-text {
       opacity: 1;

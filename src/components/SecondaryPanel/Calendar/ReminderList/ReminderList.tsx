@@ -36,7 +36,7 @@ export default function ReminderList({ reminders, locale, showReminderDay, editR
         <button className="btn icon-btn" onClick={hide} title={locale.global.back}>
           <Icon id="chevron-left"/>
         </button>
-        <span className="calendar-title reminder-list-title">Reminders</span>
+        <span className="calendar-title reminder-list-title">{locale.calendar.reminders_title}</span>
       </div>
       {sortedReminders.length > 0 ? (
         <ul className="reminder-list-items" data-dropdown-parent>

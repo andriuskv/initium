@@ -44,34 +44,27 @@ function getDefault(): Settings {
       },
       middleTopOrder: [
         {
-          id: "timers",
-          name: "Mini timer"
+          id: "timers"
         },
         {
-          id: "clock",
-          name: "Clock"
+          id: "clock"
         },
         {
-          id: "greeting",
-          name: "Greeting"
+          id: "greeting"
         }
       ],
       placement: {
         "top-left": {
-          id: "tasks",
-          name: "Tasks"
+          id: "tasks"
         },
         "top-right": {
-          id: "weather",
-          name: "Weather"
+          id: "weather"
         },
         "bottom-left": {
-          id: "",
-          name: "Empty"
+          id: "empty"
         },
         "bottom-right": {
-          id: "secondary",
-          name: "Secondary"
+          id: "secondary"
         }
       }
     },
@@ -90,12 +83,11 @@ function getDefault(): Settings {
       clockStyle: "default",
       clockScale: 1,
       centerClock: false,
-      clockFullscreenEnabled: false,
       dateHidden: false,
       dateScale: 1.1,
       datePosition: "bottom",
       dateAlignment: "center",
-      dateLocale: "en-US",
+      dateLocale: "default",
       firstWeekday: 0,
       worldClocksHidden: false,
       reminderPreviewHidden: false,

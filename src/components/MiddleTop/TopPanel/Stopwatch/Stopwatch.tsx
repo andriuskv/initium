@@ -270,7 +270,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
       id: "splits",
       shouldToggle: true,
       component: Splits,
-      params: { splits, locale }
+      params: { splits }
     });
   }
 
@@ -329,7 +329,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
         {running || !dirty ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.global.reset}</button>}
         <div className="top-panel-secondary-actions">
           {dirty && pipService.isSupported() && (
-            <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
+            <button className="btn icon-btn" onClick={togglePip} title={locale.topPanel.toggle_pip}>
               <Icon id="pip"/>
             </button>
           )}

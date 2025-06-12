@@ -1,7 +1,8 @@
+import type { GeneralSettings, TasksSettings } from "types/settings";
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { handleZIndex } from "services/zIndex";
+import { useLocalization } from "contexts/localization";
 import "./tasks.css";
-import type { GeneralSettings, TasksSettings } from "types/settings";
 
 const TasksContent = lazy(() => import("./TasksContent"));
 
@@ -9,10 +10,10 @@ type Props = {
   settings: TasksSettings,
   generalSettings: GeneralSettings,
   corner: string,
-  locale: any
 }
 
-export default function Tasks({ settings, generalSettings, corner, locale }: Props) {
+export default function Tasks({ settings, generalSettings, corner }: Props) {
+  const locale = useLocalization();
   const [state, setState] = useState({ rendered: false, visible: false, revealed: false, hiding: false });
   const [expanded, setExpanded] = useState(false);
   const timeoutId = useRef(0);

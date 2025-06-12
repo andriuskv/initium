@@ -1,4 +1,5 @@
-import type { TimeDateSettings } from "types/settings";
+import type { GeneralSettings, TimeDateSettings } from "types/settings";
+import { parseLocaleString } from "utils";
 import { getSetting } from "./settings";
 
 function adjustTime({ hours, minutes = 0 }: { hours: number, minutes?: number }, format: 12 | 24 = 24) {
@@ -67,10 +68,7 @@ function formatDate(date: Date | number, { locale = "en", includeTime = false, i
   if (excludeYear) {
     delete options.year;
   }
-
-  if (locale === "system") {
-    locale = navigator.language;
-  }
+  locale = parseDateLocale(locale);
 
   try {
     return new Intl.DateTimeFormat(locale, options).format(date);
@@ -80,9 +78,28 @@ function formatDate(date: Date | number, { locale = "en", includeTime = false, i
   }
 }
 
+function getDateLocale() {
+  const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
+  return parseDateLocale(dateLocale);
+}
+
+
+function parseDateLocale(locale: string) {
+  if (locale === "default") {
+    const generalSettings = getSetting("general") as GeneralSettings;
+
+    return generalSettings.locale;
+  }
+  else if (locale === "system") {
+    return navigator.language;
+  }
+  return locale;
+}
+
 function getWeekdays(locale = "en", format: "short" | "long" = "long") {
+  const dateLocale = parseDateLocale(locale);
   const { firstWeekday } = getSetting("timeDate") as TimeDateSettings;
-  const formatter = new Intl.DateTimeFormat(locale, { weekday: format, timeZone: "UTC" });
+  const formatter = new Intl.DateTimeFormat(dateLocale, { weekday: format, timeZone: "UTC" });
   // Start from monday
   const weekdays = [3, 4, 5, 6, 7, 8, 9].map(day => {
     const dd = day < 10 ? `0${day}` : day;
@@ -102,7 +119,8 @@ function getWeekdayName(day: number, locale = "en", useShortName = false) {
 }
 
 function getMonthNames(locale = "en", format: "short" | "long" = "long") {
-  const formatter = new Intl.DateTimeFormat(locale, { month: format, timeZone: "UTC" });
+  const dateLocale = parseDateLocale(locale);
+  const formatter = new Intl.DateTimeFormat(dateLocale, { month: format, timeZone: "UTC" });
   return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => {
     const mm = month < 10 ? `0${month}` : month;
     const date = new Date(`2023-${mm}-01T00:00:00+00:00`);
@@ -236,7 +254,7 @@ function getOffsettedCurrentTime(milliseconds: number) {
   return getClockTimeString(offset, { padHours: true });
 }
 
-function getHoursOffset(milliseconds: number, useNumerical = false) {
+function getHoursOffset(milliseconds: number, locale: any, useNumerical = false) {
   const hours = Math.round(milliseconds / 1000 / 60 / 60);
 
   if (useNumerical) {
@@ -248,15 +266,15 @@ function getHoursOffset(milliseconds: number, useNumerical = false) {
     }
     return "0";
   }
-  const suffix = Math.abs(hours) === 1 ? "" : "s";
+  const unit = Math.abs(hours) === 1 ? locale.world.hour : locale.world.hours;
 
   if (hours > 0) {
-    return `${hours} hour${suffix} ahead`;
+    return parseLocaleString(locale.world.ahead, hours, unit);
   }
   else if (hours < 0) {
-    return `${Math.abs(hours)} hour${suffix} behind`;
+    return parseLocaleString(locale.world.behind, Math.abs(hours), unit);
   }
-  return "Current timezone";
+  return locale.world.current_timezone;
 }
 
 function parseDateInputValue(value: string, includeTime = false) {
@@ -308,5 +326,7 @@ export {
   formatDate,
   getOffsettedCurrentTime,
   getHoursOffset,
-  parseDateInputValue
+  parseDateInputValue,
+  parseDateLocale,
+  getDateLocale
 };

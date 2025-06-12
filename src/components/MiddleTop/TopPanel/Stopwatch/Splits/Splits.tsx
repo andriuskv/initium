@@ -28,7 +28,7 @@ export default function Splits({ splits, locale, hide } : Props) {
       <ul className="stopwatch-splits">
         {splits.map((split, index) => (
           <li className="stopwatch-split" key={index}>
-            <span>#{splits.length - index}</span>
+            <span>{splits.length - index}</span>
             <span>{split.elapsedString}</span>
             {split.diffString ? <span>{split.diffString}</span> : null}
           </li>

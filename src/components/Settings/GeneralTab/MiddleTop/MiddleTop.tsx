@@ -65,7 +65,7 @@ export default function MiddleTop({ settings, locale, updateContextSetting, hidi
                 <Icon id="chevron-down"/>
               </button>
             </div>
-            <div className="middle-top-order-item-name">{item.name}</div>
+            <div className="middle-top-order-item-name">{locale.settings.general[item.id]}</div>
             <Dropdown toggle={{ title: locale.middleTop.dropdown_title }}>
               <button className={`btn text-btn dropdown-btn${item.alignment === "start" ? " active" : ""}`}
                 onClick={() => changeAlignment("start", item.id)}>{locale.middleTop.align_top}</button>

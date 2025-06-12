@@ -59,7 +59,7 @@ export default function TimersTab({ locale }: { locale: any }) {
           defaultValue={settings.fullscreenTextScale} onChange={handleTextScaleChange}/>
       </label>
       <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-        <span>{locale.settings.timers.mini_timer_label}</span>
+        <span className="setting-desc">{locale.settings.timers.mini_timer_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           disabled={settings.disabled}
           checked={settings.showMinimal}
@@ -73,7 +73,7 @@ export default function TimersTab({ locale }: { locale: any }) {
           <h4 className="settings-group-title">{locale.settings.timers.timer_group_title}</h4>
         </div>
         <label className={`setting${settings.disabled ? " disabled" : ""}`}>
-          <span>{locale.settings.timers.preset_as_label_label}</span>
+          <span className="setting-desc">{locale.settings.timers.preset_as_label_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             disabled={settings.disabled}
             checked={settings.timer.usePresetNameAsLabel}

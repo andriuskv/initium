@@ -2,6 +2,7 @@ import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type Reac
 import { getSetting, updateSetting } from "services/settings";
 import { handleZIndex } from "services/zIndex";
 import { hasStoredFeeds } from "services/feeds";
+import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import Resizer from "components/Resizer";
 import Spinner from "components/Spinner";
@@ -14,8 +15,7 @@ const Notepad = lazy(() => import("./Notepad"));
 const RssFeed = lazy(() => import("./RssFeed"));
 
 type Props = {
-  settings: MainPanelSettings,
-  locale: any
+  settings: MainPanelSettings
 }
 
 type Tab = {
@@ -55,7 +55,8 @@ function renderComponent(tab: Tab, activeTabId: string, component: ReactNode, sh
   );
 }
 
-export default function MainPanel({ settings, locale }: Props) {
+export default function MainPanel({ settings }: Props) {
+  const locale = useLocalization();
   const [activeTab, setActiveTab] = useState((): ActiveTab => {
     return { id: localStorage.getItem("mainPanelTab") ?? "topSites" };
   });

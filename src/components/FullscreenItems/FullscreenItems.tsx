@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, lazy, Suspense, type FC } from "react";
+import type { AppearanceSettings } from "types/settings";
 import { timeout } from "utils";
+import { useLocalization } from "contexts/localization";
 import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
-import type { AppearanceSettings } from "types/settings";
 
 const Settings = lazy(() => import("components/Settings"));
 const WallpaperViewer = lazy(() => import("components/WallpaperViewer"));
@@ -11,11 +12,13 @@ const GreetingEditor = lazy(() => import("components/GreetingEditor"));
 type FullscreenModalType = {
   id?: string,
   hiding?: boolean,
-  component?: FC<{ hide: () => void }>,
+  component?: FC<{ locale: any, hide: () => void }>,
   params?: { [key: string]: unknown }
 }
 
-export default function FullscreenItems({ appearanceSettings, locale }: { appearanceSettings: AppearanceSettings, locale: any }) {
+// export default function FullscreenItems({ appearanceSettings, locale }: { appearanceSettings: AppearanceSettings, locale: any }) {
+export default function FullscreenItems({ appearanceSettings }: { appearanceSettings: AppearanceSettings }) {
+  const locale = useLocalization();
   const [fullscreenModal, setFullscreenModal] = useState<FullscreenModalType>({});
   const modalTimeoutId = useRef(0);
 
@@ -98,7 +101,7 @@ export default function FullscreenItems({ appearanceSettings, locale }: { appear
   else if (fullscreenModal.component) {
     return (
       <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
-        <fullscreenModal.component {...fullscreenModal.params} hide={hideFullscreenModal}/>
+        <fullscreenModal.component {...fullscreenModal.params} locale={locale} hide={hideFullscreenModal}/>
       </FullscreenModal>
     );
   }

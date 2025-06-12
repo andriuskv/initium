@@ -3,6 +3,7 @@ import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings";
 import { handleZIndex } from "services/zIndex";
 import * as focusService from "services/focus";
+import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./secondary-panel.css";
 
@@ -22,59 +23,24 @@ type Item = {
 }
 type Items = Record<string, Item>;
 
-export default function SecondaryPanel({ corner, locale }: { corner: string, locale: any }) {
+export default function SecondaryPanel({ corner }: { corner: string }) {
+  const locale = useLocalization();
   const { settings } = useSettings();
   const [selectedItem, setSelectedItem] = useState<Item>({ id: "", title: "", iconId: "" });
-  const [items, setItems] = useState<Items>(() => ({
-    "stickyNotes": {
-      id: "stickyNotes",
-      title: locale.secondaryPanel.sticky_notes,
-      iconId: "sticky-notes",
-      attrs: {
-        "data-focus-id": "stickyNotes"
-      }
-    },
-    "shortcuts": {
-      id: "shortcuts",
-      title: locale.secondaryPanel.shortcuts,
-      iconId: "grid",
-      attrs: {
-        "data-focus-id": "shortcuts"
-      }
-    },
-    "timers": {
-      id: "timers",
-      title: locale.secondaryPanel.timers,
-      iconId: "clock"
-    },
-    "calendar": {
-      id: "calendar",
-      title: locale.secondaryPanel.calendar,
-      iconId: "calendar",
-      attrs: {
-        "data-focus-id": "calendar"
-      }
-    },
-    "settings": {
-      id: "settings",
-      title: locale.global.settings,
-      iconId: "settings",
-      attrs: {
-        "data-modal-initiator": true
-      }
-    }
-  }));
+  const [items, setItems] = useState<Items>(() => getItems());
   const calendarTimeoutId = useRef(0);
   const lastItemId = useRef("");
   const closeButton = useRef<HTMLButtonElement>(null);
+  const currentLocale = useRef(locale.locale);
 
   useEffect(() => {
-    if (!settings.general.calendarDisabled) {
+    if (!items.calendar.rendered && !settings.general.calendarDisabled) {
+      clearTimeout(calendarTimeoutId.current);
       calendarTimeoutId.current = window.setTimeout(() => {
         setItems({ ...items, calendar: {...items.calendar, rendered: true } });
       }, 4000);
     }
-  }, []);
+  }, [items]);
 
   useEffect(() => {
     function toggleTimersIndicator({ detail }: CustomEventInit) {
@@ -91,10 +57,30 @@ export default function SecondaryPanel({ corner, locale }: { corner: string, loc
   useEffect(() => {
     setItems({
       ...items,
-      stickyNotes: { ...items.stickyNotes, disabled: settings.general.stickyNotesDisabled },
-      shortcuts: { ...items.shortcuts, disabled: settings.general.shortcutsDisabled },
-      timers: { ...items.timers, disabled: settings.timers.disabled },
-      calendar: { ...items.calendar, disabled: settings.general.calendarDisabled }
+      stickyNotes: {
+        ...items.stickyNotes,
+        disabled: settings.general.stickyNotesDisabled,
+        title: locale.secondaryPanel.stickyNotes
+      },
+      shortcuts: {
+        ...items.shortcuts,
+        disabled: settings.general.shortcutsDisabled,
+        title: locale.secondaryPanel.shortcuts
+      },
+      timers: {
+        ...items.timers,
+        disabled: settings.timers.disabled,
+        title: locale.secondaryPanel.timers
+      },
+      calendar: {
+        ...items.calendar,
+        disabled: settings.general.calendarDisabled,
+        title: locale.secondaryPanel.calendar
+      },
+      settings: {
+        ...items.settings,
+        title: locale.secondaryPanel.settings
+      }
     });
   }, [settings.general, settings.timers]);
 
@@ -133,6 +119,64 @@ export default function SecondaryPanel({ corner, locale }: { corner: string, loc
       setSelectedItem({ ...selectedItem, visible: true });
     }
   }, [items.calendar.rendered]);
+
+  useEffect(() => {
+    if (currentLocale.current === locale.locale) {
+      return;
+    }
+    currentLocale.current = locale.locale;
+    const newItems: Items = { ...items };
+
+    for (const item in items) {
+      newItems[item] = {
+        ...items[item],
+        title: locale.secondaryPanel[item]
+      };
+    }
+    setItems(newItems);
+  }, [items, locale.locale]);
+
+  function getItems() {
+    return {
+      "stickyNotes": {
+        id: "stickyNotes",
+        title: locale.secondaryPanel.stickyNotes,
+        iconId: "sticky-notes",
+        attrs: {
+          "data-focus-id": "stickyNotes"
+        }
+      },
+      "shortcuts": {
+        id: "shortcuts",
+        title: locale.secondaryPanel.shortcuts,
+        iconId: "grid",
+        attrs: {
+          "data-focus-id": "shortcuts"
+        }
+      },
+      "timers": {
+        id: "timers",
+        title: locale.secondaryPanel.timers,
+        iconId: "clock"
+      },
+      "calendar": {
+        id: "calendar",
+        title: locale.secondaryPanel.calendar,
+        iconId: "calendar",
+        attrs: {
+          "data-focus-id": "calendar"
+        }
+      },
+      "settings": {
+        id: "settings",
+        title: locale.global.settings,
+        iconId: "settings",
+        attrs: {
+          "data-modal-initiator": true
+        }
+      }
+    };
+  }
 
   function selectItem(id: string) {
     if (id === "timers") {

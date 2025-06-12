@@ -2,7 +2,7 @@ import type { ChangeEvent, MouseEvent, KeyboardEvent, FormEvent } from "react";
 import type { TimeDateSettings } from "types/settings";
 import type { Day, Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
 import { useState, useMemo } from "react";
-import { getRandomHexColor, hslStringToHex, getRandomString } from "utils";
+import { getRandomHexColor, hslStringToHex, getRandomString, parseLocaleString } from "utils";
 import { padTime, getWeekday, getWeekdays, getTimeString, formatDate, parseDateInputValue, getDateString } from "services/timeDate";
 import { getSetting } from "services/settings";
 import { createCalendarEvent, updateCalendarEvent, getEventColors, saveNotifiedReminder } from "services/calendar";
@@ -196,7 +196,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     }
 
     if (initialForm.range) {
-      formA.range.enabled = initialForm.range.text !== "All day";
+      formA.range.enabled = initialForm.range.text !== locale.calendar.range_label;
 
       if (initialForm.range.from) {
         formA.range.from = { ...initialForm.range.from, text: `${initialForm.range.from.hours}:${padTime(initialForm.range.from.minutes)}`, };
@@ -693,6 +693,13 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     });
   }
 
+  const repeatCount = parseLocaleString(locale.calendar.form.repeat_count_label, <span key="a">{locale.calendar.form.repeat_after}</span>,
+    <input type="text" className="input repeat-input" name="count" autoComplete="off" key="occurrences"
+      value={form.repeat.count || ""} onChange={handleRepeatInputChange}
+      disabled={form.repeat.ends !== "occurrences"} required={form.repeat.ends === "occurrences"}/>,
+    <span key={form.repeat.count}>{form.repeat.count === "1" ? locale.calendar.form.repeat_occurrence : locale.calendar.form.repeat_occurrences}</span>
+  );
+
   return (
     <form className="reminder-form" inert={form.submiting} onSubmit={handleFormSubmit} onKeyDown={preventFormSubmit}>
       <div className="container-header">
@@ -730,23 +737,23 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
               value={form.dateString} onChange={handleSelectedDayInputChange}/>
           </div>
           {!form.updating && user ? (
-            <Dropdown container={{ className: "reminder-form-display-date-dropdown" }} toggle={{ title: "Reminder type" }}>
+            <Dropdown container={{ className: "reminder-form-display-date-dropdown" }} toggle={{ title: locale.calendar.form.reminder_type_label }}>
               <div className="dropdown-group">
-                <h4 className="reminder-form-display-date-dropdown-title">Reminder type</h4>
+                <h4 className="reminder-form-display-date-dropdown-title">{locale.calendar.form.reminder_type_label}</h4>
               </div>
               <div className="dropdown-group">
                 <button type="button" className={`btn text-btn dropdown-btn${form.type === "normal" ? " active" : ""}`}
-                  onClick={() => changeReminderType("normal")}>Normal reminder</button>
+                  onClick={() => changeReminderType("normal")}>{locale.calendar.form.reminder_type_label_normal}</button>
                 <button type="button" className={`btn text-btn dropdown-btn${form.type === "google" ? " active" : ""}`}
-                  onClick={() => changeReminderType("google")}>Google event</button>
+                  onClick={() => changeReminderType("google")}>{locale.calendar.form.reminder_type_label_event}</button>
               </div>
             </Dropdown>
           ) : null}
         </div>
-        <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder="Remind me to..." required/>
+        <input type="text" className="input" name="reminder" autoComplete="off" defaultValue={form.text} placeholder={locale.calendar.form.input_placeholder} required/>
         <div className="textarea-container">
           <textarea className="input textarea reminder-form-textarea" name="description" defaultValue={form.descriptionRaw}
-            placeholder="Description"></textarea>
+            placeholder={locale.calendar.form.desc_placeholder}></textarea>
         </div>
         <div className="reminder-form-row">
           <label className="reminder-form-setting">
@@ -755,7 +762,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
             <div className="checkbox">
               <div className="checkbox-tick"></div>
             </div>
-            <span>{locale.calendar.form.range_label}</span>
+            <span>{locale.calendar.range_label}</span>
           </label>
           <label className="reminder-form-setting">
             <input type="checkbox" className="sr-only checkbox-input" name="repeat"
@@ -772,7 +779,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
               <div className="checkbox">
                 <div className="checkbox-tick"></div>
               </div>
-              <span>Notify</span>
+              <span>{locale.calendar.form.notify_label}</span>
             </label>
           )}
           {form.repeat.enabled && (
@@ -861,7 +868,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                   <input type="radio" className="sr-only radio-input" name="ends"
                     value="date" defaultChecked={form.repeat.ends === "date"}/>
                   <div className="radio"></div>
-                  <span>On</span>
+                  <span>{locale.calendar.form.range_on_label}</span>
                   <input type="date" name="enddate" className="input reminder-form-end-date-input" data-modal-keep
                     defaultValue={form.repeat.endDateString}
                     disabled={form.repeat.ends !== "date"} required={form.repeat.ends === "date"}/>
@@ -875,11 +882,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                   <input type="radio" className="sr-only radio-input" name="ends"
                     value="occurrences" defaultChecked={form.repeat.ends === "occurrences"}/>
                   <div className="radio"></div>
-                  <span>After</span>
-                  <input type="text" className="input repeat-input" name="count" autoComplete="off"
-                    value={form.repeat.count || ""} onChange={handleRepeatInputChange}
-                    disabled={form.repeat.ends !== "occurrences"} required={form.repeat.ends === "occurrences"}/>
-                  <span>occurrences</span>
+                  {repeatCount}
                 </label>
                 {form.repeat.ends === "occurrences" && form.repeat.countError && (
                   <div className="reminder-form-input-message">{locale.calendar.form.invalid_number_message}</div>
@@ -891,10 +894,10 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         {form.notify.enabled && form.range.enabled ? (
           <div className="reminder-form-notify-setting">
             <div className="reminder-form-column reminder-form-setting">
-              <div>Notify before</div>
+              <div>{locale.calendar.form.notify_time_label}</div>
               <div className="reminder-form-row">
                 <label>
-                  <div className="label-top">Hour(s)</div>
+                  <div className="label-top">{locale.global.hour_s}</div>
                   <div className="select-container">
                     <select className="input select" onChange={handleNotifyTimeChange} value={form.notify.time.hours} name="hours">
                       <option value="0">0</option>
@@ -914,7 +917,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
                   </div>
                 </label>
                 <label>
-                  <div className="label-top">Minutes</div>
+                  <div className="label-top">{locale.global.minutes}</div>
                   <div className="select-container">
                     <select className="input select" onChange={handleNotifyTimeChange} value={form.notify.time.minutes} name="minutes">
                       <option value="0">0</option>

@@ -121,7 +121,7 @@ export default function Notepad({ locale }: { locale: any }) {
   function getDefaultTab() {
     const tab = {
       id: getRandomString(),
-      title: "Tab 1",
+      title: `${locale.notepad.placeholder_title} 1`,
       content: ""
     };
     return {

@@ -1,16 +1,27 @@
-import { expect, test, vi } from "vitest";
+import { expect, test, beforeEach, vi, type MockedFunction } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { type TasksSettings, type GeneralSettings } from "types/settings";
-import { Suspense } from "react";
+import { Suspense, type ReactNode } from "react";
 import { handleZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
+import { useLocalization } from "contexts/localization";
 import Tasks from "./Tasks";
 import locale from "lang/en.json" assert { type: "json" };
+
+vi.mock("contexts/localization", () => ({
+  useLocalization: vi.fn(),
+  LocalizationProvider: ({ children }: { children: ReactNode }) => <>{children}</>
+}));
 
 vi.mock("services/zIndex", () => ({
   handleZIndex: vi.fn(),
 }));
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  (useLocalization as MockedFunction<typeof useLocalization>).mockReturnValue(locale);
+});
 
 const renderComponent = (props = {}) => {
   return render(
@@ -19,7 +30,6 @@ const renderComponent = (props = {}) => {
         settings={getSetting("tasks") as TasksSettings}
         generalSettings={getSetting("general") as GeneralSettings}
         corner="top-right"
-        locale={locale}
         {...props}
       />
     </Suspense>

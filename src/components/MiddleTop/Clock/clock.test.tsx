@@ -20,7 +20,6 @@ const defaultSettings: TimeDateSettings = {
   format: 24,
   clockStyle: "default",
   clockDisabled: false,
-  clockFullscreenEnabled: false,
   clockScale: 1,
   dateLocale: "en-US",
   datePosition: "bottom",
