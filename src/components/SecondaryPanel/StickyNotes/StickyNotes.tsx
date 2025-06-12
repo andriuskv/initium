@@ -63,7 +63,7 @@ export default function StickyNotes({ locale, hide }: { locale: any, hide: () =>
                 </button>
                 <button className="btn icon-text-btn dropdown-btn" onClick={() => toggleHideNote(note.id)}>
                   <Icon id={note.hidden ? "eye" : "eye-off"}/>
-                  <span>{note.hidden ? "Show" : "Hide"}</span>
+                  <span>{note.hidden ? locale.global.show : locale.global.hide}</span>
                 </button>
                 <button className="btn icon-text-btn dropdown-btn" onClick={() => removeNote(note.id)}>
                   <Icon id="trash"/>

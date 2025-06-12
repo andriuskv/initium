@@ -1,10 +1,9 @@
 import type { PartialDeep } from "type-fest";
 import type { DDate, ReminderRepeat, CalendarType, Month, Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
-import type { TimeDateSettings } from "types/settings";
 import { getLocalStorageItem, getRandomString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
-import { getSetting } from "services/settings";
+import * as localizationService from "services/localization";
 
 type GoogleEvent = {
   id: string,
@@ -60,7 +59,7 @@ let eventColors: EventColors | null = null;
 let authIntervalId = 0;
 
 function generateYear(year: number) {
-  const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
+  const dateLocale = timeDateService.getDateLocale();
   const months: Month[] = [];
 
   for (let i = 0; i < 12; i++) {
@@ -186,9 +185,9 @@ function getDaysInMonth(year: number, month: number) {
   return timeDateService.getDaysInMonth(year, month);
 }
 
-function getReminderRangeString({ from, to }: Reminder["range"]) {
+function getReminderRangeString({ from, to }: Reminder["range"], locale: any) {
   if (!from) {
-    return "All day";
+    return locale.calendar.range_label;
   }
 
   if (to) {
@@ -206,7 +205,7 @@ function getReminderRepeatTooltip({ type, gap, count, weekdays, customTypeGapNam
   let tooltip = "";
 
   if (endDate) {
-    const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
+    const dateLocale = timeDateService.getDateLocale();
     const date = new Date(endDate.year, endDate.month, endDate.day);
     const formatedDate = timeDateService.formatDate(date, { locale: dateLocale });
     endDateString = ` until ${formatedDate}`;
@@ -241,7 +240,7 @@ function getReminderRepeatTooltip({ type, gap, count, weekdays, customTypeGapNam
 }
 
 function getWeekdayRepeatTooltip(weekdayStates: boolean[], countString: string, endDateString: string) {
-  const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
+  const dateLocale = timeDateService.getDateLocale();
   const weekdays = timeDateService.getWeekdays(dateLocale);
   const formatter = new Intl.ListFormat(dateLocale, {
     style: "long",
@@ -696,12 +695,14 @@ function getStartDate(start: GoogleEvent["start"]) {
 }
 
 function getRange(start: GoogleEvent["start"], end: GoogleEvent["end"]): GoogleReminder["range"] {
+  const locale = localizationService.getLocale();
+
   if (start.date && end.date) {
     const startNum = new Date(start.date).getTime();
     const endNum = new Date(end.date).getTime();
 
     if (endNum - startNum === 86400000) {
-      return { text: "All day" };
+      return { text: locale.calendar.range_label };
     }
   }
   else if (start.dateTime && end.dateTime) {
@@ -719,10 +720,10 @@ function getRange(start: GoogleEvent["start"], end: GoogleEvent["end"]): GoogleR
     return {
       from,
       to,
-      text: getReminderRangeString({ from, to, text: "" })
+      text: getReminderRangeString({ from, to, text: "" }, locale)
     };
   }
-  return { text: "All day" };
+  return { text: locale.calendar.range_label };
 }
 
 function parseRecurrence(recurrence: string[]): GoogleReminder["repeat"] | null {

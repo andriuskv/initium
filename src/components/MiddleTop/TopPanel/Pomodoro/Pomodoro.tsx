@@ -313,7 +313,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
         {running || !state.dirty ? null : <button className="btn text-btn top-panel-item-action-btn" onClick={reset}>{locale.global.reset}</button>}
         <div className="top-panel-secondary-actions">
           {state.dirty && pipService.isSupported() && (
-            <button className="btn icon-btn" onClick={togglePip} title="Toggle picture-in-picture">
+            <button className="btn icon-btn" onClick={togglePip} title={locale.topPanel.toggle_pip}>
               <Icon id="pip"/>
             </button>
           )}

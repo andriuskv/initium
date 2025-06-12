@@ -5,10 +5,11 @@ import "./google-user-dropdown.css";
 type Props = {
   className?: string,
   user: GoogleUser,
+  locale: any,
   handleSignOut: () => void,
 }
 
-export default function GoogleUserDropdown({ className, user, handleSignOut }: Props) {
+export default function GoogleUserDropdown({ className, user, locale, handleSignOut }: Props) {
   return (
     <Dropdown container={className ? { className } : undefined} toggle={{
       title: user.name,
@@ -23,7 +24,7 @@ export default function GoogleUserDropdown({ className, user, handleSignOut }: P
         </div>
       </div>
       <div className="google-user-dropdown-bottom">
-        <button className="btn text-btn" onClick={handleSignOut} data-dropdown-close>Disconnect</button>
+        <button className="btn text-btn" onClick={handleSignOut} data-dropdown-close>{locale.settings.time_date.disconnect}</button>
       </div>
     </Dropdown>
   );

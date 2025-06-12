@@ -19,6 +19,7 @@ type Props = {
 export default function World({ visible, locale, animDirection, parentVisible }: Props) {
   const [clocks, setClocks] = useState<Clock[]>([]);
   const timeoutId = useRef(0);
+  const currentLocale = useRef(locale.locale);
 
   useEffect(() => {
     init();
@@ -66,7 +67,7 @@ export default function World({ visible, locale, animDirection, parentVisible }:
   function initClocks(clocks: Clock[]) {
     setClocks(clocks.map(clock => {
       clock.time = getOffsettedCurrentTime(clock.diff);
-      clock.diffString = getHoursOffset(clock.diff);
+      clock.diffString = getHoursOffset(clock.diff, locale);
       return clock;
     }));
   }
@@ -74,8 +75,10 @@ export default function World({ visible, locale, animDirection, parentVisible }:
   function update() {
     setClocks(clocks.map(clock => {
       clock.time = getOffsettedCurrentTime(clock.diff);
+      clock.diffString = currentLocale.current !== locale.locale ? getHoursOffset(clock.diff, locale) : clock.diffString;
       return clock;
     }));
+    currentLocale.current = locale.locale;
   }
 
   function addClock(clock: Clock) {
@@ -98,7 +101,7 @@ export default function World({ visible, locale, animDirection, parentVisible }:
       id: "world",
       shouldToggle: true,
       component: Form,
-      params: { locale, addClock }
+      params: { addClock }
     });
   }
 

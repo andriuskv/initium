@@ -10,12 +10,12 @@ export default function Placement({ locale, hiding, hide }: { locale: any, hidin
 
   return (
     <Modal hiding={hiding} hide={hide}>
-      <h3 className="modal-title modal-title-center">Corners</h3>
+      <h3 className="modal-title modal-title-center">{locale.settings.general.corners}</h3>
       <div className="settings-placement-items">
         {arr.map(([key, value]) => (
-          <Dropdown toggle={{ title: value.name, isTextBtn: true }} container={{ className: "settings-placement-item" }} key={key}>
+          <Dropdown toggle={{ title: locale.settings.general[value.id || "empty"], isTextBtn: true }} container={{ className: "settings-placement-item" }} key={key}>
             {arr.map(([key2, value2]) => key === key2 ? null : (
-              <button className="btn text-btn dropdown-btn" onClick={() => swapPosition(key, key2)} key={key2}>{value2.name}</button>
+              <button className="btn text-btn dropdown-btn" onClick={() => swapPosition(key, key2)} key={key2}>{locale.settings.general[value2.id]}</button>
             ))}
           </Dropdown>
         ))}

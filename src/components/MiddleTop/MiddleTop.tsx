@@ -118,7 +118,7 @@ export default function MiddleTop({ settings }: Props) {
         )}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.timeDate.clockDisabled ? null : <Clock settings={settings.timeDate}/>}
+        {settings.timeDate.clockDisabled ? null : <Clock generalLocale={settings.general.locale} settings={settings.timeDate}/>}
       </Suspense>
       <Suspense fallback={null}>
         {greetingVisible && !settings.general.greeting.disabled ? <Greeting settings={settings.general.greeting}/> : null}

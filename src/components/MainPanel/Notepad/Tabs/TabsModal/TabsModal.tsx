@@ -18,8 +18,7 @@ export default function TabsModal({ locale, modal, hiding, confirmTabRemoval, cr
         <form onSubmit={createTab}>
           <h4 className="modal-title modal-title-center">{locale.notepad.create_modal_title}</h4>
           <input type="text" className="input" name="title"
-            autoComplete="off"
-            placeholder="Tab title"/>
+            autoComplete="off"/>
           <div className="modal-actions">
             <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
             <button className="btn">{locale.global.create}</button>

@@ -4,7 +4,7 @@ import type { Units, Countdown } from "./countdown.types";
 import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent, getRandomString } from "utils";
 import { getSetting } from "services/settings";
-import { formatDate } from "services/timeDate";
+import { formatDate, getDateLocale } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
 import Icon from "components/Icon";
 import CreateButton from "components/CreateButton";
@@ -106,6 +106,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
       return {
         ...countdown,
         ...parseDateDiff(diff, countdown.view),
+        date: getCountdownDateString(new Date(countdown.dateString)),
         diff
       };
     });
@@ -182,8 +183,9 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
 
     // @ts-ignore
     if (Intl.DurationFormat) {
+      const dateLocale = getDateLocale();
       // @ts-ignore
-      const durationItems = new Intl.DurationFormat("en-US", { style: "long" }).formatToParts(parts) as {
+      const durationItems = new Intl.DurationFormat(dateLocale, { style: "long" }).formatToParts(parts) as {
         unit: Units;
         type: "integer" | "unit";
         value: string;
@@ -243,7 +245,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
       id: "countdown",
       shouldToggle: true,
       component: Form,
-      params: { locale, createCountdown }
+      params: { createCountdown }
     });
   }
 
@@ -308,7 +310,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
 
   return (
     <div className={`container-body top-panel-item countdown${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
-      <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": "" }}></CreateButton>
+      <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": "" }}/>
       {countdowns.length ? (
         <div className="countdown-items-container">
           <ul className="top-panel-item-content countdown-items">

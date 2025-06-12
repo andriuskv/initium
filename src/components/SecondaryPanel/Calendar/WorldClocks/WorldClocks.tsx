@@ -72,7 +72,7 @@ export default function WorldClocks({ parentVisible, locale }: { parentVisible: 
   function initClocks(clocks: Clock[]) {
     setClocks(clocks.toSorted((a, b) => a.diff - b.diff).map(clock => {
       clock.time = getOffsettedCurrentTime(clock.diff);
-      clock.diffString = getHoursOffset(clock.diff, true);
+      clock.diffString = getHoursOffset(clock.diff, locale, true);
       return clock;
     }));
   }

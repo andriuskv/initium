@@ -106,15 +106,6 @@ export default function MainPanelTab({ locale, hide }: { locale: any, hide: () =
           <div className="checkbox-tick"></div>
         </div>
       </label>
-      {/* <label className="setting">
-        <span>Disable twitter</span>
-        <input type="checkbox" className="sr-only checkbox-input"
-          checked={settings.components.twitter.disabled}
-          onChange={() => toggleComponent("twitter")}/>
-        <div className="checkbox">
-          <div className="checkbox-tick"></div>
-        </div>
-      </label> */}
       <label className="setting">
         <span>{locale.settings.main_panel.disable_rss_feed_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"

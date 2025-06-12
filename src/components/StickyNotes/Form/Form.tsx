@@ -1,6 +1,7 @@
 import type { FormType } from "types/stickyNotes";
 import { useState, useEffect, useLayoutEffect, useRef, type CSSProperties, type FormEvent, type MouseEvent as ReactMouseEvent, type KeyboardEvent as ReactKeyboardEvent, type ChangeEvent } from "react";
 import * as focusService from "services/focus";
+import { useLocalization } from "contexts/localization";
 import { useNotes } from "contexts/stickyNotes";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
@@ -20,12 +21,12 @@ const textColors = [[0, 0, 0], [1, 0, 0]];
 type Props = {
   initialForm: FormType,
   noteCount: number,
-  locale: any,
   discardNote: (shouldAnimate?: boolean) => void,
   showForm: () => void
 }
 
-export default function Form({ initialForm, noteCount, locale, discardNote, showForm }: Props) {
+export default function Form({ initialForm, noteCount, discardNote, showForm }: Props) {
+  const locale = useLocalization();
   const { createNote, removeNote } = useNotes();
   const [movable, setMovable] = useState(false);
   const [form, setForm] = useState<FormType | null>(null);

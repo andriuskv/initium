@@ -207,6 +207,25 @@ function getLocalStorageItem<T>(key: string): T | null {
   return item ? JSON.parse(item) : null;
 }
 
+function parseLocaleString(localeArr: (string | string[])[], ...token: any[]): (string | any)[] {
+  const arr = [];
+
+  for (const item of localeArr) {
+    if (Array.isArray(item)) {
+      arr.push(...parseLocaleString(item, ...token));
+    }
+    else if (/\$(\d)/.test(item)) {
+      const index = Number(item.match(/\$(\d)/)![1]);
+
+      arr.push(token[index]);
+    }
+    else {
+      arr.push(item);
+    }
+  }
+  return arr;
+}
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -223,5 +242,6 @@ export {
   getRandomValueBetweenTwoNumbers,
   replaceLink,
   toggleBehindElements,
-  getLocalStorageItem
+  getLocalStorageItem,
+  parseLocaleString
 };

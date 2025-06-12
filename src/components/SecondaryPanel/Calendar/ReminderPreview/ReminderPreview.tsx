@@ -5,6 +5,7 @@ import Icon from "components/Icon";
 import "./reminder-preview.css";
 
 type Props = {
+  locale: any,
   currentView: "default" | "day" | "year" | "reminders",
   currentDay: Day,
   tomorrowDay: Day,
@@ -12,16 +13,16 @@ type Props = {
   ref: RefObject<HTMLDivElement | null>
 }
 
-export default function ReminderPreview({ currentView, currentDay, tomorrowDay, settings, ref }: Props) {
+export default function ReminderPreview({ locale, currentView, currentDay, tomorrowDay, settings, ref }: Props) {
   const days = [
     {
       shouldShow: !settings.reminderPreviewHidden,
-      name: "Today",
+      name: locale.calendar.today,
       reminders: currentDay.reminders
     },
     {
       shouldShow: settings.showTomorrowReminers,
-      name: "Tomorrow",
+      name: locale.calendar.tomorrow,
       reminders: tomorrowDay.reminders
     }
   ];

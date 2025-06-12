@@ -88,6 +88,11 @@
   }
 }
 
+.setting-desc {
+  max-width: 400px;
+  text-wrap-style: pretty;
+}
+
 .last-setting-tab-item {
   border: none;
   box-shadow: 0 1px 0 0 var(--color-white-10);

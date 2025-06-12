@@ -5,10 +5,15 @@
 }
 
 .google-calendar-integration-setting-main {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+
+  .dropdown-container, > .btn {
+    margin-left: auto;
+  }
 }
 
 .google-calendar-integration-setting-message {

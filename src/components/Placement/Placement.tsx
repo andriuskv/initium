@@ -15,7 +15,7 @@ type Component = {
   params?: { [key: string]: unknown }
 }
 
-export default function Placement({ locale }: { locale: any }) {
+export default function Placement() {
   const { settings } = useSettings();
   const { placement } = usePlacement();
   const [weather, setWeather] = useState<{ rendered: boolean, shouldDelay?: boolean}>(() => ({
@@ -28,19 +28,19 @@ export default function Placement({ locale }: { locale: any }) {
       id: getRandomString(),
       component: Weather,
       shouldSkip: !weather.rendered,
-      params: { timeFormat: settings.timeDate.format, locale }
+      params: { timeFormat: settings.timeDate.format }
     },
     tasks: {
       id: getRandomString(),
       component: Tasks,
       shouldSkip: settings.tasks.disabled,
-      params: { settings: settings.tasks, generalSettings: settings.general, locale }
+      params: { settings: settings.tasks, generalSettings: settings.general }
     },
     secondary: {
       id: getRandomString(),
       component: SecondaryPanel,
       shouldSkip: false,
-      params: { locale }
+      params: {}
     }
   }));
 

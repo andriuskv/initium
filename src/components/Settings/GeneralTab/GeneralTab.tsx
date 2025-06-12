@@ -13,9 +13,10 @@ export default function GeneralTab({ locale }: { locale: any }) {
   const { settings, toggleSetting, updateContextSetting, resetSettings } = useSettings();
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
 
-  // function handleLocaleChange({ target }) {
-  //   updateSetting("general", { locale: target.value });
-  // }
+  function handleLocaleChange({ target }: ChangeEvent) {
+    const input = target as HTMLSelectElement;
+    updateContextSetting("general", { locale: input.value });
+  }
 
   function showGreetingEditor() {
     dispatchCustomEvent("fullscreen-modal", { id: "greeting" });
@@ -69,14 +70,15 @@ export default function GeneralTab({ locale }: { locale: any }) {
 
   return (
     <div className="container-body setting-tab">
-      {/* <label className="setting">
-        <span>Language</span>
+      <label className="setting">
+        <span>{locale.settings.general.language}</span>
         <div className="select-container">
           <select className="input select" onChange={handleLocaleChange} value={settings.general.locale}>
             <option value="en">English</option>
+            <option value="ru">Русский</option>
           </select>
         </div>
-      </label> */}
+      </label>
       <label className="setting">
         <span>{locale.settings.general.disable_sticky_notes_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
@@ -131,7 +133,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
         </div>
       </div>
       <label className="setting">
-        <span>Open links in a new tab</span>
+        <span>{locale.settings.general.new_tab_links_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.openLinkInNewTab}
           onChange={() => toggleSetting("general", "openLinkInNewTab")}/>
@@ -141,8 +143,8 @@ export default function GeneralTab({ locale }: { locale: any }) {
       </label>
       <div className="settings-group last-setting-tab-item">
         <div className="settings-group-top">
-          <h4 className="settings-group-title">Corners</h4>
-          <button className="btn outline-btn settings-group-top-btn" onClick={showPlacementModal}>Show</button>
+          <h4 className="settings-group-title">{locale.settings.general.corners}</h4>
+          <button className="btn outline-btn settings-group-top-btn" onClick={showPlacementModal}>{locale.global.show}</button>
         </div>
       </div>
       <div className="setting setting-reset">

@@ -168,7 +168,7 @@
 
 .top-panel-header {
   flex-grow: 1;
-  padding: var(--space-sm) var(--space-sm) var(--space-sm) 0;
+  padding: var(--space-sm);
 }
 
 .top-panel-header-item {
@@ -176,7 +176,7 @@
   display: flex;
   justify-content: center;
   flex: 1;
-  padding: 0 var(--space-sm);
+  height: 100%;
 
   &.active {
     .top-panel-header-item-btn {

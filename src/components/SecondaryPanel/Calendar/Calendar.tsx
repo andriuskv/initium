@@ -58,7 +58,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   const [transition, setTransition] = useState({ x: 0, y: 0, active: false });
   const [slideAnimation, setSlideAnimation] = useState("");
   const { message, showMessage, dismissMessage }= useMessage("");
-  const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [settings.dateLocale, settings.firstWeekday]);
+  const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [locale.locale, settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
   const reminderPreviewRef = useRef<HTMLDivElement>(null);
   const reminderPreviewHeight = useRef(0);
@@ -96,7 +96,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       return;
     }
     reinitCalendar();
-  }, [settings.dateLocale]);
+  }, [locale.locale, settings.dateLocale]);
 
   useEffect(() => {
     if (currentDay) {
@@ -741,7 +741,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     }
     reminder.id ??= getRandomString();
     reminder.range ??= {};
-    reminder.range.text = calendarService.getReminderRangeString(reminder.range);
+    reminder.range.text = calendarService.getReminderRangeString(reminder.range, locale);
 
     if (reminder.description) {
       reminder.descriptionRaw = reminder.description;
@@ -849,7 +849,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       id: "reminder",
       shouldToggle: true,
       component: Form,
-      params: { form, locale, user: googleUser, googleCalendars, updateReminder }
+      params: { form, user: googleUser, googleCalendars, updateReminder }
     });
   }
 
@@ -1046,7 +1046,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   }
   return (
     <>
-      <HeaderDropdown user={googleUser} calendars={googleCalendars} toggleCalendarReminders={toggleCalendarReminders}
+      <HeaderDropdown user={googleUser} calendars={googleCalendars} locale={locale} toggleCalendarReminders={toggleCalendarReminders}
         showReminderList={showReminderList} handleUserSignOut={handleUserSignOut}/>
       {message ? <Toast message={message} position="top" offset="40px" locale={locale} dismiss={dismissMessage}/> : null}
       <div className="container-body calendar-current-date">
@@ -1137,7 +1137,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
         )}
       </div>
       {shouldReminderPreviewBeShown() ? (
-        <ReminderPreview currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>) : null}
+        <ReminderPreview locale={locale} currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>) : null}
       {settings.worldClocksHidden ? null : (
         <Suspense fallback={null}>
           <WorldClocks parentVisible={visible} locale={locale}/>

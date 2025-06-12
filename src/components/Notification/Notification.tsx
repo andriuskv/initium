@@ -2,8 +2,10 @@ import type { Notification } from "types/notification";
 import { useNotification } from "contexts/notification";
 import "./notification.css";
 import Icon from "components/Icon";
+import { useLocalization } from "contexts/localization";
 
 export default function Notification() {
+  const locale = useLocalization();
   const { notifications, dismissNotification } = useNotification();
 
   function handleActionClick(notification: Notification) {
@@ -31,7 +33,7 @@ export default function Notification() {
               {notification.action ? (
                 <button className="btn text-btn" onClick={() => handleActionClick(notification)}>{notification.actionTitle}</button>
               ) : null}
-              <button className="btn text-btn" onClick={() => dismissNotification(notification.id)}>Dismiss</button>
+              <button className="btn text-btn" onClick={() => dismissNotification(notification.id)}>{locale.global.dismiss}</button>
             </div>
           </div>
         </div>

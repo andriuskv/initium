@@ -1,11 +1,18 @@
-import { expect, test, beforeAll, afterAll, beforeEach, afterEach, vi } from "vitest";
+import { expect, test, beforeAll, afterAll, beforeEach, afterEach, vi, type MockedFunction } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
+import { useLocalization } from "contexts/localization";
 import { useSettings } from "contexts/settings";
 import { fetchWeather, fetchMoreWeather } from "services/weather";
 import Weather from "./Weather";
 import locale from "lang/en.json" assert { type: "json" };
+import type { ReactNode } from "react";
+
+vi.mock("contexts/localization", () => ({
+  useLocalization: vi.fn(),
+  LocalizationProvider: ({ children }: { children: ReactNode }) => <>{children}</>
+}));
 
 vi.mock("contexts/settings", () => ({
   useSettings: vi.fn(),
@@ -56,6 +63,7 @@ afterAll(() => {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  (useLocalization as MockedFunction<typeof useLocalization>).mockReturnValue(locale);
   (useSettings as any).mockReturnValue({ settings: mockSettings });
   (fetchWeather as any).mockResolvedValue(mockCurrentWeather);
   (fetchMoreWeather as any).mockResolvedValue(mockMoreWeather);
@@ -66,7 +74,7 @@ afterEach(() => {
 });
 
 test("renders current weather information on initial load", async () => {
-  render(<Weather timeFormat={24} corner="top-right" locale={locale}/>);
+  render(<Weather timeFormat={24} corner="top-right"/>);
   await waitFor(() => expect(screen.getByText("Test Location")).toBeInTheDocument());
 
   expect(screen.getByText("25")).toBeInTheDocument();
@@ -75,7 +83,7 @@ test("renders current weather information on initial load", async () => {
 });
 
 test("shows more weather information when more button is clicked", async () => {
-  render(<Weather timeFormat={24} corner="top-right" locale={locale}/>);
+  render(<Weather timeFormat={24} corner="top-right"/>);
 
   await waitFor(() => expect(fetchWeather).toHaveBeenCalled());
   await waitFor(() => screen.getByText("Test Location"));
@@ -92,7 +100,7 @@ test("shows more weather information when more button is clicked", async () => {
 
 test("updates weather information after a timeout", async () => {
   vi.useFakeTimers();
-  render(<Weather timeFormat={24} corner="top-right" locale={locale}/>);
+  render(<Weather timeFormat={24} corner="top-right"/>);
   await waitFor(() => screen.getByText("Test Location"));
 
   (fetchWeather as any).mockResolvedValue({ ...mockCurrentWeather, temperature: 26 });
@@ -104,25 +112,21 @@ test("updates weather information after a timeout", async () => {
 
 test("handles errors when fetching weather", async () => {
   (fetchWeather as any).mockRejectedValue(new Error("Failed to fetch weather"));
-  render(<Weather timeFormat={24} corner="top-right" locale={locale}/>);
+  render(<Weather timeFormat={24} corner="top-right"/>);
 
   await waitFor(() => expect(fetchWeather).toHaveBeenCalled());
 });
 
 test("updates more weather information when visible", async () => {
-  render(<Weather timeFormat={24} corner="top-right" locale={locale}/>);
+  render(<Weather timeFormat={24} corner="top-right"/>);
   await waitFor(() => screen.getByText("Test Location"));
-
-  // const user = userEvent.setup({
-  //   advanceTimers: vi.advanceTimersByTime.bind(vi),
-  // });
 
   await userEvent.click(screen.getByTitle(locale.global.more));
   await waitFor(() => expect(fetchMoreWeather).toHaveBeenCalled());
 });
 
 test("fetches weather with city name or geo location after settings change", async () => {
-  const { rerender } = render(<Weather timeFormat={24} corner="top-right" locale={locale}/>);
+  const { rerender } = render(<Weather timeFormat={24} corner="top-right"/>);
   await waitFor(() => screen.getByText("Test Location"));
 
   (useSettings as any).mockReturnValue({
@@ -132,13 +136,13 @@ test("fetches weather with city name or geo location after settings change", asy
     },
   });
 
-  rerender(<Weather timeFormat={24} corner="top-right" locale={locale}/>);
+  rerender(<Weather timeFormat={24} corner="top-right"/>);
   await waitFor(() => expect(fetchWeather).toHaveBeenCalledTimes(2));
 });
 
 test("does not update more weather data within the 20-minute interval", async () => {
   vi.useFakeTimers();
-  render(<Weather timeFormat={24} corner="top-right" locale={locale}/>);
+  render(<Weather timeFormat={24} corner="top-right"/>);
   await waitFor(() => screen.getByText("Test Location"));
 
   const user = userEvent.setup({
@@ -158,7 +162,7 @@ test("does not update more weather data within the 20-minute interval", async ()
 test("handles missing current weather data gracefully", async () => {
   (fetchWeather as any).mockResolvedValue(null);
 
-  const { container } = render(<Weather timeFormat={24} corner="top-right" locale={locale}/>);
+  const { container } = render(<Weather timeFormat={24} corner="top-right"/>);
   await waitFor(() => expect(fetchWeather).toHaveBeenCalled());
   expect(container.firstChild).toBeNull();
 });

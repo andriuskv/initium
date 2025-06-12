@@ -5,7 +5,7 @@ import { getDisplayTime, formatDate } from "services/timeDate";
 import "./clock.css";
 import useWorker from "../useWorker";
 
-export default function Clock({ settings }: { settings: TimeDateSettings }) {
+export default function Clock({ generalLocale = "en", settings }: { generalLocale?: string, settings: TimeDateSettings }) {
   const [clock, setClock] = useState(() => getDisplayTime(settings.clockStyle === "vertical"));
   const [date, setDate] = useState(() => getDate());
   const [expanded, setExpanded] = useState(false);
@@ -24,7 +24,7 @@ export default function Clock({ settings }: { settings: TimeDateSettings }) {
 
   useEffect(() => {
     updateDate();
-  }, [settings.dateLocale]);
+  }, [generalLocale, settings.dateLocale]);
 
   useEffect(() => {
     if (expanded) {
@@ -72,7 +72,7 @@ export default function Clock({ settings }: { settings: TimeDateSettings }) {
   }
 
   function handleClick(event: MouseEvent) {
-    if (event.detail === 2 && settings.clockFullscreenEnabled) {
+    if (event.detail === 2) {
       document.startViewTransition(() => {
         setExpanded(!expanded);
       });

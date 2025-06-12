@@ -64,7 +64,7 @@ export default function Form({ locale, addClock, hide }: Props) {
           city: city.city,
           country: city.country,
           diff,
-          diffString: getHoursOffset(diff)
+          diffString: getHoursOffset(diff, locale)
         });
       } catch (e) {
         console.log(e);

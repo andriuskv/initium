@@ -5,6 +5,7 @@ import * as focusService from "services/focus";
 import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
+import { useLocalization } from "contexts/localization";
 import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
 import "./weather.css";
@@ -12,12 +13,12 @@ import "./weather.css";
 type Props = {
   timeFormat: 12 | 24,
   corner: string,
-  locale: any
 }
 
 const MoreWeather = lazy(() => import("./MoreWeather"));
 
-export default function Weather({ timeFormat, corner, locale }: Props) {
+export default function Weather({ timeFormat, corner }: Props) {
+  const locale = useLocalization();
   const { settings: { appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings } } = useSettings();
   const [state, setState] = useState({ visible: false, rendered: false, reveal: false });
   const [current, setCurrentWeather] = useState<Current | null>(null);
@@ -97,8 +98,11 @@ export default function Weather({ timeFormat, corner, locale }: Props) {
     if (!moreWeather) {
       return;
     }
-    setMoreWeather({ ...moreWeather, daily: updateWeekdayLocale(moreWeather.daily, dateLocale) });
-  }, [dateLocale]);
+    setMoreWeather({
+      ...moreWeather,
+      daily: updateWeekdayLocale(moreWeather.daily, dateLocale)
+    });
+  }, [locale.locale, dateLocale]);
 
   useEffect(() => {
     if (moreWeather) {

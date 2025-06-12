@@ -1,12 +1,12 @@
 type MiddleTopItem = {
   id: "timers" | "clock" | "greeting";
-  name: string;
+  name?: string;
   alignment?: "start" | "center" | "end";
 };
 
 export type PlacementItem = {
   id: string,
-  name: string
+  name?: string
 }
 
 export type Placement = {
@@ -63,7 +63,6 @@ export type TimeDateSettings = {
   clockStyle: "default" | "vertical";
   clockScale: number;
   centerClock: boolean;
-  clockFullscreenEnabled: boolean;
   dateHidden: boolean;
   dateScale: number;
   datePosition: "top" | "bottom";

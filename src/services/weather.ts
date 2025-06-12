@@ -1,8 +1,8 @@
-import type { TimeDateSettings, WeatherSettings } from "types/settings";
+import type { GeneralSettings, WeatherSettings } from "types/settings";
 import type { Current, Hour, Weekday } from "types/weather";
 import { getRandomString } from "utils";
 import { getSetting } from "./settings";
-import { getTimeString, getCurrentDate } from "./timeDate";
+import { getTimeString, getCurrentDate, parseDateLocale, getDateLocale } from "./timeDate";
 
 function fetchWeatherWithCityName(name: string) {
   return fetchWeatherData(`q=${name}`);
@@ -57,7 +57,7 @@ function parseMoreWeather(data: { hourly: Hour[], daily: Weekday[] }, units: "C"
       id: getRandomString(),
       tempC: units === "C" ? item.temperature : convertTemperature(item.temperature, "C"),
       time: getTimeString({ hours: item.hour, minutes: 0 })
-    }
+    };
   });
   const daily = data.daily.map(item => ({
     ...item,
@@ -68,7 +68,8 @@ function parseMoreWeather(data: { hourly: Hour[], daily: Weekday[] }, units: "C"
 }
 
 function updateWeekdayLocale(weekdays: Weekday[], locale = "en") {
-  const formatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
+  const dateLocale = parseDateLocale(locale);
+  const formatter = new Intl.DateTimeFormat(dateLocale, { weekday: "short" });
   const date = getCurrentDate();
 
   for (const day of weekdays) {
@@ -101,9 +102,11 @@ function convertWindSpeed({ value, raw }: { value: number, raw: number }, units:
 }
 
 function fetchWeatherData(params: string) {
-  const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
+  const { locale } = getSetting("general") as GeneralSettings;
+  const dateLocale = getDateLocale();
   const { units, speedUnits } = getSetting("weather") as WeatherSettings;
-  return fetch(`${process.env.SERVER_URL}/weather?${params}&lang=en,${dateLocale}&units=${units},${speedUnits}`).then(res => res.json()) as Promise<{ hourly: Hour[], daily: Weekday[] } | Current>;
+
+  return fetch(`${process.env.SERVER_URL}/weather?${params}&lang=${locale},${dateLocale}&units=${units},${speedUnits}`).then(res => res.json()) as Promise<{ hourly: Hour[], daily: Weekday[] } | Current>;
 }
 
 export {

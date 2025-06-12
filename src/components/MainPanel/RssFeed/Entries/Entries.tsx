@@ -1,10 +1,11 @@
+import type { Feeds, Entry, Nav } from "types/feed";
 import { useRef, type MouseEvent } from "react";
+import { parseLocaleString } from "utils";
 import TabsContainer from "components/TabsContainer";
 import ToTop from "components/ToTop";
 import Icon from "components/Icon";
 import Link from "components/Link";
 import "./entries.css";
-import type { Feeds, Entry, Nav } from "types/feed";
 
 const VISIBLE_ITEM_COUNT = 3;
 
@@ -93,7 +94,7 @@ export default function Entries({ navigation, feeds, locale, selectFeed, previou
               ) : null}
             </div>
             <button className="btn text-btn feed-entry-expand-btn" onClick={() => expandEntry(entry, index)}>{locale.rssFeed.show_more}</button>
-            {entry.date ? <div className="feed-date">Posted on {entry.date}</div> : null}
+            {entry.date ? <div className="feed-date">{parseLocaleString(locale.rssFeed.entry_date, entry.date)}</div> : null}
           </li>
         ))}
       </ul>

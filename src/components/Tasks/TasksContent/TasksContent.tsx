@@ -1,7 +1,7 @@
 import type { AppearanceSettings, GeneralSettings, TasksSettings, TimeDateSettings } from "types/settings";
 import type { Group, Label, TaskRepeat, TaskRepeatHistory, TaskType, Subtask, TaskForm } from "../tasks.type";
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { getRandomString, timeout, replaceLink } from "utils";
+import { getRandomString, timeout, replaceLink, parseLocaleString } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
 import { formatDate, getDSTChangeDirection } from "services/timeDate";
@@ -739,13 +739,16 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       </Suspense>
     );
   }
+
+  const completeMessage = parseLocaleString(locale.tasks.task_complete_mesasge, <span className="tasks-dialog-count" key={removedItems.length}>{removedItems.length}</span>, removedItems.length > 1 ? locale.tasks.task_plural : locale.tasks.task_singular);
+
   return (
     <>
       <div className="container-header">
         <Dropdown>
           <button className="btn icon-text-btn dropdown-btn" onClick={showGroups}>
             <Icon id="menu"/>
-            <span>Groups</span>
+            <span>{locale.tasks.groups}</span>
           </button>
           <button className="btn icon-text-btn dropdown-btn" onClick={toggleSize}>
             <Icon id={`vertical-${expanded ? "shrink" : "expand"}`}/>
@@ -790,7 +793,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       </div>
       {removedItems.length > 0 && (
         <div className="container-footer tasks-dialog">
-          <span>Completed <span className="tasks-dialog-count">{removedItems.length}</span> task{removedItems.length > 1 ? "s" : ""}</span>
+          <span>{completeMessage}</span>
           <button className="btn text-btn" onClick={undoRemovedTasks}>{locale.tasks.undo}</button>
         </div>
       )}

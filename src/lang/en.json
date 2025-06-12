@@ -38,7 +38,20 @@
     "text_size_title": "Text size",
     "decrease_size_title": "Decrease size",
     "increase_size_title": "Increase size",
-    "color_input_title": "Color picker"
+    "color_input_title": "Color picker",
+    "year": "Year",
+    "month": "Month",
+    "day": "Day",
+    "hour": "Hour",
+    "minute": "Minute",
+    "second": "Second",
+    "years": "Years",
+    "months": "Months",
+    "dayd": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "hour_s": "Hour(s)"
   },
   "toTop": {
     "title": "To top"
@@ -60,10 +73,17 @@
     "limit_label": "Limit",
     "label_title": "Labels",
     "create_label_title": "Create a label",
+    "complete_with_subtasks_message": "Complete the task by completing all its subtasks",
+    "task_singular": "task",
+    "task_plural": "tasks",
+    "task_complete_mesasge": ["Completed", " ", "$0", " ", "$1"],
     "group_title": "Group",
     "create_group_title": "Create a group",
     "subtask_title": "Subtasks",
-    "add_subtask_title": "Add a subtask"
+    "add_subtask_title": "Add a subtask",
+    "repeat_label_days": "day(s)",
+    "repeat_label_weeks": "week(s)",
+    "repeat_label_months": "month(s)"
   },
   "mainPanel": {
     "show_sidebar_title": "Show sidebar",
@@ -78,11 +98,13 @@
   "notepad": {
     "title": "Notepad",
     "tabs_title": "Notepad Tabs",
+    "placeholder_title": "Tab",
     "show_tabs_title": "Show tabs",
     "download_all_button": "Download all",
     "create_modal_title": "Create tab",
     "remove_modal_title": "Remove tab",
-    "remove_modal_text": "Do you want to remove this tab?"
+    "remove_modal_text": "Do you want to remove this tab?",
+    "tab_size_label": "Size"
   },
   "rssFeed": {
     "feeds_title": "RSS Feeds",
@@ -94,7 +116,8 @@
     "deactive": "Deactive",
     "inactive": "Inactive",
     "fetch_error": "Failed to fetch.",
-    "retry": "Try Again"
+    "retry": "Try Again",
+    "entry_date": ["Posted on", " ", "$0"]
   },
   "topPanel": {
     "timer": "Timer",
@@ -106,9 +129,12 @@
     "stop": "Stop",
     "mute": "Mute",
     "unmute": "Unmute",
-    "label_input_placeholder": "Label"
+    "label_input_placeholder": "Label",
+    "toggle_pip": "Toggle picture-in-picture"
   },
   "timer": {
+    "new_timer_btn": "New timer",
+    "remove_timer_btn": "Remove timer",
     "presets_button": "Presets",
     "no_presets_message": "No presets",
     "manage_presets_button": "Manage",
@@ -123,12 +149,6 @@
   },
   "pomodoro": {},
   "countdown": {
-    "year": "Year",
-    "month": "Month",
-    "day": "Day",
-    "hour": "Hour",
-    "minute": "Minute",
-    "second": "Second",
     "no_countdowns_message": "No countdowns",
     "form_title": "Create countdown"
   },
@@ -136,7 +156,12 @@
     "form_title": "Add a new world clock",
     "no_clocks_message": "No clocks added.",
     "location_not_found_message": "Location not found.",
-    "search_prompt_message": "Search for a location"
+    "search_prompt_message": "Search for a location",
+    "hour": "hour",
+    "hours": "hours",
+    "current_timezone": "Current timezone",
+    "ahead": ["$0", " ", "$1", " ", "ahead"],
+    "behind": ["$0", " ", "$1", " ", "behind"]
   },
   "weather": {
     "temperature": "Temperature",
@@ -147,10 +172,11 @@
     "wind_setting_label": "Wind speed units"
   },
   "secondaryPanel": {
-    "sticky_notes": "Sticky Notes",
+    "stickyNotes": "Sticky Notes",
     "shortcuts": "Shortcuts",
     "timers": "Timers",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "settings": "Settings"
   },
   "stickyNotes": {
     "no_notes_message": "No notes yet.",
@@ -159,29 +185,38 @@
     "text_color": "Text color",
     "scale": "Scale"
   },
-  "shortcuts": {
-    "no_notes_message": "No notes yet.",
-    "color_picker": "Color picker",
-    "scale": "Scale"
-  },
   "calendar": {
+    "reminders_title": "Reminders",
     "prevoius_year_title": "Previous year",
     "next_year_title": "Next year",
     "prevoius_month_title": "Previous month",
     "next_month_title": "Next month",
-    "no_reminders_message": "No reminders yet",
+    "no_reminders_message": "No reminders yet.",
     "world_clocks_title": "World Clocks",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "range_label": "All day",
     "form": {
       "title": "Reminder form",
-      "range_label": "All day",
+      "reminder_type_label": "Reminder type",
+      "reminder_type_label_normal": "Normal reminder",
+      "reminder_type_label_event": "Google event",
       "repeat_label": "Repeat",
       "repeat_option_custom": "Custom",
       "repeat_option_day": "Every day",
       "repeat_option_weekday": "Every weekday",
       "repeat_option_week": "Every week",
       "repeat_option_month": "Every month",
+      "input_placeholder": "Remind me to...",
+      "desc_placeholder": "Description",
+      "notify_label": "Notify",
       "range_from_label": "From",
       "range_to_label": "To",
+      "range_on_label": "On",
+      "repeat_after": "After",
+      "repeat_occurrence": "occurrence",
+      "repeat_occurrences": "occurrences",
+      "repeat_count_label": ["$0", "$1", "$2"],
       "repeat_custom_label": "Repeat every",
       "repeat_custom_option_days": "day(s)",
       "repeat_custom_option_weeks": "week(s)",
@@ -190,21 +225,37 @@
       "invalid_time_format_message": "Please provide valid time format.",
       "invalid_number_message": "Please insert a whole number.",
       "repeat_end_setting_label": "Ends",
-      "repeat_end_setting_never_label": "Never"
+      "repeat_end_setting_never_label": "Never",
+      "notify_time_label": "Notify before"
+    },
+    "user_dropdown": {
+      "open_calendar_title": "Open Google Calendar",
+      "sign_out": "Sign out",
+      "calendars_list_title": "Calendars"
     }
   },
   "settings": {
     "title": "Settings",
     "general": {
       "title": "General",
+      "language": "Language",
       "disable_sticky_notes_label": "Disable sticky notes",
       "disable_shortcuts_label": "Disable shortcuts",
       "disable_calendar_label": "Disable calendar",
       "disable_greeting_label": "Disable greeting",
       "greeting_group_title": "Greeting",
       "show_greeting_editor_title": "Editor",
+      "new_tab_links_label": "Open links in a new tab",
       "middle_top_group_title": "Middle top",
       "show_middle_top_title": "Order",
+      "timers": "Mini timer",
+      "clock": "Clock",
+      "greeting": "Greeting",
+      "corners": "Corners",
+      "tasks": "Tasks",
+      "weather": "Weather",
+      "empty": "Empty",
+      "secondary": "Secondary",
       "reset_settings_title": "Reset settings",
       "reset_settings_message": "Are you sure you want to reset settings to default?"
     },
@@ -251,7 +302,14 @@
       "date_align_end": "End",
       "calendar_group_title": "Calendar",
       "first_weekday_label": "First day of the week",
-      "hide_clocks_label": "Hide world clocks"
+      "monday": "Monday",
+      "sunday": "Sunday",
+      "today_reminder_preview": "Hide today's reminder preview",
+      "tomorrow_reminder_preview": "Show tomorrow's reminder preview",
+      "hide_clocks_label": "Hide world clocks",
+      "connect": "Connect",
+      "connecting": "Connecting",
+      "disconnect": "Disconnect"
     },
     "main_panel": {
       "title": "Main Panel",
@@ -273,7 +331,7 @@
       "disable_tasks_label": "Disable tasks",
       "show_default_group_label": "Show default group's header",
       "hide_empty_groups_label": "Hide empty groups",
-      "count_subtasks_label": "Include subtasks in task count",
+      "count_subtasks_label": "Include subtasks in the tasks count",
       "show_completed_reateating_tasks_label": "Show completed repeating tasks",
       "hide_repeat_history_label": "Hide repeat history"
     },
@@ -289,7 +347,7 @@
       "disable_timers_label": "Disable timers",
       "volume_label": "Volume",
       "fullscreen_scale_label": "Fullscreen text scale",
-      "mini_timer_label": "Show minimal timer when top panel is hidden",
+      "mini_timer_label": "Show mini timer when top panel is hidden",
       "timer_group_title": "Timer",
       "preset_as_label_label": "Use preset name as a label when it's not provided",
       "pomodoro_group_title": "Pomodoro",
@@ -299,6 +357,8 @@
     },
     "storage": {
       "title": "Storage",
+      "usage_label_1": ["$0", "$1"],
+      "usage_label_2": ["Used of", " ", "$0"],
       "used_label": "Used",
       "rss_feeds": "RSS feeds",
       "calendar_reminders": "Calendar reminders",
@@ -307,7 +367,12 @@
       "greetings": "Greetings",
       "persistent_sites": "Persistent sites",
       "world_clocks": "World clocks",
-      "sticky_notes": "Sticky notes"
+      "sticky_notes": "Sticky notes",
+      "data_title": "Data Management",
+      "data_backup": "Backup",
+      "data_restore": "Restore",
+      "data_wipe": "Wipe all",
+      "data_confirm": ["For confirmation enter", " ", "$0"]
     }
   },
   "greetingEditor": {
