@@ -16,7 +16,6 @@ type FullscreenModalType = {
   params?: { [key: string]: unknown }
 }
 
-// export default function FullscreenItems({ appearanceSettings, locale }: { appearanceSettings: AppearanceSettings, locale: any }) {
 export default function FullscreenItems({ appearanceSettings }: { appearanceSettings: AppearanceSettings }) {
   const locale = useLocalization();
   const [fullscreenModal, setFullscreenModal] = useState<FullscreenModalType>({});

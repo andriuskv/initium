@@ -217,7 +217,9 @@ function parseLocaleString(localeArr: (string | string[])[], ...token: any[]): (
     else if (/\$(\d)/.test(item)) {
       const index = Number(item.match(/\$(\d)/)![1]);
 
-      arr.push(token[index]);
+      if (token[index]) {
+        arr.push(token[index]);
+      }
     }
     else {
       arr.push(item);

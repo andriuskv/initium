@@ -197,10 +197,8 @@ export default function StorageTab({ locale }: { locale: any }) {
     setDataMessage("");
     setModal({
       type: "restore",
-      title: "Data restore",
-      body: `
-        Do you want to restore data from the backup?
-        This will cause all present data to be overwritten.`.trim(),
+      title: locale.settings.storage.data_restore_title,
+      body: locale.settings.storage.data_restore_message.trim(),
       confirmInputValue: ""
     });
   }
@@ -208,8 +206,8 @@ export default function StorageTab({ locale }: { locale: any }) {
   function showWipeDataModal() {
     setModal({
       type: "wipe-data",
-      title: "Wipe all data",
-      body: "This will wipe all the data across all the devices.",
+      title: locale.settings.storage.data_wipe_title,
+      body: locale.settings.storage.data_wipe_message,
       confirmInputValue: ""
     });
   }
@@ -282,14 +280,15 @@ export default function StorageTab({ locale }: { locale: any }) {
   if (!ready.current) {
     return null;
   }
-  const restoreConfirmMessage = parseLocaleString(locale.settings.storage.data_confirm, <b>restore</b>);
-  const wipeConfirmMessage = parseLocaleString(locale.settings.storage.data_confirm, <b>wipe all data</b>);
+  const restoreConfirmMessage = parseLocaleString(locale.settings.storage.data_confirm, <b key="1">restore</b>);
+  const wipeConfirmMessage = parseLocaleString(locale.settings.storage.data_confirm, <b key="1">wipe all data</b>);
   const usedGroup = parseLocaleString(locale.settings.storage.usage_label_1, (
     <div className="storage-usage-current-numerical" key={stats.usedStorageFormatted}>
       <span>{stats.usedStorageFormatted}</span>
       <span className="storage-usage-current-numerical-units">kB</span>
     </div>
-  ), <div key={stats.maxStorageFormatted}>{parseLocaleString(locale.settings.storage.usage_label_2, stats.maxStorageFormatted)}</div>);
+  ), <div key={stats.maxStorageFormatted}>{parseLocaleString(locale.settings.storage.usage_label_2, stats.maxStorageFormatted)}</div>,
+  locale.settings.storage.usage_label_3);
 
   return (
     <div className="container-body setting-tab">
@@ -358,7 +357,7 @@ export default function StorageTab({ locale }: { locale: any }) {
           </div>
         </Modal>
       ) : modal?.type === "restore" ? (
-        <Modal hiding={modalHiding} hide={hideModal}>
+        <Modal hiding={modalHiding} hide={hideModal} className="storage-modal">
           <form onSubmit={restoreFromBackup}>
             <h4 className="modal-title">{modal.title}</h4>
             <div className="modal-text-body">{modal.body}</div>
@@ -376,7 +375,7 @@ export default function StorageTab({ locale }: { locale: any }) {
           </form>
         </Modal>
       ) : modal?.type === "wipe-data" ? (
-        <Modal hiding={modalHiding} hide={hideModal}>
+        <Modal hiding={modalHiding} hide={hideModal} className="storage-modal">
           <form onSubmit={wipeAllData}>
             <h4 className="modal-title">{modal.title}</h4>
             <div className="modal-text-body">{modal.body}</div>

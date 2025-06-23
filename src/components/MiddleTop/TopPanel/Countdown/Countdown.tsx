@@ -363,21 +363,21 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
                 <div className="countdown-item-date">{countdown.date}</div>
                 <Dropdown container={{ className: "countdown-item-dropdown" }} usePortal>
                   <div className="dropdown-group">
-                    <div className="countdown-item-dropdown-title">View</div>
+                    <div className="countdown-item-dropdown-title">{locale.countdown.view}</div>
                   </div>
                   <div className="dropdown-group">
                     <button className={`btn text-btn dropdown-btn${countdown.view === "year" ? " active" : ""}`}
-                      onClick={() => selectView("year", i)}>Full</button>
+                      onClick={() => selectView("year", i)}>{locale.countdown.full}</button>
                     <button className={`btn text-btn dropdown-btn${countdown.view === "month" ? " active" : ""}`}
-                      onClick={() => selectView("month", i)}>Month</button>
+                      onClick={() => selectView("month", i)}>{locale.global.month}</button>
                     <button className={`btn text-btn dropdown-btn${countdown.view === "day" ? " active" : ""}`}
-                      onClick={() => selectView("day", i)}>Day</button>
+                      onClick={() => selectView("day", i)}>{locale.global.day}</button>
                     <button className={`btn text-btn dropdown-btn${countdown.view === "hour" ? " active" : ""}`}
-                      onClick={() => selectView("hour", i)}>Hour</button>
+                      onClick={() => selectView("hour", i)}>{locale.global.hour}</button>
                     <button className={`btn text-btn dropdown-btn${countdown.view === "minute" ? " active" : ""}`}
-                      onClick={() => selectView("minute", i)}>Minute</button>
+                      onClick={() => selectView("minute", i)}>{locale.global.minute}</button>
                     <button className={`btn text-btn dropdown-btn${countdown.view === "second" ? " active" : ""}`}
-                      onClick={() => selectView("second", i)}>Second</button>
+                      onClick={() => selectView("second", i)}>{locale.global.second}</button>
                   </div>
                   <button className="btn icon-text-btn dropdown-btn countdown-item-dropdown-remove-btn" onClick={() => removeCountdown(i)}>
                     <Icon id="trash"/>

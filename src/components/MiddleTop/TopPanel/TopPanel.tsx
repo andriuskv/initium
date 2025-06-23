@@ -63,6 +63,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const minimalVisible = useRef(false);
   const saveTabTimeoutId = useRef(0);
   const activeTabIndex = findTabIndex(activeTab);
+  const vertical = locale.locale === "ja";
 
   useEffect(() => {
     if (forceVisibility) {
@@ -80,10 +81,10 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
     const newTabs: Tabs = { ...tabs };
 
     for (const tab in tabs) {
-      const a = tab as TabName;
+      const name = tab as TabName;
 
-      newTabs[a] = {
-        ...tabs[a],
+      newTabs[name] = {
+        ...tabs[name],
         name: locale.topPanel[tab]
       };
     }
@@ -362,8 +363,8 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   return (
     <div className={`top-panel${minimal ? ` minimal visible` : expanded ? " fullscreen-mask expanded" : " container"}${visible ? " visible" : ""}`}
       onClick={handleContainerClick} ref={containerRef}>
-      <div className="top-panel-content">
-        <TabsContainer className="top-panel-hide-target" visible={visible} current={activeTabIndex}>
+      <div className={`top-panel-content${vertical ? " vertical" : ""}`}>
+        <TabsContainer className="top-panel-hide-target top-panel-header-container" visible={visible} current={activeTabIndex} orientation={vertical ? "v" : "h"}>
           <ul className="container-header top-panel-header">
             {(Object.keys(tabs) as TabName[]).map(item => (
               <li className={`top-panel-header-item${activeTab === item ? " active" : ""}`} key={item}>
@@ -375,11 +376,19 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
                 </button>
               </li>
             ))}
-            <li className="top-panel-close-btn">
-              <button className="btn icon-btn" onClick={hideTopPanel} title={locale.global.close}>
-                <Icon id="cross"/>
-              </button>
-            </li>
+            {vertical ? (
+              <li className="top-panel-header-item top-panel-close-btn">
+                <button className="btn icon-text-btn top-panel-header-item-btn" onClick={hideTopPanel}>
+                  <Icon id="cross"/>
+                  <span>{locale.global.close}</span>
+                </button>
+              </li>) : (
+              <li className="top-panel-close-btn">
+                <button className="btn icon-btn" onClick={hideTopPanel} title={locale.global.close}>
+                  <Icon id="cross"/>
+                </button>
+              </li>
+            )}
           </ul>
         </TabsContainer>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>

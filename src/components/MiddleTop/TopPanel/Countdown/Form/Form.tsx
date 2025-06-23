@@ -314,29 +314,29 @@ export default function Form({ locale, createCountdown, hide }: Props) {
         </label>
         <div className="countdown-form-fields">
           <label>
-            <div className="countdown-form-field-title">{locale.countdown.year}</div>
+            <div className="countdown-form-field-title">{locale.global.year}</div>
             <input type="text" className="input countdown-form-field" name="year"
               onChange={handleInputChange} value={form.year} required/>
           </label>
           <label>
-            <div className="countdown-form-field-title">{locale.countdown.month}</div>
+            <div className="countdown-form-field-title">{locale.global.month}</div>
             <input type="text" className="input countdown-form-field" name="month"
               onChange={handleInputChange} value={form.month} required/>
           </label>
           <label>
-            <div className="countdown-form-field-title">{locale.countdown.day}</div>
+            <div className="countdown-form-field-title">{locale.global.day}</div>
             <input type="text" className="input countdown-form-field" name="day"
               onChange={handleInputChange} value={form.day} required/>
           </label>
         </div>
         <div className="countdown-form-fields">
           <label>
-            <div className="countdown-form-field-title">{locale.countdown.hour}</div>
+            <div className="countdown-form-field-title">{locale.global.hour}</div>
             <input type="text" className="input countdown-form-field" name="hours"
               onChange={handleInputChange} value={form.hours}/>
           </label>
           <label>
-            <div className="countdown-form-field-title">{locale.countdown.minute}s</div>
+            <div className="countdown-form-field-title">{locale.global.minutes}</div>
             <input type="text" className="input countdown-form-field" name="minutes"
               onChange={handleInputChange} value={form.minutes}/>
           </label>

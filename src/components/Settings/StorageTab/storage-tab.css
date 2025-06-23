@@ -133,6 +133,10 @@
   gap: var(--space-md);
 }
 
+.storage-modal {
+  max-width: 400px;
+}
+
 .storage-confirm-input-container {
   margin-top: var(--space-xl);
   margin-inline: var(--space-md);

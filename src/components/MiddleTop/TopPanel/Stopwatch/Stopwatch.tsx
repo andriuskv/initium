@@ -277,7 +277,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
   return (
     <div className={`top-panel-item stopwatch${visible ? " visible" : ""}${splits.length ? " with-splits" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
       <div className="container-body">
-        {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
+        {pipVisible ? <div className="top-panel-item-content">{locale.topPanel.pip_active}</div> : (
           <div className="top-panel-item-content">
             {running || dirty ?
               label ? (

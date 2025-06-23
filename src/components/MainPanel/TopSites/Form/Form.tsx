@@ -58,7 +58,7 @@ export default function Form({ form, locale, hiding, updateSite, hide }: Props) 
   return (
     <Modal className="top-sites-form" transparent hiding={hiding} hide={hide}>
       <form onSubmit={handleFormSubmit}>
-        <h3 className="modal-title modal-title-center">{form.updating ? locale.global.edit : locale.global.add} site</h3>
+        <h3 className="modal-title modal-title-center">{form.updating ? locale.topSites.edit_shortcut_title : locale.topSites.add_shortcut_title}</h3>
         <div className="top-sites-form-content">
           <label className="top-sites-form-label">
             <div className="label-top">{locale.global.title_input_label}</div>

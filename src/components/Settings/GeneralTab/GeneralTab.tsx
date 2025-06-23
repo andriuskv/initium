@@ -76,6 +76,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
           <select className="input select" onChange={handleLocaleChange} value={settings.general.locale}>
             <option value="en">English</option>
             <option value="ru">Русский</option>
+            <option value="ja">日本語</option>
           </select>
         </div>
       </label>
