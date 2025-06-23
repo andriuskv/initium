@@ -324,11 +324,11 @@ export default function Form({ initialForm, noteCount, discardNote, showForm }: 
                   value={form.textScale} onChange={handleRangeInputChange} name="textScale"/>
               </div>
             </Dropdown>
-            <button className="btn icon-btn" onClick={toggleScaleView} title="Scale">
+            <button className="btn icon-btn" onClick={toggleScaleView} title={locale.stickyNotes.scale}>
               <Icon id="scale"/>
             </button>
             {initialForm.action === "edit" ? (
-              <button className="btn icon-btn" onClick={() => removeNote(initialForm.id!)}>
+              <button className="btn icon-btn" onClick={() => removeNote(initialForm.id!)} title={locale.global.remove}>
                 <Icon id="trash"/>
               </button>
             ) : null}

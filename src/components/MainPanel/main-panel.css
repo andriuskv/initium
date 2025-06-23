@@ -98,8 +98,12 @@
       display: none;
     }
 
-    .main-panel-sidebar.expanded {
+    .main-panel-sidebar {
+      transform: translate(-2px, 8px);
+
+      .expanded {
        transform: translateX(var(--space-md));
+      }
     }
   }
 }
@@ -122,7 +126,7 @@
   &:not(:has(.main-panel-item-header-item:nth-last-child(n + 2))) {
     .main-panel-item-header-item-select-btn:is(:hover, :focus-visible) {
       --background-color: transparent;
-      --color: var(--color-white-80);
+      --color: var(--color-white);
 
       border-color: transparent;
       box-shadow: none;

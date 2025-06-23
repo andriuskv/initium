@@ -47,7 +47,6 @@
     "second": "Second",
     "years": "Years",
     "months": "Months",
-    "dayd": "Days",
     "hours": "Hours",
     "minutes": "Minutes",
     "seconds": "Seconds",
@@ -93,7 +92,8 @@
     "next_shift_title": "Shift right"
   },
   "topSites": {
-    "add_site_title": "Add site"
+    "add_shortcut_title": "Add shortcut",
+    "edit_shortcut_title": "Edit shortcut"
   },
   "notepad": {
     "title": "Notepad",
@@ -130,7 +130,8 @@
     "mute": "Mute",
     "unmute": "Unmute",
     "label_input_placeholder": "Label",
-    "toggle_pip": "Toggle picture-in-picture"
+    "toggle_pip": "Toggle picture-in-picture",
+    "pip_active": "Picture-in-picture is active"
   },
   "timer": {
     "new_timer_btn": "New timer",
@@ -150,7 +151,9 @@
   "pomodoro": {},
   "countdown": {
     "no_countdowns_message": "No countdowns",
-    "form_title": "Create countdown"
+    "form_title": "Create countdown",
+    "view": "View",
+    "full": "Full"
   },
   "world": {
     "form_title": "Add a new world clock",
@@ -292,6 +295,8 @@
       "date_group_title": "Date",
       "hide_date_label": "Hide date",
       "date_lang_label": "Date language",
+      "default": "Default",
+      "system": "System",
       "date_postion_label": "Date position",
       "date_postion_top": "Top",
       "date_postion_bottom": "Bottom",
@@ -359,6 +364,7 @@
       "title": "Storage",
       "usage_label_1": ["$0", "$1"],
       "usage_label_2": ["Used of", " ", "$0"],
+      "usage_label_3": "",
       "used_label": "Used",
       "rss_feeds": "RSS feeds",
       "calendar_reminders": "Calendar reminders",
@@ -372,6 +378,10 @@
       "data_backup": "Backup",
       "data_restore": "Restore",
       "data_wipe": "Wipe all",
+      "data_restore_title": "Data restore",
+      "data_wipe_title": "Wipe all data",
+      "data_restore_message": "Would you like to restore the data from the backup? Please note that this will overwrite all existing data.",
+      "data_wipe_message": "This will wipe all data from all devices.",
       "data_confirm": ["For confirmation enter", " ", "$0"]
     }
   },

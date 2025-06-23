@@ -291,7 +291,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
         {visibleSites.length < settings.visibleItemCount && !settings.addSiteButtonHidden && (
           <li className="top-site">
             <button className="top-site-link top-site-add-btn" onClick={() => showForm()}>
-              <div className="container top-site-container top-site-title">{locale.topSites.add_site_title}</div>
+              <div className="container top-site-container top-site-title">{locale.topSites.add_shortcut_title}</div>
               <div className="container top-site-container top-site-thumbnail-container">
                 <Icon id="plus" className="top-site-add-btn-icon"/>
               </div>

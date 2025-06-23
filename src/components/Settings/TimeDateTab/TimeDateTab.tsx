@@ -175,8 +175,8 @@ export default function TimeDateTab({ locale }: { locale: any }) {
           <div className="select-container">
             <select className="input select" onChange={handleDateLocaleChange} value={settings.dateLocale}
               disabled={settings.clockDisabled || settings.dateHidden}>
-              <option value="default">Default</option>
-              <option value="system">System</option>
+              <option value="default">{locale.settings.time_date.default}</option>
+              <option value="system">{locale.settings.time_date.system}</option>
               <option value="cs-CZ">Čeština</option>
               <option value="da-DK">Dansk</option>
               <option value="en-US">English</option>

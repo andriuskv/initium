@@ -47,7 +47,6 @@
     "second": "Секунда",
     "years": "Годы",
     "months": "Месяцы",
-    "dayd": "Дни",
     "hours": "Часы",
     "minutes": "Минуты",
     "seconds": "Секунды",
@@ -93,7 +92,8 @@
     "next_shift_title": "Сдвинуть вправо"
   },
   "topSites": {
-    "add_site_title": "Добавить сайт"
+    "add_shortcut_title": "Добавить ярлык",
+    "edit_shortcut_title": "Редактировать ярлык"
   },
   "notepad": {
     "title": "Блокнот",
@@ -130,7 +130,8 @@
     "mute": "Выключить звук",
     "unmute": "Включить звук",
     "label_input_placeholder": "Метка",
-    "toggle_pip": "Переключить 'picture-in-picture'"
+    "toggle_pip": "Переключение изображения в картинке",
+    "pip_active": "Функция «картинка в картинке» активна"
   },
   "timer": {
     "new_timer_btn": "Новый таймер",
@@ -150,7 +151,9 @@
   "pomodoro": {},
   "countdown": {
     "no_countdowns_message": "Нет обратных отсчетов",
-    "form_title": "Создать обратный отсчет"
+    "form_title": "Создать обратный отсчет",
+    "view": "Вид",
+    "full": "Полный"
   },
   "world": {
     "form_title": "Добавить новые часы мира",
@@ -292,6 +295,8 @@
       "date_group_title": "Дата",
       "hide_date_label": "Скрыть дату",
       "date_lang_label": "Язык даты",
+      "default": "По умолчанию",
+      "system": "Система",
       "date_postion_label": "Положение даты",
       "date_postion_top": "Сверху",
       "date_postion_bottom": "Снизу",
@@ -372,6 +377,10 @@
       "data_backup": "Резервное копирование",
       "data_restore": "Восстановить",
       "data_wipe": "Протрите все",
+      "data_restore_title": "Восстановление данных",
+      "data_wipe_title": "Удалить все данные",
+      "data_restore_message": "Хотите восстановить данные из резервной копии? Обратите внимание, что при этом все существующие данные будут перезаписаны.",
+      "data_wipe_message": "Это приведет к удалению всех данных со всех устройств.",
       "data_confirm": ["Для подтверждения введите", " ", "$0"]
     }
   },
