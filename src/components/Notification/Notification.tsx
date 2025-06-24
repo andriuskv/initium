@@ -33,7 +33,7 @@ export default function Notification() {
               {notification.action ? (
                 <button className="btn text-btn" onClick={() => handleActionClick(notification)}>{notification.actionTitle}</button>
               ) : null}
-              <button className="btn text-btn" onClick={() => dismissNotification(notification.id)}>{locale.global.dismiss}</button>
+              <button className="btn text-btn" onClick={() => dismissNotification(notification.id)}>{notification.dismissTitle || locale.global.dismiss}</button>
             </div>
           </div>
         </div>

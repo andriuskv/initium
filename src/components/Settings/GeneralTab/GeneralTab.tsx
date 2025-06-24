@@ -60,6 +60,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
     else if (settings.appearance.wallpaper.provider === "bing") {
       resetWallpaperInfo();
     }
+    localStorage.removeItem("first");
     localStorage.removeItem("noise");
 
     const newSettings = resetSettings();

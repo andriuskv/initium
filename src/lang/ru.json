@@ -1,6 +1,7 @@
 {
   "locale": "ru",
   "global": {
+    "lang_switch": "Хотите переключиться на русский?",
     "create": "Создать",
     "update": "Обновить",
     "add": "Добавить",
@@ -32,6 +33,7 @@
     "enable": "Включить",
     "restore": "Восстановить",
     "confirm": "Подтвердить",
+    "switch": "Переключаться",
     "settings": "Настройки",
     "title_input_label": "Заголовок",
     "url_input_label": "URL",

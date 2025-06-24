@@ -198,7 +198,7 @@ export default function StorageTab({ locale }: { locale: any }) {
     setModal({
       type: "restore",
       title: locale.settings.storage.data_restore_title,
-      body: locale.settings.storage.data_restore_message.trim(),
+      body: locale.settings.storage.data_restore_message,
       confirmInputValue: ""
     });
   }

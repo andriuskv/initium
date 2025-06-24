@@ -11,23 +11,23 @@ function LocalizationProvider({ children }: PropsWithChildren) {
   const [locale, setLocale] = useState<any>();
 
   useEffect(() => {
+    document.documentElement.lang = settings.general.locale;
     init();
   }, [settings.general.locale]);
 
   async function init() {
-    const module = await import(`lang/${settings.general.locale}.json`, { assert: { type: "json" } });
+    const module = await localizationService.fetchLocale(settings.general.locale);
 
     if (module) {
       setLocale(module.default);
       localizationService.setLocale(module.default);
     }
     else {
-      const module = await import("lang/en.json", { assert: { type: "json" } });
+      const module = await localizationService.fetchLocale("en");
 
       setLocale(module.default);
       localizationService.setLocale(module.default);
     }
-    document.documentElement.lang = settings.general.locale;
   }
 
   return <LocalizationContext value={locale}>{children}</LocalizationContext>;
