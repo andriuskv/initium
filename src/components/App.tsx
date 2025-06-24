@@ -1,6 +1,7 @@
 import type { Announcement } from "types/announcement";
 import { useLayoutEffect, lazy, Suspense } from "react";
 import { initAppearanceSettings } from "services/settings";
+import { fetchLocale, getReadableLocale } from "services/localization";
 import { useSettings } from "contexts/settings";
 import { useLocalization } from "contexts/localization";
 import { useNotification } from "contexts/notification";
@@ -16,7 +17,7 @@ const MainPanel = lazy(() => import("./MainPanel"));
 const StickyNotes = lazy(() => import("./StickyNotes"));
 
 export default function App() {
-  const { settings } = useSettings();
+  const { settings, updateContextSetting } = useSettings();
   const locale = useLocalization();
   const { showNotification } = useNotification();
 
@@ -24,6 +25,13 @@ export default function App() {
     initAppearanceSettings(settings.appearance);
     initAnnouncements();
   }, []);
+
+  useLayoutEffect(() => {
+    if (!locale) {
+      return;
+    }
+    initLang();
+  }, [locale]);
 
   async function initAnnouncements() {
     try {
@@ -44,6 +52,37 @@ export default function App() {
           });
         }
         localStorage.setItem("announcements", JSON.stringify(localAnnouncements));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function initLang() {
+    try {
+      const first = localStorage.getItem("first");
+
+      if (first) {
+        return;
+      }
+      localStorage.setItem("first", "1");
+      /* global chrome */
+      const full = await chrome.i18n.getUILanguage();
+      const part = full.split("-")[0];
+      const readable = getReadableLocale(part);
+
+      if (part !== "en" && part !== locale.locale && readable) {
+        const uiLocale = await fetchLocale(part);
+
+        showNotification({
+          id: "lang-switch",
+          content: `${uiLocale.global.lang_switch}\nDo you want to switch to ${readable}?`,
+          action: () => {
+            updateContextSetting("general", { locale: part });
+          },
+          actionTitle: `${uiLocale.global.switch} / Switch`,
+          dismissTitle: `${uiLocale.global.dismiss} / Dismiss`,
+        });
       }
     } catch (err) {
       console.log(err);

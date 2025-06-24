@@ -1,6 +1,7 @@
 {
   "locale": "ja",
   "global": {
+    "lang_switch": "日本語に切り替えますか？",
     "create": "作成",
     "update": "更新",
     "add": "追加",
@@ -32,6 +33,7 @@
     "enable": "有効",
     "restore": "復元",
     "confirm": "確認",
+    "switch": "切り替える",
     "settings": "設定",
     "title_input_label": "タイトル",
     "url_input_label": "URL",

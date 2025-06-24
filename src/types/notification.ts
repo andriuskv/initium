@@ -7,4 +7,5 @@ export type Notification = {
   duration?: number,
   action?: () => void,
   actionTitle?: string
+  dismissTitle?: string
 }
