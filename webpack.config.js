@@ -33,6 +33,7 @@ module.exports = function(env = {}) {
     }),
     new CopyPlugin({ patterns: [
       { from: "./src/assets", to: "./assets" },
+      { from: "./src/_locales", to: "./_locales" },
       { from: "./public", globOptions: {
         ignore: ["**/index.html"]
       }}

@@ -9,6 +9,7 @@
   overflow-y: auto;
   overflow-x: clip;
   height: 100%;
+  scrollbar-gutter: stable both-edges;
 }
 
 .world-clocks {
@@ -16,7 +17,7 @@
   align-content: flex-start;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-md);
-  height: 100%;
+  height: auto;
   padding: var(--space-md);
 }
 

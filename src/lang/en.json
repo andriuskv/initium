@@ -1,6 +1,7 @@
 {
   "locale": "en",
   "global": {
+    "new_tab": "New Tab",
     "create": "Create",
     "update": "Update",
     "add": "Add",

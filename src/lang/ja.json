@@ -1,6 +1,7 @@
 {
   "locale": "ja",
   "global": {
+    "new_tab": "新しいタブ",
     "lang_switch": "日本語に切り替えますか？",
     "create": "作成",
     "update": "更新",
