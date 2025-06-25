@@ -16,6 +16,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
   function handleLocaleChange({ target }: ChangeEvent) {
     const input = target as HTMLSelectElement;
     updateContextSetting("general", { locale: input.value });
+    localStorage.setItem("locale", input.value);
   }
 
   function showGreetingEditor() {

@@ -35,6 +35,22 @@
 
     .top-panel-item {
       flex-grow: 1;
+
+      &.anim-left {
+        .top-panel-item-content {
+          animation-name: opacity-up, slide-top;
+        }
+      }
+
+      &.anim-right {
+        .top-panel-item-content {
+          animation-name: opacity-up, slide-bottom;
+        }
+      }
+    }
+
+    .top-panel-item-placeholder {
+      height: 189px;
     }
 
     .top-panel-item-content {
@@ -59,7 +75,7 @@
 
     .countdown-items-container {
       height: 189px;
-      max-height: auto;
+      max-height: initial;
     }
 
     .world {
@@ -310,6 +326,26 @@
 @keyframes slide-right {
   from {
     transform: translateX(10%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-top {
+  from {
+    transform: translateY(-10%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-bottom {
+  from {
+    transform: translateY(10%);
   }
 
   to {

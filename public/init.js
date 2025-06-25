@@ -9,3 +9,12 @@ if (wallpaper) {
     </div>
   `);
 }
+
+const locale = localStorage.getItem("locale") || "en";
+const title = {
+  "en": "New Tab",
+  "ja": "新しいタブ",
+  "ru": "Новая вкладка"
+};
+
+document.title = `${title[locale]} | Initium`;

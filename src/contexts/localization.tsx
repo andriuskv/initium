@@ -11,6 +11,12 @@ function LocalizationProvider({ children }: PropsWithChildren) {
   const [locale, setLocale] = useState<any>();
 
   useEffect(() => {
+    if (locale) {
+      document.title = `${locale.global.new_tab} | Initium`;
+    }
+  }, [locale]);
+
+  useEffect(() => {
     document.documentElement.lang = settings.general.locale;
     init();
   }, [settings.general.locale]);
