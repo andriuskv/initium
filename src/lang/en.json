@@ -33,6 +33,7 @@
     "enable": "Enable",
     "restore": "Restore",
     "confirm": "Confirm",
+    "info": "Info",
     "settings": "Settings",
     "title_input_label": "Title",
     "url_input_label": "URL",
@@ -51,7 +52,16 @@
     "hours": "Hours",
     "minutes": "Minutes",
     "seconds": "Seconds",
-    "hour_s": "Hour(s)"
+    "hour_s": "Hour(s)",
+    "default": "Default",
+    "show_date_picker": "Show date picker",
+    "increase": "Increase",
+    "decrease": "Decrease",
+    "change_color": "Change color",
+    "hidden": "Hidden",
+    "generic_error_message": "Something went wrong. Try again later.",
+    "missing_user_message": "User is missing. Authenticate again please.",
+    "failed_user_fetch_message": "Couldn't retrieve user. Try again later."
   },
   "toTop": {
     "title": "To top"
@@ -69,6 +79,8 @@
     "label_modal_title": "New label",
     "more_options_title": "More options",
     "expiration_date_label": "Expiration date",
+    "expiration_date_message": "Expiration date can't be in the past.",
+    "details": "Details",
     "repeat_label": "Repeat",
     "limit_label": "Limit",
     "label_title": "Labels",
@@ -81,6 +93,8 @@
     "create_group_title": "Create a group",
     "subtask_title": "Subtasks",
     "add_subtask_title": "Add a subtask",
+    "make_required": "Make required",
+    "make_optional": "Make optional",
     "repeat_label_days": "day(s)",
     "repeat_label_weeks": "week(s)",
     "repeat_label_months": "month(s)"
@@ -93,6 +107,7 @@
     "next_shift_title": "Shift right"
   },
   "topSites": {
+    "title": "Top Sites",
     "add_shortcut_title": "Add shortcut",
     "edit_shortcut_title": "Edit shortcut"
   },
@@ -117,6 +132,9 @@
     "deactive": "Deactive",
     "inactive": "Inactive",
     "fetch_error": "Failed to fetch.",
+    "no_entries": "Feed has no entries.",
+    "no_feed":  "Feed was not found.",
+    "duplicate_feed": "Feed already exists.",
     "retry": "Try Again",
     "entry_date": ["Posted on", " ", "$0"]
   },
@@ -149,12 +167,18 @@
     "split_duration": "DURATION",
     "split_diff": "DIFFERENCE"
   },
-  "pomodoro": {},
+  "pomodoro": {
+    "focus": "Focus",
+    "short": "Short break",
+    "long": "Long break"
+  },
   "countdown": {
-    "no_countdowns_message": "No countdowns",
+    "no_countdowns_message": "No countdowns.",
     "form_title": "Create countdown",
     "view": "View",
-    "full": "Full"
+    "full": "Full",
+    "invalid_hours": "Invalid hour format.",
+    "invalid_date": "Invalid date."
   },
   "world": {
     "form_title": "Add a new world clock",
@@ -173,7 +197,9 @@
     "humidity": "Humidity",
     "wind": "Wind",
     "temp_setting_label": "Temperature units",
-    "wind_setting_label": "Wind speed units"
+    "wind_setting_label": "Wind speed units",
+    "failed_update_message": "Failed to update weather. Will try again later.",
+    "geo_message": "Access to geolocation is not permitted."
   },
   "secondaryPanel": {
     "stickyNotes": "Sticky Notes",
@@ -184,7 +210,6 @@
   },
   "stickyNotes": {
     "no_notes_message": "No notes yet.",
-    "color_picker": "Color picker",
     "text_opacity": "Opacity",
     "text_color": "Text color",
     "scale": "Scale"
@@ -200,6 +225,9 @@
     "today": "Today",
     "tomorrow": "Tomorrow",
     "range_label": "All day",
+    "google_event": "Google Calendar event",
+    "google_event_only_msg": "Reminder was created on Google Calendar only.",
+    "event_remove_message": "Unable to delete an event. Try again later.",
     "form": {
       "title": "Reminder form",
       "reminder_type_label": "Reminder type",
@@ -225,9 +253,14 @@
       "repeat_custom_option_days": "day(s)",
       "repeat_custom_option_weeks": "week(s)",
       "repeat_custom_option_months": "month(s)",
+      "no_date_message": "Please provide date.",
+      "invalid_date_message": "Date should be newer that the current selected date.",
+      "no_notify_message": "Please provide notification time",
       "invalid_range_message": "Please provide valid range.",
       "invalid_time_format_message": "Please provide valid time format.",
       "invalid_number_message": "Please insert a whole number.",
+      "event_update_message": "Unable to update an event. Try again later.",
+      "event_create_message": "Unable to create an event. Try again later.",
       "repeat_end_setting_label": "Ends",
       "repeat_end_setting_never_label": "Never",
       "notify_time_label": "Notify before"
@@ -281,7 +314,12 @@
       "set_wallpaper_title": "Set wallpaper from...",
       "set_wallpaper_device_title": "Device",
       "wallpaper_playback_speed_label": "Playback speed",
-      "daily_wallpaper_provider_title": "Daily wallpaper provider"
+      "daily_wallpaper_provider_title": "Daily wallpaper provider",
+      "wallpaper_pos": "Adjust wallpaper position",
+      "invalid_url": "Invalid URL.",
+      "no_valid_image": "URL does not contain valid image.",
+      "no_valid_video": "URL does not contain valid video.",
+      "video_size_limit":  "File size exceeds 50mb limit."
     },
     "time_date": {
       "title": "Time & Date",
@@ -296,7 +334,6 @@
       "date_group_title": "Date",
       "hide_date_label": "Hide date",
       "date_lang_label": "Date language",
-      "default": "Default",
       "system": "System",
       "date_postion_label": "Date position",
       "date_postion_top": "Top",
@@ -313,6 +350,7 @@
       "today_reminder_preview": "Hide today's reminder preview",
       "tomorrow_reminder_preview": "Show tomorrow's reminder preview",
       "hide_clocks_label": "Hide world clocks",
+      "google_calendar": "Google Calendar",
       "connect": "Connect",
       "connecting": "Connecting",
       "disconnect": "Disconnect"
@@ -375,6 +413,8 @@
       "persistent_sites": "Persistent sites",
       "world_clocks": "World clocks",
       "sticky_notes": "Sticky notes",
+      "item_del_title": ["Delete", " ", "$0", " ", "data?"],
+      "item_del_message": ["Do you really want to delete", " ", "$0", " ", "data?\nAll associated data will be removed."],
       "data_title": "Data Management",
       "data_backup": "Backup",
       "data_restore": "Restore",
@@ -383,11 +423,17 @@
       "data_wipe_title": "Wipe all data",
       "data_restore_message": "Would you like to restore the data from the backup? Please note that this will overwrite all existing data.",
       "data_wipe_message": "This will wipe all data from all devices.",
-      "data_confirm": ["For confirmation enter", " ", "$0"]
+      "data_confirm": ["For confirmation enter", " ", "$0"],
+      "invalid_file": "Invalid file type.",
+      "invalid_json": "Invalid json file."
     }
   },
   "greetingEditor": {
-    "title": "Greeting Editor"
+    "title": "Greeting Editor",
+    "info_1": "You can get multiple greetings by separating text with a new line.",
+    "info_2": "To move greeting text to the new line you can use <br/>.",
+    "info_22": "To move greeting text to the new line you can use &lt;br/&gt;.",
+    "info_3": "Supports Markdown syntax."
   },
   "middleTop": {
     "title": "Middle Top Order",

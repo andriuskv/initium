@@ -47,12 +47,12 @@ export default function ReminderList({ reminders, locale, showReminderDay, editR
                 {reminder.type === "google" ? (
                   <div className="reminder-list-item-color inert" style={{ "backgroundColor": reminder.color }}></div>
                 ) : (
-                  <button className="btn reminder-list-item-color" style={{ "backgroundColor": reminder.color }} title="Change color"
+                  <button className="btn reminder-list-item-color" style={{ "backgroundColor": reminder.color }} title={locale.global.change_color}
                     onClick={() => changeReminderColor(reminder.id)}></button>
                 )}
                 <div>
                   {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
-                  {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google Calendar event"/> : ""}
+                  {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title={locale.calendar.google_event}/> : ""}
                 </div>
                 <div>
                   <p>{reminder.text}</p>

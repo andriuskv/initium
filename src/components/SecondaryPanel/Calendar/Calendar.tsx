@@ -222,7 +222,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   function showReminderNotification(reminder: Reminder, day: Day) {
     showNotification({
       id: getRandomString(),
-      title: "Calendar",
+      title: locale.secondaryPanel.calendar,
       iconId: "calendar",
       content: `${reminder.notify?.type === "default" ? "Today" : reminder.range.text}\n${reminder.text}`,
       action: () => {
@@ -232,7 +232,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
         }
         showDayView(day);
       },
-      actionTitle: "Show"
+      actionTitle: locale.global.show
     });
   }
 
@@ -668,7 +668,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       if (!success) {
         delete reminder.removing;
         setGoogleReminders([...googleReminders]);
-        showMessage("Unable to delete an event. Try again later.");
+        showMessage(locale.calendar.event_remove_message);
         return;
       }
       const index = googleReminders.findIndex(({ id }) => reminder.id === id);
@@ -868,7 +868,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
 
     if (reminder.type === "google" && primaryCalendar && !primaryCalendar.selected) {
-      showMessage("Reminder was created on Google calendar only.");
+      showMessage(locale.calendar.google_event_only_msg);
       return;
     }
     if (calendar) {

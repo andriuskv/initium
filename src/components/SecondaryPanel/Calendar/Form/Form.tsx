@@ -388,14 +388,14 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         const dateString = elements.enddate.value;
 
         if (!dateString) {
-          formRepeat.dateMessage = "Please provide date.";
+          formRepeat.dateMessage = locale.calendar.form.no_date_message;
           setForm({ ...form, range: formRange, repeat: formRepeat });
           return;
         }
         const endDate = parseDateInputValue(dateString);
 
         if (new Date(endDate.year, endDate.month, endDate.day) < new Date(form.year, form.month, form.day)) {
-          formRepeat.dateMessage = "Date should be higher that the current selected date.";
+          formRepeat.dateMessage = locale.calendar.form.invalid_date_message;
           setForm({ ...form, range: formRange, repeat: formRepeat });
           return;
         }
@@ -420,7 +420,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
             repeat: formRepeat,
             notify: {
               ...form.notify,
-              message:  "Please provide notification time"
+              message:  locale.calendar.form.no_notify_message
             }
           });
           return;
@@ -458,7 +458,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
 
         if (!event) {
           setForm({ ...form, submiting: false });
-          showMessage("Unable to update an event. Try again later.");
+          showMessage(locale.calendar.form.event_update_message);
           return;
         }
       }
@@ -467,7 +467,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
 
         if (!event) {
           setForm({ ...form, submiting: false });
-          showMessage("Unable to create an event. Try again later.");
+          showMessage(locale.calendar.form.event_create_message);
           return;
         }
         reminder.id = event.id;
@@ -713,7 +713,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
         <div className="reminder-form-display-date">
           {form.type === "google" && form.eventColors && form.eventColorIndex !== undefined ? (
             <Dropdown
-              toggle={{ body: <div className="reminder-form-selecated-event-color" style={{ backgroundColor: form.eventColors[form.eventColorIndex].color }}></div>, title: "Color picker" }}
+              toggle={{ body: <div className="reminder-form-selecated-event-color" style={{ backgroundColor: form.eventColors[form.eventColorIndex].color }}></div>, title: locale.global.color_input_title }}
               container={{ className: "reminder-form-event-color-dropdown-container" }}>
               <ul className="reminder-form-event-colors">
                 {form.eventColors.map(({ id, color }, index) => (
@@ -731,7 +731,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
             </div>
           )}
           <div className="reminder-form-display-date-container">
-            <button type="button" className="btn text-btn reminder-form-display-date-btn" title="Show date picker"
+            <button type="button" className="btn text-btn reminder-form-display-date-btn" title={locale.global.show_date_picker}
               onClick={showSelectedDayPicker} data-modal-keep>{form.displayDateString}</button>
             <input type="date" name="selecteddate" className="input reminder-form-display-date-input" tabIndex={-1}
               value={form.dateString} onChange={handleSelectedDayInputChange}/>

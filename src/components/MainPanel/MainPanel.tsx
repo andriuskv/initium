@@ -174,20 +174,20 @@ export default function MainPanel({ settings }: Props) {
     const tabs: Tabs = {
       topSites: {
         id: "topSites",
-        title: "Top sites",
+        title: locale.topSites.title,
         iconId: "top-sites",
         renderPending: true
       },
       notepad: {
         id: "notepad",
-        title: "Notepad",
+        title: locale.notepad.title,
         iconId: "notepad",
         expandable: true,
         renderPending: true
       },
       rssFeed: {
         id: "rssFeed",
-        title: "RSS feed",
+        title: locale.rssFeed.feeds_title,
         iconId: "rss",
         delay: 1200000,
         expandable: true,

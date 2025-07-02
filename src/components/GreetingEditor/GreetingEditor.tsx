@@ -73,11 +73,12 @@ export default function GreetingEditor({ locale, hide }: Props) {
     <div className="greeting-editor">
       <div className="container-header">
         <Dropdown
-          toggle={{ title: "Info", iconId: "info" }}
+          toggle={{ title: locale.global.info, iconId: "info" }}
           body={{ className: "greeting-editor-dropdown" }}>
           <ul className="greeting-editor-info-items">
-            <li>You can get multiple greetings by separating text with a new line.</li>
-            <li>To move greeting text to the new line you can use &lt;br/&gt;.</li>
+            <li>{locale.greetingEditor.info_1}</li>
+            <li>{locale.greetingEditor.info_2}</li>
+            <li>{locale.greetingEditor.info_3}</li>
           </ul>
         </Dropdown>
         {bytes && (

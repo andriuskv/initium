@@ -84,6 +84,7 @@
   background-color: var(--color-white-10);
   font-size: var(--text-xxs);
   font-weight: bold;
+  white-space: nowrap;
   cursor: default;
 }
 

@@ -274,7 +274,7 @@ export default function Form({ initialForm, noteCount, discardNote, showForm }: 
             </div>
           ) : null}
           <div className="sticky-note-sidebar">
-            <Dropdown toggle={{ iconId: "color-picker", title: locale.stickyNotes.color_picker }} body={{ className: "sticky-note-dropdown" }}>
+            <Dropdown toggle={{ iconId: "color-picker", title: locale.global.color_input_title }} body={{ className: "sticky-note-dropdown" }}>
               <ul className="sticky-note-color-picker-items">
                 {backgroundColors.map(color => (
                   <li key={color}>

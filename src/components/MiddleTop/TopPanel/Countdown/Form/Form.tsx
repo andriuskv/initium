@@ -89,7 +89,7 @@ export default function Form({ locale, createCountdown, hide }: Props) {
     event.preventDefault();
 
     if (Number.isNaN(h)) {
-      setForm({ ...form, message: "Invalid hour format." });
+      setForm({ ...form, message: locale.countdown.invalid_hours });
       return;
     }
     const dateString = getDateString({
@@ -102,7 +102,7 @@ export default function Form({ locale, createCountdown, hide }: Props) {
     const date = new Date(dateString);
 
     if (date.toString() === "Invalid Date") {
-      setForm({ ...form, message: "Invalid date." });
+      setForm({ ...form, message: locale.countdown.invalid_date });
       return;
     }
     const dateNum = date.getTime();
@@ -302,7 +302,7 @@ export default function Form({ locale, createCountdown, hide }: Props) {
       </div>
       <div className="container-body countdown-form-body">
         <div className="countdown-form-date-btn-container">
-          <button type="button" className="btn icon-btn countdown-form-date-btn" title="Show date picker"
+          <button type="button" className="btn icon-btn countdown-form-date-btn" title={locale.global.show_date_picker}
             onClick={showDatePicker} data-modal-keep>
             <Icon id="calendar"/>
           </button>
@@ -353,8 +353,8 @@ export default function Form({ locale, createCountdown, hide }: Props) {
       </div>
       <div className="container-footer countdown-form-bottom">
         {form.message && <div className="countdown-form-bottom-message">{form.message}</div>}
-        <button type="button" className="btn text-btn" onClick={hide}>Cancel</button>
-        <button className="btn">Create</button>
+        <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
+        <button className="btn">{locale.global.create}</button>
       </div>
     </form>
   );

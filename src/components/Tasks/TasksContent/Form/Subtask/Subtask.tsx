@@ -26,7 +26,7 @@ export default function Subtask({ children, index, subtask, locale, completeWith
         <Dropdown>
           <button type="button" className="btn icon-text-btn dropdown-btn icon-placeholder"
             onClick={() => toggleSubtaskReq(index)}>
-            <span>{subtask.optional ? "Make required" : "Make optional"}</span>
+            <span>{subtask.optional ? locale.tasks.make_required : locale.tasks.make_optional}</span>
           </button>
           <button type="button" className="btn icon-text-btn dropdown-btn" onClick={() => removeFormSubtask(index)}>
             <Icon id="trash"/>

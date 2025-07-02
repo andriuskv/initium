@@ -24,11 +24,6 @@ type Props = {
 type Stage = "focus" | "short" | "long";
 
 const stagesOrder: Stage[] = ["focus", "short", "focus", "long"];
-const stages = {
-  focus: "Focus",
-  short: "Short break",
-  long: "Long break"
-};
 
 export default function Pomodoro({ visible, locale, animDirection, toggleIndicator, updateTitle, expand, handleReset }: Props) {
   const [running, setRunning] = useState(false);
@@ -256,7 +251,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
     setPipVisible(!pipVisible);
     pipService.toggle({
       name,
-      title: "Pomodoro",
+      title: locale.topPanel.pomodoro,
       data: {
         hours: state.hours,
         minutes: state.minutes,
@@ -273,15 +268,15 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   return (
     <div className={`top-panel-item pomodoro${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
       <div className="container-body">
-        {pipVisible ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
+        {pipVisible ? <div className="top-panel-item-content">{locale.topPanel.pip_active}</div> : (
           <div className="top-panel-item-content">
             {running || state.dirty ?
               label ? (
                 <h4 className="top-panel-item-content-label pomodoro-label">
                   <div>{label}</div>
-                  <div className="pomodoro-stage">{stages[stage]}</div>
+                  <div className="pomodoro-stage">{locale.pomodoro[stage]}</div>
                 </h4>
-              ) : <h4 className="top-panel-item-content-label pomodoro-stage">{stages[stage]}</h4> : (
+              ) : <h4 className="top-panel-item-content-label pomodoro-stage">{locale.pomodoro[stage]}</h4> : (
                 <div className="top-panel-item-content-top">
                   <input type="text" className="input" value={label} onChange={handleLabelInputChange}
                     placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>

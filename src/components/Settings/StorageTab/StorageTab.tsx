@@ -168,10 +168,8 @@ export default function StorageTab({ locale }: { locale: any }) {
   function showRemoveItemModal(item: Item) {
     setModal({
       type: "item",
-      title: `Delete ${item.fullName} data?`,
-      body: `
-        Do you really want to delete ${item.fullName} data?
-        All associated data will be removed.`.trim(),
+      title: parseLocaleString(locale.settings.storage.item_del_title, item.fullName),
+      body: parseLocaleString(locale.settings.storage.item_del_message, item.fullName),
       item
     });
   }
@@ -231,7 +229,7 @@ export default function StorageTab({ locale }: { locale: any }) {
       const file = await fileHandle.getFile();
 
       if (file.type !== "application/json") {
-        setDataMessage("Invalid file type.");
+        setDataMessage(locale.settings.storage.invalid_file);
         return;
       }
 
@@ -246,7 +244,7 @@ export default function StorageTab({ locale }: { locale: any }) {
           }
         }
       } catch {
-        setDataMessage("Invalid json file.");
+        setDataMessage(locale.settings.storage.invalid_json);
       }
     } catch (e) {
       console.log(e);

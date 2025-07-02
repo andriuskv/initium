@@ -173,6 +173,7 @@ export default function Weather({ timeFormat, corner }: Props) {
       }
       else if (json.location) {
         setCurrentWeather(json);
+        dispatchCustomEvent("weather-error", null);
 
         if (forceMoreWeatherUpdate) {
           lastMoreWeatherUpdate.current = 0;
@@ -205,7 +206,7 @@ export default function Weather({ timeFormat, corner }: Props) {
     }
     catch (e) {
       console.log(e);
-      setMoreWeatherMessage("Failed to update weather. Will try again later.");
+      setMoreWeatherMessage(locale.weather.failed_update_message);
     }
   }
 
