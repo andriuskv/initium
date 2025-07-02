@@ -94,7 +94,7 @@ export default function TimeDateTab({ locale }: { locale: any }) {
       }
     } catch (e) {
       console.log(e);
-      setCalendarUser({ message: "Something went wrong. Try again later." });
+      setCalendarUser({ message: locale.global.generic_error_message });
     }
   }
 
@@ -175,7 +175,7 @@ export default function TimeDateTab({ locale }: { locale: any }) {
           <div className="select-container">
             <select className="input select" onChange={handleDateLocaleChange} value={settings.dateLocale}
               disabled={settings.clockDisabled || settings.dateHidden}>
-              <option value="default">{locale.settings.time_date.default}</option>
+              <option value="default">{locale.global.default}</option>
               <option value="system">{locale.settings.time_date.system}</option>
               <option value="cs-CZ">Čeština</option>
               <option value="da-DK">Dansk</option>
@@ -293,7 +293,7 @@ export default function TimeDateTab({ locale }: { locale: any }) {
         <div className="setting last-setting-tab-item google-calendar-integration-setting">
           <div className="google-calendar-integration-setting-main">
             <img src="assets/google-product-logos/calendar.png" className="" width="24px" height="24px" loading="lazy" alt=""></img>
-            <span>Google Calendar</span>
+            <span>{locale.settings.time_date.google_calendar}</span>
             {calendarUser.user ? <GoogleUserDropdown user={calendarUser.user} locale={locale} handleSignOut={handleGoogleCalendarDisconnect}/> : (
               <button className="btn" onClick={handleGoogleCalendarConnect} disabled={calendarUser.status === "connecting"}>{calendarUser.status === "connecting" ? locale.settings.time_date.connecting : locale.settings.time_date.connect}</button>
             )}

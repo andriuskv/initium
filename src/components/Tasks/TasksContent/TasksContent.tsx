@@ -177,7 +177,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   function getDefaultGroup(): Group {
     return {
       id: "default",
-      name: "Default",
+      name: locale.global.default,
       expanded: true,
       taskCount: 0,
       tasks: []

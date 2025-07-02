@@ -3,6 +3,7 @@ import type { Current, Hour, Weekday } from "types/weather";
 import { getRandomString } from "utils";
 import { getSetting } from "./settings";
 import { getTimeString, getCurrentDate, parseDateLocale, getDateLocale } from "./timeDate";
+import * as localizationService from "services/localization";
 
 function fetchWeatherWithCityName(name: string) {
   return fetchWeatherData(`q=${name}`);
@@ -38,11 +39,12 @@ function fetchCoords(): Promise<{ lat: number, lon: number } | { type: "geo", me
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => resolve({ lat: coords.latitude, lon: coords.longitude }),
       error => {
+        const locale = localizationService.getLocale();
         console.log(error);
 
         resolve({
           type: "geo",
-          message: error.code === 1 ? "Access to geolocation is not permitted." : "Something went wrong."
+          message: error.code === 1 ? locale.weather.geo_message : locale.global.generic_errro_message
         });
       },
       { enableHighAccuracy: true }

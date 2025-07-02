@@ -301,7 +301,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
           task.expirationDate = selectedDateTime;
 
           if (task.expirationDate <= task.creationDate) {
-            showMessage("Expiration date can't be in the past.");
+            showMessage(locale.tasks.expiration_date_message);
             return;
           }
           const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
@@ -357,7 +357,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
         task.expirationDate = new Date(dateTime).getTime();
 
         if (task.expirationDate <= task.creationDate) {
-          showMessage("Expiration date can't be in the past.");
+          showMessage(locale.tasks.expiration_date_message);
           return;
         }
         const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
@@ -587,7 +587,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
           </div>
           <div className="textarea-container task-form-textarea-container">
             <textarea className="input textarea task-form-textarea" name="text" defaultValue={state.task.rawText}
-              placeholder="Details" autoFocus required></textarea>
+              placeholder={locale.tasks.details} autoFocus required></textarea>
           </div>
           <div className="task-form-item-container">
             <h4 className="task-form-item-title">{locale.tasks.subtask_title}</h4>

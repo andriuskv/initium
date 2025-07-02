@@ -34,7 +34,7 @@ export default function Form({ feeds, locale, addFeed, hide }: Props) {
     event.preventDefault();
 
     if (feeds.active.some(feed => feed.url === url)) {
-      setForm({ ...form, message: "Feed already exists." });
+      setForm({ ...form, message: locale.rssFeed.duplicate_feed });
       return;
     }
     setForm({ ...form, message: "", fetching: true });

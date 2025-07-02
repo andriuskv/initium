@@ -339,8 +339,10 @@ async function fetchToken() {
   const user = getLocalStorageItem<GoogleUser>("google-user");
 
   if (!user) {
+    const locale = localizationService.getLocale();
     clearUser();
-    return { message: "User is missing. Authenticate again please." };
+
+    return { message: locale.calendar.failed_user_fetch_message };
   }
   const authToken = await fetchAuthToken(user.email);
 
@@ -356,7 +358,8 @@ async function getUser(token: string): Promise<GoogleUser | { message: string }>
   const json = await fetchUser(token);
 
   if (json.error) {
-    return { message: "Couldn't retrieve user. Try again later." };
+    const locale = localizationService.getLocale();
+    return { message: locale.calendar.missing_user_message };
   }
   const user: GoogleUser = {
     email: json.emailAddresses[0].value,
@@ -509,8 +512,9 @@ async function initGoogleCalendar(retried = false): Promise<{ calendars: GoogleC
     localStorage.setItem("google-calendars", JSON.stringify(calendars));
     return { calendars, reminders };
   } catch (e) {
+    const locale = localizationService.getLocale();
     console.log(e);
-    return { message: "Something went wrong. Try again later." };
+    return { message: locale.global.generic_error_message };
   }
 }
 
@@ -528,6 +532,7 @@ async function fetchCalendarItems(calendar: GoogleCalendar, retried = false) {
     return { message: token.message };
   }
   const params = `key=${process.env.CALENDAR_API_KEY}&access_token=${token}`;
+  const locale = localizationService.getLocale();
 
   try {
     const [colorsJson, json] = await Promise.all([
@@ -538,7 +543,7 @@ async function fetchCalendarItems(calendar: GoogleCalendar, retried = false) {
     if (colorsJson.error) {
       if (colorsJson.error.code === 401) {
         if (retried) {
-          return { message: "Something went wrong. Try again later." };
+          return { message: locale.global.generic_error_message };
         }
         const res = await fetchToken();
 
@@ -547,7 +552,7 @@ async function fetchCalendarItems(calendar: GoogleCalendar, retried = false) {
         }
         return fetchCalendarItems(calendar, true);
       }
-      return { message: "Something went wrong. Try again later." };
+      return { message: locale.global.generic_error_message };
     }
     const calendarItems = parseItems(json.items, {
       defaultColor: calendar.color,
@@ -560,7 +565,7 @@ async function fetchCalendarItems(calendar: GoogleCalendar, retried = false) {
     return { reminders: calendarItems };
   } catch (e) {
     console.log(e);
-    return { message: "Something went wrong. Try again later." };
+    return { message: locale.global.generic_error_message };
   }
 }
 

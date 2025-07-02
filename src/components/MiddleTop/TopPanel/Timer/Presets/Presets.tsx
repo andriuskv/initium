@@ -151,7 +151,7 @@ export default function Presets({ presets, locale, updatePresets, getUpdatedTime
           <input type="text" className="input timer-presets-form-name-input" name="name"
             value={form.name} placeholder={locale.timer.presets_input_placeholder}
             onChange={handlePresetNameChange} autoComplete="off" required/>
-          <Inputs state={state} updateInputs={updateInputs} addTime={addTime} removeTime={removeTime} handleKeyDown={resetFormError}/>
+          <Inputs locale={locale} state={state} updateInputs={updateInputs} addTime={addTime} removeTime={removeTime} handleKeyDown={resetFormError}/>
         </div>
         {form.error && <p className="timer-presets-form-message">{locale.timer.presets_form_message}</p>}
         <div className="timer-presets-form-footer">

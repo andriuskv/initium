@@ -4,6 +4,7 @@ import { getRandomString } from "../utils";
 import { getSetting } from "./settings";
 import { formatDate } from "./timeDate";
 import * as chromeStorage from "./chromeStorage";
+import * as localizationService from "services/localization";
 
 type FetchEntry = {
   id: string,
@@ -43,14 +44,15 @@ function fetchFeedData(url: string): Promise<{ feed: FetchFeed }> {
 
 async function fetchFeed(feed: { url: string, title: string }): Promise<FeedType | { message: string }> {
   const data = await fetchFeedData(feed.url);
+  const locale = localizationService.getLocale();
 
   if (data.feed) {
     if (Array.isArray(data.feed.items)) {
       return parseFeed(data.feed, feed);
     }
-    return { message: "Feed has no entries." };
+    return { message: locale.rssFeed.no_entries };
   }
-  return { message: "Feed was not found." };
+  return { message: locale.rssFeed.no_feed };
 }
 
 async function updateFeed({ url, entries, newEntryCount }: { url: string, entries: Entry[], newEntryCount: number }) {

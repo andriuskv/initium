@@ -63,7 +63,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
   const minimalVisible = useRef(false);
   const saveTabTimeoutId = useRef(0);
   const activeTabIndex = findTabIndex(activeTab);
-  const vertical = locale.locale === "ja";
+  const vertical = false;
 
   useEffect(() => {
     if (forceVisibility) {

@@ -40,7 +40,7 @@ export default function ReminderPreview({ locale, currentView, currentDay, tomor
                     <div className="calendar-reminder-preview-item-color" style={{ backgroundColor: reminder.color }}></div>
                     <p>{reminder.text}</p>
                     {reminder.range.from ? <p className="calendar-reminder-preview-item-range-text">{reminder.range.text}</p> : null}
-                    {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title="Google calendar event"/> : ""}
+                    {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title={locale.calendar.google_event}/> : ""}
                   </li>
                 ))}
               </ul>

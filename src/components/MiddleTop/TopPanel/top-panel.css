@@ -92,7 +92,8 @@
   top: var(--space-md);
   opacity: 0;
   visibility: hidden;
-  width: 610px;
+  /* width: 610px; */
+  width: 670px;
   border-bottom-left-radius: 999px;
   border-bottom-right-radius: 999px;
   transform-origin: top center;
@@ -270,6 +271,7 @@
   width: 100%;
   padding: var(--space-sm) var(--space-md);
   font-weight: normal;
+  word-break: auto-phrase;
 
   .indicator::after {
     bottom: 1px;

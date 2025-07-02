@@ -63,7 +63,7 @@ export default function Wallpaper({ locale }: { locale: any }) {
     }
 
     if (!URL.canParse(input.value)) {
-      setModal({ ...modal, message: "Invalid URL." });
+      setModal({ ...modal, message: locale.settings.appearance.invalid_url });
       return;
     }
     const url = new URL(input.value);
@@ -80,7 +80,7 @@ export default function Wallpaper({ locale }: { locale: any }) {
       image.onerror = () => {
         setModal({
           ...modal,
-          message: "URL does not contain valid image."
+          message: locale.settings.appearance.no_valid_image
         });
       };
       image.src = input.value;
@@ -99,7 +99,7 @@ export default function Wallpaper({ locale }: { locale: any }) {
       video.addEventListener("error", () => {
         setModal({
           ...modal,
-          message: "URL does not contain valid video."
+          message: locale.settings.appearance.no_valid_video
         });
         abortController.abort();
       }, { signal: abortController.signal });
@@ -124,7 +124,7 @@ export default function Wallpaper({ locale }: { locale: any }) {
     const file = await getSelectedFile();
 
     if (file.size >= 50000000) {
-      setMessages({ ...messages, wallpaper: "File size exceeds 50mb. Please try a different file." });
+      setMessages({ ...messages, wallpaper: locale.settings.appearance.video_size_limit });
       return;
     }
     setMessages({ ...messages, wallpaper: undefined });
@@ -182,7 +182,7 @@ export default function Wallpaper({ locale }: { locale: any }) {
         {settings.wallpaper.mimeType?.startsWith("image") && (settings.wallpaper.url || settings.wallpaper.id) ? (
           <button className="btn icon-btn setting-wallpaper-viewer-btn"
             onClick={showWallpaperViewer}
-            title="Adjust wallpaper position">
+            title={locale.settings.appearance.wallpaper_pos}>
             <Icon id="image"/>
           </button>
         ) : null}

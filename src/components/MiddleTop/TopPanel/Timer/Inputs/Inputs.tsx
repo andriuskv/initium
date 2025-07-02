@@ -4,6 +4,7 @@ import { padTime } from "services/timeDate";
 import Icon from "components/Icon";
 
 type Props = {
+  locale: any,
   state: Time,
   addTime: (to: "hours" | "minutes" | "seconds", event: MouseEvent) => void,
   removeTime: (to: "hours" | "minutes" | "seconds", event: MouseEvent) => void,
@@ -11,7 +12,7 @@ type Props = {
   handleKeyDown?: (event: KeyboardEvent) => void,
 };
 
-export default function Inputs({ state, addTime, removeTime, updateInputs, handleKeyDown: handleContainerKeyDown = () => {} }: Props) {
+export default function Inputs({ locale, state, addTime, removeTime, updateInputs, handleKeyDown: handleContainerKeyDown = () => {} }: Props) {
   const hoursInputRef = useRef<HTMLInputElement>(null);
   const minutesInputRef = useRef<HTMLInputElement>(null);
   const secondsInputRef = useRef<HTMLInputElement>(null);
@@ -194,10 +195,10 @@ export default function Inputs({ state, addTime, removeTime, updateInputs, handl
       <div className="timer-digit-container">
         <div className="timer-digit-value-container">
           <div className="timer-display-btns">
-            <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title="Increase">
+            <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title={locale.global.increase}>
               <Icon id="plus" size="16px"/>
             </button>
-            <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title="Decrease">
+            <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title={locale.global.decrease}>
               <Icon id="minus" size="16px"/>
             </button>
           </div>
@@ -209,10 +210,10 @@ export default function Inputs({ state, addTime, removeTime, updateInputs, handl
       <div className="timer-digit-container">
         <div className="timer-digit-value-container">
           <div className="timer-display-btns">
-            <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title="Increase">
+            <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title={locale.global.increase}>
               <Icon id="plus" size="16px"/>
             </button>
-            <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title="Decrease">
+            <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title={locale.global.decrease}>
               <Icon id="minus" size="16px"/>
             </button>
           </div>
@@ -224,10 +225,10 @@ export default function Inputs({ state, addTime, removeTime, updateInputs, handl
       <div className="timer-digit-container">
         <div className="timer-digit-value-container">
           <div className="timer-display-btns">
-            <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title="Increase">
+            <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title={locale.global.increase}>
               <Icon id="plus" size="16px"/>
             </button>
-            <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title="Decrease">
+            <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title={locale.global.decrease}>
               <Icon id="minus" size="16px"/>
             </button>
           </div>

@@ -250,7 +250,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
     setPipVisible(!pipVisible);
     pipService.toggle({
       name,
-      title: "Stopwatch",
+      title: locale.topPanel.stopwatch,
       data: {
         hours: state.hours,
         minutes: state.minutesDisplay,

@@ -465,7 +465,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     }
     pipService.toggle({
       name: `timer-${activeTimer.id}`,
-      title: "Timer",
+      title: locale.topPanel.timer,
       data: {
         hours: activeTimer.hours,
         minutes: activeTimer.minutes,
@@ -684,7 +684,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
   return (
     <div className={`top-panel-item timer${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
       <div className="container-body">
-        {pipId === activeTimer.id ? <div className="top-panel-item-content">Picture-in-picture is active</div> : (
+        {pipId === activeTimer.id ? <div className="top-panel-item-content">{locale.topPanel.pip_active}</div> : (
           <div className="top-panel-item-content">
             {activeTimer.running ? (
               <>
@@ -694,10 +694,10 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
                     <div className="timer-digit-container">
                       <div className="timer-digit-value-container">
                         <div className="timer-display-btns">
-                          <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title="Increase">
+                          <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title={locale.global.increase}>
                             <Icon id="plus" size="16px"/>
                           </button>
-                          <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title="Decrease">
+                          <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title={locale.global.decrease}>
                             <Icon id="minus" size="16px"/>
                           </button>
                         </div>
@@ -710,10 +710,10 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
                     <div className="timer-digit-container">
                       <div className="timer-digit-value-container">
                         <div className="timer-display-btns">
-                          <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title="Increase">
+                          <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title={locale.global.increase}>
                             <Icon id="plus" size="16px"/>
                           </button>
-                          <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title="Decrease">
+                          <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title={locale.global.decrease}>
                             <Icon id="minus" size="16px"/>
                           </button>
                         </div>
@@ -725,10 +725,10 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
                   <div className="timer-digit-container">
                     <div className="timer-digit-value-container">
                       <div className="timer-display-btns">
-                        <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title="Increase">
+                        <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title={locale.global.increase}>
                           <Icon id="plus" size="16px"/>
                         </button>
-                        <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title="Decrease">
+                        <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title={locale.global.decrease}>
                           <Icon id="minus" size="16px"/>
                         </button>
                       </div>
@@ -746,7 +746,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
                       <input type="text" className="input" value={activeTimer.label} onChange={handleLabelInputChange}
                         placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
                       {activeTimer.label ? (
-                        <button className="btn icon-btn" onClick={clearLabelInput} title="Clear">
+                        <button className="btn icon-btn" onClick={clearLabelInput} title={locale.global.clear}>
                           <Icon id="cross"/>
                         </button>
                       ) : null}
@@ -768,7 +768,7 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
                     </Dropdown>
                   </div>
                 )}
-                <Inputs state={activeTimer} addTime={addTime} removeTime={removeTime} updateInputs={updateInputs}/>
+                <Inputs locale={locale} state={activeTimer} addTime={addTime} removeTime={removeTime} updateInputs={updateInputs}/>
               </>
             )}
           </div>

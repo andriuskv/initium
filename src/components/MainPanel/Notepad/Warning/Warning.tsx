@@ -22,7 +22,7 @@ export default function Warning({ locale, storageWarning, dismiss }: Props) {
   return (
     <Dropdown
       container={{ className: "notepad-warning-dropdown-container" }}
-      toggle={{ title: "Show warning", iconId: "warning" }}
+      toggle={{ title: locale.global.show, iconId: "warning" }}
       body={{ className: "notepad-warning-dropdown" }}>
       <p>{storageWarning.message}</p>
     </Dropdown>

@@ -93,7 +93,7 @@ export default function Entries({ navigation, feeds, locale, selectFeed, previou
                 <p className="feed-entry-description" dangerouslySetInnerHTML={{ __html: getEntryDescription(entry.description) }}></p>
               ) : null}
             </div>
-            <button className="btn text-btn feed-entry-expand-btn" onClick={() => expandEntry(entry, index)}>{locale.rssFeed.show_more}</button>
+            <button className="btn text-btn feed-entry-expand-btn" onClick={() => expandEntry(entry, index)}>{locale.global.show_more}</button>
             {entry.date ? <div className="feed-date">{parseLocaleString(locale.rssFeed.entry_date, entry.date)}</div> : null}
           </li>
         ))}
