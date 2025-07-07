@@ -1,10 +1,8 @@
-/* global chrome */
-
 import type { MainPanelComponents, AppearanceSettings } from "types/settings";
 import type { Site } from "./top-sites.type";
 import { useState, useEffect, useRef } from "react";
 import { useModal } from "hooks";
-import { getLocalStorageItem } from "utils";
+import { getFaviconURL, getLocalStorageItem } from "utils";
 import { getSetting } from "services/settings";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
@@ -62,6 +60,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
   }
 
   async function fetchTopSites(localData: LocalData = {}) {
+    /* global chrome */
     const sites = await chrome.topSites.get() as { url: string, title: string }[];
     return parseSites(sites, localData);
   }
@@ -73,7 +72,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
       if (modifiedSite) {
         site.title = modifiedSite.title;
       }
-      site.iconUrl = getFaviconURL(site.url);
+      site.iconUrl = getFaviconURL(site.url, 32);
       return site;
     });
   }
@@ -83,11 +82,6 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
 
     setSites(sites);
     localStorage.removeItem("top sites");
-  }
-
-  function getFaviconURL(url: string) {
-    const { href } = new URL(url);
-    return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${href}&size=32`;
   }
 
   function showForm() {
@@ -142,7 +136,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
         return "Site with the same URL already exists.";
       }
       site.local = true;
-      site.iconUrl = getFaviconURL(site.url);
+      site.iconUrl = getFaviconURL(site.url, 32);
       let index = sites.findLastIndex(site => site.local);
 
       if (index < 0) {
@@ -158,7 +152,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
     else if (action === "update" && modal) {
       const oldSite = { ...sites[modal.index] };
       const updatedSite = {
-        iconUrl: getFaviconURL(site.url),
+        iconUrl: getFaviconURL(site.url, 32),
         ...site
       };
 

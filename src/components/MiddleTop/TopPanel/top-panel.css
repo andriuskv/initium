@@ -92,7 +92,6 @@
   top: var(--space-md);
   opacity: 0;
   visibility: hidden;
-  /* width: 610px; */
   width: 670px;
   border-bottom-left-radius: 999px;
   border-bottom-right-radius: 999px;

@@ -228,6 +228,16 @@ function parseLocaleString(localeArr: (string | string[])[], ...token: any[]): (
   return arr;
 }
 
+function getUrl(value: string) {
+  return /^https?:\/\//.test(value) ? value : `https://${value}`;
+}
+
+function getFaviconURL(url: string, size: number) {
+  const { href } = new URL(url);
+  /* global chrome */
+  return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${href}&size=${size}`;
+}
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -245,5 +255,7 @@ export {
   replaceLink,
   toggleBehindElements,
   getLocalStorageItem,
-  parseLocaleString
+  parseLocaleString,
+  getUrl,
+  getFaviconURL
 };

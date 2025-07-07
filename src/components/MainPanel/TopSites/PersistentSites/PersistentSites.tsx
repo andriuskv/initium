@@ -13,7 +13,7 @@ type Props = {
   settings: MainPanelComponents["topSites"],
   enableEdit?: boolean,
   locale: any,
-  getFaviconURL: (url: string) => string
+  getFaviconURL: (url: string, size: number) => string
 }
 
 export default function PersistentSites({ settings, enableEdit, locale, getFaviconURL }: Props) {
@@ -55,7 +55,7 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
   function initSites(sites: PersistentSite[]) {
     return sites.map(site => {
       site.id = crypto.randomUUID();
-      site.iconUrl = getFaviconURL(site.url);
+      site.iconUrl = getFaviconURL(site.url, 32);
       return site;
     });
   }
@@ -94,7 +94,7 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
         title: siteTitle,
         url: siteUrl,
         id:  crypto.randomUUID(),
-        iconUrl:  getFaviconURL(siteUrl)
+        iconUrl:  getFaviconURL(siteUrl, 32)
       }];
 
       setSites(newSites);
@@ -105,7 +105,7 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
         title: siteTitle,
         url: siteUrl,
         id: crypto.randomUUID(),
-        iconUrl: getFaviconURL(siteUrl)
+        iconUrl: getFaviconURL(siteUrl, 32)
       });
 
       setSites(newSites);

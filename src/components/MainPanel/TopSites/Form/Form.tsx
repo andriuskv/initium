@@ -1,9 +1,8 @@
 import type { Site, PersistentSite, FormType } from "../top-sites.type";
-import type { FormEvent } from "react";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { getUrl } from "utils";
 import Modal from "components/Modal";
 import "./form.css";
-
 
 type Props = {
   form: FormType,
@@ -15,11 +14,6 @@ type Props = {
 
 export default function Form({ form, locale, hiding, updateSite, hide }: Props) {
   const [message, setMessage] = useState<string>("");
-
-  function getUrl(value: string) {
-    return /^https?:\/\//.test(value) ? value : `https://${value}`;
-  }
-
   function handleFormSubmit(event: FormEvent) {
     interface FormElements extends HTMLFormControlsCollection {
       url: HTMLInputElement;
