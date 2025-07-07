@@ -3,8 +3,9 @@
   display: grid;
   gap: var(--space-md);
   grid-template-columns: repeat(4, 80px);
-  max-height: 272px;
+  max-height: 100%;
   padding: var(--space-md);
+  scrollbar-gutter: stable both-edges;
 
   &.editing  {
     .shortcuts-item:hover {
@@ -44,6 +45,19 @@
   position: absolute;
   top: var(--space-sm);
   right: var(--space-sm);
+}
+
+.shortcuts-item-remove-btn {
+  z-index: 1;
+  position: absolute;
+  bottom: var(--space-sm);
+  right: var(--space-sm);
+}
+
+.shortcuts-add-btn {
+  position: absolute;
+  top: 5px;
+  left: 39px;
 }
 
 .shortcuts-edit-toggle-btn {

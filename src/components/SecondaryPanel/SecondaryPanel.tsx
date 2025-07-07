@@ -239,7 +239,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
             </div>
           ) : selectedItem.id === "shortcuts" ? (
             <div className={`container-body secondary-panel-item-content${selectedItem.id ? "" : " hidden"}`}
-              style={{ width: "364px", height: "272px"}}>
+              style={{ width: "380px", height: "272px" }}>
               <Suspense fallback={null}>
                 <Shortcuts locale={locale}/>
               </Suspense>
