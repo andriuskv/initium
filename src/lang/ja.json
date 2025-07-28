@@ -63,7 +63,8 @@
     "hidden": "隠されている",
     "generic_error_message": "問題が発生しました。後でもう一度お試しください。",
     "missing_user_message": "ユーザーが見つかりません。もう一度認証してください。",
-    "failed_user_fetch_message": "ユーザーを取得できませんでした。後でもう一度お試しください。"
+    "failed_user_fetch_message": "ユーザーを取得できませんでした。後でもう一度お試しください。",
+    "adding": "追加中..."
   },
   "toTop": {
     "title": "トップへ"

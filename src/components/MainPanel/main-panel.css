@@ -101,8 +101,8 @@
     .main-panel-sidebar {
       transform: translate(-2px, 8px);
 
-      .expanded {
-       transform: translateX(var(--space-md));
+      &.expanded {
+        transform: translateX(var(--space-md));
       }
     }
   }

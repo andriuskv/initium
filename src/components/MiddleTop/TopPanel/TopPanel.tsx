@@ -393,7 +393,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
         </TabsContainer>
         <Suspense fallback={<div className={`top-panel-item-placeholder ${activeTab}`}></div>}>
           {tabs.timer.rendered ? (
-            <Timer visible={activeTab === "timer"} locale={locale} animDirection={tabs.timer.direction}
+            <Timer visible={activeTab === "timer"} locale={locale} animDirection={tabs.timer.direction} expanded={expanded}
               toggleIndicator={toggleIndicator} updateTitle={updateTitle} ignoreMiniTimerPref={ignoreMiniTimerPref}
               expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
           ) : null}
@@ -404,7 +404,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
           {tabs.pomodoro.rendered ? (
             <Pomodoro visible={activeTab === "pomodoro"} locale={locale} animDirection={tabs.pomodoro.direction}
               toggleIndicator={toggleIndicator} updateTitle={updateTitle}
-              expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
+              expand={expand} handleReset={handleReset}/>
           ) : null}
           {tabs.world.rendered ? (
             <World visible={activeTab === "world"} parentVisible={visible} animDirection={tabs.world.direction}
