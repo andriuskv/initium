@@ -63,7 +63,7 @@ export default function Form({ feeds, locale, addFeed, hide }: Props) {
       <input type="text" className="input feed-form-input" name="url" placeholder={locale.global.url_input_label} required/>
       <div className="feed-add-btn-container">
         {form.message && <div className="feed-message">{form.message}</div>}
-        <button className="btn" disabled={form.fetching}>{form.fetching ? "Adding..." : locale.global.add}</button>
+        <button className="btn" disabled={form.fetching}>{form.fetching ? locale.global.adding: locale.global.add}</button>
       </div>
       {form.backButtonVisible && (
         <button type="button" className="btn icon-btn feed-form-hide-btn" onClick={hide} title={locale.global.close}>

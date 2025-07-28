@@ -17,7 +17,6 @@ type Props = {
   toggleIndicator: (name: TabName, value: boolean) => void,
   updateTitle: (name: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
   expand: () => void,
-  exitFullscreen: () => void,
   handleReset: (name: string) => Promise<unknown> | undefined
 }
 

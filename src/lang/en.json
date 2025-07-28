@@ -61,7 +61,8 @@
     "hidden": "Hidden",
     "generic_error_message": "Something went wrong. Try again later.",
     "missing_user_message": "User is missing. Authenticate again please.",
-    "failed_user_fetch_message": "Couldn't retrieve user. Try again later."
+    "failed_user_fetch_message": "Couldn't retrieve user. Try again later.",
+    "adding": "Adding..."
   },
   "toTop": {
     "title": "To top"

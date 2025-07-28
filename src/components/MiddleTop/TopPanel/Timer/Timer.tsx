@@ -20,6 +20,7 @@ type Props = {
   visible: boolean,
   locale: any,
   animDirection?: "anim-left" | "anim-right",
+  expanded: boolean,
   toggleIndicator: (name: TabName, value: boolean) => void,
   updateTitle: (name: string, values?: { hours?: number, minutes?: string, seconds: string, isAudioEnabled: boolean }) => void,
   ignoreMiniTimerPref: (name: TabName, value: boolean) => void,
@@ -42,7 +43,7 @@ type TimerType = Time & {
 
 type TimerObj = { [key: string]: TimerType };
 
-export default function Timer({ visible, locale, animDirection, toggleIndicator, updateTitle, ignoreMiniTimerPref, expand, exitFullscreen, handleReset }: Props) {
+export default function Timer({ visible, locale, animDirection, expanded, toggleIndicator, updateTitle, ignoreMiniTimerPref, expand, exitFullscreen, handleReset }: Props) {
   const [timers, setTimers] = useState<TimerObj>(() => {
     const id = getRandomString(4);
 
@@ -126,7 +127,10 @@ export default function Timer({ visible, locale, animDirection, toggleIndicator,
     if (timersArr.filter(timer => timer.running).length < 2) {
       toggleIndicator("timer", false);
       updateTitle("timer");
-      exitFullscreen();
+
+      if (expanded) {
+        exitFullscreen();
+      }
     }
     removeFromRunning(`timer-${id}`);
     ignoreMiniTimerPref("timer", timers[id].active);
