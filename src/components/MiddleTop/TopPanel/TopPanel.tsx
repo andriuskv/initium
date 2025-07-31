@@ -4,6 +4,7 @@ import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type Mous
 import { delay, setPageTitle, timeout, toggleBehindElements } from "utils";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
+import { setWidgetState } from "services/widgetStates";
 import { useLocalization } from "contexts/localization";
 import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
@@ -32,14 +33,15 @@ type Tabs = {
 type Props = {
   settings: TimersSettings;
   initialTab?: TabName | "";
+  initialVisibility?: boolean;
   forceVisibility?: boolean;
   animationSpeed: number;
   resetTopPanel: () => void;
 }
 
-export default function TopPanel({ settings, initialTab = "", forceVisibility = false, animationSpeed, resetTopPanel }: Props) {
+export default function TopPanel({ settings, initialTab = "", initialVisibility = false, forceVisibility = false, animationSpeed, resetTopPanel }: Props) {
   const locale = useLocalization();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(initialVisibility);
   const [minimal, setMinimal] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     return initialTab || (localStorage.getItem("active-timer-tab") || "timer") as TabName;
@@ -124,6 +126,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       }
       else {
         setVisible(nextVisible);
+        setWidgetState("topPanel", nextVisible);
       }
 
       if (nextVisible) {
@@ -231,6 +234,7 @@ export default function TopPanel({ settings, initialTab = "", forceVisibility = 
       setVisible(false);
       showMinimalTimer();
     }
+    setWidgetState("topPanel", false);
   }
 
   function resetMinimal(shouldShowFull = false) {

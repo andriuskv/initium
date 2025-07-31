@@ -5,6 +5,7 @@ import "@testing-library/jest-dom";
 import { useLocalization } from "contexts/localization";
 import { useSettings } from "contexts/settings";
 import { fetchWeather, fetchMoreWeather } from "services/weather";
+import { getWidgetState } from "services/widgetStates";
 import Weather from "./Weather";
 import locale from "lang/en.json" assert { type: "json" };
 import type { ReactNode } from "react";
@@ -28,6 +29,11 @@ vi.mock("services/zIndex", () => ({
   handleZIndex: vi.fn(),
 }));
 
+vi.mock("services/widgetStates", () => ({
+  getWidgetState: vi.fn(),
+  setWidgetState: vi.fn(),
+}));
+
 const mockCurrentWeather = {
   location: "Test Location",
   temperature: 25,
@@ -46,6 +52,7 @@ const mockMoreWeather = {
 };
 
 const mockSettings = {
+  general: { rememberWidgetState: false },
   appearance: { animationSpeed: 1 },
   timeDate: { dateLocale: "en-US" },
   weather: { units: "C", speedUnits: "m/s", cityName: "Test City", useGeo: false },
@@ -80,6 +87,15 @@ test("renders current weather information on initial load", async () => {
   expect(screen.getByText("25")).toBeInTheDocument();
   expect(screen.getByText("°C")).toBeInTheDocument();
   expect(screen.getByAltText("")).toHaveAttribute("src", "test-icon.png");
+});
+
+test("renders more weather on initial load when rememberWidgetState is true and widget", async () => {
+  (useSettings as any).mockReturnValue({ settings: { ...mockSettings, general: { rememberWidgetState: true } } });
+  (getWidgetState as any).mockReturnValue(true);
+  render(<Weather timeFormat={24} corner="top-right"/>);
+  await waitFor(() => expect(screen.getByText("Test Location")).toBeInTheDocument());
+  await waitFor(() => expect(fetchMoreWeather).toHaveBeenCalled());
+  await waitFor(() => expect(screen.getByText(mockCurrentWeather.description)).toBeInTheDocument());
 });
 
 test("shows more weather information when more button is clicked", async () => {

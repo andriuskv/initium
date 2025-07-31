@@ -3,6 +3,7 @@ import type { Settings } from "types/settings";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { setPageTitle } from "utils";
 import * as chromeStorage from "services/chromeStorage";
+import { getWidgetState, setWidgetState } from "services/widgetStates";
 import "./middle-top.css";
 
 const TopPanel = lazy(() => import("./TopPanel"));
@@ -13,10 +14,23 @@ type Props = {
   settings: Settings
 }
 
+type TopPanelState = {
+  rendered: boolean
+  forceVisibility?: boolean
+  initialTab?: TabName
+  initialVisibility?: boolean
+}
+
 export default function MiddleTop({ settings }: Props) {
   const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
   const [greetingVisible, setGreetingVisible] = useState(false);
-  const [topPanel, setTopPanel] = useState<{ rendered: boolean, forceVisibility?: boolean, initialTab?: TabName }>({ rendered: false });
+  const [topPanel, setTopPanel] = useState<TopPanelState>(() => {
+    if (settings.general.rememberWidgetState) {
+      const state = getWidgetState("topPanel");
+      return { rendered: state, initialVisibility: state };
+    }
+    return { rendered: false };
+  });
   const [itemOrder, setItemOrder] = useState(() => getItemOrder());
   const topPanelTimeoutId = useRef(0);
 
@@ -106,6 +120,7 @@ export default function MiddleTop({ settings }: Props) {
     if (initialTab) {
       localStorage.setItem("active-timer-tab", initialTab);
     }
+    setWidgetState("topPanel", true);
   }
 
   return (
@@ -113,7 +128,7 @@ export default function MiddleTop({ settings }: Props) {
       style={{ "--order": itemOrder.orderString, ...itemOrder.order } as CSSProperties}>
       <Suspense fallback={null}>
         {!settings.timers.disabled && topPanel.rendered && (
-          <TopPanel initialTab={topPanel.initialTab} forceVisibility={topPanel.forceVisibility} settings={settings.timers}
+          <TopPanel initialTab={topPanel.initialTab} initialVisibility={topPanel.initialVisibility} forceVisibility={topPanel.forceVisibility} settings={settings.timers}
             animationSpeed={settings.appearance.animationSpeed} resetTopPanel={resetTopPanel}/>
         )}
       </Suspense>

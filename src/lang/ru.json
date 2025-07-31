@@ -282,6 +282,7 @@
       "disable_shortcuts_label": "Отключить ярлыки",
       "disable_calendar_label": "Отключить календарь",
       "disable_greeting_label": "Отключить приветствие",
+      "remember_widget_state_label": "Запомнить состояние открытых виджетов",
       "greeting_group_title": "Приветствие",
       "show_greeting_editor_title": "Редактор",
       "new_tab_links_label": "Открывать ссылки в новой вкладке",

@@ -1,6 +1,7 @@
 import type { GeneralSettings, TasksSettings } from "types/settings";
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { handleZIndex } from "services/zIndex";
+import { getWidgetState, setWidgetState } from "services/widgetStates";
 import { useLocalization } from "contexts/localization";
 import "./tasks.css";
 
@@ -14,7 +15,13 @@ type Props = {
 
 export default function Tasks({ settings, generalSettings, corner }: Props) {
   const locale = useLocalization();
-  const [state, setState] = useState({ rendered: false, visible: false, revealed: false, hiding: false });
+  const [state, setState] = useState(() => {
+    if (generalSettings.rememberWidgetState) {
+      const state = getWidgetState("tasks");
+      return { rendered: state, visible: state, revealed: state, hiding: false };
+    }
+    return { rendered: false, visible: false, revealed: false, hiding: false };
+  });
   const [expanded, setExpanded] = useState(false);
   const timeoutId = useRef(0);
 
@@ -37,12 +44,15 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   }, [state.rendered]);
 
   function toggle() {
+    const visible = state.visible;
+
     if (!state.rendered) {
-      setState({ ...state, rendered: true, visible: false });
+      setState({ ...state, rendered: true, visible });
     }
     else {
-      setState({ ...state, visible: !state.visible, hiding: state.visible });
+      setState({ ...state, visible: !visible, hiding: state.visible });
     }
+    setWidgetState("tasks", !visible);
   }
 
   function toggleSize() {

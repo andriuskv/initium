@@ -26,8 +26,15 @@ type Items = Record<string, Item>;
 export default function SecondaryPanel({ corner }: { corner: string }) {
   const locale = useLocalization();
   const { settings } = useSettings();
-  const [selectedItem, setSelectedItem] = useState<Item>({ id: "", title: "", iconId: "" });
   const [items, setItems] = useState<Items>(() => getItems());
+  const [selectedItem, setSelectedItem] = useState<Item>(() => {
+    const id = localStorage.getItem("active-secondary-panel-item") || "";
+
+    if (id && settings.general.rememberWidgetState) {
+      return items[id];
+    }
+    return { id: "", title: "", iconId: "" };
+  });
   const calendarTimeoutId = useRef(0);
   const lastItemId = useRef("");
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -102,17 +109,8 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
         setSelectedItem({ ...selectedItem, visible: true });
       });
     }
+    localStorage.setItem("active-secondary-panel-item", selectedItem.id);
   }, [selectedItem.id]);
-
-  useEffect(() => {
-    if (selectedItem.visible) {
-      setTimeout(() => {
-        if (closeButton.current) {
-          closeButton.current.focus();
-        }
-      }, 200 * settings.appearance.animationSpeed);
-    }
-  }, [selectedItem.visible]);
 
   useEffect(() => {
     if (selectedItem.id === "calendar" && items.calendar.rendered) {
@@ -187,6 +185,11 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
     }
     else {
       setSelectedItem(items[id]);
+      setTimeout(() => {
+        if (closeButton.current) {
+          closeButton.current.focus();
+        }
+      }, 200 * settings.appearance.animationSpeed);
     }
   }
 
@@ -196,6 +199,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
 
     setTimeout(() => {
       setSelectedItem({ id: "", title: "", iconId: "" });
+      localStorage.removeItem("active-secondary-panel-item");
     }, 400 * settings.appearance.animationSpeed);
   }
 

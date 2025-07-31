@@ -5,6 +5,7 @@ import * as focusService from "services/focus";
 import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
 import { handleZIndex, increaseZIndex } from "services/zIndex";
+import { getWidgetState, setWidgetState } from "services/widgetStates";
 import { useLocalization } from "contexts/localization";
 import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
@@ -19,8 +20,14 @@ const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ timeFormat, corner }: Props) {
   const locale = useLocalization();
-  const { settings: { appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings } } = useSettings();
-  const [state, setState] = useState({ visible: false, rendered: false, reveal: false });
+  const { settings: { general: { rememberWidgetState }, appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings } } = useSettings();
+  const [state, setState] = useState(() => {
+    if (rememberWidgetState) {
+      const state = getWidgetState("weather");
+      return { visible: state, rendered: state, reveal: state };
+    }
+    return { visible: false, rendered: false, reveal: false };
+  });
   const [current, setCurrentWeather] = useState<Current | null>(null);
   const [moreWeather, setMoreWeather] = useState<{ hourly: Hour[], daily: Weekday[]} | null>(null);
   const [moreWeatherMessage, setMoreWeatherMessage] = useState("");
@@ -128,36 +135,33 @@ export default function Weather({ timeFormat, corner }: Props) {
     }
   }, [current, state.visible]);
 
-  useLayoutEffect(() => {
-    if (state.reveal) {
-      setTimeout(() => {
-        focusService.focusSelector(".weather-more-close-btn");
-      }, 50);
-    }
-    else {
-      moreButton.current?.focus();
-    }
-  }, [state.reveal]);
-
   function scheduleWeatherUpdate() {
     timeoutId.current = window.setTimeout(updateWeather, 1200000);
   }
 
   function hideMoreWeather() {
     setState({ ...state, visible: false });
+    setWidgetState("weather", false);
 
     setTimeout(() => {
       setState({ ...state, visible: false, reveal: false });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        moreButton.current?.focus();
+      }));
     }, 320 * animationSpeed);
   }
 
-  function show() {
+  function showMoreWeather() {
     if (!state.rendered) {
       setState({ rendered: true, reveal: true, visible: false });
     }
     else {
       setState({ ...state, reveal: true });
     }
+    setWidgetState("weather", true);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      focusService.focusSelector(".weather-more-close-btn");
+    }));
   }
 
   async function updateWeather(forceMoreWeatherUpdate = false) {
@@ -216,7 +220,7 @@ export default function Weather({ timeFormat, corner }: Props) {
   return (
     <div className={`weather ${corner}`} style={{ "--z-index": increaseZIndex("weather") } as CSSProperties} onClick={event => handleZIndex(event, "weather")}>
       <div className={`weather-small${state.reveal ? " hidden" : ""}`}>
-        <button className="btn icon-btn weather-more-btn" onClick={show} ref={moreButton} title={locale.global.more}>
+        <button className="btn icon-btn weather-more-btn" onClick={showMoreWeather} ref={moreButton} title={locale.global.more}>
           <Icon id="expand"/>
         </button>
         <div className="weather-current">

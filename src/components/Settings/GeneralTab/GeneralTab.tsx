@@ -109,6 +109,15 @@ export default function GeneralTab({ locale }: { locale: any }) {
           <div className="checkbox-tick"></div>
         </div>
       </label>
+      <label className="setting">
+        <span>{locale.settings.general.remember_widget_state_label}</span>
+        <input type="checkbox" className="sr-only checkbox-input"
+          checked={settings.general.rememberWidgetState}
+          onChange={() => toggleSetting("general", "rememberWidgetState")}/>
+        <div className="checkbox">
+          <div className="checkbox-tick"></div>
+        </div>
+      </label>
       <div className="settings-group">
         <div className="settings-group-top">
           <h4 className="settings-group-title">{locale.settings.general.greeting_group_title}</h4>

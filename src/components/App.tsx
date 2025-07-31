@@ -96,13 +96,13 @@ export default function App() {
   return (
     <>
       <Wallpaper settings={settings.appearance.wallpaper}/>
-      <MiddleTop settings={settings}/>
       <Suspense fallback={null}>
         {settings.general.stickyNotesDisabled ? null : <StickyNotes/>}
       </Suspense>
       <Suspense fallback={null}>
         {settings.mainPanel.disabled ? null : <MainPanel settings={settings.mainPanel}/>}
       </Suspense>
+      <MiddleTop settings={settings}/>
       <Placement/>
       <Tooltip/>
       <Notification/>

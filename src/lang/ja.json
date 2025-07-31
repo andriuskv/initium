@@ -283,6 +283,7 @@
       "disable_shortcuts_label": "ショートカットを無効にする",
       "disable_calendar_label": "カレンダーを無効にする",
       "disable_greeting_label": "あいさつを無効にする",
+      "remember_widget_state_label": "ウィジェットの開いた状態を記憶する",
       "greeting_group_title": "あいさつ",
       "show_greeting_editor_title": "エディター",
       "new_tab_links_label": "リンクを新しいタブで開く",
