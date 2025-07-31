@@ -39,6 +39,7 @@ export type GeneralSettings = {
   stickyNotesDisabled: boolean;
   shortcutsDisabled: boolean;
   calendarDisabled: boolean;
+  rememberWidgetState: boolean;
   greeting: {
     disabled: boolean;
     textSize: number;

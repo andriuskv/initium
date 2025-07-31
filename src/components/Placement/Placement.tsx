@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense, type FC } from "react";
 import { getRandomString } from "utils";
+import { getWidgetState } from "services/widgetStates";
 import { useSettings } from "contexts/settings";
 import { usePlacement } from "contexts/placement";
 import SecondaryPanel from "components/SecondaryPanel";
@@ -80,6 +81,7 @@ export default function Placement() {
 
   useEffect(() => {
     const shouldRender = isWeatherEnabled();
+    const shouldSkipWaiting = settings.general.rememberWidgetState && getWidgetState("weather");
 
     clearTimeout(weatherTimeoutId.current);
 
@@ -87,7 +89,7 @@ export default function Placement() {
       if (weather.shouldDelay) {
         weatherTimeoutId.current = window.setTimeout(() => {
           setWeather({ rendered: true });
-        }, 2000);
+        }, shouldSkipWaiting ? 1 : 2000);
       }
       else {
         setWeather({ rendered: true });

@@ -38,6 +38,7 @@ function getDefault(): Settings {
       stickyNotesDisabled: false,
       shortcutsDisabled: false,
       calendarDisabled: false,
+      rememberWidgetState: false,
       greeting: {
         disabled: false,
         textSize: 1
