@@ -234,7 +234,6 @@ export default function RssFeed({ locale, showIndicator }: Props) {
 
   async function refetchFeeds() {
     const newActive: FeedType[] = [];
-    const newFailed: FailedFeedType[] = [];
     const active = [...feeds.active];
     let failed = [...feeds.failed];
 
@@ -245,9 +244,9 @@ export default function RssFeed({ locale, showIndicator }: Props) {
         newActive.push(newFeed);
       }
       else {
-        newFailed.push({
+        newActive.push({
           ...feed,
-          index
+          message: locale.rssFeed.fetch_error
         });
       }
     }
@@ -264,8 +263,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
     }
     setFeeds({
       ...feeds,
-      active: newActive,
-      failed: failed.concat(newFailed)
+      active: newActive
     });
   }
 
