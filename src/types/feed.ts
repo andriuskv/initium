@@ -19,7 +19,8 @@ export type FeedType = {
   updated?: string,
   image?: string,
   fetching?: boolean,
-  updatingTitle?: boolean
+  updatingTitle?: boolean,
+  message?: string
 }
 
 export type FailedFeedType = FeedType & {

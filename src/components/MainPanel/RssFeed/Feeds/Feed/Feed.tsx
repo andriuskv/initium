@@ -83,6 +83,7 @@ export default function Feed({ children, index, feed, locale, updateFeed, select
         )}
       </div>
       <p>{feed.description}</p>
+      {feed.message ? <span className="feed-error-message">{locale.rssFeed.fetch_error}</span> : null}
       {feed.updated ? <div className="feed-date">Updated on {feed.updated}</div> : null}
     </>
   );

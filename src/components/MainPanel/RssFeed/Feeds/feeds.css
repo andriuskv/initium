@@ -125,3 +125,10 @@
   justify-content: center;
   align-items: center;
 }
+
+.feed-error-message {
+  margin-top: var(--space-sm);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  color: var(--color-negative);
+}
