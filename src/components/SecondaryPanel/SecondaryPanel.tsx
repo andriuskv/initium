@@ -184,12 +184,24 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
       dispatchCustomEvent("fullscreen-modal", { id, shouldToggle: true });
     }
     else {
-      setSelectedItem(items[id]);
-      setTimeout(() => {
-        if (closeButton.current) {
-          closeButton.current.focus();
-        }
-      }, 200 * settings.appearance.animationSpeed);
+      if (id === selectedItem.id) {
+        hideItem();
+        return;
+      }
+
+      if (selectedItem.id && settings.appearance.animationSpeed > 0) {
+        document.startViewTransition(() => {
+          setSelectedItem(items[id]);
+        });
+      }
+      else {
+        setSelectedItem(items[id]);
+        setTimeout(() => {
+          if (closeButton.current) {
+            closeButton.current.focus();
+          }
+        }, 200 * settings.appearance.animationSpeed);
+      }
     }
   }
 
@@ -213,18 +225,6 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
 
   return (
     <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondary-panel")}>
-      {selectedItem.id ? null : (
-        <ul className="secondary-panel-item-selection">
-          {Object.values(items).filter(item => !item.disabled).map(item => (
-            <li key={item.id}>
-              <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
-                onClick={() => selectItem(item.id)} aria-label={item.title} data-tooltip={item.title} {...(item.attrs ? item.attrs : null)}>
-                <Icon id={item.iconId} className="panel-item-btn-icon"/>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
       <div className={`container secondary-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""} corner-item`}>
         <div className="container-header secondary-panel-item-header secondary-panel-transition-target">
           <Icon id={selectedItem.iconId}/>
@@ -260,6 +260,16 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
           ) : null}
         </div>
       </div>
+      <ul className="secondary-panel-item-selection">
+        {Object.values(items).filter(item => !item.disabled).map(item => (
+          <li key={item.id}>
+            <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
+              onClick={() => selectItem(item.id)} aria-label={item.title} data-tooltip={item.title} {...(item.attrs ? item.attrs : null)}>
+              <Icon id={item.iconId} className="panel-item-btn-icon"/>
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

@@ -18,7 +18,7 @@
     "file-saver": "^2.0.5",
     "idb-keyval": "^6.2.2",
     "jszip": "^3.10.1",
-    "marked": "^16.1.1",
+    "marked": "^16.1.2",
     "react": "^19.1.1",
     "react-compiler-runtime": "^19.1.0-rc.2",
     "react-dom": "^19.1.1",
