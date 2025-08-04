@@ -7,7 +7,20 @@
   transition: var(--duration-n) opacity;
 }
 
+::view-transition-old(item-container),
+::view-transition-new(item-container) {
+  height: 100%;
+  width: 100%;
+}
+
+::view-transition-group(item-container) {
+  overflow: clip;
+  animation-duration: var(--duration-f);
+}
+
 .secondary-panel-item-container {
+  view-transition-name: item-container;
+
   &.visible {
     .secondary-panel-transition-target {
       opacity: 1;
@@ -22,7 +35,9 @@
 
 .secondary-panel-item-selection {
   display: flex;
+  justify-content: end;
   gap: var(--space-md);
+  margin-top: var(--space-md);
 }
 
 .secondary-panel-item-header {
