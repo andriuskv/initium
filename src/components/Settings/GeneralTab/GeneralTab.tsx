@@ -2,6 +2,7 @@ import { dispatchCustomEvent } from "utils";
 import { useModal } from "hooks";
 import { initAppearanceSettings } from "services/settings";
 import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
+import { resetItemPos } from "services/widget-pos";
 import { useSettings } from "contexts/settings";
 import Modal from "components/Modal";
 import "./general-tab.css";
@@ -118,6 +119,10 @@ export default function GeneralTab({ locale }: { locale: any }) {
           <div className="checkbox-tick"></div>
         </div>
       </label>
+      <div className="setting">
+        <span>{locale.settings.general.reset_widget_pos_label}</span>
+        <button className="btn" onClick={resetItemPos}>{locale.global.reset}</button>
+      </div>
       <div className="settings-group">
         <div className="settings-group-top">
           <h4 className="settings-group-title">{locale.settings.general.greeting_group_title}</h4>
