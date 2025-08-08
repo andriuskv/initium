@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, lazy, Suspense, type FC } from "react";
 import type { AppearanceSettings } from "types/settings";
-import { timeout } from "utils";
+import { getRandomString, timeout } from "utils";
 import { useLocalization } from "contexts/localization";
 import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
+import { getItemPos } from "services/widget-pos";
 
 const Settings = lazy(() => import("components/Settings"));
 const WallpaperViewer = lazy(() => import("components/WallpaperViewer"));
@@ -80,8 +81,16 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
     );
   }
   else if (fullscreenModal.id === "settings") {
+    const item = getItemPos("settings");
+    const attrs = {
+      "data-move-target": "settings",
+      "style": item ? { "--x": item.x, "--y": item.y } : {},
+      // With compiler enabled element with changed attrs doesn't get rerendered, to circumvent that pass in random attr
+      [`data-${getRandomString()}`]: "",
+    };
+
     return (
-      <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
+      <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal} {...attrs}>
         <Suspense fallback={<div className="settings"><Spinner size="24px"/></div>}>
           {<Settings locale={locale} hide={hideFullscreenModal}/>}
         </Suspense>

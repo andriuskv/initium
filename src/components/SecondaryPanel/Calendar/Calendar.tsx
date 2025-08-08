@@ -1139,7 +1139,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       {shouldReminderPreviewBeShown() ? (
         <ReminderPreview locale={locale} currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>) : null}
       {settings.worldClocksHidden ? null : (
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="container-footer calendar-world-clocks" style={{ height: "35px" }}></div>}>
           <WorldClocks parentVisible={visible} locale={locale}/>
         </Suspense>
       )}

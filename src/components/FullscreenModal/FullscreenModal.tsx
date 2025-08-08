@@ -12,7 +12,7 @@ type Props = PropsWithChildren & {
   hide: () => void
 }
 
-export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, hide }: Props) {
+export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, hide, ...attrs }: Props) {
   const container = useRef(null);
   let pointerInside = false;
   let keep = false;
@@ -70,7 +70,7 @@ export default function FullscreenModal({ children, hiding, transparent = false,
     }
   }
 
-  const modal = <div className={`fullscreen-modal${hiding ? " hiding" : ""}${noAnim ? " static" : ""}${transparent ? "" : " container"}`} ref={container}>{children}</div>;
+  const modal = <div className={`fullscreen-modal${hiding ? " hiding" : ""}${noAnim ? " static" : ""}${transparent ? "" : " container"}`} {...attrs} ref={container}>{children}</div>;
 
   if (mask) {
     return <div className="fullscreen-modal-mask">{modal}</div>;

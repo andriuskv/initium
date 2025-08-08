@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense, useMemo } from "react";
 import { getLocalStorageItem, timeout } from "utils";
 import * as focusService from "services/focus";
+import { handleMoveInit } from "services/widget-pos";
 import TabsContainer from "components/TabsContainer";
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";
@@ -93,7 +94,7 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
 
   return (
     <div className="settings">
-      <div className="container-header settings-header">
+      <div className="container-header settings-header" onPointerDown={handleMoveInit} data-move-id="settings">
         <Icon id="settings"/>
         <h3 className="container-header-title">{locale.settings.title}</h3>
         <button className="btn icon-btn" onClick={hide} title={locale.global.close}>

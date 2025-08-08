@@ -17,10 +17,13 @@
 }
 
 .fullscreen-modal {
+  --x: 50;
+  --y: 50;
+
   z-index: 1000;
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: calc(var(--y) * 1%);
+  left: calc(var(--x) * 1%);
   transform: translate(-50%, -50%);
   max-width: calc(100% - var(--space-xl));
   max-height: calc(100% - var(--space-xl));
