@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from "react";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import * as focusService from "services/focus";
+import { handleZIndex, increaseZIndex } from "services/zIndex";
 import "./fullscreen-modal.css";
 
 type Props = PropsWithChildren & {
@@ -9,13 +10,18 @@ type Props = PropsWithChildren & {
   hiding?: boolean,
   mask?: boolean,
   noAnim?: boolean,
+  keepVisible?: boolean,
   hide: () => void
 }
 
-export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, hide, ...attrs }: Props) {
-  const container = useRef(null);
+export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, keepVisible = false, hide, ...attrs }: Props) {
+  const container = useRef<HTMLDivElement>(null);
   let pointerInside = false;
   let keep = false;
+
+  useEffect(() => {
+    increaseContainerZIndex();
+  }, []);
 
   useLayoutEffect(() => {
     if (container.current) {
@@ -35,11 +41,11 @@ export default function FullscreenModal({ children, hiding, transparent = false,
       window.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, []);
+  }, [keepVisible]);
 
   function handlePointerDown({ target }: PointerEvent) {
     const element = target as HTMLElement;
-    keep = false;
+    keep = keepVisible;
 
     if (element?.closest(".fullscreen-modal")) {
       pointerInside = true;
@@ -70,7 +76,13 @@ export default function FullscreenModal({ children, hiding, transparent = false,
     }
   }
 
-  const modal = <div className={`fullscreen-modal${hiding ? " hiding" : ""}${noAnim ? " static" : ""}${transparent ? "" : " container"}`} {...attrs} ref={container}>{children}</div>;
+  function increaseContainerZIndex() {
+    if (container.current) {
+      container.current.style.setProperty("--z-index", increaseZIndex("fullscreen-modal").toString());
+    }
+  }
+
+  const modal = <div className={`fullscreen-modal${hiding ? " hiding" : ""}${noAnim ? " static" : ""}${transparent ? "" : " container"}`} {...attrs} ref={container} onClick={event => handleZIndex(event, "fullscreen-modal")}>{children}</div>;
 
   if (mask) {
     return <div className="fullscreen-modal-mask">{modal}</div>;
