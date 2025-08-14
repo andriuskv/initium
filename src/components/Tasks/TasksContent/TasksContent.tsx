@@ -5,6 +5,7 @@ import { getRandomString, timeout, replaceLink, parseLocaleString } from "utils"
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
 import { formatDate, getDSTChangeDirection } from "services/timeDate";
+import { handleMoveInit } from "services/widget-pos";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
@@ -744,7 +745,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
   return (
     <>
-      <div className="container-header">
+      <div className="container-header" onPointerDown={handleMoveInit} data-move-id="tasks">
         <Dropdown>
           <button className="btn icon-text-btn dropdown-btn" onClick={showGroups}>
             <Icon id="menu"/>

@@ -238,6 +238,19 @@ function getFaviconURL(url: string, size: number) {
   return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${href}&size=${size}`;
 }
 
+function fillMissing(target: { [key: string]: unknown }, source: { [key: string]: unknown }) {
+  for (const key of Object.keys(source)) {
+    if (typeof target[key] === "undefined") {
+      target[key] = source[key];
+    }
+    else if (target[key] && typeof target[key] === "object") {
+      target[key] = fillMissing(target[key] as { [key: string]: unknown }, source[key] as { [key: string]: unknown });
+    }
+  }
+  return target;
+}
+
+
 export {
   setPageTitle,
   dispatchCustomEvent,
@@ -257,5 +270,6 @@ export {
   getLocalStorageItem,
   parseLocaleString,
   getUrl,
-  getFaviconURL
+  getFaviconURL,
+  fillMissing
 };

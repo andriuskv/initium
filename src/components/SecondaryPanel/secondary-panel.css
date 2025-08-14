@@ -1,5 +1,21 @@
 .secondary-panel {
   z-index: var(--z-index, 1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+
+  &.top-left {
+    .secondary-panel-item-selection {
+      justify-content: start;
+      order: -1;
+    }
+  }
+
+  &.bottom-left {
+    .secondary-panel-item-selection {
+      justify-content: start;
+    }
+  }
 }
 
 .secondary-panel-transition-target {
@@ -37,7 +53,6 @@
   display: flex;
   justify-content: end;
   gap: var(--space-md);
-  margin-top: var(--space-md);
 }
 
 .secondary-panel-item-header {

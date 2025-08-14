@@ -84,7 +84,7 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
     const item = getItemPos("settings");
     const attrs = {
       "data-move-target": "settings",
-      "style": item ? { "--x": item.x, "--y": item.y } : {},
+      "style": { "--x": `${item.x}%`, "--y": `${item.y}%` },
       // With compiler enabled element with changed attrs doesn't get rerendered, to circumvent that pass in random attr
       [`data-${getRandomString()}`]: "",
     };
