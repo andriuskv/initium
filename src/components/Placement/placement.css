@@ -1,4 +1,4 @@
-.top-left {
+.top-left:not(.moved) {
   position: absolute;
   top: var(--space-md);
   left: var(--space-md);
@@ -27,7 +27,7 @@
   }
 }
 
-.top-right {
+.top-right:not(.moved) {
   position: absolute;
   top: var(--space-md);
   right: var(--space-md);
@@ -56,7 +56,7 @@
   }
 }
 
-.bottom-left {
+.bottom-left:not(.moved) {
   position: absolute;
   bottom: var(--space-md);
   left: var(--space-md);
@@ -85,7 +85,7 @@
   }
 }
 
-.bottom-right {
+.bottom-right:not(.moved) {
   position: absolute;
   bottom: var(--space-md);
   right: var(--space-md);

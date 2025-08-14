@@ -16,7 +16,7 @@
     }
   }
 
-  &.top-left {
+  &.top-left:not(.moved) {
     .tasks-toggle-btn {
       position: absolute;
       top: 0;
@@ -31,7 +31,7 @@
     }
   }
 
-  &.top-right {
+  &.top-right:not(.moved) {
     .tasks-toggle-btn {
       position: absolute;
       top: 0;
@@ -49,7 +49,7 @@
     }
   }
 
-  &.bottom-left {
+  &.bottom-left:not(.moved) {
     .tasks-toggle-btn {
       position: absolute;
       top: 0;
@@ -70,7 +70,7 @@
     }
   }
 
-  &.bottom-right {
+  &.bottom-right:not(.moved) {
     .tasks-toggle-btn {
       position: absolute;
       top: 0;
@@ -88,6 +88,52 @@
         animation-fill-mode: both;
         animation-name: toggle-opacity;
         transform: translate(calc(100% + (var(--offset))), var(--offset));
+      }
+    }
+  }
+
+  &.moved {
+    --x: var(--space-md);
+    --y: var(--space-md);
+
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+
+    .tasks-toggle-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: var(--duration-n) transform;
+      transition-delay: var(--duration-f);
+
+       &.shifted {
+        transition-delay: 0s;
+        transform: translate(var(--offset), var(--offset));
+      }
+    }
+
+    .tasks-container {
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        var(--duration-n) opacity,
+        var(--duration-n) visibility;
+      transition-delay: var(--duration-f);
+    }
+
+    &:not(.revealed) {
+      .tasks-container.visible {
+        opacity: 1;
+        visibility: inherit;
+        transition-delay: 0s;
+      }
+    }
+
+    &.revealed {
+      .tasks-container.visible {
+        opacity: 1;
+        visibility: inherit;
       }
     }
   }
@@ -117,6 +163,7 @@
   box-shadow: none;
   text-shadow: 0 1px 1px var(--color-black-16), 0 2px 2px var(--color-black-8);
   user-select: none;
+  white-space: nowrap;
 
   &:hover {
     --background-color: transparent;
