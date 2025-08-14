@@ -90,7 +90,7 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
     };
 
     return (
-      <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal} {...attrs}>
+      <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal} keepVisible {...attrs}>
         <Suspense fallback={<div className="settings"><Spinner size="24px"/></div>}>
           {<Settings locale={locale} hide={hideFullscreenModal}/>}
         </Suspense>
