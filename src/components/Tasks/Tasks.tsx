@@ -1,7 +1,6 @@
 import type { GeneralSettings, TasksSettings } from "types/settings";
 import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
-import { handleZIndex } from "services/zIndex";
-import { getWidgetState, setWidgetState } from "services/widgetStates";
+import { getWidgetState, setWidgetState, handleZIndex, increaseZIndex } from "services/widgetStates";
 import { getItemPos } from "services/widget-pos";
 import { useLocalization } from "contexts/localization";
 import "./tasks.css";
@@ -18,8 +17,8 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   const locale = useLocalization();
   const [state, setState] = useState(() => {
     if (generalSettings.rememberWidgetState) {
-      const state = getWidgetState("tasks");
-      return { rendered: state, visible: state, revealed: state, hiding: false };
+      const { opened } = getWidgetState("tasks");
+      return { rendered: opened, visible: opened, revealed: opened, hiding: false };
     }
     return { rendered: false, visible: false, revealed: false, hiding: false };
   });
@@ -54,7 +53,7 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
     else {
       setState({ ...state, visible: !visible, hiding: state.visible });
     }
-    setWidgetState("tasks", !visible);
+    setWidgetState("tasks", { opened: !visible });
   }
 
   function toggleSize() {
@@ -62,7 +61,7 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   }
 
   return (
-    <div className={`tasks${expanded ? " expanded" : ""}${state.revealed ? " revealed" : ""} ${corner}${pos.moved ? " moved" : ""}`} style={{ "--x": `${pos.x}%`, "--y": `${pos.y}%` } as CSSProperties}
+    <div className={`tasks${expanded ? " expanded" : ""}${state.revealed ? " revealed" : ""} ${corner}${pos.moved ? " moved" : ""}`} style={{ "--x": `${pos.x}%`, "--y": `${pos.y}%`, "--z-index": increaseZIndex("tasks") } as CSSProperties}
       onClick={event => handleZIndex(event, "tasks")} data-move-target="tasks">
       <button className={`btn tasks-toggle-btn${state.visible ? " shifted" : ""}${state.hiding ? " hiding" : ""}`} onClick={toggle}>{locale.tasks.title}</button>
       <div className={`container tasks-container${state.visible ? " visible" : ""} corner-item`}>

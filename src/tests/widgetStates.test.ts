@@ -1,5 +1,5 @@
 import { beforeEach, expect, test } from "vitest";
-import { increaseZIndex, resetIndexes } from "services/zIndex";
+import { increaseZIndex, resetIndexes } from "services/widgetStates";
 
 beforeEach(() => {
   resetIndexes();

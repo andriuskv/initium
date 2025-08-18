@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { type TasksSettings, type GeneralSettings } from "types/settings";
 import { Suspense, type ReactNode } from "react";
-import { handleZIndex } from "services/zIndex";
+import { handleZIndex } from "services/widgetStates";
 import { getSetting } from "services/settings";
 import { useLocalization } from "contexts/localization";
 import Tasks from "./Tasks";
@@ -14,8 +14,10 @@ vi.mock("contexts/localization", () => ({
   LocalizationProvider: ({ children }: { children: ReactNode }) => <>{children}</>
 }));
 
-vi.mock("services/zIndex", () => ({
+vi.mock("services/widgetStates", () => ({
   handleZIndex: vi.fn(),
+  increaseZIndex: vi.fn(),
+  setWidgetState: vi.fn(),
 }));
 
 beforeEach(() => {

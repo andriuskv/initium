@@ -24,12 +24,9 @@ vi.mock("services/weather", () => ({
   fetchMoreWeather: vi.fn(),
 }));
 
-vi.mock("services/zIndex", () => ({
-  increaseZIndex: vi.fn().mockReturnValue(1),
-  handleZIndex: vi.fn(),
-}));
-
 vi.mock("services/widgetStates", () => ({
+  handleZIndex: vi.fn(),
+  increaseZIndex: vi.fn().mockReturnValue(1),
   getWidgetState: vi.fn(),
   setWidgetState: vi.fn(),
 }));
@@ -91,7 +88,7 @@ test("renders current weather information on initial load", async () => {
 
 test("renders more weather on initial load when rememberWidgetState is true and widget", async () => {
   (useSettings as any).mockReturnValue({ settings: { ...mockSettings, general: { rememberWidgetState: true } } });
-  (getWidgetState as any).mockReturnValue(true);
+  (getWidgetState as any).mockReturnValue({ opened: true, zIndex: 1 });
   render(<Weather timeFormat={24} corner="top-right"/>);
   await waitFor(() => expect(screen.getByText("Test Location")).toBeInTheDocument());
   await waitFor(() => expect(fetchMoreWeather).toHaveBeenCalled());

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings";
-import { handleZIndex } from "services/zIndex";
+import { handleZIndex } from "services/widgetStates";
 import * as focusService from "services/focus";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
@@ -224,7 +224,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
   }
 
   return (
-    <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondary-panel")}>
+    <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondaryPanel")}>
       <div className={`container secondary-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""} corner-item`}>
         <div className="container-header secondary-panel-item-header secondary-panel-transition-target">
           <Icon id={selectedItem.iconId}/>

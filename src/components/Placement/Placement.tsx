@@ -81,7 +81,7 @@ export default function Placement() {
 
   useEffect(() => {
     const shouldRender = isWeatherEnabled();
-    const shouldSkipWaiting = settings.general.rememberWidgetState && getWidgetState("weather");
+    const shouldSkipWaiting = settings.general.rememberWidgetState && getWidgetState("weather")?.opened;
 
     clearTimeout(weatherTimeoutId.current);
 

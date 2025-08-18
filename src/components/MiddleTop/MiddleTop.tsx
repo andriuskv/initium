@@ -26,8 +26,8 @@ export default function MiddleTop({ settings }: Props) {
   const [greetingVisible, setGreetingVisible] = useState(false);
   const [topPanel, setTopPanel] = useState<TopPanelState>(() => {
     if (settings.general.rememberWidgetState) {
-      const state = getWidgetState("topPanel");
-      return { rendered: state, initialVisibility: state };
+      const { opened } = getWidgetState("topPanel");
+      return { rendered: opened, initialVisibility: opened };
     }
     return { rendered: false };
   });
@@ -120,7 +120,7 @@ export default function MiddleTop({ settings }: Props) {
     if (initialTab) {
       localStorage.setItem("active-timer-tab", initialTab);
     }
-    setWidgetState("topPanel", true);
+    setWidgetState("topPanel", { opened: true });
   }
 
   return (

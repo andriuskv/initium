@@ -18,7 +18,7 @@
     "file-saver": "^2.0.5",
     "idb-keyval": "^6.2.2",
     "jszip": "^3.10.1",
-    "marked": "^16.1.2",
+    "marked": "^16.2.0",
     "react": "^19.1.1",
     "react-compiler-runtime": "^19.1.0-rc.2",
     "react-dom": "^19.1.1",
@@ -61,7 +61,7 @@
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.1",
     "vitest": "^3.2.4",
-    "webpack": "^5.101.1",
+    "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1"
   },
   "browserslist": [

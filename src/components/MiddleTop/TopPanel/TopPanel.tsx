@@ -2,9 +2,8 @@ import type { TimersSettings } from "types/settings";
 import type { TabName } from "./top-panel-types";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type MouseEvent } from "react";
 import { delay, setPageTitle, timeout, toggleBehindElements } from "utils";
-import { handleZIndex, increaseZIndex } from "services/zIndex";
 import { getSetting } from "services/settings";
-import { setWidgetState } from "services/widgetStates";
+import { setWidgetState, handleZIndex, increaseZIndex } from "services/widgetStates";
 import { useLocalization } from "contexts/localization";
 import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
@@ -126,7 +125,7 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
       }
       else {
         setVisible(nextVisible);
-        setWidgetState("topPanel", nextVisible);
+        setWidgetState("topPanel", { opened: nextVisible });
       }
 
       if (nextVisible) {
@@ -234,7 +233,7 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
       setVisible(false);
       showMinimalTimer();
     }
-    setWidgetState("topPanel", false);
+    setWidgetState("topPanel", { opened: false });
   }
 
   function resetMinimal(shouldShowFull = false) {
@@ -320,7 +319,7 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
 
   function increaseContainerZIndex() {
     if (containerRef.current) {
-      containerRef.current.style.setProperty("--z-index", increaseZIndex("top-panel").toString());
+      containerRef.current.style.setProperty("--z-index", increaseZIndex("topPanel").toString());
     }
   }
 
@@ -361,7 +360,7 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
     if (minimal && event.detail === 2) {
       resetMinimal(true);
     }
-    handleZIndex(event, "top-panel");
+    handleZIndex(event, "topPanel");
   }
 
   return (
