@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type ReactNode } from "react";
 import { getSetting, updateSetting } from "services/settings";
-import { handleZIndex } from "services/zIndex";
+import { handleZIndex } from "services/widgetStates";
 import { hasStoredFeeds } from "services/feeds";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
@@ -268,7 +268,7 @@ export default function MainPanel({ settings }: Props) {
 
   return (
     <div className={`main-panel${tabExpandable ? " expandable" : ""}${activeTab.expanded ? " expanded" : ""}${settings.navHidden || settings.navDisabled ? " nav-hidden" : ""}${activeTab.collapsing ? " collapsing" : ""}`}
-      onClick={event => handleZIndex(event, "main-panel")} ref={containerRef}>
+      onClick={event => handleZIndex(event, "mainPanel")} ref={containerRef}>
       {settings.navHidden || settings.navDisabled ? null : (
         <ul className="main-panel-nav">
           {Object.values(tabs).map(tab => (

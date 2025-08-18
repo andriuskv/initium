@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import * as focusService from "services/focus";
-import { handleZIndex, increaseZIndex } from "services/zIndex";
+import { handleZIndex, increaseZIndex } from "services/widgetStates";
 import "./fullscreen-modal.css";
 
 type Props = PropsWithChildren & {

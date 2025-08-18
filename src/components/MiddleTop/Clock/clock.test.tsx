@@ -7,10 +7,13 @@ import useWorker from "../useWorker";
 
 vi.mock("services/timeDate");
 vi.mock("../useWorker");
-vi.mock("utils", () => ({
-  getLocalStorageItem: vi.fn(),
-  toggleBehindElements: vi.fn(),
-}));
+vi.mock("utils", async () => {
+  return {
+    ...(await vi.importActual("utils")),
+    getLocalStorageItem: vi.fn(),
+    toggleBehindElements: vi.fn()
+  };
+});
 
 const mockedGetDisplayTime = getDisplayTime as MockedFunction<typeof getDisplayTime>;
 const mockedFormatDate = formatDate as MockedFunction<typeof formatDate>;

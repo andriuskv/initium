@@ -4,8 +4,7 @@ import { dispatchCustomEvent } from "utils";
 import * as focusService from "services/focus";
 import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
-import { handleZIndex, increaseZIndex } from "services/zIndex";
-import { getWidgetState, setWidgetState } from "services/widgetStates";
+import { getWidgetState, setWidgetState, handleZIndex, increaseZIndex } from "services/widgetStates";
 import { useLocalization } from "contexts/localization";
 import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
@@ -23,8 +22,8 @@ export default function Weather({ timeFormat, corner }: Props) {
   const { settings: { general: { rememberWidgetState }, appearance: { animationSpeed }, timeDate: { dateLocale }, weather: settings } } = useSettings();
   const [state, setState] = useState(() => {
     if (rememberWidgetState) {
-      const state = getWidgetState("weather");
-      return { visible: state, rendered: state, reveal: state };
+      const { opened } = getWidgetState("weather");
+      return { visible: opened, rendered: opened, reveal: opened };
     }
     return { visible: false, rendered: false, reveal: false };
   });
@@ -141,7 +140,7 @@ export default function Weather({ timeFormat, corner }: Props) {
 
   function hideMoreWeather() {
     setState({ ...state, visible: false });
-    setWidgetState("weather", false);
+    setWidgetState("weather", { opened: false });
 
     setTimeout(() => {
       setState({ ...state, visible: false, reveal: false });
@@ -158,7 +157,7 @@ export default function Weather({ timeFormat, corner }: Props) {
     else {
       setState({ ...state, reveal: true });
     }
-    setWidgetState("weather", true);
+    setWidgetState("weather", { opened: true });
     requestAnimationFrame(() => requestAnimationFrame(() => {
       focusService.focusSelector(".weather-more-close-btn");
     }));
