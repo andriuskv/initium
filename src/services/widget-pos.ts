@@ -1,5 +1,6 @@
 import type { MouseEvent as ReactMouseEvent } from "react";
-import { getLocalStorageItem, fillMissing } from "utils";
+import { getLocalStorageItem, fillMissing, dispatchCustomEvent } from "utils";
+import { increaseElementZindex } from "./widgetStates";
 
 type Item = {
   x: number;
@@ -13,7 +14,7 @@ type Item = {
 type Items = { [key: string]: Item };
 
 let items = init();
-let activeItem: { start: { x: number, y: number }, id: string, element: HTMLElement } | null = null;
+let activeItem: { startClient: { x: number, y: number }, start: { x: number, y: number }, id: string, element: HTMLElement } | null = null;
 
 function init() {
   const items = getLocalStorageItem<Partial<Items>>("widgets-pos") || {};
@@ -44,6 +45,11 @@ function resetItemPos() {
   localStorage.removeItem("widgets-pos");
 
   for (const element of document.querySelectorAll("[data-move-target]") as NodeListOf<HTMLElement>) {
+    const id = element.getAttribute("data-move-target");
+
+    if (id) {
+      dispatchCustomEvent("widget-move-init", { id, moved: false });
+    }
     element.style.setProperty("--x", "");
     element.style.setProperty("--y", "");
     element.classList.remove("moved");
@@ -97,6 +103,7 @@ function handleMoveInit(event: ReactMouseEvent) {
   const y = event.clientY - rect.top - (rect.height * items[id].translateY);
 
   activeItem = {
+    startClient: { x: event.clientX, y:  event.clientY },
     start: { x, y },
     id,
     element
@@ -104,6 +111,8 @@ function handleMoveInit(event: ReactMouseEvent) {
 
   document.documentElement.style.userSelect = "none";
   document.documentElement.style.cursor = "move";
+
+  increaseElementZindex(element, activeItem.id);
 
   window.addEventListener("pointermove", handlePointerMove);
   window.addEventListener("pointerup", handlePointerUp, { once: true });
@@ -117,13 +126,16 @@ function handlePointerMove(event: MouseEvent) {
   const y = (event.clientY - activeItem.start.y) / document.documentElement.clientHeight * 100;
   const item = items[activeItem.id];
 
+  if (!item.moved && Math.abs(event.clientX - activeItem.startClient.x) > 8 && Math.abs(event.clientY - activeItem.startClient.y) > 8) {
+    item.moved = true;
+    activeItem.element.classList.add("moved");
+    dispatchCustomEvent("widget-move-init", { id: activeItem.id, moved: true });
+  }
   item.x = x;
   item.y = y;
-  item.moved = true;
 
   activeItem.element.style.setProperty("--x", `${x}%`);
   activeItem.element.style.setProperty("--y", `${y}%`);
-  activeItem.element.classList.add("moved");
 }
 
 function handlePointerUp() {

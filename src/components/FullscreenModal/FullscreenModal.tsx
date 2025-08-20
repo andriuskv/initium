@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import * as focusService from "services/focus";
-import { handleZIndex, increaseZIndex } from "services/widgetStates";
+import { handleZIndex, increaseElementZindex } from "services/widgetStates";
 import "./fullscreen-modal.css";
 
 type Props = PropsWithChildren & {
@@ -20,7 +20,7 @@ export default function FullscreenModal({ children, hiding, transparent = false,
   let keep = false;
 
   useEffect(() => {
-    increaseContainerZIndex();
+    increaseElementZindex(container.current, "fullscreenModal");
   }, []);
 
   useLayoutEffect(() => {
@@ -76,13 +76,7 @@ export default function FullscreenModal({ children, hiding, transparent = false,
     }
   }
 
-  function increaseContainerZIndex() {
-    if (container.current) {
-      container.current.style.setProperty("--z-index", increaseZIndex("fullscreen-modal").toString());
-    }
-  }
-
-  const modal = <div className={`fullscreen-modal${hiding ? " hiding" : ""}${noAnim ? " static" : ""}${transparent ? "" : " container"}`} {...attrs} ref={container} onClick={event => handleZIndex(event, "fullscreen-modal")}>{children}</div>;
+  const modal = <div className={`fullscreen-modal${hiding ? " hiding" : ""}${noAnim ? " static" : ""}${transparent ? "" : " container"}`} {...attrs} ref={container} onClick={event => handleZIndex(event, "fullscreenModal")}>{children}</div>;
 
   if (mask) {
     return <div className="fullscreen-modal-mask">{modal}</div>;

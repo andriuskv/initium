@@ -14,10 +14,9 @@ vi.mock("contexts/localization", () => ({
   LocalizationProvider: ({ children }: { children: ReactNode }) => <>{children}</>
 }));
 
-vi.mock("services/widgetStates", () => ({
-  handleZIndex: vi.fn(),
-  increaseZIndex: vi.fn(),
-  setWidgetState: vi.fn(),
+vi.mock("services/widgetStates", async () => ({
+  ...(await vi.importActual("services/widgetStates")),
+  handleZIndex: vi.fn()
 }));
 
 beforeEach(() => {

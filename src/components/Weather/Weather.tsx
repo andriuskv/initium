@@ -1,10 +1,10 @@
 import type { Current, Hour, Weekday } from "types/weather";
-import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
 import * as focusService from "services/focus";
 import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
-import { getWidgetState, setWidgetState, handleZIndex, increaseZIndex } from "services/widgetStates";
+import { getWidgetState, setWidgetState, handleZIndex, initElementZindex } from "services/widgetStates";
 import { useLocalization } from "contexts/localization";
 import { useSettings } from "contexts/settings";
 import Icon from "components/Icon";
@@ -34,6 +34,7 @@ export default function Weather({ timeFormat, corner }: Props) {
   const lastMoreWeatherUpdate = useRef(0);
   const timeoutId = useRef(0);
   const moreButton = useRef<HTMLButtonElement>(null);
+  const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (firstRender.current) {
@@ -129,8 +130,12 @@ export default function Weather({ timeFormat, corner }: Props) {
   }, [state.rendered, state.reveal]);
 
   useEffect(() => {
-    if (current && state.visible) {
-      updateMoreWeather(current.coords);
+    if (current) {
+      initElementZindex(container.current, "weather");
+
+      if (state.visible) {
+        updateMoreWeather(current.coords);
+      }
     }
   }, [current, state.visible]);
 
@@ -217,7 +222,7 @@ export default function Weather({ timeFormat, corner }: Props) {
     return null;
   }
   return (
-    <div className={`weather ${corner}`} style={{ "--z-index": increaseZIndex("weather") } as CSSProperties} onClick={event => handleZIndex(event, "weather")}>
+    <div className={`weather ${corner}`} onClick={event => handleZIndex(event, "weather")} ref={container}>
       <div className={`weather-small${state.reveal ? " hidden" : ""}`}>
         <button className="btn icon-btn weather-more-btn" onClick={showMoreWeather} ref={moreButton} title={locale.global.more}>
           <Icon id="expand"/>

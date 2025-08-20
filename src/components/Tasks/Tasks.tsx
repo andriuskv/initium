@@ -1,6 +1,6 @@
 import type { GeneralSettings, TasksSettings } from "types/settings";
 import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
-import { getWidgetState, setWidgetState, handleZIndex, increaseZIndex } from "services/widgetStates";
+import { getWidgetState, setWidgetState, handleZIndex, initElementZindex, increaseElementZindex } from "services/widgetStates";
 import { getItemPos } from "services/widget-pos";
 import { useLocalization } from "contexts/localization";
 import "./tasks.css";
@@ -10,7 +10,7 @@ const TasksContent = lazy(() => import("./TasksContent"));
 type Props = {
   settings: TasksSettings,
   generalSettings: GeneralSettings,
-  corner: string,
+  corner: string
 }
 
 export default function Tasks({ settings, generalSettings, corner }: Props) {
@@ -25,6 +25,23 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   const [expanded, setExpanded] = useState(false);
   const timeoutId = useRef(0);
   const pos = getItemPos("tasks");
+  const [moved, setMoved] = useState(pos.moved);
+  const container = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    initElementZindex(container.current, "tasks");
+
+    function handleMoveInit({ detail: { id, moved } }: CustomEventInit) {
+      if (id === "tasks") {
+        setMoved(moved);
+      }
+    }
+    window.addEventListener("widget-move-init", handleMoveInit);
+
+    return () => {
+      window.removeEventListener("widget-move-init", handleMoveInit);
+    };
+  }, []);
 
   useEffect(() => {
     if (state.visible) {
@@ -46,14 +63,19 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
 
   function toggle() {
     const visible = state.visible;
+    const nextVisible = !visible;
 
     if (!state.rendered) {
       setState({ ...state, rendered: true, visible });
     }
     else {
-      setState({ ...state, visible: !visible, hiding: state.visible });
+      setState({ ...state, visible: nextVisible, hiding: state.visible });
     }
-    setWidgetState("tasks", { opened: !visible });
+    setWidgetState("tasks", { opened: nextVisible });
+
+    if (nextVisible) {
+      increaseElementZindex(container.current, "tasks");
+    }
   }
 
   function toggleSize() {
@@ -61,16 +83,27 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   }
 
   return (
-    <div className={`tasks${expanded ? " expanded" : ""}${state.revealed ? " revealed" : ""} ${corner}${pos.moved ? " moved" : ""}`} style={{ "--x": `${pos.x}%`, "--y": `${pos.y}%`, "--z-index": increaseZIndex("tasks") } as CSSProperties}
-      onClick={event => handleZIndex(event, "tasks")} data-move-target="tasks">
-      <button className={`btn tasks-toggle-btn${state.visible ? " shifted" : ""}${state.hiding ? " hiding" : ""}`} onClick={toggle}>{locale.tasks.title}</button>
-      <div className={`container tasks-container${state.visible ? " visible" : ""} corner-item`}>
-        <div className="tasks-transition-target tasks-content">
-          <Suspense fallback={null}>
-            {state.rendered && <TasksContent settings={settings} generalSettings={generalSettings} expanded={expanded} locale={locale} toggleSize={toggleSize}/>}
-          </Suspense>
+    <>
+      {moved ? (
+        <div className={`tasks ${corner}`}>
+          <button className={`btn tasks-toggle-btn`} onClick={toggle}>{locale.tasks.title}</button>
+        </div>
+      ) : null}
+      <div className={`tasks${expanded ? " expanded" : ""}${state.revealed ? " revealed" : ""} ${corner}${moved ? " moved" : ""}`}
+        style={{ "--x": `${pos.x}%`, "--y": `${pos.y}%` } as CSSProperties}
+        onClick={event => handleZIndex(event, "tasks")} data-move-target="tasks" ref={container}>
+        {moved && !state.visible ? null : (
+          <button className={`btn tasks-toggle-btn${state.visible ? " shifted" : ""}${state.hiding ? " hiding" : ""}`}
+            onClick={toggle}>{locale.tasks.title}</button>
+        )}
+        <div className={`container tasks-container${state.visible ? " visible" : ""} corner-item`}>
+          <div className="tasks-transition-target tasks-content">
+            <Suspense fallback={null}>
+              {state.rendered && <TasksContent settings={settings} generalSettings={generalSettings} expanded={expanded} locale={locale} toggleSize={toggleSize}/>}
+            </Suspense>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

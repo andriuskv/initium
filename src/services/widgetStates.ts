@@ -9,7 +9,7 @@ type Widget = {
 };
 
 const states = getLocalStorageItem<{ [key: string]: Widget }>("widget-states") || {};
-let topWidget: { name: string, index: number } | null = null;
+let topWidget: { name: string, index: number } | null = initTopWidget();
 let timeoutId = 0;
 
 for (const id of Object.keys(states)) {
@@ -18,13 +18,26 @@ for (const id of Object.keys(states)) {
   }
 }
 
+function initTopWidget() {
+  let top = null;
+  let max = 0;
+
+  for (const id of Object.keys(states)) {
+    if (states[id].zIndex > max) {
+      max = states[id].zIndex;
+      top = { name: id, index: max };
+    }
+  }
+  return top;
+}
+
 function getWidgetState(name: string) {
   states[name] ??= { opened: false, zIndex: 1 };
   return states[name];
 }
 
 function setWidgetState(id: string, state: Partial<Widget>) {
-  states[id] = { ...states[id], ...state };
+  states[id] = { ...getWidgetState(id), ...state };
   save();
 }
 
@@ -57,13 +70,21 @@ function handleZIndex({ currentTarget }: MouseEvent, name: string) {
 
   if (currentTarget) {
     const index = getZIndex(name);
-    const state = getWidgetState(name);
 
     (currentTarget as HTMLElement).style.setProperty("--z-index", index.toString());
+    save();
+  }
+}
 
-    if (state?.opened) {
-      setWidgetState(name, { ...state, zIndex: index });
-    }
+function initElementZindex(element: HTMLElement | null, name: string) {
+  if (element) {
+    element.style.setProperty("--z-index", getWidgetState(name).zIndex.toString());
+  }
+}
+
+function increaseElementZindex(element: HTMLElement | null, name: string) {
+  if (element) {
+    element.style.setProperty("--z-index", increaseZIndex(name).toString());
   }
 }
 
@@ -97,5 +118,7 @@ export {
   setWidgetState,
   increaseZIndex,
   handleZIndex,
+  initElementZindex,
+  increaseElementZindex,
   resetIndexes
 };
