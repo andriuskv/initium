@@ -3,7 +3,7 @@ import type { TabName } from "./top-panel-types";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type MouseEvent } from "react";
 import { delay, setPageTitle, timeout, toggleBehindElements } from "utils";
 import { getSetting } from "services/settings";
-import { setWidgetState, handleZIndex, increaseZIndex } from "services/widgetStates";
+import { setWidgetState, handleZIndex, increaseElementZindex, initElementZindex } from "services/widgetStates";
 import { useLocalization } from "contexts/localization";
 import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
@@ -67,8 +67,9 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
   const vertical = false;
 
   useEffect(() => {
+    initElementZindex(containerRef.current, "topPanel");
+
     if (forceVisibility) {
-      increaseContainerZIndex();
       setVisible(true);
       resetTopPanel();
     }
@@ -318,9 +319,7 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
   }
 
   function increaseContainerZIndex() {
-    if (containerRef.current) {
-      containerRef.current.style.setProperty("--z-index", increaseZIndex("topPanel").toString());
-    }
+    increaseElementZindex(containerRef.current, "topPanel");
   }
 
   function toggleIndicator(name: TabName, value: boolean) {

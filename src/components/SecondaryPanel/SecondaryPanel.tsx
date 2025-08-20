@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings";
-import { handleZIndex } from "services/widgetStates";
+import { handleZIndex, initElementZindex, increaseElementZindex } from "services/widgetStates";
 import * as focusService from "services/focus";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
@@ -39,6 +39,11 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
   const lastItemId = useRef("");
   const closeButton = useRef<HTMLButtonElement>(null);
   const currentLocale = useRef(locale.locale);
+  const container = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    initElementZindex(container.current, "secondaryPanel");
+  }, []);
 
   useEffect(() => {
     if (!items.calendar.rendered && !settings.general.calendarDisabled) {
@@ -188,6 +193,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
         hideItem();
         return;
       }
+      increaseElementZindex(container.current, "secondaryPanel");
 
       if (selectedItem.id && settings.appearance.animationSpeed > 0) {
         document.startViewTransition(() => {
@@ -224,7 +230,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
   }
 
   return (
-    <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondaryPanel")}>
+    <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondaryPanel")} ref={container}>
       <div className={`container secondary-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""} corner-item`}>
         <div className="container-header secondary-panel-item-header secondary-panel-transition-target">
           <Icon id={selectedItem.iconId}/>

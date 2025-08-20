@@ -64,6 +64,8 @@ export default function GeneralTab({ locale }: { locale: any }) {
     }
     localStorage.removeItem("first");
     localStorage.removeItem("noise");
+    localStorage.removeItem("widget-states");
+    localStorage.removeItem("widgets-pos");
 
     const newSettings = resetSettings();
 
