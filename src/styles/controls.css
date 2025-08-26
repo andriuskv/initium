@@ -236,7 +236,7 @@ textarea {
   border: none;
   border-right: var(--space-md) solid transparent;
 
-  & option {
+  option {
     background-color: var(--color-grey-90);
     color: var(--color-white-80);
   }

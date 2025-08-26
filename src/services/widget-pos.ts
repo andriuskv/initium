@@ -3,11 +3,10 @@ import { getLocalStorageItem, fillMissing, dispatchCustomEvent } from "utils";
 import { increaseElementZindex } from "./widgetStates";
 
 type Item = {
-  x: number;
-  y: number;
+  x?: number;
+  y?: number;
   translateX: number;
   translateY: number;
-  units: "px" | "%";
   moved?: boolean;
 }
 
@@ -22,22 +21,20 @@ function init() {
 }
 
 function getDefault(): Items {
-  return convertUnits({
+  return {
     settings: {
-      x: 50,
-      y: 50,
       translateX: 0.5,
       translateY: 0.5,
-      units: "%"
     },
     tasks: {
-      x: 8,
-      y: 8,
       translateX: 0,
       translateY: 0,
-      units: "px"
+    },
+    weather: {
+      translateX: 0,
+      translateY: 0,
     }
-  } as Items);
+  };
 }
 
 function resetItemPos() {
@@ -54,19 +51,6 @@ function resetItemPos() {
     element.style.setProperty("--y", "");
     element.classList.remove("moved");
   }
-}
-
-function convertUnits(items: Items): Items {
-  for (const id of Object.keys(items)) {
-    const item = items[id];
-
-    if (item.units === "px") {
-      item.x = (item.x / document.documentElement.clientWidth) * 100;
-      item.y = (item.y / document.documentElement.clientHeight) * 100;
-      item.units = "%";
-    }
-  }
-  return items;
 }
 
 function getItemPos(id: string) {

@@ -278,11 +278,33 @@
   font-size: var(--text-lg);
 }
 
-.weather-more-settings {
+.weather-more-top {
+  z-index: 1;
   position: absolute;
-  top: 6px;
-  right: 42px;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: end;
+  gap: var(--space-sm);
+  width: 320px;
+  padding: var(--space-sm);
 
+  &::before {
+    z-index: -1;
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    display: block;
+    content: '';
+    width: 100%;
+    height: calc(100% + 2px);
+    border-bottom: 1px solid var(--color-white-4);
+    background-color: var(--color-white-4);
+    mask-image: linear-gradient(to left, var(--color-black-100) 60%, hsl(0deg 100% 100% / 0%));
+  }
+}
+
+.weather-more-settings {
   .dropdown {
     min-width: 180px;
   }
@@ -295,10 +317,4 @@
   &:last-of-type {
     padding-bottom: 0;
   }
-}
-
-.weather-more-close-btn {
-  position: absolute;
-  top: 6px;
-  right: 6px;
 }

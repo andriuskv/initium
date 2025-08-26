@@ -1,6 +1,8 @@
 import type { Current, Hour, Weekday, View } from "types/weather";
+import type { WeatherSettings } from "types/settings";
 import { useState, useRef, type CSSProperties } from "react";
 import { timeout } from "utils";
+import { handleMoveInit } from "services/widget-pos";
 import { useSettings } from "contexts/settings";
 import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";
@@ -16,13 +18,14 @@ type Props = {
   speedUnits: "m/s" | "ft/s",
   message?: string,
   locale: any,
+  settings: WeatherSettings
   hide: () => void
 }
 
 const views = ["temp", "prec", "wind"];
 
-export default function MoreWeather({ current, more, units, speedUnits, message, locale, hide }: Props) {
-  const { settings: { weather: settings }, updateContextSetting } = useSettings();
+export default function MoreWeather({ current, more, units, speedUnits, message, locale, settings, hide }: Props) {
+  const { updateContextSetting } = useSettings();
   const [view, setView] = useState<View>(() => (localStorage.getItem("active-weather-tab") || "temp") as View);
   const saveTabTimeoutId = useRef(0);
   const activeTabIndex = views.indexOf(view);
@@ -51,6 +54,33 @@ export default function MoreWeather({ current, more, units, speedUnits, message,
   return (
     <>
       <div className="container-header weather-more-current">
+        <div className="weather-more-top" data-move-id="weather" onPointerDown={handleMoveInit}>
+          <Dropdown container={{ className: "weather-more-settings" }} toggle={{ iconId: "settings", title: locale.global.settings }}>
+            <label className="dropdown-group weather-more-setting">
+              <div>{locale.weather.temp_setting_label}</div>
+              <input type="checkbox" className="sr-only toggle-input"
+                checked={units === "F"}
+                onChange={() => toggleUnits("temp")}/>
+              <div className="toggle">
+                <div className="toggle-item">°C</div>
+                <div className="toggle-item">°F</div>
+              </div>
+            </label>
+            <label className="dropdown-group weather-more-setting">
+              <div>{locale.weather.wind_setting_label}</div>
+              <input type="checkbox" className="sr-only toggle-input"
+                checked={speedUnits === "ft/s"}
+                onChange={() => toggleUnits("wind")}/>
+              <div className="toggle">
+                <div className="toggle-item">m/s</div>
+                <div className="toggle-item">ft/s</div>
+              </div>
+            </label>
+          </Dropdown>
+          <button className="btn icon-btn weather-more-close-btn" onClick={hide} title={locale.global.close}>
+            <Icon id="cross"/>
+          </button>
+        </div>
         <div className="weather-more-current-icon-container">
           <img src={current.icon} className={`weather-more-current-icon icon-${current.iconId}`} alt="" width="100px" height="100px" loading="lazy"/>
         </div>
@@ -128,31 +158,6 @@ export default function MoreWeather({ current, more, units, speedUnits, message,
       ) : message ? <p className="weather-more-message">{message}</p>
         : <Spinner size="48px"/>
       }
-      <Dropdown container={{ className: "weather-more-settings" }} toggle={{ iconId: "settings", title: locale.global.settings }}>
-        <label className="dropdown-group weather-more-setting">
-          <div>{locale.weather.temp_setting_label}</div>
-          <input type="checkbox" className="sr-only toggle-input"
-            checked={units === "F"}
-            onChange={() => toggleUnits("temp")}/>
-          <div className="toggle">
-            <div className="toggle-item">°C</div>
-            <div className="toggle-item">°F</div>
-          </div>
-        </label>
-        <label className="dropdown-group weather-more-setting">
-          <div>{locale.weather.wind_setting_label}</div>
-          <input type="checkbox" className="sr-only toggle-input"
-            checked={speedUnits === "ft/s"}
-            onChange={() => toggleUnits("wind")}/>
-          <div className="toggle">
-            <div className="toggle-item">m/s</div>
-            <div className="toggle-item">ft/s</div>
-          </div>
-        </label>
-      </Dropdown>
-      <button className="btn icon-btn weather-more-close-btn" onClick={hide} title={locale.global.close}>
-        <Icon id="cross"/>
-      </button>
     </>
   );
 }

@@ -17,16 +17,22 @@
 }
 
 .fullscreen-modal {
-  --x: 50%;
-  --y: 50%;
-
   z-index: var(--z-index, 2);
   position: absolute;
-  top: var(--y);
-  left: var(--x);
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   max-width: calc(100% - var(--space-xl));
   max-height: calc(100% - var(--space-xl));
+
+  &.moved {
+    --x: var(--space-md);
+    --y: var(--space-md);
+
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+  }
 
   &:not(.static) {
     animation-duration: var(--duration-n);
