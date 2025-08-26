@@ -51,7 +51,7 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
     else {
       timeoutId.current = window.setTimeout(() => {
         setState({ ...state, revealed: false, hiding: false });
-      }, 320);
+      }, 300);
     }
   }, [state.visible, expanded]);
 

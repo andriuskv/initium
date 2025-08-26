@@ -82,15 +82,18 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
   }
   else if (fullscreenModal.id === "settings") {
     const item = getItemPos("settings");
-    const attrs = {
-      "data-move-target": "settings",
-      "style": { "--x": `${item.x}%`, "--y": `${item.y}%` },
-      // With compiler enabled element with changed attrs doesn't get rerendered, to circumvent that pass in random attr
-      [`data-${getRandomString()}`]: "",
+    const props = {
+      moved: item.moved,
+      attrs: {
+        "data-move-target": "settings",
+        "style": { "--x": `${item.x}%`, "--y": `${item.y}%` },
+        // With compiler enabled element with changed attrs doesn't get rerendered, to circumvent that pass in random attr
+        [`data-${getRandomString()}`]: ""
+      }
     };
 
     return (
-      <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal} keepVisible {...attrs}>
+      <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal} keepVisible {...props}>
         <Suspense fallback={<div className="settings"><Spinner size="24px"/></div>}>
           {<Settings locale={locale} hide={hideFullscreenModal}/>}
         </Suspense>

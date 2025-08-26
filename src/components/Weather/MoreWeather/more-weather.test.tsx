@@ -1,3 +1,4 @@
+import type { WeatherSettings } from "types/settings";
 import { expect, test, beforeEach, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
@@ -5,6 +6,10 @@ import { useSettings } from "contexts/settings";
 import MoreWeather from "./MoreWeather";
 import locale from "lang/en.json" assert { type: "json" };
 import userEvent from "@testing-library/user-event";
+
+vi.mock("services/widget-pos", () => ({
+  handleMoveInit: vi.fn()
+}));
 
 vi.mock("contexts/settings", () => ({
   useSettings: vi.fn(),
@@ -50,6 +55,13 @@ const mockMore = {
   ],
 };
 
+const mockSettings = {
+  general: { rememberWidgetState: false },
+  appearance: { animationSpeed: 1 },
+  timeDate: { dateLocale: "en-US" },
+  weather: { units: "C", speedUnits: "m/s", cityName: "Test City", useGeo: false } as WeatherSettings,
+};
+
 const mockHide = vi.fn();
 
 beforeEach(() => {
@@ -65,6 +77,7 @@ test("renders correctly with minimal props", () => {
     <MoreWeather
       current={mockCurrent as any}
       more={mockMore as any}
+      settings={mockSettings.weather}
       units="C"
       speedUnits="m/s"
       locale={locale}
@@ -85,6 +98,7 @@ test("renders message when more data is null and message is present", () => {
     <MoreWeather
       current={mockCurrent as any}
       more={null}
+      settings={mockSettings.weather}
       units="C"
       speedUnits="m/s"
       message="Error fetching data"
@@ -101,6 +115,7 @@ test("renders spinner when more data is null and message is empty", () => {
     <MoreWeather
       current={mockCurrent as any}
       more={null}
+      settings={mockSettings.weather}
       units="C"
       speedUnits="m/s"
       locale={locale}
@@ -117,6 +132,7 @@ test("calls hide function when close button is clicked", async () => {
     <MoreWeather
       current={mockCurrent as any}
       more={mockMore as any}
+      settings={mockSettings.weather}
       units="C"
       speedUnits="m/s"
       locale={locale}
@@ -136,6 +152,7 @@ test("toggles temperature units correctly", async () => {
     <MoreWeather
       current={mockCurrent as any}
       more={mockMore as any}
+      settings={mockSettings.weather}
       units="C"
       speedUnits="m/s"
       locale={locale as any}
@@ -158,6 +175,7 @@ test("toggles temperature units correctly", async () => {
     <MoreWeather
       current={mockCurrent as any}
       more={mockMore as any}
+      settings={mockSettings.weather}
       units="F"
       speedUnits="m/s"
       locale={locale as any}
@@ -176,6 +194,7 @@ test("toggles wind speed units correctly", async () => {
     <MoreWeather
       current={mockCurrent as any}
       more={mockMore as any}
+      settings={mockSettings.weather}
       units="C"
       speedUnits="m/s"
       locale={locale as any}
@@ -193,6 +212,7 @@ test("toggles wind speed units correctly", async () => {
     <MoreWeather
       current={mockCurrent as any}
       more={mockMore as any}
+      settings={mockSettings.weather}
       units="C"
       speedUnits="ft/s"
       locale={locale as any}
@@ -210,6 +230,7 @@ test("selects and saves the active tab view", async () => {
     <MoreWeather
       current={mockCurrent as any}
       more={mockMore as any}
+      settings={mockSettings.weather}
       units="C"
       speedUnits="m/s"
       locale={locale as any}

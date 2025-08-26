@@ -1,14 +1,15 @@
 import type { Current, Hour, Weekday } from "types/weather";
-import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { dispatchCustomEvent } from "utils";
 import * as focusService from "services/focus";
 import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
-import { getWidgetState, setWidgetState, handleZIndex, initElementZindex } from "services/widgetStates";
+import { getWidgetState, setWidgetState, handleZIndex, initElementZindex, increaseElementZindex } from "services/widgetStates";
+import { getItemPos } from "services/widget-pos";
 import { useLocalization } from "contexts/localization";
 import { useSettings } from "contexts/settings";
-import Icon from "components/Icon";
 import "./weather.css";
+import WeatherSmall from "./WeatherSmall";
 
 type Props = {
   timeFormat: 12 | 24,
@@ -35,6 +36,21 @@ export default function Weather({ timeFormat, corner }: Props) {
   const timeoutId = useRef(0);
   const moreButton = useRef<HTMLButtonElement>(null);
   const container = useRef<HTMLDivElement>(null);
+  const pos = getItemPos("weather");
+  const [moved, setMoved] = useState(pos.moved);
+
+  useEffect(() => {
+    function handleMoveInit({ detail: { id, moved } }: CustomEventInit) {
+      if (id === "weather") {
+        setMoved(moved);
+      }
+    }
+    window.addEventListener("widget-move-init", handleMoveInit);
+
+    return () => {
+      window.removeEventListener("widget-move-init", handleMoveInit);
+    };
+  }, []);
 
   useEffect(() => {
     if (firstRender.current) {
@@ -144,15 +160,20 @@ export default function Weather({ timeFormat, corner }: Props) {
   }
 
   function hideMoreWeather() {
+    let duration = 300;
+
     setState({ ...state, visible: false });
     setWidgetState("weather", { opened: false });
 
+    if (moved) {
+      duration = 200;
+    }
     setTimeout(() => {
       setState({ ...state, visible: false, reveal: false });
       requestAnimationFrame(() => requestAnimationFrame(() => {
         moreButton.current?.focus();
       }));
-    }, 320 * animationSpeed);
+    }, duration * animationSpeed);
   }
 
   function showMoreWeather() {
@@ -160,7 +181,18 @@ export default function Weather({ timeFormat, corner }: Props) {
       setState({ rendered: true, reveal: true, visible: false });
     }
     else {
-      setState({ ...state, reveal: true });
+      const nextReveal = !state.reveal;
+
+      if (nextReveal) {
+        setState({ ...state, reveal: nextReveal, visible: false });
+        increaseElementZindex(container.current, "weather");
+      }
+      else {
+        setState({ ...state, visible: false });
+        setTimeout(() => {
+          setState({ ...state, visible: false, reveal: false });
+        }, 200 * animationSpeed);
+      }
     }
     setWidgetState("weather", { opened: true });
     requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -222,30 +254,25 @@ export default function Weather({ timeFormat, corner }: Props) {
     return null;
   }
   return (
-    <div className={`weather ${corner}`} onClick={event => handleZIndex(event, "weather")} ref={container}>
-      <div className={`weather-small${state.reveal ? " hidden" : ""}`}>
-        <button className="btn icon-btn weather-more-btn" onClick={showMoreWeather} ref={moreButton} title={locale.global.more}>
-          <Icon id="expand"/>
-        </button>
-        <div className="weather-current">
-          <div className="weather-temperature-icon-container">
-            <div className="weather-temperature">
-              <span className="weather-temperature-value">{Math.round(current.temperature)}</span>
-              <span className="weather-temperature-units">°{settings.units}</span>
-            </div>
-            <img src={current.icon} className={`weather-icon icon-${current.iconId}`} width="80px" height="80px" alt=""/>
+    <>
+      {moved ? (
+        <div className={`weather ${corner}`} onClick={event => handleZIndex(event, "weather")}>
+          <WeatherSmall current={current} locale={locale} settings={settings} moreButton={moreButton} showMoreWeather={showMoreWeather}/>
+        </div>
+      ): null}
+      <div className={`weather ${corner}${moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "weather")}
+      style={{ "--x": `${pos.x}%`, "--y": `${pos.y}%` } as CSSProperties} data-move-target="weather" ref={container}>
+        {moved ? null : <WeatherSmall current={current} locale={locale} settings={settings} moreButton={moreButton} hidden={state.reveal} showMoreWeather={showMoreWeather}/>
+        }
+        <div className={`container weather-more${state.visible ? " visible" : ""}${state.reveal ? " reveal" : ""} corner-item`}>
+          <div className="weather-transition-target weather-more-info">
+            <Suspense fallback={null}>
+              {state.rendered && <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits}
+                message={moreWeatherMessage} locale={locale} settings={settings} hide={hideMoreWeather}/>}
+            </Suspense>
           </div>
-          <div className="weather-location">{current.location}</div>
         </div>
       </div>
-      <div className={`container weather-more${state.visible ? " visible" : ""}${state.reveal ? " reveal" : ""} corner-item`}>
-        <div className="weather-transition-target weather-more-info">
-          <Suspense fallback={null}>
-            {state.rendered && <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits}
-              message={moreWeatherMessage} locale={locale} hide={hideMoreWeather}/>}
-          </Suspense>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

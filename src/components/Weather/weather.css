@@ -25,88 +25,25 @@
       text-align: right;
     }
   }
-}
 
-.weather-small {
-  &:hover, &:has(:focus-visible) {
-    .weather-more-btn {
-      opacity: 1;
-      translate: 8px 8px;
+  &.moved {
+    --x: var(--space-md);
+    --y: var(--space-md);
+
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+
+    .weather-more:not(.visible) {
+      opacity: 0;
+      transition: var(--duration-n) opacity;
+      transition-delay: var(--duration-f);
     }
 
-    .weather-current {
-      scale: 0.64;
+    .weather-more.visible .weather-transition-target{
+      transition-delay: 0s;
     }
   }
-
-  &.hidden {
-    display: none;
-  }
-}
-
-.weather-current {
-  text-shadow:
-    0 1px 1px var(--color-black-8),
-    1px 2px 2px var(--color-black-4),
-    2px 4px 4px var(--color-black-2);
-  transition: var(--duration-n) opacity, var(--duration-f) scale;
-  user-select: none;
-}
-
-.weather-more-btn {
-  z-index: 1;
-  position: absolute;
-  opacity: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 90%;
-  height: 80%;
-  border-radius: 16px;
-  backdrop-filter: blur(2px);
-  background-image: var(--panel-background-noise);
-}
-
-.weather-temperature-icon-container {
-  display: flex;
-  align-items: center;
-  height: 40px;
-  margin-bottom: var(--space-md);
-}
-
-.weather-temperature {
-  display: flex;
-  align-self: center;
-}
-
-.weather-temperature-value {
-  font-size: var(--text-xxxl);
-  line-height: 1;
-}
-
-.weather-temperature-units {
-  margin-left: var(--space-xs);
-  font-size: var(--text-lg);
-}
-
-.weather-icon {
-  filter:
-    drop-shadow(0 1px 1px var(--color-black-8))
-    drop-shadow(1px 2px 2px var(--color-black-4))
-    drop-shadow(2px 4px 4px var(--color-black-2));
-
-  &.icon-13d, &.icon-13n {
-    filter:
-      brightness(2)
-      drop-shadow(0 1px 1px var(--color-black-8))
-      drop-shadow(1px 2px 2px var(--color-black-4))
-      drop-shadow(2px 4px 4px var(--color-black-2));
-  }
-}
-
-.weather-location {
-  font-weight: bold;
-  letter-spacing: 1px;
 }
 
 .weather-more {

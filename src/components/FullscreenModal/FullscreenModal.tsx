@@ -11,10 +11,14 @@ type Props = PropsWithChildren & {
   mask?: boolean,
   noAnim?: boolean,
   keepVisible?: boolean,
+  moved?: boolean,
+  attrs?: {
+    [key: string]: unknown
+  },
   hide: () => void
 }
 
-export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, keepVisible = false, hide, ...attrs }: Props) {
+export default function FullscreenModal({ children, hiding, transparent = false, mask = false, noAnim = false, keepVisible = false, hide, ...props}: Props) {
   const container = useRef<HTMLDivElement>(null);
   let pointerInside = false;
   let keep = false;
@@ -76,7 +80,7 @@ export default function FullscreenModal({ children, hiding, transparent = false,
     }
   }
 
-  const modal = <div className={`fullscreen-modal${hiding ? " hiding" : ""}${noAnim ? " static" : ""}${transparent ? "" : " container"}`} {...attrs} ref={container} onClick={event => handleZIndex(event, "fullscreenModal")}>{children}</div>;
+  const modal = <div className={`fullscreen-modal${hiding ? " hiding" : ""}${noAnim ? " static" : ""}${transparent ? "" : " container"}${props.moved ? " moved" : ""}`} {...props.attrs} ref={container} onClick={event => handleZIndex(event, "fullscreenModal")}>{children}</div>;
 
   if (mask) {
     return <div className="fullscreen-modal-mask">{modal}</div>;
