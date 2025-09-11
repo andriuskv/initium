@@ -40,7 +40,7 @@
       transition-delay: var(--duration-f);
     }
 
-    .weather-more.visible .weather-transition-target{
+    .weather-more.visible .weather-transition-target  {
       transition-delay: 0s;
     }
   }

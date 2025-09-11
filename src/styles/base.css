@@ -24,6 +24,7 @@ body {
   font-size: var(--text-md);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  font-synthesis: none;
 }
 
 a {

@@ -31,9 +31,9 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   useEffect(() => {
     initElementZindex(container.current, "tasks");
 
-    function handleMoveInit({ detail: { id, moved } }: CustomEventInit) {
-      if (id === "tasks") {
-        setMoved(moved);
+    function handleMoveInit({ detail: { tasks } }: CustomEventInit) {
+      if (tasks) {
+        setMoved(tasks.moved);
       }
     }
     window.addEventListener("widget-move-init", handleMoveInit);

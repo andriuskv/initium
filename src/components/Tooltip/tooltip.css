@@ -1,5 +1,5 @@
 .tooltip {
-  z-index: 100;
+  z-index: 10000;
   position: absolute;
   position-area: top;
   position-visibility: anchors-visible;
