@@ -1,48 +1,36 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import type { Items } from "./SecondaryPanel.type";
+import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings";
-import { handleZIndex, initElementZindex, increaseElementZindex } from "services/widgetStates";
+import { handleZIndex, initElementZindex, increaseElementZindex, getWidgetState, setWidgetState } from "services/widgetStates";
+import { getItemPos, handleMoveInit } from "services/widget-pos";
 import * as focusService from "services/focus";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
 import "./secondary-panel.css";
+import Container from "./Container";
 
 const StickyNotes = lazy(() => import("./StickyNotes"));
 const Shortcuts = lazy(() => import("./Shortcuts"));
 const Calendar = lazy(() => import("./Calendar"));
 
-type Item = {
-  id: string,
-  title: string,
-  iconId: string,
-  disabled?: boolean,
-  rendered?: boolean,
-  visible?: boolean,
-  indicatorVisible?: boolean
-  attrs?: { [key: string]: string | boolean }
-}
-type Items = Record<string, Item>;
-
 export default function SecondaryPanel({ corner }: { corner: string }) {
   const locale = useLocalization();
   const { settings } = useSettings();
   const [items, setItems] = useState<Items>(() => getItems());
-  const [selectedItem, setSelectedItem] = useState<Item>(() => {
-    const id = localStorage.getItem("active-secondary-panel-item") || "";
-
-    if (id && settings.general.rememberWidgetState) {
-      return items[id];
-    }
-    return { id: "", title: "", iconId: "" };
-  });
   const calendarTimeoutId = useRef(0);
-  const lastItemId = useRef("");
-  const closeButton = useRef<HTMLButtonElement>(null);
   const currentLocale = useRef(locale.locale);
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     initElementZindex(container.current, "secondaryPanel");
+
+    for (const id of ["stickyNotes", "shortcuts", "calendar"]) {
+      if (items[id].moved) {
+        const element = document.querySelector(`[data-move-target="${id}"]`) as HTMLElement;
+        initElementZindex(element, id);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -52,19 +40,40 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
         setItems({ ...items, calendar: {...items.calendar, rendered: true } });
       }, 4000);
     }
-  }, [items]);
 
-  useEffect(() => {
     function toggleTimersIndicator({ detail }: CustomEventInit) {
       toggleIndicator("timers", detail);
     }
 
+    function handleMoveInit({ detail: moveItems }: CustomEventInit) {
+      const newItems: Items = {};
+
+      for (const id of Object.keys(moveItems)) {
+        if (items[id]) {
+          newItems[id] = { ...items[id], ...moveItems[id] };
+        }
+      }
+
+      if (Object.keys(newItems).length) {
+        setItems({ ...items, ...newItems });
+      }
+    }
+    window.addEventListener("widget-move-init", handleMoveInit);
     window.addEventListener("indicator-visibility", toggleTimersIndicator);
 
     return () => {
+      window.removeEventListener("widget-move-init", handleMoveInit);
       window.removeEventListener("indicator-visibility", toggleTimersIndicator);
     };
   }, [items]);
+
+  useEffect(() => {
+    if (items.calendar.revealed) {
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          setItems({ ...items, calendar: { ...items.calendar, visible: true } });
+        }));
+    }
+  }, [items.calendar.revealed]);
 
   useEffect(() => {
     setItems({
@@ -97,33 +106,6 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
   }, [settings.general, settings.timers]);
 
   useEffect(() => {
-    if (!selectedItem.id) {
-      if (lastItemId.current) {
-        focusService.focusSelector(`[data-focus-id=${lastItemId.current}]`);
-        lastItemId.current = "";
-      }
-      return;
-    }
-
-    if (selectedItem.id === "calendar" && !items.calendar.rendered) {
-      clearTimeout(calendarTimeoutId.current);
-      setItems({ ...items, calendar: {...items.calendar, rendered: true } });
-    }
-    else {
-      requestAnimationFrame(() => {
-        setSelectedItem({ ...selectedItem, visible: true });
-      });
-    }
-    localStorage.setItem("active-secondary-panel-item", selectedItem.id);
-  }, [selectedItem.id]);
-
-  useEffect(() => {
-    if (selectedItem.id === "calendar" && items.calendar.rendered) {
-      setSelectedItem({ ...selectedItem, visible: true });
-    }
-  }, [items.calendar.rendered]);
-
-  useEffect(() => {
     if (currentLocale.current === locale.locale) {
       return;
     }
@@ -140,7 +122,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
   }, [items, locale.locale]);
 
   function getItems() {
-    return {
+    const items: Items = {
       "stickyNotes": {
         id: "stickyNotes",
         title: locale.secondaryPanel.stickyNotes,
@@ -179,6 +161,19 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
         }
       }
     };
+
+    for (const id of ["stickyNotes", "shortcuts", "calendar"]) {
+      const { opened } = getWidgetState(id);
+      const pos = getItemPos(id);
+
+      items[id] = { ...items[id], ...pos };
+
+      if (opened) {
+        items[id] = { ...items[id], visible: true, revealed: true, rendered: true };
+      }
+    }
+
+    return items;
   }
 
   function selectItem(id: string) {
@@ -189,36 +184,47 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
       dispatchCustomEvent("fullscreen-modal", { id, shouldToggle: true });
     }
     else {
-      if (id === selectedItem.id) {
-        hideItem();
+      if (items[id].visible) {
+        hideItem(id);
         return;
       }
-      increaseElementZindex(container.current, "secondaryPanel");
 
-      if (selectedItem.id && settings.appearance.animationSpeed > 0) {
-        document.startViewTransition(() => {
-          setSelectedItem(items[id]);
-        });
+      if (!items[id].moved) {
+        increaseElementZindex(container.current, "secondaryPanel");
+      }
+
+      if (id === "calendar" && !items[id].rendered) {
+        clearTimeout(calendarTimeoutId.current);
+        setItems({ ...items, [id]: { ...items[id], rendered: true, revealed: true } });
       }
       else {
-        setSelectedItem(items[id]);
-        setTimeout(() => {
-          if (closeButton.current) {
-            closeButton.current.focus();
+        setItems({ ...items, [id]: { ...items[id], revealed: true } });
+
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          setItems({ ...items, [id]: { ...items[id], revealed: true, visible: true } });
+
+          if (items[id].moved) {
+            const element = document.querySelector(`[data-move-target="${id}"]`) as HTMLElement;
+
+            increaseElementZindex(element, id);
           }
-        }, 200 * settings.appearance.animationSpeed);
+        }));
       }
+      setWidgetState(id, { opened: true });
+      setTimeout(() => {
+        focusService.focusSelector(`[data-comp-focus-id=${id}]`);
+      }, 200 * settings.appearance.animationSpeed);
     }
   }
 
-  function hideItem() {
-    lastItemId.current = selectedItem.id;
-    setSelectedItem({ ...selectedItem, visible: false });
+  function hideItem(id: string) {
+    setItems({ ...items, [id]: { ...items[id], visible: false } });
+    setWidgetState(id, { opened: false });
 
     setTimeout(() => {
-      setSelectedItem({ id: "", title: "", iconId: "" });
-      localStorage.removeItem("active-secondary-panel-item");
-    }, 400 * settings.appearance.animationSpeed);
+      setItems({ ...items, [id]: { ...items[id], visible: false, revealed: false } });
+      focusService.focusSelector(`[data-focus-id=${id}]`);
+    }, 200 * settings.appearance.animationSpeed);
   }
 
   function toggleIndicator(id: string, value: boolean) {
@@ -229,44 +235,70 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
     selectItem("calendar");
   }
 
+  function hideStickyNotes() {
+    hideItem("stickyNotes");
+  }
+
   return (
-    <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondaryPanel")} ref={container}>
-      <div className={`container secondary-panel-item-container${selectedItem.id ? "" : " hidden"}${selectedItem.visible ? " visible" : ""} corner-item`}>
-        <div className="container-header secondary-panel-item-header secondary-panel-transition-target">
-          <Icon id={selectedItem.iconId}/>
-          <h3 className="secondary-panel-item-title">{selectedItem.title}</h3>
-          <button className="btn icon-btn" onClick={hideItem} ref={closeButton} title={locale.global.close}>
-            <Icon id="cross"/>
-          </button>
+    <>
+      {items.stickyNotes.moved && items.stickyNotes.revealed ? (
+        <div className={`secondary-panel${items.stickyNotes.moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "stickyNotes")}  style={{ "--x": `${items.stickyNotes.x}%`, "--y": `${items.stickyNotes.y}%` } as CSSProperties} data-move-target="stickyNotes">
+          <Container item={items.stickyNotes} locale={locale} style={{ width: "280px", height: "312px"}}
+            handleMoveInit={handleMoveInit} hide={hideStickyNotes}>
+            <Suspense fallback={null}>
+              <StickyNotes locale={locale} hide={hideStickyNotes}/>
+            </Suspense>
+          </Container>
+            </div>
+      ) : null}
+      {items.shortcuts.moved && items.shortcuts.revealed ? (
+        <div className={`secondary-panel${items.shortcuts.moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "shortcuts")} style={{ "--x": `${items.shortcuts.x}%`, "--y": `${items.shortcuts.y}%` } as CSSProperties} data-move-target="shortcuts">
+          <Container item={items.shortcuts} locale={locale} style={{ width: "380px", height: "272px"}}
+            handleMoveInit={handleMoveInit} hide={() => hideItem("shortcuts")}>
+            <Suspense fallback={null}>
+              <Shortcuts locale={locale}/>
+            </Suspense>
+          </Container>
+          </div>
+      ) : null}
+      {items.calendar.moved && items.calendar.rendered ? (
+        <div className={`secondary-panel${items.calendar.moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "calendar")}
+          style={{ "--x": `${items.calendar.x}%`, "--y": `${items.calendar.y}%` } as CSSProperties} data-move-target="calendar">
+          <Container item={items.calendar} locale={locale} style={{ width: "380px", minHeight: "402px"}} className={` calendar-container${items.calendar.revealed ? " revealed" : ""}`}
+            handleMoveInit={handleMoveInit} hide={() => hideItem("calendar")}>
+            <Suspense fallback={null}>
+              <Calendar visible={!!items.calendar.visible} locale={locale} reveal={selectCalendar} showIndicator={toggleIndicator}/>
+            </Suspense>
+          </Container>
         </div>
-        <div className="secondary-panel-transition-target">
-          {selectedItem.id === "stickyNotes" ? (
-            <div className={`container-body secondary-panel-item-content${selectedItem.id ? "" : " hidden"}`}
-              style={{ width: "280px", height: "312px"}}>
-              <Suspense fallback={null}>
-                <StickyNotes locale={locale} hide={hideItem}/>
-              </Suspense>
-            </div>
-          ) : selectedItem.id === "shortcuts" ? (
-            <div className={`container-body secondary-panel-item-content${selectedItem.id ? "" : " hidden"}`}
-              style={{ width: "380px", height: "272px" }}>
-              <Suspense fallback={null}>
-                <Shortcuts locale={locale}/>
-              </Suspense>
-            </div>
-          ) : null}
-          {items.calendar.rendered ? (
-            <div className={`secondary-panel-item-content${selectedItem.id === "calendar" ? "" : " hidden"}`}
-              style={{ width: "380px", minHeight: "402px"}}>
-              <Suspense fallback={null}>
-                <Calendar visible={selectedItem.id === "calendar" && !!selectedItem.visible}
-                  locale={locale} reveal={selectCalendar} showIndicator={toggleIndicator}/>
-              </Suspense>
-            </div>
-          ) : null}
-        </div>
+      ) : null}
+      <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondaryPanel")} ref={container}>
+        {!items.stickyNotes.moved && items.stickyNotes.revealed ? (
+          <Container item={items.stickyNotes} locale={locale} style={{ width: "280px", height: "312px"}}
+            handleMoveInit={handleMoveInit} hide={hideStickyNotes}>
+            <Suspense fallback={null}>
+              <StickyNotes locale={locale} hide={hideStickyNotes}/>
+            </Suspense>
+          </Container>
+        ) : null}
+        {!items.shortcuts.moved && items.shortcuts.revealed ? (
+          <Container item={items.shortcuts} locale={locale} style={{ width: "380px", height: "272px"}}
+            handleMoveInit={handleMoveInit} hide={() => hideItem("shortcuts")}>
+            <Suspense fallback={null}>
+              <Shortcuts locale={locale}/>
+            </Suspense>
+          </Container>
+        ) : null}
+        {!items.calendar.moved && items.calendar.rendered ? (
+          <Container item={items.calendar} locale={locale} style={{ width: "380px", minHeight: "402px"}} className={` calendar-container${items.calendar.revealed ? " revealed" : ""}`}
+            handleMoveInit={handleMoveInit} hide={() => hideItem("calendar")}>
+            <Suspense fallback={null}>
+              <Calendar visible={!!items.calendar.visible} locale={locale} reveal={selectCalendar} showIndicator={toggleIndicator}/>
+            </Suspense>
+          </Container>
+        ) : null}
       </div>
-      <ul className="secondary-panel-item-selection">
+      <ul className={`secondary-panel-item-selection ${corner}`}>
         {Object.values(items).filter(item => !item.disabled).map(item => (
           <li key={item.id}>
             <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}
@@ -276,6 +308,6 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
           </li>
         ))}
       </ul>
-    </div>
+    </>
   );
 }

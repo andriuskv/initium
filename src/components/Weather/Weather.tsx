@@ -40,9 +40,9 @@ export default function Weather({ timeFormat, corner }: Props) {
   const [moved, setMoved] = useState(pos.moved);
 
   useEffect(() => {
-    function handleMoveInit({ detail: { id, moved } }: CustomEventInit) {
-      if (id === "weather") {
-        setMoved(moved);
+    function handleMoveInit({ detail: { weather } }: CustomEventInit) {
+      if (weather) {
+        setMoved(weather.moved);
       }
     }
     window.addEventListener("widget-move-init", handleMoveInit);

@@ -3,11 +3,13 @@ import { getLocalStorageItem, fillMissing, dispatchCustomEvent } from "utils";
 import { increaseElementZindex } from "./widgetStates";
 
 type Item = {
+  id: string;
   x?: number;
   y?: number;
   translateX: number;
   translateY: number;
   moved?: boolean;
+  delayedTarget?: boolean;
 }
 
 type Items = { [key: string]: Item };
@@ -23,16 +25,43 @@ function init() {
 function getDefault(): Items {
   return {
     settings: {
+      id: "settings",
       translateX: 0.5,
       translateY: 0.5,
+      moved: false
     },
     tasks: {
+      id: "tasks",
       translateX: 0,
       translateY: 0,
+      moved: false,
     },
     weather: {
+      id: "weather",
       translateX: 0,
       translateY: 0,
+      moved: false,
+    },
+    stickyNotes: {
+      id: "stickyNotes",
+      translateX: 0,
+      translateY: 0,
+      moved: false,
+      delayedTarget: true
+    },
+    shortcuts: {
+      id: "shortcuts",
+      translateX: 0,
+      translateY: 0,
+      moved: false,
+      delayedTarget: true
+    },
+    calendar: {
+      id: "calendar",
+      translateX: 0,
+      translateY: 0,
+      moved: false,
+      delayedTarget: true
     }
   };
 }
@@ -42,15 +71,11 @@ function resetItemPos() {
   localStorage.removeItem("widgets-pos");
 
   for (const element of document.querySelectorAll("[data-move-target]") as NodeListOf<HTMLElement>) {
-    const id = element.getAttribute("data-move-target");
-
-    if (id) {
-      dispatchCustomEvent("widget-move-init", { id, moved: false });
-    }
     element.style.setProperty("--x", "");
     element.style.setProperty("--y", "");
     element.classList.remove("moved");
   }
+  dispatchCustomEvent("widget-move-init", items);
 }
 
 function getItemPos(id: string) {
@@ -75,12 +100,12 @@ function handleMoveInit(event: ReactMouseEvent) {
   }
   const element = target.closest(`[data-move-target="${id}"]`) as HTMLElement;
 
-  if (!element) {
+  if (!element && !items[id].delayedTarget) {
     throw new Error("Target element is missing");
   }
 
   if (!items[id]) {
-    items[id] = getDefault()[id];
+    throw new Error("Invalid item id");
   }
   const rect = element.getBoundingClientRect();
   const x = event.clientX - rect.left - (rect.width * items[id].translateX);
@@ -96,28 +121,32 @@ function handleMoveInit(event: ReactMouseEvent) {
   document.documentElement.style.userSelect = "none";
   document.documentElement.style.cursor = "move";
 
-  increaseElementZindex(element, activeItem.id);
+  increaseElementZindex(element, id);
 
   window.addEventListener("pointermove", handlePointerMove);
   window.addEventListener("pointerup", handlePointerUp, { once: true });
 }
 
-function handlePointerMove(event: MouseEvent) {
+async function handlePointerMove(event: MouseEvent) {
   if (!activeItem) {
     return;
   }
+  const item = items[activeItem.id];
   const x = (event.clientX - activeItem.start.x) / document.documentElement.clientWidth * 100;
   const y = (event.clientY - activeItem.start.y) / document.documentElement.clientHeight * 100;
-  const item = items[activeItem.id];
 
-  if (!item.moved && Math.abs(event.clientX - activeItem.startClient.x) > 8 && Math.abs(event.clientY - activeItem.startClient.y) > 8) {
-    item.moved = true;
-    activeItem.element.classList.add("moved");
-    dispatchCustomEvent("widget-move-init", { id: activeItem.id, moved: true });
-  }
   item.x = x;
   item.y = y;
 
+  if (!item.moved && (Math.abs(event.clientX - activeItem.startClient.x) > 5 || Math.abs(event.clientY - activeItem.startClient.y) > 5)) {
+    item.moved = true;
+    activeItem.element.classList.add("moved");
+    dispatchCustomEvent("widget-move-init", { [item.id]: item });
+
+    if (item.delayedTarget) {
+      waitForMoveTarget(activeItem.id);
+    }
+  }
   activeItem.element.style.setProperty("--x", `${x}%`);
   activeItem.element.style.setProperty("--y", `${y}%`);
 }
@@ -157,13 +186,42 @@ function handlePointerUp() {
   }
   item.y = y;
   activeItem.element.style.setProperty("--y", `${y}%`);
-
   activeItem = null;
+
+  dispatchCustomEvent("widget-move-init", { [item.id]: item });
   localStorage.setItem("widgets-pos", JSON.stringify(items));
+}
+
+function waitForMoveTarget(id: string) {
+  window.requestAnimationFrame(() => {
+    const updated = updateMoveTarget(id);
+
+    if (updated) {
+      return;
+    }
+    waitForMoveTarget(id);
+  });
+}
+
+function updateMoveTarget(id: string) {
+  const element = document.querySelector(`[data-move-target="${id}"]`) as HTMLElement;
+
+  if (!element || !activeItem || element.classList.contains("container")) {
+    return;
+  }
+  const item = items[id];
+
+  activeItem.element = element;
+  element.style.setProperty("--x", `${item.x}%`);
+  element.style.setProperty("--y", `${item.y}%`);
+  element.classList.add("moved");
+  increaseElementZindex(element, id);
+  return true;
 }
 
 export {
   resetItemPos,
   getItemPos,
   handleMoveInit,
+  updateMoveTarget
 };
