@@ -1,9 +1,10 @@
-import type { GeneralSettings, TasksSettings } from "types/settings";
+import type { AppearanceSettings, GeneralSettings, TasksSettings } from "types/settings";
 import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { getWidgetState, setWidgetState, handleZIndex, initElementZindex, increaseElementZindex } from "services/widgetStates";
 import { getItemPos } from "services/widget-pos";
 import { useLocalization } from "contexts/localization";
 import "./tasks.css";
+import { getSetting } from "services/settings";
 
 const TasksContent = lazy(() => import("./TasksContent"));
 
@@ -23,6 +24,7 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
     return { rendered: false, visible: false, revealed: false, hiding: false };
   });
   const [expanded, setExpanded] = useState(false);
+  const [collapsing, setCollapsing] = useState(false);
   const timeoutId = useRef(0);
   const pos = getItemPos("tasks");
   const [moved, setMoved] = useState(pos.moved);
@@ -79,7 +81,18 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   }
 
   function toggleSize() {
-    setExpanded(!expanded);
+    if (expanded) {
+      setExpanded(false);
+      setCollapsing(true);
+
+      setTimeout(() => {
+        setCollapsing(false);
+
+      }, 200 * (getSetting("appearance") as AppearanceSettings).animationSpeed);
+    }
+    else {
+      setExpanded(true);
+    }
   }
 
   return (
@@ -89,7 +102,7 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
           <button className={`btn tasks-toggle-btn`} onClick={toggle}>{locale.tasks.title}</button>
         </div>
       ) : null}
-      <div className={`tasks${expanded ? " expanded" : ""}${state.revealed ? " revealed" : ""} ${corner}${moved ? " moved" : ""}`}
+      <div className={`tasks${expanded ? " expanded" : ""}${collapsing ? " collapsing" : ""}${state.revealed ? " revealed" : ""} ${corner}${moved ? " moved" : ""}`}
         style={{ "--x": `${pos.x}%`, "--y": `${pos.y}%` } as CSSProperties}
         onClick={event => handleZIndex(event, "tasks")} data-move-target="tasks" ref={container}>
         {moved && !state.visible ? null : (
