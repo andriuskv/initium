@@ -177,24 +177,29 @@ export default function Weather({ timeFormat, corner }: Props) {
   }
 
   function showMoreWeather() {
+    let opened = false;
+
     if (!state.rendered) {
+      opened = true;
       setState({ rendered: true, reveal: true, visible: false });
     }
     else {
       const nextReveal = !state.reveal;
 
       if (nextReveal) {
+        opened = true;
         setState({ ...state, reveal: nextReveal, visible: false });
         increaseElementZindex(container.current, "weather");
       }
       else {
+        opened = false;
         setState({ ...state, visible: false });
         setTimeout(() => {
           setState({ ...state, visible: false, reveal: false });
         }, 200 * animationSpeed);
       }
     }
-    setWidgetState("weather", { opened: true });
+    setWidgetState("weather", { opened });
     requestAnimationFrame(() => requestAnimationFrame(() => {
       focusService.focusSelector(".weather-more-close-btn");
     }));
