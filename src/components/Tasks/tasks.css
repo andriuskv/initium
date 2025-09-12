@@ -13,6 +13,10 @@
 
     &.expanded {
       --height: 100%;
+
+      &.moved {
+        top: var(--space-md);
+      }
     }
   }
 
@@ -99,6 +103,10 @@
     position: absolute;
     top: var(--y);
     left: var(--x);
+
+    &.collapsing, &.expanded {
+      transition: var(--duration-n) height, var(--duration-n) top;
+    }
 
     .tasks-toggle-btn {
       position: absolute;
