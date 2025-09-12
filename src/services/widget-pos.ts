@@ -1,6 +1,6 @@
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { getLocalStorageItem, fillMissing, dispatchCustomEvent } from "utils";
-import { increaseElementZindex } from "./widgetStates";
+import { increaseElementZindex, getWidgetState } from "./widgetStates";
 
 type Item = {
   id: string;
@@ -14,10 +14,13 @@ type Item = {
 
 type Items = { [key: string]: Item };
 
-let items = init();
+let items = initItems();
 let activeItem: { startClient: { x: number, y: number }, start: { x: number, y: number }, id: string, element: HTMLElement } | null = null;
+let checked: { [key: string]: boolean } = {};
 
-function init() {
+checkIfOutside(true);
+
+function initItems() {
   const items = getLocalStorageItem<Partial<Items>>("widgets-pos") || {};
   return fillMissing(items, getDefault()) as Items;
 }
@@ -218,6 +221,67 @@ function updateMoveTarget(id: string) {
   increaseElementZindex(element, id);
   return true;
 }
+
+function checkIfOutside(waitForTarget = false) {
+  const spacing = 8;
+  let count = 0;
+
+  for (const id of Object.keys(items)) {
+    const item = items[id];
+
+    if (item.moved && !checked[id]) {
+      const state = getWidgetState(id);
+
+      if (state.opened) {
+        const element = document.querySelector(`[data-move-target="${id}"]`) as HTMLElement;
+
+        if (waitForTarget) {
+          count += 1;
+        }
+
+        if (!element) {
+          continue;
+        }
+        const rect = element.getBoundingClientRect();
+        const maxWidth = document.documentElement.clientWidth - spacing;
+        const maxHeight = document.documentElement.clientHeight - spacing;
+
+        if (rect.width < maxWidth) {
+          if (rect.width + rect.left > maxWidth) {
+            element.style.setProperty("--x", `${(maxWidth - rect.width) / document.documentElement.clientWidth * 100}%`);
+          }
+          else if (rect.left < spacing) {
+            element.style.setProperty("--x", `${spacing / document.documentElement.clientWidth * 100}%`);
+          }
+        }
+
+        if (rect.height < maxHeight) {
+          if (rect.height + rect.top > maxHeight) {
+            element.style.setProperty("--y", `${(maxHeight - rect.height) / document.documentElement.clientHeight * 100}%`);
+          }
+          else if (rect.top < spacing) {
+            element.style.setProperty("--y", `${spacing / document.documentElement.clientHeight * 100}%`);
+          }
+        }
+        checked[id] = true;
+        count -= 1;
+      }
+    }
+  }
+
+  if (count > 0) {
+    requestAnimationFrame(() => {
+      checkIfOutside(true);
+    });
+  }
+  else {
+    checked = {};
+  }
+}
+
+window.addEventListener("resize", () => {
+  checkIfOutside();
+});
 
 export {
   resetItemPos,
