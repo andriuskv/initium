@@ -44,7 +44,7 @@
   --nav-height: 34px;
   --offset-y: 42%;
 
-  z-index: var(--z-index, 2);
+  z-index: var(--z-index, 1);
   position: absolute;
   top: var(--offset-y);
   display: flex;
