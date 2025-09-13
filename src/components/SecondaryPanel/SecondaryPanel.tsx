@@ -1,7 +1,9 @@
 import type { Items } from "./SecondaryPanel.type";
+import type { GeneralSettings } from "types/settings";
 import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings";
+import { getSetting } from "services/settings";
 import { handleZIndex, initElementZindex, increaseElementZindex, getWidgetState, setWidgetState } from "services/widgetStates";
 import { getItemPos, handleMoveInit } from "services/widget-pos";
 import * as focusService from "services/focus";
@@ -21,6 +23,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
   const calendarTimeoutId = useRef(0);
   const currentLocale = useRef(locale.locale);
   const container = useRef<HTMLDivElement>(null);
+  const firstCalendarReveal = useRef(true);
 
   useEffect(() => {
     initElementZindex(container.current, "secondaryPanel");
@@ -69,9 +72,15 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
 
   useEffect(() => {
     if (items.calendar.revealed) {
-        requestAnimationFrame(() => requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
           setItems({ ...items, calendar: { ...items.calendar, visible: true } });
-        }));
+
+          if (firstCalendarReveal.current && items.calendar.moved) {
+            const element = document.querySelector(`[data-move-target="calendar"]`) as HTMLElement;
+            firstCalendarReveal.current = false;
+            increaseElementZindex(element, "calendar");
+          }
+        });
     }
   }, [items.calendar.revealed]);
 
@@ -162,17 +171,18 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
       }
     };
 
+    const { rememberWidgetState } = getSetting("general") as GeneralSettings;
+
     for (const id of ["stickyNotes", "shortcuts", "calendar"]) {
       const { opened } = getWidgetState(id);
       const pos = getItemPos(id);
 
       items[id] = { ...items[id], ...pos };
 
-      if (opened) {
+      if (opened && rememberWidgetState) {
         items[id] = { ...items[id], visible: true, revealed: true, rendered: true };
       }
     }
-
     return items;
   }
 

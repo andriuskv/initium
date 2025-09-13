@@ -1,21 +1,31 @@
 import type { MouseEvent } from "react";
 import { getLocalStorageItem } from "utils";
-import { getSetting } from "./settings";
-import type { GeneralSettings } from "types/settings";
 
 type Widget = {
   zIndex: number,
   opened: boolean
 };
 
-const states = getLocalStorageItem<{ [key: string]: Widget }>("widget-states") || {};
+type States = { [key: string]: Widget };
+
+const states = initStates(getLocalStorageItem<States>("widget-states") || {});
 let topWidget: { name: string, index: number } | null = initTopWidget();
 let timeoutId = 0;
 
-for (const id of Object.keys(states)) {
-  if (typeof states[id] === "boolean") {
-    states[id] = { opened: states[id], zIndex: 1 };
+function initStates(states: States) {
+  for (const id of Object.keys(states)) {
+    if (typeof states[id] === "boolean") {
+      states[id] = { opened: states[id], zIndex: 1 };
+    }
   }
+  const sortedState = Object.entries(states).toSorted((a, b) => a[1].zIndex - b[1].zIndex);
+  let zIndex = 0;
+
+  for (let i = 0; i < sortedState.length; i++) {
+    sortedState[i][1].zIndex = zIndex + 1;
+    zIndex += 1;
+  }
+  return Object.fromEntries(sortedState);
 }
 
 function initTopWidget() {
@@ -98,18 +108,7 @@ function resetIndexes() {
 function save() {
   clearTimeout(timeoutId);
   timeoutId = window.setTimeout(() => {
-    const { rememberWidgetState } = getSetting("general") as GeneralSettings;
-    let newStates: { [key: string]: Widget } = {};
-
-    if (rememberWidgetState) {
-      newStates = states;
-    }
-    else {
-      for (const id of Object.keys(states)) {
-        newStates[id] = { opened: false, zIndex: 1 };
-      }
-    }
-    localStorage.setItem("widget-states", JSON.stringify(newStates));
+    localStorage.setItem("widget-states", JSON.stringify(states));
   }, 200);
 }
 

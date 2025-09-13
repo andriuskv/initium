@@ -269,7 +269,7 @@ function checkIfOutside(waitForTarget = false) {
     }
   }
 
-  if (count > 0) {
+  if (count > 0 && waitForTarget) {
     requestAnimationFrame(() => {
       checkIfOutside(true);
     });
