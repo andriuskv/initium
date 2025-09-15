@@ -146,6 +146,57 @@ p {
   position: relative;
 }
 
+.dock-pos {
+  z-index: 1000;
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  background-color: var(--color-white-10);
+  animation-name: dock-ping;
+  animation-duration: var(--duration-n);
+}
+
+.dock-pos-top-left {
+  top: 0;
+  left: 0;
+  border-bottom-right-radius: 999px;
+  transform-origin: top left;
+}
+
+.dock-pos-top-right {
+  top: 0;
+  right: 0;
+  border-bottom-left-radius: 999px;
+  transform-origin: top right;
+}
+
+.dock-pos-bottom-right {
+  bottom: 0;
+  right: 0;
+  border-top-left-radius: 999px;
+  transform-origin: bottom right;
+}
+
+.dock-pos-bottom-left {
+  bottom: 0;
+  left: 0;
+  border-top-right-radius: 999px;
+  transform-origin: bottom left;
+}
+
+
+@keyframes dock-ping {
+  0% {
+    transform: scale(0.5);
+  }
+  80% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 @keyframes opacity-up {
   from {
     opacity: 0;

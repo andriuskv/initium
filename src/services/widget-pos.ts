@@ -1,6 +1,8 @@
 import type { MouseEvent as ReactMouseEvent } from "react";
+import type { GeneralSettings } from "types/settings";
 import { getLocalStorageItem, fillMissing, dispatchCustomEvent } from "utils";
 import { increaseElementZindex, getWidgetState } from "./widgetStates";
+import { getSetting } from "./settings";
 
 type Item = {
   id: string;
@@ -17,6 +19,8 @@ type Items = { [key: string]: Item };
 let items = initItems();
 let activeItem: { startClient: { x: number, y: number }, start: { x: number, y: number }, id: string, element: HTMLElement } | null = null;
 let checked: { [key: string]: boolean } = {};
+let indicator: HTMLElement | null = null;
+let dockPos: { id: string, x: number, y: number } | null = null;
 
 checkIfOutside(true);
 
@@ -37,13 +41,13 @@ function getDefault(): Items {
       id: "tasks",
       translateX: 0,
       translateY: 0,
-      moved: false,
+      moved: false
     },
     weather: {
       id: "weather",
       translateX: 0,
       translateY: 0,
-      moved: false,
+      moved: false
     },
     stickyNotes: {
       id: "stickyNotes",
@@ -114,6 +118,7 @@ function handleMoveInit(event: ReactMouseEvent) {
   const x = event.clientX - rect.left - (rect.width * items[id].translateX);
   const y = event.clientY - rect.top - (rect.height * items[id].translateY);
 
+  dockPos = getDockPos(id, rect);
   activeItem = {
     startClient: { x: event.clientX, y:  event.clientY },
     start: { x, y },
@@ -135,8 +140,10 @@ async function handlePointerMove(event: MouseEvent) {
     return;
   }
   const item = items[activeItem.id];
-  const x = (event.clientX - activeItem.start.x) / document.documentElement.clientWidth * 100;
-  const y = (event.clientY - activeItem.start.y) / document.documentElement.clientHeight * 100;
+  const xpx = event.clientX - activeItem.start.x;
+  const ypx = event.clientY - activeItem.start.y;
+  const x = xpx / document.documentElement.clientWidth * 100;
+  const y = ypx / document.documentElement.clientHeight * 100;
 
   item.x = x;
   item.y = y;
@@ -148,6 +155,32 @@ async function handlePointerMove(event: MouseEvent) {
 
     if (item.delayedTarget) {
       waitForMoveTarget(activeItem.id);
+    }
+  }
+  else if (dockPos) {
+    let canDock = false;
+
+    if (dockPos.id === "top-left" && xpx < dockPos.x && ypx < dockPos.y) {
+      canDock = true;
+    }
+    else if (dockPos.id === "top-right" && xpx > dockPos.x && ypx < dockPos.y) {
+      canDock = true;
+    }
+    else if (dockPos.id === "bottom-right" && xpx > dockPos.x && ypx > dockPos.y) {
+      canDock = true;
+    }
+    else if (dockPos.id === "bottom-left" && xpx < dockPos.x && ypx > dockPos.y) {
+      canDock = true;
+    }
+
+    if (canDock) {
+      if (!indicator) {
+        createDockIndicator(dockPos.id);
+      }
+    }
+    else if (indicator) {
+      document.body.removeChild(indicator);
+      indicator = null;
     }
   }
   activeItem.element.style.setProperty("--x", `${x}%`);
@@ -162,12 +195,23 @@ function handlePointerUp() {
   if (!activeItem) {
     return;
   }
+  const item = items[activeItem.id];
+  dockPos = null;
+
+  if (indicator) {
+    indicator.remove();
+    indicator = null;
+    item.moved = false;
+    activeItem = null;
+    dispatchCustomEvent("widget-move-init", { [item.id]: item });
+    localStorage.setItem("widgets-pos", JSON.stringify(items));
+    return;
+  }
   const spacing = 8;
   const { clientWidth, clientHeight } = document.documentElement;
   const maxWidth = document.documentElement.clientWidth - spacing;
   const maxHeight = clientHeight - spacing;
   const rect = activeItem.element.getBoundingClientRect();
-  const item = items[activeItem.id];
   const { translateX, translateY } = item;
   let x = item.x;
   let y = item.y;
@@ -193,6 +237,53 @@ function handlePointerUp() {
 
   dispatchCustomEvent("widget-move-init", { [item.id]: item });
   localStorage.setItem("widgets-pos", JSON.stringify(items));
+}
+
+function getDockPos(id: string, rect: DOMRect) {
+  const { placement } = getSetting("general") as GeneralSettings;
+  const spacing = 8;
+  const posMap = {
+    "top-left": {
+      x: spacing,
+      y: spacing
+    },
+    "top-right": {
+      x: document.documentElement.clientWidth - rect.width - spacing,
+      y: spacing
+    },
+    "bottom-left": {
+      x: spacing,
+      y: document.documentElement.clientHeight - rect.height - spacing
+    },
+    "bottom-right": {
+      x: document.documentElement.clientWidth - rect.width - spacing,
+      y: document.documentElement.clientHeight - rect.height - spacing
+    }
+  };
+
+  for (const key of Object.keys(placement)) {
+    const pos: keyof typeof placement = key as keyof typeof placement;
+
+    if (placement[pos].id === id) {
+      return {
+        id: pos,
+        ...posMap[pos]
+      };
+    }
+    else if (placement[pos].id === "secondary" && ["stickyNotes", "shortcuts", "calendar"].includes(id)) {
+      return {
+        id: pos,
+        ...posMap[pos]
+      };
+    }
+  }
+  return null;
+}
+
+function createDockIndicator(dockPos: string) {
+  indicator = document.createElement("div");
+  indicator.classList.add("dock-indicator", "dock-pos", `dock-pos-${dockPos}`);
+  document.body.appendChild(indicator);
 }
 
 function waitForMoveTarget(id: string) {
