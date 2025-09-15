@@ -144,8 +144,6 @@ function getDefault(): Settings {
   };
 }
 
-
-
 function resetSettings() {
   localStorage.removeItem("settings");
   settings = initSettings();
