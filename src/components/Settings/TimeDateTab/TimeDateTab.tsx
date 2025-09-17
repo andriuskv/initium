@@ -1,5 +1,5 @@
 import type { GoogleUser } from "types/calendar";
-import { useState, useRef, type ChangeEvent } from "react";
+import { useState, useRef, type ChangeEvent, useEffect } from "react";
 import { dispatchCustomEvent, getLocalStorageItem, timeout } from "utils";
 import { useSettings } from "contexts/settings";
 import * as calendarService from "services/calendar";
@@ -9,7 +9,7 @@ import GoogleUserDropdown from "./GoogleUserDropdown";
 type CalendarUser = {
   user?: GoogleUser | null,
   message?: string,
-  status?: "connecting"
+  status?: "connecting" | ""
 }
 
 export default function TimeDateTab({ locale }: { locale: any }) {
@@ -24,6 +24,26 @@ export default function TimeDateTab({ locale }: { locale: any }) {
     return { user: null } as unknown as CalendarUser;
   });
   const timeoutId = useRef(0);
+
+  useEffect(() => {
+    function handleGoogleUserSignIn({ detail: { user, connecting } }: CustomEventInit) {
+      if (user) {
+        setCalendarUser({ ...calendarUser, user, status: "" });
+      }
+      else if (connecting) {
+        setCalendarUser({ ...calendarUser, status: "connecting" });
+      }
+      else {
+        setCalendarUser({ ...calendarUser, status: "" });
+      }
+    }
+
+    window.addEventListener("google-user-sign-in", handleGoogleUserSignIn);
+
+    return () => {
+      window.removeEventListener("google-user-sign-in", handleGoogleUserSignIn);
+    };
+  }, [calendarUser]);
 
   function toggleTimeFormat() {
     const { format } = settings;

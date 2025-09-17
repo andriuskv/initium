@@ -106,3 +106,14 @@
 .calendar-list-item-title {
   @mixin text-truncate;
 }
+
+.calendar-connect-container {
+  padding: 0 var(--space-md) var(--space-md) var(--space-md);
+}
+
+.calendar-connect-container-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}

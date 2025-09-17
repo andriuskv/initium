@@ -1,5 +1,7 @@
 import type { GoogleCalendar, GoogleUser } from "types/calendar";
 import { useState } from "react";
+import { dispatchCustomEvent } from "utils";
+import * as calendarService from "services/calendar";
 import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./header-dropdown.css";
@@ -10,17 +12,44 @@ type Props = {
   locale: any,
   toggleCalendarReminders: (calendarId: string, selected: boolean) => void,
   showReminderList: () => void,
+  showMessage: (message: string) => void,
+  initGoogleUser: (user: GoogleUser) => void,
   handleUserSignOut: (shouldCleanup?: boolean) => void
 }
 
-export default function HeaderDropdown({ user, calendars, locale, toggleCalendarReminders, showReminderList, handleUserSignOut }: Props) {
+export default function HeaderDropdown({ user, calendars, locale, toggleCalendarReminders, showReminderList, showMessage, initGoogleUser, handleUserSignOut }: Props) {
   const [calendarsVisible, setCalendarsVisible] = useState(() => localStorage.getItem("calendar-list-visible") === "true");
+  const [userConnecting, setUserConnecting] = useState(false);
 
   function toggleCalendarList() {
     const visible = !calendarsVisible;
 
     setCalendarsVisible(visible);
     localStorage.setItem("calendar-list-visible", visible.toString());
+  }
+
+  async function handleGoogleCalendarConnect() {
+    setUserConnecting(true);
+    dispatchCustomEvent("google-user-sign-in", { connecting: true });
+
+    try {
+      const data = await calendarService.authGoogleUser();
+
+      if ("message" in data) {
+        showMessage(data.message);
+      }
+      else {
+        initGoogleUser(data.user);
+        dispatchCustomEvent("google-user-sign-in", { user: data.user });
+      }
+    } catch (e) {
+      console.log(e);
+      showMessage(locale.global.generic_error_message);
+      dispatchCustomEvent("google-user-sign-in", { connecting: false });
+    }
+    finally {
+      setUserConnecting(false);
+    }
   }
 
   return (
@@ -77,7 +106,15 @@ export default function HeaderDropdown({ user, calendars, locale, toggleCalendar
             ) : null}
           </div>
         </>
-      ) : null}
+      ) : (
+        <div className="dropdown-group calendar-connect-container">
+          <div className="calendar-connect-container-item">
+            <img src="assets/google-product-logos/calendar.png" className="" width="24px" height="24px" loading="lazy" alt=""></img>
+            <span>{locale.settings.time_date.google_calendar}</span>
+          </div>
+          <button className="btn" onClick={handleGoogleCalendarConnect} disabled={userConnecting}>{userConnecting ? locale.settings.time_date.connecting : locale.settings.time_date.connect}</button>
+        </div>
+      )}
       <div className="dropdown-group">
         <button className="btn text-btn dropdown-btn" onClick={showReminderList}>{locale.calendar.reminders_title}</button>
       </div>

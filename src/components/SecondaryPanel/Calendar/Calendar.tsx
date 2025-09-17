@@ -332,10 +332,14 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     });
   }
 
+  function initGoogleUser(user: GoogleUser) {
+    initGoogleCalendar();
+    setGoogleUser(user);
+  }
+
   function handleGoogleUserChange({ detail: user }: CustomEventInit) {
     if (user) {
-      initGoogleCalendar();
-      setGoogleUser(user);
+      initGoogleUser(user);
     }
     else {
       handleUserSignOut();
@@ -1066,7 +1070,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     <>
       {loadingGoogleCalendar ? <Spinner className="google-calendar-spinner"/> : null}
       <HeaderDropdown user={googleUser} calendars={googleCalendars} locale={locale} toggleCalendarReminders={toggleCalendarReminders}
-        showReminderList={showReminderList} handleUserSignOut={handleUserSignOut}/>
+        showReminderList={showReminderList} showMessage={showMessage} initGoogleUser={initGoogleUser} handleUserSignOut={handleUserSignOut}/>
       {message ? <Toast message={message} position="top" offset="40px" locale={locale} dismiss={dismissMessage}/> : null}
       <div className="container-body calendar-current-date">
         <button className="btn text-btn calendar-current-date-btn" onClick={showCurrentDateView}>
