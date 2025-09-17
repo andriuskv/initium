@@ -879,6 +879,14 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       showMessage(locale.calendar.google_event_only_msg);
       return;
     }
+
+    if (reminder.type === "google") {
+      setGoogleReminders([...reminderArray] as GoogleReminder[]);
+    }
+    else {
+      setReminders([...reminderArray]);
+    }
+
     if (calendar) {
       createReminder(reminder, calendar);
     }

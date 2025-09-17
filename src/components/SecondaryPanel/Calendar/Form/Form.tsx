@@ -131,7 +131,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     const pickerColor = initialForm.color ? initialForm.color.startsWith("hsl") ? hslStringToHex(initialForm.color) : initialForm.color : getRandomHexColor();
 
     const formA: FormType = {
-      id: initialForm.id || getRandomString(),
+      id: initialForm.updating ? initialForm.id : getRandomString(),
       type: initialForm.type || "normal",
       creationDate: Date.now(),
       text: initialForm.text,
