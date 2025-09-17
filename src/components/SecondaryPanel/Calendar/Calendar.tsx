@@ -67,6 +67,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   const slideAnimationTimeoutId = useRef(0);
   const notificationCheckIntervalId = useRef(0);
   const first = useRef(true);
+  const firstGoogleCalendarInit = useRef(true);
   const revealed = useRef(false);
   const tomorrowDay = useMemo(() => {
     if (!calendar) {
@@ -77,7 +78,10 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   }, [calendar]);
 
   useEffect(() => {
-    init();
+    if (first.current) {
+      first.current = false;
+      init();
+    }
   }, []);
 
   useEffect(() => {
@@ -106,8 +110,8 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
 
   useEffect(() => {
     if (calendar) {
-      if (first.current) {
-        first.current = false;
+      if (firstGoogleCalendarInit.current) {
+        firstGoogleCalendarInit.current = false;
 
         if (localStorage.getItem("google-user") && localStorage.getItem("gtoken")) {
           initGoogleCalendar();
@@ -263,6 +267,10 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       setGoogleReminders(data.reminders);
       createReminders(data.reminders, calendar);
       setCalendar({ ...calendar });
+
+      if (currentDay) {
+        getVisibleMonth(calendar, { year: currentDay.year, month: currentDay.month });
+      }
     }
     setGoogleCalendars(data.calendars);
   }
@@ -871,6 +879,14 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       showMessage(locale.calendar.google_event_only_msg);
       return;
     }
+
+    if (reminder.type === "google") {
+      setGoogleReminders([...reminderArray] as GoogleReminder[]);
+    }
+    else {
+      setReminders([...reminderArray]);
+    }
+
     if (calendar) {
       createReminder(reminder, calendar);
     }

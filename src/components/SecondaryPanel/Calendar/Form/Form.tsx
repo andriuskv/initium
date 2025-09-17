@@ -131,7 +131,7 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
     const pickerColor = initialForm.color ? initialForm.color.startsWith("hsl") ? hslStringToHex(initialForm.color) : initialForm.color : getRandomHexColor();
 
     const formA: FormType = {
-      id: initialForm.id || getRandomString(),
+      id: initialForm.updating ? initialForm.id : getRandomString(),
       type: initialForm.type || "normal",
       creationDate: Date.now(),
       text: initialForm.text,
@@ -489,8 +489,10 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   function changeReminderType(type: "normal" | "google") {
-    if (type === "google" && !form.eventColors && form.calendarId) {
-      const eventColors = getEventColors(form.calendarId, googleCalendars);
+    const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
+
+    if (type === "google" && !form.eventColors && primaryCalendar) {
+      const eventColors = getEventColors(primaryCalendar.id, googleCalendars);
 
       if (eventColors) {
         setForm({
@@ -500,7 +502,6 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           eventColorIndex: eventColors.length - 1
         });
       }
-
     }
     else {
       setForm({ ...form, type });
