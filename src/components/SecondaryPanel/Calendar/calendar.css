@@ -339,6 +339,12 @@
   font-size: var(--text-lg);
 }
 
+.google-calendar-spinner {
+  position: absolute;
+  top: var(--space-md);
+  right: 76px;
+}
+
 @keyframes calendar-scale-up {
   from {
     transform: scale(1);

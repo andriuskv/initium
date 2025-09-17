@@ -57,6 +57,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   const [view, setView] = useState<{ name: "default" | "day" | "year" | "reminders", data?: unknown }>({ name: "default" });
   const [transition, setTransition] = useState({ x: 0, y: 0, active: false });
   const [slideAnimation, setSlideAnimation] = useState("");
+  const [loadingGoogleCalendar, setLoadingGoogleCalendar] = useState(false);
   const { message, showMessage, dismissMessage }= useMessage("");
   const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [locale.locale, settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
@@ -256,10 +257,12 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   }
 
   async function initGoogleCalendar() {
+    setLoadingGoogleCalendar(true);
     const data = await calendarService.initGoogleCalendar();
 
     if ("message" in data) {
       showMessage(data.message);
+      setLoadingGoogleCalendar(false);
       return;
     }
 
@@ -273,6 +276,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       }
     }
     setGoogleCalendars(data.calendars);
+    setLoadingGoogleCalendar(false);
   }
 
   async function toggleCalendarReminders(calendarId: string, selected: boolean) {
@@ -492,8 +496,6 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
 
   function setVisibleYear(direction: number) {
     const year = currentYear + direction;
-
-
 
     if (calendar && !calendar[year]) {
       calendar[year] = calendarService.generateYear(year);
@@ -1062,6 +1064,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   }
   return (
     <>
+      {loadingGoogleCalendar ? <Spinner className="google-calendar-spinner"/> : null}
       <HeaderDropdown user={googleUser} calendars={googleCalendars} locale={locale} toggleCalendarReminders={toggleCalendarReminders}
         showReminderList={showReminderList} handleUserSignOut={handleUserSignOut}/>
       {message ? <Toast message={message} position="top" offset="40px" locale={locale} dismiss={dismissMessage}/> : null}
