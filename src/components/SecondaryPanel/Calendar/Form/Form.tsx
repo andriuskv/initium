@@ -489,8 +489,10 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
   }
 
   function changeReminderType(type: "normal" | "google") {
-    if (type === "google" && !form.eventColors && form.calendarId) {
-      const eventColors = getEventColors(form.calendarId, googleCalendars);
+    const primaryCalendar = googleCalendars.find(calendar => calendar.primary);
+
+    if (type === "google" && !form.eventColors && primaryCalendar) {
+      const eventColors = getEventColors(primaryCalendar.id, googleCalendars);
 
       if (eventColors) {
         setForm({
@@ -500,7 +502,6 @@ export default function Form({ form: initialForm, locale, user, googleCalendars,
           eventColorIndex: eventColors.length - 1
         });
       }
-
     }
     else {
       setForm({ ...form, type });
