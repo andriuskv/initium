@@ -4,6 +4,7 @@ import { dispatchCustomEvent, timeout, getRandomString, getRandomHslColor, findF
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import * as calendarService from "services/calendar";
+import { observeElement } from "services/widget-pos";
 import { useSettings } from "contexts/settings";
 import { useNotification } from "contexts/notification";
 import { useMessage } from "hooks";
@@ -122,6 +123,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
           calendarService.clearUser();
         }
       }
+      observeElement("calendar");
       checkDate(calendar, currentDay!);
       window.addEventListener("google-user-change", handleGoogleUserChange);
       chromeStorage.subscribeToChanges(({ reminders }) => {
