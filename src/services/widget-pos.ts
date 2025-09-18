@@ -21,6 +21,7 @@ let activeItem: { startClient: { x: number, y: number }, start: { x: number, y: 
 let checked: { [key: string]: boolean } = {};
 let indicator: HTMLElement | null = null;
 let dockPos: { id: string, x: number, y: number } | null = null;
+let observers: { [key: string]: ResizeObserver } = {};
 
 checkIfOutside(true);
 
@@ -83,6 +84,11 @@ function resetItemPos() {
     element.classList.remove("moved");
   }
   dispatchCustomEvent("widget-move-init", items);
+
+  for (const observer of Object.values(observers)) {
+    observer.disconnect();
+  }
+  observers = {};
 }
 
 function getItemPos(id: string) {
@@ -199,6 +205,10 @@ function handlePointerUp() {
   dockPos = null;
 
   if (indicator) {
+    if (observers[activeItem.id]) {
+      observers[activeItem.id].disconnect();
+      delete observers[activeItem.id];
+    }
     indicator.remove();
     indicator = null;
     item.moved = false;
@@ -313,8 +323,32 @@ function updateMoveTarget(id: string) {
   return true;
 }
 
-function checkIfOutside(waitForTarget = false) {
+function fitElement(element: HTMLElement) {
   const spacing = 8;
+  const rect = element.getBoundingClientRect();
+  const maxWidth = document.documentElement.clientWidth - spacing;
+  const maxHeight = document.documentElement.clientHeight - spacing;
+
+  if (rect.width < maxWidth) {
+    if (rect.width + rect.left > maxWidth) {
+      element.style.setProperty("--x", `${(maxWidth - rect.width) / document.documentElement.clientWidth * 100}%`);
+    }
+    else if (rect.left < spacing) {
+      element.style.setProperty("--x", `${spacing / document.documentElement.clientWidth * 100}%`);
+    }
+  }
+
+  if (rect.height < maxHeight) {
+    if (rect.height + rect.top > maxHeight) {
+      element.style.setProperty("--y", `${(maxHeight - rect.height) / document.documentElement.clientHeight * 100}%`);
+    }
+    else if (rect.top < spacing) {
+      element.style.setProperty("--y", `${spacing / document.documentElement.clientHeight * 100}%`);
+    }
+  }
+}
+
+function checkIfOutside(waitForTarget = false) {
   let count = 0;
 
   for (const id of Object.keys(items)) {
@@ -333,27 +367,7 @@ function checkIfOutside(waitForTarget = false) {
         if (!element) {
           continue;
         }
-        const rect = element.getBoundingClientRect();
-        const maxWidth = document.documentElement.clientWidth - spacing;
-        const maxHeight = document.documentElement.clientHeight - spacing;
-
-        if (rect.width < maxWidth) {
-          if (rect.width + rect.left > maxWidth) {
-            element.style.setProperty("--x", `${(maxWidth - rect.width) / document.documentElement.clientWidth * 100}%`);
-          }
-          else if (rect.left < spacing) {
-            element.style.setProperty("--x", `${spacing / document.documentElement.clientWidth * 100}%`);
-          }
-        }
-
-        if (rect.height < maxHeight) {
-          if (rect.height + rect.top > maxHeight) {
-            element.style.setProperty("--y", `${(maxHeight - rect.height) / document.documentElement.clientHeight * 100}%`);
-          }
-          else if (rect.top < spacing) {
-            element.style.setProperty("--y", `${spacing / document.documentElement.clientHeight * 100}%`);
-          }
-        }
+        fitElement(element);
         checked[id] = true;
         count -= 1;
       }
@@ -370,6 +384,24 @@ function checkIfOutside(waitForTarget = false) {
   }
 }
 
+function observeElement(id: string) {
+  const element = document.querySelector(`[data-move-target="${id}"]`) as HTMLElement;
+
+  if (!element || !items[id].moved) {
+    return;
+  }
+
+  if (observers[id]) {
+    observers[id].disconnect();
+  }
+  observers[id] = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      fitElement(entry.target as HTMLElement);
+    }
+  });
+  observers[id].observe(element);
+}
+
 window.addEventListener("resize", () => {
   checkIfOutside();
 });
@@ -378,5 +410,6 @@ export {
   resetItemPos,
   getItemPos,
   handleMoveInit,
-  updateMoveTarget
+  updateMoveTarget,
+  observeElement
 };
