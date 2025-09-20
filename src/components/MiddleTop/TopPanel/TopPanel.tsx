@@ -67,11 +67,13 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
   const vertical = false;
 
   useEffect(() => {
-    initElementZindex(containerRef.current, "topPanel");
-
     if (forceVisibility) {
       setVisible(true);
       resetTopPanel();
+      increaseElementZindex(containerRef.current, "topPanel");
+    }
+    else {
+      initElementZindex(containerRef.current, "topPanel");
     }
 
     return () => {

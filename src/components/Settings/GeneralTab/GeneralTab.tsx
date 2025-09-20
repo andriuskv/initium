@@ -2,7 +2,7 @@ import { dispatchCustomEvent } from "utils";
 import { useModal } from "hooks";
 import { initAppearanceSettings } from "services/settings";
 import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
-import { resetItemPos } from "services/widget-pos";
+import { resetItemPos } from "services/widgetStates";
 import { useSettings } from "contexts/settings";
 import Modal from "components/Modal";
 import "./general-tab.css";
@@ -64,7 +64,6 @@ export default function GeneralTab({ locale }: { locale: any }) {
     }
     localStorage.removeItem("first");
     localStorage.removeItem("noise");
-    localStorage.removeItem("widget-states");
     localStorage.removeItem("widgets-pos");
 
     const newSettings = resetSettings();

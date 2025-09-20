@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense, useMemo } from "react";
 import { getLocalStorageItem, timeout } from "utils";
 import * as focusService from "services/focus";
-import { handleMoveInit } from "services/widget-pos";
+import { handleMoveInit } from "services/widgetStates";
 import TabsContainer from "components/TabsContainer";
 import Spinner from "components/Spinner";
 import Icon from "components/Icon";

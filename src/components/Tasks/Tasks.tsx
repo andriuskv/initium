@@ -1,7 +1,6 @@
 import type { AppearanceSettings, GeneralSettings, TasksSettings } from "types/settings";
 import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { getWidgetState, setWidgetState, handleZIndex, initElementZindex, increaseElementZindex } from "services/widgetStates";
-import { getItemPos } from "services/widget-pos";
 import { useLocalization } from "contexts/localization";
 import "./tasks.css";
 import { getSetting } from "services/settings";
@@ -26,8 +25,8 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [collapsing, setCollapsing] = useState(false);
   const timeoutId = useRef(0);
-  const pos = getItemPos("tasks");
-  const [moved, setMoved] = useState(pos.moved);
+  const widgetState = getWidgetState("tasks");
+  const [moved, setMoved] = useState(widgetState.moved);
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -103,7 +102,7 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
         </div>
       ) : null}
       <div className={`tasks${expanded ? " expanded" : ""}${collapsing ? " collapsing" : ""}${state.revealed ? " revealed" : ""} ${corner}${moved ? " moved" : ""}`}
-        style={{ "--x": `${pos.x}%`, "--y": `${pos.y}%` } as CSSProperties}
+        style={{ "--x": `${widgetState.x}%`, "--y": `${widgetState.y}%` } as CSSProperties}
         onClick={event => handleZIndex(event, "tasks")} data-move-target="tasks" ref={container}>
         {moved && !state.visible ? null : (
           <button className={`btn tasks-toggle-btn${state.visible ? " shifted" : ""}${state.hiding ? " hiding" : ""}`}

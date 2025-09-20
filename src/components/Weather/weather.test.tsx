@@ -26,8 +26,7 @@ vi.mock("services/weather", () => ({
 
 vi.mock("services/widgetStates", async () => ({
   ...(await vi.importActual("services/widgetStates")),
-  handleZIndex: vi.fn(),
-  getWidgetState: vi.fn()
+  getWidgetState: vi.fn(() => ({ opened: false, zIndex: 1 }))
 }));
 
 const mockCurrentWeather = {

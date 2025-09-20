@@ -5,7 +5,7 @@ import { getRandomString, timeout, replaceLink, parseLocaleString } from "utils"
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
 import { formatDate, getDSTChangeDirection } from "services/timeDate";
-import { handleMoveInit } from "services/widget-pos";
+import { handleMoveInit } from "services/widgetStates";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";

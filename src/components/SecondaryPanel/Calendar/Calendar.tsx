@@ -4,7 +4,7 @@ import { dispatchCustomEvent, timeout, getRandomString, getRandomHslColor, findF
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import * as calendarService from "services/calendar";
-import { observeElement } from "services/widget-pos";
+import { observeElement } from "services/widgetStates";
 import { useSettings } from "contexts/settings";
 import { useNotification } from "contexts/notification";
 import { useMessage } from "hooks";

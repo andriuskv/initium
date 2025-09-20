@@ -7,7 +7,8 @@ import MoreWeather from "./MoreWeather";
 import locale from "lang/en.json" assert { type: "json" };
 import userEvent from "@testing-library/user-event";
 
-vi.mock("services/widget-pos", () => ({
+vi.mock("services/widgetStates", async () => ({
+  ...(await vi.importActual("services/widgetStates")),
   handleMoveInit: vi.fn()
 }));
 

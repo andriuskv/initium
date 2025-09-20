@@ -6,24 +6,24 @@ beforeEach(() => {
 });
 
 test("should increase z-index", () => {
-  const index = increaseZIndex("test");
+  const index = increaseZIndex("tasks");
 
   expect(index).toBe(2);
 });
 
 test("should not increase z-index for the same component", () => {
-  let index = increaseZIndex("test");
-  expect(index).toBe(2);
+  let index = increaseZIndex("tasks");
+  expect(index).toBe(1);
 
-  index = increaseZIndex("test");
-  expect(index).toBe(2);
+  index = increaseZIndex("tasks");
+  expect(index).toBe(1);
 });
 
 test("should increase z-index for a different component", () => {
-  const index1 = increaseZIndex("test1");
+  const index1 = increaseZIndex("tasks");
 
-  expect(index1).toBe(2);
+  expect(index1).toBe(1);
 
-  const index2 = increaseZIndex("test2");
-  expect(index2).toBe(3);
+  const index2 = increaseZIndex("weather");
+  expect(index2).toBe(2);
 });
