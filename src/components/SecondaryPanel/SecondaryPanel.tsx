@@ -4,8 +4,7 @@ import { useState, useEffect, useRef, lazy, Suspense, type CSSProperties } from 
 import { dispatchCustomEvent } from "utils";
 import { useSettings } from "contexts/settings";
 import { getSetting } from "services/settings";
-import { handleZIndex, initElementZindex, increaseElementZindex, getWidgetState, setWidgetState } from "services/widgetStates";
-import { getItemPos, handleMoveInit } from "services/widget-pos";
+import { handleZIndex, initElementZindex, increaseElementZindex, getWidgetState, setWidgetState, handleMoveInit } from "services/widgetStates";
 import * as focusService from "services/focus";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
@@ -174,12 +173,10 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
     const { rememberWidgetState } = getSetting("general") as GeneralSettings;
 
     for (const id of ["stickyNotes", "shortcuts", "calendar"]) {
-      const { opened } = getWidgetState(id);
-      const pos = getItemPos(id);
+      const state = getWidgetState(id);
+      items[id] = { ...items[id], ...state };
 
-      items[id] = { ...items[id], ...pos };
-
-      if (opened && rememberWidgetState) {
+      if (state.opened && rememberWidgetState) {
         items[id] = { ...items[id], visible: true, revealed: true, rendered: true };
       }
     }

@@ -4,7 +4,7 @@ import { getRandomString, timeout } from "utils";
 import { useLocalization } from "contexts/localization";
 import FullscreenModal from "components/FullscreenModal";
 import Spinner from "components/Spinner";
-import { getItemPos } from "services/widget-pos";
+import { getWidgetState } from "services/widgetStates";
 
 const Settings = lazy(() => import("components/Settings"));
 const WallpaperViewer = lazy(() => import("components/WallpaperViewer"));
@@ -81,7 +81,7 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
     );
   }
   else if (fullscreenModal.id === "settings") {
-    const item = getItemPos("settings");
+    const item = getWidgetState("settings");
     const props = {
       moved: item.moved,
       attrs: {

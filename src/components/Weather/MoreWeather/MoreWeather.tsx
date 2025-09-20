@@ -2,7 +2,7 @@ import type { Current, Hour, Weekday, View } from "types/weather";
 import type { WeatherSettings } from "types/settings";
 import { useState, useRef, type CSSProperties } from "react";
 import { timeout } from "utils";
-import { handleMoveInit } from "services/widget-pos";
+import { handleMoveInit } from "services/widgetStates";
 import { useSettings } from "contexts/settings";
 import TabsContainer from "components/TabsContainer";
 import Icon from "components/Icon";

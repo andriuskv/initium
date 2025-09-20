@@ -5,7 +5,6 @@ import * as focusService from "services/focus";
 import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getTimeString } from "services/timeDate";
 import { getWidgetState, setWidgetState, handleZIndex, initElementZindex, increaseElementZindex } from "services/widgetStates";
-import { getItemPos } from "services/widget-pos";
 import { useLocalization } from "contexts/localization";
 import { useSettings } from "contexts/settings";
 import "./weather.css";
@@ -36,8 +35,8 @@ export default function Weather({ timeFormat, corner }: Props) {
   const timeoutId = useRef(0);
   const moreButton = useRef<HTMLButtonElement>(null);
   const container = useRef<HTMLDivElement>(null);
-  const pos = getItemPos("weather");
-  const [moved, setMoved] = useState(pos.moved);
+  const widgetState = getWidgetState("weather");
+  const [moved, setMoved] = useState(widgetState.moved);
 
   useEffect(() => {
     function handleMoveInit({ detail: { weather } }: CustomEventInit) {
@@ -266,7 +265,7 @@ export default function Weather({ timeFormat, corner }: Props) {
         </div>
       ): null}
       <div className={`weather ${corner}${moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "weather")}
-      style={{ "--x": `${pos.x}%`, "--y": `${pos.y}%` } as CSSProperties} data-move-target="weather" ref={container}>
+      style={{ "--x": `${widgetState.x}%`, "--y": `${widgetState.y}%` } as CSSProperties} data-move-target="weather" ref={container}>
         {moved ? null : <WeatherSmall current={current} locale={locale} settings={settings} moreButton={moreButton} hidden={state.reveal} showMoreWeather={showMoreWeather}/>
         }
         <div className={`container weather-more${state.visible ? " visible" : ""}${state.reveal ? " reveal" : ""} corner-item`}>
