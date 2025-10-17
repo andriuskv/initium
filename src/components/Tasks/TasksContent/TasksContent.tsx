@@ -1,18 +1,18 @@
 import type { AppearanceSettings, GeneralSettings, TasksSettings, TimeDateSettings } from "types/settings";
 import type { Group, Label, TaskRepeat, TaskRepeatHistory, TaskType, Subtask, TaskForm } from "../tasks.type";
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { getRandomString, timeout, replaceLink, parseLocaleString } from "utils";
+import { getRandomString, timeout, replaceLink } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import { getSetting } from "services/settings";
 import { formatDate, getDSTChangeDirection } from "services/timeDate";
-import { handleMoveInit } from "services/widgetStates";
 import Icon from "components/Icon";
-import Dropdown from "components/Dropdown";
 import CreateButton from "components/CreateButton";
 import Toast from "components/Toast";
 import Spinner from "components/Spinner";
 import "./tasks-content.css";
 import Task from "./Task";
+import Header from "./Header/Header";
+import Footer from "./Footer/Footer";
 
 const Form = lazy(() => import("./Form"));
 const Groups = lazy(() => import("./Groups"));
@@ -517,35 +517,36 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     hideForm();
   }
 
-  function toggleGroupVisibility(group: Group) {
+  function toggleGroupVisibility(group: Group, index: number) {
     if (!groups) {
       return;
     }
     const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
+    const newGroup = { ...group };
 
-    if (group.expanded) {
-      group.state = "collapsing";
+    if (newGroup.expanded) {
+      newGroup.state = "collapsing";
     }
     else {
-      group.state = "expanding";
-      group.expanded = true;
+      newGroup.state = "expanding";
+      newGroup.expanded = true;
     }
-
     groupToggleTimeoutId.current = timeout(() => {
       if (!groups) {
         return;
       }
 
-      if (group.state === "collapsing") {
-        group.expanded = false;
+      if (newGroup.state === "collapsing") {
+        newGroup.expanded = false;
       }
-      delete group.state;
+      delete newGroup.state;
 
-      setGroups([ ...groups ]);
-      saveTasks(groups);
+      const newGroups = groups.with(index, newGroup);
+
+      setGroups(newGroups);
+      saveTasks(newGroups);
     }, 200 * animationSpeed, groupToggleTimeoutId.current);
-
-    setGroups([ ...groups]);
+    setGroups(groups.with(index, newGroup));
   }
 
   function showForm() {
@@ -741,22 +742,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     );
   }
 
-  const completeMessage = parseLocaleString(locale.tasks.task_complete_mesasge, <span className="tasks-dialog-count" key={removedItems.length}>{removedItems.length}</span>, removedItems.length > 1 ? locale.tasks.task_plural : locale.tasks.task_singular);
-
   return (
     <>
-      <div className="container-header" onPointerDown={handleMoveInit} data-move-id="tasks">
-        <Dropdown>
-          <button className="btn icon-text-btn dropdown-btn" onClick={showGroups}>
-            <Icon id="menu"/>
-            <span>{locale.tasks.groups}</span>
-          </button>
-          <button className="btn icon-text-btn dropdown-btn" onClick={toggleSize}>
-            <Icon id={`vertical-${expanded ? "shrink" : "expand"}`}/>
-            <span>{expanded ? locale.global.shrink : locale.global.expand}</span>
-          </button>
-        </Dropdown>
-      </div>
+      <Header locale={locale} expanded={expanded} toggleSize={toggleSize} showGroups={showGroups}/>
       <div className={`container-body tasks-body${removedItems.length > 0 ? " dialog-visible" : ""}`}>
         {taskCount > 0 ? (
           <ul className="tasks-groups-container">
@@ -764,7 +752,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
               <li key={group.id} className="tasks-group">
                 {(groupIndex > 0 || settings.defaultGroupVisible) && (
                   <button className={`btn icon-btn tasks-groups-item tasks-groups-item-toggle-btn${group.expanded ? " expanded" : ""}`}
-                    onClick={() => toggleGroupVisibility(group)}
+                    onClick={() => toggleGroupVisibility(group, groupIndex)}
                     disabled={!group.taskCount || group.hiding}
                     title={group.taskCount > 0 ? group.expanded ? locale.global.collapse : locale.global.expand : ""}>
                     <span className="tasks-group-count">{group.taskCount}</span>
@@ -792,12 +780,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         <CreateButton className="tasks-create-btn" onClick={showForm} shiftTarget=".task-edit-btn" trackScroll></CreateButton>
         {storageWarning ? <Toast message={storageWarning.message} position="bottom" locale={locale} dismiss={dismissStorageWarning}/> : null}
       </div>
-      {removedItems.length > 0 && (
-        <div className="container-footer tasks-dialog">
-          <span>{completeMessage}</span>
-          <button className="btn text-btn" onClick={undoRemovedTasks}>{locale.tasks.undo}</button>
-        </div>
-      )}
+      {removedItems.length > 0 && <Footer locale={locale} removedItemsCount={removedItems.length} undoRemovedTasks={undoRemovedTasks}/>}
     </>
   );
 }

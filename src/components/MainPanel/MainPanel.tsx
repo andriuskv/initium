@@ -1,4 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type ReactNode } from "react";
+import type { AppearanceSettings, MainPanelSettings } from "types/settings";
+import type { Tab, Tabs } from "./MainPanel.type";
 import { getSetting, updateSetting } from "services/settings";
 import { handleZIndex } from "services/widgetStates";
 import { hasStoredFeeds } from "services/feeds";
@@ -8,7 +10,8 @@ import Resizer from "components/Resizer";
 import Spinner from "components/Spinner";
 import "./main-panel.css";
 import Sidebar from "./Sidebar";
-import type { AppearanceSettings, MainPanelSettings } from "types/settings";
+import Nav from "./Nav/Nav";
+
 
 const TopSites = lazy(() => import("./TopSites"));
 const Notepad = lazy(() => import("./Notepad"));
@@ -18,20 +21,6 @@ type Props = {
   settings: MainPanelSettings
 }
 
-type Tab = {
-  id: string,
-  title: string,
-  iconId: string,
-  disabled?: boolean,
-  renderPending?: boolean,
-  expandable?: boolean,
-  indicatorVisible?: boolean,
-  delay?: number,
-  firstRender?: boolean
-}
-
-type Tabs = { [key: string]: Tab };
-
 type ActiveTab = {
   id: string,
   expanded?: boolean,
@@ -40,7 +29,7 @@ type ActiveTab = {
   params?: { [key: string]: any }
 }
 
-function renderComponent(tab: Tab, activeTabId: string, component: ReactNode, showSpinner?: boolean) {
+function Component({ children, tab, activeTabId, showSpinner }: { children: ReactNode, tab: Tab, activeTabId: string, showSpinner?: boolean}) {
   if (tab.disabled) {
     return null;
   }
@@ -50,7 +39,7 @@ function renderComponent(tab: Tab, activeTabId: string, component: ReactNode, sh
 
   return (
     <div className={`container main-panel-item${activeTabId === tab.id ? "" : " hidden"}`}>
-      {tab.renderPending ? fallback : <Suspense fallback={fallback}>{component}</Suspense>}
+      {tab.renderPending ? fallback : <Suspense fallback={fallback}>{children}</Suspense>}
     </div>
   );
 }
@@ -269,20 +258,7 @@ export default function MainPanel({ settings }: Props) {
   return (
     <div className={`main-panel${tabExpandable ? " expandable" : ""}${activeTab.expanded ? " expanded" : ""}${settings.navHidden || settings.navDisabled ? " nav-hidden" : ""}${activeTab.collapsing ? " collapsing" : ""}`}
       onClick={event => handleZIndex(event, "mainPanel")} ref={containerRef}>
-      {settings.navHidden || settings.navDisabled ? null : (
-        <ul className="main-panel-nav">
-          {Object.values(tabs).map(tab => (
-            tab.disabled ? null : (
-              <li key={tab.id}>
-                <button className={`btn icon-btn panel-item-btn${tab.indicatorVisible ? " indicator" : ""}`}
-                  onClick={() => selectTab(tab.id)} aria-label={tab.title} data-tooltip={tab.title}>
-                  <Icon id={tab.iconId} className="panel-item-btn-icon"/>
-                </button>
-              </li>
-            )
-          ))}
-        </ul>
-      )}
+      <Nav tabs={tabs} disabled={settings.navHidden || settings.navDisabled} selectTab={selectTab}/>
       {tabExpandable && (
         <Sidebar expanded={activeTab.expanded} locale={locale} expandTab={expandTab}
           resizerEnabled={resizerEnabled} toggleResizer={toggleResizer}/>
@@ -294,8 +270,12 @@ export default function MainPanel({ settings }: Props) {
           </Suspense>
         </div>
       )}
-      {renderComponent(tabs.notepad, activeTab.id, <Notepad locale={locale}/>, true)}
-      {renderComponent(tabs.rssFeed, activeTab.id, <RssFeed locale={locale} showIndicator={showIndicator}/>)}
+      <Component tab={tabs.notepad} activeTabId={activeTab.id} showSpinner={true}>
+        <Notepad locale={locale}/>
+      </Component>
+      <Component tab={tabs.rssFeed} activeTabId={activeTab.id}>
+        <RssFeed locale={locale} showIndicator={showIndicator}/>
+      </Component>
       {resizerEnabled && <Resizer saveHeight={saveHeight}/>}
     </div>
   );

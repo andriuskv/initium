@@ -1,4 +1,4 @@
-import type { FeedType } from "types/feed";
+import type { FeedTypeName, FeedType } from "types/feed";
 import type { PropsWithChildren, MouseEvent, KeyboardEvent, FocusEvent } from "react";
 import Icon from "components/Icon";
 import Dropdown from "components/Dropdown";
@@ -8,7 +8,7 @@ type Props = PropsWithChildren & {
   locale: any,
   index: number,
   feed: FeedType,
-  updateFeed: (feed: FeedType, type: "active" | "inactive" | "failed", shouldSave?: boolean) => void,
+  updateFeed: (feed: FeedType, type: FeedTypeName, shouldSave?: boolean) => void,
   selectFeedFromList: (event: MouseEvent<HTMLButtonElement>, index: number) => void,
   deactivateFeed: (index: number) => void,
   removeFeed: (index: number, type: string) => void,

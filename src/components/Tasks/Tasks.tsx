@@ -14,10 +14,11 @@ type Props = {
 }
 
 export default function Tasks({ settings, generalSettings, corner }: Props) {
+  const widgetState = getWidgetState("tasks");
   const locale = useLocalization();
   const [state, setState] = useState(() => {
     if (generalSettings.rememberWidgetState) {
-      const { opened } = getWidgetState("tasks");
+      const { opened } = widgetState;
       return { rendered: opened, visible: opened, revealed: opened, hiding: false };
     }
     return { rendered: false, visible: false, revealed: false, hiding: false };
@@ -25,7 +26,6 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [collapsing, setCollapsing] = useState(false);
   const timeoutId = useRef(0);
-  const widgetState = getWidgetState("tasks");
   const [moved, setMoved] = useState(widgetState.moved);
   const container = useRef<HTMLDivElement>(null);
 
@@ -86,7 +86,6 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
 
       setTimeout(() => {
         setCollapsing(false);
-
       }, 200 * (getSetting("appearance") as AppearanceSettings).animationSpeed);
     }
     else {

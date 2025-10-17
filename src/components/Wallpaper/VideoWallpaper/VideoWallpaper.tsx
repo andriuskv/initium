@@ -13,6 +13,19 @@ export default function VideoWallpaper({ url, playbackSpeed, removeDownscaled }:
   const timeoutId = useRef(0);
 
   useEffect(() => {
+    function handlePageVisibilityChange() {
+      if (!ref.current) {
+        return;
+      }
+
+      if (document.hidden) {
+        ref.current.pause();
+      }
+      else {
+        ref.current.play();
+      }
+    }
+
     if (!ref.current) {
       return;
     }
@@ -44,18 +57,6 @@ export default function VideoWallpaper({ url, playbackSpeed, removeDownscaled }:
     }
   }, [playbackSpeed]);
 
-  function handlePageVisibilityChange() {
-    if (!ref.current) {
-      return;
-    }
-
-    if (document.hidden) {
-      ref.current.pause();
-    }
-    else {
-      ref.current.play();
-    }
-  }
 
   return <video src={url} className="wallpaper-video" loop muted autoPlay crossOrigin="anonymous" ref={ref}></video>;
 }

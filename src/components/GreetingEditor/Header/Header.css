@@ -1,0 +1,17 @@
+.greeting-editor-dropdown {
+  right: auto;
+  left: 0;
+  padding: var(--space-xl);
+}
+
+.greeting-editor-info-items {
+  padding-left: var(--space-xl);
+  list-style: disc;
+}
+
+.greeting-editor-space-usage {
+  margin-left: var(--space-md);
+  margin-right: auto;
+  color: var(--color-white-60);
+  font-weight: bold;
+}

@@ -4,15 +4,17 @@ import tsParser from "@typescript-eslint/parser";
 import globals from "globals";
 import react from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
-import * as reactHooks from 'eslint-plugin-react-hooks';
+import reactHooks from "eslint-plugin-react-hooks";
 import css from "@eslint/css";
+import { globalIgnores } from "eslint/config";
 
 export default [
+  globalIgnores(["dist"]),
   js.configs.recommended,
   ...tsEslint.configs.recommended,
   react.configs.flat.recommended,
-  reactHooks.configs.recommended,
-  reactHooks.configs["recommended-latest"],
+  reactHooks.configs.flat.recommended,
+  reactHooks.configs.flat["recommended-latest"],
   {
     files: ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
     languageOptions: {

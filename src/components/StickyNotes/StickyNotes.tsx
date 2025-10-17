@@ -51,7 +51,6 @@ export default function StickyNotes() {
     if (event.detail === 2) {
       const index = notes.findIndex(({ id }) => note.id === id);
 
-
       setForm({ ...note, index, action: "edit" });
     }
   }
@@ -99,7 +98,7 @@ export default function StickyNotes() {
 
   return (
     <>
-      { notesToRender ? (
+      {notesToRender?.length ? (
         <ul className="sticky-notes">
           {notesToRender.map(note => (
             <li className={`sticky-note${note.discarding ? " discarding" : ""}`} style={{ "--x": note.x, "--y": note.y, "--tilt": note.tilt, "--scale": note.scale, "--text-scale": note.textScale, backgroundColor: note.backgroundColor, "--text-color": note.textStyle.string } as CSSProperties} onClick={event => handleNoteClick(note, event)}

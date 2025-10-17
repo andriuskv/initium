@@ -1,4 +1,4 @@
-import type { Entry, FeedType, FailedFeedType, Feeds, Nav } from "types/feed";
+import type { Entry, FeedTypeName, FeedType, FailedFeedType, Feeds, Nav } from "types/feed";
 import { useState, useEffect, useRef, lazy, Suspense, type MouseEvent } from "react";
 import { getLocalStorageItem, timeout } from "utils";
 import * as chromeStorage from "services/chromeStorage";
@@ -437,7 +437,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
     }
   }
 
-  function updateTypeFeed(feed: FeedType, type: "active" | "inactive" | "failed", save = true) {
+  function updateTypeFeed(feed: FeedType, type: FeedTypeName, save = true) {
     updateFeeds({
       ...feeds,
       [type]: feeds[type].map(f => {
@@ -449,7 +449,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
     }, save);
   }
 
-  function removeFeed(index: number, type: "active" | "inactive" | "failed", save = true) {
+  function removeFeed(index: number, type: FeedTypeName, save = true) {
     const newFeeds = {
       ...feeds,
       [type]: feeds[type].toSpliced(index, 1)

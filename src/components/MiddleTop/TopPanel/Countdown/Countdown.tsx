@@ -1,5 +1,5 @@
 import type { TimeDateSettings } from "types/settings";
-import type { TabName } from "../top-panel-types";
+import type { TabName } from "../top-panel.type";
 import type { Units, Countdown } from "./countdown.types";
 import { useState, useEffect, useRef, lazy } from "react";
 import { dispatchCustomEvent, getRandomString } from "utils";
