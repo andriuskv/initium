@@ -272,7 +272,7 @@ export default function Weather({ timeFormat, corner }: Props) {
           <div className="weather-transition-target weather-more-info">
             <Suspense fallback={null}>
               {state.rendered && <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits}
-                message={moreWeatherMessage} locale={locale} settings={settings} hide={hideMoreWeather}/>}
+                message={moreWeatherMessage} locale={locale} hide={hideMoreWeather}/>}
             </Suspense>
           </div>
         </div>

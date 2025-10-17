@@ -44,4 +44,4 @@ export type Hour = {
   }
 }
 
-export type View = "temp" | "prec" | "wind";
+export type View = "temperature" | "precipitation" | "wind";

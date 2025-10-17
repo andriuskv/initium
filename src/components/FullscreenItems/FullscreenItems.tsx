@@ -104,7 +104,7 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
     return (
       <FullscreenModal transparent mask noAnim hide={hideFullscreenModal}>
         <Suspense fallback={null}>
-          <WallpaperViewer locale={locale} hide={hideFullscreenModal}/>
+          <WallpaperViewer hide={hideFullscreenModal}/>
         </Suspense>
       </FullscreenModal>
     );

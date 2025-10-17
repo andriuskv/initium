@@ -9,6 +9,8 @@ export type Entry = {
   thumbnail?: string
 }
 
+export type FeedTypeName = "active" | "inactive" | "failed";
+
 export type FeedType = {
   id: string,
   title: string,

@@ -17,13 +17,13 @@ type Item = {
 
 type Items = { [key: string]: Item };
 
+let saveTimeoutId = 0;
 let items = initItems();
 let topWidget: { id: string, index: number } = initTopWidget(items);
 let activeItem: { startClient: { x: number, y: number }, start: { x: number, y: number }, id: string, element: HTMLElement } | null = null;
 let indicator: HTMLElement | null = null;
 let dockPos: { id: string, x: number, y: number } | null = null;
 let observers: { [key: string]: ResizeObserver } = {};
-let saveTimeoutId = 0;
 const spacing = 8;
 
 checkIfOutside(true);

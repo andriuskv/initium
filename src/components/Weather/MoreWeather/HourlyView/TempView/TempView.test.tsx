@@ -1,7 +1,7 @@
 import { expect, test, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import HourlyView from "./HourlyView";
+import TempView from "./TempView";
 import { type Hour } from "types/weather";
 
 vi.mock("services/weather");
@@ -122,7 +122,7 @@ beforeEach(() => {
 });
 
 test("renders temperature values and graph correctly in C", () => {
-  render(<HourlyView view="temp" hourly={mockHourlyDataC} units="C" speedUnits="m/s"/>);
+  render(<TempView hourly={mockHourlyDataC}/>);
 
   // Every 3 item is rendered starting from index 1
   expect(screen.getAllByText(/°/)).toHaveLength(2);
@@ -131,48 +131,9 @@ test("renders temperature values and graph correctly in C", () => {
 });
 
 test("renders temperature values and graph correctly in F", () => {
-  render(<HourlyView view="temp" hourly={mockHourlyDataF} units="F" speedUnits="m/s"/>);
+  render(<TempView hourly={mockHourlyDataF}/>);
 
   expect(screen.getByText("20°")).toBeInTheDocument();
   expect(screen.getByText("50°")).toBeInTheDocument();
 
-});
-
-test("renders precipitation values and graph correctly", () => {
-  render(<HourlyView view="prec" hourly={mockHourlyDataC} units="C" speedUnits="m/s"/>);
-
-  // Every 3 item is rendered starting from index 1
-  expect(screen.getAllByText(/%/)).toHaveLength(2);
-  expect(screen.getByText("30%")).toBeInTheDocument();
-  expect(screen.getByText("25%")).toBeInTheDocument();
-
-  const bars = screen.getAllByTestId("bar");
-
-  expect(bars[0]).toHaveStyle({ height: "20%" });
-  expect(bars[1]).toHaveStyle({ height: "30%" });
-  expect(bars[2]).toHaveStyle({ height: "40%" });
-  expect(bars[3]).toHaveStyle({ height: "10%" });
-  expect(bars[4]).toHaveStyle({ height: "25%" });
-});
-
-test("renders wind values and icons correctly in m/s", () => {
-  render(<HourlyView view="wind" hourly={mockHourlyDataC} units="C" speedUnits="m/s"/>);
-
-  expect(screen.getAllByText(/m\/s/)).toHaveLength(2);
-  expect(screen.getByText("7 m/s")).toBeInTheDocument();
-  expect(screen.getByText("8 m/s")).toBeInTheDocument();
-
-  expect(screen.getByTitle("South")).toBeInTheDocument();
-  expect(screen.getByTitle("Northeast")).toBeInTheDocument();
-});
-
-test("renders wind values and icons correctly in ft/s", () => {
-  render(<HourlyView view="wind" hourly={mockHourlyDataC} units="C" speedUnits="ft/s" />);
-
-  expect(screen.getAllByText(/ft\/s/)).toHaveLength(2);
-  expect(screen.getByText("7 ft/s")).toBeInTheDocument();
-  expect(screen.getByText("8 ft/s")).toBeInTheDocument();
-
-  expect(screen.getByTitle("South")).toBeInTheDocument();
-  expect(screen.getByTitle("Northeast")).toBeInTheDocument();
 });

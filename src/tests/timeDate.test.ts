@@ -24,7 +24,7 @@ test("should get offsetted current time", () => {
   const offset2 = getOffsettedCurrentTime(1000 * 60 * 60 * 2);
   const offset3 = getOffsettedCurrentTime(-1000 * 60 * 60 * 2);
 
-  expect(offset1).toBe(`${hours}:${padTime(minutes)}`);
+  expect(offset1).toBe(`${padTime(hours)}:${padTime(minutes)}`);
 
   expect(offset1).toMatch(/^\d{2}:\d{2}$/);
   expect(offset2).toMatch(/^\d{2}:\d{2}$/);

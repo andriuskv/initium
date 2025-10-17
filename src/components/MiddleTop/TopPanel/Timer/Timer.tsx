@@ -1,4 +1,4 @@
-import type { TabName } from "../top-panel-types";
+import type { TabName } from "../top-panel.type";
 import type { Preset, Time } from "./timer.type";
 import { useState, useEffect, useRef, lazy, type ChangeEvent, type MouseEvent } from "react";
 import { timeout, getRandomString, dispatchCustomEvent, getLocalStorageItem } from "utils";

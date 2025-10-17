@@ -14,6 +14,7 @@ type Props = {
 
 export default function Form({ form, locale, hiding, updateSite, hide }: Props) {
   const [message, setMessage] = useState<string>("");
+
   function handleFormSubmit(event: FormEvent) {
     interface FormElements extends HTMLFormControlsCollection {
       url: HTMLInputElement;

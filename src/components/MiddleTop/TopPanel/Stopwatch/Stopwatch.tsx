@@ -1,4 +1,4 @@
-import type { TabName } from "../top-panel-types";
+import type { TabName } from "../top-panel.type";
 import { useState, useEffect, useRef, lazy, type ChangeEvent } from "react";
 import { dispatchCustomEvent, getLocalStorageItem } from "utils";
 import { padTime } from "services/timeDate";

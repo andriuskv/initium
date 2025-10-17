@@ -1,16 +1,11 @@
-import type { WallpaperSettings } from "types/settings";
 import { useState, useEffect, useRef, type MouseEvent as ReactMouseEvent, type SyntheticEvent } from "react";
+import type { WallpaperSettings } from "types/settings";
+import type { ImageType, Area } from "./WallpaperViewer.type";
 import { useSettings } from "contexts/settings";
-import { getIDBWallpaper, updateDownscaledWallpaperPosition } from "services/wallpaper";
+import { getIDBWallpaper } from "services/wallpaper";
 import Spinner from "components/Spinner";
 import "./wallpaper-viewer.css";
-
-type ImageType = {
-  naturalWidth: number,
-  naturalHeight: number,
-  width: number,
-  height: number
-};
+import BottomBar from "./BottomBar/BottomBar";
 
 type ViewportType = {
   width: number,
@@ -43,16 +38,8 @@ function useUrl({ id, url: imageUrl }: WallpaperSettings): string | null {
   return url;
 }
 
-
-type Area = {
-  width: number,
-  height: number,
-  x: number,
-  y: number
-}
-
-export default function WallpaperViewer({ locale, hide }: { locale: any, hide: () => void }) {
-  const { settings: { appearance: { wallpaper: settings } }, updateContextSetting } = useSettings();
+export default function WallpaperViewer({ hide }: { hide: () => void }) {
+  const { settings: { appearance: { wallpaper: settings } } } = useSettings();
   const url = useUrl(settings);
   const [area, setArea] = useState<Area | null>(null);
   const [image, setImage] = useState<ImageType | null>(null);
@@ -193,36 +180,6 @@ export default function WallpaperViewer({ locale, hide }: { locale: any, hide: (
     }
   }
 
-  function getWallpaperPosition(value: number, dimensionName: "width" | "height") {
-    const areaDimension = area![dimensionName];
-    const imageDimension = image![dimensionName];
-    const diff = imageDimension - areaDimension;
-
-    if (diff === 0) {
-      return 0;
-    }
-    return value / diff * 100;
-  }
-
-  function saveWallpaperPosition() {
-    if (!area) {
-      return;
-    }
-    const x = getWallpaperPosition(area.x, "width");
-    const y = getWallpaperPosition(area.y, "height");
-
-    updateContextSetting("appearance", {
-      wallpaper: {
-        ...settings,
-        x,
-        y
-      }
-    });
-
-    updateDownscaledWallpaperPosition(x, y);
-    hide();
-  }
-
   function resetArea() {
     if (!area || !image) {
       return;
@@ -246,11 +203,7 @@ export default function WallpaperViewer({ locale, hide }: { locale: any, hide: (
             transform: `translate(${area.x}px, ${area.y}px)`
           }} onPointerDown={handlePointerDown}></div>}
         </div>
-        <div className="container wallpaper-viewer-bar">
-          <button className="btn text-btn" onClick={resetArea}>{locale.global.reset}</button>
-          <button className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
-          <button className="btn text-btn" onClick={saveWallpaperPosition}>{locale.global.save}</button>
-        </div>
+        <BottomBar area={area} image={image} resetArea={resetArea} hide={hide}/>
       </div>
     </>
   );

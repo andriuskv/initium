@@ -1,4 +1,4 @@
-import type { TabName } from "./TopPanel/top-panel-types";
+import type { TabName } from "./TopPanel/top-panel.type";
 import type { Settings } from "types/settings";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { setPageTitle } from "utils";

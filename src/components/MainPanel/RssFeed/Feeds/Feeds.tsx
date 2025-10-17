@@ -1,5 +1,5 @@
 import type { DragStartEvent } from "@dnd-kit/core";
-import type { FailedFeedType, Feeds, FeedType } from "types/feed";
+import type { FailedFeedType, Feeds, FeedType, FeedTypeName } from "types/feed";
 import { useState, type CSSProperties, type MouseEvent } from "react";
 import * as feedService from "services/feeds";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -15,10 +15,10 @@ type Props = {
   locale: any,
   feeds: Feeds,
   selectFeedFromList: (event: MouseEvent<HTMLButtonElement>, index: number) => void,
-  removeFeed: (index: number, type: "active" | "inactive" | "failed") => void,
+  removeFeed: (index: number, type: FeedTypeName) => void,
   deactivateFeed: (index: number) => void,
   updateFeeds: (feeds: Feeds, shouldSave?: boolean) => void,
-  updateFeed: (feed: FeedType, type: "active" | "inactive" | "failed", shouldSave?: boolean) => void,
+  updateFeed: (feed: FeedType, type: FeedTypeName, shouldSave?: boolean) => void,
   showForm: () => void,
   hide: () => void,
 }
@@ -26,7 +26,7 @@ type Props = {
 export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, deactivateFeed, updateFeeds, updateFeed, showForm, hide }: Props) {
   const [activeDragId, setActiveDragId] = useState("");
 
-  async function refetchFeed(feed: FeedType, type: "active" | "inactive" | "failed") {
+  async function refetchFeed(feed: FeedType, type: FeedTypeName) {
     updateFeed({
       ...feed,
       fetching: true

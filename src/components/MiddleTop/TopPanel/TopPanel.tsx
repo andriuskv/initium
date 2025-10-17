@@ -1,5 +1,5 @@
 import type { TimersSettings } from "types/settings";
-import type { TabName } from "./top-panel-types";
+import type { TabName } from "./top-panel.type";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type MouseEvent } from "react";
 import { delay, setPageTitle, timeout, toggleBehindElements } from "utils";
 import { getSetting } from "services/settings";
@@ -287,15 +287,12 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
     if (animTabs) {
       tab.direction = animTabs[name];
 
-      setTabs({ ...tabs, [name]: tab });
       setTimeout(() => {
         delete tab.direction;
         setTabs({ ...tabs, [name]: tab });
       }, 200 * animationSpeed);
     }
-    else {
-      setTabs({ ...tabs, [name]: tab });
-    }
+    setTabs({ ...tabs, [name]: tab });
 
     saveTabTimeoutId.current = timeout(() => {
       localStorage.setItem("active-timer-tab", name);
@@ -335,6 +332,9 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
   }
 
   function exitFullscreen() {
+    if (!expanded) {
+      return;
+    }
     document.startViewTransition(() => {
       setExpanded(false);
     });

@@ -71,15 +71,15 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
 
   useEffect(() => {
     if (items.calendar.revealed) {
-        requestAnimationFrame(() => {
-          setItems({ ...items, calendar: { ...items.calendar, visible: true } });
+      requestAnimationFrame(() => {
+        setItems({ ...items, calendar: { ...items.calendar, visible: true } });
 
-          if (firstCalendarReveal.current && items.calendar.moved) {
-            const element = document.querySelector(`[data-move-target="calendar"]`) as HTMLElement;
-            firstCalendarReveal.current = false;
-            increaseElementZindex(element, "calendar");
-          }
-        });
+        if (firstCalendarReveal.current && items.calendar.moved) {
+          const element = document.querySelector(`[data-move-target="calendar"]`) as HTMLElement;
+          firstCalendarReveal.current = false;
+          increaseElementZindex(element, "calendar");
+        }
+      });
     }
   }, [items.calendar.revealed]);
 
@@ -249,14 +249,14 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
   return (
     <>
       {items.stickyNotes.moved && items.stickyNotes.revealed ? (
-        <div className={`secondary-panel${items.stickyNotes.moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "stickyNotes")}  style={{ "--x": `${items.stickyNotes.x}%`, "--y": `${items.stickyNotes.y}%` } as CSSProperties} data-move-target="stickyNotes">
+        <div className={`secondary-panel${items.stickyNotes.moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "stickyNotes")} style={{ "--x": `${items.stickyNotes.x}%`, "--y": `${items.stickyNotes.y}%` } as CSSProperties} data-move-target="stickyNotes">
           <Container item={items.stickyNotes} locale={locale} style={{ width: "280px", height: "312px"}}
             handleMoveInit={handleMoveInit} hide={hideStickyNotes}>
             <Suspense fallback={null}>
               <StickyNotes locale={locale} hide={hideStickyNotes}/>
             </Suspense>
           </Container>
-            </div>
+        </div>
       ) : null}
       {items.shortcuts.moved && items.shortcuts.revealed ? (
         <div className={`secondary-panel${items.shortcuts.moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "shortcuts")} style={{ "--x": `${items.shortcuts.x}%`, "--y": `${items.shortcuts.y}%` } as CSSProperties} data-move-target="shortcuts">
@@ -266,7 +266,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
               <Shortcuts locale={locale}/>
             </Suspense>
           </Container>
-          </div>
+        </div>
       ) : null}
       {items.calendar.moved && items.calendar.rendered ? (
         <div className={`secondary-panel${items.calendar.moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "calendar")}

@@ -1,5 +1,5 @@
 import type { DDate, CalendarType, Day, GoogleCalendar, GoogleReminder, Reminder, GoogleUser } from "types/calendar";
-import { useState, useEffect, useRef, useMemo, Suspense, lazy, type CSSProperties, type KeyboardEvent } from "react";
+import { useState, useEffect, useRef, Suspense, lazy, type CSSProperties, type KeyboardEvent } from "react";
 import { dispatchCustomEvent, timeout, getRandomString, getRandomHslColor, findFocusableElements, findRelativeFocusableElement, replaceLink, getLocalStorageItem } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
@@ -48,7 +48,6 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   const { settings: { appearance: { animationSpeed }, timeDate: settings } } = useSettings();
   const { showNotification } = useNotification();
   const [calendar, setCalendar] = useState<CalendarType | null>(null);
-  const [currentDay, setCurrentDay] = useState<Day | null>(null);
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
   const [visibleMonth, setVisibleMonth] = useState<VisibleMonth | null>(null);
   const [reminders, setReminders] = useState<Reminder[]>([]);
@@ -60,7 +59,6 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   const [slideAnimation, setSlideAnimation] = useState("");
   const [loadingGoogleCalendar, setLoadingGoogleCalendar] = useState(false);
   const { message, showMessage, dismissMessage }= useMessage("");
-  const weekdays = useMemo(() => timeDateService.getWeekdays(settings.dateLocale, "short"), [locale.locale, settings.dateLocale, settings.firstWeekday]);
   const currentFirstWeekday = useRef(settings.firstWeekday);
   const reminderPreviewRef = useRef<HTMLDivElement>(null);
   const reminderPreviewHeight = useRef(0);
@@ -71,13 +69,11 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   const first = useRef(true);
   const firstGoogleCalendarInit = useRef(true);
   const revealed = useRef(false);
-  const tomorrowDay = useMemo(() => {
-    if (!calendar) {
-      return null;
-    }
-    const date = timeDateService.getTomorrowDate();
-    return getCalendarDay(calendar, date);
-  }, [calendar]);
+
+  const weekdays = timeDateService.getWeekdays(settings.dateLocale, "short");
+  const currentDay: Day | null = getCurrentDay(calendar);
+  const tomorrowDay: Day | null = getTomorrowDay(calendar);
+  const shouldShowReminderPreview = shouldReminderPreviewBeShown(currentDay, tomorrowDay);
 
   useEffect(() => {
     if (first.current) {
@@ -176,7 +172,6 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     calendar[year][month].isCurrentMonth = true;
 
     setCurrentYear(year);
-    setCurrentDay(getCurrentDay(calendar, currentDate));
     getVisibleMonth(calendar, currentDate);
     createReminders(reminders.concat(googleReminders), calendar);
     setCalendar(calendar);
@@ -251,7 +246,6 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
         const day = getCalendarDay(calendar, currentDay);
 
         delete day.isCurrentDay;
-        setCurrentDay(getCurrentDay(calendar, date));
         setCalendar({ ...calendar });
       }
       checkDate(calendar, currentDay);
@@ -436,26 +430,25 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     }
   }
 
-  function getCurrentDay(calendar: CalendarType, date: DDate) {
+  function getCurrentDay(calendar: CalendarType | null) {
+    if (!calendar) {
+      return null;
+    }
+    const date: DDate = timeDateService.getCurrentDate();
     const day = getCalendarDay(calendar, date);
     const weekday = timeDateService.getWeekday(day.year, day.month, day.day);
 
     day.isCurrentDay = true;
     day.weekdayName = timeDateService.getWeekdayName(weekday, settings.dateLocale);
-
     return day;
   }
 
-  function resetCurrentDay() {
-    if (!calendar || !currentDay) {
-      return;
+  function getTomorrowDay(calendar: CalendarType | null) {
+    if (!calendar) {
+      return null;
     }
-    const currentDate = timeDateService.getCurrentDate();
-
-    setCurrentDay({
-      ...currentDay,
-      ...getCalendarDay(calendar, currentDate)
-    });
+    const date = timeDateService.getTomorrowDate();
+    return getCalendarDay(calendar, date);
   }
 
   function getCalendarDay(calendar: CalendarType, { year, month, day }: DDate): Day {
@@ -596,10 +589,6 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       }
       day.reminders.push(reminder);
 
-      if (day.isCurrentDay) {
-        setCurrentDay({ ...day });
-      }
-
       if (reminder.nextRepeat.repeats > 0) {
         reminder.nextRepeat.repeats -= 1;
 
@@ -709,7 +698,6 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     setReminders([...reminders]);
     setGoogleReminders([...googleReminders]);
     setCalendar({ ...calendar });
-    resetCurrentDay();
   }
 
   function removeCalendarReminder(id: string) {
@@ -788,10 +776,6 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       const day = getCalendarDay(calendar, reminder);
 
       day.reminders.push(reminder);
-
-      if (day.isCurrentDay) {
-        setCurrentDay({ ...day });
-      }
     }
   }
 
@@ -1048,7 +1032,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     }
   }
 
-  function shouldReminderPreviewBeShown() {
+  function shouldReminderPreviewBeShown(currentDay: Day | null, tomorrowDay: Day | null) {
     if (view.name === "reminders") {
       return false;
     }
@@ -1161,7 +1145,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
           </div>
         )}
       </div>
-      {shouldReminderPreviewBeShown() ? (
+      {shouldShowReminderPreview ? (
         <ReminderPreview locale={locale} currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>) : null}
       {settings.worldClocksHidden ? null : (
         <Suspense fallback={<div className="container-footer calendar-world-clocks" style={{ height: "35px" }}></div>}>
