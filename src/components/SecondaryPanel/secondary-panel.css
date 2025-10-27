@@ -5,11 +5,11 @@
   align-items: end;
   gap: var(--space-md);
 
-  &.top-left:not(.moved), &.top-right:not(.moved) {
+  &.placement-top-left:not(.moved), &.placement-top-right:not(.moved) {
     top: 42px;
   }
 
-  &.bottom-left:not(.moved), &.bottom-right:not(.moved) {
+  &.placement-bottom-left:not(.moved), &.placement-bottom-right:not(.moved) {
     bottom: 42px;
   }
 
@@ -57,12 +57,12 @@
   justify-content: end;
   gap: var(--space-md);
 
-  &.top-left {
+  &.placement-top-left {
     justify-content: start;
     order: -1;
   }
 
-  &.bottom-left {
+  &.placement-bottom-left {
     justify-content: start;
   }
 }

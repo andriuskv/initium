@@ -8,7 +8,7 @@
   z-index: var(--z-index, 1);
   cursor: default;
 
-  &.top-left, &.bottom-left {
+  &.placement-top-left, &.placement-bottom-left {
     .weather-temperature {
       order: 1;
     }
@@ -19,7 +19,7 @@
     }
   }
 
-  &.top-right, &.bottom-right {
+  &.placement-top-right, &.placement-bottom-right {
     .weather-location {
       margin-right: var(--space-md);
       text-align: right;

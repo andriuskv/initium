@@ -20,6 +20,11 @@ export default function GeneralTab({ locale }: { locale: any }) {
     localStorage.setItem("locale", input.value);
   }
 
+  function handleNotifPositionChange({ target }: ChangeEvent) {
+    const input = target as HTMLSelectElement;
+    updateContextSetting("general", { notifPosition: input.value });
+  }
+
   function showGreetingEditor() {
     dispatchCustomEvent("fullscreen-modal", { id: "greeting" });
   }
@@ -165,6 +170,19 @@ export default function GeneralTab({ locale }: { locale: any }) {
           <button className="btn outline-btn settings-group-top-btn" onClick={showPlacementModal}>{locale.global.show}</button>
         </div>
       </div>
+      <label className="setting last-setting-tab-item">
+        <span>Notification position</span>
+        <div className="select-container">
+          <select className="input select" onChange={handleNotifPositionChange} value={settings.general.notifPosition}>
+            <option value="top-left">Top left</option>
+            <option value="top-right">Top right</option>
+            <option value="top-center">Top center</option>
+            <option value="bottom-left">Bottom left</option>
+            <option value="bottom-right">Bottom right</option>
+            <option value="bottom-center">Bottom center</option>
+          </select>
+        </div>
+      </label>
       <div className="setting setting-reset">
         <span>{locale.settings.general.reset_settings_title}</span>
         <button className="btn text-btn text-negative-btn" onClick={showResetModal}>{locale.global.reset}</button>

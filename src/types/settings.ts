@@ -46,6 +46,7 @@ export type GeneralSettings = {
   };
   middleTopOrder: MiddleTopItem[];
   placement: Placement;
+  notifPosition: string;
 };
 
 export type AppearanceSettings = {

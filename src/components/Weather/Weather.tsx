@@ -262,12 +262,12 @@ export default function Weather({ timeFormat, corner }: Props) {
   return (
     <>
       {moved ? (
-        <div className={`weather ${corner}`} onClick={event => handleZIndex(event, "weather")}>
+        <div className={`weather placement-${corner}`} onClick={event => handleZIndex(event, "weather")}>
           <WeatherSmall current={current} locale={locale} settings={settings} moreButton={moreButton} showMoreWeather={showMoreWeather}/>
         </div>
       ): null}
-      <div className={`weather ${corner}${moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "weather")}
-      style={{ "--x": `${widgetState.x}%`, "--y": `${widgetState.y}%` } as CSSProperties} data-move-target="weather" ref={container}>
+      <div className={`weather placement-${corner}${moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "weather")}
+        style={{ "--x": `${widgetState.x}%`, "--y": `${widgetState.y}%` } as CSSProperties} data-move-target="weather" ref={container}>
         {moved ? null : <WeatherSmall current={current} locale={locale} settings={settings} moreButton={moreButton} hidden={state.reveal} showMoreWeather={showMoreWeather}/>
         }
         <div className={`container weather-more${state.visible ? " visible" : ""}${state.reveal ? " reveal" : ""} corner-item`}>

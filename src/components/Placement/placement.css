@@ -1,4 +1,5 @@
-.top-left:not(.moved) {
+
+.placement-top-left:not(.moved) {
   position: absolute;
   top: var(--space-md);
   left: var(--space-md);
@@ -27,7 +28,7 @@
   }
 }
 
-.top-right:not(.moved) {
+.placement-top-right:not(.moved) {
   position: absolute;
   top: var(--space-md);
   right: var(--space-md);
@@ -56,7 +57,7 @@
   }
 }
 
-.bottom-left:not(.moved) {
+.placement-bottom-left:not(.moved) {
   position: absolute;
   bottom: var(--space-md);
   left: var(--space-md);
@@ -85,7 +86,7 @@
   }
 }
 
-.bottom-right:not(.moved) {
+.placement-bottom-right:not(.moved) {
   position: absolute;
   bottom: var(--space-md);
   right: var(--space-md);
