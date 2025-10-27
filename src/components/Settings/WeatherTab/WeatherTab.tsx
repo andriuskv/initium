@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { useSettings } from "contexts/settings";
 import "./weather-tab.css";
+import Icon from "components/Icon";
 
 type ErrorType = {
   type: "general" | "geo" | "target";
@@ -10,16 +11,23 @@ type ErrorType = {
 export default function WeatherTab({ locale }: { locale: any }) {
   const { settings: { weather: settings }, updateContextSetting, toggleSetting } = useSettings();
   const [error, setError] = useState<ErrorType | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    function handleWeatherError({ detail }: CustomEventInit) {
-      setError(detail);
+    function handleWeatherUpdate({ detail }: CustomEventInit) {
+      if (detail.status === "error") {
+        setError(detail.data);
+        setLoading(false);
+        return;
+      }
+      setError(null);
+      setLoading(detail.status === "loading");
     }
 
-    window.addEventListener("weather-error", handleWeatherError);
+    window.addEventListener("weather-update", handleWeatherUpdate);
 
     return () => {
-      window.removeEventListener("weather-error", handleWeatherError);
+      window.removeEventListener("weather-update", handleWeatherUpdate);
     };
   }, []);
 
@@ -80,8 +88,12 @@ export default function WeatherTab({ locale }: { locale: any }) {
       <div className={`setting weather-location-setting${settings.disabled || settings.useGeo ? " disabled" : ""}`}>
         <form onSubmit={handleCityNameChange} className="weather-setting-location-form">
           <span>{locale.settings.weather.location_label}</span>
-          <input type="text" className="input setting-input" placeholder="Paris,FR" name="cityName"
-            autoComplete="off" disabled={settings.disabled || settings.useGeo} defaultValue={settings.cityName}/>
+          <div className="multi-input-container weather-setting-input-container">
+            {loading ? <Icon id="spinner"/> : null}
+            <input type="text" className="input multi-input-left setting-input" placeholder="Paris,FR" name="cityName"
+              autoComplete="off" disabled={settings.disabled || settings.useGeo || loading} defaultValue={settings.cityName}/>
+            <button className="btn multi-input-right" disabled={settings.disabled || settings.useGeo || loading}>{locale.global.set}</button>
+          </div>
         </form>
         {error?.type === "target" && <p className="setting-message weather-setting-message">{error.message}</p>}
       </div>

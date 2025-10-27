@@ -206,6 +206,7 @@ export default function Weather({ timeFormat, corner }: Props) {
 
   async function updateWeather(forceMoreWeatherUpdate = false) {
     try {
+      dispatchCustomEvent("weather-update", { status: "loading" });
       const json = await fetchWeather() as Current;
 
       if (!json) {
@@ -213,11 +214,12 @@ export default function Weather({ timeFormat, corner }: Props) {
       }
 
       if ("message" in json) {
-        dispatchCustomEvent("weather-error", json);
+        dispatchCustomEvent("weather-update", { status: "error", data: json });
+        return;
       }
       else if (json.location) {
+        dispatchCustomEvent("weather-update", { status: "done" });
         setCurrentWeather(json);
-        dispatchCustomEvent("weather-error", null);
 
         if (forceMoreWeatherUpdate) {
           lastMoreWeatherUpdate.current = 0;

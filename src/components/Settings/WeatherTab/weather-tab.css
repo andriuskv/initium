@@ -27,5 +27,16 @@
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-between;
+}
+
+.weather-setting-input-container {
+  position: relative;
+  margin-left: auto;
+
+  .svg-icon {
+    position: absolute;
+    top: 50%;
+    left: var(--space-sm);
+    translate: 0 -50%;
+  }
 }
