@@ -96,11 +96,11 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
   return (
     <>
       {moved ? (
-        <div className={`tasks ${corner}`}>
+        <div className={`tasks placement-${corner}`}>
           <button className={`btn tasks-toggle-btn`} onClick={toggle}>{locale.tasks.title}</button>
         </div>
       ) : null}
-      <div className={`tasks${expanded ? " expanded" : ""}${collapsing ? " collapsing" : ""}${state.revealed ? " revealed" : ""} ${corner}${moved ? " moved" : ""}`}
+      <div className={`tasks${expanded ? " expanded" : ""}${collapsing ? " collapsing" : ""}${state.revealed ? " revealed" : ""} placement-${corner}${moved ? " moved" : ""}`}
         style={{ "--x": `${widgetState.x}%`, "--y": `${widgetState.y}%` } as CSSProperties}
         onClick={event => handleZIndex(event, "tasks")} data-move-target="tasks" ref={container}>
         {moved && !state.visible ? null : (

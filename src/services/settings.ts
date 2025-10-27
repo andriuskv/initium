@@ -67,7 +67,8 @@ function getDefault(): Settings {
         "bottom-right": {
           id: "secondary"
         }
-      }
+      },
+      notifPosition: "bottom-right"
     },
     appearance: {
       animationSpeed: 1,

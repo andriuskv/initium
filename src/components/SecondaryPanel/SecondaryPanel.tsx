@@ -279,7 +279,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
           </Container>
         </div>
       ) : null}
-      <div className={`secondary-panel ${corner}`} onClick={event => handleZIndex(event, "secondaryPanel")} ref={container}>
+      <div className={`secondary-panel placement-${corner}`} onClick={event => handleZIndex(event, "secondaryPanel")} ref={container}>
         {!items.stickyNotes.moved && items.stickyNotes.revealed ? (
           <Container item={items.stickyNotes} locale={locale} style={{ width: "280px", height: "312px"}}
             handleMoveInit={handleMoveInit} hide={hideStickyNotes}>
@@ -305,7 +305,7 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
           </Container>
         ) : null}
       </div>
-      <ul className={`secondary-panel-item-selection ${corner}`}>
+      <ul className={`secondary-panel-item-selection placement-${corner}`}>
         {Object.values(items).filter(item => !item.disabled).map(item => (
           <li key={item.id}>
             <button className={`btn icon-btn panel-item-btn${item.indicatorVisible ? " indicator" : ""}`}

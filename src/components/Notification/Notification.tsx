@@ -2,9 +2,11 @@ import type { Notification } from "types/notification";
 import { useNotification } from "contexts/notification";
 import "./notification.css";
 import Icon from "components/Icon";
+import { useSettings } from "contexts/settings";
 import { useLocalization } from "contexts/localization";
 
 export default function Notification() {
+  const { settings} = useSettings();
   const locale = useLocalization();
   const { notifications, dismissNotification } = useNotification();
 
@@ -20,7 +22,7 @@ export default function Notification() {
     return null;
   }
   return (
-    <div className="notifications">
+    <div className={`notifications ${settings.general.notifPosition}`}>
       {notifications.map(notification => (
         <div className={`container notification${notification.hiding ? " hiding" : ""}`} key={notification.id}>
           {notification.title ? <div className="container-header notification-top">

@@ -1,11 +1,42 @@
 .notifications {
   z-index: 1000;
   position: absolute;
-  right: var(--space-md);
-  bottom: 42px;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+
+  &.top-left {
+    top: var(--space-md);
+    left: var(--space-md);
+  }
+
+  &.top-right {
+    top: var(--space-md);
+    right: var(--space-md);
+  }
+
+  &.top-center {
+    top: var(--space-md);
+    right: 50%;
+    transform: translateX(50%);
+  }
+
+  &.bottom-left {
+    left: var(--space-md);
+    bottom: var(--space-md);
+  }
+
+  &.bottom-right {
+    right: var(--space-md);
+    bottom: var(--space-md);
+  }
+
+
+  &.bottom-center {
+    right: 50%;
+    bottom: var(--space-md);
+    transform: translateX(50%);
+  }
 }
 
 .notification {

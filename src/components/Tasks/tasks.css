@@ -20,7 +20,7 @@
     }
   }
 
-  &.top-left:not(.moved) {
+  &.placement-top-left:not(.moved) {
     .tasks-toggle-btn {
       position: absolute;
       top: 0;
@@ -35,7 +35,7 @@
     }
   }
 
-  &.top-right:not(.moved) {
+  &.placement-top-right:not(.moved) {
     .tasks-toggle-btn {
       position: absolute;
       top: 0;
@@ -53,7 +53,7 @@
     }
   }
 
-  &.bottom-left:not(.moved) {
+  &.placement-bottom-left:not(.moved) {
     .tasks-toggle-btn {
       position: absolute;
       top: 0;
@@ -74,7 +74,7 @@
     }
   }
 
-  &.bottom-right:not(.moved) {
+  &.placement-bottom-right:not(.moved) {
     .tasks-toggle-btn {
       position: absolute;
       top: 0;
