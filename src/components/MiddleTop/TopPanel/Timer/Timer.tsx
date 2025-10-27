@@ -505,6 +505,20 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
     }
   }
 
+  function resetPreset() {
+    const newTimers = { ...timers, [activeTimer.id]: {
+      ...activeTimer,
+      hours: "00",
+      minutes:"00",
+      seconds: "00",
+      label: activeTimer.label,
+      presetId: ""
+    }};
+
+    setTimers(newTimers);
+    saveTimers(newTimers);
+  }
+
   function handleLabelInputChange(event: ChangeEvent) {
     const newTimers = { ...timers, [activeTimer.id]: {
       ...activeTimer,
@@ -760,10 +774,14 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
                       toggle={{ isIconTextBtn: true, title: locale.timer.presets_button, iconId: "menu" }}>
                       <div className="dropdown-group timer-dropdown-presets">
                         {presets.length ? (
-                          presets.map(preset => (
-                            <button className={`btn text-btn dropdown-btn timer-dropdown-btn${activeTimer.presetId === preset.id ? " active" : ""}`} key={preset.id}
-                              onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
-                          ))
+                          <>
+                            {activeTimer.presetId ? <button className="btn text-btn dropdown-btn timer-dropdown-btn"
+                              onClick={resetPreset}></button> : null}
+                            {presets.map(preset => (
+                              <button className={`btn text-btn dropdown-btn timer-dropdown-btn${activeTimer.presetId === preset.id ? " active" : ""}`} key={preset.id}
+                                onClick={() => handlePresetSelection(preset.id)}>{preset.name}</button>
+                            ))}
+                          </>
                         ) : (
                           <p className="timer-dropdown-presets-message">{locale.timer.no_presets_message}</p>
                         )}
