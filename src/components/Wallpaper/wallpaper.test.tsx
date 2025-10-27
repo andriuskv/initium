@@ -45,9 +45,7 @@ test("renders image wallpaper with correct styles when type is url", async () =>
 test("renders video wallpaper", async () => {
   const mockFile = new File(["test"], "test.mp4", { type: "video/mp4" });
   vi.mocked(getIDBWallpaper).mockResolvedValue(mockFile);
-  vi.stubGlobal("URL", {
-    createObjectURL: vi.fn().mockReturnValue("test-video-url"),
-  });
+  vi.spyOn(global.URL, "createObjectURL").mockImplementation(() => "test-video-url");
 
   const settings: WallpaperSettings = {
     provider: "unsplash",
@@ -116,13 +114,13 @@ test("removes downscaled wallpaper after a delay", async () => {
 
   const mockedOnload = vi.fn();
 
-  global.Image = vi.fn(() => ({
-    onload: () => {},
+  global.Image = class {
+    onload() {}
     set src(string: string) {
       mockedOnload();
       this.onload();
-    },
-  })) as unknown as typeof Image;
+    }
+  } as unknown as typeof Image;
 
   document.body.innerHTML = `
     <div id="downscaled-wallpaper">Downscaled Wallpaper</div>
