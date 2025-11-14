@@ -25,6 +25,19 @@ type Split = {
   diffString: string
 };
 
+function getInitialState() {
+  return {
+    elapsed: 0,
+    millisecondsDisplay: "00",
+    secondsDisplay: "0",
+    minutesDisplay: "",
+    milliseconds: 0,
+    seconds: 0,
+    minutes: 0,
+    hours: 0
+  };
+}
+
 export default function Stopwatch({ visible, locale, animDirection, toggleIndicator, updateTitle, expand }: Props) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => getInitialState());
@@ -35,6 +48,37 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
   const pageVisible = useRef(true);
   const { initWorker, destroyWorkers } = useWorker(handleMessage, [splits.length]);
   const name = "stopwatch";
+
+  function init() {
+    type Data = {
+      splits?: Split[],
+      label?: string
+      elapsed: number,
+      millisecondsDisplay: string,
+      secondsDisplay: string,
+      minutesDisplay: string,
+      milliseconds: number,
+      seconds: number,
+      minutes: number,
+      hours: number
+    }
+    const data = getLocalStorageItem<Data>(name);
+
+    if (data) {
+      if (data.splits) {
+        setSplits(data.splits);
+      }
+      setLabel(data.label || "");
+
+      delete data.splits;
+      delete data.label;
+
+      data.millisecondsDisplay = "00";
+
+      setState(data);
+      setDirty(true);
+    }
+  }
 
   useEffect(() => {
     init();
@@ -54,6 +98,26 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
       document.removeEventListener("visibilitychange", handlePageVisibilityChange);
     };
   }, []);
+
+  function start() {
+    setDirty(true);
+    setRunning(true);
+    updateTitle(name, { seconds: "00", isAudioEnabled: false });
+  }
+
+  function stop() {
+    setRunning(false);
+    updateTitle(name);
+  }
+
+  function toggle() {
+    if (running) {
+      stop();
+    }
+    else {
+      start();
+    }
+  }
 
   useEffect(() => {
     if (running) {
@@ -89,57 +153,6 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
 
   function handleMessage(event: MessageEvent) {
     update(event.data);
-  }
-
-  function init() {
-    type Data = {
-      splits?: Split[],
-      label?: string
-      elapsed: number,
-      millisecondsDisplay: string,
-      secondsDisplay: string,
-      minutesDisplay: string,
-      milliseconds: number,
-      seconds: number,
-      minutes: number,
-      hours: number
-    }
-    const data = getLocalStorageItem<Data>(name);
-
-    if (data) {
-      if (data.splits) {
-        setSplits(data.splits);
-      }
-      setLabel(data.label || "");
-
-      delete data.splits;
-      delete data.label;
-
-      data.millisecondsDisplay = "00";
-
-      setState(data);
-      setDirty(true);
-    }
-  }
-
-  function toggle() {
-    if (running) {
-      stop();
-    }
-    else {
-      start();
-    }
-  }
-
-  function start() {
-    setDirty(true);
-    setRunning(true);
-    updateTitle(name, { seconds: "00", isAudioEnabled: false });
-  }
-
-  function stop() {
-    setRunning(false);
-    updateTitle(name);
   }
 
   function update({ elapsed }: { elapsed: number }) {
@@ -191,19 +204,6 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
     if (running) {
       stop();
     }
-  }
-
-  function getInitialState() {
-    return {
-      elapsed: 0,
-      millisecondsDisplay: "00",
-      secondsDisplay: "0",
-      minutesDisplay: "",
-      milliseconds: 0,
-      seconds: 0,
-      minutes: 0,
-      hours: 0
-    };
   }
 
   function makeSplit() {

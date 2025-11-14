@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from "react";
 import type { Settings, MainPanelComponents } from "types/settings";
-import { createContext, useState, use, useMemo } from "react";
+import { createContext, useState, use } from "react";
 import * as settingsService from "services/settings";
 
 type SettingsContextType = {
@@ -15,15 +15,6 @@ const SettingsContext = createContext<SettingsContextType>({} as SettingsContext
 
 function SettingsProvider({ children }: PropsWithChildren) {
   const [settings, setSettings] = useState<Settings>(() => settingsService.getSettings());
-  const memoizedValue = useMemo(() => {
-    return {
-      settings,
-      updateContextSetting,
-      updateMainPanelComponentSetting,
-      toggleSetting,
-      resetSettings
-    };
-  }, [settings]);
 
   function updateContextSetting(name: keyof Settings, setting: Partial<Settings[keyof Settings]>) {
     const settings = settingsService.updateSetting(name, setting);
@@ -52,7 +43,7 @@ function SettingsProvider({ children }: PropsWithChildren) {
     return settings;
   }
 
-  return <SettingsContext value={memoizedValue}>{children}</SettingsContext>;
+  return <SettingsContext value={{ settings, updateContextSetting, updateMainPanelComponentSetting, toggleSetting, resetSettings }}>{children}</SettingsContext>;
 }
 
 function useSettings() {

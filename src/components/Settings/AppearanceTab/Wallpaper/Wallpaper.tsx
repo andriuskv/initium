@@ -25,6 +25,10 @@ export default function Wallpaper({ locale }: { locale: any }) {
   const wallpaperProvider = settings.wallpaper.provider;
 
   useEffect(() => {
+    function handleWallpaperInfoUpdate({ detail }: CustomEventInit) {
+      setWallpaperInfo(detail);
+    }
+
     window.addEventListener("wallpaper-info-update", handleWallpaperInfoUpdate);
 
     return () => {
@@ -32,9 +36,6 @@ export default function Wallpaper({ locale }: { locale: any }) {
     };
   }, []);
 
-  function handleWallpaperInfoUpdate({ detail }: CustomEventInit) {
-    setWallpaperInfo(detail);
-  }
 
   function resetWallpaper() {
     updateContextSetting("appearance", { wallpaper: { url: "", provider: "unsplash" } });

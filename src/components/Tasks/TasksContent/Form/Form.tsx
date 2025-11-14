@@ -38,12 +38,62 @@ type Props = {
   locale: any
 }
 
+function getDateTimeString(time?: number) {
+  const date = time ? new Date(time) : new Date();
+
+  return getDateString(date, true);
+}
+
+function getDefaultTask(text = "", props = {}): TaskType | SubtaskType {
+  const { openLinkInNewTab } = getSetting("general") as GeneralSettings;
+
+  return {
+    id: getRandomString(4),
+    rawText: text,
+    text: replaceLink(text, "task-link", openLinkInNewTab),
+    ...props
+  };
+}
+
+function getUniqueTaskLabels(groups: Group[], groupIndex = -1, taskIndex = -1) {
+  let labels: Label[] = (getLocalStorageItem<Label[]>("taskLabels") || []).map((label: Label) => {
+    label.id = getRandomString();
+    return label;
+  });
+
+  for (const group of groups) {
+    for (const task of group.tasks) {
+      for (const label of task.labels) {
+        if (!findLabel(labels, label)) {
+          labels.push({ ...label });
+        }
+      }
+    }
+  }
+
+  if (groupIndex > -1) {
+    const taskLabels = groups[groupIndex].tasks[taskIndex].labels;
+
+    labels = labels.map(label => {
+      if (findLabel(taskLabels, label)) {
+        label.flagged = true;
+      }
+      return label;
+    });
+  }
+  return labels;
+}
+
+function findLabel(labels: Label[], { name, color }: Label) {
+  return labels.find(label => label.name === name && label.color === color);
+}
+
 export default function Form({ form, groups, locale, replaceGroups, removeTask, createGroup, hide }: Props) {
   const [state, setState] = useState<State>(() => {
     const defaultForm: State = {
       moreOptionsVisible: false,
       completeWithSubtasks: false,
-      labels: form ? getUniqueTaskLabels(form.groupIndex, form.taskIndex): [],
+      labels: form ? getUniqueTaskLabels(groups, form.groupIndex, form.taskIndex): [],
       task: {
         creationDate: Date.now(),
         id: getRandomString(4),
@@ -102,35 +152,6 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     });
   }
 
-  function getUniqueTaskLabels(groupIndex = -1, taskIndex = -1) {
-    let labels: Label[] = (getLocalStorageItem<Label[]>("taskLabels") || []).map((label: Label) => {
-      label.id = getRandomString();
-      return label;
-    });
-
-    for (const group of groups) {
-      for (const task of group.tasks) {
-        for (const label of task.labels) {
-          if (!findLabel(labels, label)) {
-            labels.push({ ...label });
-          }
-        }
-      }
-    }
-
-    if (groupIndex > -1) {
-      const taskLabels = groups[groupIndex].tasks[taskIndex].labels;
-
-      labels = labels.map(label => {
-        if (findLabel(taskLabels, label)) {
-          label.flagged = true;
-        }
-        return label;
-      });
-    }
-    return labels;
-  }
-
   function findLabelInTasks(label: Label) {
     for (const group of groups) {
       for (const task of group.tasks) {
@@ -139,10 +160,6 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
         }
       }
     }
-  }
-
-  function findLabel(labels: Label[], { name, color }: Label) {
-    return labels.find(label => label.name === name && label.color === color);
   }
 
   function findLabelIndex(labels: Label[], { name, color }: Label) {
@@ -208,17 +225,6 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     createGroup(group);
   }
 
-  function getDefaultTask(text = "", props = {}): TaskType | SubtaskType {
-    const { openLinkInNewTab } = getSetting("general") as GeneralSettings;
-
-    return {
-      id: getRandomString(4),
-      rawText: text,
-      text: replaceLink(text, "task-link", openLinkInNewTab),
-      ...props
-    };
-  }
-
   function addFormSubtask() {
     const subtask: SubtaskType = getDefaultTask();
 
@@ -249,6 +255,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
 
     event.preventDefault();
 
+    const currentDate = new Date().getTime();
     const formElement = event.target as HTMLFormElement;
     const elements = formElement.elements as FormElements;
     const text = elements.text.value.trim();
@@ -258,7 +265,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     const index = groups.findIndex(({ id }) => id === selectedGroupId);
     const tasks = groups[index].tasks;
     const task = getDefaultTask(text, {
-      creationDate: Date.now(),
+      creationDate: currentDate,
       subtasks: getFormSubtasks(elements.subtask),
       labels: getFlaggedFormLabels()
     }) as TaskType;
@@ -276,7 +283,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
       const repeatLimit = Number(elements.repeatLimit.value);
 
       task.repeat = {
-        start: Date.now(),
+        start: currentDate,
         status: 0,
         number: 0,
         gap: repeatGap,
@@ -434,12 +441,6 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
 
   function showGroupForm() {
     setModal({ type: "group" });
-  }
-
-  function getDateTimeString(time?: number) {
-    const date = time ? new Date(time) : new Date();
-
-    return getDateString(date, true);
   }
 
   function togglePrefsVisibility() {

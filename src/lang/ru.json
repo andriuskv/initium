@@ -111,7 +111,8 @@
   "topSites": {
     "title": "Популярные сайты",
     "add_shortcut_title": "Добавить ярлык",
-    "edit_shortcut_title": "Редактировать ярлык"
+    "edit_shortcut_title": "Редактировать ярлык",
+    "duplicate_site": "Сайт с таким же URL-адресом уже существует."
   },
   "notepad": {
     "title": "Блокнот",
@@ -289,6 +290,13 @@
       "new_tab_links_label": "Открывать ссылки в новой вкладке",
       "middle_top_group_title": "Верхняя средняя часть",
       "show_middle_top_title": "Порядок",
+      "notif_pos": "Местоположение уведомления",
+      "notif_pos_top_left": "Вверху слева",
+      "notif_pos_top_right": "Вверху справа",
+      "notif_pos_top_center": "Вверху по центру",
+      "notif_pos_bottom_left": "Внизу слева",
+      "notif_pos_bottom_right": "Внизу справа",
+      "notif_pos_bottom_center": "Внизу по центру",
       "timers": "Мини-таймер",
       "clock": "Часы",
       "greeting": "Приветствие",

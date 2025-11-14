@@ -20,23 +20,6 @@ export default function TabsContainer({ className, children, current, offset = 0
   const isStatic = useRef(true);
   const first = useRef(true);
 
-  useLayoutEffect(() => {
-    updateIndicator();
-
-    return () => {
-      prev.current = current;
-    };
-  }, [current]);
-
-  useLayoutEffect(() => {
-    if (first.current) {
-      first.current = false;
-      return;
-    }
-    isStatic.current = true;
-    updateIndicator();
-  }, [offset, visible, itemCount]);
-
   function updateIndicator() {
     if (current < 0 || !tabsContainerRef.current || !indicatorRef.current) {
       return;
@@ -114,6 +97,24 @@ export default function TabsContainer({ className, children, current, offset = 0
       }, 70 * animationSpeed);
     }
   }
+
+  useLayoutEffect(() => {
+    updateIndicator();
+
+    return () => {
+      prev.current = current;
+    };
+  }, [current]);
+
+  useLayoutEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    isStatic.current = true;
+    updateIndicator();
+  }, [offset, visible, itemCount]);
+
 
   return (
     <div className={`${className ? `${className} ` : ""}tabs-container ${orientation}`} ref={tabsContainerRef}>

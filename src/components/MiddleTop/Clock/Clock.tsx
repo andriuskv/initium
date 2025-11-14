@@ -5,9 +5,20 @@ import { getDisplayTime, formatDate } from "services/timeDate";
 import "./clock.css";
 import useWorker from "../useWorker";
 
+function getDate(dateLocale: string) {
+  const date = new Date();
+  const formatted = formatDate(date.getTime(), {
+    locale: dateLocale,
+    includeWeekday: true,
+    excludeYear: true
+  });
+
+  return { day: date.getDate(), formatted };
+}
+
 export default function Clock({ generalLocale = "en", settings }: { generalLocale?: string, settings: TimeDateSettings }) {
   const [clock, setClock] = useState(() => getDisplayTime(settings.clockStyle === "vertical"));
-  const [date, setDate] = useState(() => getDate());
+  const [date, setDate] = useState(() => getDate(settings.dateLocale));
   const [expanded, setExpanded] = useState(false);
   const { initWorker, destroyWorkers } = useWorker(handleMessage);
 
@@ -22,11 +33,23 @@ export default function Clock({ generalLocale = "en", settings }: { generalLocal
     };
   }, [settings, date]);
 
+  function updateDate() {
+    setDate(getDate(settings.dateLocale));
+  }
+
   useEffect(() => {
     updateDate();
   }, [generalLocale, settings.dateLocale]);
 
   useEffect(() => {
+    function collapse(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        document.startViewTransition(() => {
+          setExpanded(false);
+        });
+      }
+    }
+
     if (expanded) {
       window.addEventListener("keydown", collapse);
     }
@@ -45,29 +68,6 @@ export default function Clock({ generalLocale = "en", settings }: { generalLocal
 
     if (new Date().getDate() !== date.day) {
       updateDate();
-    }
-  }
-
-  function getDate() {
-    const date = new Date();
-    const formatted = formatDate(date.getTime(), {
-      locale: settings.dateLocale,
-      includeWeekday: true,
-      excludeYear: true
-    });
-
-    return { day: date.getDate(), formatted };
-  }
-
-  function updateDate() {
-    setDate(getDate());
-  }
-
-  function collapse(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      document.startViewTransition(() => {
-        setExpanded(false);
-      });
     }
   }
 

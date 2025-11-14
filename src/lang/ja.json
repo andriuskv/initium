@@ -112,7 +112,8 @@
   "topSites": {
     "title": "トップサイト",
     "add_shortcut_title": "ショートカットを追加する",
-    "edit_shortcut_title": "ショートカットを編集する"
+    "edit_shortcut_title": "ショートカットを編集する",
+    "duplicate_site": "同じURLのサイトが既に存在します。"
   },
   "notepad": {
     "title": "メモ帳",
@@ -290,6 +291,13 @@
       "new_tab_links_label": "リンクを新しいタブで開く",
       "middle_top_group_title": "中央上部",
       "show_middle_top_title": "順序",
+      "notif_pos": "通知ポジション",
+      "notif_pos_top_left": "左上",
+      "notif_pos_top_right": "右上",
+      "notif_pos_top_center": "上部中央",
+      "notif_pos_bottom_left": "左下",
+      "notif_pos_bottom_right": "右下",
+      "notif_pos_bottom_center": "下部中央",
       "timers": "ミニタイマー",
       "clock": "時計",
       "greeting": "あいさつ",

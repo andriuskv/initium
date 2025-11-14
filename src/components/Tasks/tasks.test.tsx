@@ -8,6 +8,7 @@ import { getSetting } from "services/settings";
 import { useLocalization } from "contexts/localization";
 import Tasks from "./Tasks";
 import locale from "lang/en.json" assert { type: "json" };
+import { delay } from "utils";
 
 vi.mock("contexts/localization", () => ({
   useLocalization: vi.fn(),
@@ -47,6 +48,7 @@ test("toggles visibility of the tasks container", async () => {
   const toggleButton = screen.getByRole("button", { name: locale.tasks.title });
 
   await userEvent.click(toggleButton);
+  await delay(50); // wait for animation frame
   expect(container.querySelector(".tasks-container")).toHaveClass("visible");
 
   await userEvent.click(toggleButton);

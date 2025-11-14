@@ -18,23 +18,25 @@ function LocalizationProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     document.documentElement.lang = settings.general.locale;
+
+    async function init() {
+      const module = await localizationService.fetchLocale(settings.general.locale);
+
+      if (module) {
+        setLocale(module.default);
+        localizationService.setLocale(module.default);
+      }
+      else {
+        const module = await localizationService.fetchLocale("en");
+
+        setLocale(module.default);
+        localizationService.setLocale(module.default);
+      }
+    }
+
     init();
   }, [settings.general.locale]);
 
-  async function init() {
-    const module = await localizationService.fetchLocale(settings.general.locale);
-
-    if (module) {
-      setLocale(module.default);
-      localizationService.setLocale(module.default);
-    }
-    else {
-      const module = await localizationService.fetchLocale("en");
-
-      setLocale(module.default);
-      localizationService.setLocale(module.default);
-    }
-  }
 
   return <LocalizationContext value={locale}>{children}</LocalizationContext>;
 }

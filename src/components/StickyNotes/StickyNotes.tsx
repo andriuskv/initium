@@ -21,6 +21,22 @@ export default function StickyNotes() {
     }
   }
 
+  function discardWithAnimation() {
+    const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
+
+    if (form) {
+      setForm({ ...form, discarding: true });
+    }
+    setTimeout(() => {
+      setForm(null);
+    }, 200 * animationSpeed);
+  }
+
+  function resetTextSelection() {
+    // Remove selected text that might be previously selected by double click.
+    window.getSelection()?.removeAllRanges();
+  }
+
   useEffect(() => {
     function handleStickyNoteChange({ detail }: CustomEventInit) {
       if (form) {
@@ -72,22 +88,6 @@ export default function StickyNotes() {
     else if (shouldAnimate) {
       discardWithAnimation();
     }
-  }
-
-  function discardWithAnimation() {
-    const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
-
-    if (form) {
-      setForm({ ...form, discarding: true });
-    }
-    setTimeout(() => {
-      setForm(null);
-    }, 200 * animationSpeed);
-  }
-
-  function resetTextSelection() {
-    // Remove selected text that might be previously selected by double click.
-    window.getSelection()?.removeAllRanges();
   }
 
   function showForm() {

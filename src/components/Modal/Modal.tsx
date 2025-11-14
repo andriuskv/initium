@@ -15,6 +15,12 @@ export default function Modal({ children, className, transparent, hiding, hide }
   const element = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    function handleKeydown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        hide();
+      }
+    }
+
     if (container.current) {
       focusService.setInitiator(document.activeElement as HTMLElement);
       focusService.trapFocus("modal", container.current);
@@ -40,12 +46,6 @@ export default function Modal({ children, className, transparent, hiding, hide }
       hide();
     }
     element.current = null;
-  }
-
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      hide();
-    }
   }
 
   return (
