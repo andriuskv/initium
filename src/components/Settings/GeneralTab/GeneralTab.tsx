@@ -171,15 +171,15 @@ export default function GeneralTab({ locale }: { locale: any }) {
         </div>
       </div>
       <label className="setting last-setting-tab-item">
-        <span>Notification position</span>
+        <span>{locale.settings.general.notif_pos}</span>
         <div className="select-container">
           <select className="input select" onChange={handleNotifPositionChange} value={settings.general.notifPosition}>
-            <option value="top-left">Top left</option>
-            <option value="top-right">Top right</option>
-            <option value="top-center">Top center</option>
-            <option value="bottom-left">Bottom left</option>
-            <option value="bottom-right">Bottom right</option>
-            <option value="bottom-center">Bottom center</option>
+            <option value="top-left">{locale.settings.general.notif_pos_top_left}</option>
+            <option value="top-right">{locale.settings.general.notif_pos_top_right}</option>
+            <option value="top-center">{locale.settings.general.notif_pos_top_center}</option>
+            <option value="bottom-left">{locale.settings.general.notif_pos_bottom_left}</option>
+            <option value="bottom-right">{locale.settings.general.notif_pos_bottom_right}</option>
+            <option value="bottom-center">{locale.settings.general.notif_pos_bottom_center}</option>
           </select>
         </div>
       </label>

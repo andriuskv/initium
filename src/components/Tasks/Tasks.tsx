@@ -44,34 +44,40 @@ export default function Tasks({ settings, generalSettings, corner }: Props) {
     };
   }, []);
 
-  useEffect(() => {
-    if (state.visible) {
-      clearTimeout(timeoutId.current);
-      setState({ ...state, revealed: true });
-    }
-    else {
-      timeoutId.current = window.setTimeout(() => {
-        setState({ ...state, revealed: false, hiding: false });
-      }, 300);
-    }
-  }, [state.visible, expanded]);
-
-  useEffect(() => {
-    if (state.rendered) {
-      setState({ ...state, visible: true });
-    }
-  }, [state.rendered]);
-
   function toggle() {
     const visible = state.visible;
     const nextVisible = !visible;
 
     if (!state.rendered) {
-      setState({ ...state, rendered: true, visible });
+      const nextState = { ...state, rendered: true };
+      setState(nextState);
+
+      requestAnimationFrame(() => {
+        setState({ ...nextState, visible: true });
+
+        requestAnimationFrame(() => {
+          setState({ ...nextState, visible: true, revealed: true });
+        });
+      });
     }
     else {
-      setState({ ...state, visible: nextVisible, hiding: state.visible });
+      const nextState = { ...state, visible: nextVisible, hiding: state.visible };
+
+      clearTimeout(timeoutId.current);
+      setState(nextState);
+
+      if (nextVisible) {
+        requestAnimationFrame(() => {
+          setState({ ...nextState, revealed: true });
+        });
+      }
+      else {
+        timeoutId.current = window.setTimeout(() => {
+          setState({ ...nextState, revealed: false, hiding: false });
+        }, 300);
+      }
     }
+
     setWidgetState("tasks", { opened: nextVisible });
 
     if (nextVisible) {

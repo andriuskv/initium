@@ -12,6 +12,7 @@ export default function Resizer({ saveHeight }: Props) {
   const startY = useRef(0);
   const initialHeight = useRef(320);
   const height = useRef(0);
+  const documentBody = useRef(document.body);
 
   useLayoutEffect(() => {
     if (!resizerRef.current) {
@@ -19,18 +20,18 @@ export default function Resizer({ saveHeight }: Props) {
     }
     containerRef.current = resizerRef.current.parentElement!;
     containerRef.current.classList.add("resizing");
-    document.body.style.touchAction = "none";
+    documentBody.current.style.touchAction = "none";
 
     return () => {
       containerRef.current!.classList.remove("resizing");
-      document.body.style.touchAction = "";
+      documentBody.current.style.touchAction = "";
     };
   }, []);
 
   function handlePointerDown({ clientY }: ReactPointerEvent<HTMLDivElement>) {
     startY.current = clientY;
     initialHeight.current = containerRef.current!.offsetHeight;
-    document.body.style.userSelect = "none";
+    documentBody.current.style.userSelect = "none";
 
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp, { once: true });
@@ -53,8 +54,7 @@ export default function Resizer({ saveHeight }: Props) {
       containerRef.current!.style.setProperty("--height", `${height.current}px`);
     }
     saveHeight(height.current);
-    // eslint-disable-next-line react-compiler/react-compiler
-    document.body.style.userSelect = "";
+    documentBody.current.style.userSelect = "";
     window.removeEventListener("pointermove", handlePointerMove);
   }
 

@@ -95,6 +95,42 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
     setTabs(newTabs);
   }, [locale.locale]);
 
+  function showMinimalTimer() {
+    if (pipService.isActive() || tabs[activeTab].ignore) {
+      return;
+    }
+    const { showMinimal } = getSetting("timers") as TimersSettings;
+
+    if (showMinimal && isRunning(activeTab)) {
+      minimalVisible.current = true;
+
+      setTimeout(() => {
+        setMinimal(true);
+      }, 250 * animationSpeed);
+    }
+  }
+
+  function resetMinimal(shouldShowFull = false) {
+    minimalVisible.current = false;
+
+    if (containerRef.current) {
+      containerRef.current.classList.add("no-delay");
+      containerRef.current.classList.remove("visible");
+    }
+
+    setTimeout(() => {
+      setMinimal(false);
+
+      if (shouldShowFull) {
+        setVisible(true);
+      }
+
+      if (containerRef.current) {
+        containerRef.current.classList.remove("no-delay");
+      }
+    }, 200 * animationSpeed);
+  }
+
   useEffect(() => {
     if (settings.showMinimal && visible) {
       return;
@@ -107,6 +143,46 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
       resetMinimal();
     }
   }, [settings.showMinimal]);
+
+  function increaseContainerZIndex() {
+    increaseElementZindex(containerRef.current, "topPanel");
+  }
+
+  function selectTab(name: TabName) {
+    if (activeTab === name) {
+      return;
+    }
+    const tab = { ...tabs[name], rendered: true };
+    const animTabs = getAnimDirection(name, activeTab);
+
+    setActiveTab(name);
+
+    if (animTabs) {
+      tab.direction = animTabs[name];
+
+      setTimeout(() => {
+        delete tab.direction;
+        setTabs({ ...tabs, [name]: tab });
+      }, 200 * animationSpeed);
+    }
+    setTabs({ ...tabs, [name]: tab });
+
+    saveTabTimeoutId.current = timeout(() => {
+      localStorage.setItem("active-timer-tab", name);
+    }, 400, saveTabTimeoutId.current);
+  }
+
+  function getAnimDirection(current: string, prev: string): { [key: string]: "anim-right" | "anim-left" } | null {
+    if (!prev) {
+      return null;
+    }
+    const tabsArr = Object.keys(tabs);
+
+    if (tabsArr.indexOf(current) > tabsArr.indexOf(prev)) {
+      return { [current]: "anim-right", [prev]: "anim-left" };
+    }
+    return { [current]: "anim-left", [prev]: "anim-right" };
+  }
 
   useEffect(() => {
     function toggleTopPanel({ detail }: CustomEventInit) {
@@ -146,7 +222,21 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
     };
   }, [visible, minimal, activeTab, tabs]);
 
+  function exitFullscreen() {
+    if (!expanded) {
+      return;
+    }
+    document.startViewTransition(() => {
+      setExpanded(false);
+    });
+  }
+
   useEffect(() => {
+    function collapse(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        exitFullscreen();
+      }
+    }
     if (expanded) {
       window.addEventListener("keydown", collapse);
     }
@@ -188,18 +278,6 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
     }
   }, [minimal]);
 
-  function getAnimDirection(current: string, prev: string): { [key: string]: "anim-right" | "anim-left" } | null {
-    if (!prev) {
-      return null;
-    }
-    const tabsArr = Object.keys(tabs);
-
-    if (tabsArr.indexOf(current) > tabsArr.indexOf(prev)) {
-      return { [current]: "anim-right", [prev]: "anim-left" };
-    }
-    return { [current]: "anim-left", [prev]: "anim-right" };
-  }
-
   function findTabIndex(name: string) {
     const index = Object.keys(tabs).findIndex(tab => tab === name);
 
@@ -239,66 +317,6 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
     setWidgetState("topPanel", { opened: false });
   }
 
-  function resetMinimal(shouldShowFull = false) {
-    minimalVisible.current = false;
-
-    if (containerRef.current) {
-      containerRef.current.classList.add("no-delay");
-      containerRef.current.classList.remove("visible");
-    }
-
-    setTimeout(() => {
-      setMinimal(false);
-
-      if (shouldShowFull) {
-        setVisible(true);
-      }
-
-      if (containerRef.current) {
-        containerRef.current.classList.remove("no-delay");
-      }
-    }, 200 * animationSpeed);
-  }
-
-  function showMinimalTimer() {
-    if (pipService.isActive() || tabs[activeTab].ignore) {
-      return;
-    }
-    const { showMinimal } = getSetting("timers") as TimersSettings;
-
-    if (showMinimal && isRunning(activeTab)) {
-      minimalVisible.current = true;
-
-      setTimeout(() => {
-        setMinimal(true);
-      }, 250 * animationSpeed);
-    }
-  }
-
-  function selectTab(name: TabName) {
-    if (activeTab === name) {
-      return;
-    }
-    const tab = { ...tabs[name], rendered: true };
-    const animTabs = getAnimDirection(name, activeTab);
-
-    setActiveTab(name);
-
-    if (animTabs) {
-      tab.direction = animTabs[name];
-
-      setTimeout(() => {
-        delete tab.direction;
-        setTabs({ ...tabs, [name]: tab });
-      }, 200 * animationSpeed);
-    }
-    setTabs({ ...tabs, [name]: tab });
-
-    saveTabTimeoutId.current = timeout(() => {
-      localStorage.setItem("active-timer-tab", name);
-    }, 400, saveTabTimeoutId.current);
-  }
-
   function ignoreMiniTimerPref(name: TabName, value: boolean) {
     setTabs({
       ...tabs,
@@ -317,10 +335,6 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
     }
   }
 
-  function increaseContainerZIndex() {
-    increaseElementZindex(containerRef.current, "topPanel");
-  }
-
   function toggleIndicator(name: TabName, value: boolean) {
     setTabs({
       ...tabs,
@@ -328,15 +342,6 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
         ...tabs[name],
         indicatorVisible: value
       }
-    });
-  }
-
-  function exitFullscreen() {
-    if (!expanded) {
-      return;
-    }
-    document.startViewTransition(() => {
-      setExpanded(false);
     });
   }
 
@@ -348,12 +353,6 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
 
     if (pipService.isActive()) {
       pipService.close("");
-    }
-  }
-
-  function collapse(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      exitFullscreen();
     }
   }
 

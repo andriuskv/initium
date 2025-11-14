@@ -22,8 +22,45 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
   const [form, setForm] = useState<FormType | null>(null);
   const [activeDragId, setActiveDragId] = useState("");
 
+  function hideForm() {
+    setForm(null);
+  }
+
   useEffect(() => {
+    function initSites(sites: PersistentSite[]) {
+      return sites.map(site => {
+        site.id = crypto.randomUUID();
+        site.iconUrl = getFaviconURL(site.url, 32);
+        return site;
+      });
+    }
+
+    async function init() {
+      const sites = await chromeStorage.get("persistentSites") || [];
+
+      setSites(initSites(sites));
+
+      chromeStorage.subscribeToChanges(({ persistentSites }) => {
+        if (!persistentSites) {
+          return;
+        }
+
+        if (persistentSites.newValue) {
+          setSites(initSites(persistentSites.newValue));
+        }
+        else {
+          setSites([]);
+        }
+        hideForm();
+      });
+    }
+
+    function enableSiteEdit() {
+      setSiteEditEnabled(true);
+    }
+
     init();
+
 
     window.addEventListener("enable-persistent-site-edit", enableSiteEdit);
 
@@ -32,48 +69,12 @@ export default function PersistentSites({ settings, enableEdit, locale, getFavic
     };
   }, []);
 
-  async function init() {
-    const sites = await chromeStorage.get("persistentSites") || [];
-
-    setSites(initSites(sites));
-
-    chromeStorage.subscribeToChanges(({ persistentSites }) => {
-      if (!persistentSites) {
-        return;
-      }
-
-      if (persistentSites.newValue) {
-        setSites(initSites(persistentSites.newValue));
-      }
-      else {
-        setSites([]);
-      }
-      hideForm();
-    });
-  }
-
-  function initSites(sites: PersistentSite[]) {
-    return sites.map(site => {
-      site.id = crypto.randomUUID();
-      site.iconUrl = getFaviconURL(site.url, 32);
-      return site;
-    });
-  }
-
-  function enableSiteEdit() {
-    setSiteEditEnabled(true);
-  }
-
   function disableSiteEdit() {
     setSiteEditEnabled(false);
   }
 
   function showForm(data = {}) {
     setForm(data);
-  }
-
-  function hideForm() {
-    setForm(null);
   }
 
   function updateSite(site: Partial<PersistentSite>, action: "add" | "update"): string | undefined {

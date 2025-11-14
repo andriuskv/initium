@@ -154,9 +154,6 @@ export default function Tooltip() {
           element.addEventListener("pointerleave", getRemoveTooltipCb("hover"), { once: true, signal: abortController.current.signal });
           element.addEventListener("blur", getRemoveTooltipCb("focus"), { once: true, signal: abortController.current.signal });
         }
-        else {
-          setTooltips(tooltips.filter(item => item.id !== tooltip.id));
-        }
       }
     }
 

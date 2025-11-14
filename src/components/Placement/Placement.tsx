@@ -5,6 +5,7 @@ import { useSettings } from "contexts/settings";
 import { usePlacement } from "contexts/placement";
 import SecondaryPanel from "components/SecondaryPanel";
 import "./placement.css";
+import type { WeatherSettings } from "types/settings";
 
 const Weather = lazy(() => import("components/Weather"));
 const Tasks = lazy(() => import("components/Tasks"));
@@ -16,12 +17,16 @@ type Component = {
   params?: { [key: string]: unknown }
 }
 
+function isWeatherEnabled(settings: WeatherSettings) {
+  return !settings.disabled && (!!settings.cityName || settings.useGeo);
+}
+
 export default function Placement() {
   const { settings } = useSettings();
   const { placement } = usePlacement();
   const [weather, setWeather] = useState<{ rendered: boolean, shouldDelay?: boolean}>(() => ({
     rendered: false,
-    shouldDelay: isWeatherEnabled()
+    shouldDelay: isWeatherEnabled(settings.weather)
   }));
   const weatherTimeoutId = useRef(0);
   const [components, setComponents] = useState<{ [key: string]: Component }>(() => ({
@@ -80,7 +85,7 @@ export default function Placement() {
   }, [settings.timeDate.format]);
 
   useEffect(() => {
-    const shouldRender = isWeatherEnabled();
+    const shouldRender = isWeatherEnabled(settings.weather);
     const shouldSkipWaiting = settings.general.rememberWidgetState && getWidgetState("weather")?.opened;
 
     clearTimeout(weatherTimeoutId.current);
@@ -99,10 +104,6 @@ export default function Placement() {
       setWeather({ rendered: false });
     }
   }, [settings.weather]);
-
-  function isWeatherEnabled() {
-    return !settings.weather.disabled && (!!settings.weather.cityName || settings.weather.useGeo);
-  }
 
   return Object.entries(placement).map(([corner, value]) => {
     const item = components[value.id];

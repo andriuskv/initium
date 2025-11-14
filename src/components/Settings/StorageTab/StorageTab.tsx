@@ -9,8 +9,21 @@ import "./storage-tab.css";
 import MainUsage from "./MainUsage/MainUsage";
 import DataManagement from "./DataManagement/DataManagement";
 
-export default function StorageTab({ locale }: { locale: any }) {
-  const [items, setItems] = useState<Item[]>(() => [
+function getInitStats(itemCount: number): Stats {
+  const maxStorage = itemCount * chromeStorage.MAX_QUOTA;
+
+  return {
+    maxStorage,
+    maxStorageFormatted: formatBytes(maxStorage),
+    usedStorageFormatted: "",
+    usedStorage: 0,
+    usedStorageInPercent: 0,
+    dashoffset: 1000
+  };
+}
+
+function getDefaultItems(locale: any): Item[] {
+  return [
     {
       name: "tasks",
       fullName: locale.tasks.title
@@ -55,24 +68,83 @@ export default function StorageTab({ locale }: { locale: any }) {
       name: "stickyNotes",
       fullName: locale.settings.storage.sticky_notes
     }
-  ]);
-  const [stats, setStats] = useState<Stats>(() => getInitStats(items.length));
+  ];
+}
+
+export default function StorageTab({ locale }: { locale: any }) {
+  const [items, setItems] = useState<Item[] | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
-  const ready = useRef(false);
   const storageItems = useRef<string[]>([]);
   const storageTimeoutId = useRef(0);
 
+  function updateState(usedStorage: number, items: Item[], stats: Stats) {
+    const usageRatio = usedStorage / stats.maxStorage;
+
+    setItems(items);
+    setStats({
+      ...stats,
+      usedStorage,
+      usedStorageInPercent: Math.ceil(usageRatio * 100),
+      usedStorageFormatted: formatBytes(usedStorage, { excludeUnits: true }),
+      // 1000 = empty circle, 717 = full circle
+      dashoffset: 1000 - 283 * usageRatio
+    });
+  }
+
   useEffect(() => {
+    async function init() {
+      const newItems = getDefaultItems(locale);
+      const stats = getInitStats(newItems.length);
+      let usedStorage = 0;
+
+      for (const item of newItems) {
+        const { used, usedFormated, usedRatio } = await chromeStorage.getBytesInUse(item.name);
+        usedStorage += used;
+        item.bytes = used;
+        item.usageRatio = usedRatio;
+        item.usedStorage = usedFormated;
+      }
+      updateState(usedStorage, newItems, stats);
+    }
+
     init();
   }, []);
 
   useEffect(() => {
+    async function updateStorageItems(storageItems: string[]) {
+      if (!items || !stats) {
+        return null;
+      }
+      let newItems = [...items];
+      let usedStorage = stats.usedStorage;
+
+      for (const name of storageItems) {
+        const { used, usedFormated, usedRatio } = await chromeStorage.getBytesInUse(name);
+        const index = items.findIndex(item => item.name === name);
+
+        if (index >= 0) {
+          const item = newItems[index];
+          const byteDiff = used - (item.bytes || 0);
+          usedStorage += byteDiff;
+          newItems = newItems.with(index, {
+            ...item,
+            bytes: used,
+            usageRatio: usedRatio,
+            usedStorage: usedFormated
+          });
+        }
+      }
+      updateState(usedStorage, newItems, stats);
+      storageItems.length = 0;
+    }
+
     chromeStorage.subscribeToChanges(storage => {
       const [name] = Object.keys(storage);
       storageItems.current.push(name);
 
       storageTimeoutId.current = timeout(() => {
-        updateStorageItems();
+        updateStorageItems(storageItems.current);
       }, 100, storageTimeoutId.current);
     }, { id: "storage-tab", listenToLocal: true });
 
@@ -80,78 +152,6 @@ export default function StorageTab({ locale }: { locale: any }) {
       chromeStorage.removeSubscriber("storage-tab");
     };
   }, [[items, stats]]);
-
-  async function init() {
-    const newItems = [...items];
-    let usedStorage = 0;
-
-    for (const item of newItems) {
-      const { used, usedFormated, usedRatio } = await chromeStorage.getBytesInUse(item.name);
-      usedStorage += used;
-      item.bytes = used;
-      item.usageRatio = usedRatio;
-      item.usedStorage = usedFormated;
-    }
-    const usageRatio = usedStorage / stats.maxStorage;
-
-    setItems(newItems);
-    setStats({
-      ...stats,
-      usedStorage,
-      usedStorageInPercent: Math.ceil(usageRatio * 100),
-      usedStorageFormatted: formatBytes(usedStorage, { excludeUnits: true }),
-      // 1000 = empty circle, 717 = full circle
-      dashoffset: 1000 - 283 * usageRatio
-    });
-    ready.current = true;
-  }
-
-  async function updateStorageItems() {
-    let newItems = [...items];
-    let usedStorage = stats.usedStorage;
-
-    for (const name of storageItems.current) {
-      const { used, usedFormated, usedRatio } = await chromeStorage.getBytesInUse(name);
-      const index = items.findIndex(item => item.name === name);
-
-      if (index >= 0) {
-        const item = newItems[index];
-        const byteDiff = used - (item.bytes || 0);
-        usedStorage += byteDiff;
-        newItems = newItems.with(index, {
-          ...item,
-          bytes: used,
-          usageRatio: usedRatio,
-          usedStorage: usedFormated
-        });
-      }
-    }
-    const usageRatio = usedStorage / stats.maxStorage;
-
-    setItems(newItems);
-    setStats({
-      ...stats,
-      usedStorage,
-      usedStorageInPercent: Math.ceil(usageRatio * 100),
-      usedStorageFormatted: formatBytes(usedStorage, { excludeUnits: true }),
-      // 1000 = empty circle, 717 = full circle
-      dashoffset: 1000 - 283 * usageRatio
-    });
-    storageItems.current.length = 0;
-  }
-
-  function getInitStats(itemCount: number): Stats {
-    const maxStorage = itemCount * chromeStorage.MAX_QUOTA;
-
-    return {
-      maxStorage,
-      maxStorageFormatted: formatBytes(maxStorage),
-      usedStorageFormatted: "",
-      usedStorage: 0,
-      usedStorageInPercent: 0,
-      dashoffset: 1000
-    };
-  }
 
   function showRemoveItemModal(item: Item) {
     setModal({
@@ -170,7 +170,7 @@ export default function StorageTab({ locale }: { locale: any }) {
     }
   }
 
-  if (!ready.current) {
+  if (!items || !stats) {
     return null;
   }
 

@@ -133,7 +133,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
 
     if (action === "add") {
       if (isDuplicateSite(site.url, sites)) {
-        return "Site with the same URL already exists.";
+        return locale.topSites.duplicate_site;
       }
       site.local = true;
       site.iconUrl = getFaviconURL(site.url, 32);
@@ -158,7 +158,7 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
 
       if (site.url !== oldSite.url) {
         if (isDuplicateSite(site.url, sites)) {
-          return "Site with the same URL already exists.";
+          return locale.topSites.duplicate_site;
         }
         const data = getLocalSites();
 

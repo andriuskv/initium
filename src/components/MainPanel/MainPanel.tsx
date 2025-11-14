@@ -44,12 +44,44 @@ function Component({ children, tab, activeTabId, showSpinner }: { children: Reac
   );
 }
 
+function getTabs(locale: any, settings: MainPanelSettings): Tabs {
+  const tabs: Tabs = {
+    topSites: {
+      id: "topSites",
+      title: locale.topSites.title,
+      iconId: "top-sites",
+      renderPending: true
+    },
+    notepad: {
+      id: "notepad",
+      title: locale.notepad.title,
+      iconId: "notepad",
+      expandable: true,
+      renderPending: true
+    },
+    rssFeed: {
+      id: "rssFeed",
+      title: locale.rssFeed.feeds_title,
+      iconId: "rss",
+      delay: 1200000,
+      expandable: true,
+      firstRender: true,
+      renderPending: true
+    }
+  };
+
+  for (const tab of Object.values(tabs)) {
+    tab.disabled = settings.components[tab.id as keyof MainPanelSettings["components"]].disabled;
+  }
+  return tabs;
+}
+
 export default function MainPanel({ settings }: Props) {
   const locale = useLocalization();
   const [activeTab, setActiveTab] = useState((): ActiveTab => {
     return { id: localStorage.getItem("mainPanelTab") ?? "topSites" };
   });
-  const [tabs, setTabs] = useState(() => getTabs());
+  const [tabs, setTabs] = useState(() => getTabs(locale, settings));
   const [resizerEnabled, setResizerEnabled] = useState(false);
   const [feedReady, setFeedReady] = useState(false);
   const tabTimeouts = useRef<({ [key: string]: number })>({});
@@ -72,6 +104,22 @@ export default function MainPanel({ settings }: Props) {
       window.removeEventListener("enable-persistent-site-edit", selectTopSitesTab);
     };
   }, []);
+
+  function selectTab(id: string) {
+    const newId = id === activeTab.id ? "" : id;
+
+    if (tabs[newId]?.indicatorVisible) {
+      setTabs({
+        ...tabs,
+        [newId]: {
+          ...tabs[newId],
+          indicatorVisible: false
+        }
+      });
+    }
+    setActiveTab({ id: newId, manuallySelected: true });
+    localStorage.setItem("mainPanelTab", newId);
+  }
 
   useEffect(() => {
     let firstEnabledTab = "";
@@ -105,6 +153,27 @@ export default function MainPanel({ settings }: Props) {
     setTabs(newTabs);
   }, [settings.components]);
 
+  async function initComponent(id: string, callback: () => Promise<boolean>) {
+    const tab = { ...tabs[id] };
+    let delay = -1;
+
+    clearTimeout(tabTimeouts.current[id]);
+    delete tabTimeouts.current[id];
+
+    if (activeTab.id === id) {
+      delay = activeTab.manuallySelected ? 1 : 2000;
+    }
+    else if (tab.firstRender && tab.delay && await callback()) {
+      delay = tab.delay;
+    }
+
+    if (delay > 0) {
+      tabTimeouts.current[id] = window.setTimeout(() => {
+        setFeedReady(true);
+      }, delay);
+    }
+  }
+
   useEffect(() => {
     if (resizerEnabled) {
       setResizerEnabled(false);
@@ -137,75 +206,6 @@ export default function MainPanel({ settings }: Props) {
       });
     }
   }, [feedReady]);
-
-  async function initComponent(id: string, callback: () => Promise<boolean>) {
-    const tab = { ...tabs[id] };
-    let delay = -1;
-
-    clearTimeout(tabTimeouts.current[id]);
-    delete tabTimeouts.current[id];
-
-    if (activeTab.id === id) {
-      delay = activeTab.manuallySelected ? 1 : 2000;
-    }
-    else if (tab.firstRender && tab.delay && await callback()) {
-      delay = tab.delay;
-    }
-
-    if (delay > 0) {
-      tabTimeouts.current[id] = window.setTimeout(() => {
-        setFeedReady(true);
-      }, delay);
-    }
-  }
-
-  function getTabs() {
-    const tabs: Tabs = {
-      topSites: {
-        id: "topSites",
-        title: locale.topSites.title,
-        iconId: "top-sites",
-        renderPending: true
-      },
-      notepad: {
-        id: "notepad",
-        title: locale.notepad.title,
-        iconId: "notepad",
-        expandable: true,
-        renderPending: true
-      },
-      rssFeed: {
-        id: "rssFeed",
-        title: locale.rssFeed.feeds_title,
-        iconId: "rss",
-        delay: 1200000,
-        expandable: true,
-        firstRender: true,
-        renderPending: true
-      }
-    };
-
-    for (const tab of Object.values(tabs)) {
-      tab.disabled = settings.components[tab.id as keyof MainPanelSettings["components"]].disabled;
-    }
-    return tabs;
-  }
-
-  function selectTab(id: string) {
-    const newId = id === activeTab.id ? "" : id;
-
-    if (tabs[newId]?.indicatorVisible) {
-      setTabs({
-        ...tabs,
-        [newId]: {
-          ...tabs[newId],
-          indicatorVisible: false
-        }
-      });
-    }
-    setActiveTab({ id: newId, manuallySelected: true });
-    localStorage.setItem("mainPanelTab", newId);
-  }
 
   function expandTab() {
     const willExpand = !activeTab.expanded;

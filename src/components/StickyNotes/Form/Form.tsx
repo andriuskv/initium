@@ -25,6 +25,14 @@ type Props = {
   showForm: () => void
 }
 
+function getTextColor(textColor: number[], opacity = 60) {
+  return `oklch(${textColor.join(" ")} / ${opacity}%)`;
+}
+
+function getTilt() {
+  return Math.floor(Math.random() * 20) - 10;
+}
+
 export default function Form({ initialForm, noteCount, discardNote, showForm }: Props) {
   const locale = useLocalization();
   const { createNote, removeNote } = useNotes();
@@ -74,6 +82,34 @@ export default function Form({ initialForm, noteCount, discardNote, showForm }: 
   }, [initialForm]);
 
   useEffect(() => {
+    function handlePointerMove(event: MouseEvent) {
+      if (moving.current) {
+        return;
+      }
+      moving.current = true;
+
+      requestAnimationFrame(() => {
+        if (!form) {
+          return;
+        }
+        const x = event.clientX / document.documentElement.clientWidth * 100;
+        const y = event.clientY / document.documentElement.clientHeight * 100;
+
+        setForm({ ...form, x, y });
+        moving.current = false;
+      });
+    }
+
+    function handlePointerUp() {
+      setMovable(false);
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        discardNote();
+      }
+    }
+
     if (movable) {
       document.documentElement.style.userSelect = "none";
       document.documentElement.style.cursor = "move";
@@ -91,34 +127,6 @@ export default function Form({ initialForm, noteCount, discardNote, showForm }: 
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [movable]);
-
-  function handlePointerMove(event: MouseEvent) {
-    if (moving.current) {
-      return;
-    }
-    moving.current = true;
-
-    requestAnimationFrame(() => {
-      if (!form) {
-        return;
-      }
-      const x = event.clientX / document.documentElement.clientWidth * 100;
-      const y = event.clientY / document.documentElement.clientHeight * 100;
-
-      setForm({ ...form, x, y });
-      moving.current = false;
-    });
-  }
-
-  function handlePointerUp() {
-    setMovable(false);
-  }
-
-  function handleKeyDown(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      discardNote();
-    }
-  }
 
   function handleInputChange(event: FormEvent) {
     if (!form) {
@@ -159,10 +167,6 @@ export default function Form({ initialForm, noteCount, discardNote, showForm }: 
       return;
     }
     setForm({ ...form, backgroundColor: color });
-  }
-
-  function getTextColor(textColor: number[], opacity = 60) {
-    return `oklch(${textColor.join(" ")} / ${opacity}%)`;
   }
 
   function updateTextColor(index: number) {
@@ -211,10 +215,6 @@ export default function Form({ initialForm, noteCount, discardNote, showForm }: 
         tilt: getTilt()
       });
     }
-  }
-
-  function getTilt() {
-    return Math.floor(Math.random() * 20) - 10;
   }
 
   function round(number: number, decimals: number) {

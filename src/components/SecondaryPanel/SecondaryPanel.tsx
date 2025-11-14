@@ -15,10 +15,64 @@ const StickyNotes = lazy(() => import("./StickyNotes"));
 const Shortcuts = lazy(() => import("./Shortcuts"));
 const Calendar = lazy(() => import("./Calendar"));
 
+function getItems(locale: any) {
+  const items: Items = {
+    "stickyNotes": {
+      id: "stickyNotes",
+      title: locale.secondaryPanel.stickyNotes,
+      iconId: "sticky-notes",
+      attrs: {
+        "data-focus-id": "stickyNotes"
+      }
+    },
+    "shortcuts": {
+      id: "shortcuts",
+      title: locale.secondaryPanel.shortcuts,
+      iconId: "grid",
+      attrs: {
+        "data-focus-id": "shortcuts"
+      }
+    },
+    "timers": {
+      id: "timers",
+      title: locale.secondaryPanel.timers,
+      iconId: "clock"
+    },
+    "calendar": {
+      id: "calendar",
+      title: locale.secondaryPanel.calendar,
+      iconId: "calendar",
+      attrs: {
+        "data-focus-id": "calendar"
+      }
+    },
+    "settings": {
+      id: "settings",
+      title: locale.global.settings,
+      iconId: "settings",
+      attrs: {
+        "data-modal-initiator": true
+      }
+    }
+  };
+
+  const { rememberWidgetState } = getSetting("general") as GeneralSettings;
+
+  for (const id of ["stickyNotes", "shortcuts", "calendar"]) {
+    const state = getWidgetState(id);
+    items[id] = { ...items[id], ...state };
+
+    if (state.opened && rememberWidgetState) {
+      items[id] = { ...items[id], visible: true, revealed: true, rendered: true };
+    }
+  }
+  return items;
+}
+
 export default function SecondaryPanel({ corner }: { corner: string }) {
   const locale = useLocalization();
   const { settings } = useSettings();
-  const [items, setItems] = useState<Items>(() => getItems());
+  const [items, setItems] = useState<Items>(() => getItems(locale));
   const calendarTimeoutId = useRef(0);
   const currentLocale = useRef(locale.locale);
   const container = useRef<HTMLDivElement>(null);
@@ -34,6 +88,10 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
       }
     }
   }, []);
+
+  function toggleIndicator(id: string, value: boolean) {
+    setItems({ ...items, [id]: { ...items[id], indicatorVisible: value } });
+  }
 
   useEffect(() => {
     if (!items.calendar.rendered && !settings.general.calendarDisabled) {
@@ -129,60 +187,6 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
     setItems(newItems);
   }, [items, locale.locale]);
 
-  function getItems() {
-    const items: Items = {
-      "stickyNotes": {
-        id: "stickyNotes",
-        title: locale.secondaryPanel.stickyNotes,
-        iconId: "sticky-notes",
-        attrs: {
-          "data-focus-id": "stickyNotes"
-        }
-      },
-      "shortcuts": {
-        id: "shortcuts",
-        title: locale.secondaryPanel.shortcuts,
-        iconId: "grid",
-        attrs: {
-          "data-focus-id": "shortcuts"
-        }
-      },
-      "timers": {
-        id: "timers",
-        title: locale.secondaryPanel.timers,
-        iconId: "clock"
-      },
-      "calendar": {
-        id: "calendar",
-        title: locale.secondaryPanel.calendar,
-        iconId: "calendar",
-        attrs: {
-          "data-focus-id": "calendar"
-        }
-      },
-      "settings": {
-        id: "settings",
-        title: locale.global.settings,
-        iconId: "settings",
-        attrs: {
-          "data-modal-initiator": true
-        }
-      }
-    };
-
-    const { rememberWidgetState } = getSetting("general") as GeneralSettings;
-
-    for (const id of ["stickyNotes", "shortcuts", "calendar"]) {
-      const state = getWidgetState(id);
-      items[id] = { ...items[id], ...state };
-
-      if (state.opened && rememberWidgetState) {
-        items[id] = { ...items[id], visible: true, revealed: true, rendered: true };
-      }
-    }
-    return items;
-  }
-
   function selectItem(id: string) {
     if (id === "timers") {
       dispatchCustomEvent("top-panel-visible");
@@ -232,10 +236,6 @@ export default function SecondaryPanel({ corner }: { corner: string }) {
       setItems({ ...items, [id]: { ...items[id], visible: false, revealed: false } });
       focusService.focusSelector(`[data-focus-id=${id}]`);
     }, 200 * settings.appearance.animationSpeed);
-  }
-
-  function toggleIndicator(id: string, value: boolean) {
-    setItems({ ...items, [id]: { ...items[id], indicatorVisible: value } });
   }
 
   function selectCalendar() {

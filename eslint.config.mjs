@@ -15,6 +15,7 @@ export default [
   react.configs.flat.recommended,
   reactHooks.configs.flat.recommended,
   reactHooks.configs.flat["recommended-latest"],
+  reactCompiler.configs.recommended,
   {
     files: ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -36,8 +37,7 @@ export default [
       },
     },
     plugins: {
-      react,
-      "react-compiler": reactCompiler
+      react
     },
     rules: {
       "@typescript-eslint/no-require-imports": 0,
@@ -49,7 +49,6 @@ export default [
       "react/no-unescaped-entities": 0,
       "react-hooks/exhaustive-deps": 0,
       "react/jsx-no-target-blank": 0,
-      "react-compiler/react-compiler": "error",
       "array-callback-return": 2,
       "arrow-spacing": [2, {
         "before": true,

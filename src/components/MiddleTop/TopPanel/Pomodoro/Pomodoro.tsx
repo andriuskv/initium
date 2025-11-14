@@ -24,6 +24,21 @@ type Stage = "focus" | "short" | "long";
 
 const stagesOrder: Stage[] = ["focus", "short", "focus", "long"];
 
+function parseDuration(duration: number) {
+  const hours = Math.floor(duration / 3600);
+  const minutes = Math.floor(duration / 60 % 60);
+  const seconds = duration % 60;
+
+  return {
+    duration,
+    hours,
+    minutes,
+    seconds,
+    minutesString: padTime(minutes, !!(hours)),
+    secondsString: padTime(seconds, !!(hours || minutes))
+  };
+}
+
 export default function Pomodoro({ visible, locale, animDirection, toggleIndicator, updateTitle, expand, handleReset }: Props) {
   const [running, setRunning] = useState(false);
   const [state, setState] = useState(() => {
@@ -42,9 +57,61 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
   const { initWorker, destroyWorkers } = useWorker(handleMessage);
   const name = "pomodoro";
 
+  function init() {
+    type Data = {
+      duration: number,
+      stage: Stage,
+      stageIndex: number,
+      label: string,
+      isAudioEnabled: boolean
+    }
+    const data = getLocalStorageItem<Data>(name);
+
+    if (data) {
+      currentStageIndex.current = data.stageIndex;
+
+      setStage(data.stage);
+      setAudio({ shouldPlay: data.isAudioEnabled });
+      setLabel(data.label);
+      setState({
+        ...parseDuration(data.duration),
+        dirty: true
+      });
+    }
+  }
+
   useEffect(() => {
     init();
   }, []);
+
+  function toggle() {
+    if (running) {
+      stop();
+    }
+    else {
+      start();
+    }
+  }
+
+  function start() {
+    if (!audioElement.current) {
+      audioElement.current = new Audio("./assets/chime.mp3");
+    }
+    setRunning(true);
+    setState({ ...state, dirty: true });
+    updateTitle(name, {
+      ...state,
+      hours: state.hours,
+      minutes: state.hours || state.minutes ? state.minutesString : "",
+      seconds: state.secondsString,
+      isAudioEnabled: audio.shouldPlay
+    });
+  }
+
+  function stop() {
+    setRunning(false);
+    updateTitle(name);
+  }
 
   useEffect(() => {
     if (running) {
@@ -98,58 +165,6 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
         playAudio();
       }
     }
-  }
-
-  function init() {
-    type Data = {
-      duration: number,
-      stage: Stage,
-      stageIndex: number,
-      label: string,
-      isAudioEnabled: boolean
-    }
-    const data = getLocalStorageItem<Data>(name);
-
-    if (data) {
-      currentStageIndex.current = data.stageIndex;
-
-      setStage(data.stage);
-      setAudio({ shouldPlay: data.isAudioEnabled });
-      setLabel(data.label);
-      setState({
-        ...parseDuration(data.duration),
-        dirty: true
-      });
-    }
-  }
-
-  function toggle() {
-    if (running) {
-      stop();
-    }
-    else {
-      start();
-    }
-  }
-
-  function start() {
-    if (!audioElement.current) {
-      audioElement.current = new Audio("./assets/chime.mp3");
-    }
-    setRunning(true);
-    setState({ ...state, dirty: true });
-    updateTitle(name, {
-      ...state,
-      hours: state.hours,
-      minutes: state.hours || state.minutes ? state.minutesString : "",
-      seconds: state.secondsString,
-      isAudioEnabled: audio.shouldPlay
-    });
-  }
-
-  function stop() {
-    setRunning(false);
-    updateTitle(name);
   }
 
   function update(duration: number) {
@@ -216,21 +231,6 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
       ...parseDuration(duration * 60),
       dirty: false
     });
-  }
-
-  function parseDuration(duration: number) {
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor(duration / 60 % 60);
-    const seconds = duration % 60;
-
-    return {
-      duration,
-      hours,
-      minutes,
-      seconds,
-      minutesString: padTime(minutes, !!(hours)),
-      secondsString: padTime(seconds, !!(hours || minutes))
-    };
   }
 
   function toggleAudio() {

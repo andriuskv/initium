@@ -17,24 +17,24 @@ export default function GreetingEditor({ locale, hide }: Props) {
   const [bytes, setBytes] = useState<{ usedFormated: string, maxFormated: string, message?: string } | null>(null);
   const saveTimeoutId = useRef(0);
 
-  useEffect(() => {
-    init();
-  }, []);
-
-  async function init() {
-    const greetings = await chromeStorage.get("greetings") as string[];
-
-    if (greetings?.length) {
-      setTextArea(greetings.join("\n"));
-    }
-    setByteUsage();
-  }
-
   async function setByteUsage() {
     const { usedFormated, maxFormated } = await chromeStorage.getBytesInUse("greetings");
 
     setBytes({ usedFormated, maxFormated });
   }
+
+  useEffect(() => {
+    async function init() {
+      const greetings = await chromeStorage.get("greetings") as string[];
+
+      if (greetings?.length) {
+        setTextArea(greetings.join("\n"));
+      }
+      setByteUsage();
+    }
+
+    init();
+  }, []);
 
   function dismissMessage() {
     if (bytes) {

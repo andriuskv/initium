@@ -21,7 +21,33 @@ export default function App() {
   const locale = useLocalization();
   const { showNotification } = useNotification();
 
+
   useLayoutEffect(() => {
+    async function initAnnouncements() {
+      try {
+        const json = await fetch(`${process.env.SERVER_URL}/messages`).then(res => res.json());
+
+        if (json.messages) {
+          const currentDate = Date.now();
+          const localAnnouncements = (getLocalStorageItem<Announcement[]>("announcements") || [])
+            .filter(a => a.expires > currentDate);
+          const newMessages = (json.messages as Announcement[])
+            .filter(m => !localAnnouncements.some((l => l.id === m.id)));
+
+          for (const message of newMessages) {
+            showNotification(message);
+            localAnnouncements.push({
+              ...message,
+              date: Date.now(),
+            });
+          }
+          localStorage.setItem("announcements", JSON.stringify(localAnnouncements));
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
     initAppearanceSettings(settings.appearance);
     initAnnouncements();
   }, []);
@@ -30,69 +56,44 @@ export default function App() {
     if (!locale) {
       return;
     }
-    initLang();
-  }, [locale]);
 
-  async function initAnnouncements() {
-    try {
-      const json = await fetch(`${process.env.SERVER_URL}/messages`).then(res => res.json());
+    async function initLang() {
+      try {
+        const first = localStorage.getItem("first");
 
-      if (json.messages) {
-        const currentDate = Date.now();
-        const localAnnouncements = (getLocalStorageItem<Announcement[]>("announcements") || [])
-          .filter(a => a.expires > currentDate);
-        const newMessages = (json.messages as Announcement[])
-          .filter(m => !localAnnouncements.some((l => l.id === m.id)));
+        if (first) {
+          return;
+        }
+        localStorage.setItem("first", "1");
+        /* global chrome */
+        const full = chrome.i18n.getUILanguage();
+        const part = full.split("-")[0];
+        const readable = getReadableLocale(part);
 
-        for (const message of newMessages) {
-          showNotification(message);
-          localAnnouncements.push({
-            ...message,
-            date: Date.now(),
+        if (part !== "en" && part !== locale.locale && readable) {
+          const uiLocale = await fetchLocale(part);
+
+          showNotification({
+            id: "lang-switch",
+            content: `${uiLocale.global.lang_switch}\nDo you want to switch to ${readable}?`,
+            action: () => {
+              updateContextSetting("general", { locale: part });
+            },
+            actionTitle: `${uiLocale.global.switch} / Switch`,
+            dismissTitle: `${uiLocale.global.dismiss} / Dismiss`,
           });
         }
-        localStorage.setItem("announcements", JSON.stringify(localAnnouncements));
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
     }
-  }
 
-  async function initLang() {
-    try {
-      const first = localStorage.getItem("first");
-
-      if (first) {
-        return;
-      }
-      localStorage.setItem("first", "1");
-      /* global chrome */
-      const full = await chrome.i18n.getUILanguage();
-      const part = full.split("-")[0];
-      const readable = getReadableLocale(part);
-
-      if (part !== "en" && part !== locale.locale && readable) {
-        const uiLocale = await fetchLocale(part);
-
-        showNotification({
-          id: "lang-switch",
-          content: `${uiLocale.global.lang_switch}\nDo you want to switch to ${readable}?`,
-          action: () => {
-            updateContextSetting("general", { locale: part });
-          },
-          actionTitle: `${uiLocale.global.switch} / Switch`,
-          dismissTitle: `${uiLocale.global.dismiss} / Dismiss`,
-        });
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
+    initLang();
+  }, [locale]);
 
   if (!locale) {
     return null;
   }
-
   return (
     <>
       <Wallpaper settings={settings.appearance.wallpaper}/>

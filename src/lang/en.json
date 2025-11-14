@@ -110,7 +110,8 @@
   "topSites": {
     "title": "Top Sites",
     "add_shortcut_title": "Add shortcut",
-    "edit_shortcut_title": "Edit shortcut"
+    "edit_shortcut_title": "Edit shortcut",
+    "duplicate_site": "Site with the same URL already exists."
   },
   "notepad": {
     "title": "Notepad",
@@ -288,6 +289,13 @@
       "new_tab_links_label": "Open links in a new tab",
       "middle_top_group_title": "Middle top",
       "show_middle_top_title": "Order",
+      "notif_pos": "Notification position",
+      "notif_pos_top_left": "Top left",
+      "notif_pos_top_right": "Top right",
+      "notif_pos_top_center": "Top center",
+      "notif_pos_bottom_left": "Bottom left",
+      "notif_pos_bottom_right": "Bottom right",
+      "notif_pos_bottom_center": "Bottom center",
       "timers": "Mini timer",
       "clock": "Clock",
       "greeting": "Greeting",

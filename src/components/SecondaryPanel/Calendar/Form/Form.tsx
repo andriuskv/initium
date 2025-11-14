@@ -106,169 +106,169 @@ type Props = {
   hide: () => void
 }
 
+function generateTimeTable() {
+  const dataList = { items: [""] };
+  let minutes = 0;
+  let hours = 0;
+
+  while (hours < 24) {
+    dataList.items.push(getTimeString({ hours, minutes }, { padHours: true }));
+    minutes += 30;
+
+    if (minutes === 60) {
+      hours += 1;
+      minutes = 0;
+    }
+  }
+  return dataList;
+}
+
+function getInitialForm(initialForm: InitialForm, googleCalendars: GoogleCalendar[], locale: any): FormType {
+  const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
+  const weekday = getWeekday(initialForm.year, initialForm.month, initialForm.day);
+  const weekdays = {
+    current: weekday,
+    static: [false, false, false, false, false, false, false],
+    dynamic: [false, false, false, false, false, false, false]
+  };
+  weekdays.static[weekday] = true;
+  weekdays.dynamic[weekday] = true;
+
+  const date = initialForm.selectedDay ? initialForm.selectedDay: initialForm;
+  const dateString = getDateString(date);
+  const displayDateString = formatDate(new Date(date.year, date.month, date.day), { locale: dateLocale });
+  const pickerColor = initialForm.color ? initialForm.color.startsWith("hsl") ? hslStringToHex(initialForm.color) : initialForm.color : getRandomHexColor();
+
+  const formA: FormType = {
+    id: initialForm.updating ? initialForm.id : getRandomString(),
+    type: initialForm.type || "normal",
+    creationDate: Date.now(),
+    text: initialForm.text,
+    descriptionRaw: initialForm.descriptionRaw,
+    day: initialForm.day,
+    month: initialForm.month,
+    year: initialForm.year,
+    dateString,
+    displayDateString,
+    pickerColor,
+    updating: initialForm.updating,
+    range: {
+      enabled: false,
+      dataList: generateTimeTable(),
+      from: { hours: 0, minutes: 0, text: "" },
+      to: { hours: 0, minutes: 0, text: "" }
+    },
+    repeat: {
+      enabled: false,
+      type: "custom",
+      customTypeGapName: "days",
+      day: initialForm.day,
+      month: initialForm.month,
+      year: initialForm.year,
+      weekdays,
+      ends: "never",
+      gap: "",
+      count: "",
+      endDateString: initialForm.repeat?.endDate ? getDateString({
+        year: initialForm.repeat.endDate.year,
+        month: initialForm.repeat.endDate.month,
+        day: initialForm.repeat.endDate.day
+      }) : undefined,
+      minEndDateString: getDateString({
+        year: initialForm.year,
+        month: initialForm.month,
+        day: initialForm.day
+      }),
+    },
+    notify: {
+      enabled: false,
+      type: "default",
+      time: { hours: 1, minutes: 0 }
+    }
+  };
+
+  if (initialForm.calendarId) {
+    formA.eventColors = getEventColors(initialForm.calendarId, googleCalendars);
+
+    if (formA.eventColors) {
+      formA.eventColorIndex = formA.eventColors.length - 1;
+    }
+
+    if (initialForm.color && formA.eventColors) {
+      const index = formA.eventColors.findIndex(({ color }) => initialForm.color === color);
+
+      if (index >= 0) {
+        formA.eventColorIndex = index;
+        formA.colorId = formA.eventColors[formA.eventColorIndex].id;
+      }
+    }
+  }
+
+  if (initialForm.range) {
+    formA.range.enabled = initialForm.range.text !== locale.calendar.range_label;
+
+    if (initialForm.range.from) {
+      formA.range.from = { ...initialForm.range.from, text: `${initialForm.range.from.hours}:${padTime(initialForm.range.from.minutes)}`, };
+    }
+
+    if (initialForm.range.to) {
+      formA.range.to = { ...initialForm.range.to, text: `${initialForm.range.to.hours}:${padTime(initialForm.range.to.minutes)}`};
+    }
+    else {
+      formA.range.to = {
+        text: "",
+        hours: 0,
+        minutes: 0
+      };
+    }
+  }
+
+  if (initialForm.repeat) {
+    formA.repeat.enabled = true;
+    formA.repeat.type = initialForm.repeat.type || "custom";
+    formA.repeat.ends = initialForm.repeat.count > 0 ? "occurrences" : "never";
+    formA.repeat.gap = initialForm.repeat.gap ?? "";
+    formA.repeat.count = initialForm.repeat.count;
+    formA.repeat.year = initialForm.year;
+    formA.repeat.month = initialForm.month;
+    formA.repeat.day = initialForm.day;
+
+    if (formA.repeat.endDateString) {
+      formA.repeat.ends = "date";
+    }
+
+    if (initialForm.repeat.type === "weekday" && initialForm.repeat.weekdays) {
+      formA.repeat.weekdays = {
+        current: weekday,
+        dynamic: initialForm.repeat.weekdays.dynamic,
+        static: [...initialForm.repeat.weekdays.dynamic].with(weekday, true)
+      };
+    }
+  }
+
+  if (initialForm.notify) {
+    formA.notify.enabled = true;
+    formA.notify.type = initialForm.notify.type;
+
+    if (initialForm.notify.time) {
+      formA.notify.time = {
+        full: initialForm.notify.time.full,
+        hours: Math.floor(initialForm.notify.time.full / 60),
+        minutes: initialForm.notify.time.full % 60
+      };
+    }
+  }
+
+  return formA;
+}
+
 export default function Form({ form: initialForm, locale, user, googleCalendars, updateReminder, hide }: Props) {
-  const [form, setForm] = useState(() => getInitialForm(initialForm));
+  const [form, setForm] = useState(() => getInitialForm(initialForm, googleCalendars, locale));
   const { message, showMessage, dismissMessage }= useMessage("");
   const weekdayNames = useMemo(() => {
     const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
     return getWeekdays(dateLocale, "short");
   }, []);
-
-  function getInitialForm(initialForm: InitialForm) {
-    const { dateLocale } = getSetting("timeDate") as TimeDateSettings;
-    const weekday = getWeekday(initialForm.year, initialForm.month, initialForm.day);
-    const weekdays = {
-      current: weekday,
-      static: [false, false, false, false, false, false, false],
-      dynamic: [false, false, false, false, false, false, false]
-    };
-    weekdays.static[weekday] = true;
-    weekdays.dynamic[weekday] = true;
-
-    const date = initialForm.selectedDay ? initialForm.selectedDay: initialForm;
-    const dateString = getDateString(date);
-    const displayDateString = formatDate(new Date(date.year, date.month, date.day), { locale: dateLocale });
-    const pickerColor = initialForm.color ? initialForm.color.startsWith("hsl") ? hslStringToHex(initialForm.color) : initialForm.color : getRandomHexColor();
-
-    const formA: FormType = {
-      id: initialForm.updating ? initialForm.id : getRandomString(),
-      type: initialForm.type || "normal",
-      creationDate: Date.now(),
-      text: initialForm.text,
-      descriptionRaw: initialForm.descriptionRaw,
-      day: initialForm.day,
-      month: initialForm.month,
-      year: initialForm.year,
-      dateString,
-      displayDateString,
-      pickerColor,
-      updating: initialForm.updating,
-      range: {
-        enabled: false,
-        dataList: generateTimeTable(),
-        from: { hours: 0, minutes: 0, text: "" },
-        to: { hours: 0, minutes: 0, text: "" }
-      },
-      repeat: {
-        enabled: false,
-        type: "custom",
-        customTypeGapName: "days",
-        day: initialForm.day,
-        month: initialForm.month,
-        year: initialForm.year,
-        weekdays,
-        ends: "never",
-        gap: "",
-        count: "",
-        endDateString: initialForm.repeat?.endDate ? getDateString({
-          year: initialForm.repeat.endDate.year,
-          month: initialForm.repeat.endDate.month,
-          day: initialForm.repeat.endDate.day
-        }) : undefined,
-        minEndDateString: getDateString({
-          year: initialForm.year,
-          month: initialForm.month,
-          day: initialForm.day
-        }),
-      },
-      notify: {
-        enabled: false,
-        type: "default",
-        time: { hours: 1, minutes: 0 }
-      }
-    };
-
-    if (initialForm.calendarId) {
-      formA.eventColors = getEventColors(initialForm.calendarId, googleCalendars);
-
-      if (formA.eventColors) {
-        formA.eventColorIndex = formA.eventColors.length - 1;
-      }
-
-      if (initialForm.color && formA.eventColors) {
-        const index = formA.eventColors.findIndex(({ color }) => initialForm.color === color);
-
-        if (index >= 0) {
-          formA.eventColorIndex = index;
-          formA.colorId = formA.eventColors[formA.eventColorIndex].id;
-        }
-      }
-    }
-
-    if (initialForm.range) {
-      formA.range.enabled = initialForm.range.text !== locale.calendar.range_label;
-
-      if (initialForm.range.from) {
-        formA.range.from = { ...initialForm.range.from, text: `${initialForm.range.from.hours}:${padTime(initialForm.range.from.minutes)}`, };
-      }
-
-      if (initialForm.range.to) {
-        formA.range.to = { ...initialForm.range.to, text: `${initialForm.range.to.hours}:${padTime(initialForm.range.to.minutes)}`};
-      }
-      else {
-        formA.range.to = {
-          text: "",
-          hours: 0,
-          minutes: 0
-        };
-      }
-    }
-
-    if (initialForm.repeat) {
-      formA.repeat.enabled = true;
-      formA.repeat.type = initialForm.repeat.type || "custom";
-      formA.repeat.ends = initialForm.repeat.count > 0 ? "occurrences" : "never";
-      formA.repeat.gap = initialForm.repeat.gap ?? "";
-      formA.repeat.count = initialForm.repeat.count;
-      formA.repeat.year = initialForm.year;
-      formA.repeat.month = initialForm.month;
-      formA.repeat.day = initialForm.day;
-
-      if (formA.repeat.endDateString) {
-        formA.repeat.ends = "date";
-      }
-
-      if (initialForm.repeat.type === "weekday" && initialForm.repeat.weekdays) {
-        formA.repeat.weekdays = {
-          current: weekday,
-          dynamic: initialForm.repeat.weekdays.dynamic,
-          static: [...initialForm.repeat.weekdays.dynamic].with(weekday, true)
-        };
-      }
-    }
-
-    if (initialForm.notify) {
-      formA.notify.enabled = true;
-      formA.notify.type = initialForm.notify.type;
-
-      if (initialForm.notify.time) {
-        formA.notify.time = {
-          full: initialForm.notify.time.full,
-          hours: Math.floor(initialForm.notify.time.full / 60),
-          minutes: initialForm.notify.time.full % 60
-        };
-      }
-    }
-
-    return formA;
-  }
-
-  function generateTimeTable() {
-    const dataList = { items: [""] };
-    let minutes = 0;
-    let hours = 0;
-
-    while (hours < 24) {
-      dataList.items.push(getTimeString({ hours, minutes }, { padHours: true }));
-      minutes += 30;
-
-      if (minutes === 60) {
-        hours += 1;
-        minutes = 0;
-      }
-    }
-    return dataList;
-  }
 
   function validateHourFormat(value: string) {
     const regex24Hours = /^(([0-1]?[0-9])|(2[0-3])):[0-5]?[0-9]$/;

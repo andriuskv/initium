@@ -16,6 +16,16 @@ function useUrl({ id, url: imageUrl }: WallpaperSettings): string | null {
   const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    async function init() {
+      if (id) {
+        const image = await getIDBWallpaper(id);
+        setUrl(URL.createObjectURL(image));
+      }
+      else if (imageUrl) {
+        setUrl(imageUrl);
+      }
+    }
+
     init();
 
     return () => {
@@ -24,16 +34,6 @@ function useUrl({ id, url: imageUrl }: WallpaperSettings): string | null {
       }
     };
   }, []);
-
-  async function init() {
-    if (id) {
-      const image = await getIDBWallpaper(id);
-      setUrl(URL.createObjectURL(image));
-    }
-    else if (imageUrl) {
-      setUrl(imageUrl);
-    }
-  }
 
   return url;
 }
