@@ -271,6 +271,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
       }
       setFeeds({
         ...feeds,
+        failed,
         active: newActive
       });
     }
@@ -325,9 +326,9 @@ export default function RssFeed({ locale, showIndicator }: Props) {
       if (!activeComponent) {
         animateNavigation();
       }
-      updatedFeeds.current.length = 0;
       showIndicator("rssFeed");
     }
+    updatedFeeds.current.length = 0;
   }, [navigation, feeds]);
 
   function previousShift() {
