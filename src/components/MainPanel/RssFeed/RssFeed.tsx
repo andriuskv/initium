@@ -271,6 +271,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
       }
       setFeeds({
         ...feeds,
+        failed,
         active: newActive
       });
     }
