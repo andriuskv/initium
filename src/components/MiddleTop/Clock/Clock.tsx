@@ -3,7 +3,6 @@ import { useState, useEffect, type CSSProperties, type MouseEvent } from "react"
 import { toggleBehindElements } from "utils";
 import { getDisplayTime, formatDate } from "services/timeDate";
 import "./clock.css";
-import useWorker from "../useWorker";
 
 function getDate(dateLocale: string) {
   const date = new Date();
@@ -17,25 +16,38 @@ function getDate(dateLocale: string) {
 }
 
 export default function Clock({ generalLocale = "en", settings }: { generalLocale?: string, settings: TimeDateSettings }) {
-  const [clock, setClock] = useState(() => getDisplayTime(settings.clockStyle === "vertical"));
+  const clockVertical = settings.clockStyle === "vertical";
+  const [clock, setClock] = useState(() => getDisplayTime(clockVertical));
   const [date, setDate] = useState(() => getDate(settings.dateLocale));
   const [expanded, setExpanded] = useState(false);
-  const { initWorker, destroyWorkers } = useWorker(handleMessage);
+
+  function updateClock() {
+    setClock(getDisplayTime(clockVertical));
+  }
+
+  function updateDate() {
+    setDate(getDate(settings.dateLocale));
+  }
 
   useEffect(() => {
     if (settings.clockDisabled) {
       return;
     }
-    initWorker({ id: "clock", type: "clock" });
+
+    function handleTimeDateChange(event: CustomEventInit) {
+      updateClock();
+
+      if (event.detail.unit === "days") {
+        updateDate();
+      }
+    }
+
+    window.addEventListener("timedate-change", handleTimeDateChange);
 
     return () => {
-      destroyWorkers();
+      window.removeEventListener("timedate-change", handleTimeDateChange);
     };
-  }, [settings, date]);
-
-  function updateDate() {
-    setDate(getDate(settings.dateLocale));
-  }
+  }, [settings]);
 
   useEffect(() => {
     updateDate();
@@ -63,14 +75,6 @@ export default function Clock({ generalLocale = "en", settings }: { generalLocal
     };
   }, [expanded]);
 
-  function handleMessage() {
-    setClock(getDisplayTime(settings.clockStyle === "vertical"));
-
-    if (new Date().getDate() !== date.day) {
-      updateDate();
-    }
-  }
-
   function handleClick(event: MouseEvent) {
     if (event.detail === 2) {
       document.startViewTransition(() => {
@@ -84,7 +88,7 @@ export default function Clock({ generalLocale = "en", settings }: { generalLocal
       style={{ "--scale": settings.clockScale, "--date-alignment": settings.dateAlignment } as CSSProperties}
       onClick={handleClick}>
       <div className="clock-time-container">
-        {settings.clockStyle === "vertical" ? (
+        {clockVertical ? (
           <div className="clock-time">
             <div className="clock-time-hours">{clock.hours}</div>
             <div>{clock.minutes}</div>

@@ -38,8 +38,6 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   const [taskCount, setTaskCount] = useState(0);
   const [storageWarning, setStorageWarning] = useState<{ message: string } | null>(null);
   const taskRemoveTimeoutId = useRef(0);
-  const ignoreUpdate = useRef(false);
-  const checkIntervalId = useRef(0);
   const groupToggleTimeoutId = useRef(0);
 
   useEffect(() => {
@@ -84,21 +82,18 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     if (!groups) {
       return;
     }
-    if (ignoreUpdate.current) {
-      ignoreUpdate.current = false;
-      return;
+    function handleTimeDateChange(event: CustomEventInit) {
+      if (event.detail.unit === "minutes" && groups) {
+        checkGroups(groups);
+        const newGroups = updateAllGroupTaskCount(groups);
+        setGroups(newGroups);
+      }
     }
-    checkIntervalId.current = window.setInterval(() => {
-      ignoreUpdate.current = true;
 
-      checkGroups(groups);
-      const newGroups = updateAllGroupTaskCount(groups);
-      setGroups(newGroups);
-    }, 30000);
+    window.addEventListener("timedate-change", handleTimeDateChange);
 
     return () => {
-      clearInterval(checkIntervalId.current);
-      ignoreUpdate.current = false;
+      window.removeEventListener("timedate-change", handleTimeDateChange);
     };
   }, [groups]);
 
@@ -113,7 +108,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }, [removedItems]);
 
   async function init() {
-    const tasks = await chromeStorage.get("tasks");
+    const tasks = await chromeStorage.get("tasks") as Group[];
     const groups = tasks?.length > 0 ? tasks : [getDefaultGroup()];
 
     initGroups(groups, true);
@@ -124,7 +119,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       }
 
       if (tasks.newValue) {
-        initGroups(tasks.newValue, false);
+        initGroups(tasks.newValue as Group[], false);
       }
       else {
         setGroups([getDefaultGroup()]);
@@ -596,32 +591,34 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   async function saveTasks(groups: Partial<Group>[]) {
-    const data = await chromeStorage.set({ tasks: structuredClone(groups).map(group => {
-      delete group.state;
-      delete group.hiding;
-      delete group.taskCount;
+    const data = await chromeStorage.set({
+      tasks: structuredClone(groups).map(group => {
+        delete group.state;
+        delete group.hiding;
+        delete group.taskCount;
 
-      group.tasks = group.tasks?.map(task => {
-        const cleanTask = cleanupTask(task);
+        group.tasks = group.tasks?.map(task => {
+          const cleanTask = cleanupTask(task);
 
-        cleanTask.subtasks = task.subtasks.map(cleanupSubtask) as Subtask[];
-        cleanTask.labels = (task.labels as Partial<Label>[]).map(label => {
-          delete label.id;
-          return label;
-        }) as Label[];
+          cleanTask.subtasks = task.subtasks.map(cleanupSubtask) as Subtask[];
+          cleanTask.labels = (task.labels as Partial<Label>[]).map(label => {
+            delete label.id;
+            return label;
+          }) as Label[];
 
-        if (cleanTask.repeat?.history) {
-          cleanTask.repeat.history = (cleanTask.repeat.history as Partial<TaskRepeatHistory>[]).map(item => {
-            delete item.id;
-            delete item.elapsed;
-            delete item.dateString;
-            return item;
-          }) as TaskRepeatHistory[];
-        }
-        return cleanTask;
-      }) as TaskType[];
-      return group;
-    })}, { warnSize: true });
+          if (cleanTask.repeat?.history) {
+            cleanTask.repeat.history = (cleanTask.repeat.history as Partial<TaskRepeatHistory>[]).map(item => {
+              delete item.id;
+              delete item.elapsed;
+              delete item.dateString;
+              return item;
+            }) as TaskRepeatHistory[];
+          }
+          return cleanTask;
+        }) as TaskType[];
+        return group;
+      })
+    }, { warnSize: true });
 
     if (data?.usedRatio === 1 && data?.message) {
       setStorageWarning({ message: data.message });
@@ -641,7 +638,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     }
   }
 
-  function replaceGroups(items: { index: number, group: Group}[], shouldSave = true) {
+  function replaceGroups(items: { index: number, group: Group }[], shouldSave = true) {
     if (!groups) {
       return;
     }
@@ -728,23 +725,23 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
 
   if (activeComponent === "form" && form) {
     return (
-      <Suspense fallback={<Spinner/>}>
+      <Suspense fallback={<Spinner />}>
         <Form form={form} groups={groups} locale={locale} replaceGroups={replaceGroups} removeTask={removeFormTask}
-          createGroup={createGroup} hide={hideForm}/>
+          createGroup={createGroup} hide={hideForm} />
       </Suspense>
     );
   }
   else if (activeComponent === "groups") {
     return (
-      <Suspense fallback={<Spinner/>}>
-        <Groups groups={groups} locale={locale} updateGroups={updateGroups} createGroup={createGroup} hide={hideActiveComponent}/>
+      <Suspense fallback={<Spinner />}>
+        <Groups groups={groups} locale={locale} updateGroups={updateGroups} createGroup={createGroup} hide={hideActiveComponent} />
       </Suspense>
     );
   }
 
   return (
     <>
-      <Header locale={locale} expanded={expanded} toggleSize={toggleSize} showGroups={showGroups}/>
+      <Header locale={locale} expanded={expanded} toggleSize={toggleSize} showGroups={showGroups} />
       <div className={`container-body tasks-body${removedItems.length > 0 ? " dialog-visible" : ""}`}>
         {taskCount > 0 ? (
           <ul className="tasks-groups-container">
@@ -758,7 +755,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
                     <span className="tasks-group-count">{group.taskCount}</span>
                     <span className="tasks-group-title">{group.name}</span>
                     {group.taskCount > 0 && (
-                      <Icon id="chevron-down" className="tasks-group-icon"/>
+                      <Icon id="chevron-down" className="tasks-group-icon" />
                     )}
                   </button>
                 )}
@@ -766,7 +763,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
                   <ul className={`tasks-group-items${group.state ? ` ${group.state}` : ""}`}>
                     {group.tasks.map((task, taskIndex) => (
                       !settings.showCompletedRepeatingTasks && task.hidden ? null : (
-                        <Task task={task} groupIndex={groupIndex} taskIndex={taskIndex} locale={locale} settings={settings} removeTask={removeTask} removeSubtask={removeSubtask} editTask={editTask} key={task.id}/>
+                        <Task task={task} groupIndex={groupIndex} taskIndex={taskIndex} locale={locale} settings={settings} removeTask={removeTask} removeSubtask={removeSubtask} editTask={editTask} key={task.id} />
                       )
                     ))}
                   </ul>
@@ -778,9 +775,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
           <p className="tasks-message">{locale.tasks.no_tasks}</p>
         )}
         <CreateButton className="tasks-create-btn" onClick={showForm} shiftTarget=".task-edit-btn" trackScroll></CreateButton>
-        {storageWarning ? <Toast message={storageWarning.message} position="bottom" locale={locale} dismiss={dismissStorageWarning}/> : null}
+        {storageWarning ? <Toast message={storageWarning.message} position="bottom" locale={locale} dismiss={dismissStorageWarning} /> : null}
       </div>
-      {removedItems.length > 0 && <Footer locale={locale} removedItemsCount={removedItems.length} undoRemovedTasks={undoRemovedTasks}/>}
+      {removedItems.length > 0 && <Footer locale={locale} removedItemsCount={removedItems.length} undoRemovedTasks={undoRemovedTasks} />}
     </>
   );
 }

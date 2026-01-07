@@ -3,10 +3,8 @@ import { render, screen } from "@testing-library/react";
 import type { TimeDateSettings } from "types/settings";
 import { getDisplayTime, formatDate } from "services/timeDate";
 import Clock from "./Clock";
-import useWorker from "../useWorker";
 
 vi.mock("services/timeDate");
-vi.mock("../useWorker");
 vi.mock("utils", async () => {
   return {
     ...(await vi.importActual("utils")),
@@ -17,7 +15,6 @@ vi.mock("utils", async () => {
 
 const mockedGetDisplayTime = getDisplayTime as MockedFunction<typeof getDisplayTime>;
 const mockedFormatDate = formatDate as MockedFunction<typeof formatDate>;
-const mockedUseWorker = useWorker as MockedFunction<typeof useWorker>;
 
 const defaultSettings: TimeDateSettings = {
   format: 24,
@@ -61,13 +58,6 @@ beforeEach(() => {
 
   mockedGetDisplayTime.mockReturnValue(mockTime24);
   mockedFormatDate.mockReturnValue(mockDate.formatted);
-  mockedUseWorker.mockReturnValue({
-    initWorker: vi.fn(),
-    destroyWorker: vi.fn(),
-    destroyWorkers: vi.fn(),
-    updateDuration: vi.fn(),
-    updateWorkerCallback: vi.fn()
-  });
   vi.spyOn(global.Date, "now").mockImplementation(() => new Date("2024-04-15T10:30:00").getTime());
 });
 
@@ -76,45 +66,25 @@ afterEach(() => {
 });
 
 test("renders the clock time correctly in 24 hour format", () => {
-  render(<Clock settings={defaultSettings}/>);
+  render(<Clock settings={defaultSettings} />);
 
   expect(screen.getByText("22:30")).toBeInTheDocument();
 });
 
 test("renders the clock time correctly in 12 hour format", () => {
   mockedGetDisplayTime.mockReturnValue(mockTime12);
-  render(<Clock settings={({ ...defaultSettings, format: 12 })}/>);
+  render(<Clock settings={({ ...defaultSettings, format: 12 })} />);
 
   expect(screen.getByText("10:30")).toBeInTheDocument();
   expect(screen.getByText("PM")).toBeInTheDocument();
 });
 
 test("renders the date correctly", () => {
-  render(<Clock settings={defaultSettings}/>);
+  render(<Clock settings={defaultSettings} />);
   expect(screen.getByText("Monday, April 14")).toBeInTheDocument();
 });
 
 test("hides the date when dateHidden is true", () => {
-  render(<Clock settings={{ ...defaultSettings, dateHidden: true }}/>);
+  render(<Clock settings={{ ...defaultSettings, dateHidden: true }} />);
   expect(screen.queryByText("Monday, April 14")).not.toBeInTheDocument();
-});
-
-test("initializes the worker", () => {
-  render(<Clock settings={defaultSettings}/>);
-  expect(mockedUseWorker(() => {}).initWorker).toHaveBeenCalledWith({
-    id: "clock",
-    type: "clock"
-  });
-});
-
-test("destroys the workers when the component unmounts", () => {
-  const { unmount } = render(<Clock settings={defaultSettings}/>);
-
-  unmount();
-  expect(mockedUseWorker(() => {}).destroyWorkers).toHaveBeenCalled();
-});
-
-test("does not initialize the worker when clock is disabled", () => {
-  render(<Clock settings={{ ...defaultSettings, clockDisabled: true }}/>);
-  expect(mockedUseWorker(() => {}).initWorker).not.toHaveBeenCalled();
 });
