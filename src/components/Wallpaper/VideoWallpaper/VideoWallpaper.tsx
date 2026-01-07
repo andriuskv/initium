@@ -57,6 +57,5 @@ export default function VideoWallpaper({ url, playbackSpeed, removeDownscaled }:
     }
   }, [playbackSpeed]);
 
-
   return <video src={url} className="wallpaper-video" loop muted autoPlay crossOrigin="anonymous" ref={ref}></video>;
 }

@@ -9,6 +9,7 @@ import "./dropdown.css";
 import ToggleBtn from "./ToggleBtn/ToggleBtn";
 
 type Props = PropsWithChildren & {
+  disabled?: boolean,
   usePortal?: boolean,
   container?: {
     className: string
@@ -23,7 +24,8 @@ type Props = PropsWithChildren & {
   },
   body?: {
     className: string
-   }
+  },
+  handleToggle?: (event: ReactMouseEvent, visible: boolean) => void
 }
 
 type State = {
@@ -39,7 +41,7 @@ type State = {
   } | null;
 }
 
-export default function Dropdown({ container, toggle = {}, body, usePortal, children }: Props) {
+export default function Dropdown({ container, toggle = {}, body, disabled, usePortal, children, handleToggle }: Props) {
   const [state, setState] = useState<State>({ id: getRandomString(), visible: false });
   const isMounted = useRef(false);
   const drop = useRef<HTMLDivElement>(null);
@@ -139,6 +141,8 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
   }, [state.reveal]);
 
   function toggleDropdown(event: ReactMouseEvent) {
+    handleToggle?.(event, !state.visible);
+
     if (state.visible) {
       hideDropdown();
       return;
@@ -188,7 +192,7 @@ export default function Dropdown({ container, toggle = {}, body, usePortal, chil
 
   return (
     <div id={state.id} className={`dropdown-container${container ? ` ${container.className}` : ""}${state.visible ? " visible" : ""}`}>
-      <ToggleBtn params={toggle} toggleDropdown={toggleDropdown} ref={toggleBtn} visible={state.visible}/>
+      <ToggleBtn params={toggle} toggleDropdown={toggleDropdown} ref={toggleBtn} visible={state.visible} disabled={disabled}/>
       {usePortal && CSS.supports("anchor-name", "--test") ? (
         createPortal(
           <div role="menu" className={`container container-opaque dropdown portal${body? ` ${body.className}` : ""}${state.reveal? " reveal" : ""}${state.visible? " visible" : ""}${state.onTop? " top" : ""}${state.hiding? " hiding" : ""}`} style={{ "positionAnchor": `--anchor-${state.id}` } as CSSProperties } ref={drop}>{children}</div>,

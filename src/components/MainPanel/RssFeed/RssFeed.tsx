@@ -502,18 +502,32 @@ export default function RssFeed({ locale, showIndicator }: Props) {
     });
   }
 
-  function deactivateFeed(index: number) {
-    const active = [...feeds.active];
-    const [feed] = active.splice(index, 1);
+  function deactivateFeed(index: number, type: FeedTypeName) {
+    const typeFeed = [...feeds[type]];
+    const [feed] = typeFeed.splice(index, 1);
 
-    if (active.length) {
+    if (type === "active" && typeFeed.length) {
       selectView({ activeIndex: 0, shift: 0 });
     }
     updateFeeds({
       ...feeds,
-      active,
+      [type]: typeFeed,
       inactive: [...feeds.inactive, feed]
+    });
+  }
 
+  function dismissMessage(feed: FeedType, type: FeedTypeName) {
+    updateFeeds({
+      ...feeds,
+      [type]: feeds[type].map(f => {
+        if (f.url === feed.url) {
+          return {
+            ...f,
+            message: undefined
+          };
+        }
+        return f;
+      })
     });
   }
 
@@ -559,7 +573,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
         {activeComponent === "feeds" && (
           <Feeds feeds={feeds} locale={locale} selectFeedFromList={selectFeedFromList}
             removeFeed={removeFeed} deactivateFeed={deactivateFeed}
-            updateFeed={updateTypeFeed}
+            updateFeed={updateTypeFeed} dismissMessage={dismissMessage}
             updateFeeds={updateFeeds} showForm={showForm} hide={hideFeedList}/>
         )}
         {activeComponent === "form" && <Form feeds={feeds} locale={locale} addFeed={addFeed} hide={hideForm}/>}

@@ -28,6 +28,7 @@
   min-height: 38px;
   padding-block: var(--space-xs);
   justify-content: center;
+  flex-shrink: 0;
 
   &:has(.timer-dropdown-label) {
     .timer-dropdown-indicator {

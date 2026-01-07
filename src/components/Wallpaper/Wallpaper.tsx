@@ -55,7 +55,6 @@ export default function Wallpaper({ settings }: {settings: WallpaperSettings }) 
     }
   }
 
-
   useEffect(() => {
     async function init(settings: WallpaperSettings, first = false) {
       if (settings.type === "blob") {
