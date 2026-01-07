@@ -209,7 +209,9 @@ function getCurrentDate() {
     year: date.getFullYear(),
     month: date.getMonth(),
     day: date.getDate(),
-    weekday: adjustWeekday(weekday)
+    weekday: adjustWeekday(weekday),
+    hours: date.getHours(),
+    minutes: date.getMinutes()
   };
 }
 
@@ -335,6 +337,31 @@ function parseDateInputValue(value: string, includeTime = false) {
   }
   return data;
 }
+
+let start = getCurrentDate();
+let timeDateWorker: Worker | null = null;
+
+(function initTimeDateWorker() {
+  if (!timeDateWorker && typeof Worker !== "undefined") {
+    timeDateWorker = new Worker(new URL("./timeDateWorker.ts", import.meta.url), { type: "module" });
+    timeDateWorker.addEventListener("message", () => {
+      const current = getCurrentDate();
+
+      if (current.minutes !== start.minutes) {
+        dispatchCustomEvent("timedate-change", { unit: "minutes" });
+      }
+
+      if (current.hours !== start.hours) {
+        dispatchCustomEvent("timedate-change", { unit: "hours" });
+      }
+
+      if (current.day !== start.day) {
+        dispatchCustomEvent("timedate-change", { unit: "days" });
+      }
+      start = current;
+    });
+  }
+})();
 
 export {
   adjustTime,

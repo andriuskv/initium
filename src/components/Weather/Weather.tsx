@@ -33,7 +33,7 @@ export default function Weather({ timeFormat, corner }: Props) {
   const [moreWeatherMessage, setMoreWeatherMessage] = useState("");
   const [updatingMoreWeather, setUpdatingMoreWeather] = useState(true);
   const firstRender = useRef(true);
-  const lastMoreWeatherUpdate = useRef(0);
+  const moreUpdateNeeded = useRef(false);
   const timeoutId = useRef(0);
   const moreButton = useRef<HTMLButtonElement>(null);
   const container = useRef<HTMLDivElement>(null);
@@ -58,7 +58,8 @@ export default function Weather({ timeFormat, corner }: Props) {
       updateWeather();
     }
     else if (current && (settings.cityName || settings.useGeo)) {
-      updateWeather(true);
+      updateWeather();
+      moreUpdateNeeded.current = true;
     }
     else {
       setCurrentWeather(null);
@@ -151,14 +152,33 @@ export default function Weather({ timeFormat, corner }: Props) {
   }, [state.rendered, state.reveal]);
 
   useEffect(() => {
-    if (current) {
-      initElementZindex(container.current, "weather");
+    if (!current) {
+      return;
+    }
+    initElementZindex(container.current, "weather");
 
-      if (state.visible) {
-        updateMoreWeather(current.coords);
+    if (state.visible && (!moreWeather || moreUpdateNeeded.current)) {
+      updateMoreWeather(current.coords);
+      moreUpdateNeeded.current = false;
+    }
+
+    function handleTimeDateChange(event: CustomEventInit) {
+      if (event.detail.unit === "hours" && current) {
+        if (state.visible) {
+          updateMoreWeather(current.coords);
+        }
+        else {
+          moreUpdateNeeded.current = true;
+        }
       }
     }
-  }, [current, state.visible]);
+
+    window.addEventListener("timedate-change", handleTimeDateChange);
+
+    return () => {
+      window.removeEventListener("timedate-change", handleTimeDateChange);
+    };
+  }, [current, moreWeather, state.visible]);
 
   function scheduleWeatherUpdate() {
     timeoutId.current = window.setTimeout(updateWeather, UPDATE_INTERVAL);
@@ -210,7 +230,7 @@ export default function Weather({ timeFormat, corner }: Props) {
     }));
   }
 
-  async function updateWeather(forceMoreWeatherUpdate = false) {
+  async function updateWeather() {
     try {
       dispatchCustomEvent("weather-update", { status: "loading" });
       const json = await fetchWeather() as Current;
@@ -226,10 +246,6 @@ export default function Weather({ timeFormat, corner }: Props) {
       else if (json.location) {
         dispatchCustomEvent("weather-update", { status: "done" });
         setCurrentWeather(json);
-
-        if (forceMoreWeatherUpdate) {
-          lastMoreWeatherUpdate.current = 0;
-        }
       }
     }
     catch (e) {
@@ -240,10 +256,7 @@ export default function Weather({ timeFormat, corner }: Props) {
     }
   }
 
-  async function updateMoreWeather(coords : { lat: number, lon: number }) {
-    if (Date.now() - lastMoreWeatherUpdate.current < 1200000) {
-      return;
-    }
+  async function updateMoreWeather(coords: { lat: number, lon: number }) {
     try {
       setUpdatingMoreWeather(true);
 

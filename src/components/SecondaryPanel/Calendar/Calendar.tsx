@@ -58,14 +58,12 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   const [transition, setTransition] = useState({ x: 0, y: 0, active: false });
   const [slideAnimation, setSlideAnimation] = useState("");
   const [loadingGoogleCalendar, setLoadingGoogleCalendar] = useState(false);
-  const { message, showMessage, dismissMessage }= useMessage("");
+  const { message, showMessage, dismissMessage } = useMessage("");
   const currentFirstWeekday = useRef(settings.firstWeekday);
   const reminderPreviewRef = useRef<HTMLDivElement>(null);
   const reminderPreviewHeight = useRef(0);
   const saveTimeoutId = useRef(0);
-  const dateCheckTimeoutId = useRef(0);
   const slideAnimationTimeoutId = useRef(0);
-  const notificationCheckIntervalId = useRef(0);
   const first = useRef(true);
   const firstGoogleCalendarInit = useRef(true);
   const revealed = useRef(false);
@@ -107,37 +105,48 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   }, [currentDay]);
 
   useEffect(() => {
-    if (calendar) {
-      if (firstGoogleCalendarInit.current) {
-        firstGoogleCalendarInit.current = false;
-
-        if (localStorage.getItem("google-user") && localStorage.getItem("gtoken")) {
-          initGoogleCalendar();
-        }
-        else {
-          setGoogleUser(null);
-          calendarService.clearUser();
-        }
-      }
-      observeElement("calendar");
-      checkDate(calendar, currentDay!);
-      window.addEventListener("google-user-change", handleGoogleUserChange);
-      chromeStorage.subscribeToChanges(({ reminders }) => {
-        if (!reminders) {
-          return;
-        }
-
-        if (reminders.newValue) {
-          const gr = resetRepeatableReminders(googleReminders);
-          initCalendar(reminders.newValue, gr as GoogleReminder[]);
-        }
-        else {
-          initCalendar();
-        }
-        showCalendar();
-      }, { id: "calendar" });
+    if (!calendar) {
+      return;
     }
+
+    if (firstGoogleCalendarInit.current) {
+      firstGoogleCalendarInit.current = false;
+
+      if (localStorage.getItem("google-user") && localStorage.getItem("gtoken")) {
+        initGoogleCalendar();
+      }
+      else {
+        setGoogleUser(null);
+        calendarService.clearUser();
+      }
+    }
+    observeElement("calendar");
+    window.addEventListener("google-user-change", handleGoogleUserChange);
+    chromeStorage.subscribeToChanges(({ reminders }) => {
+      if (!reminders) {
+        return;
+      }
+
+      if (reminders.newValue) {
+        const gr = resetRepeatableReminders(googleReminders);
+        initCalendar(reminders.newValue as Reminder[], gr as GoogleReminder[]);
+      }
+      else {
+        initCalendar();
+      }
+      showCalendar();
+    }, { id: "calendar" });
+
+    function handleTimeDateChange(event: CustomEventInit) {
+      if (event.detail.unit === "days") {
+        checkDate(calendar!, currentDay!);
+      }
+    }
+
+    window.addEventListener("timedate-change", handleTimeDateChange);
+
     return () => {
+      window.removeEventListener("timedate-change", handleTimeDateChange);
       window.removeEventListener("google-user-change", handleGoogleUserChange);
     };
   }, [calendar]);
@@ -146,31 +155,39 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     if (!calendar) {
       return;
     }
-    checkForNotications();
-    clearInterval(notificationCheckIntervalId.current);
-    notificationCheckIntervalId.current = window.setInterval(() => {
-      checkForNotications();
-    }, 60000);
+    checkForNotifications();
+
+    function handleTimeDateChange(event: CustomEventInit) {
+      if (event.detail.unit === "minutes") {
+        checkForNotifications();
+      }
+    }
+
+    window.addEventListener("timedate-change", handleTimeDateChange);
 
     return () => {
-      clearInterval(notificationCheckIntervalId.current);
+      window.removeEventListener("timedate-change", handleTimeDateChange);
     };
   }, [reminders.length]);
 
   async function init() {
-    const reminders = await chromeStorage.get("reminders");
+    const reminders = await chromeStorage.get("reminders") as Reminder[];
 
     initCalendar(reminders);
   }
 
   function initCalendar(reminders: Reminder[] = [], googleReminders: GoogleReminder[] = []) {
     const currentDate = timeDateService.getCurrentDate();
+    const tomorrowDate = timeDateService.getTomorrowDate();
     const { year, month } = currentDate;
     const calendar: CalendarType = {
-      [year] : calendarService.generateYear(year)
+      [year]: calendarService.generateYear(year)
     };
     calendar[year][month].isCurrentMonth = true;
 
+    if (!calendar[tomorrowDate.year]) {
+      calendar[tomorrowDate.year] = calendarService.generateYear(tomorrowDate.year);
+    }
     setCurrentYear(year);
     getVisibleMonth(calendar, currentDate);
     createReminders(reminders.concat(googleReminders), calendar);
@@ -185,7 +202,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
     initCalendar(r, gr);
   }
 
-  function checkForNotications() {
+  function checkForNotifications() {
     if (!calendar) {
       return;
     }
@@ -239,17 +256,14 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   }
 
   function checkDate(calendar: CalendarType, currentDay: Day) {
-    dateCheckTimeoutId.current = timeout(() => {
-      const date = timeDateService.getCurrentDate();
+    const date = timeDateService.getCurrentDate();
 
-      if (currentDay.day !== date.day || currentDay.month !== date.month || currentDay.year !== date.year) {
-        const day = getCalendarDay(calendar, currentDay);
+    if (currentDay.day !== date.day || currentDay.month !== date.month || currentDay.year !== date.year) {
+      const day = getCalendarDay(calendar, currentDay);
 
-        delete day.isCurrentDay;
-        setCalendar({ ...calendar });
-      }
-      checkDate(calendar, currentDay);
-    }, 30000, dateCheckTimeoutId.current);
+      delete day.isCurrentDay;
+      setCalendar({ ...calendar });
+    }
   }
 
   async function initGoogleCalendar() {
@@ -530,7 +544,7 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       gaps: reminder.repeat.type === "weekday" ? calendarService.getWeekdayRepeatGaps(reminder) : undefined,
       year: reminder.year,
       month: reminder.month,
-      day:  reminder.day - 1
+      day: reminder.day - 1
     };
 
     if (!reminder.nextRepeat || reminder.nextRepeat.done) {
@@ -1054,10 +1068,10 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   }
   return (
     <>
-      {loadingGoogleCalendar ? <Spinner className="google-calendar-spinner"/> : null}
+      {loadingGoogleCalendar ? <Spinner className="google-calendar-spinner" /> : null}
       <HeaderDropdown user={googleUser} calendars={googleCalendars} locale={locale} toggleCalendarReminders={toggleCalendarReminders}
-        showReminderList={showReminderList} showMessage={showMessage} initGoogleUser={initGoogleUser} handleUserSignOut={handleUserSignOut}/>
-      {message ? <Toast message={message} position="top" offset="40px" locale={locale} dismiss={dismissMessage}/> : null}
+        showReminderList={showReminderList} showMessage={showMessage} initGoogleUser={initGoogleUser} handleUserSignOut={handleUserSignOut} />
+      {message ? <Toast message={message} position="top" offset="40px" locale={locale} dismiss={dismissMessage} /> : null}
       <div className="container-body calendar-current-date">
         <button className="btn text-btn calendar-current-date-btn" onClick={showCurrentDateView}>
           <div className="calendar-current-date-weekday">{currentDay.weekdayName}</div>
@@ -1066,20 +1080,20 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
       </div>
       <div className="container-body calendar-wrapper" style={{ "--x": `${transition.x}px`, "--y": `${transition.y}px`, "--additional-height": `${reminderPreviewHeight.current}px` } as CSSProperties}>
         {view.name === "day" ? (
-          <Suspense fallback={<Spinner/>}>
+          <Suspense fallback={<Spinner />}>
             <SelectedDay day={view.data as Day} locale={locale} editReminder={editReminder}
               showForm={showForm} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
-              hide={showCalendar}/>
+              hide={showCalendar} />
           </Suspense>
         ) : view.name === "year" ? (
           <div className={`calendar${transition.active ? " transition" : ""}`}>
             <div className="calendar-header">
               <button className="btn icon-btn" onClick={() => setVisibleYear(-1)} title={locale.calendar.prevoius_year_title}>
-                <Icon id="chevron-left"/>
+                <Icon id="chevron-left" />
               </button>
               <span className="calendar-title">{currentYear}</span>
               <button className="btn icon-btn" onClick={() => setVisibleYear(1)} title={locale.calendar.next_year_title}>
-                <Icon id="chevron-right"/>
+                <Icon id="chevron-right" />
               </button>
             </div>
             <ul className="calendar-months" onKeyDown={handleMonthsKeyDown}>
@@ -1096,17 +1110,17 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
           <Suspense fallback={null}>
             <ReminderList reminders={reminders.concat(googleReminders)} locale={locale} showReminderDay={showReminderDay}
               editReminder={editReminder} removeReminder={removeReminder} changeReminderColor={changeReminderColor}
-              hide={showCalendar}/>
+              hide={showCalendar} />
           </Suspense>
         ) : (
           <div className={`calendar${transition.active ? " transition" : ""}`}>
             <div className="calendar-header">
               <button className="btn icon-btn" onClick={() => changeMonth(-1, true)} title={locale.calendar.prevoius_month_title}>
-                <Icon id="chevron-left"/>
+                <Icon id="chevron-left" />
               </button>
               <button className="btn text-btn calendar-title" onClick={viewYear}>{visibleMonth.current.dateString}</button>
               <button className="btn icon-btn" onClick={() => changeMonth(1, true)} title={locale.calendar.next_month_title}>
-                <Icon id="chevron-right"/>
+                <Icon id="chevron-right" />
               </button>
             </div>
             <div className={`calendar-body${slideAnimation ? ` ${slideAnimation}` : ""}`}>
@@ -1146,10 +1160,10 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
         )}
       </div>
       {shouldShowReminderPreview ? (
-        <ReminderPreview locale={locale} currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef}/>) : null}
+        <ReminderPreview locale={locale} currentView={view.name} currentDay={currentDay} tomorrowDay={tomorrowDay} settings={settings} ref={reminderPreviewRef} />) : null}
       {settings.worldClocksHidden ? null : (
         <Suspense fallback={<div className="container-footer calendar-world-clocks" style={{ height: "35px" }}></div>}>
-          <WorldClocks parentVisible={visible} locale={locale}/>
+          <WorldClocks parentVisible={visible} locale={locale} />
         </Suspense>
       )}
     </>
