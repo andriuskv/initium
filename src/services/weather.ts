@@ -53,20 +53,40 @@ function fetchCoords(): Promise<{ lat: number, lon: number } | { type: "geo", me
 }
 
 function parseMoreWeather(data: { hourly: Hour[], daily: Weekday[] }, units: "C" | "F"): { hourly: Hour[], daily: Weekday[] } {
-  const hourly = data.hourly.map(item => {
-    return {
-      ...item,
-      id: getRandomString(),
-      tempC: units === "C" ? item.temperature : convertTemperature(item.temperature, "C"),
-      time: getTimeString({ hours: item.hour, minutes: 0 })
-    };
-  });
+  const HOUR = 60 * 60 * 1000;
+  const currentDate = Date.now();
+
+  const hourly = data.hourly.filter(item => item.datetime ? item.datetime > currentDate - HOUR : true)
+    .slice(0, 25)
+    .map(item => {
+      const date = new Date(item.datetime);
+      const dateLocal = new Date((item.datetime + item.tzoffset * HOUR));
+
+      return {
+        ...item,
+        id: getRandomString(),
+        tempC: units === "C" ? item.temperature : convertTemperature(item.temperature, "C"),
+        time: getTimeString({ hours: date.getHours(), minutes: 0 }),
+        timeLocal: getTimeString({ hours: dateLocal.getUTCHours(), minutes: 0 })
+      };
+    });
   const daily = data.daily.map(item => ({
     ...item,
     id: getRandomString()
   }));
 
   return { hourly, daily };
+}
+
+function getHourlyTime(item: Hour) {
+  const HOUR = 60 * 60 * 1000;
+  const date = new Date(item.datetime);
+  const dateLocal = new Date((item.datetime + item.tzoffset * HOUR));
+
+  return {
+    time: getTimeString({ hours: date.getHours(), minutes: 0 }),
+    timeLocal: getTimeString({ hours: dateLocal.getUTCHours(), minutes: 0 })
+  };
 }
 
 function updateWeekdayLocale(weekdays: Weekday[], locale = "en") {
@@ -114,6 +134,7 @@ function fetchWeatherData(params: string) {
 export {
   fetchWeather,
   fetchMoreWeather,
+  getHourlyTime,
   updateWeekdayLocale,
   convertTemperature,
   convertWindSpeed

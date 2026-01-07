@@ -43,6 +43,12 @@
   }
 }
 
+.weather-more-update-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
 .weather-more-settings {
   .dropdown {
     min-width: 180px;

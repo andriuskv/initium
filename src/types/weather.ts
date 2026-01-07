@@ -13,6 +13,12 @@ export type Current = {
   iconId: string
 }
 
+export type More = {
+  updated: number,
+  hourly: Hour[],
+  daily: Weekday[]
+}
+
 export type Weekday = {
   id: string,
   description: string;
@@ -28,7 +34,10 @@ export type Weekday = {
 export type Hour = {
   id: string,
   hour: number,
+  datetime: number,
+  tzoffset: number,
   time: string,
+  timeLocal: string,
   temperature: number,
   tempC: number,
   precipitation: number,

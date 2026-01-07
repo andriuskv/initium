@@ -2,6 +2,13 @@
   justify-content: center;
   padding: 0;
   margin-top: auto;
+  transition: 0.2s filter, 0.2s opacity;
+
+  &.updating {
+    filter: blur(2px);
+    opacity: 0.8;
+    pointer-events: none;
+  }
 }
 
 .weather-more-daily-weekday {

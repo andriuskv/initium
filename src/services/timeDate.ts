@@ -1,6 +1,11 @@
 import type { GeneralSettings, TimeDateSettings } from "types/settings";
-import { parseLocaleString } from "utils";
+import { dispatchCustomEvent, parseLocaleString } from "utils";
 import { getSetting } from "./settings";
+
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
 
 function adjustTime({ hours, minutes = 0 }: { hours: number, minutes?: number }, format: 12 | 24 = 24) {
   let period = "";
@@ -54,7 +59,7 @@ function formatDate(date: Date | number, { locale = "en", includeTime = false, i
 
   if (includeTime) {
     const { format } = getSetting("timeDate") as TimeDateSettings;
-    options = { ...options, hour: "2-digit", minute: "numeric", hourCycle: format === 12 ? "h12": "h23" };
+    options = { ...options, hour: "2-digit", minute: "numeric", hourCycle: format === 12 ? "h12" : "h23" };
   }
 
   if (includeWeekday) {
@@ -83,7 +88,6 @@ function getDateLocale() {
   return parseDateLocale(dateLocale);
 }
 
-
 function parseDateLocale(locale: string) {
   if (locale === "default") {
     const generalSettings = getSetting("general") as GeneralSettings;
@@ -94,6 +98,32 @@ function parseDateLocale(locale: string) {
     return navigator.language;
   }
   return locale;
+}
+
+function getUnit(ms: number) {
+  const abs = Math.abs(ms);
+
+  if (abs < MINUTE) return "second";
+  if (abs < HOUR) return "minute";
+  if (abs < DAY) return "hour";
+
+  return "second";
+}
+
+function toUnit(ms: number, unit: string) {
+  if (unit === "second") return Math.round(ms / SECOND);
+  if (unit === "minute") return Math.round(ms / MINUTE);
+  if (unit === "hour") return Math.round(ms / HOUR);
+
+  return ms;
+}
+
+function getRelativeString(ms: number, locale = "en") {
+  const unit = getUnit(ms);
+  const inUnit = toUnit(ms, unit);
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+
+  return rtf.format(inUnit, unit);
 }
 
 function getWeekdays(locale = "en", format: "short" | "long" = "long") {
@@ -317,6 +347,7 @@ export {
   getTomorrowDate,
   getDateString,
   getCurrentDateString,
+  getRelativeString,
   getWeekdays,
   getWeekdayName,
   getMonthName,
