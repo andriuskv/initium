@@ -1,21 +1,22 @@
-import type { Current, Hour, Weekday } from "types/weather";
+import type { Current, More } from "types/weather";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { dispatchCustomEvent } from "utils";
 import * as focusService from "services/focus";
-import { fetchWeather, fetchMoreWeather, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
-import { getTimeString } from "services/timeDate";
+import { fetchWeather, fetchMoreWeather, getHourlyTime, updateWeekdayLocale, convertTemperature, convertWindSpeed } from "services/weather";
 import { getWidgetState, setWidgetState, handleZIndex, initElementZindex, increaseElementZindex } from "services/widgetStates";
 import { useLocalization } from "contexts/localization";
 import { useSettings } from "contexts/settings";
 import "./weather.css";
 import WeatherSmall from "./WeatherSmall";
 
+const MoreWeather = lazy(() => import("./MoreWeather"));
+
+const UPDATE_INTERVAL = 840000;
+
 type Props = {
   timeFormat: 12 | 24,
   corner: string,
 }
-
-const MoreWeather = lazy(() => import("./MoreWeather"));
 
 export default function Weather({ timeFormat, corner }: Props) {
   const locale = useLocalization();
@@ -28,8 +29,9 @@ export default function Weather({ timeFormat, corner }: Props) {
     return { visible: false, rendered: false, reveal: false };
   });
   const [current, setCurrentWeather] = useState<Current | null>(null);
-  const [moreWeather, setMoreWeather] = useState<{ hourly: Hour[], daily: Weekday[]} | null>(null);
+  const [moreWeather, setMoreWeather] = useState<More | null>(null);
   const [moreWeatherMessage, setMoreWeatherMessage] = useState("");
+  const [updatingMoreWeather, setUpdatingMoreWeather] = useState(true);
   const firstRender = useRef(true);
   const lastMoreWeatherUpdate = useRef(0);
   const timeoutId = useRef(0);
@@ -77,6 +79,7 @@ export default function Weather({ timeFormat, corner }: Props) {
 
       if (moreWeather) {
         setMoreWeather({
+          ...moreWeather,
           hourly: [...moreWeather.hourly.map(item => {
             item.temperature = convertTemperature(item.temperature, settings.units);
             item.tempC = settings.units === "C" ? item.temperature : convertTemperature(item.temperature, "C");
@@ -106,6 +109,7 @@ export default function Weather({ timeFormat, corner }: Props) {
 
       if (moreWeather) {
         setMoreWeather({
+          ...moreWeather,
           hourly: [...moreWeather.hourly.map(item => {
             item.wind.speed = convertWindSpeed(item.wind.speed, settings.speedUnits);
             return item;
@@ -130,10 +134,12 @@ export default function Weather({ timeFormat, corner }: Props) {
     if (moreWeather) {
       setMoreWeather({
         ...moreWeather,
-        hourly: [...moreWeather.hourly.map(item => {
-          item.time = getTimeString({ hours: item.hour, minutes: 0 });
-          return item;
-        })]
+        hourly: moreWeather.hourly.map(item => {
+          return {
+            ...item,
+            ...getHourlyTime(item)
+          };
+        })
       });
     }
   }, [timeFormat]);
@@ -155,7 +161,7 @@ export default function Weather({ timeFormat, corner }: Props) {
   }, [current, state.visible]);
 
   function scheduleWeatherUpdate() {
-    timeoutId.current = window.setTimeout(updateWeather, 1200000);
+    timeoutId.current = window.setTimeout(updateWeather, UPDATE_INTERVAL);
   }
 
   function hideMoreWeather() {
@@ -239,20 +245,22 @@ export default function Weather({ timeFormat, corner }: Props) {
       return;
     }
     try {
-      lastMoreWeatherUpdate.current = Date.now();
+      setUpdatingMoreWeather(true);
 
       const json = await fetchMoreWeather(coords, settings.units);
 
       setMoreWeather({
+        updated: Date.now(),
         hourly: json.hourly,
         daily: json.daily
       });
       setMoreWeatherMessage("");
-
+      setUpdatingMoreWeather(false);
     }
     catch (e) {
       console.log(e);
       setMoreWeatherMessage(locale.weather.failed_update_message);
+      setUpdatingMoreWeather(false);
     }
   }
 
@@ -263,18 +271,18 @@ export default function Weather({ timeFormat, corner }: Props) {
     <>
       {moved ? (
         <div className={`weather placement-${corner}`} onClick={event => handleZIndex(event, "weather")}>
-          <WeatherSmall current={current} locale={locale} settings={settings} moreButton={moreButton} showMoreWeather={showMoreWeather}/>
+          <WeatherSmall current={current} locale={locale} settings={settings} moreButton={moreButton} showMoreWeather={showMoreWeather} />
         </div>
-      ): null}
+      ) : null}
       <div className={`weather placement-${corner}${moved ? " moved" : ""}`} onClick={event => handleZIndex(event, "weather")}
         style={{ "--x": `${widgetState.x}%`, "--y": `${widgetState.y}%` } as CSSProperties} data-move-target="weather" ref={container}>
-        {moved ? null : <WeatherSmall current={current} locale={locale} settings={settings} moreButton={moreButton} hidden={state.reveal} showMoreWeather={showMoreWeather}/>
+        {moved ? null : <WeatherSmall current={current} locale={locale} settings={settings} moreButton={moreButton} hidden={state.reveal} showMoreWeather={showMoreWeather} />
         }
         <div className={`container weather-more${state.visible ? " visible" : ""}${state.reveal ? " reveal" : ""} corner-item`}>
           <div className="weather-transition-target weather-more-info">
             <Suspense fallback={null}>
               {state.rendered && <MoreWeather current={current} more={moreWeather} units={settings.units} speedUnits={settings.speedUnits}
-                message={moreWeatherMessage} locale={locale} hide={hideMoreWeather}/>}
+                message={moreWeatherMessage} updating={updatingMoreWeather} locale={locale} hide={hideMoreWeather} />}
             </Suspense>
           </div>
         </div>

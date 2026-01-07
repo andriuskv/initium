@@ -64,7 +64,8 @@
     "generic_error_message": "問題が発生しました。後でもう一度お試しください。",
     "missing_user_message": "ユーザーが見つかりません。もう一度認証してください。",
     "failed_user_fetch_message": "ユーザーを取得できませんでした。後でもう一度お試しください。",
-    "adding": "追加中..."
+    "adding": "追加中...",
+    "updating": "更新中..."
   },
   "toTop": {
     "title": "トップへ"
@@ -135,7 +136,7 @@
     "activate": "アクティブにする",
     "deactive": "非アクティブにする",
     "inactive": "非アクティブ",
-    "fetch_error": "取得に失敗しました。",
+    "fetch_error": "取得に失敗しました",
     "no_entries": "フィードにエントリがありません。",
     "no_feed": "フィードが見つかりませんでした。",
     "duplicate_feed": "フィードはすでに存在します。",
