@@ -16,20 +16,22 @@ type Props = {
   feeds: Feeds,
   selectFeedFromList: (event: MouseEvent<HTMLButtonElement>, index: number) => void,
   removeFeed: (index: number, type: FeedTypeName) => void,
-  deactivateFeed: (index: number) => void,
+  deactivateFeed: (index: number, type: FeedTypeName) => void,
   updateFeeds: (feeds: Feeds, shouldSave?: boolean) => void,
   updateFeed: (feed: FeedType, type: FeedTypeName, shouldSave?: boolean) => void,
+  dismissMessage: (feed: FeedType, type: FeedTypeName) => void,
   showForm: () => void,
   hide: () => void,
 }
 
-export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, deactivateFeed, updateFeeds, updateFeed, showForm, hide }: Props) {
+export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, deactivateFeed, updateFeeds, updateFeed, dismissMessage, showForm, hide }: Props) {
   const [activeDragId, setActiveDragId] = useState("");
 
   async function refetchFeed(feed: FeedType, type: FeedTypeName) {
     updateFeed({
       ...feed,
-      fetching: true
+      fetching: true,
+      message: undefined
     }, type, false);
 
     try {
@@ -38,7 +40,8 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
       if ("message" in data) {
         updateFeed({
           ...feed,
-          fetching: undefined
+          fetching: undefined,
+          message: locale.rssFeed.fetch_error,
         }, type, false);
         return;
       }
@@ -134,9 +137,16 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
                   <h3 className="feed-list-item-title">{feed.title}</h3>
                   <Link href={feed.url} className="feed-list-item-url">{feed.url}</Link>
                 </div>
-                <button className="btn icon-btn" onClick={() => removeFeed(index, "failed")} title={locale.global.remove}>
-                  <Icon id="trash"/>
-                </button>
+                <Dropdown>
+                  <button className="btn icon-text-btn dropdown-btn" onClick={() => deactivateFeed(index, "failed")}>
+                    <Icon id="sleep"/>
+                    <span>{locale.rssFeed.deactive}</span>
+                  </button>
+                  <button className="btn icon-text-btn dropdown-btn" onClick={() => removeFeed(index, "failed")}>
+                    <Icon id="trash"/>
+                    <span>{locale.global.remove}</span>
+                  </button>
+                </Dropdown>
               </div>
               <div className="feed-list-item-error">
                 <span>{locale.rssFeed.fetch_error}</span>
@@ -162,7 +172,7 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
                   </h3>
                   <Link href={feed.url} className="feed-list-item-url">{feed.url}</Link>
                 </div>
-                <Dropdown>
+                <Dropdown disabled={feed.fetching}>
                   <button className="btn icon-text-btn dropdown-btn" onClick={() => refetchFeed(feed, "inactive")}>
                     <Icon id="sleep-off"/>
                     <span>{locale.rssFeed.activate}</span>
@@ -174,7 +184,18 @@ export default function Feeds({ feeds, locale, selectFeedFromList, removeFeed, d
                 </Dropdown>
               </div>
               <p>{feed.description}</p>
+              {feed.message ? (
+                <div className="feed-list-item-error">
+                  <span>{feed.message}</span>
+                  <button className="btn icon-btn" onClick={() => dismissMessage(feed, "inactive")}><Icon id="cross" title={locale.global.dismiss}/></button>
+                </div>
+              ) : null}
             </div>
+            {feed.fetching ? (
+              <div className="feed-list-item-mask">
+                <Spinner size="32px"/>
+              </div>
+            ) : null}
           </li>
         ))}
       </ul>

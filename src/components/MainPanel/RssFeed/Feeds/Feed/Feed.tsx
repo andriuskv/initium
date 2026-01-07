@@ -10,7 +10,7 @@ type Props = PropsWithChildren & {
   feed: FeedType,
   updateFeed: (feed: FeedType, type: FeedTypeName, shouldSave?: boolean) => void,
   selectFeedFromList: (event: MouseEvent<HTMLButtonElement>, index: number) => void,
-  deactivateFeed: (index: number) => void,
+  deactivateFeed: (index: number, type: string) => void,
   removeFeed: (index: number, type: string) => void,
 }
 
@@ -71,7 +71,7 @@ export default function Feed({ children, index, feed, locale, updateFeed, select
               <Icon id="edit"/>
               <span>{locale.global.rename}</span>
             </button>
-            <button className="btn icon-text-btn dropdown-btn" onClick={() => deactivateFeed(index)}>
+            <button className="btn icon-text-btn dropdown-btn" onClick={() => deactivateFeed(index, "active")}>
               <Icon id="sleep"/>
               <span>{locale.rssFeed.deactive}</span>
             </button>

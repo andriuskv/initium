@@ -133,7 +133,7 @@
     "activate": "Activate",
     "deactive": "Deactive",
     "inactive": "Inactive",
-    "fetch_error": "Failed to fetch.",
+    "fetch_error": "Failed to fetch",
     "no_entries": "Feed has no entries.",
     "no_feed":  "Feed was not found.",
     "duplicate_feed": "Feed already exists.",

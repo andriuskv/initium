@@ -12,18 +12,19 @@ type Props = {
     body?: ReactNode
   },
   visible: boolean,
+  disabled?: boolean,
   ref: RefObject<HTMLButtonElement | null>,
   toggleDropdown: (event: MouseEvent) => void
 }
 
-export default function ToggleBtn({ params, visible, ref, toggleDropdown }: Props) {
+export default function ToggleBtn({ params, visible, disabled, ref, toggleDropdown }: Props) {
   const locale = useLocalization();
   const className = `${params.className ? ` ${params.className}` : ""}${visible ? " active" : ""}`;
 
   if (params.isIconTextBtn) {
     return (
       <button type="button" className={`btn icon-text-btn dropdown-toggle-btn${className}`} ref={ref}
-        onClick={toggleDropdown}>
+        onClick={toggleDropdown} disabled={disabled}>
         <Icon id={params.iconId || "vertical-dots"}/>
         <span>{params.title}</span>
       </button>
@@ -32,12 +33,12 @@ export default function ToggleBtn({ params, visible, ref, toggleDropdown }: Prop
   else if (params.isTextBtn) {
     return (
       <button type="button" className={`btn text-btn dropdown-toggle-btn${className}`} ref={ref}
-        onClick={toggleDropdown}>{params.title}</button>
+        onClick={toggleDropdown} disabled={disabled}>{params.title}</button>
     );
   }
   return (
     <button type="button" className={`btn icon-btn dropdown-toggle-btn${className}`} ref={ref}
-      onClick={toggleDropdown} title={params.title || locale.global.more}>
+      onClick={toggleDropdown} title={params.title || locale.global.more} disabled={disabled}>
       {params.body ? params.body : <Icon id={params.iconId || "vertical-dots"}/>}
     </button>
   );

@@ -23,7 +23,7 @@ export default function Shortcuts({ locale } : { locale: any }) {
     let shortcuts = await chromeStorage.get("shortcuts") as Item[] | null;
 
     if (!shortcuts?.length) {
-      const json = await import("./shortcuts.json", { assert: { type: "json" } });
+      const { default: json } = await import("./shortcuts.json", { assert: { type: "json" } });
       shortcuts = json.shortcuts as Item[];
     }
     setItems(shortcuts.map(item => {
