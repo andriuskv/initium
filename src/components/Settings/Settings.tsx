@@ -17,6 +17,7 @@ const WeatherTab = lazy(() => import("./WeatherTab"));
 const TimersTab = lazy(() => import("./TimersTab"));
 const StorageTab = lazy(() => import("./StorageTab"));
 const LogsTab = lazy(() => import("./LogsTab"));
+const AboutTab = lazy(() => import("./AboutTab/AboutTab"));
 
 export default function Settings({ locale, hide }: { locale: any, hide: () => void }) {
   const tabs = useMemo(() => [
@@ -62,16 +63,21 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
     },
     {
       id: "logs",
-      name: "Logs",
+      name: locale.settings.logs.title,
       shouldHide: (getLocalStorageItem<Announcement[]>("announcements") || []).length === 0,
       component: LogsTab
+    },
+    {
+      id: "about",
+      name: locale.settings.about.title,
+      component: AboutTab
     }
-  ], [locale]);
+  ].filter(tab => !tab.shouldHide), [locale]);
   const [activeTabId, setActiveTabId] = useState(() => {
     const id = localStorage.getItem("active-settings-tab");
     const activeTabIndex = tabs.findIndex((tab) => tab.id === id);
 
-    if (activeTabIndex > -1 && tabs[activeTabIndex].shouldHide) {
+    if (activeTabIndex === -1 || tabs[activeTabIndex].shouldHide) {
       return "general";
     }
     return id || "general";
@@ -95,16 +101,16 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
   return (
     <div className="settings">
       <div className="container-header settings-header" onPointerDown={handleMoveInit} data-move-id="settings">
-        <Icon id="settings"/>
+        <Icon id="settings" />
         <h3 className="container-header-title">{locale.settings.title}</h3>
         <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
-          <Icon id="cross"/>
+          <Icon id="cross" />
         </button>
       </div>
       <div className="settings-body">
         <TabsContainer className="setting-nav-container" current={activeTabIndex} orientation="v">
           <ul className="settings-nav">
-            {tabs.map(tab => !tab.shouldHide && (
+            {tabs.map(tab => (
               <li className={`settings-nav-item${activeTabId === tab.id ? " active" : ""}`} key={tab.id}>
                 <button className="btn text-btn settings-nav-item-btn"
                   onClick={() => selectTab(tab.id)}>{tab.name}</button>
@@ -112,8 +118,8 @@ export default function Settings({ locale, hide }: { locale: any, hide: () => vo
             ))}
           </ul>
         </TabsContainer>
-        <Suspense fallback={<Spinner/>}>
-          <activeTab.component locale={locale} hide={hide}/>
+        <Suspense fallback={<Spinner />}>
+          <activeTab.component locale={locale} hide={hide} />
         </Suspense>
       </div>
     </div>
