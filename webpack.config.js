@@ -8,7 +8,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const postcssPresetEnv = require("postcss-preset-env");
 const { defineReactCompilerLoaderOption, reactCompilerLoader } = require("react-compiler-webpack");
 
-module.exports = function(env = {}) {
+module.exports = function (env = {}) {
   const mode = env.prod ? "production" : "development";
   const plugins = [
     new DefinePlugin({
@@ -16,7 +16,10 @@ module.exports = function(env = {}) {
         NODE_ENV: JSON.stringify(mode),
         CALENDAR_API_KEY: JSON.stringify(process.env.CALENDAR_API_KEY),
         SERVER_URL: JSON.stringify(process.env.SERVER_URL),
-        DEV_SERVER_URL: JSON.stringify(process.env.DEV_SERVER_URL)
+        DEV_SERVER_URL: JSON.stringify(process.env.DEV_SERVER_URL),
+        ISSUES_URL: JSON.stringify(process.env.ISSUES_URL),
+        DONATE_LINK_A: JSON.stringify(process.env.DONATE_LINK_A),
+        DONATE_LINK_B: JSON.stringify(process.env.DONATE_LINK_B)
       }
     }),
     new MiniCssExtractPlugin({
@@ -31,13 +34,17 @@ module.exports = function(env = {}) {
         minifyCSS: true
       } : undefined
     }),
-    new CopyPlugin({ patterns: [
-      { from: "./src/assets", to: "./assets" },
-      { from: "./src/_locales", to: "./_locales" },
-      { from: "./public", globOptions: {
-        ignore: ["**/index.html"]
-      }}
-    ]})
+    new CopyPlugin({
+      patterns: [
+        { from: "./src/assets", to: "./assets" },
+        { from: "./src/_locales", to: "./_locales" },
+        {
+          from: "./public", globOptions: {
+            ignore: ["**/index.html"]
+          }
+        }
+      ]
+    })
   ];
 
   return {
@@ -151,7 +158,7 @@ module.exports = function(env = {}) {
     devtool: env.prod ? false : "inline-source-map",
     stats: {
       entrypoints: false,
-      warnings:false,
+      warnings: false,
       children: false
     }
   };

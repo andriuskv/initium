@@ -438,6 +438,16 @@
       "data_confirm": ["For confirmation enter", " ", "$0"],
       "invalid_file": "Invalid file type.",
       "invalid_json": "Invalid json file."
+    },
+    "logs": {
+      "title": "Logs"
+    },
+    "about": {
+      "title": "About",
+      "subtitle": "Thank you for using Initium New Tab!",
+      "version": "Version",
+      "issues_text": ["If you have any issues or suggestions, please feel free to submit an issue on ", "$0", "."],
+      "tip_text": "If you find this extension useful, please consider supporting the development of this extension by donating."
     }
   },
   "greetingEditor": {
