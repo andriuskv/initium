@@ -6,7 +6,7 @@ import { addToRunning, removeFromRunning } from "../running-timers";
 import * as pipService from "../picture-in-picture";
 import Icon from "components/Icon";
 import "./stopwatch.css";
-import useWorker from "../../useWorker";
+import useWorker from "hooks/useWorker";
 
 const Splits = lazy(() => import("./Splits"));
 
@@ -173,7 +173,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
       updateTitle(name, {
         hours: newState.hours,
         minutes: newState.hours || newState.minutes ? newState.minutesDisplay : "",
-        seconds:  newState.secondsDisplay,
+        seconds: newState.secondsDisplay,
         isAudioEnabled: false
       });
       localStorage.setItem(name, JSON.stringify({ ...newState, label, splits: splits.slice(0, 100) }));
@@ -284,7 +284,7 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
                 <h4 className="top-panel-item-content-label">{label}</h4>
               ) : null : (
                 <div className="top-panel-item-content-top">
-                  <input type="text" className="input" value={label} onChange={handleLabelInputChange} placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                  <input type="text" className="input" value={label} onChange={handleLabelInputChange} placeholder={locale.topPanel.label_input_placeholder} autoComplete="off" />
                 </div>
               )}
             <div className="top-panel-item-display">
@@ -330,12 +330,12 @@ export default function Stopwatch({ visible, locale, animDirection, toggleIndica
         <div className="top-panel-secondary-actions">
           {dirty && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title={locale.topPanel.toggle_pip}>
-              <Icon id="pip"/>
+              <Icon id="pip" />
             </button>
           )}
           {running && (
             <button className="btn icon-btn" onClick={expand} title={locale.global.expand}>
-              <Icon id="expand"/>
+              <Icon id="expand" />
             </button>
           )}
         </div>

@@ -6,6 +6,7 @@ const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
+const WEEK = 7 * DAY;
 
 function adjustTime({ hours, minutes = 0 }: { hours: number, minutes?: number }, format: 12 | 24 = 24) {
   let period = "";
@@ -364,6 +365,7 @@ let timeDateWorker: Worker | null = null;
 })();
 
 export {
+  WEEK,
   adjustTime,
   getTimeString,
   getDisplayTime,

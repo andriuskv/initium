@@ -10,7 +10,7 @@ import Icon from "components/Icon";
 import CreateButton from "components/CreateButton";
 import Dropdown from "components/Dropdown";
 import "./countdown.css";
-import useWorker from "../../useWorker";
+import useWorker from "hooks/useWorker";
 
 const Form = lazy(() => import("./Form"));
 
@@ -47,7 +47,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
   }, [countdowns]);
 
   async function init() {
-    const countdowns = await chromeStorage.get("countdowns");
+    const countdowns = await chromeStorage.get("countdowns") as Countdown[];
 
     if (countdowns?.length) {
       startCountdowns(countdowns);
@@ -61,7 +61,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
       }
 
       if (countdowns.newValue) {
-        startCountdowns(countdowns.newValue);
+        startCountdowns(countdowns.newValue as Countdown[]);
       }
       else {
         setCountdowns([]);
@@ -282,7 +282,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
 
     return formatDate(date.getTime(), {
       locale: dateLocale,
-      includeTime : !!(date.getHours() || date.getMinutes())
+      includeTime: !!(date.getHours() || date.getMinutes())
     });
   }
 
@@ -310,7 +310,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
 
   return (
     <div className={`container-body top-panel-item countdown${visible ? " visible" : ""}${animDirection ? ` ${animDirection}` : ""}`}>
-      <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": "" }}/>
+      <CreateButton onClick={showForm} attrs={{ "data-modal-initiator": "" }} />
       {countdowns.length ? (
         <div className="countdown-items-container">
           <ul className="top-panel-item-content countdown-items">
@@ -380,7 +380,7 @@ export default function Countdown({ visible, locale, animDirection, toggleIndica
                       onClick={() => selectView("second", i)}>{locale.global.second}</button>
                   </div>
                   <button className="btn icon-text-btn dropdown-btn countdown-item-dropdown-remove-btn" onClick={() => removeCountdown(i)}>
-                    <Icon id="trash"/>
+                    <Icon id="trash" />
                     <span>{locale.global.remove}</span>
                   </button>
                 </Dropdown>
