@@ -466,5 +466,10 @@
     "align_top": "上部",
     "align_center": "中央",
     "align_bottom": "下部"
+  },
+  "notification": {
+    "tip_action_title": "寄付する",
+    "tip_title": "お知らせ",
+    "tip_text": "このエクステンションが役に立つと思われたら、寄付を通じて開発を支援していただけると幸いです。"
   }
 }

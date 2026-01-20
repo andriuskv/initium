@@ -465,5 +465,10 @@
     "align_top": "Top",
     "align_center": "Center",
     "align_bottom": "Bottom"
+  },
+  "notification": {
+    "tip_action_title": "Donate",
+    "tip_title": "Notice",
+    "tip_text": "If you find this extension useful, please consider donating."
   }
 }

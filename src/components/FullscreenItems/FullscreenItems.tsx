@@ -74,8 +74,8 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
   if (fullscreenModal.id === "greeting") {
     return (
       <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
-        <Suspense fallback={<div className="greeting-editor"><Spinner size="24px"/></div>}>
-          {<GreetingEditor locale={locale} hide={hideFullscreenModal}/>}
+        <Suspense fallback={<div className="greeting-editor"><Spinner size="24px" /></div>}>
+          {<GreetingEditor locale={locale} hide={hideFullscreenModal} />}
         </Suspense>
       </FullscreenModal>
     );
@@ -94,8 +94,8 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
 
     return (
       <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal} keepVisible {...props}>
-        <Suspense fallback={<div className="settings"><Spinner size="24px"/></div>}>
-          {<Settings locale={locale} hide={hideFullscreenModal}/>}
+        <Suspense fallback={<div className="settings"><Spinner size="24px" /></div>}>
+          {<Settings locale={locale} hide={hideFullscreenModal} />}
         </Suspense>
       </FullscreenModal>
     );
@@ -104,7 +104,7 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
     return (
       <FullscreenModal transparent mask noAnim hide={hideFullscreenModal}>
         <Suspense fallback={null}>
-          <WallpaperViewer hide={hideFullscreenModal}/>
+          <WallpaperViewer hide={hideFullscreenModal} />
         </Suspense>
       </FullscreenModal>
     );
@@ -112,7 +112,7 @@ export default function FullscreenItems({ appearanceSettings }: { appearanceSett
   else if (fullscreenModal.component) {
     return (
       <FullscreenModal hiding={fullscreenModal.hiding} hide={hideFullscreenModal}>
-        <fullscreenModal.component {...fullscreenModal.params} locale={locale} hide={hideFullscreenModal}/>
+        <fullscreenModal.component {...fullscreenModal.params} locale={locale} hide={hideFullscreenModal} />
       </FullscreenModal>
     );
   }

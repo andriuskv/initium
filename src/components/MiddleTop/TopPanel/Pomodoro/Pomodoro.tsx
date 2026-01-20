@@ -6,7 +6,7 @@ import { addToRunning, removeFromRunning } from "../running-timers";
 import * as pipService from "../picture-in-picture";
 import Icon from "components/Icon";
 import "./pomodoro.css";
-import useWorker from "../../useWorker";
+import useWorker from "hooks/useWorker";
 import type { TimersSettings } from "types/settings";
 import { getLocalStorageItem } from "utils";
 
@@ -115,7 +115,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
 
   useEffect(() => {
     if (running) {
-      initWorker({ id: name, duration: state.duration });
+      initWorker({ id: name, duration: state.duration * 1000 });
       toggleIndicator(name, true);
       addToRunning(name);
     }
@@ -133,7 +133,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
 
   useEffect(() => {
     if (running) {
-      initWorker({ id: name, duration: state.duration });
+      initWorker({ id: name, duration: state.duration * 1000 });
     }
     return () => {
       destroyWorkers();
@@ -159,7 +159,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
       setNextStage();
     }
     else {
-      update(data.duration);
+      update(data.duration / 1000);
 
       if (data.duration === 0 && audio.shouldPlay) {
         playAudio();
@@ -278,7 +278,7 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
               ) : <h4 className="top-panel-item-content-label pomodoro-stage">{locale.pomodoro[stage]}</h4> : (
                 <div className="top-panel-item-content-top">
                   <input type="text" className="input" value={label} onChange={handleLabelInputChange}
-                    placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                    placeholder={locale.topPanel.label_input_placeholder} autoComplete="off" />
                 </div>
               )}
             <div className="top-panel-item-display">
@@ -308,16 +308,16 @@ export default function Pomodoro({ visible, locale, animDirection, toggleIndicat
         <div className="top-panel-secondary-actions">
           {state.dirty && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title={locale.topPanel.toggle_pip}>
-              <Icon id="pip"/>
+              <Icon id="pip" />
             </button>
           )}
           {running ? (
             <button className="btn icon-btn" onClick={expand} title={locale.global.expand}>
-              <Icon id="expand"/>
+              <Icon id="expand" />
             </button>
           ) : (
             <button className="btn icon-btn" onClick={toggleAudio} title={audio.shouldPlay ? locale.topPanel.mute : locale.topPanel.unmute}>
-              <Icon id={`bell${audio.shouldPlay ? "" : "-off"}`}/>
+              <Icon id={`bell${audio.shouldPlay ? "" : "-off"}`} />
             </button>
           )}
         </div>

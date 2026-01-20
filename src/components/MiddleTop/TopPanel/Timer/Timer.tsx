@@ -11,7 +11,7 @@ import Dropdown from "components/Dropdown";
 import Icon from "components/Icon";
 import "./timer.css";
 import Inputs from "./Inputs";
-import useWorker from "../../useWorker";
+import useWorker from "hooks/useWorker";
 import type { TimersSettings } from "types/settings";
 
 const Presets = lazy(() => import("./Presets"));
@@ -140,7 +140,7 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
     const timer = timers[data.id];
 
     if (data.duration >= 0) {
-      update(data.duration, data.id);
+      update(data.duration / 1000, data.id);
 
       if (data.duration === 0 && timer.shouldPlayAudio) {
         playAudio(timer.id);
@@ -158,7 +158,7 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
     if (Object.keys(timers).length) {
       setTimers(timers);
     }
-    setPresets(presets);
+    setPresets(presets as Preset[]);
 
     chromeStorage.subscribeToChanges(({ timer }) => {
       if (!timer) {
@@ -166,7 +166,7 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
       }
 
       if (timer.newValue) {
-        setPresets(timer.newValue);
+        setPresets(timer.newValue as Preset[]);
       }
       else {
         const id = getRandomString(4);
@@ -229,7 +229,7 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
       if (usePresetNameAsLabel && timer.presetId) {
         label = presets.find(preset => preset.id === timer.presetId)!.name;
       }
-      initTimer({ id, duration });
+      initTimer({ id, duration: duration * 1000 });
       setTimers({
         ...timers,
         [timer.id]: {
@@ -368,7 +368,7 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
     }
     const newTimers = {
       ...timers,
-      [timer.id] : {
+      [timer.id]: {
         ...timer,
         ...inputs,
         dirty: false,
@@ -404,11 +404,13 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
   }
 
   function updateInputs(inputs: Time) {
-    setTimers({ ...timers, [activeTimer.id]: {
-      ...activeTimer,
-      ...inputs,
-      dirtyInput: true
-    }});
+    setTimers({
+      ...timers, [activeTimer.id]: {
+        ...activeTimer,
+        ...inputs,
+        dirtyInput: true
+      }
+    });
 
     if (pipId) {
       const hours = Number.parseInt(inputs.hours, 10);
@@ -423,10 +425,12 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
   }
 
   function toggleAudio() {
-    setTimers({ ...timers, [activeTimer.id]: {
-      ...activeTimer,
-      shouldPlayAudio: !activeTimer.shouldPlayAudio
-    }});
+    setTimers({
+      ...timers, [activeTimer.id]: {
+        ...activeTimer,
+        shouldPlayAudio: !activeTimer.shouldPlayAudio
+      }
+    });
   }
 
   function showPresets() {
@@ -438,10 +442,12 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
 
   function updatePresets(presets: Preset[]) {
     if (!presets.length) {
-      setTimers({ ...timers, [activeTimer.id]: {
-        ...activeTimer,
-        presetId: ""
-      }});
+      setTimers({
+        ...timers, [activeTimer.id]: {
+          ...activeTimer,
+          presetId: ""
+        }
+      });
     }
     setPresets([...presets]);
   }
@@ -491,14 +497,16 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
 
     if (preset) {
       const { timer: { usePresetNameAsLabel } } = getSetting("timers") as TimersSettings;
-      const newTimers = { ...timers, [activeTimer.id]: {
-        ...activeTimer,
-        hours: preset.hours,
-        minutes: preset.minutes,
-        seconds: preset.seconds,
-        label: usePresetNameAsLabel ? preset.name : activeTimer.label,
-        presetId: preset.id
-      }};
+      const newTimers = {
+        ...timers, [activeTimer.id]: {
+          ...activeTimer,
+          hours: preset.hours,
+          minutes: preset.minutes,
+          seconds: preset.seconds,
+          label: usePresetNameAsLabel ? preset.name : activeTimer.label,
+          presetId: preset.id
+        }
+      };
 
       setTimers(newTimers);
       saveTimers(newTimers);
@@ -506,24 +514,28 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
   }
 
   function resetPreset() {
-    const newTimers = { ...timers, [activeTimer.id]: {
-      ...activeTimer,
-      hours: "00",
-      minutes:"00",
-      seconds: "00",
-      label: activeTimer.label,
-      presetId: ""
-    }};
+    const newTimers = {
+      ...timers, [activeTimer.id]: {
+        ...activeTimer,
+        hours: "00",
+        minutes: "00",
+        seconds: "00",
+        label: activeTimer.label,
+        presetId: ""
+      }
+    };
 
     setTimers(newTimers);
     saveTimers(newTimers);
   }
 
   function handleLabelInputChange(event: ChangeEvent) {
-    const newTimers = { ...timers, [activeTimer.id]: {
-      ...activeTimer,
-      label: (event.target as HTMLInputElement).value
-    }};
+    const newTimers = {
+      ...timers, [activeTimer.id]: {
+        ...activeTimer,
+        label: (event.target as HTMLInputElement).value
+      }
+    };
 
     setTimers(newTimers);
     saveTimeoutId.current = timeout(() => {
@@ -532,10 +544,12 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
   }
 
   function clearLabelInput() {
-    const newTimers = { ...timers, [activeTimer.id]: {
-      ...activeTimer,
-      label: ""
-    }};
+    const newTimers = {
+      ...timers, [activeTimer.id]: {
+        ...activeTimer,
+        label: ""
+      }
+    };
 
     setTimers(newTimers);
     saveTimers(newTimers);
@@ -601,10 +615,10 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
   function updateTime(to: "hours" | "minutes" | "seconds", sign: 1 | -1, event: MouseEvent) {
     const values = getUpdatedTime(activeTimer, { to, sign, shouldPad: !activeTimer.running }, event);
 
-    setTimers({ ...timers, [activeTimer.id]: { ...activeTimer, ...values }});
+    setTimers({ ...timers, [activeTimer.id]: { ...activeTimer, ...values } });
 
     if (activeTimer.running) {
-      updateDuration(activeTimer.id, values.duration);
+      updateDuration(activeTimer.id, values.duration * 1000);
     }
   }
 
@@ -624,7 +638,7 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
     };
   }
 
-  function getUpdatedTime(initialValues: Time, { to, sign, shouldPad = true } : { to: "hours" | "minutes" | "seconds", sign: 1 | -1, shouldPad?: boolean }, event: MouseEvent) {
+  function getUpdatedTime(initialValues: Time, { to, sign, shouldPad = true }: { to: "hours" | "minutes" | "seconds", sign: 1 | -1, shouldPad?: boolean }, event: MouseEvent) {
     let amount = 1;
 
     if (event.ctrlKey) {
@@ -713,10 +727,10 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
                       <div className="timer-digit-value-container">
                         <div className="timer-display-btns">
                           <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title={locale.global.increase}>
-                            <Icon id="plus" size="16px"/>
+                            <Icon id="plus" size="16px" />
                           </button>
                           <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title={locale.global.decrease}>
-                            <Icon id="minus" size="16px"/>
+                            <Icon id="minus" size="16px" />
                           </button>
                         </div>
                         <span className="top-panel-digit">{activeTimer.hours}</span>
@@ -729,10 +743,10 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
                       <div className="timer-digit-value-container">
                         <div className="timer-display-btns">
                           <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title={locale.global.increase}>
-                            <Icon id="plus" size="16px"/>
+                            <Icon id="plus" size="16px" />
                           </button>
                           <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title={locale.global.decrease}>
-                            <Icon id="minus" size="16px"/>
+                            <Icon id="minus" size="16px" />
                           </button>
                         </div>
                         <span className="top-panel-digit">{activeTimer.minutes}</span>
@@ -744,10 +758,10 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
                     <div className="timer-digit-value-container">
                       <div className="timer-display-btns">
                         <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title={locale.global.increase}>
-                          <Icon id="plus" size="16px"/>
+                          <Icon id="plus" size="16px" />
                         </button>
                         <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title={locale.global.decrease}>
-                          <Icon id="minus" size="16px"/>
+                          <Icon id="minus" size="16px" />
                         </button>
                       </div>
                       <span className="top-panel-digit">{activeTimer.seconds}</span>
@@ -762,10 +776,10 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
                   <div className="top-panel-item-content-top">
                     <div className="input-icon-btn-container">
                       <input type="text" className="input" value={activeTimer.label} onChange={handleLabelInputChange}
-                        placeholder={locale.topPanel.label_input_placeholder} autoComplete="off"/>
+                        placeholder={locale.topPanel.label_input_placeholder} autoComplete="off" />
                       {activeTimer.label ? (
                         <button className="btn icon-btn" onClick={clearLabelInput} title={locale.global.clear}>
-                          <Icon id="cross"/>
+                          <Icon id="cross" />
                         </button>
                       ) : null}
                     </div>
@@ -790,7 +804,7 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
                     </Dropdown>
                   </div>
                 )}
-                <Inputs locale={locale} state={activeTimer} addTime={addTime} removeTime={removeTime} updateInputs={updateInputs}/>
+                <Inputs locale={locale} state={activeTimer} addTime={addTime} removeTime={removeTime} updateInputs={updateInputs} />
               </>
             )}
           </div>
@@ -802,22 +816,22 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
         <div className="top-panel-secondary-actions">
           {activeTimer.dirty && pipService.isSupported() && (
             <button className="btn icon-btn" onClick={togglePip} title={locale.topPanel.toggle_pip}>
-              <Icon id="pip"/>
+              <Icon id="pip" />
             </button>
           )}
           {activeTimer.running ? (
             <button className="btn icon-btn" onClick={expand} title={locale.global.expand}>
-              <Icon id="expand"/>
+              <Icon id="expand" />
             </button>
           ) : (
             <button className="btn icon-btn" onClick={toggleAudio} title={activeTimer.shouldPlayAudio ? locale.topPanel.mute : locale.topPanel.unmute}>
-              <Icon id={`bell${activeTimer.shouldPlayAudio ? "" : "-off"}`}/>
+              <Icon id={`bell${activeTimer.shouldPlayAudio ? "" : "-off"}`} />
             </button>
           )}
           <Dropdown toggle={{ className: shouldShowIndicator ? "indicator" : "" }}>
             <div className="dropdown-group timer-dropdown-list">
               <button className="btn icon-text-btn dropdown-btn timer-dropdown-btn" onClick={addTimer}>
-                <Icon id="plus"/>
+                <Icon id="plus" />
                 <span>{locale.timer.new_timer_btn}</span>
               </button>
             </div>
@@ -835,7 +849,7 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
             </div>
             {timersArr.length > 1 && !activeTimer.running ? (
               <button className="btn icon-text-btn dropdown-btn timer-dropdown-btn" onClick={removeTimer}>
-                <Icon id="trash"/>
+                <Icon id="trash" />
                 <span>{locale.timer.remove_timer_btn}</span>
               </button>
             ) : null}
