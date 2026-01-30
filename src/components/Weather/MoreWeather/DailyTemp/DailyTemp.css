@@ -2,13 +2,6 @@
   justify-content: center;
   padding: 0;
   margin-top: auto;
-  transition: 0.2s filter, 0.2s opacity;
-
-  &.updating {
-    filter: blur(2px);
-    opacity: 0.8;
-    pointer-events: none;
-  }
 }
 
 .weather-more-daily-weekday {
@@ -27,10 +20,10 @@
   margin: var(--space-sm);
   filter: var(--icon-filter);
 
-  &.icon-13d, &.icon-13n {
+  &.icon-13d,
+  &.icon-13n {
     filter:
-      brightness(2)
-      var(--icon-filter);
+      brightness(2) var(--icon-filter);
   }
 }
 

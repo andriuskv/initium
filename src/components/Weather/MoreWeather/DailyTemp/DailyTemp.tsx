@@ -3,12 +3,11 @@ import "./DailyTemp.css";
 
 type Props = {
   daily: Weekday[],
-  updating?: boolean
 }
 
-export default function DailyTemp({ daily, updating }: Props) {
+export default function DailyTemp({ daily }: Props) {
   return (
-    <div className={`container-footer weather-more-daily${updating ? " updating" : ""}`}>
+    <div className="container-footer weather-more-daily">
       {daily.map(item => (
         <div className="weather-more-daily-weekday" key={item.id}>
           <div className="weather-more-daily-weekday-name">{item.weekday}</div>
