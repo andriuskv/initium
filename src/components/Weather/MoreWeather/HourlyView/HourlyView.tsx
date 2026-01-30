@@ -10,11 +10,10 @@ import WindView from "./WindView/WindView";
 type Props = {
   locale: any,
   hourly: Hour[],
-  speedUnits: "m/s" | "ft/s",
-  updating?: boolean
+  speedUnits: "m/s" | "ft/s"
 }
 
-export default function HourlyView({ locale, hourly, speedUnits, updating }: Props) {
+export default function HourlyView({ locale, hourly, speedUnits }: Props) {
   const [activeView, setActiveView] = useState<View>(() => (localStorage.getItem("active-weather-tab") || "temperature") as View);
   const saveTabTimeoutId = useRef(0);
   const views: View[] = ["temperature", "precipitation", "wind"];
@@ -29,7 +28,7 @@ export default function HourlyView({ locale, hourly, speedUnits, updating }: Pro
   }
 
   return (
-    <div className={`container-body weather-more-hourly-view-container${updating ? " updating" : ""}`}>
+    <div className="container-body weather-more-hourly-view-container">
       <TabsContainer className="weather-more-hourly-view-top" current={activeTabIndex}>
         <ul className="weather-more-hourly-view-top-items">
           {views.map(view => (
@@ -40,9 +39,9 @@ export default function HourlyView({ locale, hourly, speedUnits, updating }: Pro
           ))}
         </ul>
       </TabsContainer>
-      {activeView === "temperature" ? <TempView hourly={hourly}/>
-        : activeView === "precipitation" ? <PrecView hourly={hourly}/>
-          : activeView === "wind" ? <WindView hourly={hourly} speedUnits={speedUnits}/> : null
+      {activeView === "temperature" ? <TempView hourly={hourly} />
+        : activeView === "precipitation" ? <PrecView hourly={hourly} />
+          : activeView === "wind" ? <WindView hourly={hourly} speedUnits={speedUnits} /> : null
       }
       <div className="weather-more-hourly-view-time">
         {hourly.filter((_, index) => index % 3 === 1).map(item => (

@@ -26,24 +26,24 @@ export default function MoreWeather({ current, more, units, speedUnits, message,
         <div className="weather-more-top" data-move-id="weather" onPointerDown={handleMoveInit}>
           {updating ? (
             <div className="weather-more-update-indicator">
-              <Spinner size="20px"/>
+              <Spinner size="20px" />
               <span>{locale.global.updating}</span>
             </div>
           ) : null}
-          <SettingsDropdown locale={locale}/>
+          <SettingsDropdown locale={locale} />
           <button className="btn icon-btn weather-more-close-btn" onClick={hide} title={locale.global.close}>
-            <Icon id="cross"/>
+            <Icon id="cross" />
           </button>
         </div>
-        <CurrentView current={current} units={units} speedUnits={speedUnits} locale={locale}/>
+        <CurrentView current={current} units={units} speedUnits={speedUnits} locale={locale} />
       </div>
       {more ? (
         <>
-          <HourlyView locale={locale} hourly={more.hourly} speedUnits={speedUnits} updating={updating}/>
-          <DailyTemp daily={more.daily} updating={updating}/>
+          <HourlyView locale={locale} hourly={more.hourly} speedUnits={speedUnits} />
+          <DailyTemp daily={more.daily} />
         </>
       ) : message ? <p className="weather-more-message">{message}</p>
-        : <Spinner size="48px"/>
+        : <Spinner size="48px" />
       }
     </>
   );
