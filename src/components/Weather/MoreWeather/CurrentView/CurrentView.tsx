@@ -10,10 +10,12 @@ type Props = {
 }
 
 export default function CurrentView({ current, units, speedUnits, locale }: Props) {
+  const icon = `/assets/weather-icons/${current.iconId}.png`;
+
   return (
     <>
       <div className="weather-more-current-icon-container">
-        <img src={current.icon} className={`weather-more-current-icon icon-${current.iconId}`} alt="" width="100px" height="100px" loading="lazy"/>
+        <img src={icon} className={`weather-more-current-icon icon-${current.iconId}`} alt="" width="100px" height="100px" loading="lazy" />
       </div>
       <div className="weather-more-current-main">
         <div className="weather-more-current-location">{current.location}</div>

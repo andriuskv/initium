@@ -29,6 +29,7 @@ vi.mock("services/widgetStates", async () => ({
   getWidgetState: vi.fn(() => ({ opened: false, zIndex: 1 }))
 }));
 
+const mockIconPath = "/assets/weather-icons/";
 const mockCurrentWeather = {
   location: "Test Location",
   temperature: 25,
@@ -76,25 +77,25 @@ afterEach(() => {
 });
 
 test("renders current weather information on initial load", async () => {
-  render(<Weather timeFormat={24} corner="top-right"/>);
+  render(<Weather timeFormat={24} corner="top-right" />);
   await waitFor(() => expect(screen.getByText("Test Location")).toBeInTheDocument());
 
   expect(screen.getByText("25")).toBeInTheDocument();
   expect(screen.getByText("°C")).toBeInTheDocument();
-  expect(screen.getByAltText("")).toHaveAttribute("src", "test-icon.png");
+  expect(screen.getByAltText("")).toHaveAttribute("src", `${mockIconPath}${mockCurrentWeather.iconId}.png`);
 });
 
 test("renders more weather on initial load when rememberWidgetState is true and widget", async () => {
   (useSettings as any).mockReturnValue({ settings: { ...mockSettings, general: { rememberWidgetState: true } } });
   (getWidgetState as any).mockReturnValue({ opened: true, zIndex: 1 });
-  render(<Weather timeFormat={24} corner="top-right"/>);
+  render(<Weather timeFormat={24} corner="top-right" />);
   await waitFor(() => expect(screen.getByText("Test Location")).toBeInTheDocument());
   await waitFor(() => expect(fetchMoreWeather).toHaveBeenCalled());
   await waitFor(() => expect(screen.getByText(mockCurrentWeather.description)).toBeInTheDocument());
 });
 
 test("shows more weather information when more button is clicked", async () => {
-  render(<Weather timeFormat={24} corner="top-right"/>);
+  render(<Weather timeFormat={24} corner="top-right" />);
 
   await waitFor(() => expect(fetchWeather).toHaveBeenCalled());
   await waitFor(() => screen.getByText("Test Location"));
@@ -111,7 +112,7 @@ test("shows more weather information when more button is clicked", async () => {
 
 test("updates weather information after a timeout", async () => {
   vi.useFakeTimers();
-  render(<Weather timeFormat={24} corner="top-right"/>);
+  render(<Weather timeFormat={24} corner="top-right" />);
   await waitFor(() => screen.getByText("Test Location"));
 
   (fetchWeather as any).mockResolvedValue({ ...mockCurrentWeather, temperature: 26 });
@@ -123,13 +124,13 @@ test("updates weather information after a timeout", async () => {
 
 test("handles errors when fetching weather", async () => {
   (fetchWeather as any).mockRejectedValue(new Error("Failed to fetch weather"));
-  render(<Weather timeFormat={24} corner="top-right"/>);
+  render(<Weather timeFormat={24} corner="top-right" />);
 
   await waitFor(() => expect(fetchWeather).toHaveBeenCalled());
 });
 
 test("updates more weather information when visible", async () => {
-  render(<Weather timeFormat={24} corner="top-right"/>);
+  render(<Weather timeFormat={24} corner="top-right" />);
   await waitFor(() => screen.getByText("Test Location"));
 
   await userEvent.click(screen.getByTitle(locale.global.more));
@@ -137,7 +138,7 @@ test("updates more weather information when visible", async () => {
 });
 
 test("fetches weather with city name or geo location after settings change", async () => {
-  const { rerender } = render(<Weather timeFormat={24} corner="top-right"/>);
+  const { rerender } = render(<Weather timeFormat={24} corner="top-right" />);
   await waitFor(() => screen.getByText("Test Location"));
 
   (useSettings as any).mockReturnValue({
@@ -147,13 +148,13 @@ test("fetches weather with city name or geo location after settings change", asy
     },
   });
 
-  rerender(<Weather timeFormat={24} corner="top-right"/>);
+  rerender(<Weather timeFormat={24} corner="top-right" />);
   await waitFor(() => expect(fetchWeather).toHaveBeenCalledTimes(2));
 });
 
 test("does not update more weather data within the 20-minute interval", async () => {
   vi.useFakeTimers();
-  render(<Weather timeFormat={24} corner="top-right"/>);
+  render(<Weather timeFormat={24} corner="top-right" />);
   await waitFor(() => screen.getByText("Test Location"));
 
   const user = userEvent.setup({
@@ -173,7 +174,7 @@ test("does not update more weather data within the 20-minute interval", async ()
 test("handles missing current weather data gracefully", async () => {
   (fetchWeather as any).mockResolvedValue(null);
 
-  const { container } = render(<Weather timeFormat={24} corner="top-right"/>);
+  const { container } = render(<Weather timeFormat={24} corner="top-right" />);
   await waitFor(() => expect(fetchWeather).toHaveBeenCalled());
   expect(container.firstChild).toBeNull();
 });
