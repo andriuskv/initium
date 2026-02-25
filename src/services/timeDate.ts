@@ -367,6 +367,7 @@ let timeDateWorker: Worker | null = null;
 export {
   WEEK,
   adjustTime,
+  getTimeObj,
   getTimeString,
   getDisplayTime,
   getDaysInMonth,

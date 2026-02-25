@@ -41,7 +41,8 @@ function getDefault(): Settings {
       rememberWidgetState: false,
       greeting: {
         disabled: false,
-        textSize: 1
+        textSize: 1,
+        name: ""
       },
       middleTopOrder: [
         {
