@@ -16,7 +16,7 @@
   --text-xl: calc(1.375 * var(--text-base-size));
   --text-xxl: calc(1.75 * var(--text-base-size));
   --text-xxxl: calc(2.225 * var(--text-base-size));
-  --text-xxxxl: calc(3 * var(--text-base-size));
+  --text-4xl: calc(3 * var(--text-base-size));
 
   --animation-speed: 1;
 

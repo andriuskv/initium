@@ -38,6 +38,23 @@ export default function GeneralTab({ locale }: { locale: any }) {
     });
   }
 
+  function handleNameChange(event: React.SubmitEvent) {
+    interface FormElements extends HTMLFormControlsCollection {
+      name: HTMLInputElement;
+    }
+
+    const formElement = event.target as HTMLFormElement;
+    const elements = formElement.elements as FormElements;
+
+    event.preventDefault();
+    updateContextSetting("general", {
+      greeting: {
+        ...settings.general.greeting,
+        name: elements.name.value
+      }
+    });
+  }
+
   function handleRangeInputChange({ target }: ChangeEvent) {
     updateContextSetting("general", {
       greeting: {
@@ -93,7 +110,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
         <span>{locale.settings.general.disable_sticky_notes_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.stickyNotesDisabled}
-          onChange={() => toggleSetting("general", "stickyNotesDisabled")}/>
+          onChange={() => toggleSetting("general", "stickyNotesDisabled")} />
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
@@ -102,7 +119,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
         <span>{locale.settings.general.disable_shortcuts_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.shortcutsDisabled}
-          onChange={() => toggleSetting("general", "shortcutsDisabled")}/>
+          onChange={() => toggleSetting("general", "shortcutsDisabled")} />
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
@@ -111,7 +128,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
         <span>{locale.settings.general.disable_calendar_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.calendarDisabled}
-          onChange={() => toggleSetting("general", "calendarDisabled")}/>
+          onChange={() => toggleSetting("general", "calendarDisabled")} />
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
@@ -120,7 +137,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
         <span>{locale.settings.general.remember_widget_state_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.rememberWidgetState}
-          onChange={() => toggleSetting("general", "rememberWidgetState")}/>
+          onChange={() => toggleSetting("general", "rememberWidgetState")} />
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
@@ -138,7 +155,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
           <span>{locale.settings.general.disable_greeting_label}</span>
           <input type="checkbox" className="sr-only checkbox-input"
             checked={settings.general.greeting.disabled}
-            onChange={toggleGreetingSetting}/>
+            onChange={toggleGreetingSetting} />
           <div className="checkbox">
             <div className="checkbox-tick"></div>
           </div>
@@ -146,8 +163,18 @@ export default function GeneralTab({ locale }: { locale: any }) {
         <label className="setting">
           <span>{locale.global.text_size_title}</span>
           <input type="range" className="range-input" min="0.75" max="2.5" step="0.05"
-            defaultValue={settings.general.greeting.textSize} onChange={handleRangeInputChange}/>
+            defaultValue={settings.general.greeting.textSize} onChange={handleRangeInputChange} />
         </label>
+        <form onSubmit={handleNameChange} className="setting">
+          <label className="setting-form-label">
+            <span>{locale.settings.general.name_label}</span>
+            <div className="multi-input-container">
+              <input type="text" className="input multi-input-left setting-input" name="name"
+                autoComplete="off" defaultValue={settings.general.greeting.name} />
+              <button className="btn multi-input-right">{locale.global.set}</button>
+            </div>
+          </label>
+        </form>
       </div>
       <div className="settings-group last-setting-tab-item">
         <div className="settings-group-top">
@@ -159,7 +186,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
         <span>{locale.settings.general.new_tab_links_label}</span>
         <input type="checkbox" className="sr-only checkbox-input"
           checked={settings.general.openLinkInNewTab}
-          onChange={() => toggleSetting("general", "openLinkInNewTab")}/>
+          onChange={() => toggleSetting("general", "openLinkInNewTab")} />
         <div className="checkbox">
           <div className="checkbox-tick"></div>
         </div>
@@ -198,9 +225,9 @@ export default function GeneralTab({ locale }: { locale: any }) {
         </Modal>
       ) : modal?.type === "order" ? (
         <MiddleTop settings={settings} locale={locale}
-          updateContextSetting={updateContextSetting} hiding={modalHiding} hide={hideModal}/>
+          updateContextSetting={updateContextSetting} hiding={modalHiding} hide={hideModal} />
       ) : modal?.type === "placement" ?
-        <Placement locale={locale} hiding={modalHiding} hide={hideModal}/> : null
+        <Placement locale={locale} hiding={modalHiding} hide={hideModal} /> : null
       }
     </div>
   );

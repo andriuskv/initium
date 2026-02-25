@@ -43,6 +43,7 @@ export type GeneralSettings = {
   greeting: {
     disabled: boolean;
     textSize: number;
+    name: string;
   };
   middleTopOrder: MiddleTopItem[];
   placement: Placement;

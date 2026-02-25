@@ -287,6 +287,7 @@
       "reset_widget_pos_label": "Reset widget position",
       "greeting_group_title": "Greeting",
       "show_greeting_editor_title": "Editor",
+      "name_label": "Your name",
       "new_tab_links_label": "Open links in a new tab",
       "middle_top_group_title": "Middle top",
       "show_middle_top_title": "Order",
@@ -470,5 +471,23 @@
     "tip_action_title": "Donate",
     "tip_title": "Notice",
     "tip_text": "If you find this extension useful, please consider donating."
+  },
+  "greeting": {
+    "morning": [
+      ["Good morning", "Morning"],
+      ["how are you today?", "how are you doing today?", "hope you slept well.", "ready to take on the day?", "hope you're having a great start to your day."]
+    ],
+    "afternoon": [
+      ["Good afternoon", "Good day"],
+      ["still going strong?", "how's your day so far?", "how's your day going?", "hope you're having a great day.", "hope you're having a productive day.", "hope you're having a good day."]
+    ],
+    "evening": [
+      ["Good evening", "Evening"],
+      ["hope you're having a nice end to your day.", "hope you're having a great evening.", "hope you're having a relaxing evening.", "hope you're having a good evening."]
+    ],
+    "night": [
+      ["Good evening", "Evening"],
+      ["hope you're having a relaxing night.", "hope you're having a peaceful night.", "hope you're having a good night.", "hope you're having a great night."]
+    ]
   }
 }

@@ -2,7 +2,7 @@ import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type Reac
 import type { AppearanceSettings, MainPanelSettings } from "types/settings";
 import type { Tab, Tabs } from "./MainPanel.type";
 import { getSetting, updateSetting } from "services/settings";
-import { handleZIndex } from "services/widgetStates";
+import { handleZIndex, initElementZindex } from "services/widgetStates";
 import { hasStoredFeeds } from "services/feeds";
 import { useLocalization } from "contexts/localization";
 import Icon from "components/Icon";
@@ -29,13 +29,13 @@ type ActiveTab = {
   params?: { [key: string]: any }
 }
 
-function Component({ children, tab, activeTabId, showSpinner }: { children: ReactNode, tab: Tab, activeTabId: string, showSpinner?: boolean}) {
+function Component({ children, tab, activeTabId, showSpinner }: { children: ReactNode, tab: Tab, activeTabId: string, showSpinner?: boolean }) {
   if (tab.disabled) {
     return null;
   }
   const fallback = showSpinner ?
-    <Spinner size="24px"/> :
-    <Icon id={tab.iconId} className="main-panel-item-splash-icon animate"/>;
+    <Spinner size="24px" /> :
+    <Icon id={tab.iconId} className="main-panel-item-splash-icon animate" />;
 
   return (
     <div className={`container main-panel-item${activeTabId === tab.id ? "" : " hidden"}`}>
@@ -97,6 +97,7 @@ export default function MainPanel({ settings }: Props) {
     if (containerRef.current && settings.height) {
       containerRef.current.style.setProperty("--height", `${settings.height}px`);
     }
+    initElementZindex(containerRef.current, "mainPanel");
 
     window.addEventListener("enable-persistent-site-edit", selectTopSitesTab);
 
@@ -243,7 +244,8 @@ export default function MainPanel({ settings }: Props) {
         [id]: {
           ...tabs[id],
           indicatorVisible: true
-        } });
+        }
+      });
     }
   }
 
@@ -258,25 +260,25 @@ export default function MainPanel({ settings }: Props) {
   return (
     <div className={`main-panel${tabExpandable ? " expandable" : ""}${activeTab.expanded ? " expanded" : ""}${settings.navHidden || settings.navDisabled ? " nav-hidden" : ""}${activeTab.collapsing ? " collapsing" : ""}`}
       onClick={event => handleZIndex(event, "mainPanel")} ref={containerRef}>
-      <Nav tabs={tabs} disabled={settings.navHidden || settings.navDisabled} selectTab={selectTab}/>
+      <Nav tabs={tabs} disabled={settings.navHidden || settings.navDisabled} selectTab={selectTab} />
       {tabExpandable && (
         <Sidebar expanded={activeTab.expanded} locale={locale} expandTab={expandTab}
-          resizerEnabled={resizerEnabled} toggleResizer={toggleResizer}/>
+          resizerEnabled={resizerEnabled} toggleResizer={toggleResizer} />
       )}
       {tabs.topSites.disabled || tabs.topSites.renderPending ? null : (
         <div className={`main-panel-item top-sites-container${activeTab.id === tabs.topSites.id ? "" : " hidden"}`}>
           <Suspense fallback={null}>
-            <TopSites settings={settings.components.topSites} locale={locale} { ...(activeTab.params ? activeTab.params : {})}/>
+            <TopSites settings={settings.components.topSites} locale={locale} {...(activeTab.params ? activeTab.params : {})} />
           </Suspense>
         </div>
       )}
       <Component tab={tabs.notepad} activeTabId={activeTab.id} showSpinner={true}>
-        <Notepad locale={locale}/>
+        <Notepad locale={locale} />
       </Component>
       <Component tab={tabs.rssFeed} activeTabId={activeTab.id}>
-        <RssFeed locale={locale} showIndicator={showIndicator}/>
+        <RssFeed locale={locale} showIndicator={showIndicator} />
       </Component>
-      {resizerEnabled && <Resizer saveHeight={saveHeight}/>}
+      {resizerEnabled && <Resizer saveHeight={saveHeight} />}
     </div>
   );
 }

@@ -23,7 +23,6 @@ type TopPanelState = {
 
 export default function MiddleTop({ settings }: Props) {
   const [shouldCenterClock, setShouldCenterClock] = useState(() => getClockCenterState());
-  const [greetingVisible, setGreetingVisible] = useState(false);
   const [topPanel, setTopPanel] = useState<TopPanelState>(() => {
     if (settings.general.rememberWidgetState) {
       const { opened } = getWidgetState("topPanel");
@@ -36,7 +35,6 @@ export default function MiddleTop({ settings }: Props) {
 
   useEffect(() => {
     initTopPanel();
-    initGreeting();
 
     window.addEventListener("top-panel-visible", renderTopPanel, { once: true });
   }, []);
@@ -78,21 +76,6 @@ export default function MiddleTop({ settings }: Props) {
     return false;
   }
 
-  async function initGreeting() {
-    const greetings = await chromeStorage.get("greetings");
-
-    if (greetings?.length) {
-      setGreetingVisible(true);
-      return;
-    }
-    chromeStorage.subscribeToChanges(({ greetings }) => {
-      if (greetings?.newValue) {
-        setGreetingVisible(true);
-        chromeStorage.removeSubscriber("greeting");
-      }
-    }, { id: "greeting", listenToLocal: true });
-  }
-
   async function initTopPanel() {
     if (settings.timers.disabled) {
       return;
@@ -124,19 +107,19 @@ export default function MiddleTop({ settings }: Props) {
   }
 
   return (
-    <div className={`middle-top${shouldCenterClock ? " full-height": ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}
+    <div className={`middle-top${shouldCenterClock ? " full-height" : ""}${settings.timeDate.clockDisabled ? " clock-disabled" : ""}`}
       style={{ "--order": itemOrder.orderString, ...itemOrder.order } as CSSProperties}>
       <Suspense fallback={null}>
         {!settings.timers.disabled && topPanel.rendered && (
           <TopPanel initialTab={topPanel.initialTab} initialVisibility={topPanel.initialVisibility} forceVisibility={topPanel.forceVisibility} settings={settings.timers}
-            animationSpeed={settings.appearance.animationSpeed} resetTopPanel={resetTopPanel}/>
+            animationSpeed={settings.appearance.animationSpeed} resetTopPanel={resetTopPanel} />
         )}
       </Suspense>
       <Suspense fallback={null}>
-        {settings.timeDate.clockDisabled ? null : <Clock generalLocale={settings.general.locale} settings={settings.timeDate}/>}
+        {settings.timeDate.clockDisabled ? null : <Clock generalLocale={settings.general.locale} settings={settings.timeDate} />}
       </Suspense>
       <Suspense fallback={null}>
-        {greetingVisible && !settings.general.greeting.disabled ? <Greeting settings={settings.general.greeting}/> : null}
+        {!settings.general.greeting.disabled ? <Greeting settings={settings.general.greeting} /> : null}
       </Suspense>
     </div>
   );

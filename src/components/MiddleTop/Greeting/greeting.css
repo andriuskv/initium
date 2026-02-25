@@ -20,3 +20,41 @@
   word-break: break-word;
   user-select: none;
 }
+
+.part-greeting {
+  max-width: 1000px;
+  padding-block: var(--space-md);
+  font-size: calc(var(--text-size-scale) * 2rem);
+  white-space: pre-line;
+  text-wrap-style: pretty;
+  line-height: 1.15;
+  animation-name: opacity-up, slide-down;
+  animation-duration: var(--duration-s);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+
+  &.hidding {
+    animation-name: opacity-down, slide-down-2;
+    animation-duration: var(--duration-n);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-10px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down-2 {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(10px);
+  }
+}

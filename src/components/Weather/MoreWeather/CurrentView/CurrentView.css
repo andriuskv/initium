@@ -14,10 +14,10 @@
   display: block;
   filter: var(--icon-filter);
 
-  &.icon-13d, &.icon-13n {
+  &.icon-13d,
+  &.icon-13n {
     filter:
-      brightness(2)
-      var(--icon-filter);
+      brightness(2) var(--icon-filter);
   }
 }
 
@@ -44,7 +44,7 @@
 }
 
 .weather-more-current-temperature-value {
-  font-size: var(--text-xxxxl);
+  font-size: var(--text-4xl);
   line-height: 1;
 }
 
