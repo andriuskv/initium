@@ -479,11 +479,11 @@
     ],
     "afternoon": [
       ["Good afternoon", "Good day"],
-      ["still going strong?", "how's your day so far?", "how's your day going?", "hope you're having a great day.", "hope you're having a productive day.", "hope you're having a good day."]
+      ["still going strong?", "how's your day so far?", "how's your day going?", "hope you're having a great day.", "hope you're having a productive day."]
     ],
     "evening": [
       ["Good evening", "Evening"],
-      ["hope you're having a nice end to your day.", "hope you're having a great evening.", "hope you're having a relaxing evening.", "hope you're having a good evening."]
+      ["hope you're having a nice end to your day."]
     ],
     "night": [
       ["Good evening", "Evening"],

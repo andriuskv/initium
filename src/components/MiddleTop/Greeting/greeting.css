@@ -22,11 +22,10 @@
 }
 
 .part-greeting {
-  max-width: 1000px;
-  padding-block: var(--space-md);
-  font-size: calc(var(--text-size-scale) * 2rem);
+  max-width: 1200px;
+  padding: var(--space-md) var(--space-xl);
+  font-size: calc(var(--text-size-scale) * 1.8rem);
   white-space: pre-line;
-  text-wrap-style: pretty;
   line-height: 1.15;
   animation-name: opacity-up, slide-down;
   animation-duration: var(--duration-s);

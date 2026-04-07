@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    "rootDir": "src",
     "outDir": "dist",
     "sourceMap": true,
     "module": "ESNext",
@@ -20,22 +20,17 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "paths": {
-      "services/*": ["services/*"],
-      "components/*": ["components/*"],
-      "contexts/*": ["contexts/*"],
-      "hooks/*": ["hooks/*"],
-      "types/*": ["types/*"],
-      "assets/*": ["assets/*"],
-      "lang/*": ["lang/*"],
-      "utils": ["utils.ts"]
+      "services/*": ["./src/services/*"],
+      "components/*": ["./src/components/*"],
+      "contexts/*": ["./src/contexts/*"],
+      "hooks/*": ["./src/hooks/*"],
+      "types/*": ["./src/types/*"],
+      "assets/*": ["./src/assets/*"],
+      "lang/*": ["./src/lang/*"],
+      "utils": ["./src/utils.ts"]
     }
   },
   "lib": ["DOM", "ESNext", "webworker"],
   "typeRoots": ["node_modules/@types", "src/types"],
-  "include": [
-    "build.js",
-    "webpack.config.js",
-    "src"
-  ],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "config", "public", "build.js", "webpack.config.js", "vitest.config.ts", "eslint.config.mjs"]
 }

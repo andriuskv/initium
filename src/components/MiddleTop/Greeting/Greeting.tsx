@@ -29,7 +29,7 @@ function getDayPartGreeting(name: string, locale: any) {
   const message = greetings[1][Math.floor(Math.random() * greetings[1].length)];
 
   return {
-    message: `${greeting}${name ? ` ${name}${locale.locale === "ja" ? "さん" : ""}` : ""},\n${message}`,
+    message: `${greeting}${name ? ` ${name}${locale.locale === "ja" ? "さん" : ""}` : ""}, ${message}`,
     part
   };
 }
@@ -117,7 +117,7 @@ export default function Greeting({ settings }: { settings: GeneralSettings["gree
 
         setTimeout(() => {
           setPartGreeting({ alwaysVisible: false, shown: true, message, ...data });
-        }, 200 * animationSpeed);
+        }, 400 * animationSpeed);
       }, 5000);
     }
   }
