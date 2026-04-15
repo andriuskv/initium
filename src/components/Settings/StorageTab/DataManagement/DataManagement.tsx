@@ -3,7 +3,7 @@ import type { Item } from "../StorageTab.type";
 import { parseLocaleString } from "utils";
 import { getCurrentDateString } from "services/timeDate";
 import * as chromeStorage from "services/chromeStorage";
-import { useModal } from "hooks";
+import { useModal } from "@/hooks";
 import Icon from "components/Icon";
 import Modal from "components/Modal";
 
@@ -47,6 +47,23 @@ export default function DataManagement({ locale, items }: { locale: any, items: 
     });
   }
 
+  function getFile(): Promise<File> {
+    return new Promise(resolve => {
+      const input = document.createElement("input");
+
+      input.setAttribute("type", "file");
+      input.onchange = ({ target }) => {
+        const input = target as HTMLInputElement;
+
+        if (input.files) {
+          resolve(input.files[0]);
+        }
+        input.onchange = null;
+      };
+      input.click();
+    });
+  }
+
   async function restoreFromBackup(event: FormEvent) {
     event.preventDefault();
 
@@ -54,18 +71,25 @@ export default function DataManagement({ locale, items }: { locale: any, items: 
       if (modal?.confirmInputValue !== "restore") {
         return;
       }
-      const [fileHandle] = await (window as any).showOpenFilePicker({
-        types: [{
-          accept: {
-            "application/json": [".json"]
-          }
-        }]
-      });
-      setModal(null);
+      let file: File | null = null;
 
-      const file = await fileHandle.getFile();
+      if ((window as any).showOpenFilePicker) {
+        const [fileHandle] = await (window as any).showOpenFilePicker({
+          types: [{
+            accept: {
+              "application/json": [".json"]
+            }
+          }]
+        });
+        setModal(null);
 
-      if (file.type !== "application/json") {
+        file = await fileHandle.getFile();
+      }
+      else {
+        file = await getFile();
+      }
+
+      if (file?.type !== "application/json") {
         setDataMessage(locale.settings.storage.invalid_file);
         return;
       }
@@ -114,15 +138,15 @@ export default function DataManagement({ locale, items }: { locale: any, items: 
         {dataMessage ? <p className="storage-data-message">{dataMessage}</p> : null}
         <div className="storage-data-btns">
           <button className="btn icon-text-btn alt-icon-text-btn" onClick={createDataBackup}>
-            <Icon id="download"/>
+            <Icon id="download" />
             <span>{locale.settings.storage.data_backup}</span>
           </button>
           <button className="btn icon-text-btn alt-icon-text-btn" onClick={showRestoreModal}>
-            <Icon id="upload"/>
+            <Icon id="upload" />
             <span>{locale.settings.storage.data_restore}</span>
           </button>
           <button className="btn icon-text-btn alt-icon-text-btn" onClick={showWipeDataModal}>
-            <Icon id="trash"/>
+            <Icon id="trash" />
             <span>{locale.settings.storage.data_wipe}</span>
           </button>
         </div>
@@ -136,7 +160,7 @@ export default function DataManagement({ locale, items }: { locale: any, items: 
               <label>
                 <div>{restoreConfirmMessage}</div>
                 <input type="text" className="input" autoComplete="off"
-                  onChange={handleImportInputChange} value={modal.confirmInputValue} required/>
+                  onChange={handleImportInputChange} value={modal.confirmInputValue} required />
               </label>
             </div>
             <div className="modal-actions">
@@ -154,7 +178,7 @@ export default function DataManagement({ locale, items }: { locale: any, items: 
               <label>
                 <div>{wipeConfirmMessage}</div>
                 <input type="text" className="input" autoComplete="off"
-                  onChange={handleImportInputChange} value={modal.confirmInputValue} required/>
+                  onChange={handleImportInputChange} value={modal.confirmInputValue} required />
               </label>
             </div>
             <div className="modal-actions">
