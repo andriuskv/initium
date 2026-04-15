@@ -39,7 +39,8 @@ textarea {
   resize: none;
 }
 
-.input, .btn {
+.input,
+.btn {
   --background-color: var(--color-white-10);
 
   border-radius: 999px;
@@ -121,13 +122,16 @@ textarea {
   }
 }
 
-.icon-btn, .text-btn, .icon-text-btn {
+.icon-btn,
+.text-btn,
+.icon-text-btn {
   --background-color: transparent;
 
   border-color: transparent;
   box-shadow: none;
 
-  &:hover, &:focus-visible {
+  &:hover,
+  &:focus-visible {
     --background-color: var(--color-white-10);
     --color: var(--color-white);
 
@@ -176,7 +180,8 @@ textarea {
 .text-negative-btn {
   --color: var(--color-negative);
 
-  &:hover, &:focus-visible {
+  &:hover,
+  &:focus-visible {
     --background-color: var(--color-negative-10);
 
     border-color: var(--color-negative-4);
@@ -211,7 +216,8 @@ textarea {
 
   font-size: var(--text-sm);
 
-  &:hover, &:focus-visible {
+  &:hover,
+  &:focus-visible {
     --background-color: var(--color-white-10);
 
     &:disabled {
@@ -243,7 +249,7 @@ textarea {
 }
 
 .sr-only {
-	position: absolute;
+  position: absolute;
   width: 1px;
   height: 1px;
   padding: 0;
@@ -260,6 +266,8 @@ textarea {
 }
 
 .checkbox {
+  --tick-color: var(--color-primary);
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -275,8 +283,8 @@ textarea {
   width: 32%;
   height: 64%;
   margin-bottom: var(--space-xs);
-  border-right: 2px solid var(--color-primary);
-  border-bottom: 2px solid var(--color-primary);
+  border-right: 2px solid var(--tick-color);
+  border-bottom: 2px solid var(--tick-color);
   transform: rotateZ(45deg) scale(0);
   animation-name: scale-tick-up;
   animation-duration: var(--duration-f);
@@ -284,11 +292,11 @@ textarea {
 }
 
 .checkbox-input {
-  &:checked + .checkbox .checkbox-tick {
+  &:checked+.checkbox .checkbox-tick {
     display: block;
   }
 
-  &:focus-visible + .checkbox {
+  &:focus-visible+.checkbox {
     box-shadow: var(--focus-shadow);
   }
 }
@@ -314,11 +322,11 @@ textarea {
 }
 
 .radio-input {
-  &:checked + .radio::after {
+  &:checked+.radio::after {
     transform: scale(1);
   }
 
-  &:focus-visible + .radio {
+  &:focus-visible+.radio {
     box-shadow: var(--focus-shadow);
   }
 }
@@ -351,7 +359,7 @@ textarea {
 }
 
 .toggle-input {
-  &:checked + .toggle {
+  &:checked+.toggle {
     &::before {
       transform: translateX(100%);
     }
@@ -361,11 +369,11 @@ textarea {
     }
   }
 
-  &:not(:checked) + .toggle .toggle-item:nth-of-type(1) {
+  &:not(:checked)+.toggle .toggle-item:nth-of-type(1) {
     color: var(--color-black-40);
   }
 
-  &:focus-visible + .toggle {
+  &:focus-visible+.toggle {
     box-shadow: var(--focus-shadow);
   }
 }
@@ -407,7 +415,8 @@ textarea {
     padding-right: 30px;
   }
 
-  > .icon-btn, .dropdown-container {
+  >.icon-btn,
+  .dropdown-container {
     position: absolute;
     right: var(--space-xs);
     top: 50%;
@@ -418,7 +427,7 @@ textarea {
     }
   }
 
-  > .icon-btn {
+  >.icon-btn {
     padding: var(--space-xs);
   }
 }
@@ -478,7 +487,9 @@ textarea {
   cursor: move;
   transition: var(--duration-f) opacity;
 
-  &:hover, &:focus-visible, &:active {
+  &:hover,
+  &:focus-visible,
+  &:active {
     opacity: 1;
   }
 }

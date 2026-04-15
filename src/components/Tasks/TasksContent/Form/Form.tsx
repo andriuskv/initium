@@ -1,7 +1,7 @@
 import { useState, lazy, Suspense, type FormEvent, type ChangeEvent, type KeyboardEvent } from "react";
 import type { DragStartEvent } from "@dnd-kit/core";
 import { getLocalStorageItem, getRandomString, replaceLink } from "utils";
-import { useModal, useMessage } from "hooks";
+import { useModal, useMessage } from "@/hooks";
 import { getSetting } from "services/settings";
 import { formatDate, getDateString } from "services/timeDate";
 import { SortableItem, SortableList } from "components/Sortable";
@@ -93,7 +93,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     const defaultForm: State = {
       moreOptionsVisible: false,
       completeWithSubtasks: false,
-      labels: form ? getUniqueTaskLabels(groups, form.groupIndex, form.taskIndex): [],
+      labels: form ? getUniqueTaskLabels(groups, form.groupIndex, form.taskIndex) : [],
       task: {
         creationDate: Date.now(),
         id: getRandomString(4),
@@ -143,7 +143,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
   const { modal, setModal, hiding: modalHiding, hideModal } = useModal();
   const [activeDragId, setActiveDragId] = useState("");
   const [prefsVisible, setPrefsVisible] = useState(state.completeWithSubtasks);
-  const { message, showMessage, dismissMessage }= useMessage("");
+  const { message, showMessage, dismissMessage } = useMessage("");
 
   function toggleMoreOptions() {
     setState({
@@ -240,7 +240,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
   function removeFormSubtask(index: number) {
     const subtasks = state.task.subtasks.toSpliced(index, 1);
 
-    setState({ ...state, task: { ...state.task, subtasks} });
+    setState({ ...state, task: { ...state.task, subtasks } });
   }
 
   function handleTaskFormSubmit(event: FormEvent) {
@@ -482,7 +482,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
 
   function handleSort(items: unknown[] | null) {
     if (items) {
-      setState({...state, task: { ...state.task, subtasks: items as SubtaskType[] } });
+      setState({ ...state, task: { ...state.task, subtasks: items as SubtaskType[] } });
     }
     setActiveDragId("");
   }
@@ -506,7 +506,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
 
     return (
       <SortableItem className={`task-form-subtask${subtask.id === activeDragId ? " dragging" : ""}`}
-        component={component} id={subtask.id} key={subtask.id} handleTitle={locale.global.drag}/>
+        component={component} id={subtask.id} key={subtask.id} handleTitle={locale.global.drag} />
     );
   }
 
@@ -514,7 +514,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     <>
       <div className="container-header">
         <button className="btn icon-btn" onClick={toggleMoreOptions} title={locale.tasks.more_options_title}>
-          <Icon id="show-more"/>
+          <Icon id="show-more" />
         </button>
       </div>
       <form className="task-form" onSubmit={handleTaskFormSubmit} onKeyDown={handleFormKeydown}>
@@ -534,7 +534,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
                   <div>
                     <div className="multi-input-container task-form-repeat-gap-unit-container">
                       <input type="text" className="input multi-input-left task-form-repeat-input"
-                        defaultValue={state.task.repeat?.gap} name="repeatGap" placeholder="1" autoComplete="off"/>
+                        defaultValue={state.task.repeat?.gap} name="repeatGap" placeholder="1" autoComplete="off" />
                       <select className="input select multi-input-right"
                         defaultValue={state.task.repeat?.unit} name="repeatUnit">
                         <option value="day">{locale.tasks.repeat_label_days}</option>
@@ -546,7 +546,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
                   <label>
                     <span className="label-left">{locale.tasks.limit_label}</span>
                     <input type="text" className="input task-form-repeat-input"
-                      defaultValue={state.task.repeat?.limit} name="repeatLimit" autoComplete="off"/>
+                      defaultValue={state.task.repeat?.limit} name="repeatLimit" autoComplete="off" />
                   </label>
                 </div>
               </div>
@@ -555,7 +555,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
           <div className="task-form-item-container">
             <h4 className="task-form-item-title">{locale.tasks.label_title}</h4>
             <button type="button" className="btn icon-btn" onClick={showLabelForm} title={locale.tasks.create_label_title}>
-              <Icon id="plus"/>
+              <Icon id="plus" />
             </button>
           </div>
           {state.labels.length > 0 && (
@@ -567,7 +567,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
                     title={label.flagged ? locale.global.deselect : locale.global.select}>
                     <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
                     <div className="task-label-title">{label.name}</div>
-                    {label.flagged && <Icon id="check" className="task-form-label-btn-tick"/>}
+                    {label.flagged && <Icon id="check" className="task-form-label-btn-tick" />}
                   </button>
                 </li>
               ))}
@@ -576,14 +576,22 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
           <div className="task-form-item-container">
             <h4 className="task-form-item-title">{locale.tasks.group_title}</h4>
             <div className="select-container">
-              <select className="input select" onChange={handleGroupSelection} value={state.selectedGroupId}>
+              <select className="input select task-form-group-select" onChange={handleGroupSelection} value={state.selectedGroupId}>
+                <button className="select-btn">
+                  {/* @ts-ignore */}
+                  <selectedcontent></selectedcontent>
+                  <Icon id="chevron-down" />
+                </button>
                 {groups.map(group => (
-                  <option value={group.id} key={group.id}>{group.id === "default" ? "" : group.name}</option>
+                  <option value={group.id} key={group.id}>
+                    <span className="task-form-group-select-group-color" style={{ backgroundColor: group.color ? group.color : "" }}></span>
+                    <span className="option-text">{group.id === "default" ? "" : group.name}</span>
+                  </option>
                 ))}
               </select>
             </div>
             <button type="button" className="btn icon-btn" onClick={showGroupForm} title={locale.tasks.create_group_title}>
-              <Icon id="plus"/>
+              <Icon id="plus" />
             </button>
           </div>
           <div className="textarea-container task-form-textarea-container">
@@ -594,17 +602,17 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
             <h4 className="task-form-item-title">{locale.tasks.subtask_title}</h4>
             <button type="button" className={`btn icon-btn task-form-pref-toggle-btn${prefsVisible ? " expanded" : ""}`}
               onClick={togglePrefsVisibility} title={prefsVisible ? locale.global.collapse : locale.global.expand}>
-              <Icon id="chevron-down"/>
+              <Icon id="chevron-down" />
             </button>
             <button type="button" className="btn icon-btn" onClick={addFormSubtask} title={locale.tasks.add_subtask_title}>
-              <Icon id="plus"/>
+              <Icon id="plus" />
             </button>
           </div>
           {prefsVisible ? (
             <div className="task-form-preferences">
               <label className="task-form-pref">
                 <input type="checkbox" className="sr-only checkbox-input" name="completeWithSubtasks"
-                  checked={state.completeWithSubtasks} onChange={togglePref}/>
+                  checked={state.completeWithSubtasks} onChange={togglePref} />
                 <div className="checkbox">
                   <div className="checkbox-tick"></div>
                 </div>
@@ -632,14 +640,14 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
       </form>
       {message ? (
         <Suspense fallback={null}>
-          <Toast message={message} position="bottom" offset="40px" locale={locale} dismiss={dismissMessage}/>
+          <Toast message={message} position="bottom" offset="40px" locale={locale} dismiss={dismissMessage} />
         </Suspense>
       ) : null}
       {modal?.type === "label" ? (
         <LabelForm locale={locale} addUniqueLabel={addUniqueLabel} removeTaskLabel={removeTaskLabel}
-          hiding={modalHiding} hide={hideModal}/>
+          hiding={modalHiding} hide={hideModal} />
       ) : modal?.type === "group" ? (
-        <GroupForm locale={locale} createGroup={localCreateGroup} hiding={modalHiding} hide={hideModal} modal/>
+        <GroupForm locale={locale} submitAction={localCreateGroup} hiding={modalHiding} hide={hideModal} modal />
       ) : null}
     </>
   );

@@ -566,6 +566,14 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     updateGroups(groups.toSpliced(1, 0, group));
   }
 
+  function editGroup(group: Group) {
+    if (!groups) {
+      return;
+    }
+    const oldGroupIndex = groups.findIndex(({ id }) => group.id === id);
+    updateGroups(groups.with(oldGroupIndex, group));
+  }
+
   function hideActiveComponent() {
     setActiveComponent("");
   }
@@ -734,7 +742,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   else if (activeComponent === "groups") {
     return (
       <Suspense fallback={<Spinner />}>
-        <Groups groups={groups} locale={locale} updateGroups={updateGroups} createGroup={createGroup} hide={hideActiveComponent} />
+        <Groups groups={groups} locale={locale} updateGroups={updateGroups} createGroup={createGroup} editGroup={editGroup} hide={hideActiveComponent} />
       </Suspense>
     );
   }
@@ -746,7 +754,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         {taskCount > 0 ? (
           <ul className="tasks-groups-container">
             {groups.map((group, groupIndex) => (group.taskCount === 0 && settings.emptyGroupsHidden ? null : (
-              <li key={group.id} className="tasks-group">
+              <li key={group.id} className="tasks-group" style={{ "--group-color": group.color } as React.CSSProperties}>
                 {(groupIndex > 0 || settings.defaultGroupVisible) && (
                   <button className={`btn icon-btn tasks-groups-item tasks-groups-item-toggle-btn${group.expanded ? " expanded" : ""}`}
                     onClick={() => toggleGroupVisibility(group, groupIndex)}
@@ -763,7 +771,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
                   <ul className={`tasks-group-items${group.state ? ` ${group.state}` : ""}`}>
                     {group.tasks.map((task, taskIndex) => (
                       !settings.showCompletedRepeatingTasks && task.hidden ? null : (
-                        <Task task={task} groupIndex={groupIndex} taskIndex={taskIndex} locale={locale} settings={settings} removeTask={removeTask} removeSubtask={removeSubtask} editTask={editTask} key={task.id} />
+                        <Task task={task} groupIndex={groupIndex} taskIndex={taskIndex} locale={locale} settings={settings} color={group.color} removeTask={removeTask} removeSubtask={removeSubtask} editTask={editTask} key={task.id} />
                       )
                     ))}
                   </ul>

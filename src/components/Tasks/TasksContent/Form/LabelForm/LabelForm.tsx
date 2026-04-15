@@ -86,12 +86,12 @@ export default function LabelForm({ locale, addUniqueLabel, removeTaskLabel, hid
     <Modal className="task-label-modal" hiding={hiding} hide={hide}>
       <form onSubmit={handleLabelFormSubmit}>
         <h4 className="modal-title modal-title-center">{locale.tasks.label_modal_title}</h4>
-        <div className="task-label-form-body">
+        <div className="task-modal-form-body">
           <div className="task-form-color-picker-container" style={{ backgroundColor: currentColor }}>
             <input type="color" name="color" className="task-form-color-picker"
-              onInput={handleColorChange} defaultValue={currentColor} title={locale.global.color_input_title}/>
+              onInput={handleColorChange} defaultValue={currentColor} title={locale.global.color_input_title} />
           </div>
-          <input type="text" name="name" className="input task-label-form-input" autoComplete="off" autoFocus required/>
+          <input type="text" name="name" className="input task-label-form-input" autoComplete="off" autoFocus required />
         </div>
         <div className="modal-actions">
           <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
@@ -107,7 +107,7 @@ export default function LabelForm({ locale, addUniqueLabel, removeTaskLabel, hid
                 title={locale.global.remove}>
                 <div className="task-label-color" style={{ backgroundColor: label.color }}></div>
                 <div className="task-label-title">{label.name}</div>
-                <Icon id="trash" className="task-form-label-btn-icon"/>
+                <Icon id="trash" className="task-form-label-btn-icon" />
               </button>
             </li>
           ))}

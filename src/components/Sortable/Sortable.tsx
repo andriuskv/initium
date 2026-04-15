@@ -113,10 +113,11 @@ type ItemProps = PropsWithChildren & {
   id: UniqueIdentifier,
   className?: string,
   component?: { Component: FC<any>; params: any },
-  handleTitle?: string
+  handleTitle?: string,
+  style?: React.CSSProperties
 }
 
-function SortableItem({ children, id, className, component, handleTitle }: ItemProps) {
+function SortableItem({ children, id, className, component, handleTitle, style = {} }: ItemProps) {
   const {
     attributes,
     listeners,
@@ -125,23 +126,24 @@ function SortableItem({ children, id, className, component, handleTitle }: ItemP
     transition
   } = useSortable({ id });
 
-  const style = {
+  const itemStyle = {
     transform: CSS.Transform.toString(transform),
-    transition
+    transition,
+    ...style
   };
 
   if (component) {
     return (
-      <li ref={setNodeRef} style={style} className={className}>
+      <li ref={setNodeRef} style={itemStyle} className={className}>
         <component.Component {...component.params}>
           <button type="button" className="btn icon-btn drag-handle" {...attributes} {...listeners} title={handleTitle}>
-            <Icon id="drag"/>
+            <Icon id="drag" />
           </button>
         </component.Component>
       </li>
     );
   }
-  return <li ref={setNodeRef} style={style} className={className} {...attributes} {...listeners}>{children}</li>;
+  return <li ref={setNodeRef} style={itemStyle} className={className} {...attributes} {...listeners}>{children}</li>;
 }
 
 export {

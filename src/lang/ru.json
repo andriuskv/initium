@@ -76,6 +76,7 @@
     "complete": "Выполнить",
     "undo": "ОТМЕНИТЬ",
     "new_group": "Новая группа",
+    "edit_group": "Редактировать группу",
     "group_input_placeholder": "Название группы",
     "remove_group_modal_title": "Удалить группу",
     "remove_group_modal_message": "Хотите удалить эту группу?",

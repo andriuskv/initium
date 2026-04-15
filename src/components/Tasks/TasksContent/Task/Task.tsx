@@ -9,6 +9,7 @@ type Props = {
   groupIndex: number,
   taskIndex: number,
   settings: TasksSettings
+  color?: string,
   removeTask: (groupIndex: number, taskIndex: number) => void,
   removeSubtask: (groupIndex: number, taskIndex: number, subtaskIndex: number) => void,
   editTask: (groupIndex: number, taskIndex: number) => void,
@@ -27,7 +28,7 @@ function getOffset(expirationDate: number, creationDate: number) {
   return dashoffset;
 }
 
-export default function Task({ locale, task, groupIndex, taskIndex, settings, removeTask, removeSubtask, editTask }: Props) {
+export default function Task({ locale, task, groupIndex, taskIndex, settings, color, removeTask, removeSubtask, editTask }: Props) {
   return (
     <li className={`task${task.removed ? " removed" : ""}`}>
       <div className="task-body">
@@ -45,7 +46,7 @@ export default function Task({ locale, task, groupIndex, taskIndex, settings, re
           {task.hidden ? (
             <div className="checkbox task-checkbox-btn disabled"></div>
           ) : (
-            <button className="checkbox task-checkbox-btn"
+            <button className="checkbox task-checkbox-btn" style={{ "--tick-color": color } as CSSProperties}
               onClick={() => removeTask(groupIndex, taskIndex)} title={locale.tasks.complete}>
               <div className="checkbox-tick"></div>
             </button>
@@ -61,7 +62,7 @@ export default function Task({ locale, task, groupIndex, taskIndex, settings, re
                     {subtask.hidden ? (
                       <div className="checkbox task-checkbox-btn disabled"></div>
                     ) : (
-                      <button className="checkbox task-checkbox-btn"
+                      <button className="checkbox task-checkbox-btn" style={{ "--tick-color": color } as CSSProperties}
                         onClick={() => removeSubtask(groupIndex, taskIndex, subtaskIndex)} title={locale.tasks.complete}>
                         <div className="checkbox-tick"></div>
                       </button>
@@ -76,14 +77,14 @@ export default function Task({ locale, task, groupIndex, taskIndex, settings, re
         )}
         <button className="btn icon-btn alt-icon-btn task-edit-btn"
           onClick={() => editTask(groupIndex, taskIndex)} title={locale.global.edit}>
-          <Icon id="edit"/>
+          <Icon id="edit" />
         </button>
         {task.expirationDate ? (
           <svg className="task-expiration-indicator">
             <title>Expires on {task.expirationDateString}</title>
             <circle cx="8" cy="8" r="4" strokeDasharray="100"
               className="task-expiration-indicator-visual"
-              style={{ "--dashoffset": getOffset(task.expirationDate, task.creationDate) } as CSSProperties}/>
+              style={{ "--dashoffset": getOffset(task.expirationDate, task.creationDate) } as CSSProperties} />
           </svg>
         ) : null}
         {!settings.repeatHistoryHidden && task.repeat?.history?.length ? (
@@ -93,7 +94,7 @@ export default function Task({ locale, task, groupIndex, taskIndex, settings, re
                 title={item.dateString} key={item.id}>
                 {typeof item.elapsed === "number" && item.elapsed > 0 ? (
                   <div className="task-repeat-history-item-inner"
-                    style={{ "--elapsed" : item.elapsed } as CSSProperties}></div>
+                    style={{ "--elapsed": item.elapsed } as CSSProperties}></div>
                 ) : null}
               </div>
             ))}

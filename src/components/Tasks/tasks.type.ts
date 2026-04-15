@@ -49,12 +49,12 @@ export type TaskType = {
 
 export type Group = {
   id: string,
+  color?: string,
   name: string,
   tasks: TaskType[],
   expanded: boolean,
   taskCount: number,
   hiding?: boolean,
-  renameEnabled?: boolean,
   state?: "collapsing" | "expanding"
 }
 

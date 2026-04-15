@@ -1,5 +1,5 @@
 import { expect, test, beforeEach, vi, type MockedFunction } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { type ReactNode } from "react";
 import GroupContent from "./GroupContent";
@@ -16,12 +16,10 @@ const mockGroup: Group = {
   id: "1",
   name: "Test Group",
   taskCount: 5,
-  renameEnabled: false,
   tasks: [],
   expanded: false
 };
-const mockRenameGroup = vi.fn();
-const mockEnableGroupRename = vi.fn();
+const mockEnableGroupEdit = vi.fn();
 const mockShowRemoveModal = vi.fn();
 
 beforeEach(() => {
@@ -36,8 +34,7 @@ test("renders group name and task count", () => {
         locale={locale}
         index={0}
         group={mockGroup}
-        renameGroup={mockRenameGroup}
-        enableGroupRename={mockEnableGroupRename}
+        enableGroupEdit={mockEnableGroupEdit}
         showRemoveModal={mockShowRemoveModal}
       />
     </LocalizationProvider>
@@ -52,8 +49,7 @@ test("does not render remove button when allowRemoval is false", () => {
       locale={locale}
       index={0}
       group={mockGroup}
-      renameGroup={mockRenameGroup}
-      enableGroupRename={mockEnableGroupRename}
+      enableGroupEdit={mockEnableGroupEdit}
       showRemoveModal={mockShowRemoveModal}
       allowRemoval={false}
     />
@@ -61,22 +57,21 @@ test("does not render remove button when allowRemoval is false", () => {
   expect(screen.queryByText("Remove")).not.toBeInTheDocument();
 });
 
-test("calls enableGroupRename when rename button is clicked", async () => {
+test("calls enableGroupEdit when edit button is clicked", async () => {
   render(
     <GroupContent
       locale={locale}
       index={0}
       group={mockGroup}
-      renameGroup={mockRenameGroup}
-      enableGroupRename={mockEnableGroupRename}
+      enableGroupEdit={mockEnableGroupEdit}
       showRemoveModal={mockShowRemoveModal}
     />
   );
 
-  await userEvent.click(screen.getByText("Rename"));
+  await userEvent.click(screen.getByText("Edit"));
 
-  expect(mockEnableGroupRename).toHaveBeenCalledTimes(1);
-  expect(mockEnableGroupRename).toHaveBeenCalledWith(mockGroup);
+  expect(mockEnableGroupEdit).toHaveBeenCalledTimes(1);
+  expect(mockEnableGroupEdit).toHaveBeenCalledWith(mockGroup);
 });
 
 test("calls showRemoveModal when remove button is clicked", async () => {
@@ -85,8 +80,7 @@ test("calls showRemoveModal when remove button is clicked", async () => {
       locale={locale}
       index={0}
       group={mockGroup}
-      renameGroup={mockRenameGroup}
-      enableGroupRename={mockEnableGroupRename}
+      enableGroupEdit={mockEnableGroupEdit}
       showRemoveModal={mockShowRemoveModal}
     />
   );
@@ -95,73 +89,4 @@ test("calls showRemoveModal when remove button is clicked", async () => {
 
   expect(mockShowRemoveModal).toHaveBeenCalledTimes(1);
   expect(mockShowRemoveModal).toHaveBeenCalledWith(0);
-});
-
-test("renders input when renameEnabled is true", () => {
-  const renameEnabledGroup: Group = {
-    ...mockGroup,
-    renameEnabled: true
-  };
-
-  render(
-    <GroupContent
-      locale={locale}
-      index={0}
-      group={renameEnabledGroup}
-      renameGroup={mockRenameGroup}
-      enableGroupRename={mockEnableGroupRename}
-      showRemoveModal={mockShowRemoveModal}
-    />
-  );
-  const inputElement = screen.getByRole("textbox") as HTMLInputElement;
-
-  expect(inputElement).toBeInTheDocument();
-  expect(inputElement.defaultValue).toBe(renameEnabledGroup.name);
-  expect(inputElement).toHaveClass("input tasks-group-input");
-  expect(inputElement).toHaveFocus();
-});
-
-test("calls renameGroup when input is blurred", () => {
-  const renameEnabledGroup: Group = {
-    ...mockGroup,
-    renameEnabled: true
-  };
-  render(
-    <GroupContent
-      locale={locale}
-      index={0}
-      group={renameEnabledGroup}
-      renameGroup={mockRenameGroup}
-      enableGroupRename={mockEnableGroupRename}
-      showRemoveModal={mockShowRemoveModal}
-    />
-  );
-  const inputElement = screen.getByRole("textbox");
-
-  fireEvent.blur(inputElement);
-
-  expect(mockRenameGroup).toHaveBeenCalledTimes(1);
-});
-
-test("should blur input on enter", () => {
-  const renameEnabledGroup: Group = {
-    ...mockGroup,
-    renameEnabled: true
-  };
-  render(
-    <GroupContent
-      locale={locale}
-      index={0}
-      group={renameEnabledGroup}
-      renameGroup={mockRenameGroup}
-      enableGroupRename={mockEnableGroupRename}
-      showRemoveModal={mockShowRemoveModal}
-    />
-  );
-  const inputElement = screen.getByRole("textbox") as HTMLInputElement;
-  const blurSpy = vi.spyOn(inputElement, "blur");
-
-  fireEvent.keyUp(inputElement, { key: "Enter" });
-
-  expect(blurSpy).toHaveBeenCalledTimes(1);
 });

@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import GroupForm from "./GroupForm";
 import locale from "lang/en.json" assert { type: "json" };
 
-const createGroupMock = vi.fn();
+const submitActionMock = vi.fn();
 const hideMock = vi.fn();
 
 beforeEach(() => {
@@ -14,7 +14,7 @@ test("renders inline", () => {
   render(
     <GroupForm
       locale={locale}
-      createGroup={createGroupMock}
+      submitAction={submitActionMock}
       hide={hideMock}
     />
   );
@@ -25,7 +25,7 @@ test("renders as a modal", () => {
   const { container } = render(
     <GroupForm
       locale={locale}
-      createGroup={createGroupMock}
+      submitAction={submitActionMock}
       modal={true}
       hide={hideMock}
     />
@@ -37,7 +37,7 @@ test("calls createGroup on form submit", async () => {
   render(
     <GroupForm
       locale={locale}
-      createGroup={createGroupMock}
+      submitAction={submitActionMock}
       hide={hideMock}
     />
   );
@@ -49,7 +49,7 @@ test("calls createGroup on form submit", async () => {
   fireEvent.click(button);
 
   await waitFor(() => {
-    expect(createGroupMock).toHaveBeenCalledTimes(1);
+    expect(submitActionMock).toHaveBeenCalledTimes(1);
   });
   expect(input).toHaveValue("");
 });
@@ -58,7 +58,7 @@ test("calls createGroup on form submit and hides modal", async () => {
   render(
     <GroupForm
       locale={locale}
-      createGroup={createGroupMock}
+      submitAction={submitActionMock}
       modal={true}
       hide={hideMock}
     />
@@ -71,7 +71,7 @@ test("calls createGroup on form submit and hides modal", async () => {
   fireEvent.click(button);
 
   await waitFor(() => {
-    expect(createGroupMock).toHaveBeenCalledTimes(1);
+    expect(submitActionMock).toHaveBeenCalledTimes(1);
     expect(hideMock).toHaveBeenCalledTimes(1);
   });
 });
@@ -80,7 +80,7 @@ test("hides modal when cancel button is clicked", async () => {
   render(
     <GroupForm
       locale={locale}
-      createGroup={createGroupMock}
+      submitAction={submitActionMock}
       modal={true}
       hide={hideMock}
     />
@@ -90,6 +90,6 @@ test("hides modal when cancel button is clicked", async () => {
 
   await waitFor(() => {
     expect(hideMock).toHaveBeenCalledTimes(1);
-    expect(createGroupMock).not.toHaveBeenCalled();
+    expect(submitActionMock).not.toHaveBeenCalled();
   });
 });

@@ -2,30 +2,6 @@
   width: 100%;
 }
 
-.task-label-form-body {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.task-form-color-picker-container {
-  flex-shrink: 0;
-  overflow: hidden;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 1px solid var(--color-white-4);
-
-  &:has(:focus-visible) {
-    box-shadow: var(--focus-shadow);
-  }
-}
-
-.task-form-color-picker {
-  opacity: 0;
-  cursor: pointer;
-}
-
 .task-label-form-input {
   flex-shrink: 1;
   width: 100%;
@@ -44,6 +20,7 @@
   border-top: 1px solid var(--color-white-10);
 
   .task-form-label-btn:is(:hover, :focus-visible) {
+
     .task-label-color,
     .task-label-title {
       opacity: 0.4;
