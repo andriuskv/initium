@@ -56,6 +56,7 @@ module.exports = function (env = {}) {
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".jsx"],
       alias: {
+        "@": path.resolve(__dirname, "src"),
         components: path.resolve(__dirname, "src/components"),
         contexts: path.resolve(__dirname, "src/contexts"),
         hooks: path.resolve(__dirname, "src/hooks"),

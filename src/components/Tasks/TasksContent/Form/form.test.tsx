@@ -2,7 +2,7 @@ import { expect, test, vi, beforeEach, type MockedFunction } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
-import { useModal, useMessage } from "hooks";
+import { useModal, useMessage } from "@/hooks";
 import { getSettings } from "services/settings";
 import { useSettings } from "contexts/settings";
 import { useLocalization } from "contexts/localization";
@@ -26,14 +26,16 @@ vi.mock("utils", async () => ({
 }));
 
 const mockGroups: Group[] = [
-  { id: "default", name: "Default", tasks: [{
-    id: "task1",
-    rawText: "Existing Task",
-    subtasks: [],
-    creationDate: Date.now(),
-    expirationDate: Date.now() + 86400000,
-    labels: [],
-  }], taskCount: 0, expanded: false },
+  {
+    id: "default", name: "Default", tasks: [{
+      id: "task1",
+      rawText: "Existing Task",
+      subtasks: [],
+      creationDate: Date.now(),
+      expirationDate: Date.now() + 86400000,
+      labels: [],
+    }], taskCount: 0, expanded: false
+  },
   { id: "group1", name: "Group 1", tasks: [], taskCount: 0, expanded: false },
 ];
 
@@ -368,7 +370,7 @@ test("displays group form modal", async () => {
   await userEvent.click(groupFormButton);
 
   expect(setModal).toHaveBeenCalledWith({ type: "group" });
-  expect(screen.getByText("New group")).toBeInTheDocument();
+  expect(screen.getByText("New Group",)).toBeInTheDocument();
 });
 
 test("adds label", async () => {

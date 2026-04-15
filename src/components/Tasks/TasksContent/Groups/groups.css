@@ -1,7 +1,16 @@
+.tasks-groups-items-container {
+  position: relative;
+}
+
 .tasks-groups-items {
   overflow-y: auto;
   flex-grow: 1;
 }
+
+.tasks-groups-item {
+  background-color: color-mix(in srgb, var(--group-color) 30%, transparent);
+}
+
 
 .tasks-group-input {
   width: 100%;

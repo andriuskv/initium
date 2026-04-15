@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { useLocalization } from "contexts/localization";
-import { useModal } from "hooks";
+import { useModal } from "@/hooks";
 import Modal from "components/Modal";
 import Groups from "./Groups";
 import locale from "lang/en.json" assert { type: "json" };
@@ -17,12 +17,13 @@ vi.mock("contexts/localization", () => ({
 
 const mockGroups: any = [
   { id: "default", name: "Default", tasks: [], taskCount: 0, expanded: false },
-  { id: "group1", name: "Group 1", tasks: [{ id: "task1" }], taskCount: 1, expanded: false},
+  { id: "group1", name: "Group 1", tasks: [{ id: "task1" }], taskCount: 1, expanded: false },
   { id: "group2", name: "Group 2", tasks: [], taskCount: 0, expanded: false }
 ];
 
 const mockUpdateGroups = vi.fn();
 const mockCreateGroup = vi.fn();
+const mockEditGroup = vi.fn();
 const mockHide = vi.fn();
 
 beforeEach(() => {
@@ -46,6 +47,7 @@ test("renders tasks group list", () => {
       locale={locale}
       updateGroups={mockUpdateGroups}
       createGroup={mockCreateGroup}
+      editGroup={mockEditGroup}
       hide={mockHide}
     />
   );
@@ -61,6 +63,7 @@ test("calls hide when done button is clicked", async () => {
       locale={locale}
       updateGroups={mockUpdateGroups}
       createGroup={mockCreateGroup}
+      editGroup={mockEditGroup}
       hide={mockHide}
     />
   );
@@ -76,6 +79,7 @@ test("should not be able to remove default group", () => {
       locale={locale}
       updateGroups={mockUpdateGroups}
       createGroup={mockCreateGroup}
+      editGroup={mockEditGroup}
       hide={mockHide}
     />
   );
@@ -86,7 +90,7 @@ test("should not be able to remove default group", () => {
 test("handles group removal with empty tasks directly", async () => {
   const mockGroups: any = [
     { id: "default", name: "Default", tasks: [], taskCount: 0, expanded: false },
-    { id: "group1", name: "Group 1", tasks: [{ id: "task1" }], taskCount: 1, expanded: false},
+    { id: "group1", name: "Group 1", tasks: [{ id: "task1" }], taskCount: 1, expanded: false },
     { id: "group2", name: "Group 2", tasks: [], taskCount: 0, expanded: false }
   ];
   render(
@@ -95,10 +99,11 @@ test("handles group removal with empty tasks directly", async () => {
       locale={locale}
       updateGroups={mockUpdateGroups}
       createGroup={mockCreateGroup}
+      editGroup={mockEditGroup}
       hide={mockHide}
     />
   );
-  const removeButtons = screen.getAllByRole("button",{ name: /remove/i, hidden: true });
+  const removeButtons = screen.getAllByRole("button", { name: /remove/i, hidden: true });
 
   await userEvent.click(removeButtons[1]);
 
@@ -115,27 +120,28 @@ test("displays modal for group removal with tasks", async () => {
       locale={locale}
       updateGroups={mockUpdateGroups}
       createGroup={mockCreateGroup}
+      editGroup={mockEditGroup}
       hide={mockHide}
     />
   );
 
   const { setModal } = useModal() as any;
-  const removeButtons = screen.getAllByRole("button",{ name: /remove/i, hidden: true });
+  const removeButtons = screen.getAllByRole("button", { name: /remove/i, hidden: true });
 
   await userEvent.click(removeButtons[0]);
 
-  expect(setModal).toHaveBeenCalledWith({ groupIndex: 1 });
+  expect(setModal).toHaveBeenCalledWith({ groupIndex: 1, type: "confirm" });
 });
 
 test("confirms group removal from modal", async () => {
   const mockGroups: any = [
     { id: "default", name: "Default", tasks: [], taskCount: 0, expanded: false },
-    { id: "group1", name: "Group 1", tasks: [{ id: "task1" }], taskCount: 1, expanded: false},
+    { id: "group1", name: "Group 1", tasks: [{ id: "task1" }], taskCount: 1, expanded: false },
     { id: "group2", name: "Group 2", tasks: [], taskCount: 0, expanded: false }
   ];
 
   (useModal as any).mockReturnValue({
-    modal: { groupIndex: 1 },
+    modal: { groupIndex: 1, type: "confirm" },
     setModal: vi.fn(),
     hiding: undefined,
     hideModal: vi.fn(),
@@ -148,11 +154,12 @@ test("confirms group removal from modal", async () => {
       locale={locale}
       updateGroups={mockUpdateGroups}
       createGroup={mockCreateGroup}
+      editGroup={mockEditGroup}
       hide={mockHide}
     />
   );
 
-  expect(screen.getByTestId("mock-modal")).toBeInTheDocument();
+  expect(screen.getByText("Remove group")).toBeInTheDocument();
 
   await userEvent.click(container.querySelector(".modal-actions")!.children[1]);
 
@@ -166,7 +173,7 @@ test("confirms group removal from modal", async () => {
 
 test("cancels group removal from modal", async () => {
   (useModal as any).mockReturnValue({
-    modal: { groupIndex: 1 },
+    modal: { groupIndex: 1, type: "confirm" },
     setModal: vi.fn(),
     hiding: undefined,
     hideModal: vi.fn(),
@@ -178,6 +185,7 @@ test("cancels group removal from modal", async () => {
       locale={locale}
       updateGroups={mockUpdateGroups}
       createGroup={mockCreateGroup}
+      editGroup={mockEditGroup}
       hide={mockHide}
     />
   );

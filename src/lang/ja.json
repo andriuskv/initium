@@ -77,6 +77,7 @@
     "complete": "完了",
     "undo": "元に戻す",
     "new_group": "新しいグループ",
+    "edit_group": "グループを編集",
     "group_input_placeholder": "グループ名",
     "remove_group_modal_title": "グループを削除",
     "remove_group_modal_message": "このグループを削除しますか？",

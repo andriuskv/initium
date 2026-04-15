@@ -20,6 +20,7 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "paths": {
+      "@/*": ["./src/*"],
       "services/*": ["./src/services/*"],
       "components/*": ["./src/components/*"],
       "contexts/*": ["./src/contexts/*"],
