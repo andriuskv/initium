@@ -127,7 +127,8 @@ function SortableItem({ children, id, className, component, handleTitle, style =
   } = useSortable({ id });
 
   const itemStyle = {
-    transform: CSS.Transform.toString(transform),
+    // transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
     ...style
   };

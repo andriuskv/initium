@@ -81,13 +81,13 @@ export default function DataManagement({ locale, items }: { locale: any, items: 
             }
           }]
         });
-        setModal(null);
 
         file = await fileHandle.getFile();
       }
       else {
         file = await getFile();
       }
+      setModal(null);
 
       if (file?.type !== "application/json") {
         setDataMessage(locale.settings.storage.invalid_file);

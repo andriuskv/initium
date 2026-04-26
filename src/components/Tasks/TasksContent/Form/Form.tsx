@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, type FormEvent, type ChangeEvent, type KeyboardEvent } from "react";
+import { useState, lazy, Suspense, type SubmitEvent, type ChangeEvent, type KeyboardEvent } from "react";
 import type { DragStartEvent } from "@dnd-kit/core";
 import { getLocalStorageItem, getRandomString, replaceLink } from "utils";
 import { useModal, useMessage } from "@/hooks";
@@ -10,6 +10,7 @@ import "./form.css";
 import GroupForm from "../GroupForm";
 import LabelForm from "./LabelForm";
 import Subtask from "./Subtask";
+import { traverseSubtasks } from "components/Tasks/helpers";
 import type { Label, Subtask as SubtaskType, TaskType, Group, TaskForm } from "components/Tasks/tasks.type";
 import type { GeneralSettings, TimeDateSettings } from "types/settings";
 
@@ -55,7 +56,7 @@ function getDefaultTask(text = "", props = {}): TaskType | SubtaskType {
   };
 }
 
-function getUniqueTaskLabels(groups: Group[], groupIndex = -1, taskIndex = -1) {
+function getUniqueTaskLabels(groups: Group[], groupId?: string, taskId?: string) {
   let labels: Label[] = (getLocalStorageItem<Label[]>("taskLabels") || []).map((label: Label) => {
     label.id = getRandomString();
     return label;
@@ -71,8 +72,11 @@ function getUniqueTaskLabels(groups: Group[], groupIndex = -1, taskIndex = -1) {
     }
   }
 
-  if (groupIndex > -1) {
-    const taskLabels = groups[groupIndex].tasks[taskIndex].labels;
+  const group = groups.find(group => group.id === groupId);
+  const task = group?.tasks.find(task => task.id === taskId);
+
+  if (task) {
+    const taskLabels = task.labels;
 
     labels = labels.map(label => {
       if (findLabel(taskLabels, label)) {
@@ -93,7 +97,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     const defaultForm: State = {
       moreOptionsVisible: false,
       completeWithSubtasks: false,
-      labels: form ? getUniqueTaskLabels(groups, form.groupIndex, form.taskIndex) : [],
+      labels: form ? getUniqueTaskLabels(groups, form.groupId, form.taskId) : [],
       task: {
         creationDate: Date.now(),
         id: getRandomString(4),
@@ -103,7 +107,8 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     };
 
     if (form?.updating) {
-      const task = groups[form.groupIndex!].tasks[form.taskIndex!];
+      const group = groups.find(group => group.id === form.groupId)!;
+      const task = group.tasks.find(task => task.id === form.taskId)!;
       const subtasks = [...task.subtasks];
       let missingSubtaskCount = 2 - subtasks.length;
 
@@ -225,25 +230,49 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     createGroup(group);
   }
 
-  function addFormSubtask() {
+  function addFormSubtask(parentTask: TaskType | SubtaskType) {
     const subtask: SubtaskType = getDefaultTask();
 
-    setState({
-      ...state,
-      task: {
-        ...state.task,
-        subtasks: [...state.task.subtasks, subtask]
-      }
-    });
+    if ((parentTask as TaskType).creationDate) {
+      const task = parentTask as TaskType;
+      setState({
+        ...state,
+        task: {
+          ...task,
+          subtasks: [...task.subtasks, subtask]
+        }
+      });
+    }
+    else {
+      const subtasks = traverseSubtasks(state.task, parentTask.id, ({ parentTask, subtask, index }) => {
+        const newSubtask = getDefaultTask();
+        const nestedSubtasks = subtask.subtasks ? [...subtask.subtasks, newSubtask] : [newSubtask];
+
+        return parentTask.subtasks!.with(index, {
+          ...subtask,
+          subtasks: nestedSubtasks
+        });
+      });
+
+      setState({
+        ...state,
+        task: {
+          ...state.task,
+          subtasks
+        }
+      });
+    }
   }
 
-  function removeFormSubtask(index: number) {
-    const subtasks = state.task.subtasks.toSpliced(index, 1);
+  function removeFormSubtask(parentTaskId: string, index: number) {
+    const subtasks = traverseSubtasks(state.task, parentTaskId, ({ parentTask }) => {
+      return parentTask.subtasks!.toSpliced(index, 1);
+    });
 
     setState({ ...state, task: { ...state.task, subtasks } });
   }
 
-  function handleTaskFormSubmit(event: FormEvent) {
+  function handleTaskFormSubmit(event: SubmitEvent) {
     interface FormElements extends HTMLFormControlsCollection {
       text: HTMLInputElement;
       datetime: HTMLInputElement;
@@ -266,7 +295,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     const tasks = groups[index].tasks;
     const task = getDefaultTask(text, {
       creationDate: currentDate,
-      subtasks: getFormSubtasks(elements.subtask),
+      subtasks: getFormSubtasks(),
       labels: getFlaggedFormLabels()
     }) as TaskType;
 
@@ -298,7 +327,8 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     }
 
     if (state.updating) {
-      const taskIndex = form.taskIndex as number;
+      const groupIndex = groups.findIndex(({ id }) => id === form.groupId);
+      const taskIndex = groups[groupIndex].tasks.findIndex(({ id }) => id === form.taskId);
       const taskProps: Partial<TaskType> = {};
 
       if (dateTime) {
@@ -392,37 +422,33 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     }
   }
 
-  function getFormSubtasks(elements: HTMLInputElement | HTMLInputElement[]): SubtaskType[] {
-    if (!elements) {
+  function getFormSubtasks(): SubtaskType[] {
+    const subtaskElements = document.querySelectorAll("[data-subtask-id]");
+
+    if (!subtaskElements.length) {
       return [];
     }
-    const input = elements as HTMLInputElement;
+    const subtasks: SubtaskType[] = traverseSubtasks(state.task, "", ({ subtask }) => {
+      const input = document.querySelector(`[data-subtask-id="${subtask.id}"]`) as HTMLInputElement;
 
-    if (input.value) {
+      if (!input) {
+        return;
+      }
+
       const text = input.value.trim();
 
-      return [getDefaultTask(text, {
-        optional: state.task.subtasks[0].optional
-      })];
-    }
+      if (text || subtask.subtasks?.length) {
+        const newSubtask = getDefaultTask(text, {
+          optional: subtask.optional
+        });
 
-    const inputs = elements as HTMLInputElement[];
-
-    if (inputs.length) {
-      const subtasks = [];
-
-      for (let i = 0; i < inputs.length; i += 1) {
-        const text = inputs[i].value.trim();
-
-        if (text) {
-          subtasks.push(getDefaultTask(text, {
-            optional: state.task.subtasks[i].optional
-          }));
-        }
+        return {
+          ...subtask,
+          ...newSubtask
+        };
       }
-      return subtasks;
-    }
-    return [];
+    });
+    return subtasks;
   }
 
   function getFlaggedFormLabels() {
@@ -467,15 +493,36 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
     });
   }
 
-  function toggleSubtaskReq(index: number) {
+  function toggleSubtaskReq(parentTaskId: string, index: number) {
+    const subtasks = traverseSubtasks(state.task, parentTaskId, ({ parentTask, subtask }) => {
+      return parentTask.subtasks!.with(index, {
+        ...subtask,
+        optional: !subtask.optional
+      });
+    });
+
     setState({
       ...state,
       task: {
         ...state.task,
-        subtasks: state.task.subtasks.with(index, {
-          ...state.task.subtasks[index],
-          optional: !state.task.subtasks[index].optional
-        })
+        subtasks
+      }
+    });
+  }
+
+  function sortNestedSubtasks(parentTaskId: string, items: SubtaskType[]) {
+    const subtasks = traverseSubtasks(state.task, parentTaskId, ({ parentTask, subtask, index }) => {
+      return parentTask.subtasks!.with(index, {
+        ...subtask,
+        subtasks: items
+      });
+    });
+
+    setState({
+      ...state,
+      task: {
+        ...state.task,
+        subtasks
       }
     });
   }
@@ -500,7 +547,9 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
         locale,
         completeWithSubtasks: state.completeWithSubtasks,
         toggleSubtaskReq,
-        removeFormSubtask
+        addFormSubtask,
+        removeFormSubtask,
+        sortNestedSubtasks
       }
     };
 
@@ -604,7 +653,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
               onClick={togglePrefsVisibility} title={prefsVisible ? locale.global.collapse : locale.global.expand}>
               <Icon id="chevron-down" />
             </button>
-            <button type="button" className="btn icon-btn" onClick={addFormSubtask} title={locale.tasks.add_subtask_title}>
+            <button type="button" className="btn icon-btn" onClick={() => addFormSubtask(state.task)} title={locale.tasks.add_subtask_title}>
               <Icon id="plus" />
             </button>
           </div>

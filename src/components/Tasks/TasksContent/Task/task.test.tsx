@@ -34,8 +34,8 @@ test("renders task with text and complete button", () => {
     <Task
       locale={locale}
       task={baseTask}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -52,8 +52,8 @@ test("calls removeTask when complete button is clicked", async () => {
     <Task
       locale={locale}
       task={baseTask}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -62,7 +62,7 @@ test("calls removeTask when complete button is clicked", async () => {
   );
 
   await userEvent.click(screen.getByRole("button", { name: "Complete" }));
-  expect(mockRemoveTask).toHaveBeenCalledWith(0, 0);
+  expect(mockRemoveTask).toHaveBeenCalledWith("default", "1");
 });
 
 test("calls removeSubtask when subtask complete button is clicked", async () => {
@@ -73,8 +73,8 @@ test("calls removeSubtask when subtask complete button is clicked", async () => 
     <Task
       locale={locale}
       task={taskWithSubtasks}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -84,7 +84,7 @@ test("calls removeSubtask when subtask complete button is clicked", async () => 
 
   expect(screen.getByText("Subtask 1")).toBeInTheDocument();
   await userEvent.click(screen.getAllByRole("button", { name: "Complete" })[1]);
-  expect(mockRemoveSubtask).toHaveBeenCalledWith(0, 0, 0);
+  expect(mockRemoveSubtask).toHaveBeenCalledWith("sub1");
 });
 
 test("renders labels", () => {
@@ -95,8 +95,8 @@ test("renders labels", () => {
     <Task
       locale={locale}
       task={taskWithLabels}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -112,8 +112,8 @@ test("calls editTask when clicked", async () => {
     <Task
       locale={locale}
       task={baseTask}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -122,7 +122,7 @@ test("calls editTask when clicked", async () => {
   );
 
   await userEvent.click(screen.getByRole("button", { name: "Edit" }));
-  expect(mockEditTask).toHaveBeenCalledWith(0, 0);
+  expect(mockEditTask).toHaveBeenCalledWith("default", "1");
 });
 
 test("renders expiration indicator if expirationDate is present", () => {
@@ -133,8 +133,8 @@ test("renders expiration indicator if expirationDate is present", () => {
     <Task
       locale={locale}
       task={taskWithExpiration}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -152,8 +152,8 @@ test("renders task as removed if task.removed is true", () => {
     <Task
       locale={locale}
       task={removedTask}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -172,8 +172,8 @@ test("renders subtask as removed if subtask.removed is true", () => {
     <Task
       locale={locale}
       task={taskWithRemovedSubtask}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -192,8 +192,8 @@ test("renders optional subtask indicator", () => {
     <Task
       locale={locale}
       task={taskWithOptionalSubtask}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -217,8 +217,8 @@ test("renders repeat history", () => {
     <Task
       locale={locale}
       task={taskWithRepeatHistory}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={getSettings().tasks}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}
@@ -242,8 +242,8 @@ test("doesn't render repeat history if repeatHistoryHidden is true", () => {
     <Task
       locale={locale}
       task={taskWithRepeatHistory}
-      groupIndex={0}
-      taskIndex={0}
+      groupId="default"
+      color="#f4d"
       settings={{ ...getSettings().tasks, repeatHistoryHidden: true }}
       removeTask={mockRemoveTask}
       removeSubtask={mockRemoveSubtask}

@@ -19,6 +19,8 @@ beforeEach(() => {
 
 const mockToggleSubtaskReq = vi.fn();
 const mockRemoveFormSubtask = vi.fn();
+const mockAddFormSubtask = vi.fn();
+const mockSortNestedSubtasks = vi.fn();
 
 const mockSubtask: SubtaskType = {
   id: "1",
@@ -35,6 +37,8 @@ const renderComponent = (props = {}) => {
       completeWithSubtasks={true}
       toggleSubtaskReq={mockToggleSubtaskReq}
       removeFormSubtask={mockRemoveFormSubtask}
+      addFormSubtask={mockAddFormSubtask}
+      sortNestedSubtasks={mockSortNestedSubtasks}
       {...props}
     >
       <button title="Drag"></button>
@@ -64,20 +68,13 @@ test("renders correctly with optional subtask", () => {
   expect(screen.getByText("Make required")).toBeInTheDocument();
 });
 
-test("renders correctly without completeWithSubtasks", () => {
-  const { container } = renderComponent({ completeWithSubtasks: false });
-
-  expect(container.querySelector(".dropdown")).not.toBeInTheDocument();
-  expect(screen.getByTitle("Remove")).toBeInTheDocument();
-});
-
 test("calls toggleSubtaskReq when 'Make optional' button is clicked", async () => {
   renderComponent();
 
   await userEvent.click(screen.getByText("Make optional"));
 
   expect(mockToggleSubtaskReq).toHaveBeenCalledTimes(1);
-  expect(mockToggleSubtaskReq).toHaveBeenCalledWith(0);
+  expect(mockToggleSubtaskReq).toHaveBeenCalledWith("1", 0);
 });
 
 test("calls toggleSubtaskReq when 'Make required' button is clicked", async () => {
@@ -85,7 +82,7 @@ test("calls toggleSubtaskReq when 'Make required' button is clicked", async () =
 
   await userEvent.click(screen.getByText("Make required"));
   expect(mockToggleSubtaskReq).toHaveBeenCalledTimes(1);
-  expect(mockToggleSubtaskReq).toHaveBeenCalledWith(0);
+  expect(mockToggleSubtaskReq).toHaveBeenCalledWith("1", 0);
 });
 
 test("calls removeFormSubtask when 'Remove' button is clicked within dropdown", async () => {
@@ -94,14 +91,5 @@ test("calls removeFormSubtask when 'Remove' button is clicked within dropdown", 
   await userEvent.click(screen.getByText("Remove"));
 
   expect(mockRemoveFormSubtask).toHaveBeenCalledTimes(1);
-  expect(mockRemoveFormSubtask).toHaveBeenCalledWith(0);
-});
-
-test("calls removeFormSubtask when 'Remove' button is clicked (without dropdown)", async () => {
-  renderComponent({ completeWithSubtasks: false });
-
-  await userEvent.click(screen.getByTitle("Remove"));
-
-  expect(mockRemoveFormSubtask).toHaveBeenCalledTimes(1);
-  expect(mockRemoveFormSubtask).toHaveBeenCalledWith(0);
+  expect(mockRemoveFormSubtask).toHaveBeenCalledWith("1", 0);
 });

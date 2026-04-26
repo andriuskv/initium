@@ -11,7 +11,8 @@ export type Subtask = {
   text?: string,
   optional?: boolean,
   hidden?: boolean,
-  removed?: boolean
+  removed?: boolean,
+  subtasks?: Subtask[]
 }
 
 export type TaskRepeatHistory = {
@@ -61,7 +62,6 @@ export type Group = {
 export type TaskForm = {
   creationDate?: number,
   updating?: boolean,
-  groupIndex?: number,
-  taskIndex?: number,
+  taskId?: string,
   groupId?: string,
 }
