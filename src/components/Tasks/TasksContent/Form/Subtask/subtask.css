@@ -1,10 +1,12 @@
 .task-form-subtask {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--space-sm);
 
   &.dragging {
     z-index: 1000;
+    overflow: clip;
+    height: 30px;
   }
 }
 
@@ -35,4 +37,17 @@
 
 .task-form-subtask-input {
   flex-grow: 1;
+}
+
+.task-form-subtask-content {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.task-form-subtask-subtasks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-left: var(--space-md);
 }

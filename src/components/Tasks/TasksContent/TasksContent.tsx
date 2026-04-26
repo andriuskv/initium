@@ -13,6 +13,7 @@ import "./tasks-content.css";
 import Task from "./Task";
 import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
+import { findSubtask, traverseSubtasks } from "../helpers";
 
 const Form = lazy(() => import("./Form"));
 const Groups = lazy(() => import("./Groups"));
@@ -30,9 +31,11 @@ type Props = {
   toggleSize: () => void
 }
 
+// TODO: fix tests
+
 export default function Tasks({ settings, generalSettings, locale, expanded, toggleSize }: Props) {
   const [groups, setGroups] = useState<Group[] | null>(null);
-  const [removedItems, setRemovedItems] = useState<{ groupIndex: number, taskIndex: number, subtaskIndex?: number }[]>([]);
+  const [removedItemCount, setRemovedItemCount] = useState(0);
   const [form, setForm] = useState<TaskForm | null>(null);
   const [activeComponent, setActiveComponent] = useState<"form" | "groups" | "">("");
   const [taskCount, setTaskCount] = useState(0);
@@ -100,12 +103,12 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   useEffect(() => {
     clearTimeout(taskRemoveTimeoutId.current);
 
-    if (removedItems.length) {
+    if (removedItemCount > 0) {
       taskRemoveTimeoutId.current = window.setTimeout(() => {
         removeCompletedItems();
       }, 8000);
     }
-  }, [removedItems]);
+  }, [removedItemCount]);
 
   async function init() {
     const tasks = await chromeStorage.get("tasks") as Group[];
@@ -141,11 +144,10 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         group.name = "Default";
         modified = true;
       }
-      group.tasks.map(task => {
+      group.tasks = group.tasks.map(task => {
         task = parseTask(task) as TaskType;
-        task.subtasks = task.subtasks.map(subtask => {
-          subtask = parseBaseTask(subtask);
-          return subtask;
+        task.subtasks = traverseSubtasks(task, "", ({ subtask }) => {
+          return parseBaseTask(subtask);
         });
         task.labels = task.labels.map(label => {
           label.id = getRandomString(4);
@@ -364,11 +366,13 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     return task;
   }
 
-  function removeTask(groupIndex: number, taskIndex: number, removedThroughForm = false) {
+  function removeTask(groupId: string, taskId: string, removedThroughForm = false) {
     if (!groups) {
       return;
     }
+    const groupIndex = groups.findIndex(group => group.id === groupId);
     const group = groups[groupIndex];
+    const taskIndex = group.tasks.findIndex(task => task.id === taskId);
     const task = group.tasks[taskIndex];
     const removedTaskCount = group.tasks.reduce((total, task) => {
       if (task.removed) {
@@ -388,36 +392,61 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     });
 
     setGroups(newGroups);
-    setRemovedItems([...removedItems, { groupIndex, taskIndex }]);
+    setRemovedItemCount(removedItemCount + 1);
   }
 
-  function removeSubtask(groupIndex: number, taskIndex: number, subtaskIndex: number) {
+  function recursiveRemoveTask(task: TaskType, subtaskId: string): Subtask[] {
+    if (subtaskId === task.id) {
+      return task.subtasks;
+    }
+    const result = findSubtask(task, subtaskId);
+
+    if (!result) {
+      return task.subtasks;
+    }
+    const { parentTask, subtask, index } = result;
+    let requiredSubtaskCount = 0;
+
+    for (const subtask of parentTask.subtasks!) {
+      if (!subtask.optional && !(subtask.removed || subtask.hidden)) {
+        requiredSubtaskCount += 1;
+      }
+    }
+
+    if (requiredSubtaskCount === 0) {
+      parentTask.subtasks = parentTask.subtasks!.with(index, {
+        ...subtask,
+        removed: false
+      });
+      parentTask.removed = true;
+
+      return recursiveRemoveTask(task, parentTask.id);
+    }
+    return task.subtasks;
+  }
+
+  function removeSubtask(group: Group, task: TaskType, subtaskId: string) {
     if (!groups) {
       return;
     }
-    const task = groups[groupIndex].tasks[taskIndex];
-    const subtask = task.subtasks[subtaskIndex];
+    const groupIndex = groups.findIndex(g => g.id === group.id);
+    const taskIndex = groups[groupIndex].tasks.findIndex(t => t.id === task.id);
+    const newTask = {
+      ...task,
+      subtasks: traverseSubtasks(task, subtaskId, ({ parentTask, subtask, index }) => {
+        return parentTask.subtasks?.with(index, { ...subtask, removed: true });
+      })
+    };
 
-    subtask.removed = true;
-
-    if (task.completeWithSubtasks) {
-      let requiredSubtaskCount = 0;
-
-      for (const subtask of task.subtasks) {
-        if (!subtask.optional && !(subtask.removed || subtask.hidden)) {
-          requiredSubtaskCount += 1;
-        }
-      }
-
-      if (requiredSubtaskCount === 0) {
-        subtask.removed = false;
-        removeTask(groupIndex, taskIndex);
-        return;
-      }
+    if (newTask.completeWithSubtasks) {
+      newTask.subtasks = recursiveRemoveTask(newTask, subtaskId);
     }
 
-    setGroups([...groups]);
-    setRemovedItems([...removedItems, { groupIndex, taskIndex, subtaskIndex }]);
+    setGroups(groups.with(groupIndex, {
+      ...group,
+      tasks: group.tasks.with(taskIndex, newTask)
+    }));
+    setRemovedItemCount(removedItemCount + 1);
   }
 
   function setRepeatingTaskStatus(task: TaskType, status: number) {
@@ -438,7 +467,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
           if (task.removed) {
             delete task.removed;
             task.hidden = true;
-            task.subtasks = task.subtasks.map(subtask => {
+            task.subtasks = traverseSubtasks(task, "", ({ subtask }) => {
               delete subtask.removed;
               subtask.hidden = true;
               return subtask;
@@ -446,7 +475,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
             setRepeatingTaskStatus(task, COMPLETED_STATUS);
             return task;
           }
-          task.subtasks = task.subtasks.map(subtask => {
+          task.subtasks = traverseSubtasks(task, "", ({ subtask }) => {
             if (subtask.removed) {
               delete subtask.removed;
               subtask.hidden = true;
@@ -460,13 +489,18 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         if (task.repeat) {
           return !task.removedThroughForm;
         }
-        task.subtasks = task.subtasks.filter(subtask => !subtask.removed);
+        task.subtasks = traverseSubtasks(task, "", ({ subtask }) => {
+          if (subtask.removed) {
+            return;
+          }
+          return subtask;
+        });
         return !task.removed;
       });
       group.taskCount = getGroupTaskCount(group.tasks);
     }
     setGroups([...groups]);
-    setRemovedItems([]);
+    setRemovedItemCount(0);
     countTasks(groups);
     saveTasks(groups);
   }
@@ -475,39 +509,37 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
     if (!groups) {
       return;
     }
-    for (const { groupIndex, taskIndex, subtaskIndex } of removedItems) {
-      const group = groups[groupIndex];
-      const task = group.tasks[taskIndex];
-      group.hiding = false;
-
-      if (typeof subtaskIndex === "number" && subtaskIndex >= 0) {
-        delete task.subtasks[subtaskIndex].removed;
+    const newGroups = groups.map(group => {
+      return {
+        ...group,
+        hiding: false,
+        tasks: group.tasks.map(task => {
+          task.removed = false;
+          task.removedThroughForm = false;
+          task.subtasks = traverseSubtasks(task, "", ({ subtask }) => {
+            delete subtask.removed;
+            return subtask;
+          });
+          return task;
+        })
       }
-      else {
-        delete task.removed;
-        delete task.removedThroughForm;
-      }
-    }
-    setGroups([...groups]);
-    setRemovedItems([]);
+    });
+    setGroups(newGroups);
+    setRemovedItemCount(0);
   }
 
-  function editTask(groupIndex: number, taskIndex: number) {
-    if (!groups) {
-      return;
-    }
+  function editTask(groupId: string, taskId: string) {
     setActiveComponent("form");
     setForm({
       updating: true,
-      groupIndex,
-      taskIndex,
-      groupId: groups[groupIndex].id
+      taskId,
+      groupId
     });
   }
 
   function removeFormTask() {
-    if (form && typeof form.groupIndex === "number" && typeof form.taskIndex === "number") {
-      removeTask(form.groupIndex, form.taskIndex, true);
+    if (form?.groupId && form?.taskId) {
+      removeTask(form.groupId, form.taskId, true);
     }
     hideForm();
   }
@@ -608,7 +640,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         group.tasks = group.tasks?.map(task => {
           const cleanTask = cleanupTask(task);
 
-          cleanTask.subtasks = task.subtasks.map(cleanupSubtask) as Subtask[];
+          cleanTask.subtasks = traverseSubtasks(task, "", ({ subtask }) => {
+            return cleanupSubtask(subtask) as Subtask;
+          });
           cleanTask.labels = (task.labels as Partial<Label>[]).map(label => {
             delete label.id;
             return label;
@@ -681,15 +715,15 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   }
 
   function getSubtaskCount(task: TaskType) {
-    return task.subtasks.reduce((total, task) => {
-      if (task.hidden) {
-        if (settings.showCompletedRepeatingTasks) {
-          return total + 1;
-        }
-        return total;
+    let count = 0;
+
+    traverseSubtasks(task, "", ({ subtask }) => {
+      if (!subtask.hidden || (subtask.hidden && settings.showCompletedRepeatingTasks)) {
+        count += 1;
       }
-      return total + 1;
-    }, 0);
+      return subtask;
+    });
+    return count;
   }
 
   function getGroupTaskCount(tasks: TaskType[]) {
@@ -750,7 +784,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
   return (
     <>
       <Header locale={locale} expanded={expanded} toggleSize={toggleSize} showGroups={showGroups} />
-      <div className={`container-body tasks-body${removedItems.length > 0 ? " dialog-visible" : ""}`}>
+      <div className={`container-body tasks-body${removedItemCount > 0 ? " dialog-visible" : ""}`}>
         {taskCount > 0 ? (
           <ul className="tasks-groups-container">
             {groups.map((group, groupIndex) => (group.taskCount === 0 && settings.emptyGroupsHidden ? null : (
@@ -769,9 +803,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
                 )}
                 {group.expanded && (
                   <ul className={`tasks-group-items${group.state ? ` ${group.state}` : ""}`}>
-                    {group.tasks.map((task, taskIndex) => (
+                    {group.tasks.map((task) => (
                       !settings.showCompletedRepeatingTasks && task.hidden ? null : (
-                        <Task task={task} groupIndex={groupIndex} taskIndex={taskIndex} locale={locale} settings={settings} color={group.color} removeTask={removeTask} removeSubtask={removeSubtask} editTask={editTask} key={task.id} />
+                        <Task task={task} groupId={group.id} locale={locale} settings={settings} color={group.color} removeTask={removeTask} removeSubtask={(subtaskId) => removeSubtask(group, task, subtaskId)} editTask={() => editTask(group.id, task.id)} key={task.id} />
                       )
                     ))}
                   </ul>
@@ -785,7 +819,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
         <CreateButton className="tasks-create-btn" onClick={showForm} shiftTarget=".task-edit-btn" trackScroll></CreateButton>
         {storageWarning ? <Toast message={storageWarning.message} position="bottom" locale={locale} dismiss={dismissStorageWarning} /> : null}
       </div>
-      {removedItems.length > 0 && <Footer locale={locale} removedItemsCount={removedItems.length} undoRemovedTasks={undoRemovedTasks} />}
+      {removedItemCount > 0 && <Footer locale={locale} removedItemsCount={removedItemCount} undoRemovedTasks={undoRemovedTasks} />}
     </>
   );
 }

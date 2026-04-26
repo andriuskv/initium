@@ -150,7 +150,7 @@
 .task-form-subtasks {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   width: 100%;
   padding: var(--space-sm) var(--space-md) 0 var(--space-sm);
   margin-top: var(--space-sm);
@@ -176,6 +176,7 @@
   &,
   &::picker(select) {
     appearance: base-select;
+    max-height: 210px;
   }
 
   &::picker-icon {

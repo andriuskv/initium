@@ -1,18 +1,17 @@
 import { type CSSProperties } from "react";
 import type { TasksSettings } from "types/settings";
-import type { TaskType } from "../../tasks.type";
+import type { TaskType, Subtask as SubtaskType } from "../../tasks.type";
 import Icon from "components/Icon";
 
 type Props = {
   locale: any,
   task: TaskType,
-  groupIndex: number,
-  taskIndex: number,
+  groupId: string,
   settings: TasksSettings
   color?: string,
-  removeTask: (groupIndex: number, taskIndex: number) => void,
-  removeSubtask: (groupIndex: number, taskIndex: number, subtaskIndex: number) => void,
-  editTask: (groupIndex: number, taskIndex: number) => void,
+  removeTask: (groupId: string, taskId: string) => void,
+  removeSubtask: (subtaskId: string) => void,
+  editTask: (groupId: string, taskId: string) => void,
 }
 
 const taskStatusMap: { [key: string]: string } = {
@@ -28,7 +27,35 @@ function getOffset(expirationDate: number, creationDate: number) {
   return dashoffset;
 }
 
-export default function Task({ locale, task, groupIndex, taskIndex, settings, color, removeTask, removeSubtask, editTask }: Props) {
+function Subtasks({ subtasks, locale, settings, color, removeSubtask, completeWithSubtasks }: { subtasks: SubtaskType[], locale: any, settings: TasksSettings, color?: string, removeSubtask: (subtaskId: string) => void, completeWithSubtasks?: boolean }) {
+  return (
+    <ul className="subtasks">
+      {subtasks.map((subtask) => (
+        !settings.showCompletedRepeatingTasks && subtask.hidden ? null : (
+          <li className={`subtask${subtask.removed ? " removed" : ""}`} key={subtask.id}>
+            <div className="subtask-body">
+              {subtask.hidden ? (
+                <div className="checkbox task-checkbox-btn disabled"></div>
+              ) : (
+                <button className="checkbox task-checkbox-btn" style={{ "--tick-color": color } as CSSProperties}
+                  onClick={() => removeSubtask(subtask.id)} title={locale.tasks.complete}>
+                  <div className="checkbox-tick"></div>
+                </button>
+              )}
+              <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text || "" }}></span>
+              {completeWithSubtasks && subtask.optional ? <span className="task-text">*</span> : null}
+            </div>
+            {subtask.subtasks && subtask.subtasks.length > 0 && (
+              <Subtasks subtasks={subtask.subtasks} locale={locale} settings={settings} color={color} removeSubtask={removeSubtask} completeWithSubtasks={completeWithSubtasks} />
+            )}
+          </li>
+        )
+      ))}
+    </ul>
+  );
+}
+
+export default function Task({ locale, task, groupId, settings, color, removeTask, removeSubtask, editTask }: Props) {
   return (
     <li className={`task${task.removed ? " removed" : ""}`}>
       <div className="task-body">
@@ -47,36 +74,17 @@ export default function Task({ locale, task, groupIndex, taskIndex, settings, co
             <div className="checkbox task-checkbox-btn disabled"></div>
           ) : (
             <button className="checkbox task-checkbox-btn" style={{ "--tick-color": color } as CSSProperties}
-              onClick={() => removeTask(groupIndex, taskIndex)} title={locale.tasks.complete}>
+              onClick={() => removeTask(groupId, task.id)} title={locale.tasks.complete}>
               <div className="checkbox-tick"></div>
             </button>
           )}
           <div className="task-text" dangerouslySetInnerHTML={{ __html: task.text || "" }}></div>
         </div>
         {task.subtasks.length > 0 && (
-          <ul className="subtasks">
-            {task.subtasks.map((subtask, subtaskIndex) => (
-              !settings.showCompletedRepeatingTasks && subtask.hidden ? null : (
-                <li className={`subtask${subtask.removed ? " removed" : ""}`} key={subtask.id}>
-                  <div className="subtask-body">
-                    {subtask.hidden ? (
-                      <div className="checkbox task-checkbox-btn disabled"></div>
-                    ) : (
-                      <button className="checkbox task-checkbox-btn" style={{ "--tick-color": color } as CSSProperties}
-                        onClick={() => removeSubtask(groupIndex, taskIndex, subtaskIndex)} title={locale.tasks.complete}>
-                        <div className="checkbox-tick"></div>
-                      </button>
-                    )}
-                    <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text || "" }}></span>
-                    {task.completeWithSubtasks && subtask.optional ? <span className="task-text">*</span> : null}
-                  </div>
-                </li>
-              )
-            ))}
-          </ul>
+          <Subtasks subtasks={task.subtasks} locale={locale} settings={settings} color={color} removeSubtask={removeSubtask} completeWithSubtasks={task.completeWithSubtasks} />
         )}
         <button className="btn icon-btn alt-icon-btn task-edit-btn"
-          onClick={() => editTask(groupIndex, taskIndex)} title={locale.global.edit}>
+          onClick={() => editTask(groupId, task.id)} title={locale.global.edit}>
           <Icon id="edit" />
         </button>
         {task.expirationDate ? (

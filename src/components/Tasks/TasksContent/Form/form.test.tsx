@@ -46,18 +46,8 @@ const mockHide = vi.fn();
 
 const mockTaskForm: TaskForm = {
   updating: true,
-  groupIndex: 0,
-  taskIndex: 0,
   groupId: "default",
-  selectedGroupId: "default",
-  completeWithSubtasks: true,
-  task: {
-    id: "task1",
-    rawText: "Existing Task",
-    subtasks: [],
-    creationDate: Date.now(),
-    expirationDate: Date.now() + 86400000
-  },
+  taskId: "task1",
 };
 
 beforeEach(() => {

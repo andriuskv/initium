@@ -164,6 +164,7 @@
     var(--fg-shadow);
   font-weight: bold;
   font-size: var(--text-sm);
+  color: color-mix(in oklch, var(--group-color) 50%, contrast-color(var(--group-color)));
 }
 
 .tasks-group-title {
@@ -310,7 +311,7 @@
 
 .subtasks {
   margin-top: var(--space-sm);
-  margin-left: 22px;
+  margin-left: 6px;
 }
 
 .subtask-body {
