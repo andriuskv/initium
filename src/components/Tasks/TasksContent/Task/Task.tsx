@@ -12,6 +12,7 @@ type Props = {
   removeTask: (groupId: string, taskId: string) => void,
   removeSubtask: (subtaskId: string) => void,
   editTask: (groupId: string, taskId: string) => void,
+  toggleSubtask: (subtaskId: string) => void,
 }
 
 const taskStatusMap: { [key: string]: string } = {
@@ -27,9 +28,9 @@ function getOffset(expirationDate: number, creationDate: number) {
   return dashoffset;
 }
 
-function Subtasks({ subtasks, locale, settings, color, removeSubtask, completeWithSubtasks }: { subtasks: SubtaskType[], locale: any, settings: TasksSettings, color?: string, removeSubtask: (subtaskId: string) => void, completeWithSubtasks?: boolean }) {
+function Subtasks({ subtasks, locale, settings, color, state, removeSubtask, completeWithSubtasks, toggleSubtask }: { subtasks: SubtaskType[], locale: any, settings: TasksSettings, color?: string, state?: string, removeSubtask: (subtaskId: string) => void, completeWithSubtasks?: boolean, toggleSubtask: (subtaskId: string) => void }) {
   return (
-    <ul className="subtasks">
+    <ul className={`subtasks${state ? ` ${state}` : ""}`}>
       {subtasks.map((subtask) => (
         !settings.showCompletedRepeatingTasks && subtask.hidden ? null : (
           <li className={`subtask${subtask.removed ? " removed" : ""}`} key={subtask.id}>
@@ -44,9 +45,14 @@ function Subtasks({ subtasks, locale, settings, color, removeSubtask, completeWi
               )}
               <span className="task-text" dangerouslySetInnerHTML={{ __html: subtask.text || "" }}></span>
               {completeWithSubtasks && subtask.optional ? <span className="task-text">*</span> : null}
+              {subtask.subtasks && subtask.subtasks.length > 0 ? (
+                <button className={`btn icon-btn alt-icon-btn task-collapse-btn${subtask.collapsed ? " visible" : ""}`} title={locale.global.collapse} onClick={() => toggleSubtask(subtask.id)}>
+                  <Icon id={subtask.collapsed ? "chevron-up" : "chevron-down"} />
+                </button>
+              ) : null}
             </div>
-            {subtask.subtasks && subtask.subtasks.length > 0 && (
-              <Subtasks subtasks={subtask.subtasks} locale={locale} settings={settings} color={color} removeSubtask={removeSubtask} completeWithSubtasks={completeWithSubtasks} />
+            {subtask.collapsed ? null : subtask.subtasks && subtask.subtasks.length > 0 && (
+              <Subtasks subtasks={subtask.subtasks} locale={locale} settings={settings} color={color} state={subtask.state} removeSubtask={removeSubtask} completeWithSubtasks={completeWithSubtasks} toggleSubtask={toggleSubtask} />
             )}
           </li>
         )
@@ -55,7 +61,7 @@ function Subtasks({ subtasks, locale, settings, color, removeSubtask, completeWi
   );
 }
 
-export default function Task({ locale, task, groupId, settings, color, removeTask, removeSubtask, editTask }: Props) {
+export default function Task({ locale, task, groupId, settings, color, removeTask, removeSubtask, editTask, toggleSubtask }: Props) {
   return (
     <li className={`task${task.removed ? " removed" : ""}`}>
       <div className="task-body">
@@ -81,7 +87,7 @@ export default function Task({ locale, task, groupId, settings, color, removeTas
           <div className="task-text" dangerouslySetInnerHTML={{ __html: task.text || "" }}></div>
         </div>
         {task.subtasks.length > 0 && (
-          <Subtasks subtasks={task.subtasks} locale={locale} settings={settings} color={color} removeSubtask={removeSubtask} completeWithSubtasks={task.completeWithSubtasks} />
+          <Subtasks subtasks={task.subtasks} locale={locale} settings={settings} color={color} removeSubtask={removeSubtask} completeWithSubtasks={task.completeWithSubtasks} toggleSubtask={toggleSubtask} />
         )}
         <button className="btn icon-btn alt-icon-btn task-edit-btn"
           onClick={() => editTask(groupId, task.id)} title={locale.global.edit}>

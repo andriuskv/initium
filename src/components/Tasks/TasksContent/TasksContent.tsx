@@ -31,8 +31,6 @@ type Props = {
   toggleSize: () => void
 }
 
-// TODO: fix tests
-
 export default function Tasks({ settings, generalSettings, locale, expanded, toggleSize }: Props) {
   const [groups, setGroups] = useState<Group[] | null>(null);
   const [removedItemCount, setRemovedItemCount] = useState(0);
@@ -317,9 +315,9 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
             updateTaskRepeatHistory(task, missed);
 
             delete task.hidden;
-            task.subtasks = task.subtasks.map(task => {
-              delete task.hidden;
-              return task;
+            task.subtasks = traverseSubtasks(task, "", ({ subtask }) => {
+              delete subtask.hidden;
+              return subtask;
             });
 
             task.repeat.start = prevDate;
@@ -447,6 +445,59 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       tasks: group.tasks.with(taskIndex, newTask)
     }));
     setRemovedItemCount(removedItemCount + 1);
+  }
+
+  function toggleSubtask(group: Group, task: TaskType, subtaskId: string) {
+    if (!groups) {
+      return;
+    }
+    const groupIndex = groups.findIndex(g => g.id === group.id);
+    const { animationSpeed } = getSetting("appearance") as AppearanceSettings;
+    const taskIndex = groups[groupIndex].tasks.findIndex(t => t.id === task.id);
+    const newTask = {
+      ...task,
+      subtasks: traverseSubtasks(task, subtaskId, ({ parentTask, subtask, index }) => {
+        if (subtask.collapsed) {
+          subtask.state = "expanding";
+          subtask.collapsed = false;
+        }
+        else {
+          subtask.state = "collapsing";
+
+        }
+
+        return parentTask.subtasks?.with(index, { ...subtask });
+      })
+    };
+    setGroups(groups.with(groupIndex, {
+      ...group,
+      tasks: group.tasks.with(taskIndex, newTask)
+    }));
+    groupToggleTimeoutId.current = timeout(() => {
+      if (!groups) {
+        return;
+      }
+      const newTask = {
+        ...task,
+        subtasks: traverseSubtasks(task, subtaskId, ({ parentTask, subtask, index }) => {
+          let collapsed = subtask.collapsed;
+
+          if (subtask.state === "collapsing") {
+            collapsed = true;
+          }
+          delete subtask.state;
+          return parentTask.subtasks?.with(index, { ...subtask, collapsed });
+        })
+      };
+
+      const newGroups = groups.with(groupIndex, {
+        ...group,
+        tasks: group.tasks.with(taskIndex, newTask)
+      });
+
+      setGroups(newGroups);
+      saveTasks(newGroups);
+    }, 200 * animationSpeed, groupToggleTimeoutId.current);
   }
 
   function setRepeatingTaskStatus(task: TaskType, status: number) {
@@ -805,7 +856,7 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
                   <ul className={`tasks-group-items${group.state ? ` ${group.state}` : ""}`}>
                     {group.tasks.map((task) => (
                       !settings.showCompletedRepeatingTasks && task.hidden ? null : (
-                        <Task task={task} groupId={group.id} locale={locale} settings={settings} color={group.color} removeTask={removeTask} removeSubtask={(subtaskId) => removeSubtask(group, task, subtaskId)} editTask={() => editTask(group.id, task.id)} key={task.id} />
+                        <Task task={task} groupId={group.id} locale={locale} settings={settings} color={group.color} removeTask={removeTask} removeSubtask={(subtaskId) => removeSubtask(group, task, subtaskId)} editTask={() => editTask(group.id, task.id)} toggleSubtask={(subtaskId) => toggleSubtask(group, task, subtaskId)} key={task.id} />
                       )
                     ))}
                   </ul>

@@ -312,14 +312,62 @@
 .subtasks {
   margin-top: var(--space-sm);
   margin-left: 6px;
+
+  &.expanding {
+    overflow-y: clip;
+    animation-fill-mode: both;
+    animation-duration: var(--duration-n), var(--duration-n), var(--duration-n);
+    animation-name: expand-height, opacity-up, expanding-group;
+    animation-delay: 0s, 0s, calc(var(--duration-f) / 2);
+  }
+
+  &.collapsing {
+    overflow-y: clip;
+    animation-fill-mode: both;
+    animation-duration: var(--duration-n), var(--duration-f), var(--duration-n);
+    animation-name: opacity-down, collapsing-group, collapse-height;
+    animation-delay: 0s, 0s, var(--duration-f);
+  }
+}
+
+.subtask {
+  position: relative;
+  overflow: visible;
+
+  &:hover,
+  &:has(:focus-visible) {
+    >.subtask-body .task-collapse-btn {
+      animation: 0s linear 0.2s forwards delayed-reveal;
+    }
+  }
 }
 
 .subtask-body {
   display: flex;
   align-items: flex-start;
-  padding-top: var(--space-sm);
-  padding-left: var(--space-sm);
-  padding-bottom: var(--space-xs);
+  padding: var(--space-sm);
+}
+
+.task-collapse-btn {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  height: auto;
+
+  &:not(.visible) {
+    opacity: 0;
+
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
+    }
+  }
+
+
+  .svg-icon {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .tasks-dialog {
