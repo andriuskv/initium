@@ -10,9 +10,11 @@ export type Subtask = {
   rawText: string,
   text?: string,
   optional?: boolean,
+  collapsed?: boolean,
   hidden?: boolean,
   removed?: boolean,
   subtasks?: Subtask[]
+  state?: "collapsing" | "expanding"
 }
 
 export type TaskRepeatHistory = {
