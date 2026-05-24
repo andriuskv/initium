@@ -54,6 +54,7 @@ type ColorsFetch = { background: string }[];
 type EventColors = { id: string, color: string }[];
 
 const baseCalendarURL = "https://www.googleapis.com/calendar/v3";
+const BIRTHDAY_CALENDAR_ID = "birthdays@group";
 let cachedCalendars: { [key: string]: GoogleReminder[] } = {};
 let eventColors: EventColors | null = null;
 let authIntervalId = 0;
@@ -288,33 +289,35 @@ function saveNotifiedReminder(reminder: Reminder) {
 }
 
 function saveReminders(reminders: PartialDeep<Reminder>[]) {
-  return chromeStorage.set({ reminders: structuredClone(reminders).map(reminder => {
-    if (!reminder.range?.from) {
-      delete reminder.range;
-    }
-
-    if (reminder.repeat) {
-      delete reminder.repeat.tooltip;
-
-      if (reminder.repeat.type === "weekday" && reminder.repeat.weekdays) {
-        delete reminder.repeat.weekdays.dynamic;
+  return chromeStorage.set({
+    reminders: structuredClone(reminders).map(reminder => {
+      if (!reminder.range?.from) {
+        delete reminder.range;
       }
-    }
-    delete reminder.description;
 
-    return {
-      creationDate: reminder.creationDate,
-      day: reminder.day,
-      month: reminder.month,
-      year: reminder.year,
-      range: reminder.range,
-      repeat: reminder.repeat,
-      notify: reminder.notify,
-      color: reminder.color,
-      text: reminder.text,
-      descriptionRaw: reminder.descriptionRaw
-    };
-  })}, { warnSize: true });
+      if (reminder.repeat) {
+        delete reminder.repeat.tooltip;
+
+        if (reminder.repeat.type === "weekday" && reminder.repeat.weekdays) {
+          delete reminder.repeat.weekdays.dynamic;
+        }
+      }
+      delete reminder.description;
+
+      return {
+        creationDate: reminder.creationDate,
+        day: reminder.day,
+        month: reminder.month,
+        year: reminder.year,
+        range: reminder.range,
+        repeat: reminder.repeat,
+        notify: reminder.notify,
+        color: reminder.color,
+        text: reminder.text,
+        descriptionRaw: reminder.descriptionRaw
+      };
+    })
+  }, { warnSize: true });
 }
 
 async function getToken(): Promise<string | { message: string } | undefined> {
@@ -479,7 +482,10 @@ async function initGoogleCalendar(retried = false): Promise<{ calendars: GoogleC
       return { message: "Something went wrong. Try again later." };
     }
     const calendars = parseCalendars(calendarListJson.items, colorsJson.calendar);
-    const selectedCalendars = calendars.filter(calendar => calendar.selected);
+    const birthdaysCalendar = calendars.find(calendar => calendar.id === BIRTHDAY_CALENDAR_ID)!;
+    cachedCalendars[birthdaysCalendar.id] = [];
+
+    const selectedCalendars = calendars.filter(calendar => calendar.selected).filter(calendar => calendar.id !== BIRTHDAY_CALENDAR_ID);
     const selectedCalendarsPromises = selectedCalendars.map(calendar => (
       fetch(`${baseCalendarURL}/calendars/${encodeURIComponent(calendar.id)}/events?${params}`).then(res => res.json())
     ));
@@ -503,10 +509,19 @@ async function initGoogleCalendar(retried = false): Promise<{ calendars: GoogleC
           defaultColor: calendar.color,
           editable: calendar.canEdit,
           includeDesc: !calendar.id.endsWith("v.calendar.google.com")
-        }, colorsJson.event);
+        }, colorsJson.event, birthdaysCalendar);
+        const items = [];
 
-        reminders = reminders.concat(calendarItems);
-        cachedCalendars[calendar.id] = calendarItems;
+        for (const item of calendarItems) {
+          if (item.eventType === "birthday") {
+            cachedCalendars[birthdaysCalendar.id].push(item);
+          }
+          else {
+            items.push(item);
+          }
+        }
+        cachedCalendars[calendar.id] = items;
+        reminders = reminders.concat(birthdaysCalendar.selected ? calendarItems : items);
       }
     }
     localStorage.setItem("google-calendars", JSON.stringify(calendars));
@@ -522,10 +537,14 @@ async function fetchCalendarItems(calendar: GoogleCalendar, retried = false) {
   if (cachedCalendars[calendar.id]) {
     return { reminders: cachedCalendars[calendar.id] };
   }
+
+  if (calendar.id === BIRTHDAY_CALENDAR_ID) {
+    return { reminders: [] };
+  }
   const token = await getToken();
 
   if (!token) {
-    return [];
+    return { reminders: [] };
   }
 
   if (typeof token !== "string") {
@@ -554,15 +573,26 @@ async function fetchCalendarItems(calendar: GoogleCalendar, retried = false) {
       }
       return { message: locale.global.generic_error_message };
     }
+    const calendars = getLocalStorageItem<GoogleCalendar[]>("google-calendars") || [];
+    const birthdaysCalendar = calendars.find(calendar => calendar.id === BIRTHDAY_CALENDAR_ID)!;
     const calendarItems = parseItems(json.items, {
       defaultColor: calendar.color,
       calendarId: calendar.id,
       editable: calendar.canEdit,
       includeDesc: !calendar.id.includes("#holiday@group")
-    }, colorsJson.event);
+    }, colorsJson.event, birthdaysCalendar);
+    const items = [];
 
-    cachedCalendars[calendar.id] = calendarItems;
-    return { reminders: calendarItems };
+    for (const item of calendarItems) {
+      if (item.eventType === "birthday") {
+        cachedCalendars[birthdaysCalendar.id].push(item);
+      }
+      else {
+        items.push(item);
+      }
+    }
+    cachedCalendars[calendar.id] = items;
+    return { reminders: birthdaysCalendar.selected ? calendarItems : items };
   } catch (e) {
     console.log(e);
     return { message: locale.global.generic_error_message };
@@ -588,7 +618,7 @@ function parseCalendars(items: GoogleCalendarFetch[], colors: ColorsFetch) {
       id: item.id,
       title: item.summary,
       color: item.backgroundColor || colors[item.colorId].background,
-      canEdit: item.accessRole === "owner",
+      canEdit: item.accessRole === "owner" || item.accessRole === "writer",
       selected,
       ...(item.primary ? { primary: true, title: user.name } : {})
     });
@@ -600,6 +630,21 @@ function parseCalendars(items: GoogleCalendarFetch[], colors: ColorsFetch) {
       ([calendars[0], calendars[i]] = [calendars[i], calendars[0]]);
       break;
     }
+  }
+
+  // Birthays calendar is not listed but primary calendar includes birthdays, so we need to add it to the list
+  const hasBirthdays = calendars.some(calendar => calendar.id === BIRTHDAY_CALENDAR_ID);
+
+  if (!hasBirthdays) {
+    const calendar = oldCalendars.find(calendar => calendar.id === BIRTHDAY_CALENDAR_ID);
+
+    calendars.push({
+      id: BIRTHDAY_CALENDAR_ID,
+      title: "Birthdays",
+      color: colors["9"].background,
+      canEdit: false,
+      selected: calendar?.selected || false
+    });
   }
 
   return calendars;
@@ -627,7 +672,7 @@ function getEventColors(calendarId: string, calendars: GoogleCalendar[]) {
   return eventColors;
 }
 
-function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDesc, editable }: { calendarId: string, defaultColor: string, includeDesc: boolean, editable: boolean }, colors: ColorsFetch) {
+function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDesc, editable }: { calendarId: string, defaultColor: string, includeDesc: boolean, editable: boolean }, colors: ColorsFetch, birthdaysCalendar: GoogleCalendar | undefined) {
   const reminders: GoogleReminder[] = [];
 
   for (const item of items) {
@@ -656,10 +701,17 @@ function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDes
       };
     }
 
+    if (item.eventType === "birthday" && birthdaysCalendar) {
+      optionalParams.calendarId = birthdaysCalendar.id;
+      optionalParams.editable = false;
+      optionalParams.color = item.colorId ? colors[item.colorId].background : birthdaysCalendar.color;
+    }
+
     const reminder: GoogleReminder = {
       creationDate: new Date(item.updated ?? item.created).getTime(),
       id: item.id,
       type: "google",
+      eventType: item.eventType ?? "default",
       calendarId,
       editable: editable && item.eventType !== "birthday",
       color: item.colorId ? colors[item.colorId].background : defaultColor,
@@ -712,11 +764,19 @@ function getRange(start: GoogleEvent["start"], end: GoogleEvent["end"]): GoogleR
   }
   else if (start.dateTime && end.dateTime) {
     const startDate = new Date(start.dateTime);
-    const endDate = new Date(end.dateTime);
     const from: GoogleReminder["range"]["from"] = {
       hours: startDate.getHours(),
       minutes: startDate.getMinutes()
     };
+
+    if (start.timeZone === end.timeZone) {
+      return {
+        from,
+        text: getReminderRangeString({ from }, locale)
+      };
+    }
+
+    const endDate = new Date(end.dateTime);
     const to: GoogleReminder["range"]["to"] = {
       hours: endDate.getHours(),
       minutes: endDate.getMinutes()

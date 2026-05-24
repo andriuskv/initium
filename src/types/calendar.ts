@@ -64,6 +64,7 @@ export type Reminder = {
 
 export type GoogleReminder = Reminder & {
   type: "google",
+  eventType: string,
   calendarId: string,
   colorId?: string,
   meet?: {
