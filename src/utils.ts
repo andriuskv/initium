@@ -250,6 +250,11 @@ function fillMissing(target: { [key: string]: unknown }, source: { [key: string]
   return target;
 }
 
+function htmlDecode(input: string) {
+  const doc = new DOMParser().parseFromString(input, "text/html");
+
+  return doc.documentElement.textContent;
+}
 
 export {
   setPageTitle,
@@ -271,5 +276,6 @@ export {
   parseLocaleString,
   getUrl,
   getFaviconURL,
-  fillMissing
+  fillMissing,
+  htmlDecode
 };

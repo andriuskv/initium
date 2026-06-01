@@ -1,6 +1,6 @@
 import type { PartialDeep } from "type-fest";
 import type { DDate, ReminderRepeat, CalendarType, Month, Reminder, GoogleReminder, GoogleCalendar, GoogleUser } from "types/calendar";
-import { getLocalStorageItem, getRandomString } from "utils";
+import { getLocalStorageItem, getRandomString, htmlDecode } from "utils";
 import * as chromeStorage from "services/chromeStorage";
 import * as timeDateService from "services/timeDate";
 import * as localizationService from "services/localization";
@@ -612,7 +612,7 @@ function parseCalendars(items: GoogleCalendarFetch[], colors: ColorsFetch) {
       selected = calendar.selected;
     }
     else {
-      selected = item.primary;
+      selected = !!item.primary;
     }
     calendars.push({
       id: item.id,
@@ -690,7 +690,7 @@ function parseItems(items: GoogleEvent[], { calendarId, defaultColor, includeDes
     }
 
     if (includeDesc && item.description) {
-      optionalParams.descriptionRaw = item.description.trimEnd();
+      optionalParams.descriptionRaw = htmlDecode(item.description).trimEnd();
     }
 
     if (item.conferenceData) {

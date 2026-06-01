@@ -7,7 +7,7 @@ import * as calendarService from "services/calendar";
 import { observeElement } from "services/widgetStates";
 import { useSettings } from "contexts/settings";
 import { useNotification } from "contexts/notification";
-import { useMessage } from "hooks";
+import { useMessage } from "@/hooks";
 import Icon from "components/Icon";
 import Toast from "components/Toast";
 import Spinner from "components/Spinner";
@@ -556,17 +556,21 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
 
     while (!reminder.nextRepeat.done) {
       if (!day) {
+        const currentDate = timeDateService.getCurrentDate();
         const date = calendarService.getNextReminderDate(calendar, reminder.nextRepeat);
 
         if (date.year > reminder.nextRepeat.year) {
           reminder.nextRepeat = { ...reminder.nextRepeat, ...date };
+
+          if (date.year < currentDate.year && !calendar[date.year]) {
+            calendar[date.year] = calendarService.generateYear(date.year);
+          }
 
           if (calendar[date.year]) {
             repeatReminder(reminder, calendar);
           }
           return;
         }
-        const currentDate = timeDateService.getCurrentDate();
         const nextYear = date.year + 1;
 
         // Fill missing years between the start of the reminder repetition and the current year

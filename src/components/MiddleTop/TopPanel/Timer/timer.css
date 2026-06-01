@@ -60,7 +60,7 @@
 
 .timer-dropdown-list {
   overflow-y: auto;
-  max-height: 135px;
+  max-height: 140px;
 }
 
 .timer-digit-container {
@@ -84,7 +84,8 @@
   opacity: 0;
   display: flex;
 
-  &:hover, &:has(:focus-visible) {
+  &:hover,
+  &:has(:focus-visible) {
     opacity: 1;
   }
 
