@@ -57,10 +57,10 @@ export default function HeaderDropdown({ user, calendars, locale, toggleCalendar
       toggle={{
         body: user ? (
           <>
-            <Icon id="vertical-dots"/>
-            <img src={user.photo} className="calendar-header-dropdown-toggle-image" alt=""/>
+            <Icon id="vertical-dots" />
+            <img src={user.photo} className="calendar-header-dropdown-toggle-image" alt="" />
           </>
-        ) : <Icon id="vertical-dots"/>,
+        ) : <Icon id="vertical-dots" />,
         className: "calendar-header-dropdown-toggle-btn"
       }}
       body={{ className: "calendar-header-dropdown" }}>
@@ -68,7 +68,7 @@ export default function HeaderDropdown({ user, calendars, locale, toggleCalendar
         <>
           <div className="dropdown-group">
             <div className="calendar-header-dropdown-user">
-              <img src={user.photo} width="48px" height="48px" className="calendar-header-dropdown-user-image" loading="lazy" alt=""/>
+              <img src={user.photo} width="48px" height="48px" className="calendar-header-dropdown-user-image" loading="lazy" alt="" />
               <div>
                 <div className="calendar-header-dropdown-user-name">{user.name}</div>
                 <div className="calendar-header-dropdown-user-email">{user.email}</div>
@@ -84,7 +84,7 @@ export default function HeaderDropdown({ user, calendars, locale, toggleCalendar
           <div className="dropdown-group">
             <button className="btn text-btn calendar-list-toggle-btn" onClick={toggleCalendarList}>
               <span>{locale.calendar.user_dropdown.calendars_list_title}</span>
-              <Icon id="chevron-down" className={`calendar-list-state-icon${calendarsVisible ? " expanded" : ""}`}/>
+              <Icon id="chevron-down" className={`calendar-list-state-icon${calendarsVisible ? " expanded" : ""}`} />
             </button>
             {calendarsVisible ? (
               <ul className="calendar-list">
@@ -94,7 +94,7 @@ export default function HeaderDropdown({ user, calendars, locale, toggleCalendar
                       <input type="checkbox" className="sr-only checkbox-input"
                         disabled={calendar.fetching}
                         checked={calendar.selected}
-                        onChange={event => toggleCalendarReminders(calendar.id, event.target.checked)}/>
+                        onChange={event => toggleCalendarReminders(calendar.id, event.target.checked)} />
                       <div className="checkbox">
                         <div className="checkbox-tick"></div>
                       </div>

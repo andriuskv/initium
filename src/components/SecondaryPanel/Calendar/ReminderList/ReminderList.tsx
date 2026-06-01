@@ -34,7 +34,7 @@ export default function ReminderList({ reminders, locale, showReminderDay, editR
     <div className="calendar full-height">
       <div className="calendar-header reminder-list-header">
         <button className="btn icon-btn" onClick={hide} title={locale.global.back}>
-          <Icon id="chevron-left"/>
+          <Icon id="chevron-left" />
         </button>
         <span className="calendar-title reminder-list-title">{locale.calendar.reminders_title}</span>
       </div>
@@ -51,8 +51,8 @@ export default function ReminderList({ reminders, locale, showReminderDay, editR
                     onClick={() => changeReminderColor(reminder.id)}></button>
                 )}
                 <div>
-                  {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip}/>}
-                  {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title={locale.calendar.google_event}/> : ""}
+                  {reminder.repeat && <Icon id="repeat" className="reminder-repeat-icon" title={reminder.repeat.tooltip} />}
+                  {reminder.type === "google" ? <Icon id="cloud" className="google-reminder-icon" title={locale.calendar.google_event} /> : ""}
                 </div>
                 <div>
                   <p>{reminder.text}</p>
@@ -63,12 +63,12 @@ export default function ReminderList({ reminders, locale, showReminderDay, editR
                   <Dropdown container={{ className: "reminder-list-item-dropdown" }}>
                     <button className="btn icon-text-btn dropdown-btn"
                       onClick={() => editReminder(reminder.id, reminder.type)}>
-                      <Icon id="edit"/>
+                      <Icon id="edit" />
                       <span>{locale.global.edit}</span>
                     </button>
                     <button className="btn icon-text-btn dropdown-btn"
                       onClick={() => removeReminder(reminder)}>
-                      <Icon id="trash"/>
+                      <Icon id="trash" />
                       <span>{locale.global.remove}</span>
                     </button>
                   </Dropdown>
