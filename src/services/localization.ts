@@ -1,6 +1,7 @@
 const readableLocales: { [key: string]: string } = {
   "ja": "Japanese",
-  "ru": "Russian"
+  "ru": "Russian",
+  "pt-BR": "Portuguese (Brazil)"
 };
 
 let currentLocale: any = null;
