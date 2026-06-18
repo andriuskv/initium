@@ -205,7 +205,17 @@
     "temp_setting_label": "温度単位",
     "wind_setting_label": "風速単位",
     "failed_update_message": "天気の更新に失敗しました。後でもう一度試します。",
-    "geo_message": "地理位置情報へのアクセスが許可されていません。"
+    "geo_message": "地理位置情報へのアクセスが許可されていません。",
+    "cardinal_directions": {
+        "N": "北",
+        "NE": "北東",
+        "E": "東",
+        "SE": "南東",
+        "S": "南",
+        "SW": "南西",
+        "W": "西",
+        "NW": "北西"
+      }
   },
   "secondaryPanel": {
     "stickyNotes": "付箋",
@@ -473,6 +483,10 @@
     "tip_action_title": "寄付する",
     "tip_title": "お知らせ",
     "tip_text": "このエクステンションが役に立つと思われたら、寄付を通じて開発を支援していただけると幸いです。"
+  },
+  "storage": {
+    "full_storage": "ストレージが満杯のため、データを保存できません。",
+    "almost_full": "ストレージがほぼ満杯です。"
   },
   "greeting": {
     "morning": [

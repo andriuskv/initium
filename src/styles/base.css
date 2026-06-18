@@ -123,6 +123,7 @@ p {
   transform: translate(-50%, -50%);
   font-size: var(--text-md);
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .container-body {

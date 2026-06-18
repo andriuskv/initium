@@ -44,16 +44,9 @@ export default function WorldClocks({ parentVisible, locale }: { parentVisible: 
   }, [parentVisible, clocks]);
 
   async function init() {
-    const clocks = await chromeStorage.get("clocks");
+    const clocks = (await chromeStorage.get("clocks") || []) as Clock[];
 
-    if (clocks?.length) {
-      const { Temporal } = await import("@js-temporal/polyfill");
-
-      for (const clock of clocks) {
-        clock.diff = new Date(Temporal.Now.zonedDateTimeISO(clock.timeZone).toPlainDateTime().toString()).getTime() - Date.now();
-      }
-      initClocks(clocks);
-    }
+    initClocks(clocks);
 
     chromeStorage.subscribeToChanges(({ clocks }) => {
       if (!clocks) {
@@ -61,7 +54,8 @@ export default function WorldClocks({ parentVisible, locale }: { parentVisible: 
       }
 
       if (clocks.newValue) {
-        initClocks(clocks.newValue);
+        console.log(clocks.newValue);
+        initClocks(clocks.newValue as Clock[]);
       }
       else {
         setClocks([]);
@@ -69,12 +63,21 @@ export default function WorldClocks({ parentVisible, locale }: { parentVisible: 
     }, { id: "world-clocks", listenToLocal: true });
   }
 
-  function initClocks(clocks: Clock[]) {
-    setClocks(clocks.toSorted((a, b) => a.diff - b.diff).map(clock => {
+  async function initClocks(clocks: Clock[]) {
+    let Temporal: any;
+
+    if (typeof (window as any).Temporal !== "undefined") {
+      Temporal = (window as any).Temporal;
+    }
+    else {
+      Temporal = (await import("@js-temporal/polyfill")).Temporal;
+    }
+    setClocks(clocks.map(clock => {
+      clock.diff = new Date(Temporal.Now.zonedDateTimeISO(clock.timeZone).toPlainDateTime().toString()).getTime() - Date.now();
       clock.time = getOffsettedCurrentTime(clock.diff);
       clock.diffString = getHoursOffset(clock.diff, locale, true);
       return clock;
-    }));
+    }).toSorted((a, b) => a.diff - b.diff));
   }
 
   function revealClocksPanel() {

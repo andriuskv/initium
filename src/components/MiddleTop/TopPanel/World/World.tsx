@@ -39,16 +39,20 @@ export default function World({ visible, locale, animDirection, parentVisible }:
   }, [parentVisible, clocks]);
 
   async function init() {
-    const clocks = await chromeStorage.get("clocks");
+    const clocks = (await chromeStorage.get("clocks") || []) as Clock[];
+    let Temporal: any;
 
-    if (clocks?.length) {
-      const { Temporal } = await import("@js-temporal/polyfill");
-
-      for (const clock of clocks) {
-        clock.diff = new Date(Temporal.Now.zonedDateTimeISO(clock.timeZone).toPlainDateTime().toString()).getTime() - Date.now();
-      }
-      initClocks(clocks);
+    if (typeof (window as any).Temporal !== "undefined") {
+      Temporal = (window as any).Temporal;
     }
+    else {
+      Temporal = (await import("@js-temporal/polyfill")).Temporal;
+    }
+
+    for (const clock of clocks) {
+      clock.diff = new Date(Temporal.Now.zonedDateTimeISO(clock.timeZone).toPlainDateTime().toString()).getTime() - Date.now();
+    }
+    initClocks(clocks);
 
     chromeStorage.subscribeToChanges(({ clocks }) => {
       if (!clocks) {
@@ -56,7 +60,7 @@ export default function World({ visible, locale, animDirection, parentVisible }:
       }
 
       if (clocks.newValue) {
-        initClocks(clocks.newValue);
+        initClocks(clocks.newValue as Clock[]);
       }
       else {
         setClocks([]);
@@ -131,7 +135,7 @@ export default function World({ visible, locale, animDirection, parentVisible }:
                 <div className="world-clock-time">
                   <span className="world-clock-time-text">{clock.time}</span>
                   <button className="btn icon-btn world-clock-remove-btn" onClick={() => removeClock(clock)} title={locale.global.remove}>
-                    <Icon id="trash"/>
+                    <Icon id="trash" />
                   </button>
                 </div>
               </li>

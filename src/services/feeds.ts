@@ -29,7 +29,7 @@ type FetchFeed = {
 }
 
 function getStoredFeeds(): Promise<Feeds | null> {
-  return chromeStorage.get("feeds");
+  return chromeStorage.get("feeds") as Promise<Feeds | null>;
 }
 
 async function hasStoredFeeds() {

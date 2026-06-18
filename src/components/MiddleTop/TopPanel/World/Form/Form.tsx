@@ -33,16 +33,21 @@ export default function Form({ locale, addClock, hide }: Props) {
   }, [searchResults]);
 
   async function init() {
-    const clocks = await chromeStorage.get("clocks");
+    const clocks = (await chromeStorage.get("clocks") || []) as Clock[];
 
-    if (clocks?.length) {
-      setCurrentClocks(clocks);
-    }
+    setCurrentClocks(clocks);
   }
 
   async function searchLocation(value: string) {
     const { default: cityTimezones } = await import("city-timezones");
-    const { Temporal } = await import("@js-temporal/polyfill");
+    let Temporal: any;
+
+    if (typeof (window as any).Temporal !== "undefined") {
+      Temporal = (window as any).Temporal;
+    }
+    else {
+      Temporal = (await import("@js-temporal/polyfill")).Temporal;
+    }
     const cities = cityTimezones.findFromCityStateProvince(value);
     const results: Clock[] = [];
 
@@ -111,16 +116,16 @@ export default function Form({ locale, addClock, hide }: Props) {
       <div className="container-header">
         <h3 className="container-header-title">{locale.world.form_title}</h3>
         <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
-          <Icon id="cross"/>
+          <Icon id="cross" />
         </button>
       </div>
       <div className="world-form-top">
         <div className="world-form-input-container">
-          <Icon id="search" className="world-form-input-icon"/>
-          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} placeholder="Paris" ref={inputRef}/>
+          <Icon id="search" className="world-form-input-icon" />
+          <input type="text" className="input world-form-input" value={inputValue} onChange={handleChange} onKeyUp={handleKeyUp} placeholder="Paris" ref={inputRef} />
           {inputValue.length ? (
             <button className="btn icon-btn world-form-input-clear-btn" onClick={clearInput} title={locale.global.clear}>
-              <Icon id="cross"/>
+              <Icon id="cross" />
             </button>
           ) : null}
         </div>
@@ -134,7 +139,7 @@ export default function Form({ locale, addClock, hide }: Props) {
                   <div className="world-clock-city">{result.city}, <span className="world-form-result-country">{result.country}</span></div>
                   <div className="world-clock-diff">{result.timeZone} ᛫ {result.diffString}</div>
                 </div>
-                {result.alreadyAdded && <Icon id="check"/>}
+                {result.alreadyAdded && <Icon id="check" />}
               </button>
             </li>
           ))}

@@ -372,8 +372,8 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
             {(Object.keys(tabs) as TabName[]).map(item => (
               <li className={`top-panel-header-item${activeTab === item ? " active" : ""}`} key={item}>
                 <button className="btn icon-text-btn top-panel-header-item-btn" onClick={() => selectTab(item)}>
-                  <span className={tabs[item].indicatorVisible ? "indicator" : ""}>
-                    <Icon id={item}/>
+                  <span className={`top-panel-header-item-icon-container ${tabs[item].indicatorVisible ? " indicator" : ""}`}>
+                    <Icon id={item} />
                   </span>
                   <span>{tabs[item].name}</span>
                 </button>
@@ -382,13 +382,13 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
             {vertical ? (
               <li className="top-panel-header-item top-panel-close-btn">
                 <button className="btn icon-text-btn top-panel-header-item-btn" onClick={hideTopPanel}>
-                  <Icon id="cross"/>
+                  <Icon id="cross" />
                   <span>{locale.global.close}</span>
                 </button>
               </li>) : (
               <li className="top-panel-close-btn">
                 <button className="btn icon-btn" onClick={hideTopPanel} title={locale.global.close}>
-                  <Icon id="cross"/>
+                  <Icon id="cross" />
                 </button>
               </li>
             )}
@@ -398,26 +398,26 @@ export default function TopPanel({ settings, initialTab = "", initialVisibility 
           {tabs.timer.rendered ? (
             <Timer visible={activeTab === "timer"} locale={locale} animDirection={tabs.timer.direction} expanded={expanded}
               toggleIndicator={toggleIndicator} updateTitle={updateTitle} ignoreMiniTimerPref={ignoreMiniTimerPref}
-              expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset}/>
+              expand={expand} exitFullscreen={exitFullscreen} handleReset={handleReset} />
           ) : null}
           {tabs.stopwatch.rendered ? (
             <Stopwatch visible={activeTab === "stopwatch"} locale={locale} animDirection={tabs.stopwatch.direction}
-              toggleIndicator={toggleIndicator} updateTitle={updateTitle} expand={expand}/>
+              toggleIndicator={toggleIndicator} updateTitle={updateTitle} expand={expand} />
           ) : null}
           {tabs.pomodoro.rendered ? (
             <Pomodoro visible={activeTab === "pomodoro"} locale={locale} animDirection={tabs.pomodoro.direction}
               toggleIndicator={toggleIndicator} updateTitle={updateTitle}
-              expand={expand} handleReset={handleReset}/>
+              expand={expand} handleReset={handleReset} />
           ) : null}
           {tabs.world.rendered ? (
             <World visible={activeTab === "world"} parentVisible={visible} animDirection={tabs.world.direction}
               locale={locale} />
-          ): null}
+          ) : null}
         </Suspense>
-        <Countdown visible={activeTab === "countdown"} locale={locale} toggleIndicator={toggleIndicator} animDirection={tabs.countdown.direction}/>
+        <Countdown visible={activeTab === "countdown"} locale={locale} toggleIndicator={toggleIndicator} animDirection={tabs.countdown.direction} />
         {expanded && (
           <button className="btn icon-btn top-panel-collapse-btn" onClick={hideTopPanel} title={locale.global.close}>
-            <Icon id="cross"/>
+            <Icon id="cross" />
           </button>
         )}
       </div>

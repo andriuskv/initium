@@ -1,5 +1,6 @@
 {
   "locale": "pt-BR",
+  "locale_short": "pt",
   "global": {
     "new_tab": "Nova Guia",
     "create": "Criar",
@@ -203,7 +204,17 @@
     "temp_setting_label": "Unidade de temperatura",
     "wind_setting_label": "Unidade de velocidade do vento",
     "failed_update_message": "Falha ao atualizar o clima. Tente novamente mais tarde.",
-    "geo_message": "Acesso à geolocalização não permitido."
+    "geo_message": "Acesso à geolocalização não permitido.",
+    "cardinal_directions": {
+        "N": "Norte",
+        "NE": "Nordeste",
+        "E": "Leste",
+        "SE": "Sudeste",
+        "S": "Sul",
+        "SW": "Sudoeste",
+        "W": "Oeste",
+        "NW": "Noroeste"
+      }
   },
   "secondaryPanel": {
     "stickyNotes": "Notas Autoadesivas",
@@ -472,6 +483,10 @@
     "tip_action_title": "Doar",
     "tip_title": "Aviso",
     "tip_text": "Se você achar esta extensão útil, considere doar."
+  },
+  "storage": {
+    "full_storage": "O armazenamento está cheio, nenhum dado será salvo.",
+    "almost_full": "O armazenamento está quase cheio."
   },
   "greeting": {
     "morning": [

@@ -203,7 +203,17 @@
     "temp_setting_label": "Temperature units",
     "wind_setting_label": "Wind speed units",
     "failed_update_message": "Failed to update weather. Will try again later.",
-    "geo_message": "Access to geolocation is not permitted."
+    "geo_message": "Access to geolocation is not permitted.",
+    "cardinal_directions": {
+        "N": "North",
+        "NE": "Northeast",
+        "E": "East",
+        "SE": "Southeast",
+        "S": "South",
+        "SW": "Southwest",
+        "W": "West",
+        "NW": "Northwest"
+      }
   },
   "secondaryPanel": {
     "stickyNotes": "Sticky Notes",
@@ -472,6 +482,10 @@
     "tip_action_title": "Donate",
     "tip_title": "Notice",
     "tip_text": "If you find this extension useful, please consider donating."
+  },
+  "storage": {
+    "full_storage": "Storage is full, no data will be saved.",
+    "almost_full": "Storage is almost full."
   },
   "greeting": {
     "morning": [

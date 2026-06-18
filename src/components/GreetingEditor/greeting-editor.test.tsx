@@ -34,14 +34,14 @@ beforeEach(() => {
 test("Should get the greetings on init", async () => {
   (chromeStorage.get as MockedFunction<typeof chromeStorage.get>).mockResolvedValue(["Hello", "World"]);
 
-  render(<GreetingEditor locale={locale} hide={() => {}}/>);
+  render(<GreetingEditor locale={locale} hide={() => { }} />);
 
   expect(await screen.findByRole("textbox")).toHaveValue("Hello\nWorld");
 });
 
 test("Should call set greetings", async () => {
   (chromeStorage.set as MockedFunction<typeof chromeStorage.set>).mockResolvedValue({} as any);
-  render(<GreetingEditor locale={locale} hide={() => {}}/>);
+  render(<GreetingEditor locale={locale} hide={() => { }} />);
 
   const textArea = screen.getByRole("textbox");
   await userEvent.type(textArea, "newGreeting");
@@ -57,7 +57,7 @@ test("should display space usage", async () => {
     max: 0
   });
 
-  render(<GreetingEditor locale={locale} hide={() => {}}/>);
+  render(<GreetingEditor locale={locale} hide={() => { }} />);
 
   await waitFor(() => expect(screen.getByText("1 KB / 5 KB")).toBeInTheDocument());
 });
@@ -65,7 +65,7 @@ test("should display space usage", async () => {
 test("should call hide when close button is clicked", async () => {
   const hideMock = vi.fn();
 
-  render(<GreetingEditor locale={locale} hide={hideMock}/>);
+  render(<GreetingEditor locale={locale} hide={hideMock} />);
 
   await userEvent.click(screen.getByTitle(locale.global.close));
   expect(hideMock).toHaveBeenCalled();
@@ -79,13 +79,13 @@ test("should show warning message when data is full", async () => {
     usedRatio: 0,
     max: 0
   });
-  (chromeStorage.set as MockedFunction<typeof chromeStorage.set>).mockResolvedValue({ usedRatio: 1, message: "Warning" });
+  (chromeStorage.set as MockedFunction<typeof chromeStorage.set>).mockResolvedValue({ usedRatio: 1, messageCode: "full_storage" });
 
-  render(<GreetingEditor locale={locale} hide={() => {}} />);
+  render(<GreetingEditor locale={locale} hide={() => { }} />);
 
   const textArea = screen.getByRole("textbox");
   await userEvent.type(textArea, "newGreeting");
 
   expect(await screen.findByTestId("mock-toast")).toBeInTheDocument();
-  expect(await screen.findByText("Warning")).toBeInTheDocument();
+  expect(await screen.findByText(locale.storage.full_storage)).toBeInTheDocument();
 });

@@ -2,11 +2,12 @@ import { type CSSProperties } from "react";
 import type { Hour } from "types/weather";
 
 type Props = {
+  locale: any,
   hourly: Hour[],
   speedUnits: "m/s" | "ft/s",
 }
 
-export default function WindView({ hourly, speedUnits }: Props) {
+export default function WindView({ locale, hourly, speedUnits }: Props) {
   const items = hourly.filter((_, index) => index % 3 === 1);
   const [minSpeed, maxSpeed] = items.reduce(([minSpeed, maxSpeed], item) => {
     if (item.wind.speed.raw > maxSpeed) {
@@ -32,7 +33,7 @@ export default function WindView({ hourly, speedUnits }: Props) {
             <div className="weather-more-hourly-wind-view-item-speed">{wind.speed.value} {speedUnits}</div>
             <svg viewBox="0 0 24 24" className="weather-more-hourly-wind-view-item-icon"
               style={{ "--degrees": wind.direction.degrees, "--ratio": ratio } as CSSProperties}>
-              <title>{wind.direction.name}</title>
+              <title>{locale.weather.cardinal_directions[wind.direction.name]}</title>
               <use href="#arrow-up"></use>
             </svg>
           </div>

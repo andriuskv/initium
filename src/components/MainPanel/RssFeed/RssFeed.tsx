@@ -192,7 +192,7 @@ export default function RssFeed({ locale, showIndicator }: Props) {
         }
 
         if (feeds.newValue) {
-          syncFeeds(feeds.newValue);
+          syncFeeds(feeds.newValue as Feeds);
         }
         else {
           updatedFeeds.current.length = 0;
@@ -565,26 +565,26 @@ export default function RssFeed({ locale, showIndicator }: Props) {
   }
 
   if (loading) {
-    return <Icon id="rss" className="main-panel-item-splash-icon"/>;
+    return <Icon id="rss" className="main-panel-item-splash-icon" />;
   }
   else if (activeComponent) {
     return (
-      <Suspense fallback={<Spinner size="24px"/>}>
+      <Suspense fallback={<Spinner size="24px" />}>
         {activeComponent === "feeds" && (
           <Feeds feeds={feeds} locale={locale} selectFeedFromList={selectFeedFromList}
             removeFeed={removeFeed} deactivateFeed={deactivateFeed}
             updateFeed={updateTypeFeed} dismissMessage={dismissMessage}
-            updateFeeds={updateFeeds} showForm={showForm} hide={hideFeedList}/>
+            updateFeeds={updateFeeds} showForm={showForm} hide={hideFeedList} />
         )}
-        {activeComponent === "form" && <Form feeds={feeds} locale={locale} addFeed={addFeed} hide={hideForm}/>}
+        {activeComponent === "form" && <Form feeds={feeds} locale={locale} addFeed={addFeed} hide={hideForm} />}
       </Suspense>
     );
   }
   return (
-    <Suspense fallback={<Spinner size="24px"/>}>
+    <Suspense fallback={<Spinner size="24px" />}>
       <Entries navigation={navigation} feeds={feeds}
         locale={locale} selectFeed={selectFeed} previousShift={previousShift} nextShift={nextShift}
-        showFeedList={showFeedList} markEntryAsRead={markEntryAsRead} expandEntry={expandEntry}/>
+        showFeedList={showFeedList} markEntryAsRead={markEntryAsRead} expandEntry={expandEntry} />
     </Suspense>
   );
 }

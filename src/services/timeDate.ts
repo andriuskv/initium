@@ -93,12 +93,12 @@ function parseDateLocale(locale: string) {
   if (locale === "default") {
     const generalSettings = getSetting("general") as GeneralSettings;
 
-    return generalSettings.locale;
+    return generalSettings.locale === "pt-BR" ? "pt" : generalSettings.locale;
   }
   else if (locale === "system") {
     return navigator.language;
   }
-  return locale;
+  return locale === "pt-BR" ? "pt" : locale;
 }
 
 function getUnit(ms: number) {

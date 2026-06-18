@@ -101,18 +101,16 @@ export default function Subtask({ children, index, subtask, locale, level = 0, c
         <input type="text" name="subtask" className="input task-form-subtask-input"
           defaultValue={subtask.rawText} autoComplete="off" data-subtask-id={subtask.id} />
         <Dropdown>
-          <button type="button" className="btn icon-text-btn dropdown-btn">
-            <Icon id="ellipsis-vertical" />
-            <span>{locale.global.options}</span>
-          </button>
           <button type="button" className="btn icon-text-btn dropdown-btn" onClick={() => addFormSubtask(subtask)}>
             <Icon id="plus" />
             <span>{locale.tasks.add_subtask_title}</span>
           </button>
-          {completeWithSubtasks ? <button type="button" className="btn icon-text-btn dropdown-btn icon-placeholder"
-            onClick={() => toggleSubtaskReq(subtask.id, index)}>
-            <span>{subtask.optional ? locale.tasks.make_required : locale.tasks.make_optional}</span>
-          </button> : null}
+          {completeWithSubtasks ? (
+            <button type="button" className="btn icon-text-btn dropdown-btn icon-placeholder"
+              onClick={() => toggleSubtaskReq(subtask.id, index)}>
+              <span>{subtask.optional ? locale.tasks.make_required : locale.tasks.make_optional}</span>
+            </button>
+          ) : null}
           <button type="button" className="btn icon-text-btn dropdown-btn" onClick={() => removeFormSubtask(subtask.id, index)}>
             <Icon id="trash" />
             <span>{locale.global.remove}</span>

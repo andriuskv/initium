@@ -124,9 +124,10 @@ function convertWindSpeed({ value, raw }: { value: number, raw: number }, units:
 }
 
 function fetchWeatherData(params: string) {
-  const { locale } = getSetting("general") as GeneralSettings;
+  let { locale } = getSetting("general") as GeneralSettings;
   const dateLocale = getDateLocale();
   const { units, speedUnits } = getSetting("weather") as WeatherSettings;
+  locale = locale === "pt-BR" ? "pt" : locale;
 
   return fetch(`${process.env.SERVER_URL}/weather?${params}&lang=${locale},${dateLocale}&units=${units},${speedUnits}`).then(res => res.json()) as Promise<{ hourly: Hour[], daily: Weekday[] } | Current>;
 }

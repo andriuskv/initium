@@ -268,11 +268,22 @@
 
 .top-panel-header-item-btn {
   width: 100%;
+  max-width: 124px;
   padding: var(--space-sm) var(--space-md);
   font-weight: normal;
   word-break: auto-phrase;
 
-  .indicator::after {
+  &>span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.top-panel-header-item-icon-container {
+  flex-shrink: 0;
+
+  &::after {
     bottom: 1px;
     right: 1px;
   }
@@ -289,25 +300,25 @@
 .top-panel-item {
   display: none;
 
-    &.anim-left {
-      overflow: hidden;
+  &.anim-left {
+    overflow: hidden;
 
-      .top-panel-item-content {
-        animation-fill-mode: both;
-        animation-duration: var(--duration-n), var(--duration-n);
-        animation-name: opacity-up, slide-left;
-      }
+    .top-panel-item-content {
+      animation-fill-mode: both;
+      animation-duration: var(--duration-n), var(--duration-n);
+      animation-name: opacity-up, slide-left;
     }
+  }
 
-    &.anim-right {
-      overflow: hidden;
+  &.anim-right {
+    overflow: hidden;
 
-      .top-panel-item-content {
-        animation-fill-mode: both;
-        animation-duration: var(--duration-n), var(--duration-n);
-        animation-name: opacity-up, slide-right;
-      }
+    .top-panel-item-content {
+      animation-fill-mode: both;
+      animation-duration: var(--duration-n), var(--duration-n);
+      animation-name: opacity-up, slide-right;
     }
+  }
 
   &.visible {
     display: block;

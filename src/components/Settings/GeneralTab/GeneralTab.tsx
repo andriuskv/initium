@@ -1,5 +1,5 @@
 import { dispatchCustomEvent } from "utils";
-import { useModal } from "hooks";
+import { useModal } from "@/hooks";
 import { initAppearanceSettings } from "services/settings";
 import { resetIDBStore, resetWallpaperInfo } from "services/wallpaper";
 import { resetItemPos } from "services/widgetStates";
@@ -101,6 +101,7 @@ export default function GeneralTab({ locale }: { locale: any }) {
         <div className="select-container">
           <select className="input select" onChange={handleLocaleChange} value={settings.general.locale}>
             <option value="en">English</option>
+            <option value="pt-BR">Português (Brasil)</option>
             <option value="ru">Русский</option>
             <option value="ja">日本語</option>
           </select>
