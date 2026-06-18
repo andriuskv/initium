@@ -914,8 +914,8 @@ export default function Calendar({ visible, locale, reveal, showIndicator }: Pro
   async function saveReminders(reminders: Reminder[]) {
     const data = await calendarService.saveReminders(reminders);
 
-    if (data?.usedRatio === 1 && data.message) {
-      showMessage(data.message);
+    if (data?.usedRatio === 1 && data.messageCode) {
+      showMessage(locale.storage[data.messageCode]);
     }
     else {
       dismissMessage();

@@ -713,8 +713,8 @@ export default function Tasks({ settings, generalSettings, locale, expanded, tog
       })
     }, { warnSize: true });
 
-    if (data?.usedRatio === 1 && data?.message) {
-      setStorageWarning({ message: data.message });
+    if (data?.usedRatio === 1 && data?.messageCode) {
+      setStorageWarning({ message: locale.storage[data.messageCode] });
     }
     else {
       setStorageWarning(null);

@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import WindView from "./WindView";
 import { type Hour } from "types/weather";
+import locale from "lang/en.json" assert { type: "json" };
 
 vi.mock("services/weather");
 
@@ -13,7 +14,7 @@ const mockHourlyDataC: Hour[] = [{
   precipitation: 20,
   hour: 1,
   time: "13:00",
-  wind: { speed: { raw: 5, value: 5 }, direction: { degrees: 90, name: "East" } }
+  wind: { speed: { raw: 5, value: 5 }, direction: { degrees: 90, name: "E" } }
 },
 {
   id: "2",
@@ -22,7 +23,7 @@ const mockHourlyDataC: Hour[] = [{
   hour: 2,
   time: "14:00",
   tempC: 2,
-  wind: { speed: { raw: 7, value: 7 }, direction: { degrees: 180, name: "South" } }
+  wind: { speed: { raw: 7, value: 7 }, direction: { degrees: 180, name: "S" } }
 },
 {
   id: "3",
@@ -31,7 +32,7 @@ const mockHourlyDataC: Hour[] = [{
   hour: 3,
   time: "15:00",
   tempC: 3,
-  wind: { speed: { raw: 6, value: 6 }, direction: { degrees: 270, name: "West" } }
+  wind: { speed: { raw: 6, value: 6 }, direction: { degrees: 270, name: "W" } }
 },
 {
   id: "4",
@@ -40,7 +41,7 @@ const mockHourlyDataC: Hour[] = [{
   hour: 4,
   time: "16:00",
   tempC: 4,
-  wind: { speed: { raw: 4, value: 4 }, direction: { degrees: 0, name: "North" } }
+  wind: { speed: { raw: 4, value: 4 }, direction: { degrees: 0, name: "N" } }
 },
 {
   id: "5",
@@ -49,7 +50,7 @@ const mockHourlyDataC: Hour[] = [{
   hour: 5,
   time: "17:00",
   tempC: 5,
-  wind: { speed: { raw: 8, value: 8 }, direction: { degrees: 45, name: "Northeast" } }
+  wind: { speed: { raw: 8, value: 8 }, direction: { degrees: 45, name: "NE" } }
 },
 {
   id: "6",
@@ -58,7 +59,7 @@ const mockHourlyDataC: Hour[] = [{
   precipitation: 35,
   hour: 6,
   time: "18:00",
-  wind: { speed: { raw: 9, value: 9 }, direction: { degrees: 135, name: "Southwest" } }
+  wind: { speed: { raw: 9, value: 9 }, direction: { degrees: 135, name: "SW" } }
 }];
 
 beforeEach(() => {
@@ -66,7 +67,7 @@ beforeEach(() => {
 });
 
 test("renders wind values and icons correctly in m/s", () => {
-  render(<WindView hourly={mockHourlyDataC} speedUnits="m/s"/>);
+  render(<WindView hourly={mockHourlyDataC} speedUnits="m/s" locale={locale} />);
 
   expect(screen.getAllByText(/m\/s/)).toHaveLength(2);
   expect(screen.getByText("7 m/s")).toBeInTheDocument();
@@ -77,7 +78,7 @@ test("renders wind values and icons correctly in m/s", () => {
 });
 
 test("renders wind values and icons correctly in ft/s", () => {
-  render(<WindView hourly={mockHourlyDataC} speedUnits="ft/s" />);
+  render(<WindView hourly={mockHourlyDataC} speedUnits="ft/s" locale={locale} />);
 
   expect(screen.getAllByText(/ft\/s/)).toHaveLength(2);
   expect(screen.getByText("7 ft/s")).toBeInTheDocument();

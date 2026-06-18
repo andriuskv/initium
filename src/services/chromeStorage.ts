@@ -67,7 +67,7 @@ async function set(value: { [key: string]: unknown }, { updateLocally, warnSize 
     if ((e as Error).message?.startsWith("QUOTA_BYTES_PER_ITEM")) {
       return {
         usedRatio: 1,
-        message: "Storage is full, no data was saved."
+        messageCode: "full_storage"
       };
     }
   }
@@ -89,13 +89,16 @@ async function getBytesInUse(id: string) {
   };
 }
 
-async function checkSize(id: string) {
+async function checkSize(id: string, warnRatio: number = 0.9): Promise<{
+  usedRatio: number,
+  messageCode?: string
+}> {
   const { usedRatio } = await getBytesInUse(id);
 
-  if (usedRatio >= 0.9) {
+  if (usedRatio >= warnRatio) {
     return {
       usedRatio,
-      message: "Storage is almost full."
+      messageCode: "almost_full"
     };
   }
   return { usedRatio };

@@ -39,7 +39,7 @@ export default function CurrentView({ current, units, speedUnits, locale }: Prop
                 <span>{current.wind.speed.value} {speedUnits}</span>
                 <svg viewBox="0 0 24 24" className="weather-more-current-wind-icon"
                   style={{ "--degrees": current.wind.direction.degrees } as CSSProperties}>
-                  <title>{current.wind.direction.name}</title>
+                  <title>{locale.weather.cardinal_directions[current.wind.direction.name]}</title>
                   <use href="#arrow-up"></use>
                 </svg>
               </span>

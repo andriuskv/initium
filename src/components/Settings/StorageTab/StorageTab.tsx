@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 import type { Item, Stats } from "./StorageTab.type";
 import { formatBytes, parseLocaleString, timeout } from "utils";
-import { useModal } from "hooks";
+import { useModal } from "@/hooks";
 import * as chromeStorage from "services/chromeStorage";
 import Modal from "components/Modal";
 import Icon from "components/Icon";
@@ -176,7 +176,7 @@ export default function StorageTab({ locale }: { locale: any }) {
 
   return (
     <div className="container-body setting-tab">
-      <MainUsage locale={locale} stats={stats}/>
+      <MainUsage locale={locale} stats={stats} />
       <ul>
         {items.map((item, i) => (
           <li className="storage-item" key={i}>
@@ -194,12 +194,12 @@ export default function StorageTab({ locale }: { locale: any }) {
               </div>
             </div>
             <button className="btn icon-btn alt-icon-btn" onClick={() => showRemoveItemModal(item)} title={locale.global.delete}>
-              <Icon id="trash"/>
+              <Icon id="trash" />
             </button>
           </li>
         ))}
       </ul>
-      <DataManagement locale={locale} items={items}/>
+      <DataManagement locale={locale} items={items} />
       {modal?.type === "item" ? (
         <Modal hiding={modalHiding} hide={hideModal}>
           <h4 className="modal-title">{modal.title}</h4>

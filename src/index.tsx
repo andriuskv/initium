@@ -24,7 +24,7 @@ root.render(
         <NotificationProvider>
           <StickyNotesProvider>
             <PlacementProvider>
-              <App/>
+              <App />
             </PlacementProvider>
           </StickyNotesProvider>
         </NotificationProvider>

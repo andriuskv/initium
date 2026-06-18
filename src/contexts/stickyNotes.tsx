@@ -37,7 +37,7 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
   }, [settings.general.openLinkInNewTab]);
 
   async function init() {
-    const notes = await chromeStorage.get("stickyNotes") ?? [];
+    const notes = (await chromeStorage.get("stickyNotes") || []) as Note[];
 
     if (notes?.length) {
       setNotes(await parseNotes(notes));
@@ -49,7 +49,7 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
       }
 
       if (stickyNotes.newValue) {
-        setNotes(await parseNotes(stickyNotes.newValue));
+        setNotes(await parseNotes(stickyNotes.newValue as Note[]));
       }
       else {
         setNotes([]);
@@ -178,13 +178,15 @@ function StickyNotesProvider({ children }: PropsWithChildren) {
   }
 
   function saveNotes(notes: Partial<Note>[]) {
-    chromeStorage.set({ stickyNotes: structuredClone(notes).map(note => {
-      delete note.id;
-      delete note.contentDisplayString;
-      delete note.discarding;
-      delete note.togglingHide;
-      return note;
-    }) });
+    chromeStorage.set({
+      stickyNotes: structuredClone(notes).map(note => {
+        delete note.id;
+        delete note.contentDisplayString;
+        delete note.discarding;
+        delete note.togglingHide;
+        return note;
+      })
+    });
   }
 
   return <StickyNotesContext value={memoizedValue}>{children}</StickyNotesContext>;

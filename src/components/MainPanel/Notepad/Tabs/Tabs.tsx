@@ -2,7 +2,7 @@ import type { DragStartEvent } from "@dnd-kit/core";
 import type { TabType } from "../notepad.type";
 import { useState, useEffect, type FormEvent, type CSSProperties } from "react";
 import { getRandomString } from "utils";
-import { useModal } from "hooks";
+import { useModal } from "@/hooks";
 import * as chromeStorage from "services/chromeStorage";
 import { SortableItem, SortableList } from "components/Sortable";
 import Dropdown from "components/Dropdown";
@@ -104,7 +104,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
     const elements = formElement.elements as FormElements;
     const tab = {
       id: getRandomString(),
-      title : elements.title.value.trim() || getNewTabTitle(),
+      title: elements.title.value.trim() || getNewTabTitle(),
       content: ""
     };
 
@@ -157,7 +157,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
 
     return (
       <SortableItem className={`notepad-tabs-item${tab.id === activeDragId ? " dragging" : ""}`}
-        component={component} id={tab.id} key={tab.id} handleTitle={locale.global.drag}/>
+        component={component} id={tab.id} key={tab.id} handleTitle={locale.global.drag} />
     );
   }
 
@@ -171,22 +171,22 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
             <div className="notepad-tabs-dropdown-setting">
               <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
                 onClick={() => decreaseTextSize(textSize)} title={locale.global.decrease_size_title} disabled={textSize <= 10}>
-                <Icon id="minus"/>
+                <Icon id="minus" />
               </button>
               <span className="notepad-tabs-dropdown-setting-value">{textSize}px</span>
               <button className="btn icon-btn notepad-tabs-dropdown-setting-btn"
                 onClick={() => increaseTextSize(textSize)} title={locale.global.increase_size_title} disabled={textSize >= 32}>
-                <Icon id="plus"/>
+                <Icon id="plus" />
               </button>
             </div>
           </div>
           <button className="btn icon-text-btn dropdown-btn" onClick={downloadTabs}>
-            <Icon id="download"/>
+            <Icon id="download" />
             <span>{locale.notepad.download_all_button}</span>
           </button>
         </Dropdown>
         <button className="btn icon-btn" onClick={hide} title={locale.global.close}>
-          <Icon id="cross"/>
+          <Icon id="cross" />
         </button>
       </div>
       <ul className="container-body notepad-tabs-items" data-dropdown-parent>
@@ -212,7 +212,7 @@ export default function Tabs({ tabs, textSize, locale, selectListTab, updateTabs
         </div>
       </div>
       {modal && <TabsModal locale={locale} modal={modal} hiding={modalHiding}
-        hide={hideModal} confirmTabRemoval={confirmTabRemoval} createTab={createTab}/>}
+        hide={hideModal} confirmTabRemoval={confirmTabRemoval} createTab={createTab} />}
     </div>
   );
 }

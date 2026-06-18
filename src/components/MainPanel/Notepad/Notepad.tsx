@@ -60,7 +60,7 @@ export default function Notepad({ locale }: { locale: any }) {
 
   async function init() {
     const saved = getLocalStorageItem<{ activeIndex: number, shift: number }>("active-notepad-tab") || { activeIndex: 0, shift: 0 };
-    let notepad = await chromeStorage.get("notepad");
+    let notepad = (await chromeStorage.get("notepad") || []) as TabType[];
 
     if (notepad?.length) {
       notepad = initTabs(notepad);
@@ -82,7 +82,7 @@ export default function Notepad({ locale }: { locale: any }) {
       setNavigation({ activeIndex: 0, shift: 0 });
 
       if (notepad.newValue) {
-        setTabs(initTabs(notepad.newValue));
+        setTabs(initTabs(notepad.newValue as TabType[]));
       }
       else {
         setTabs([getDefaultTab()]);
@@ -163,10 +163,10 @@ export default function Notepad({ locale }: { locale: any }) {
   async function checkStorageSize() {
     const data = await chromeStorage.checkSize("notepad");
 
-    if (data.message) {
+    if (data.messageCode) {
       setStorageWarning({
         usedRatio: data.usedRatio,
-        message: data.message
+        message: data.messageCode ? locale.storage[data.messageCode] : undefined
       });
     }
   }
@@ -329,16 +329,18 @@ export default function Notepad({ locale }: { locale: any }) {
   function saveTabs(tabs: TabType[]) {
     saveTimeoutId.current = timeout(async () => {
       saveTabTextSize(tabs);
-      const data = await chromeStorage.set({ notepad: tabs.map(tab => ({
-        id: tab.id,
-        title: tab.title,
-        content: tab.content
-      })) }, { warnSize: true });
+      const data = await chromeStorage.set({
+        notepad: tabs.map(tab => ({
+          id: tab.id,
+          title: tab.title,
+          content: tab.content
+        }))
+      }, { warnSize: true });
 
-      if (data?.message) {
+      if (data?.messageCode) {
         setStorageWarning({
           usedRatio: data.usedRatio,
-          message: data.message
+          message: data.messageCode ? locale.storage[data.messageCode] : undefined
         });
       }
       else {
@@ -352,10 +354,10 @@ export default function Notepad({ locale }: { locale: any }) {
   }
   else if (tabListVisible) {
     return (
-      <Suspense fallback={<Spinner size="24px"/>}>
+      <Suspense fallback={<Spinner size="24px" />}>
         <Tabs tabs={tabs} textSize={textSize} locale={locale} selectListTab={selectListTab}
           updateTab={updateTab} updateTabs={updateTabs} updateTabPosition={updateTabPosition} getTabSize={getTabSize}
-          decreaseTextSize={decreaseTextSize} increaseTextSize={increaseTextSize} hide={hideTabList}/>
+          decreaseTextSize={decreaseTextSize} increaseTextSize={increaseTextSize} hide={hideTabList} />
       </Suspense>
     );
   }
@@ -365,7 +367,7 @@ export default function Notepad({ locale }: { locale: any }) {
         {tabs.length > VISIBLE_ITEM_COUNT && (
           <button className="btn icon-btn main-panel-item-header-btn" onClick={previousShift}
             aria-label={locale.mainPanel.previous_shift_title} disabled={shift <= 0}>
-            <Icon id="chevron-left"/>
+            <Icon id="chevron-left" />
           </button>
         )}
         <TabsContainer current={activeIndex} offset={shift} itemCount={tabs.length}>
@@ -382,15 +384,15 @@ export default function Notepad({ locale }: { locale: any }) {
         {tabs.length > VISIBLE_ITEM_COUNT && (
           <button className="btn icon-btn main-panel-item-header-btn" onClick={nextShift}
             aria-label={locale.mainPanel.next_shift_title} disabled={shift + VISIBLE_ITEM_COUNT >= tabs.length}>
-            <Icon id="chevron-right"/>
+            <Icon id="chevron-right" />
           </button>
         )}
         <div className="main-panel-item-header-separator"></div>
         <button className="btn icon-btn main-panel-item-header-btn" onClick={showTabList} title={locale.notepad.show_tabs_title}>
-          <Icon id="menu"/>
+          <Icon id="menu" />
         </button>
       </div>
-      {storageWarning && <Warning locale={locale} storageWarning={storageWarning} dismiss={dismissWarning}/> }
+      {storageWarning && <Warning locale={locale} storageWarning={storageWarning} dismiss={dismissWarning} />}
       {activeTab ? (
         <textarea className="container-body textarea notepad-input" ref={textareaRef} style={{ "--text-size": `${activeTab.textSize || textSize}px` } as CSSProperties}
           onChange={handleTextareaChange}
@@ -398,7 +400,7 @@ export default function Notepad({ locale }: { locale: any }) {
           value={activeTab.content}
           key={activeTab.id}>
         </textarea>
-      ): null}
+      ) : null}
       {textSizeLabelVisible && activeTab && <div className="container notepad-text-size-label">{activeTab.textSize}px</div>}
     </div>
   );

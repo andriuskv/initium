@@ -63,17 +63,17 @@ export default function GreetingEditor({ locale, hide }: Props) {
     else if (bytes) {
       setBytes({
         ...bytes,
-        message: data.message
+        message: data.messageCode ? locale.storage[data.messageCode] : undefined
       });
     }
   }
 
   return (
     <div className="greeting-editor">
-      <Header locale={locale} bytes={bytes} hide={hide}/>
+      <Header locale={locale} bytes={bytes} hide={hide} />
       {bytes?.message && (
         <Suspense fallback={null}>
-          <Toast locale={locale} message={bytes.message} position="bottom" dismiss={dismissMessage}/>
+          <Toast locale={locale} message={bytes.message} position="bottom" dismiss={dismissMessage} />
         </Suspense>
       )}
       <textarea className="container-body textarea greeting-editor-textarea" value={textArea} onChange={handleTextareaChange}></textarea>

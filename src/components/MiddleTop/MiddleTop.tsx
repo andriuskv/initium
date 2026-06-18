@@ -1,8 +1,8 @@
 import type { TabName } from "./TopPanel/top-panel.type";
+import type { Countdown } from "./TopPanel/Countdown/countdown.types";
 import type { Settings } from "types/settings";
 import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense, type CSSProperties } from "react";
 import { setPageTitle } from "utils";
-import * as chromeStorage from "services/chromeStorage";
 import { getWidgetState, setWidgetState } from "services/widgetStates";
 import "./middle-top.css";
 
@@ -81,9 +81,9 @@ export default function MiddleTop({ settings }: Props) {
       return;
     }
     const chromeStorage = await import("services/chromeStorage");
-    const countdowns = await chromeStorage.get("countdowns");
+    const countdowns = (await chromeStorage.get("countdowns") || []) as Countdown[];
 
-    if (countdowns?.length) {
+    if (countdowns.length) {
       topPanelTimeoutId.current = window.setTimeout(() => {
         setTopPanel({ rendered: true });
       }, 4000);

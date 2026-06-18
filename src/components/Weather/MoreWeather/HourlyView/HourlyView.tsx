@@ -41,7 +41,7 @@ export default function HourlyView({ locale, hourly, speedUnits }: Props) {
       </TabsContainer>
       {activeView === "temperature" ? <TempView hourly={hourly} />
         : activeView === "precipitation" ? <PrecView hourly={hourly} />
-          : activeView === "wind" ? <WindView hourly={hourly} speedUnits={speedUnits} /> : null
+          : activeView === "wind" ? <WindView locale={locale} hourly={hourly} speedUnits={speedUnits} /> : null
       }
       <div className="weather-more-hourly-view-time">
         {hourly.filter((_, index) => index % 3 === 1).map(item => (
