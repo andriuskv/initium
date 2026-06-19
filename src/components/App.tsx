@@ -29,7 +29,6 @@ export default function App() {
     if (!locale) {
       return;
     }
-    const first = localStorage.getItem("first");
 
     async function initAnnouncements() {
       try {
@@ -49,7 +48,7 @@ export default function App() {
       firstRender.current = false;
       initAnnouncements();
     }
-
+    const first = localStorage.getItem("first");
     const date = Date.now().toString();
 
     if (first) {
@@ -64,11 +63,13 @@ export default function App() {
       try {
         /* global chrome */
         const full = chrome.i18n.getUILanguage();
-        const part = full.split("-")[0];
+        const part = full.toLowerCase().includes("pt")
+          ? "pt-BR"
+          : full.split("-")[0];
         const readable = getReadableLocale(part);
 
         if (part !== "en" && part !== locale.locale && readable) {
-          const uiLocale = await fetchLocale(part);
+          const { default: uiLocale } = await fetchLocale(part);
 
           showNotification({
             id: "lang-switch",
