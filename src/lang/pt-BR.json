@@ -3,6 +3,7 @@
   "locale_short": "pt",
   "global": {
     "new_tab": "Nova Guia",
+    "lang_switch": "Deseja mudar para Português do Brasil?",
     "create": "Criar",
     "update": "Atualizar",
     "add": "Adicionar",
@@ -34,6 +35,7 @@
     "enable": "Ativar",
     "restore": "Restaurar",
     "confirm": "Confirmar",
+    "switch": "Mudar",
     "info": "Info",
     "settings": "Configurações",
     "title_input_label": "Título",
