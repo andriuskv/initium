@@ -43,6 +43,32 @@ type TimerType = Time & {
 
 type TimerObj = { [key: string]: TimerType };
 
+function DigitView({ value, type, addTime, removeTime, locale }: {
+  value: string,
+  type: "hours" | "minutes" | "seconds",
+  addTime: (to: "hours" | "minutes" | "seconds", event: MouseEvent) => void,
+  removeTime: (to: "hours" | "minutes" | "seconds", event: MouseEvent) => void,
+  locale: any
+}) {
+  return (
+    <div className="timer-digit-container">
+      <div className="timer-digit-value-container">
+        <div className="timer-display-btns">
+          <button type="button" className="btn icon-btn" onClick={event => addTime(type, event)} title={locale.global.increase}>
+            <Icon id="plus" size="16px" />
+          </button>
+          <button type="button" className="btn icon-btn" onClick={event => removeTime(type, event)} title={locale.global.decrease}>
+            <Icon id="minus" size="16px" />
+          </button>
+        </div>
+        <span className="top-panel-digit">{value}</span>
+      </div>
+      <span className="top-panel-digit-sep">{type[0]}</span>
+    </div>
+
+  )
+}
+
 export default function Timer({ visible, locale, animDirection, expanded, toggleIndicator, updateTitle, ignoreMiniTimerPref, expand, exitFullscreen, handleReset }: Props) {
   const [timers, setTimers] = useState<TimerObj>(() => {
     const id = getRandomString(4);
@@ -723,51 +749,12 @@ export default function Timer({ visible, locale, animDirection, expanded, toggle
                 {activeTimer.label ? <h4 className="top-panel-item-content-label">{activeTimer.label}</h4> : null}
                 <div className="top-panel-item-display">
                   {hours > 0 && (
-                    <div className="timer-digit-container">
-                      <div className="timer-digit-value-container">
-                        <div className="timer-display-btns">
-                          <button type="button" className="btn icon-btn" onClick={event => addTime("hours", event)} title={locale.global.increase}>
-                            <Icon id="plus" size="16px" />
-                          </button>
-                          <button type="button" className="btn icon-btn" onClick={event => removeTime("hours", event)} title={locale.global.decrease}>
-                            <Icon id="minus" size="16px" />
-                          </button>
-                        </div>
-                        <span className="top-panel-digit">{activeTimer.hours}</span>
-                      </div>
-                      <span className="top-panel-digit-sep">h</span>
-                    </div>
+                    <DigitView value={activeTimer.hours} type="hours" addTime={addTime} removeTime={removeTime} locale={locale} />
                   )}
                   {(hours > 0 || minutes > 0) && (
-                    <div className="timer-digit-container">
-                      <div className="timer-digit-value-container">
-                        <div className="timer-display-btns">
-                          <button type="button" className="btn icon-btn" onClick={event => addTime("minutes", event)} title={locale.global.increase}>
-                            <Icon id="plus" size="16px" />
-                          </button>
-                          <button type="button" className="btn icon-btn" onClick={event => removeTime("minutes", event)} title={locale.global.decrease}>
-                            <Icon id="minus" size="16px" />
-                          </button>
-                        </div>
-                        <span className="top-panel-digit">{activeTimer.minutes}</span>
-                      </div>
-                      <span className="top-panel-digit-sep">m</span>
-                    </div>
+                    <DigitView value={activeTimer.minutes} type="minutes" addTime={addTime} removeTime={removeTime} locale={locale} />
                   )}
-                  <div className="timer-digit-container">
-                    <div className="timer-digit-value-container">
-                      <div className="timer-display-btns">
-                        <button type="button" className="btn icon-btn" onClick={event => addTime("seconds", event)} title={locale.global.increase}>
-                          <Icon id="plus" size="16px" />
-                        </button>
-                        <button type="button" className="btn icon-btn" onClick={event => removeTime("seconds", event)} title={locale.global.decrease}>
-                          <Icon id="minus" size="16px" />
-                        </button>
-                      </div>
-                      <span className="top-panel-digit">{activeTimer.seconds}</span>
-                    </div>
-                    <span className="top-panel-digit-sep">s</span>
-                  </div>
+                  <DigitView value={activeTimer.seconds} type="seconds" addTime={addTime} removeTime={removeTime} locale={locale} />
                 </div>
               </>
             ) : (

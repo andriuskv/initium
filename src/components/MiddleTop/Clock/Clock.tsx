@@ -17,12 +17,16 @@ function getDate(dateLocale: string) {
 
 export default function Clock({ generalLocale = "en", settings }: { generalLocale?: string, settings: TimeDateSettings }) {
   const clockVertical = settings.clockStyle === "vertical";
-  const [clock, setClock] = useState(() => getDisplayTime(clockVertical));
+  const [clock, setClock] = useState(() => getDisplayTime(true));
   const [date, setDate] = useState(() => getDate(settings.dateLocale));
   const [expanded, setExpanded] = useState(false);
 
+  useEffect(() => {
+    updateClock();
+  }, [settings.format]);
+
   function updateClock() {
-    setClock(getDisplayTime(clockVertical));
+    setClock(getDisplayTime(true));
   }
 
   function updateDate() {
