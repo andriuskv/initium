@@ -1,7 +1,7 @@
 import type { MainPanelComponents, AppearanceSettings } from "types/settings";
 import type { Site } from "./top-sites.type";
 import { useState, useEffect, useRef } from "react";
-import { useModal } from "hooks";
+import { useModal } from "@/hooks";
 import { getFaviconURL, getLocalStorageItem } from "utils";
 import { getSetting } from "services/settings";
 import Dropdown from "components/Dropdown";
@@ -25,6 +25,36 @@ type LocalData = {
   }[]
   sites?: Site[]
 };
+
+function TopSiteItem({ site, index, openInNewTab, editSite, removeSite, locale }: {
+  site: Site,
+  index: number,
+  openInNewTab?: boolean,
+  editSite: (index: number) => void,
+  removeSite: (index: number) => void,
+  locale: any
+}) {
+  return (
+    <li className="top-site">
+      <a href={site.url} className="top-site-link" aria-label={site.title} target={openInNewTab ? "_blank" : "_self"} draggable="false">
+        <div className="container top-site-container top-site-title">{site.title}</div>
+        <div className="container top-site-container top-site-thumbnail-container">
+          <img src={site.iconUrl} className="top-site-icon" width="32px" height="32px" loading="lazy" alt="" draggable="false" />
+        </div>
+      </a>
+      <Dropdown container={{ className: "top-site-dropdown" }}>
+        <button className="btn icon-text-btn dropdown-btn" onClick={() => editSite(index)}>
+          <Icon id="edit" />
+          <span>{locale.global.edit}</span>
+        </button>
+        <button className="btn icon-text-btn dropdown-btn" onClick={() => removeSite(index)}>
+          <Icon id="trash" />
+          <span>{locale.global.remove}</span>
+        </button>
+      </Dropdown>
+    </li>
+  );
+}
 
 export default function TopSites({ settings, enableEdit, locale }: Props) {
   const [sites, setSites] = useState<Site[] | null>(null);
@@ -263,41 +293,24 @@ export default function TopSites({ settings, enableEdit, locale }: Props) {
         first.current = false;
       }}>
         {visibleSites.map((site, i) => (
-          <li className="top-site" key={site.url}>
-            <a href={site.url} className="top-site-link" aria-label={site.title} target={settings.openInNewTab ? "_blank" : "_self"} draggable="false">
-              <div className="container top-site-container top-site-title">{site.title}</div>
-              <div className="container top-site-container top-site-thumbnail-container">
-                <img src={site.iconUrl} className="top-site-icon" width="32px" height="32px" loading="lazy" alt="" draggable="false"/>
-              </div>
-            </a>
-            <Dropdown container={{ className: "top-site-dropdown" }}>
-              <button className="btn icon-text-btn dropdown-btn" onClick={() => editSite(i)}>
-                <Icon id="edit"/>
-                <span>{locale.global.edit}</span>
-              </button>
-              <button className="btn icon-text-btn dropdown-btn" onClick={() => removeSite(i)}>
-                <Icon id="trash"/>
-                <span>{locale.global.remove}</span>
-              </button>
-            </Dropdown>
-          </li>
+          <TopSiteItem site={site} index={i} key={site.url} openInNewTab={settings.openInNewTab} editSite={editSite} removeSite={removeSite} locale={locale} />
         ))}
         {visibleSites.length < settings.visibleItemCount && !settings.addSiteButtonHidden && (
           <li className="top-site">
             <button className="top-site-link top-site-add-btn" onClick={() => showForm()}>
               <div className="container top-site-container top-site-title">{locale.topSites.add_shortcut_title}</div>
               <div className="container top-site-container top-site-thumbnail-container">
-                <Icon id="plus" className="top-site-add-btn-icon"/>
+                <Icon id="plus" className="top-site-add-btn-icon" />
               </div>
             </button>
           </li>
         )}
       </ul>
       {settings.persistentSitesHidden ? null : (
-        <PersistentSites settings={settings} locale={locale} getFaviconURL={getFaviconURL} enableEdit={enableEdit}/>
+        <PersistentSites settings={settings} locale={locale} getFaviconURL={getFaviconURL} enableEdit={enableEdit} />
       )}
       {modal ? (
-        <Form form={modal} locale={locale} updateSite={updateSite} hiding={modalHiding} hide={hideModal}/>
+        <Form form={modal} locale={locale} updateSite={updateSite} hiding={modalHiding} hide={hideModal} />
       ) : null}
     </>
   );
