@@ -16,8 +16,8 @@ type Props = {
 }
 
 export default function GroupForm({ locale, action = "create", group, submitAction, modal = false, hiding, hide }: Props) {
-  const [currentColor, setCurrentColor] = useState(() => group?.color || getRandomHexColor());
-  const [colorEnabled, setColorEnabled] = useState(!!group?.color);
+  const [currentColor, setCurrentColor] = useState(() => group?.color);
+  const [colorEnabled, setColorEnabled] = useState(!!currentColor);
   const updatingColor = useRef(false);
   const colorInputRef = useRef<HTMLInputElement>(null);
 
@@ -69,10 +69,16 @@ export default function GroupForm({ locale, action = "create", group, submitActi
 
   function enableColorSet() {
     setColorEnabled(true);
+    setCurrentColor(getRandomHexColor());
 
     requestAnimationFrame(() => {
       colorInputRef.current?.click();
     });
+  }
+
+  function resetColor() {
+    setColorEnabled(false);
+    setCurrentColor(undefined);
   }
 
   if (modal) {
@@ -94,7 +100,7 @@ export default function GroupForm({ locale, action = "create", group, submitActi
               placeholder={locale.tasks.group_input_placeholder} defaultValue={group?.name} autoComplete="off" required />
           </div>
           <div className="modal-actions">
-            {group?.color && <button type="button" className="btn text-btn" onClick={() => setColorEnabled(false)}>{locale.global.cancel}</button>}
+            {currentColor ? <button type="button" className="btn text-btn" onClick={resetColor}>{locale.global.reset}</button> : null}
             <button type="button" className="btn text-btn" onClick={hide}>{locale.global.cancel}</button>
             <button className="btn">{action === "edit" ? locale.global.edit : locale.global.create}</button>
           </div>

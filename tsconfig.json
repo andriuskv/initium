@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "dist",
     "sourceMap": true,
     "module": "ESNext",
@@ -9,7 +9,6 @@
     "target": "ESNext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "importsNotUsedAsValues": "remove",
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "allowJs": true,
