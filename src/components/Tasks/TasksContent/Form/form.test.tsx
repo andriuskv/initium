@@ -117,29 +117,6 @@ test("hides form when cancel button is clicked", async () => {
   expect(mockHide).toHaveBeenCalledTimes(1);
 });
 
-test("doesn't submit form when details are empty", async () => {
-  render(
-    <Form
-      form={{} as TaskForm}
-      groups={mockGroups}
-      locale={locale}
-      replaceGroups={mockReplaceGroups}
-      removeTask={mockRemoveTask}
-      createGroup={mockCreateGroup}
-      hide={mockHide}
-    />
-  );
-
-  const textarea = screen.getByPlaceholderText("Details");
-  await userEvent.clear(textarea);
-
-  const submitButton = screen.getByText("Create");
-  await userEvent.click(submitButton);
-
-  expect(mockReplaceGroups).not.toHaveBeenCalledTimes(1);
-  expect(mockHide).not.toHaveBeenCalledTimes(1);
-});
-
 test("handles form submission for creating a new task", async () => {
   render(
     <Form

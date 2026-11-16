@@ -299,10 +299,6 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
       labels: getFlaggedFormLabels()
     }) as TaskType;
 
-    if (!text) {
-      return;
-    }
-
     if (state.completeWithSubtasks) {
       task.completeWithSubtasks = true;
     }
@@ -645,7 +641,7 @@ export default function Form({ form, groups, locale, replaceGroups, removeTask, 
           </div>
           <div className="textarea-container task-form-textarea-container">
             <textarea className="input textarea task-form-textarea" name="text" defaultValue={state.task.rawText}
-              placeholder={locale.tasks.details} autoFocus required></textarea>
+              placeholder={locale.tasks.details} autoFocus></textarea>
           </div>
           <div className="task-form-item-container">
             <h4 className="task-form-item-title">{locale.tasks.subtask_title}</h4>
