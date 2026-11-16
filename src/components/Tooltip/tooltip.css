@@ -2,7 +2,7 @@
   z-index: 10000;
   position: absolute;
   position-area: top;
-  position-visibility: anchors-visible;
+  position-visibility: anchor-visible;
   position-try-fallbacks: flip-inline flip-block;
   margin-block: var(--space-sm);
   padding: var(--space-sm) var(--space-xl);
